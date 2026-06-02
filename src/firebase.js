@@ -1,8 +1,8 @@
-import { initializeApp } from "firebase/app"
-import { initializeFirestore, persistentLocalCache } from "firebase/firestore"
-import { getAuth } from "firebase/auth"
-import { getStorage } from "firebase/storage"
-import { getAnalytics, isSupported } from "firebase/analytics"
+import { initializeApp } from 'firebase/app'
+import { initializeFirestore, persistentLocalCache } from 'firebase/firestore'
+import { getAuth, browserLocalPersistence, setPersistence } from 'firebase/auth'
+import { getStorage } from 'firebase/storage'
+import { getAnalytics, isSupported } from 'firebase/analytics'
 
 const firebaseConfig = {
   apiKey:            import.meta.env.VITE_FIREBASE_API_KEY,
@@ -14,11 +14,14 @@ const firebaseConfig = {
   measurementId:     import.meta.env.VITE_FIREBASE_MEASUREMENT_ID,
 }
 
-const app = initializeApp(firebaseConfig)
+const app  = initializeApp(firebaseConfig)
+const auth = getAuth(app)
 
-export const db = initializeFirestore(app, { localCache: persistentLocalCache() })
-export const auth = getAuth(app)
-export const storage = getStorage(app)
+setPersistence(auth, browserLocalPersistence)
+
+export { auth }
+export const db        = initializeFirestore(app, { localCache: persistentLocalCache() })
+export const storage   = getStorage(app)
 export const analytics = isSupported().then(yes => yes ? getAnalytics(app) : null)
 
 export default app

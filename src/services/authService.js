@@ -10,6 +10,7 @@ import {
   reauthenticateWithCredential,
   EmailAuthProvider,
   GoogleAuthProvider,
+  signInWithPopup,
   signInWithRedirect,
   getRedirectResult,
   linkWithPopup,
@@ -26,9 +27,19 @@ export const login = (email, password) => {
   return signInWithEmailAndPassword(auth, email, password)
 }
 
-export const loginWithGoogle = () => {
+export const loginWithGoogle = async () => {
   const provider = new GoogleAuthProvider()
-  return signInWithRedirect(auth, provider)
+  provider.setCustomParameters({ prompt: 'select_account' })
+
+  try {
+    const result = await signInWithPopup(auth, provider)
+    return result
+  } catch (err) {
+    if (err.code === 'auth/popup-blocked') {
+      return signInWithRedirect(auth, provider)
+    }
+    throw err
+  }
 }
 
 export const getGoogleRedirectResult = () => {
