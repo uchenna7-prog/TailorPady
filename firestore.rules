@@ -1,7 +1,103 @@
 rules_version = '2';
-
 service cloud.firestore {
   match /databases/{database}/documents {
+
+    match /slugs/{slug} {
+      allow read: if true;
+      allow create: if request.auth != null
+        && request.resource.data.uid == request.auth.uid;
+      allow update, delete: if request.auth != null
+        && resource.data.uid == request.auth.uid;
+    }
+
+    match /users/{uid} {
+      allow read, write: if request.auth != null && request.auth.uid == uid;
+
+      match /settings/{docId} {
+        allow read, write: if request.auth != null && request.auth.uid == uid;
+      }
+
+      match /publicProfile/{docId} {
+        allow read: if true;
+        allow write: if request.auth != null && request.auth.uid == uid;
+      }
+
+      match /galleryPhotos/{photoId} {
+        allow read: if true;
+        allow write: if request.auth != null && request.auth.uid == uid;
+      }
+
+      match /galleryDressTypes/{docId} {
+        allow read: if true;
+        allow write: if request.auth != null && request.auth.uid == uid;
+      }
+
+      match /portfolioSettings/{docId} {
+        allow read: if true;
+        allow write: if request.auth != null && request.auth.uid == uid;
+      }
+
+      match /customers/{customerId} {
+        allow read, write: if request.auth != null && request.auth.uid == uid;
+
+        match /measurements/{measurementId} {
+          allow read, write: if request.auth != null && request.auth.uid == uid;
+        }
+      }
+
+      match /orders/{orderId} {
+        allow read, write: if request.auth != null && request.auth.uid == uid;
+      }
+
+      match /invoices/{invoiceId} {
+        allow read, write: if request.auth != null && request.auth.uid == uid;
+      }
+
+      match /payments/{paymentId} {
+        allow read, write: if request.auth != null && request.auth.uid == uid;
+      }
+
+      match /receipts/{receiptId} {
+        allow read, write: if request.auth != null && request.auth.uid == uid;
+      }
+
+      match /agentMessages/{messageId} {
+        allow read, write: if request.auth != null && request.auth.uid == uid;
+      }
+
+      match /tasks/{taskId} {
+        allow read, write: if request.auth != null && request.auth.uid == uid;
+      }
+
+      match /appointments/{appointmentId} {
+        allow read, write: if request.auth != null && request.auth.uid == uid;
+      }
+
+      match /gallery/{itemId} {
+        allow read, write: if request.auth != null && request.auth.uid == uid;
+      }
+
+      match /inventory/{itemId} {
+        allow read, write: if request.auth != null && request.auth.uid == uid;
+      }
+
+      match /reviews/{reviewId} {
+        allow read: if true;
+        allow write: if request.auth != null && request.auth.uid == uid;
+        allow create: if request.auth == null
+          && request.resource.data.token is string
+          && request.resource.data.token.size() > 0
+          && request.resource.data.customerName is string
+          && request.resource.data.customerName.size() > 0
+          && request.resource.data.review is string
+          && request.resource.data.review.size() > 0
+          && request.resource.data.rating is number
+          && request.resource.data.rating >= 1
+          && request.resource.data.rating <= 5
+          && request.resource.data.status == 'pending';
+      }
+    }
+
     match /{document=**} {
       allow read, write: if false;
     }

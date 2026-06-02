@@ -13,10 +13,9 @@
       "**/node_modules/**"
     ],
     "rewrites": [
-      {
-        "source": "**",
-        "destination": "/index.html"
-      }
+      { "source": "/portfolio/**", "destination": "/public.html" },
+      { "source": "/review/**",    "destination": "/public.html" },
+      { "source": "**",            "destination": "/index.html"  }
     ]
   },
   "auth": {
