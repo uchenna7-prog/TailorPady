@@ -30,10 +30,10 @@ function GoogleIcon() {
 
 export default function Login() {
   const { login, loginWithGoogle, setRedirecting } = useAuth()
-  const { generalSettings } = useGeneralSettings()
-  const navigate  = useNavigate()
-  const location  = useLocation()
-  const from      = location.state?.from?.pathname || '/'
+  const { generalSettings }                        = useGeneralSettings()
+  const navigate                                   = useNavigate()
+  const location                                   = useLocation()
+  const from                                       = location.state?.from?.pathname || '/'
 
   const [email,         setEmail]         = useState('')
   const [password,      setPassword]      = useState('')

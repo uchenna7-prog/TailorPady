@@ -17,11 +17,11 @@ const STRENGTH_LEVELS = [
 function getStrength(password) {
   if (password.length === 0) return -1
   let score = 0
-  if (password.length >= 8)           score++
-  if (/[A-Z]/.test(password))         score++
-  if (/[0-9]/.test(password))         score++
-  if (/[^A-Za-z0-9]/.test(password))  score++
-  if (password.length < 8)            return 0
+  if (password.length >= 8)          score++
+  if (/[A-Z]/.test(password))        score++
+  if (/[0-9]/.test(password))        score++
+  if (/[^A-Za-z0-9]/.test(password)) score++
+  if (password.length < 8)           return 0
   return score
 }
 
@@ -48,8 +48,8 @@ function GoogleIcon() {
 
 export default function Signup() {
   const { signup, loginWithGoogle, setRedirecting } = useAuth()
-  const { generalSettings } = useGeneralSettings()
-  const navigate = useNavigate()
+  const { generalSettings }                         = useGeneralSettings()
+  const navigate                                    = useNavigate()
 
   const [fullName,      setFullName]      = useState('')
   const [email,         setEmail]         = useState('')
@@ -147,7 +147,6 @@ export default function Signup() {
         </div>
 
         <form onSubmit={handleSubmit} className={styles.form} noValidate>
-
           <div className={styles.field}>
             <label className={styles.label}>Full Name</label>
             <div className={styles.inputWrap}>

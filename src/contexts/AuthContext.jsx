@@ -22,14 +22,19 @@ export function AuthProvider({ children }) {
   const [redirecting, setRedirecting] = useState(false)
 
   useEffect(() => {
-    let settled = false
+    let authSettled     = false
+    let redirectSettled = false
+
+    const trySettle = () => {
+      if (authSettled && redirectSettled) {
+        setLoading(false)
+      }
+    }
 
     const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
       setUser(firebaseUser)
-      if (!settled) {
-        settled = true
-        setLoading(false)
-      }
+      authSettled = true
+      trySettle()
     })
 
     getGoogleRedirectResult()
@@ -40,10 +45,8 @@ export function AuthProvider({ children }) {
       })
       .catch(() => {})
       .finally(() => {
-        if (!settled) {
-          settled = true
-          setLoading(false)
-        }
+        redirectSettled = true
+        trySettle()
       })
 
     return unsubscribe
