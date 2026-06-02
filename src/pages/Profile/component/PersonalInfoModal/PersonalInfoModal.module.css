@@ -1,0 +1,22 @@
+.personalInfoRow {
+  display: flex;
+  gap: 10px;
+}
+.personalInfoSelect {
+  flex: 1;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 12px;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--text);
+  font-family: inherit;
+  outline: none;
+  cursor: pointer;
+  appearance: auto;
+  transition: border-color 0.15s;
+}
+.personalInfoSelect:focus { 
+    border-color: var(--accent); 
+}

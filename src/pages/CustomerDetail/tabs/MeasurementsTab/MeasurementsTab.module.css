@@ -1,0 +1,20 @@
+.measurementGroup {
+  margin-bottom: 16px;
+}
+
+.measurementGroupDate {
+  font-size: 0.65rem;
+  font-weight: 600;
+  color: var(--text3);
+  padding: 10px 16px 8px;
+}
+
+.measurementGroupDivider {
+  height: 1px;
+  background: var(--border);
+  width: calc(100% + 32px);
+  margin-left: -16px;
+}
+
+
+

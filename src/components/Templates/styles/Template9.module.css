@@ -1,0 +1,400 @@
+.template {
+  background: #fff;
+  color: #1a1a1a;
+  font-family: "Manrope", sans-serif;
+  font-size: 10px;
+  display: flex;
+  flex-direction: column;
+  min-height: 565px;
+}
+
+.header {
+  background: var(--brand-gradient);
+  color: var(--brand-on-primary);
+  padding: 10px 16px;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  gap: 12px 20px;
+  opacity: 0.88;
+  font-size: 9px;
+}
+
+.header > div:first-child {
+  display: flex;
+  flex-direction: row;
+  text-align: left;
+  min-width: 0;
+}
+
+.logoArea {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.companyName {
+  font-size: 10px;
+  font-weight: 900;
+  letter-spacing: 0.05em;
+  color: var(--brand-on-primary);
+  word-break: break-word;
+}
+
+.tagline {
+  font-size: 7.5px;
+}
+
+.headerRight {
+  font-size: 9px;
+  line-height: 1.6;
+  opacity: 0.88;
+  flex-shrink: 0;
+  margin-left: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+@media (max-width: 520px) {
+  .header {
+    grid-template-columns: 1fr 1fr;
+    align-items: start;
+    gap: 4px 12px;
+  }
+
+  .logoArea {
+    grid-column: 1;
+    grid-row: 1 / span 2;
+    align-self: center;
+  }
+
+  .headerRight:first-of-type {
+    grid-column: 2;
+    grid-row: 1;
+  }
+
+  .headerRight:last-of-type {
+    grid-column: 2;
+    grid-row: 2;
+  }
+}
+
+.invoiceRow,
+.receiptRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 16px;
+  border-bottom: 1px solid #eee;
+}
+
+.invoiceLeft,
+.receiptLeft {
+  display: flex;
+  align-items: baseline;
+  gap: 4px;
+}
+
+.invoiceWord,
+.receiptWord {
+  font-size: 10px;
+  font-weight: 400;
+  color: #555;
+}
+
+.invoiceNum,
+.receiptNum {
+  font-size: 18px;
+  font-weight: 900;
+  color: var(--brand-primary);
+}
+
+.invoiceRight,
+.receiptRight {
+  text-align: right;
+  font-size: 10px;
+  line-height: 1.7;
+}
+
+.label {
+  font-size: 9px;
+  font-weight: 700;
+  color: var(--brand-primary);
+}
+
+.infoRow {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 7px 16px 9px;
+  border-bottom: 1px solid #eee;
+}
+
+.infoRow > div {
+  min-width: 0;
+  flex: 1;
+  font-size: 10px;
+  line-height: 1.6;
+  word-break: break-word;
+  overflow-wrap: break-word;
+}
+
+.infoLabel {
+  font-weight: 700;
+  font-size: 10px;
+  margin-bottom: 2px;
+  color: var(--brand-primary);
+}
+
+.thankYou {
+  text-transform: uppercase;
+  text-align: right;
+  font-style: italic;
+  font-size: 10px;
+  padding: 8px 16px;
+  color: var(--brand-primary);
+  margin-top: 45px;
+}
+
+.tableWrapper {
+  padding: 0 16px;
+}
+
+.orderDescriptionRow {
+  display: flex;
+  gap: 5px;
+  align-items: baseline;
+  padding: 10px 0 12px;
+}
+
+.orderText {
+  font-weight: 900;
+}
+
+.orderDescLabel {
+  font-size: 11px;
+  color: #0a0a0a;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+}
+
+.colDesc  { width: 44%; }
+.colPrice { width: 22%; }
+.colQty   { width: 10%; }
+.colTotal { width: 24%; }
+
+.tableHead {
+  background: var(--brand-gradient);
+  color: var(--brand-on-primary);
+  opacity: 0.88;
+}
+
+.tableHead th {
+  padding: 5px 4px;
+  font-size: 10px;
+  font-weight: 700;
+}
+
+.tableRow {
+  border-bottom: 1px dashed #ebebeb;
+}
+
+.tableRow td {
+  padding: 6px 4px;
+  font-size: 10px;
+}
+
+th.colDesc,
+td.colDesc {
+  text-align: left;
+  word-break: break-word;
+}
+
+th.colQty,
+td.colQty {
+  text-align: center;
+  padding-left: 6px;
+  padding-right: 6px;
+}
+
+th.colPrice,
+td.colPrice {
+  text-align: center;
+  padding-right: 8px;
+}
+
+th.colTotal,
+td.colTotal {
+  text-align: center;
+}
+
+.tableBody {
+  padding: 5px 0;
+}
+
+.summaryBlock {
+  margin-left: auto;
+  width: 55%;
+  margin-top: 14px;
+  padding: 8px 16px;
+}
+
+.summaryRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  column-gap: 12px;
+  padding: 3px 0;
+}
+
+.summaryKey {
+  font-size: 10px;
+  color: #6b7280;
+}
+
+.summaryVal {
+  font-size: 10px;
+  font-weight: 500;
+  color: #1a1a1a;
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum";
+}
+
+.summaryKeyDiscount {
+  color: #15803d;
+}
+
+.summaryValDiscount {
+  color: #15803d;
+  font-weight: 700;
+}
+
+.totalBar {
+  width: 55%;
+  margin-left: auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  background: var(--brand-gradient);
+  color: var(--brand-on-primary);
+  padding: 8px 16px;
+  margin-top: auto;
+  font-weight: 900;
+  font-size: 10px;
+}
+
+.totalAmount {
+  font-size: 13px;
+  font-weight: 900;
+}
+
+.summarySection {
+  width: 100%;
+  margin-top: 0;
+}
+
+.breakdownBlock {
+  width: 100%;
+  padding: 8px 0 4px;
+  border-bottom: 1px solid var(--brand-primary-dark);
+  margin-bottom: 0;
+}
+
+.breakdownRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 3px 0;
+}
+
+.breakdownKey {
+  font-size: 9.5px;
+  color: #6b7280;
+  font-weight: 500;
+}
+
+.breakdownVal {
+  font-size: 9.5px;
+  font-weight: 500;
+  color: #1a1a1a;
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum";
+}
+
+.breakdownKeyDiscount {
+  color: #15803d;
+}
+
+.breakdownValDiscount {
+  color: #15803d;
+  font-weight: 700;
+}
+
+.orderTotalLabel {
+  font-size: 11px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--brand-primary-dark);
+}
+
+.orderTotalWrap {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 7px 0;
+}
+
+.orderTotalValue {
+  font-size: 11px;
+  font-weight: 900;
+  color: #1a1a1a;
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum";
+}
+
+.iconRow {
+  display: flex;
+  align-items: flex-start;
+  gap: 5px;
+  font-size: 9px;
+  color: inherit;
+  line-height: 1.5;
+  margin-top: 2px;
+}
+
+.icon {
+  flex-shrink: 0;
+  width: 10px;
+  height: 10px;
+  margin-top: 1px;
+  display: flex;
+  align-items: center;
+  color: inherit;
+}
+
+.icon svg {
+  width: 10px;
+  height: 10px;
+  stroke: currentColor;
+  fill: none;
+  stroke-width: 1.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  opacity: 0.55;
+}
+
+.noWrap {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: clip;
+  min-width: 0;
+  max-width: 20ch;
+}

@@ -1,0 +1,19 @@
+
+.avatarImg { 
+    border-radius: 50%; 
+    object-fit: cover; 
+    border: 2px solid var(--accent); 
+    flex-shrink: 0; 
+}
+
+.avatarInitials {
+  border-radius: 50%; 
+  background: var(--surface2); 
+  border: 2px solid var(--accent);
+  display: flex; 
+  align-items: center; 
+  justify-content: center;
+  font-weight: 900; 
+  color: var(--accent); 
+  flex-shrink: 0;
+}

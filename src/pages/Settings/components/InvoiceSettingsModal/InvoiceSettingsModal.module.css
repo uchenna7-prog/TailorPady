@@ -1,0 +1,145 @@
+.fullOverlay {
+  position: fixed;
+  inset: 0;
+  background: var(--bg);
+  z-index: 5000;
+  display: flex;
+  flex-direction: column;
+  animation: slideIn 0.25s ease;
+}
+
+@keyframes slideIn {
+  from { transform: translateX(100%); }
+  to   { transform: translateX(0); }
+}
+
+@media (min-width: 769px) {
+  .fullOverlay {
+    left: var(--sidebar-width, 280px);
+  }
+}
+
+.currencyBtn {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 11px 14px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  cursor: pointer;
+  gap: 8px;
+}
+
+.currencyBtnText {
+  font-size: 0.88rem;
+  color: var(--text);
+  text-align: left;
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px;
+}
+
+.rowIcon {
+  color: var(--text3);
+  flex-shrink: 0;
+}
+
+.rowText {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.rowLabel {
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.rowSub {
+  font-size: 0.72rem;
+  color: var(--text3);
+}
+
+.rowRight {
+  flex-shrink: 0;
+}
+
+.duePicker {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.dueChips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.chip {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 5px 13px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--text2);
+  cursor: pointer;
+  font-family: inherit;
+  transition: background 0.12s, color 0.12s, border-color 0.12s;
+  white-space: nowrap;
+}
+
+.chip:active {
+  opacity: 0.75;
+}
+
+.chipActive {
+  background: var(--text);
+  border-color: var(--text);
+  color: var(--bg);
+}
+
+.customRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.customInput {
+  width: 80px;
+  height: 38px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: var(--surface2);
+  color: var(--text);
+  font-size: 0.9rem;
+  font-weight: 600;
+  font-family: inherit;
+  text-align: center;
+  padding: 0 8px;
+  outline: none;
+  transition: border-color 0.15s;
+}
+
+.customInput:focus {
+  border-color: var(--text);
+}
+
+.customUnit {
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--text2);
+}

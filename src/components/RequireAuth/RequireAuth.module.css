@@ -1,0 +1,17 @@
+.loader {
+  display:         flex;
+  align-items:     center;
+  justify-content: center;
+  height:          100dvh;
+  background:      var(--bg);
+}
+
+.spinner {
+  font-size:  2rem;
+  color:      var(--accent);
+  animation:  spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}

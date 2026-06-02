@@ -1,0 +1,368 @@
+.template { 
+   background: #fff; 
+   color: #1a1a1a; 
+   font-family: "Manrope", sans-serif;
+   font-size: 10px; 
+   display: flex; 
+   flex-direction: column; 
+   padding: 0; 
+   position: relative; 
+    min-height: 565px;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 14px 16px 6px;
+}
+
+.header > div:first-child {
+  flex: 1;
+  min-width: 0;
+}
+
+.header > div:last-child {
+  flex-shrink: 0;
+}
+
+.logoRow { 
+  display: flex; 
+  align-items: center; 
+  gap: 8px;           
+}
+
+.companyName { 
+   font-size: 12px; 
+   font-weight: 900; 
+   letter-spacing: 0.04em; 
+   color: var(--brand-primary-dark); 
+}
+.companySub { 
+   font-size: 7.5px; 
+   color: #888; 
+   letter-spacing: 0.06em; 
+   margin-top: 1px; 
+}
+.companyAddress { 
+   font-size: 8.5px; 
+   color: #555; 
+   line-height: 1.5; 
+   margin-top: 2px; 
+}
+.invoiceTitle, .receiptTitle { 
+   font-size: 28px; 
+   font-weight: 300; 
+   color: var(--brand-primary); 
+   letter-spacing: 0.1em; 
+   align-self: center; 
+}
+
+.numberBar { 
+   background: var(--brand-gradient); 
+   color: var(--brand-on-primary); 
+   justify-content: space-between;
+   display: flex; 
+   gap: 7px; 
+   padding: 4px 16px; 
+   font-size: 9px; 
+   font-weight: 600; 
+  
+}
+.billShip { 
+   display: flex; 
+   gap: 16px; 
+   padding: 8px 16px; 
+   font-size: 10px; 
+   line-height: 1.5; 
+}
+.billShip > div {
+  flex: 1;
+  min-width: 0;
+  word-break: break-word;
+}
+.billLabel { 
+   font-weight: 700; 
+   font-size: 10px; 
+   color: var(--brand-primary); 
+}
+
+
+.tableWrapper {
+  padding: 0 16px;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+}
+
+.orderDescriptionRow {
+  display: flex;
+  gap:5px;
+  align-items: baseline;
+  padding: 10px 0 12px;
+}
+.orderText{
+  font-weight: 900;
+}
+
+.orderDescLabel {
+  font-size: 11px;
+  color: #0a0a0a;
+}
+
+.colDesc  { width: 42%; }
+.colQty   { width: 10%; }
+.colPrice { width: 23%; }
+.colTotal { width: 25%; }
+
+.tableHeader {
+  background: var(--brand-gradient);
+  color: var(--brand-on-primary);
+}
+
+.tableHeader th {
+  padding: 6px 4px;
+  font-size: 9px;
+  font-weight: 700;
+}
+
+.tableRow {
+  border-bottom: 1px dashed #ebebeb;
+}
+
+.tableRow td {
+  padding: 6px 4px;
+  font-size: 10px;
+}
+
+/* Column alignment */
+th.colDesc,  td.colDesc  { 
+   text-align: left; 
+   word-break: break-word; 
+}
+
+th.colQty, td.colQty {
+  text-align: center;
+  padding-left: 6px;   
+  padding-right: 6px;  
+}
+
+th.colPrice, td.colPrice {
+  text-align: center;
+  padding-right: 8px;  
+}
+th.colTotal, td.colTotal { 
+   text-align: center; 
+}
+
+.tableBody {
+  padding: 5px 0;
+}
+
+.summaryBlock {
+  margin-left: auto;
+  width: 55%;
+  margin-top: 14px;
+  padding: 8px 16px; 
+}
+
+.summaryRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  column-gap: 12px;
+  padding: 3px 0;
+}
+
+.summaryKey {
+  font-size: 10px;
+  color: #6b7280;
+}
+
+.summaryVal {
+  font-size: 10px;
+  font-weight: 500;
+  color: #1a1a1a;
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum";
+}
+
+/* Discount row — muted green tint */
+.summaryKeyDiscount {
+  color: #15803d;
+}
+
+.summaryValDiscount {
+  color: #15803d;
+  font-weight: 700;
+}
+
+
+.totalBar {
+   width: 55%; 
+  margin-left: auto;
+   display: flex; 
+   justify-content: space-between; 
+   align-items: baseline; 
+   background: var(--brand-gradient); 
+   color: var(--brand-on-primary); 
+   padding: 8px 16px; 
+   margin-top: auto; 
+   font-weight: 900; 
+   font-size: 10px; 
+}
+.totalAmount { 
+   font-size: 13px; 
+   font-weight: 900; 
+}
+
+.footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  padding: 8px 16px;
+  font-size: 10px;
+  margin-top: auto;
+}
+.thankYou { 
+   font-weight: 700; 
+   font-size: 10px; 
+   text-transform: uppercase; 
+   margin-bottom: 2px; 
+   color: var(--brand-primary-dark); 
+}
+.paymentNote { 
+   color: #666; 
+   font-size: 10px; 
+}
+.signArea { 
+   text-align: center; 
+}
+.signLine { 
+   width: 55px; 
+   height: 1px; 
+   background: var(--brand-primary); 
+   margin: 0 auto 2px; 
+}
+.signLabel { 
+   font-size: 10px; 
+   color: #666; 
+}
+.cornerDecoration {
+  width: 50px;
+  height: 50px;
+  background: var(--brand-gradient);
+  opacity: 0.5;
+  clip-path: polygon(100% 0, 100% 100%, 0 100%);
+  flex-shrink: 0;
+}
+
+
+
+.orderTotalLabel {
+  font-size: 11px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--brand-primary-dark);
+}
+.orderTotalValue {
+  font-size: 11px;
+  font-weight: 900;
+  color: #1a1a1a;
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum";
+}
+
+.summarySection {
+  width: 100%;
+  margin-top: 0;
+}
+
+.breakdownBlock {
+  width: 100%;
+  padding: 8px 0 4px;
+  border-bottom: 1px solid var(--brand-primary-dark);
+  margin-bottom: 0;
+}
+
+.breakdownRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 3px 0;
+}
+
+.breakdownKey {
+  font-size: 9.5px;
+  color: #6b7280;
+  font-weight: 500;
+}
+
+.breakdownVal {
+  font-size: 9.5px;
+  font-weight: 500;
+  color: #1a1a1a;
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum";
+}
+
+/* Discount row — green */
+.breakdownKeyDiscount {
+  color: #15803d;
+}
+
+.breakdownValDiscount {
+  color: #15803d;
+  font-weight: 700;
+}
+
+
+.orderTotalLabel {
+  font-size: 11px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--brand-primary-dark);
+}
+
+.orderTotalWrap {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 7px 0;
+}
+
+
+.orderTotalValue {
+  font-size: 11px;
+  font-weight: 900;
+  color: #1a1a1a;
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum";
+}
+
+.billDetailLine {
+  display: flex;
+  align-items: flex-start;
+  gap: 5px;
+  line-height: 1.5;
+}
+
+.billDetailIcon {
+  display: inline-flex;
+  align-items: center;
+  flex-shrink: 0;
+  width: 9px;
+  height: 9px;
+  opacity: 0.55;
+}
+
+.billDetailIcon svg {
+  width: 100%;
+  height: 100%;
+}

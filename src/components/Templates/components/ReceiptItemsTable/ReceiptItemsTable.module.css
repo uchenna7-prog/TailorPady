@@ -1,0 +1,177 @@
+.table {
+  width: 100%;
+  margin-top: 10px;
+}
+
+.orderDescriptionRow {
+  display: flex;
+  gap: 5px;
+  align-items: baseline;
+  padding: 10px 0 12px;
+  border-bottom: 1.5px solid var(--brand-primary-dark);
+}
+
+.orderText {
+  font-weight: 900;
+}
+
+.orderDescLabel {
+  font-size: 11px;
+  color: #0a0a0a;
+}
+
+
+/* ── Table ── */
+.tableEl {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+}
+
+.colDesc   { width: 42%; }
+.colPrice  { width: 18%; }
+.colQty    { width: 10%; }
+.colAmount { width: 22%; }
+
+.headerRow th {
+  padding: 7px 0 6px;
+  font-size: 9px;
+  font-weight: 800;
+  color: var(--brand-primary-dark);
+  border-bottom: 1px solid #e8e4de;
+}
+
+.itemsBody {
+  padding: 4px 0 10px;
+}
+
+.itemsBody tr:last-child td {
+  border-bottom: none;
+}
+
+.itemRow td {
+  padding: 6px 0;
+  border-bottom: 1px dashed #ebebeb;
+}
+
+th.colItem,  td.colItem  {
+  text-align: left;
+  word-break: break-word;
+}
+
+th.colQty,  td.colQty {
+  text-align: center;
+}
+
+th.colPrice, td.colPrice {
+  text-align: center;
+  text-wrap: nowrap;
+  word-break: break-word;
+}
+
+th.colAmount, td.colAmount {
+  text-align: center;
+}
+
+/* Body cell text styles */
+.itemName {
+  font-size: 9px;
+  font-weight: 600;
+  color: #1a1a1a;
+}
+.itemUnitPrice {
+  font-size: 9px;
+  font-weight: 400;
+  color: #6b7280;
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum";
+}
+.itemQty {
+  font-size: 9px;
+  font-weight: 400;
+  color: #6b7280;
+  font-variant-numeric: tabular-nums;
+}
+.itemLineAmount {
+  font-size: 9px;
+  font-weight: 600;
+  color: #1a1a1a;
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum";
+  white-space: nowrap;
+}
+
+/* tbody bottom border */
+.tableEl tbody {
+  border-bottom: 1.5px solid var(--brand-primary-dark, #a07d20);
+}
+
+
+/* ── Full-width summary section ── */
+.summarySection {
+  width: 100%;
+  margin-top: 0;
+}
+
+.breakdownBlock {
+  width: 100%;
+  padding: 8px 0 4px;
+  border-bottom: 1px solid var(--brand-primary-dark);
+  margin-bottom: 0;
+}
+
+.breakdownRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 3px 0;
+}
+
+.breakdownKey {
+  font-size: 9.5px;
+  color: #6b7280;
+  font-weight: 500;
+}
+
+.breakdownVal {
+  font-size: 9.5px;
+  font-weight: 500;
+  color: #1a1a1a;
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum";
+}
+
+/* Discount row — green */
+.breakdownKeyDiscount {
+  color: #15803d;
+}
+
+.breakdownValDiscount {
+  color: #15803d;
+  font-weight: 700;
+}
+
+
+/* ── Grand total bar — full width, premium feel ── */
+.orderTotalWrap {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 7px 0;
+}
+
+.orderTotalLabel {
+  font-size: 11px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--brand-primary-dark);
+}
+
+.orderTotalValue {
+  font-size: 11px;
+  font-weight: 900;
+  color: #1a1a1a;
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum";
+}

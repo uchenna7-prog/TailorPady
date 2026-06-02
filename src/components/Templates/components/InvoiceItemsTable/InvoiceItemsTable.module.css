@@ -1,0 +1,174 @@
+.table {
+  width: 100%;
+  margin-top: 10px;
+}
+
+.orderDescriptionRow {
+  display: flex;
+  gap: 5px;
+  align-items: baseline;
+  padding: 10px 0 12px;
+  border-bottom: 1.5px solid var(--brand-primary-dark);
+}
+
+.orderText {
+  font-weight: 900;
+}
+
+.orderDescLabel {
+  font-size: 11px;
+  color: #0a0a0a;
+}
+
+
+.tableEl {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+}
+
+.colDesc   { width: 42%; }
+.colPrice  { width: 23%; }
+.colQty    { width: 10%; }
+.colAmount { width: 25%; }
+
+.headerRow th {
+  padding: 7px 0 6px;
+  font-size: 9px;
+  font-weight: 800;
+  color: var(--brand-primary-dark);
+  border-bottom: 1px solid #e8e4de;
+}
+
+.itemsBody {
+  padding: 4px 0 10px;
+}
+
+.itemsBody tr:last-child td {
+  border-bottom: none;
+}
+
+.itemRow td {
+  padding: 6px 0;
+  border-bottom: 1px dashed #ebebeb;
+}
+
+th.colItem,  td.colItem  {
+  text-align: left;
+  word-break: break-word;
+}
+
+th.colQty,  td.colQty {
+  text-align: center;
+}
+
+th.colPrice, td.colPrice {
+  text-align: center;
+  word-break: break-word;
+  text-wrap: nowrap;
+}
+
+th.colAmount, td.colAmount {
+  text-align: center;
+}
+
+
+.itemName {
+  font-size: 10px;
+  font-weight: 600;
+  color: #1a1a1a;
+}
+.itemUnitPrice {
+  font-size: 10px;
+  font-weight: 400;
+  color: #6b7280;
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum";
+}
+.itemQty {
+  font-size: 10px;
+  font-weight: 400;
+  color: #6b7280;
+  font-variant-numeric: tabular-nums;
+}
+.itemLineAmount {
+  font-size: 10px;
+  font-weight: 600;
+  color: #1a1a1a;
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum";
+  white-space: nowrap;
+}
+
+
+.tableEl tbody {
+  border-bottom: 1.5px solid var(--brand-primary-dark);
+}
+
+.summaryBlock {
+  margin-left: auto;
+  width: 55%;
+  margin-top: 14px;
+  padding-top: 10px;
+}
+
+.summaryRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  column-gap: 12px;
+  padding: 3px 0;
+}
+
+.summaryKey {
+  font-size: 10px;
+  color: #6b7280;
+}
+
+.summaryVal {
+  font-size: 10px;
+  font-weight: 500;
+  color: #1a1a1a;
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum";
+}
+
+/* Discount row — muted green tint */
+.summaryKeyDiscount {
+  color: #15803d;
+}
+
+.summaryValDiscount {
+  color: #15803d;
+  font-weight: 700;
+}
+
+
+.summaryDivider {
+  height: 1.5px;
+  background: var(--brand-primary-dark);
+  margin: 8px 0;
+}
+
+.summaryTotalRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  column-gap: 12px;
+  padding: 4px 0;
+}
+
+.summaryTotalKey {
+  font-size: 13px;
+  font-weight: 900;
+  color: var(--brand-primary-dark);
+  letter-spacing: 0.03em;
+}
+
+.summaryTotalVal {
+  font-size: 13px;
+  font-weight: 900;
+  color: #1a1a1a;
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum";
+}

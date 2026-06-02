@@ -1,0 +1,196 @@
+import { calcTax } from '../../utils/invoiceUtils'
+import { resolveCumulativePaid, buildPaymentRows } from '../../../ReceiptViewer/utils'
+import { formatMoney } from '../../../../utils/moneyUtils'
+import styles from './ReceiptPaymentSummary.module.css'
+
+
+const METHOD_EMOJI = {
+  cash:     '💵',
+  transfer: '🏦',
+  card:     '💳',
+}
+
+function methodEmoji(method) {
+  return METHOD_EMOJI[(method || '').toLowerCase()] ?? '🧾'
+}
+
+function capitalize(str) {
+  return str ? str.charAt(0).toUpperCase() + str.slice(1) : '—'
+}
+
+
+export function ReceiptPaymentSummary({ receipt, receiptBrandSettings, isTemplate5 = false, isDark = false }) {
+
+  const dark = isTemplate5 || isDark
+
+  const { currency, showTax, taxRate: brandTaxRate } = receiptBrandSettings
+
+  const subtotal = receipt.items?.length > 0
+    ? receipt.items.reduce((sum, item) => sum + ((item.qty ?? 1) * (parseFloat(item.price) || 0)), 0)
+    : 0
+
+  const shippingFee    = parseFloat(receipt.shippingFee)    || 0
+  const discountAmount = parseFloat(receipt.discountAmount)  || 0
+  const discountType   = receipt.discountType                || null
+  const discountValue  = parseFloat(receipt.discountValue)   || 0
+  const useTax         = receipt.taxRate != null ? receipt.taxRate > 0 : (showTax && brandTaxRate > 0)
+  const taxRate        = receipt.taxRate != null ? receipt.taxRate : brandTaxRate
+  const taxAmount      = parseFloat(receipt.taxAmount) || calcTax(subtotal, taxRate, useTax)
+
+  const grandTotal = receipt.totalAmount != null
+    ? parseFloat(receipt.totalAmount)
+    : subtotal + shippingFee - discountAmount + taxAmount
+
+  const paymentRows = buildPaymentRows(receipt)
+
+  const previouslyPaid = paymentRows
+    .filter(p => !p._isCurrent)
+    .reduce((sum, p) => sum + (parseFloat(p.amount) || 0), 0)
+
+  const thisPaymentTotal = paymentRows
+    .filter(p => p._isCurrent)
+    .reduce((sum, p) => sum + (parseFloat(p.amount) || 0), 0)
+
+  const totalPaid = thisPaymentTotal + previouslyPaid
+
+  const balanceRemaining = parseFloat(receipt.balance) >= 0
+    ? parseFloat(receipt.balance)
+    : Math.max(0, grandTotal - resolveCumulativePaid(receipt))
+
+  const isFullyPaid = receipt.isFullPayment ?? (balanceRemaining <= 0)
+
+  const currentRows    = paymentRows.filter(p => p._isCurrent)
+  const currentMethods = [...new Set(currentRows.map(p => capitalize(p.method || '')))]
+  const methodString   = currentMethods.length <= 1
+    ? (currentMethods[0] || 'This')
+    : currentMethods.slice(0, -1).join(', ') + ' & ' + currentMethods.at(-1)
+
+  const onPrimary     = 'var(--brand-on-primary)'
+  const accentColor   = dark ? onPrimary : 'var(--brand-primary)'
+  const rowBorder     = dark ? '1px solid rgba(255,255,255,0.2)' : '1px solid #ebebeb'
+  const dividerBorder = dark ? '1.5px solid rgba(255,255,255,0.4)' : '1.5px solid var(--brand-primary-dark)'
+
+  return (
+    <div className={styles.container} style={{ color: dark ? onPrimary : '#1a1a1a' }}>
+
+      {paymentRows.length > 0 && (
+        <div className={styles.historySection}>
+
+          <div className={styles.sectionLabel} style={{ color: accentColor }}>
+            Payment History
+          </div>
+
+          {paymentRows.map((payment, index) => {
+            const isCurrent = payment._isCurrent
+            const method    = payment.method || ''
+
+            return (
+              <div
+                key={payment.id ?? index}
+                className={styles.paymentRow}
+                style={{ borderBottom: rowBorder }}
+              >
+                <span className={styles.emoji}>{methodEmoji(method)}</span>
+
+                <div className={styles.paymentMeta}>
+                  <div className={styles.paymentMethod} style={{ color: accentColor }}>
+                    {capitalize(method)}
+                    {isCurrent && (
+                      <span
+                        className={styles.latestBadge}
+                        style={dark ? { background: 'rgba(255,255,255,0.15)', color: onPrimary } : {}}
+                      >
+                        Latest
+                      </span>
+                    )}
+                  </div>
+                  <div
+                    className={styles.paymentDate}
+                    style={{ color: dark ? 'rgba(255,255,255,0.6)' : '#a8a8a8' }}
+                  >
+                    {payment.date}{payment.time ? ` · ${payment.time}` : ''}
+                  </div>
+                </div>
+
+                <span
+                  className={`${styles.paymentAmount} ${isCurrent ? styles.amountCurrent : ''}`}
+                  style={dark ? { color: onPrimary } : {}}
+                >
+                  {formatMoney(currency, payment.amount)}
+                </span>
+
+              </div>
+            )
+          })}
+
+        </div>
+      )}
+
+      <div className={styles.totalsSection}>
+
+        {useTax && taxAmount > 0 && (
+          <div className={styles.totalsRow}>
+            <span className={styles.totalsKey} style={dark ? { color: onPrimary } : {}}>
+              Tax ({taxRate}%)
+            </span>
+            <span className={styles.totalsVal} style={dark ? { color: onPrimary } : {}}>
+              {formatMoney(currency, taxAmount)}
+            </span>
+          </div>
+        )}
+
+        {paymentRows.length > 0 && previouslyPaid > 0 && (
+          <div className={styles.totalsRow}>
+            <span className={styles.totalsKey} style={{ color: accentColor }}>
+              Previously Paid
+            </span>
+            <span className={styles.totalsVal} style={{ color: accentColor }}>
+              {formatMoney(currency, previouslyPaid)}
+            </span>
+          </div>
+        )}
+
+        {paymentRows.length > 0 && thisPaymentTotal > 0 && (
+          <div className={styles.totalsRow}>
+            <span className={styles.totalsKey} style={{ color: accentColor }}>
+              This Payment
+            </span>
+            <span className={`${styles.totalsVal} ${styles.amountPaid}`}
+              style={dark ? { color: onPrimary } : {}}>
+              + {formatMoney(currency, thisPaymentTotal)}
+            </span>
+          </div>
+        )}
+
+        <div className={styles.totalsDivider} style={{ borderBottom: dividerBorder }} />
+
+        <div className={styles.totalPaidRow}>
+          <span className={styles.totalPaidKey} style={{ color: accentColor }}>
+            Total Paid
+          </span>
+          <span className={styles.totalPaidVal} style={dark ? { color: onPrimary } : {}}>
+            {formatMoney(currency, totalPaid)}
+          </span>
+        </div>
+
+        {!isFullyPaid ? (
+          <div className={styles.balanceCallout}>
+            <div>
+              <div className={styles.balanceLabel}>Balance</div>
+            </div>
+            <span className={styles.balanceAmount}>{formatMoney(currency, balanceRemaining)}</span>
+          </div>
+        ) : (
+          <div className={styles.paidCallout}>
+            <div>
+              <div className={styles.paidLabel}>✓ PAID IN FULL</div>
+            </div>
+            <span className={styles.paidAmount}>{formatMoney(currency, grandTotal)}</span>
+          </div>
+        )}
+
+      </div>
+
+    </div>
+  )
+}

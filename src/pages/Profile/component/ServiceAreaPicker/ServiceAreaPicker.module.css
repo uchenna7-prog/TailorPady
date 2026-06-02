@@ -1,0 +1,118 @@
+.wrap {
+  display:        flex;
+  flex-direction: column;
+  gap:            10px;
+}
+
+.hint {
+  display:       flex;
+  align-items:   center;
+  gap:           6px;
+  padding:       8px 12px;
+  border-radius: 10px;
+  background:    color-mix(in srgb, var(--accent) 8%, transparent);
+  border:        1px solid color-mix(in srgb, var(--accent) 25%, transparent);
+  color:         var(--text3);
+  font-size:     0.75rem;
+  font-weight:   600;
+  line-height:   1.4;
+}
+
+.special {
+  display: flex;
+  gap:     8px;
+}
+
+.specialBtn {
+  flex:            1;
+  display:         flex;
+  align-items:     center;
+  justify-content: center;
+  gap:             6px;
+  padding:         10px 12px;
+  border-radius:   12px;
+  border:          1.5px solid var(--border);
+  background:      var(--surface2);
+  color:           var(--text2);
+  font-family:     inherit;
+  font-size:       0.82rem;
+  font-weight:     700;
+  cursor:          pointer;
+  transition:      all 0.15s;
+}
+
+.specialBtn:active { opacity: 0.8; }
+
+.specialBtnActive {
+  border-color: var(--accent);
+  background:   color-mix(in srgb, var(--accent) 10%, transparent);
+  color:        var(--accent);
+}
+
+.specialBtnDisabled {
+  opacity:        0.35;
+  cursor:         not-allowed;
+  pointer-events: none;
+}
+
+.selectWrap {
+  position: relative;
+  display:  flex;
+  align-items: center;
+  transition: opacity 0.15s;
+}
+
+.selectWrapDisabled {
+  opacity:        0.4;
+  pointer-events: none;
+}
+
+.select {
+  width:        100%;
+  padding:      12px 40px 12px 14px;
+  border-radius: 12px;
+  border:       1.5px solid var(--border);
+  background:   var(--surface2);
+  color:        var(--text);
+  font-family:  inherit;
+  font-size:    0.875rem;
+  font-weight:  500;
+  cursor:       pointer;
+  appearance:   none;
+  outline:      none;
+  transition:   border-color 0.15s;
+}
+
+.select:focus { border-color: var(--accent); }
+
+.selectIcon {
+  position:       absolute;
+  right:          12px;
+  font-size:      1.1rem;
+  color:          var(--text3);
+  pointer-events: none;
+}
+
+.chips {
+  display:   flex;
+  flex-wrap: wrap;
+  gap:       6px;
+}
+
+.chip {
+  display:       inline-flex;
+  align-items:   center;
+  gap:           5px;
+  padding:       6px 10px;
+  border-radius: 20px;
+  background:    color-mix(in srgb, var(--accent) 10%, transparent);
+  border:        1.5px solid var(--accent);
+  color:         var(--accent);
+  font-family:   inherit;
+  font-size:     0.78rem;
+  font-weight:   700;
+  cursor:        pointer;
+  transition:    all 0.15s;
+}
+
+.chip:active { opacity: 0.75; }

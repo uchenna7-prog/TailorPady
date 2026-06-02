@@ -1,0 +1,34 @@
+
+.field { 
+    padding: 16px; 
+    border-bottom: 1px solid var(--border); 
+    display: flex; 
+    flex-direction: column; 
+    gap: 8px; 
+}
+
+.field:last-child { 
+    border-bottom: none; 
+}
+
+.fieldLabel { 
+    font-size: 0.7rem; 
+    font-weight: 800; 
+    color: var(--text3); 
+    text-transform: uppercase; 
+    letter-spacing: 0.05em; 
+}
+
+.fieldHint { 
+    font-size: 0.72rem; 
+    color: var(--text3); 
+    line-height: 1.4; 
+    margin-bottom: 4px; 
+}
+
+.fieldControl { 
+    width: 100%; 
+    min-height: 44px; 
+    position: relative; 
+}
+

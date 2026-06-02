@@ -1,0 +1,100 @@
+.pageWrapper {
+  background: var(--bg);
+  min-height: 100dvh;
+}
+
+.main {
+  padding: 16px 20px calc(40px + var(--sb));
+  margin: auto;
+}
+
+.hero {
+  margin-bottom: 20px;
+  padding-top: 8px;
+}
+
+.welcomeLabel {
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--text3);
+  margin: 0 0 2px;
+  display: flex;
+  align-items: center;
+  gap: 0;
+}
+
+.greetingEmoji {
+  font-size: 1rem;
+  margin-left: 6px;
+  line-height: 1;
+  display: inline-block;
+}
+
+.title {
+  font-size: 2rem;
+  font-weight: 800;
+  color: var(--text);
+  margin: 0 0 6px;
+  line-height: 1.1;
+}
+
+.subtitle {
+  font-size: 0.8rem;
+  color: var(--text3);
+  font-weight: 400;
+  margin: 0 0 4px;
+}
+
+.updatedAt {
+  font-size: 0.68rem;
+  color: var(--text3);
+  font-weight: 500;
+  margin: 4px 0 0;
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  opacity: 0.65;
+}
+
+
+.statsGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+
+@media (max-width: 600px) {
+
+  .main { 
+    padding-bottom: calc(90px + var(--sb,0px)); 
+  }
+
+  .statsGrid { 
+    grid-template-columns: repeat(2,1fr); 
+    gap: 10px; 
+    margin-bottom: 12px; 
+  }
+
+
+
+}
+
+
+@media (min-width: 769px) {
+  .main {
+    max-width: 1100px;
+    padding: 24px 32px calc(48px + var(--sb));
+  }
+
+  .statsGrid {
+    grid-template-columns: repeat(4, 1fr);
+    gap: 14px;
+    margin-bottom: 16px;
+  }
+
+
+}
+
+

@@ -1,0 +1,27 @@
+.tabContent {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+}
+
+
+.dateGroup {
+  margin-bottom: 16px;
+}
+
+.dateGroupLabel {
+  font-size: 0.72rem;
+  font-weight: 500;
+  color: var(--text3);
+  padding: 10px 0 8px;
+}
+
+.dateGroupDivider {
+  height: 1px;
+  background: var(--border);
+  width: calc(100% + 32px);
+  margin-left: -16px;
+}
+
+

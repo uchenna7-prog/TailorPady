@@ -1,0 +1,36 @@
+.dateGroup {
+  margin-bottom: 16px;
+}
+
+.dateGroupLabel {
+  font-size: 0.65rem;
+  font-weight: 600;
+  color: var(--text3);
+  padding: 10px 16px 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.dateGroupDivider {
+  height: 1px;
+  background: var(--border);
+  width: calc(100% + 32px);
+  margin-left: -16px;
+}
+
+
+.tabContent {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+}
+
+@keyframes invoiceSlideUp {
+  from { 
+    transform: translateY(100%); 
+  }
+  to { 
+    transform: translateY(0);    
+  }
+}

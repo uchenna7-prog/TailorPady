@@ -1,0 +1,209 @@
+.container {
+  width: 100%;
+  font-size: 9px;
+  color: #1a1a1a;
+}
+
+.historySection {
+  padding-top: 10px;
+}
+
+.sectionLabel {
+  font-size: 8px;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+
+.paymentRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 0;
+}
+
+.paymentRow:last-of-type {
+  border-bottom: 1px solid var(--brand-primary-dark);
+}
+
+.emoji {
+  font-size: 13px;
+  line-height: 1;
+  flex-shrink: 0;
+  width: 20px;
+  text-align: center;
+}
+
+.paymentMeta {
+  flex: 1;
+  min-width: 0;
+}
+
+.paymentMethod {
+  font-size: 9px;
+  font-weight: 600;
+  color: #1a1a1a;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.paymentDate {
+  font-size: 8px;
+  color: #a8a8a8;
+  margin-top: 1px;
+  font-variant-numeric: tabular-nums;
+}
+
+.amountCurrent {
+  color: #16a34a;
+  font-weight: 700;
+}
+
+.latestBadge {
+  font-size: 7px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  background: #e8f3f1;
+  color: #595f6c;
+  padding: 2px 5px;
+  border-radius: 3px;
+  line-height: 1;
+}
+
+.paymentAmount {
+  font-size: 10px;
+  font-weight: 600;
+  color: #1a1a1a;
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum";
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.totalsSection {
+  width: 100%;
+  margin-top: 14px;
+}
+
+.totalsRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  column-gap: 12px;
+  padding: 4px 0;
+  margin-left: auto;
+  width: 55%;
+}
+
+.totalsKey {
+  font-size: 9px;
+  color: #6b7280;
+}
+
+.totalsVal {
+  font-size: 9px;
+  font-weight: 500;
+  color: #1a1a1a;
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum";
+}
+
+.amountPaid {
+  color: #16a34a;
+  font-weight: 700;
+  font-size: 10px;
+  font-variant-numeric: tabular-nums;
+}
+
+.totalsDivider {
+  margin: 8px 0;
+  margin-left: auto;
+  width: 55%;
+}
+
+.totalPaidRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  column-gap: 12px;
+  padding: 4px 0 10px;
+  margin-left: auto;
+  width: 55%;
+}
+
+.totalPaidKey {
+  font-size: 11px;
+  font-weight: 900;
+  color: #1a1a1a;
+  letter-spacing: 0.02em;
+}
+
+.totalPaidVal {
+  font-size: 13px;
+  font-weight: 900;
+  color: #1a1a1a;
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum";
+}
+
+.paidCheckmark {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  background: #16a34a;
+  color: #fff;
+  border-radius: 50%;
+  font-size: 10px;
+  font-weight: 900;
+  flex-shrink: 0;
+}
+
+.balanceCallout,
+.paidCallout {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  column-gap: 12px;
+  padding: 4px 0;
+  margin-left: auto;
+  margin-bottom: 15px;
+  width: 55%;
+}
+
+.balanceLabel {
+  font-size: 10px;
+  font-weight: 900;
+  color: red;
+  text-transform: uppercase;
+}
+
+.balanceAmount {
+  font-size: 13px;
+  font-weight: 900;
+  color: red;
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum";
+  white-space: nowrap;
+}
+
+.paidLabel {
+  font-size: 10px;
+  font-weight: 800;
+  color: #16a34a;
+  letter-spacing: 0.01em;
+  text-transform: uppercase;
+}
+
+.paidAmount {
+  color: #16a34a;
+  font-size: 10px;
+  font-weight: 900;
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum";
+  white-space: nowrap;
+}

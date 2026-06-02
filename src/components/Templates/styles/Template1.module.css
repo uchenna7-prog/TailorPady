@@ -1,0 +1,166 @@
+.template {
+  padding: 18px;
+  color: #1a1a1a;
+  font-family: "Manrope", sans-serif;
+  font-size: 10px;
+  min-height: 565px;
+  display: flex;
+  flex-direction: column;
+}
+
+.header {
+  text-align: center;
+  margin-bottom: 20px;
+  padding-bottom: 12px;
+}
+
+.brandName {
+  font-size: 14px;
+  font-weight: 800;
+  white-space: nowrap;
+  text-transform: uppercase;
+}
+
+.tagline {
+  font-size: 10px;
+  color: #888;
+  margin-top: 3px;
+}
+
+.invoiceInfos > div,
+.receiptInfos > div {
+  text-align: right;
+  display: flex;
+  justify-content: flex-end;
+  gap: 3px;
+  flex-wrap: wrap;
+  font-size: 9px;
+}
+
+.invoiceInfos span,
+.receiptInfos span {
+  white-space: nowrap;
+  font-size: 9px;
+}
+
+.titleRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 12px 0 4px;
+}
+
+.titleLine {
+  flex: 1;
+  height: 1.5px;
+  background: var(--brand-primary);
+}
+
+.title {
+  font-size: 18px;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  white-space: nowrap;
+  padding: 0 6px;
+}
+
+.metaRow {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.metaLabel {
+  font-size: 10px;
+  font-weight: 900;
+  margin-bottom: 3px;
+  line-height: 1.4;
+  color: var(--brand-primary-dark);
+}
+
+.clientName {
+  font-size: 10px;
+  font-weight: 800;
+  margin-bottom: 4px;
+  line-height: 1.4;
+}
+
+.metaKey {
+  font-size: 10px;
+  font-weight: 800;
+  color: #767575;
+}
+
+.metaValue {
+  font-size: 10px;
+  font-weight: 900;
+  margin-top: 1px;
+  line-height: 1.4;
+}
+
+.iconRow {
+  display: flex;
+  align-items: flex-start;
+  gap: 5px;
+  margin-top: 3px;
+  font-size: 9px;
+  color: #444;
+  line-height: 1.5;
+}
+
+.icon {
+  flex-shrink: 0;
+  width: 10px;
+  height: 10px;
+  margin-top: 1px;
+  display: flex;
+  align-items: center;
+  color: #666;
+}
+
+.icon svg {
+  width: 10px;
+  height: 10px;
+  stroke: currentColor;
+  fill: none;
+  stroke-width: 1.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.footer {
+  margin-top: 16px;
+  padding-top: 12px;
+  border-top: 1px solid var(--brand-muted);
+  display: flex;
+  gap: 16px;
+}
+
+.footerLeft,
+.footRight {
+  flex: 1;
+  font-size: 10px;
+  line-height: 1.6;
+}
+
+.footerBody {
+  margin-top: 5px;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.footerNote {
+  margin-top: 4px;
+  font-size: 9px;
+  font-style: italic;
+  color: #666;
+  line-height: 1.6;
+}

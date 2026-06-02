@@ -1,0 +1,241 @@
+.sigWrap {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+/* ── Tab bar ─────────────────────────────────────────────────────────────── */
+
+.tabBar {
+  display: flex;
+  border-bottom: 1.5px solid var(--border);
+  margin-bottom: 14px;
+}
+
+.tabBtn {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 10px 8px;
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1.5px;
+  color: var(--text3);
+  font-family: inherit;
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: color 0.15s, border-color 0.15s;
+}
+
+.tabBtn_active {
+  color: var(--text);
+  border-bottom-color: var(--accent);
+}
+
+/* ── Shared pane container ───────────────────────────────────────────────── */
+
+.tabPane {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* ── Draw tab ────────────────────────────────────────────────────────────── */
+
+.sigCanvas {
+  width: 100%;
+  height: 160px;
+  border-radius: 8px;
+  border: 1.5px dashed var(--border2);
+  background: var(--surface2);
+  touch-action: none;
+  cursor: crosshair;
+  display: block;
+}
+
+/* ── Upload tab ──────────────────────────────────────────────────────────── */
+
+.uploadZone {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 160px;
+  border-radius: 8px;
+  border: 1.5px dashed var(--border2);
+  background: var(--surface2);
+  cursor: pointer;
+  padding: 20px;
+  text-align: center;
+}
+
+.uploadTitle {
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--text);
+  margin: 0;
+}
+
+.uploadSub {
+  font-size: 0.75rem;
+  color: var(--text3);
+  margin: 0;
+  max-width: 240px;
+  line-height: 1.4;
+}
+
+.uploadBtn {
+  margin-top: 4px;
+  padding: 7px 18px;
+  border-radius: 8px;
+  background: var(--accent);
+  color: var(--bg);
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
+.hiddenInput {
+  display: none;
+}
+
+.previewWrap {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.previewCanvas {
+  width: 100%;
+  height: 160px;
+  border-radius: 8px;
+  border: 1.5px dashed var(--border2);
+  background: var(--surface2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.previewImg {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+}
+
+.processingSpinner {
+  width: 28px;
+  height: 28px;
+  border: 3px solid var(--border);
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* ── Type tab ────────────────────────────────────────────────────────────── */
+
+.typeInput {
+  width: 100%;
+  padding: 10px 14px;
+  border-radius: 8px;
+  border: 1.5px solid var(--border);
+  background: var(--surface2);
+  color: var(--text);
+  font-family: inherit;
+  font-size: 0.9rem;
+  outline: none;
+  box-sizing: border-box;
+}
+
+.typeInput:focus {
+  border-color: var(--accent);
+}
+
+.fontGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.fontOption {
+  padding: 14px 10px;
+  border-radius: 8px;
+  border: 1.5px solid var(--border);
+  background: var(--surface2);
+  color: var(--text);
+  font-size: 1.5rem;
+  cursor: pointer;
+  text-align: center;
+  transition: border-color 0.15s, background 0.15s;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.fontOption_active {
+  border-color: var(--accent);
+  background: var(--surface);
+}
+
+.hiddenCanvas {
+  display: none;
+}
+
+/* ── Shared footer ───────────────────────────────────────────────────────── */
+
+.sigFooter {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.sigHint {
+  font-size: 0.72rem;
+  color: var(--text3);
+}
+
+.clearBtn {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 6px 12px;
+  border-radius: 8px;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  color: var(--text2);
+  font-family: inherit;
+  font-size: 0.78rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.clearBtn:active {
+  background: var(--surface);
+}
+
+.acceptBtn {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 6px 14px;
+  border-radius: 8px;
+  background: var(--accent);
+  border: none;
+  color: #fff;
+  font-family: inherit;
+  font-size: 0.78rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.acceptBtn:active {
+  opacity: 0.85;
+}

@@ -1,0 +1,74 @@
+.row { 
+  display: flex; 
+  align-items: center; 
+  gap: 16px; 
+  padding: 16px; 
+  border-bottom: 1px solid var(--border); 
+  background: var(--bg); 
+}
+
+.noDivider { 
+    border-bottom: none; 
+}
+
+.rowIcon { 
+  width: 36px; 
+  height: 36px; 
+  border-radius: 10px; 
+  background: var(--surface); 
+  display: flex; 
+  align-items: center; 
+  justify-content: center; 
+  color: var(--text2); 
+  flex-shrink: 0; 
+}
+
+.rowText { 
+    flex: 1; 
+    min-width: 0; 
+}
+.rowLabel { 
+    font-size: 0.7rem; 
+    font-weight: 800; 
+    color: var(--text3); 
+    text-transform: uppercase; 
+    letter-spacing: 0.05em; 
+}
+
+.rowValue { 
+    font-size: 0.95rem; 
+    font-weight: 700; 
+    color: var(--text); 
+    margin-top: 2px; 
+}
+
+.rowPlaceholder { 
+    font-size: 0.9rem; 
+    color: var(--text3); 
+    font-style: italic; 
+    margin-top: 2px; 
+}
+
+.rowSub { 
+    font-size: 0.75rem; 
+    color: var(--text3); 
+    margin-top: 4px; 
+    line-height: 1.4; 
+}
+
+.rowRight { 
+    display: flex; 
+    align-items: 
+    center; gap: 6px; 
+    flex-shrink: 0; 
+}
+
+.rowBadge { 
+    font-size: 0.72rem; 
+    font-weight: 700; 
+    color: var(--accent); 
+}
+
+.rowLabelDanger { 
+    color: #ef4444 !important; 
+}

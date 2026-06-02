@@ -1,0 +1,32 @@
+.statCardSkeleton {
+  background: var(--surface);
+  border-radius: 10px;
+  padding: 16px 14px 14px;
+  display: flex;
+  flex-direction: column;
+  min-height: 130px;
+}
+
+
+@media (max-width: 600px) {
+
+
+  .statCardSkeleton {
+    padding: 14px 12px 12px;
+    min-height: 120px;
+  }
+
+
+}
+
+
+@media (min-width: 769px) {
+
+  .statCardSkeleton {
+    padding: 20px 18px 18px;
+    min-height: 160px;
+  }
+
+}
+
+

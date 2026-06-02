@@ -1,0 +1,370 @@
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  z-index: 500;
+  display: flex;
+  align-items: flex-end;
+  backdrop-filter: blur(4px);
+}
+
+.sheet {
+  position: relative;
+  width: 100%;
+  background: var(--surface);
+  border-radius: 24px 24px 0 0;
+  height: 92dvh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.fixedHeader {
+  flex-shrink: 0;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  padding: 12px 20px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  z-index: 2;
+}
+
+.handle {
+  width: 36px;
+  height: 4px;
+  border-radius: 2px;
+  background: var(--border2);
+  margin: 0 auto;
+  flex-shrink: 0;
+}
+
+.headerInner {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.headerLeft {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+.crownIcon {
+  font-size: 1.5rem;
+  color: var(--accent);
+  flex-shrink: 0;
+}
+
+.headerText {
+  flex: 1;
+  min-width: 0;
+}
+
+.title {
+  font-size: 1.05rem;
+  font-weight: 900;
+  color: var(--text);
+  line-height: 1.2;
+}
+
+.subtitle {
+  font-size: 0.72rem;
+  color: var(--text3);
+  margin-top: 2px;
+  line-height: 1.4;
+}
+
+.closeBtn {
+  background: var(--surface2);
+  border: none;
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text2);
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.tabs {
+  display: flex;
+  gap: 0;
+}
+
+.tabBtn {
+  flex: 1;
+  padding: 10px 6px;
+  border: none;
+  background: transparent;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--text3);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  border-bottom: 2px solid transparent;
+  transition: color 0.2s, border-color 0.2s;
+}
+
+.tabActive {
+  color: var(--text);
+  border-bottom-color: var(--accent);
+}
+
+.savePill {
+  font-size: 0.58rem;
+  font-weight: 800;
+  background: color-mix(in srgb, var(--accent) 18%, transparent);
+  color: var(--accent);
+  padding: 2px 5px;
+  border-radius: 20px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+}
+
+.scrollBody {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  scroll-behavior: smooth;
+  padding: 20px 16px 48px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.planCard {
+  width: 100%;
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  padding: 18px 16px;
+  background: var(--bg);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  animation: cardIn 0.22s ease;
+  flex-shrink: 0;
+}
+
+.planCardPro {
+  border: 2px solid var(--accent);
+  background: var(--surface);
+  position: relative;
+}
+
+.planCardProGlow {
+  position: absolute;
+  top: -60px;
+  right: -60px;
+  width: 200px;
+  height: 200px;
+  border-radius: 50%;
+  background: radial-gradient(circle, color-mix(in srgb, var(--accent) 16%, transparent), transparent 70%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+@keyframes cardIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.planHeader {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+  position: relative;
+  z-index: 1;
+}
+
+.planTitleRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.planName {
+  font-size: 1rem;
+  font-weight: 900;
+  color: var(--text2);
+}
+
+.planNamePro {
+  font-size: 1rem;
+  font-weight: 900;
+  color: var(--accent);
+}
+
+.planCurrentBadge {
+  font-size: 0.62rem;
+  font-weight: 700;
+  color: var(--text3);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.planPopularBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.62rem;
+  font-weight: 800;
+  color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 14%, transparent);
+  padding: 3px 8px;
+  border-radius: 20px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+}
+
+.planPriceRow {
+  display: flex;
+  align-items: baseline;
+  gap: 3px;
+  margin-top: 2px;
+}
+
+.planAmount {
+  font-size: 1.8rem;
+  font-weight: 900;
+  color: var(--text);
+  line-height: 1;
+}
+
+.planPeriod {
+  font-size: 0.72rem;
+  color: var(--text3);
+  font-weight: 600;
+}
+
+.planBilled {
+  font-size: 0.68rem;
+  color: var(--text3);
+}
+
+.planSavingsBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.68rem;
+  font-weight: 700;
+  color: #16a34a;
+  background: rgba(22, 163, 74, 0.1);
+  padding: 4px 10px;
+  border-radius: 20px;
+  width: fit-content;
+  position: relative;
+  z-index: 1;
+}
+
+.divider {
+  height: 1px;
+  background: var(--border);
+  position: relative;
+  z-index: 1;
+}
+
+.featureList {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  position: relative;
+  z-index: 1;
+}
+
+.featureRow {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  min-width: 0;
+}
+
+.featureIconWrap {
+  width: 22px;
+  height: 22px;
+  border-radius: 6px;
+  background: var(--surface2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text3);
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+.featureIconPro {
+  background: color-mix(in srgb, var(--accent) 14%, transparent);
+  color: var(--accent);
+}
+
+.featureLabel {
+  font-size: 0.78rem;
+  color: var(--text3);
+  line-height: 1.4;
+  min-width: 0;
+}
+
+.featureLabelPro {
+  font-size: 0.78rem;
+  color: var(--text2);
+  line-height: 1.4;
+  font-weight: 500;
+  min-width: 0;
+}
+
+.ctaBtn {
+  width: 100%;
+  padding: 16px;
+  border-radius: 14px;
+  border: none;
+  background: var(--accent);
+  color: #fff;
+  font-size: 0.95rem;
+  font-weight: 800;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: opacity 0.15s;
+  flex-shrink: 0;
+  position: relative;
+  z-index: 1;
+}
+
+.ctaBtnFree {
+  background: var(--surface2);
+  color: var(--text2);
+}
+
+.ctaBtn:active {
+  opacity: 0.85;
+}
+
+.fine {
+  text-align: center;
+  font-size: 0.7rem;
+  color: var(--text3);
+  flex-shrink: 0;
+  position: relative;
+  z-index: 1;
+}

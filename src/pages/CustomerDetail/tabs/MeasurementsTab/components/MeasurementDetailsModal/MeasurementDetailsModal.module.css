@@ -1,0 +1,310 @@
+.detailPanel {
+  position:       fixed;
+  top:            0;
+  left:           0;
+  width:          100%;
+  height:         100%;
+  background:     var(--bg);
+  z-index:        3000;
+  transform:      translateX(100%);
+  transition:     transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+  display:        flex;
+  flex-direction: column;
+  overflow:       hidden;
+}
+
+.detailPanel_open {
+  transform: translateX(0);
+}
+
+.detailScrollBody {
+  flex:                       1;
+  overflow-y:                 auto;
+  padding:                    20px;
+  -webkit-overflow-scrolling: touch;
+}
+
+.detailCarouselImage {
+  width:         100%;
+  max-height:    200px;
+  object-fit:    cover;
+  border-radius: 10px;
+  border:        1px solid var(--border);
+  margin-bottom: 16px;
+}
+
+
+.placeholderBlock {
+  width:           100%;
+  height:          200px;
+  border-radius:   14px;
+  border:          1.5px dashed var(--border2);
+  display:         flex;
+  flex-direction:  column;
+  align-items:     center;
+  justify-content: center;
+  gap:             10px;
+  margin-bottom:   16px;
+  background:      var(--surface);
+}
+
+.placeholderIcon {
+  font-size: 2.8rem;
+  color:     var(--border2);
+}
+
+.placeholderText {
+  font-size:      0.6rem;
+  font-weight:    800;
+  color:          var(--text3);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin:         0;
+}
+
+
+.infoGrid {
+  display:               grid;
+  grid-template-columns: 1fr 1fr;
+  gap:                   12px;
+  margin-bottom:         16px;
+}
+
+.infoGridCell {
+  background:    var(--surface);
+  border:        1px solid var(--border);
+  border-radius: 14px;
+  padding:       12px 14px;
+}
+
+.infoGridLabel {
+  font-size:      0.6rem;
+  font-weight:    800;
+  color:          var(--text3);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom:  4px;
+}
+
+.infoGridValue {
+  font-size:   1rem;
+  font-weight: 800;
+  color:       var(--text);
+}
+
+
+.sectionCard {
+  background:    var(--surface);
+  border:        1px solid var(--border);
+  border-radius: 14px;
+  padding:       14px;
+  margin-bottom: 16px;
+}
+
+.sectionCardLabel {
+  font-size:      0.6rem;
+  font-weight:    800;
+  color:          var(--text3);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom:  10px;
+}
+
+
+.measurementFieldRow {
+  display:         flex;
+  justify-content: space-between;
+  align-items:     center;
+  padding:         12px 0;
+  border-bottom:   1px solid var(--border);
+}
+
+.measurementFieldRow_last {
+  border-bottom: none;
+}
+
+.measurementFieldName {
+  font-size:   0.8rem;
+  color:       var(--text2);
+  font-weight: 600;
+}
+
+.measurementFieldValue {
+  font-size:   1rem;
+  font-weight: 800;
+  color:       var(--text);
+  display:     flex;
+  align-items: baseline;
+  gap:         2px;
+}
+
+.measurementFieldUnit {
+  font-size:   0.65rem;
+  font-weight: 600;
+  color:       var(--text3);
+}
+
+.detailFooterDate {
+  font-size:  0.7rem;
+  color:      var(--text3);
+  margin-top: 20px;
+  text-align: center;
+}
+
+
+.editBody {
+  padding-bottom: 40px;
+}
+
+.editSectionLabel {
+  font-size:      0.65rem;
+  font-weight:    800;
+  color:          var(--text2);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom:  12px;
+  margin-top:     0;
+}
+
+.editCard {
+  background:    var(--surface);
+  border:        1px solid var(--border);
+  border-radius: 14px;
+  padding:       16px;
+}
+
+.unitChipRow {
+  display: flex;
+  gap:     8px;
+}
+
+.unitChip {
+  flex:          1;
+  text-align:    center;
+  padding:       9px 4px;
+  border-radius: 10px;
+  border:        1px solid var(--border2);
+  font-size:     0.7rem;
+  font-weight:   800;
+  color:         var(--text3);
+  cursor:        pointer;
+  transition:    all 0.2s;
+  background:    transparent;
+}
+
+.unitChip_active {
+  background:   var(--text);
+  color:        var(--bg);
+  border-color: var(--accent);
+}
+
+.fieldLabel {
+  font-size:      0.58rem;
+  font-weight:    800;
+  color:          var(--text3);
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  margin-bottom:  5px;
+  display:        block;
+}
+
+.underlineInput {
+  width:          100%;
+  background:     transparent;
+  border:         none;
+  color:          var(--text);
+  font-size:      1.05rem;
+  font-weight:    700;
+  outline:        none;
+  border-bottom:  1px solid var(--border2);
+  padding-bottom: 10px;
+  margin-bottom:  6px;
+  font-family:    'DM Sans', sans-serif;
+}
+
+.underlineInput_error {
+  border-bottom-color: var(--danger);
+}
+
+.inlineError {
+  font-size:     0.65rem;
+  font-weight:   700;
+  color:         var(--danger);
+  margin-top:    0;
+  margin-bottom: 8px;
+}
+
+.measureFieldList {
+  margin-bottom: 4px;
+}
+
+.measureFieldRow {
+  display:       flex;
+  align-items:   flex-end;
+  gap:           10px;
+  margin-bottom: 12px;
+}
+
+.measureFieldColumn {
+  flex:           1;
+  border-bottom:  1px solid var(--border2);
+  padding-bottom: 8px;
+}
+
+.measureFieldColumn label {
+  font-size:      0.58rem;
+  font-weight:    800;
+  color:          var(--text3);
+  text-transform: uppercase;
+  display:        block;
+  margin-bottom:  4px;
+  letter-spacing: 0.4px;
+}
+
+.measureFieldInput {
+  background:  transparent;
+  border:      none;
+  color:       var(--text);
+  font-size:   0.95rem;
+  font-weight: 600;
+  outline:     none;
+  width:       100%;
+  font-family: 'DM Sans', sans-serif;
+}
+
+.removeFieldButton {
+  color:       var(--danger);
+  background:  none;
+  border:      none;
+  cursor:      pointer;
+  padding:     4px;
+  display:     flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.removeFieldButton:active {
+  opacity: 0.6;
+}
+
+.addFieldButton {
+  background:    transparent;
+  border:        1px solid var(--border2);
+  color:         var(--text2);
+  padding:       9px 16px;
+  border-radius: 10px;
+  font-weight:   700;
+  display:       flex;
+  align-items:   center;
+  gap:           6px;
+  font-size:     0.68rem;
+  margin-top:    4px;
+  cursor:        pointer;
+  font-family:   'DM Sans', sans-serif;
+  transition:    border-color 0.2s;
+}
+
+.addFieldButton:active {
+  border-color: var(--accent);
+  color:        var(--accent);
+}

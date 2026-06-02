@@ -1,0 +1,23 @@
+
+.emptyState {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-top: 80px;
+  gap: 10px;
+  text-align: center;
+}
+
+.emptyIcon { 
+  font-size: 3rem; 
+  opacity: 0.15; 
+}
+.emptyState p { 
+  font-size: 0.85rem; 
+  color: var(--text3); 
+}
+.emptyState span { 
+  font-size: 0.75rem; 
+  color: var(--text3); 
+  opacity: 0.6; 
+}

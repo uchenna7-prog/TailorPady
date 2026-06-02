@@ -1,0 +1,530 @@
+.template {
+  background: #fff;
+  color: #1a1a1a;
+  font-family: "Manrope", sans-serif;
+  font-size: 10px;
+  display: flex;
+  flex-direction: column;
+  min-height: 565px;
+  padding: 10px 16px 16px;
+  position: relative;
+}
+
+.logoBlock {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 10px;
+}
+
+.logoBox {
+  width: 52px;
+  height: 52px;
+  border: 2.5px solid currentColor;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 3px;
+  flex-shrink: 0;
+  overflow: hidden;
+}
+
+.logoImg {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.logoInitial {
+  font-family: "Courier New", Courier, monospace;
+  font-weight: 700;
+  font-size: 18px;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+.invoiceTitle {
+  font-family: "Manrope", sans-serif;
+  font-size: 17px;
+  font-weight: 700;
+  text-align: center;
+  letter-spacing: 6px;
+  line-height: 1;
+  margin-bottom: 20px;
+  text-transform: uppercase;
+  opacity: 0.75;
+  color: var(--brand-primary-dark);
+}
+
+.metaRow {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 18px;
+  align-items: end;
+}
+
+.billedLabel {
+  color: var(--brand-primary-dark);
+  font-size: 9px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 4px;
+}
+
+.billedName {
+  font-size: 11px;
+  font-weight: 700;
+  color: #1a1a1a;
+  margin-bottom: 5px;
+}
+
+.billedDetails {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.billedDetailLine {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 9.5px;
+  color: #444;
+  line-height: 1.4;
+}
+
+.billedDetailIcon {
+  width: 11px;
+  height: 11px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  align-self: flex-start;
+}
+
+.billedDetailIcon svg {
+  display: inline-flex;
+  align-items: center;
+  flex-shrink: 0;
+  width: 9px;
+  height: 9px;
+  opacity: 0.6;
+}
+
+.invoiceNumBlock {
+  text-align: right;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.numLabel {
+  font-size: 8px;
+  color: #888;
+  text-transform: uppercase;
+}
+
+.numValue {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+}
+
+.orderDescRow {
+  display: flex;
+  align-items: baseline;
+  gap: 5px;
+  margin-bottom: 10px;
+  font-size: 9.5px;
+}
+
+.orderLabel {
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.orderDesc {
+  color: #555;
+}
+
+.tableWrap {
+  margin-bottom: 0;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.tableHeadRow {
+  border-top: 2px solid currentColor;
+  border-bottom: 1px solid currentColor;
+}
+
+.tableHeadRow th {
+  padding: 8px 4px;
+  font-size: 8.5px;
+  font-weight: 700;
+  text-transform: uppercase;
+  background: none;
+}
+
+.thDesc  { text-align: left;width: 42%; }
+.thQty   { text-align: center; border-left: 1px solid;width: 10%; }
+.thPrice { text-align: center; border-left: 1px solid;width: 23%; }
+.thTotal { text-align: center; border-left: 1px solid;width: 25%;  }
+
+.tableRow td {
+  padding: 8px 4px;
+  font-size: 10px;
+  color: #2a2a2a;
+}
+
+
+.tdDesc  { 
+  text-align: left; 
+  font-weight: 600; 
+  word-break: break-word;
+  width: 42%; 
+}
+.tdQty   { 
+  text-align: center; 
+  border-left: 1px solid; 
+  width: 10%; 
+}
+.tdPrice { 
+  text-align: center; 
+  border-left: 1px solid;  
+  font-variant-numeric: tabular-nums; 
+  font-feature-settings: "tnum"; 
+  width: 23%;
+}
+.tdTotal { 
+  text-align: center; 
+  border-left: 1px solid;  
+  font-variant-numeric: tabular-nums; 
+  font-feature-settings: "tnum"; 
+  width: 25%;
+}
+
+.tableFooterRule {
+  padding: 0;
+  height: 2px;
+  border-top: 2px solid currentColor;
+}
+
+.breakdownBlock {
+  width: 100%;
+  padding: 8px 0 4px;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.breakdownRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 3px 0;
+}
+
+.breakdownKey {
+  font-size: 9.5px;
+  color: #6b7280;
+  font-weight: 500;
+}
+
+.breakdownVal {
+  font-size: 9.5px;
+  font-weight: 500;
+  color: #2a2a2a;
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum";
+}
+
+.breakdownKeyDiscount { color: #15803d; }
+.breakdownValDiscount { color: #15803d; font-weight: 700; }
+
+.orderTotalWrap {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 7px 0 2px;
+  border-top: 1px solid var(--brand-primary);
+}
+
+.orderTotalLabel,.grandTotalLabel {
+  font-size: 11px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--brand-primary-dark);
+}
+
+
+.orderTotalValue {
+  font-size: 11px;
+  font-weight: 900;
+  color: #1a1a1a;
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum";
+}
+
+.historySection {
+  margin: 14px 0 10px;
+}
+
+.historyHeading {
+  font-size: 8.5px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  padding-bottom: 5px;
+  margin-bottom: 6px;
+}
+
+.historyRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 0;
+}
+
+.historyRow:last-of-type {
+  border-bottom: none;
+}
+
+.emoji {
+  font-size: 13px;
+  line-height: 1;
+  flex-shrink: 0;
+  width: 20px;
+  text-align: center;
+}
+
+.paymentMeta {
+  flex: 1;
+  min-width: 0;
+}
+
+.paymentMethod {
+  font-size: 9px;
+  font-weight: 600;
+  color: #1a1a1a;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.paymentDate {
+  font-size: 8px;
+  color: #a8a8a8;
+  margin-top: 1px;
+  font-variant-numeric: tabular-nums;
+}
+
+.historyAmount {
+  font-size: 10px;
+  font-weight: 600;
+  color: #1a1a1a;
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum";
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.amountCurrent {
+  color: #16a34a;
+  font-weight: 700;
+}
+
+.latestBadge {
+  font-size: 7px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  background: #e8f3f1;
+  color: #595f6c;
+  padding: 2px 5px;
+  border-radius: 3px;
+  line-height: 1;
+}
+
+.totalsSection {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 14px;
+}
+
+.totalsBlock {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  width: 55%;
+}
+
+.totalsRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 5px 0;
+}
+
+.tLabel {
+  font-size: 9px;
+  font-weight: 700;
+}
+
+.tVal {
+  font-size: 10px;
+  color: #2a2a2a;
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum";
+}
+
+.tValDiscount {
+  color: #15803d;
+  font-weight: 700;
+}
+
+.tValPaid {
+  color: #16a34a;
+  font-weight: 700;
+}
+
+.totalDueRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 9px 0px;
+  margin-top: 6px;
+  border-top: 2px solid var(--brand-primary);
+
+}
+
+.tdLabel {
+  font-size: 9px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1.2px;
+}
+
+.tdVal {
+  font-size: 12px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum";
+}
+
+.balanceRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 5px 0 0;
+}
+
+.balanceLabel {
+  font-size: 8.5px;
+  font-weight: 900;
+  color: #dc2626;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+}
+
+.balanceVal {
+  font-size: 11px;
+  font-weight: 900;
+  color: #dc2626;
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum";
+}
+
+.paidRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 5px 0 0;
+}
+
+.paidLabel {
+  font-size: 8.5px;
+  font-weight: 900;
+  color: #16a34a;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+}
+
+.paidVal {
+  font-size: 11px;
+  font-weight: 900;
+  color: #16a34a;
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum";
+}
+
+.footer {
+  display: flex;
+  justify-content: space-between;
+  gap: 30px;
+  font-size: 10px;
+  line-height: 1.5;
+  margin-top: 18px;
+}
+
+.footerItem {
+  min-width: 0;
+  flex: 1;
+}
+
+.footerHeading {
+  font-size: 8px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1.2px;
+  margin-bottom: 6px;
+  color: var(--brand-primary-dark);
+}
+
+.footerLabel {
+  font-weight: 900;
+  font-size: 9px;
+  margin-bottom: 2px;
+}
+
+.brandName{
+  font-weight: 600;
+  font-size: 9px;
+  margin-bottom: 2px;
+  text-transform: uppercase;
+}
+
+.iconRow {
+  display: flex;
+  align-items: flex-start;
+  gap: 5px;
+  font-size: 9px;
+  color: #444;
+  line-height: 1.5;
+  margin-top: 2px;
+}
+
+.icon {
+  flex-shrink: 0;
+  width: 10px;
+  height: 10px;
+  margin-top: 1px;
+  display: flex;
+  align-items: center;
+}
+
+.icon svg {
+  width: 10px;
+  height: 10px;
+  opacity: 0.6;
+  fill: none;
+  stroke-width: 1.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
