@@ -71,7 +71,7 @@ export function InstallBanner() {
       </span>
 
       <div className={styles.text}>
-        <div className={styles.title}>Install Tailor Pady</div>
+        <div className={styles.title}>Install TailorPady</div>
         <div className={styles.sub}>Fast access from your home screen, works offline</div>
       </div>
 

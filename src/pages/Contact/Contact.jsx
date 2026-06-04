@@ -7,8 +7,8 @@ const CONTACT = {
   phone:        '+234 9079116980',
   email:        'support@TailorPady.app',
   website:      'www.TailorPady.app',
-  businessName: 'Tailor Pady',
-  billingName:  'Tailor Pady Technologies',
+  businessName: 'TailorPady',
+  billingName:  'TailorPady Technologies',
   address:      'Choba Uniport',
 }
 

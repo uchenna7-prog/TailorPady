@@ -76,12 +76,12 @@ export default function Login() {
         <div className={styles.logo}>
           <img
             src={generalSettings.theme === 'light' ? logoLightMode : logoDarkMode}
-            alt="Tailor Pady"
+            alt="TailorPady"
             className={styles.logoIcon}
           />
           <div className={styles.logoText}>
-            <span className={styles.logoName}>Tailor Pady</span>
-            <span className={styles.logoTagline}>For tailors who mean business</span>
+            <span className={styles.logoName}>TailorPady</span>
+            <span className={styles.logoTagline}>The operating system for tailors</span>
           </div>
         </div>
 

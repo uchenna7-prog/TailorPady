@@ -106,8 +106,8 @@ function SideBar({ isOpen, onClose }) {
     if (navigator.share) {
       try {
         await navigator.share({
-          title: 'Tailor Pady',
-          text:  'For tailors who mean business — check out Tailor Pady!',
+          title: 'TailorPady',
+          text:  'The operating system for tailors — check out TailorPady!',
           url:   window.location.origin,
         })
       } catch {}
@@ -138,12 +138,12 @@ function SideBar({ isOpen, onClose }) {
           <div className={styles.brand}>
             <img
               src={generalSettings.theme === 'light' ? logoLightMode : logoDarkMode}
-              alt="Tailor Pady"
+              alt="TailorPady"
               className={styles.brandIcon}
             />
             <div className={styles.brandText}>
-              <span className={styles.brandName}>Tailor Pady</span>
-              <span className={styles.tagline}>For tailors who mean business</span>
+              <span className={styles.brandName}>TailorPady</span>
+              <span className={styles.tagline}>The operating system for tailors</span>
             </div>
           </div>
         </div>
