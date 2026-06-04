@@ -379,7 +379,7 @@
 
 .measureImg {
   width: 130px;
-  height: 130px;
+  height: 155px;
   object-fit: cover;
   flex-shrink: 0;
   border-radius: 8px;
