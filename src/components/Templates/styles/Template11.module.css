@@ -1,143 +1,93 @@
-.template {
-  background: #fff;
-  color: #1a1a1a;
-  font-family: "Manrope", sans-serif;
-  font-size: 10px;
+.template { 
+   background: #fff; 
+   color: #1a1a1a; 
+   font-family: "Manrope", sans-serif;
+   font-size: 10px; 
+   display: flex; 
+   flex-direction: column; 
+   padding: 0; 
+   position: relative; 
+    min-height: 565px;
+}
+
+.header {
   display: flex;
-  flex-direction: column;
-  padding: 0;
-  min-height: 565px;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 14px 16px 6px;
 }
 
-.topBar {
-  display: grid;
-  grid-template-columns: 1fr auto;
-  align-items: center;
-  gap: 12px 20px;
-  padding: 10px 16px;
-  border-bottom: 1px solid #f0f0f0;
-  font-size: 9px;
-}
-
-.logoArea {
+.header > div:first-child {
   flex: 1;
   min-width: 0;
-  display: flex;
-  align-items: center;
-  gap: 5px;
 }
 
-.companyInfo {
-  font-size: 9px;
-  line-height: 1.6;
-  color: #444;
+.header > div:last-child {
   flex-shrink: 0;
-  margin-left: auto;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
 }
 
-.companyName {
-  font-size: 10px;
-  font-weight: 900;
-  letter-spacing: 0.05em;
-  color: var(--brand-primary-dark);
+.logoRow { 
+  display: flex; 
+  align-items: center; 
+  gap: 8px;           
 }
 
-.tagline {
-  font-size: 7.5px;
+.companyName { 
+   font-size: 12px; 
+   font-weight: 900; 
+   letter-spacing: 0.04em; 
+   color: var(--brand-primary-dark); 
+}
+.companySub { 
+   font-size: 7.5px; 
+   color: #888; 
+   letter-spacing: 0.06em; 
+   margin-top: 1px; 
+}
+.companyAddress { 
+   font-size: 8.5px; 
+   color: #555; 
+   line-height: 1.5; 
+   margin-top: 2px; 
+}
+.invoiceTitle, .receiptTitle { 
+   font-size: 28px; 
+   font-weight: 300; 
+   color: var(--brand-primary); 
+   letter-spacing: 0.1em; 
+   align-self: center; 
 }
 
-@media (max-width: 520px) {
-  .topBar {
-    grid-template-columns: 1fr 1fr;
-    align-items: start;
-    gap: 4px 12px;
-  }
-
-  .logoArea {
-    grid-column: 1;
-    grid-row: 1 / span 2;
-    align-self: center;
-  }
-
-  .companyInfo:first-of-type {
-    grid-column: 2;
-    grid-row: 1;
-  }
-
-  .companyInfo:last-of-type {
-    grid-column: 2;
-    grid-row: 2;
-  }
+.numberBar { 
+   background: var(--brand-gradient); 
+   color: var(--brand-on-primary); 
+   justify-content: space-between;
+   display: flex; 
+   gap: 7px; 
+   padding: 4px 16px; 
+   font-size: 9px; 
+   font-weight: 600; 
+  
 }
-
-.invoiceTitle,
-.receiptTitle {
-  font-size: 22px;
-  font-weight: 400;
-  padding: 8px 16px 3px;
-  color: var(--brand-primary-dark);
+.billShip { 
+   display: flex; 
+   gap: 16px; 
+   padding: 8px 16px; 
+   font-size: 10px; 
+   line-height: 1.5; 
 }
-
-.bar {
-  background: var(--brand-surface);
-  display: flex;
-  justify-content: space-between;
-  padding: 4px 16px;
-  font-size: 8.5px;
-  font-weight: 600;
-  color: var(--brand-primary);
-  border-top: 2px solid var(--brand-primary);
-  border-bottom: 2px solid var(--brand-primary);
-}
-
-.issuedRow {
-  display: flex;
-  justify-content: space-between;
-  gap: 12px;
-  padding: 8px 16px 3px;
-  font-size: 10px;
-  line-height: 1.6;
-}
-
-.issuedRow > div:first-child {
+.billShip > div {
   flex: 1;
   min-width: 0;
   word-break: break-word;
 }
-
-.issuedRow > div:last-child {
-  flex-shrink: 0;
+.billLabel { 
+   font-weight: 700; 
+   font-size: 10px; 
+   color: var(--brand-primary); 
 }
 
-.issuedLabel {
-  font-size: 10px;
-  font-weight: 700;
-  margin-bottom: 2px;
-  color: var(--brand-primary);
-}
-
-.amountLabel {
-  font-size: 10px;
-  font-weight: 700;
-  text-align: right;
-  color: var(--brand-primary);
-}
-
-.amountVal {
-  font-size: 22px;
-  font-weight: 300;
-  text-align: right;
-  color: var(--brand-primary);
-}
-
-.projectName {
-  font-size: 10px;
-  font-weight: 600;
-  padding: 3px 16px 2px;
-}
 
 .tableWrapper {
   padding: 0 16px;
@@ -151,12 +101,11 @@
 
 .orderDescriptionRow {
   display: flex;
-  gap: 5px;
+  gap:5px;
   align-items: baseline;
   padding: 10px 0 12px;
 }
-
-.orderText {
+.orderText{
   font-weight: 900;
 }
 
@@ -166,16 +115,16 @@
 }
 
 .colDesc  { width: 42%; }
-.colPrice { width: 23%; }
 .colQty   { width: 10%; }
+.colPrice { width: 23%; }
 .colTotal { width: 25%; }
 
-.tableHead {
+.tableHeader {
   background: var(--brand-gradient);
   color: var(--brand-on-primary);
 }
 
-.tableHead th {
+.tableHeader th {
   padding: 6px 4px;
   font-size: 9px;
   font-weight: 700;
@@ -183,7 +132,6 @@
 
 .tableRow {
   border-bottom: 1px dashed #ebebeb;
-  color: #555;
 }
 
 .tableRow td {
@@ -191,28 +139,24 @@
   font-size: 10px;
 }
 
-th.colDesc,
-td.colDesc {
-  text-align: left;
-  word-break: break-word;
+/* Column alignment */
+th.colDesc,  td.colDesc  { 
+   text-align: left; 
+   word-break: break-word; 
 }
 
-th.colQty,
-td.colQty {
+th.colQty, td.colQty {
   text-align: center;
-  padding-left: 6px;
-  padding-right: 6px;
+  padding-left: 6px;   
+  padding-right: 6px;  
 }
 
-th.colPrice,
-td.colPrice {
+th.colPrice, td.colPrice {
   text-align: center;
-  padding-right: 8px;
+  padding-right: 8px;  
 }
-
-th.colTotal,
-td.colTotal {
-  text-align: center;
+th.colTotal, td.colTotal { 
+   text-align: center; 
 }
 
 .tableBody {
@@ -223,7 +167,7 @@ td.colTotal {
   margin-left: auto;
   width: 55%;
   margin-top: 14px;
-  padding-top: 10px;
+  padding: 8px 16px; 
 }
 
 .summaryRow {
@@ -247,6 +191,7 @@ td.colTotal {
   font-feature-settings: "tnum";
 }
 
+/* Discount row — muted green tint */
 .summaryKeyDiscount {
   color: #15803d;
 }
@@ -256,117 +201,86 @@ td.colTotal {
   font-weight: 700;
 }
 
-.summaryDivider {
-  height: 1.5px;
-  background: var(--brand-primary-dark);
-  margin: 8px 0;
+
+.totalBar {
+   width: 55%; 
+  margin-left: auto;
+   display: flex; 
+   justify-content: space-between; 
+   align-items: baseline; 
+   background: var(--brand-gradient); 
+   color: var(--brand-on-primary); 
+   padding: 8px 16px; 
+   margin-top: auto; 
+   font-weight: 900; 
+   font-size: 10px; 
+}
+.totalAmount { 
+   font-size: 13px; 
+   font-weight: 900; 
 }
 
-.summaryTotalRow {
+.footer {
   display: flex;
   justify-content: space-between;
-  align-items: center;
-  column-gap: 12px;
-  padding: 4px 0;
+  align-items: flex-end;
+  padding: 8px 16px;
+  font-size: 10px;
+  margin-top: auto;
+}
+.thankYou { 
+   font-weight: 700; 
+   font-size: 10px; 
+   text-transform: uppercase; 
+   margin-bottom: 2px; 
+   color: var(--brand-primary-dark); 
+}
+.paymentNote { 
+   color: #666; 
+   font-size: 10px; 
+}
+.signArea { 
+   text-align: center; 
+}
+.signLine { 
+   width: 55px; 
+   height: 1px; 
+   background: var(--brand-primary); 
+   margin: 0 auto 2px; 
+}
+.signLabel { 
+   font-size: 10px; 
+   color: #666; 
+}
+.cornerDecoration {
+  width: 50px;
+  height: 50px;
+  background: var(--brand-gradient);
+  opacity: 0.5;
+  clip-path: polygon(100% 0, 100% 100%, 0 100%);
+  flex-shrink: 0;
 }
 
-.summaryTotalKey {
-  font-size: 13px;
-  font-weight: 900;
-  color: var(--brand-primary-dark, #a07d20);
-  letter-spacing: 0.03em;
-}
 
-.summaryTotalVal {
-  font-size: 13px;
+
+.orderTotalLabel {
+  font-size: 11px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--brand-primary-dark);
+}
+.orderTotalValue {
+  font-size: 11px;
   font-weight: 900;
   color: #1a1a1a;
   font-variant-numeric: tabular-nums;
   font-feature-settings: "tnum";
 }
 
-.paymentTitle {
-  font-size: 10px;
-  font-weight: 600;
-  padding: 8px 16px 3px;
-  color: var(--brand-primary-dark);
-}
-
-.paymentBoxRow {
-  display: flex;
-  gap: 5px;
-  padding: 0 16px 8px;
-}
-
-.paymentBox {
-  flex: 1;
-  background: var(--brand-surface);
-  padding: 6px 8px;
-  font-size: 8.5px;
-  line-height: 1.5;
-  border-left: 2px solid var(--brand-primary);
-}
-
-.paymentBoxTitle {
-  font-weight: 700;
-  font-size: 9px;
-  margin-bottom: 2px;
-  color: var(--brand-primary);
-  display: flex;
-  align-items: flex-start;
-  gap: 4px;
-}
-
-.paymentBoxContent {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-}
-
-.paymentBoxLine {
-  display: flex;
-  align-items: flex-start;
-  gap: 4px;
-  line-height: 1.5;
-}
-
-.paymentBoxLineIcon {
-  display: inline-flex;
-  align-items: center;
-  flex-shrink: 0;
-  width: 8px;
-  height: 8px;
-  margin-top: 2px;
-  opacity: 0.55;
-}
-
-.paymentBoxLineIcon svg {
+.summarySection {
   width: 100%;
-  height: 100%;
-}
-
-.paymentBoxIcon {
-  display: inline-flex;
-  align-items: center;
-  flex-shrink: 0;
-  width: 9px;
-  height: 9px;
-  margin-top: 1px;
-}
-
-.paymentBoxIcon svg {
-  width: 100%;
-  height: 100%;
-}
-
-.thankYou {
-  text-align: right;
-  font-size: 10px;
-  font-weight: 700;
-  color: var(--brand-primary);
-  padding: 3px 16px 10px;
-  margin-top: auto;
-  letter-spacing: 0.05em;
+  margin-top: 0;
 }
 
 .breakdownBlock {
@@ -397,6 +311,7 @@ td.colTotal {
   font-feature-settings: "tnum";
 }
 
+/* Discount row — green */
 .breakdownKeyDiscount {
   color: #15803d;
 }
@@ -406,12 +321,6 @@ td.colTotal {
   font-weight: 700;
 }
 
-.orderTotalWrap {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 7px 0;
-}
 
 .orderTotalLabel {
   font-size: 11px;
@@ -421,6 +330,14 @@ td.colTotal {
   color: var(--brand-primary-dark);
 }
 
+.orderTotalWrap {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 7px 0;
+}
+
+
 .orderTotalValue {
   font-size: 11px;
   font-weight: 900;
@@ -429,52 +346,35 @@ td.colTotal {
   font-feature-settings: "tnum";
 }
 
-.companyInfoLine {
-  display: flex;
-  align-items: flex-start;
-  gap: 4px;
-  line-height: 1.6;
-}
-
-.companyInfoIcon {
-  display: inline-flex;
-  align-items: center;
-  flex-shrink: 0;
-  width: 9px;
-  height: 9px;
-  margin-top: 2px;
-  opacity: 0.55;
-}
-
-.companyInfoIcon svg {
-  width: 100%;
-  height: 100%;
-}
-
-.issuedDetailLine {
+.billDetailLine {
   display: flex;
   align-items: flex-start;
   gap: 5px;
-  line-height: 1.6;
+  line-height: 1.5;
 }
 
-.issuedDetailIcon {
+.billDetailIcon {
   display: inline-flex;
   align-items: center;
   flex-shrink: 0;
   width: 9px;
   height: 9px;
-  margin-top: 2px;
   opacity: 0.55;
 }
 
-.issuedDetailIcon svg {
+.billDetailIcon svg {
   width: 100%;
   height: 100%;
 }
 
-.issuedName {
-  font-weight: 700;
-  font-size: 10px;
-  margin-bottom: 1px;
-}
+
+
+
+
+
+
+
+
+
+
+

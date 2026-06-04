@@ -5,7 +5,6 @@ import {
   PhoneIcon,
   EmailIcon,
   LocationIcon,
-  WebsiteIcon,
   BankIcon,
 } from "../components/icons/icons"
 import { LogoOrName } from "../components/LogoOrBrandName/LogoOrBrandName"
@@ -37,73 +36,72 @@ export function InvoiceTemplate11({ invoice, customer, invoiceBrandSettings }) {
   return (
     <div className={styles.template}>
 
-      <div className={styles.topBar}>
+      <div className={styles.header}>
+        <div>
+          <div className={styles.logoRow}>
 
-        <div className={styles.logoArea}>
-         
-         <LogoOrName invoiceBrandSettings={invoiceBrandSettings} darkBg={false} />
-
-          <div>
-            <div className={styles.companyName}>{(invoiceBrandSettings.name || invoiceBrandSettings.ownerName || '').toUpperCase()}</div>
-            {invoiceBrandSettings.tagline && <div className={styles.tagline}>{invoiceBrandSettings.tagline}</div>}
+           <LogoOrName invoiceBrandSettings={invoiceBrandSettings} darkBg={false} />
+           
+            <div>
+              <span className={styles.companyName}>{(invoiceBrandSettings.name || invoiceBrandSettings.ownerName || '').toUpperCase()}</span>
+              {invoiceBrandSettings.tagline && <div className={styles.companySub}>{invoiceBrandSettings.tagline}</div>}
+            </div>
           </div>
         </div>
-
-        <div className={styles.companyInfo}>
-          {invoiceBrandSettings.website && (
-            <div className={styles.companyInfoLine}>
-              <span className={styles.companyInfoIcon}><WebsiteIcon /></span>
-              <span>{invoiceBrandSettings.website}</span>
-            </div>
-          )}
-          {invoiceBrandSettings.email && (
-            <div className={styles.companyInfoLine}>
-              <span className={styles.companyInfoIcon}><EmailIcon /></span>
-              <span>{invoiceBrandSettings.email}</span>
-            </div>
-          )}
-          {invoiceBrandSettings.phone && (
-            <div className={styles.companyInfoLine}>
-              <span className={styles.companyInfoIcon}><PhoneIcon /></span>
-              <span>{invoiceBrandSettings.phone}</span>
-            </div>
-          )}
-        </div>
-
+        <div className={styles.invoiceTitle} style={{ color: accentColor }}>INVOICE</div>
       </div>
 
-      <div className={styles.invoiceTitle}>Invoice</div>
-
-      <div className={styles.bar} style={{ background: "var(--brand-muted)", color: accentColor }}>
-        <span>INVOICE: #{invoice.number}</span>
-        <span>DATE ISSUED: {invoice.date}</span>
-        <span>DUE DATE: {dueDate}</span>
+      <div className={styles.numberBar}>
+        <span>INVOICE # {invoice.number}</span>
+        <span>DATE: {invoice.date}</span>
+        <span>DUE: {dueDate}</span>
       </div>
 
-      <div className={styles.issuedRow}>
-
+      <div className={styles.billShip}>
         <div>
-          <div className={styles.issuedLabel}>ISSUED TO</div>
-          <div className={styles.issuedName}>{customer.name}</div>
+          <span className={styles.billLabel}>Bill To</span>
+          <div><strong>{customer.name}</strong></div>
           {customer.phone && (
-            <div className={styles.issuedDetailLine}>
-              <span className={styles.issuedDetailIcon}><PhoneIcon /></span>
-              <span>{customer.phone}</span>
+            <div className={styles.billDetailLine}>
+              <span className={styles.billDetailIcon}><PhoneIcon /></span>
+              {customer.phone}
+            </div>
+          )}
+          {customer.email && (
+            <div className={styles.billDetailLine}>
+              <span className={styles.billDetailIcon}><EmailIcon /></span>
+              {customer.email}
             </div>
           )}
           {customer.address && (
-            <div className={styles.issuedDetailLine}>
-              <span className={styles.issuedDetailIcon}><LocationIcon /></span>
-              <span>{customer.address}</span>
+            <div className={styles.billDetailLine}>
+              <span className={styles.billDetailIcon}><LocationIcon /></span>
+              {customer.address}
             </div>
           )}
         </div>
-
-        <div style={{ textAlign: 'right' }}>
-          <div className={styles.amountLabel} style={{ color: accentColor }}>AMOUNT</div>
-          <div className={styles.amountVal} style={{ color: accentColor }}>{formatMoney(currency, grandTotal)}</div>
+        <div>
+          <span className={styles.billLabel}>From</span>
+          <div><strong>{invoiceBrandSettings.name || invoiceBrandSettings.ownerName}</strong></div>
+          {invoiceBrandSettings.phone && (
+            <div className={styles.billDetailLine}>
+              <span className={styles.billDetailIcon}><PhoneIcon /></span>
+              {invoiceBrandSettings.phone}
+            </div>
+          )}
+          {invoiceBrandSettings.email && (
+            <div className={styles.billDetailLine}>
+              <span className={styles.billDetailIcon}><EmailIcon /></span>
+              {invoiceBrandSettings.email}
+            </div>
+          )}
+          {invoiceBrandSettings.address && (
+            <div className={styles.billDetailLine}>
+              <span className={styles.billDetailIcon}><LocationIcon /></span>
+              {invoiceBrandSettings.address}
+            </div>
+          )}
         </div>
-
       </div>
 
       <div className={styles.tableWrapper}>
@@ -115,11 +113,11 @@ export function InvoiceTemplate11({ invoice, customer, invoiceBrandSettings }) {
 
         <table className={styles.table}>
           <thead>
-            <tr className={styles.tableHead}>
+            <tr className={styles.tableHeader}>
               <th className={styles.colDesc}>Item Description</th>
               <th className={styles.colQty}>Qty</th>
               <th className={styles.colPrice}>Unit Price</th>
-              <th className={styles.colTotal}>Amount</th>
+              <th className={styles.colTotal}>Total</th>
             </tr>
           </thead>
           <tbody className={styles.tableBody}>
@@ -129,7 +127,7 @@ export function InvoiceTemplate11({ invoice, customer, invoiceBrandSettings }) {
               const lineAmount = qty * unitPrice
               return (
                 <tr key={i} className={styles.tableRow}>
-                  <td className={styles.colDesc}>• {item.name}</td>
+                  <td className={styles.colDesc}>{item.name}</td>
                   <td className={styles.colQty}>{qty}</td>
                   <td className={styles.colPrice}>{formatMoney(currency, unitPrice)}</td>
                   <td className={styles.colTotal}>{formatMoney(currency, lineAmount)}</td>
@@ -162,63 +160,53 @@ export function InvoiceTemplate11({ invoice, customer, invoiceBrandSettings }) {
               <span className={styles.summaryVal}>{formatMoney(currency, taxAmount)}</span>
             </div>
           )}
-          <div className={styles.summaryDivider} />
-          <div className={styles.summaryTotalRow}>
-            <span className={styles.summaryTotalKey}>Total Due</span>
-            <span className={styles.summaryTotalVal}>{formatMoney(currency, grandTotal)}</span>
-          </div>
+        </div>
+
+        <div className={styles.totalBar} style={{ background: accentColor }}>
+          <span>TOTAL</span>
+          <span className={styles.summaryTotalVal}>{formatMoney(currency, grandTotal)}</span>
         </div>
 
       </div>
 
-      {(invoiceBrandSettings.accountBank || invoiceBrandSettings.phone) && (
-        <>
-          <div className={styles.paymentTitle}>Payment Information</div>
-          <div className={styles.paymentBoxRow}>
+      <div style={{ marginTop: 'auto' }}>
+        <div className={styles.footer}>
+          <div>
             {invoiceBrandSettings.accountBank && (
-              <div className={styles.paymentBox} style={{ background: "var(--brand-muted)" }}>
-                <div className={styles.paymentBoxTitle}>
-                  <span className={styles.paymentBoxIcon}><BankIcon /></span>
-                  Bank
+              <>
+                <div className={styles.thankYou}>Payment Information</div>
+                <div>
+                  {invoiceBrandSettings.accountNumber && <div>Account Number: {invoiceBrandSettings.accountNumber}</div>}
+                  {invoiceBrandSettings.accountBank   && <div>Bank: {invoiceBrandSettings.accountBank}</div>}
+                  {invoiceBrandSettings.accountName   && <div>Account Name: {invoiceBrandSettings.accountName}</div>}
                 </div>
-                <div className={styles.paymentBoxContent}>
-                  <div>{invoiceBrandSettings.accountBank}</div>
-                  {invoiceBrandSettings.accountName && <div>{invoiceBrandSettings.accountName}</div>}
-                  {invoiceBrandSettings.accountNumber && <div>Acct: {invoiceBrandSettings.accountNumber}</div>}
-                </div>
-              </div>
+              </>
             )}
-            {invoiceBrandSettings.phone && (
-              <div className={styles.paymentBox} style={{ background: "var(--brand-muted)" }}>
-                <div className={styles.paymentBoxTitle}>
-                  <span className={styles.paymentBoxIcon}><PhoneIcon /></span>
-                  Contact
-                </div>
-                <div className={styles.paymentBoxContent}>
-                  <div>{invoiceBrandSettings.phone}</div>
-                  {invoiceBrandSettings.email && <div>{invoiceBrandSettings.email}</div>}
-                </div>
-              </div>
-            )}
-            {invoiceBrandSettings.address && (
-              <div className={styles.paymentBox} style={{ background: "var(--brand-muted)" }}>
-                <div className={styles.paymentBoxTitle}>
-                  <span className={styles.paymentBoxIcon}><LocationIcon /></span>
-                  Visit Us
-                </div>
-                <div className={styles.paymentBoxContent}>
-                  <div>{invoiceBrandSettings.address}</div>
-                </div>
-              </div>
-            )}
+            <div className={styles.paymentNote} style={{ fontWeight: 900, color: "var(--brand-primary-dark)" }}>
+              {invoiceBrandSettings.footer}
+            </div>
           </div>
-        </>
-      )}
-
-      <div className={styles.thankYou} style={{ color: accentColor }}>
-        {invoiceBrandSettings.footer || 'THANK YOU!'}
+          <div className={styles.signArea}>
+            <div className={styles.signLine} />
+            <div className={styles.signLabel}>Signature</div>
+          </div>
+        </div>
+        <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+          <svg style={{ display: 'block', width: 50, height: 50 }} viewBox="0 0 50 50">
+            <polygon points="50,0 50,50 0,50" fill={accentColor} opacity="0.5" />
+          </svg>
+        </div>
       </div>
 
     </div>
   )
 }
+
+
+
+
+
+
+
+
+

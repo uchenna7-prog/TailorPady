@@ -1,74 +1,94 @@
-.template {
-  padding: 18px;
-  background: var(--brand-primary);
-  color: var(--brand-on-primary);
+.template{ 
+  color:#1a1a1a;
   font-family: "Manrope", sans-serif;
-  font-size: 10px;
+  min-height: 565px;
+  font-size:10px;
+  display:flex;
+  flex-direction:column;
+}
+.body{
+  flex: 1;
   display: flex;
   flex-direction: column;
-  gap: 7px;
-  min-height: 565px;
 }
-
-.top {
+.bar{ 
+  height: 8px; 
+  background: var(--brand-gradient); 
+  margin: 0;
+}
+.headerSplit { 
+  display: flex; 
+  justify-content: space-between; 
+  align-items: flex-start; 
+  padding: 12px 16px 8px; 
+  border-bottom: 1.5px solid var(--brand-primary); 
+}
+.title{ 
+  font-size: 22px; 
+  font-weight: 900; 
+  letter-spacing: 0.04em; 
+  line-height: 1; 
+  color: var(--brand-primary-dark); 
+}
+.metaRow{
   display: flex;
+  gap: 30px;
   justify-content: space-between;
-  align-items: flex-start;
+  padding: 12px 16px 8px; 
+}
+.metaItem{
+  min-width: 0;
+  flex:1;
 }
 
-.title {
-  font-size: 30px;
+.metaValName{
   font-weight: 900;
-  letter-spacing: -1px;
-  line-height: 1;
-  color: var(--brand-on-primary);
+}
+.metaLabel{
+  color:var(--brand-primary-dark);
+  font-weight: 900; 
 }
 
-.topRight {
+.invoiceInfos ,.receiptInfos {
   text-align: right;
-  font-size: 10px;
-  line-height: 1.6;
-  opacity: 0.9;
+  display: flex;
+  justify-content: flex-end;
+  gap:3px;
+  flex-wrap: wrap;
+  font-size: 9px;
 }
 
-.divider {
-  height: 1px;
-  background: rgba(255,255,255,0.35);
-  margin: 2px 0;
+.invoiceInfos span,.receiptInfos span{
+  white-space: nowrap;
+  font-size: 9px;
 }
 
-.billedTo {
-  font-size: 10px;
-  line-height: 1.5;
-}
-
-.billedLabel {
-  font-weight: 700;
-  font-size: 10px;
-  margin-bottom: 2px;
-  opacity: 0.75;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-}
 
 .orderDescriptionRow {
   display: flex;
-  gap: 5px;
+  gap:5px;
   align-items: baseline;
-  padding: 8px 0;
+  padding:8px 0 ;
   margin-bottom: 2px;
-  border-bottom: 1px solid rgba(255,255,255,0.35);
 }
-
-.orderText {
+.orderText{
   font-weight: 900;
 }
 
 .orderDescLabel {
   font-size: 11px;
+  color: #0a0a0a;
 }
 
-.table {
+
+
+/* ── Table ── */
+.table { 
+  margin-top: 10px; 
+  padding: 15px;
+}
+
+.tableEl {
   width: 100%;
   border-collapse: collapse;
   table-layout: fixed;
@@ -79,18 +99,21 @@
 .colQty   { width: 10%; }
 .colTotal { width: 24%; }
 
-.tableHead {
-  border-bottom: 1px solid rgba(255,255,255,0.4);
+.tableHeader {
+  background: var(--brand-surface);
+  color: var(--brand-primary-dark);
+  border-bottom: 1px solid var(--brand-primary);
+  border-top: 1px solid var(--brand-primary);
 }
 
-.tableHead th {
-  padding: 3px 4px;
+.tableHeader th {
+  padding: 5px 4px;
   font-size: 10px;
-  font-weight: 700;
+  font-weight: 900;
 }
 
 .tableRow {
-  border-bottom: 1px solid rgba(255,234,234,0.5);
+  border-bottom: 1px dashed #ebebeb;
 }
 
 .tableRow td {
@@ -98,28 +121,24 @@
   font-size: 10px;
 }
 
-th.colDesc,
-td.colDesc {
-  text-align: left;
-  word-break: break-word;
+/* Column alignment */
+th.colDesc,  td.colDesc  { 
+   text-align: left; 
+   word-break: break-word; 
 }
 
-th.colQty,
-td.colQty {
+th.colQty, td.colQty {
   text-align: center;
-  padding-left: 6px;
-  padding-right: 6px;
+  padding-left: 6px;   
+  padding-right: 6px;  
 }
 
-th.colPrice,
-td.colPrice {
+th.colPrice, td.colPrice {
   text-align: center;
-  padding-right: 8px;
+  padding-right: 8px;  
 }
-
-th.colTotal,
-td.colTotal {
-  text-align: center;
+th.colTotal, td.colTotal { 
+   text-align: center; 
 }
 
 .summaryBlock {
@@ -139,30 +158,31 @@ td.colTotal {
 
 .summaryKey {
   font-size: 10px;
-  color: var(--brand-on-primary);
+  color: #6b7280;
 }
 
 .summaryVal {
   font-size: 10px;
   font-weight: 500;
-  color: var(--brand-on-primary);
+  color: #1a1a1a;
   font-variant-numeric: tabular-nums;
   font-feature-settings: "tnum";
 }
 
+/* Discount row — muted green tint */
 .summaryKeyDiscount {
-  color: green;
-  font-weight: 900;
+  color: #15803d;
 }
 
 .summaryValDiscount {
-  color: green;
-  font-weight: 900;
+  color: #15803d;
+  font-weight: 700;
 }
 
+/* Partial divider — matches half-width block, not full bleed */
 .summaryDivider {
   height: 1.5px;
-  background: var(--brand-on-primary);
+  background: var(--brand-primary-dark, #a07d20);
   margin: 8px 0;
 }
 
@@ -177,45 +197,33 @@ td.colTotal {
 .summaryTotalKey {
   font-size: 13px;
   font-weight: 900;
-  color: var(--brand-on-primary);
+  color: var(--brand-primary-dark, #a07d20);
   letter-spacing: 0.03em;
 }
 
 .summaryTotalVal {
   font-size: 13px;
   font-weight: 900;
-  color: var(--brand-on-primary);
+  color: #1a1a1a;
   font-variant-numeric: tabular-nums;
   font-feature-settings: "tnum";
 }
 
-.footer {
-  display: flex;
+.footer{ 
+  display: flex; 
   justify-content: space-between;
-  gap: 30px;
-  font-size: 10px;
-  line-height: 1.5;
+  gap: 12px; 
+  padding: 10px 16px 14px; 
   margin-top: auto;
-  padding-top: 8px;
-  border-top: 1px solid rgba(255,255,255,0.35);
+  border-top: 1px solid var(--brand-muted);
 }
 
-.footerItem {
-  min-width: 0;
-  flex: 1;
-}
-
-.footerLabel {
-  font-weight: 700;
-  margin-bottom: 2px;
-}
-
-.footerNote {
-  text-align: center;
-  font-size: 10px;
-  padding-top: 6px;
-  border-top: 1px solid rgba(255,255,255,0.35);
-  opacity: 0.75;
+.orderTotalValue {
+  font-size: 11px;
+  font-weight: 900;
+  color: #1a1a1a;
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum";
 }
 
 .orderTotalLabel {
@@ -223,13 +231,12 @@ td.colTotal {
   font-weight: 800;
   text-transform: uppercase;
   letter-spacing: 0.1em;
-  color: var(--brand-on-primary);
+  color: var(--brand-primary-dark);
 }
-
 .orderTotalValue {
   font-size: 11px;
   font-weight: 900;
-  color: var(--brand-on-primary);
+  color: #1a1a1a;
   font-variant-numeric: tabular-nums;
   font-feature-settings: "tnum";
 }
@@ -255,34 +262,51 @@ td.colTotal {
 
 .breakdownKey {
   font-size: 9.5px;
-  color: var(--brand-on-primary);
+  color: #6b7280;
   font-weight: 500;
 }
 
 .breakdownVal {
   font-size: 9.5px;
   font-weight: 500;
-  color: var(--brand-on-primary);
+  color: #1a1a1a;
   font-variant-numeric: tabular-nums;
   font-feature-settings: "tnum";
 }
 
+/* Discount row — green */
 .breakdownKeyDiscount {
-  font-weight: 900;
   color: #15803d;
 }
 
 .breakdownValDiscount {
   color: #15803d;
-  font-weight: 900;
+  font-weight: 700;
 }
+
+
 
 .orderTotalWrap {
   display: flex;
   justify-content: space-between;
   align-items: center;
   padding: 7px 0;
-  border-top: 1px solid rgba(255,255,255,0.35);
+}
+
+.orderTotalLabel {
+  font-size: 11px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--brand-primary-dark);
+}
+
+.orderTotalValue {
+  font-size: 11px;
+  font-weight: 900;
+  color: #1a1a1a;
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum";
 }
 
 .iconRow {
@@ -290,7 +314,7 @@ td.colTotal {
   align-items: flex-start;
   gap: 5px;
   font-size: 9px;
-  color: var(--brand-on-primary);
+  color: #444;
   line-height: 1.5;
   margin-top: 2px;
 }
@@ -302,8 +326,7 @@ td.colTotal {
   margin-top: 1px;
   display: flex;
   align-items: center;
-  color: var(--brand-on-primary);
-  opacity: 0.8;
+  color: #666;
 }
 
 .icon svg {
@@ -316,49 +339,3 @@ td.colTotal {
   stroke-linejoin: round;
 }
 
-.termsSection {
-  padding-top: 14px;
-  margin-top: 2px;
-}
-
-.termsSectionLabel {
-  font-size: 7.5px;
-  font-weight: 800;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
-  color: var(--brand-on-primary);
-  margin-bottom: 6px;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-
-
-
-.termsList {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-
-.termsItem {
-  font-size: 8px;
-  color: var(--brand-on-primary);
-  line-height: 1.6;
-  padding-left: 14px;
-  position: relative;
-  opacity: 0.85;
-}
-
-.termsItem::before {
-  content: "◆";
-  position: absolute;
-  left: 0;
-  font-size: 5px;
-  color: var(--brand-on-primary);
-  top: 3px;
-  opacity: 0.6;
-}

@@ -1,299 +1,285 @@
-.template {
-  background: #fff;
-  color: #1a1a1a;
-  font-family: "Manrope", sans-serif;
-  font-size: 10px;
-  display: flex;
-  flex-direction: column;
-  min-height: 565px;
-  padding: 10px 16px 16px;
-  position: relative;
+.template { 
+   background: #fff; 
+   color: #1a1a1a; 
+   font-family: "Manrope", sans-serif;
+   font-size: 10px; 
+   display: flex; 
+   flex-direction: column; 
+   padding: 0; 
+   min-height: 565px;
+   box-sizing: border-box;
+}
+.header { 
+   display: flex; 
+   justify-content: space-between; 
+   align-items: center; 
+   padding: 14px 16px 10px;
+   gap: 10px; 
 }
 
-.logoBlock {
-  display: flex;
-  justify-content: center;
-  margin-bottom: 10px;
-}
 
-.logoBox {
-  width: 52px;
-  height: 52px;
-  border: 2.5px solid currentColor;
+.logoArea {
   display: flex;
   align-items: center;
-  justify-content: center;
-  border-radius: 3px;
-  flex-shrink: 0;
-  overflow: hidden;
+  gap: 10px;
+  flex: 1;
+  min-width: 0;
 }
 
-.logoImg {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  display: block;
-}
 
-.logoInitial {
-  font-family: "Courier New", Courier, monospace;
-  font-weight: 700;
-  font-size: 18px;
-  line-height: 1;
+.brandName {
   text-transform: uppercase;
-}
-
-.invoiceTitle {
-  font-family: "Manrope", sans-serif;
-  font-size: 17px;
-  font-weight: 700;
-  text-align: center;
-  letter-spacing: 6px;
-  line-height: 1;
-  margin-bottom: 20px;
-  text-transform: uppercase;
-  opacity: 0.75;
-  color: var(--brand-primary-dark);
-}
-
-.metaRow {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 12px;
-  margin-bottom: 18px;
-  align-items: end;
-}
-
-.billedLabel {
-  color: var(--brand-primary-dark);
-  font-size: 9px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  margin-bottom: 4px;
-}
-
-.billedName {
   font-size: 11px;
-  font-weight: 700;
-  color: #1a1a1a;
-  margin-bottom: 5px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  line-height: 1.2;
+}
+.brandSub {
+  font-size: 8.5px;
+  color: #999;
+  letter-spacing: 0.06em;
+  margin-top: 2px;
+}
+.invoiceBox,.receiptBox { 
+   background: var(--brand-gradient); 
+   color: var(--brand-on-primary); 
+   padding: 8px 14px; 
+   border-radius: 3px; 
+   min-width: 80px;
+   max-width: 140px;
+   flex-shrink: 0;
+   display: flex;
+   flex-direction: column;
+   justify-content: center;
+   align-items: center;
 }
 
-.billedDetails {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
+.invoiceTitle,.receiptTitle { 
+   font-size: 16px; 
+   font-weight: 900; 
+   letter-spacing: 0.05em; 
+}
+.invoiceMeta,.receiptMeta { 
+   display: flex;
+   flex-direction: column;
+   align-items: flex-start;
+   gap: 0 5px; 
+   font-size: 10px; 
+   margin-top: 3px; 
+}
+.invoiceMeta div, .receiptMeta div { 
+   display: flex; 
+   gap: 5px; 
 }
 
-.billedDetailLine {
-  display: flex;
-  align-items: center;
-  gap: 5px;
-  font-size: 9.5px;
-  color: #444;
-  line-height: 1.4;
-}
-
-.billedDetailIcon {
-  width: 11px;
-  height: 11px;
-  flex-shrink: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  align-self: flex-start;
-}
-
-.billedDetailIcon svg {
-  display: inline-flex;
-  align-items: center;
-  flex-shrink: 0;
-  width: 9px;
-  height: 9px;
-  opacity: 0.6;
-}
-
-.invoiceNumBlock {
-  text-align: right;
-  display: flex;
-  flex-direction: column;
-  gap: 5px;
-}
-
-.numLabel {
-  font-size: 8px;
-  color: #888;
-  text-transform: uppercase;
-}
-
-.numValue {
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: 0.5px;
-}
-
-.orderDescRow {
-  display: flex;
-  align-items: baseline;
-  gap: 5px;
-  margin-bottom: 10px;
-  font-size: 9.5px;
-}
-
-.orderLabel {
-  font-weight: 900;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-}
-
-.orderDesc {
-  color: #555;
-}
-
-.tableWrap {
-  margin-bottom: 0;
+.tableWrapper {
+  padding: 0 16px;
 }
 
 .table {
   width: 100%;
   border-collapse: collapse;
+  table-layout: fixed;
 }
 
-.tableHeadRow {
-  border-top: 2px solid currentColor;
-  border-bottom: 1px solid currentColor;
+.orderDescriptionRow {
+  display: flex;
+  gap: 5px;
+  align-items: baseline;
+  padding: 10px 0 12px;
+}
+.orderText {
+  font-weight: 900;
 }
 
-.tableHeadRow th {
-  padding: 8px 4px;
-  font-size: 8.5px;
+.orderDescLabel {
+  font-size: 11px;
+  color: #0a0a0a;
+}
+
+.colSn    { width: 24px; }
+.colDesc  { width: auto; }
+.colQty   { width: 12%; }
+.colPrice { width: 22%; }
+.colTotal { width: 22%; }
+
+.tableHeader {
+  background: var(--brand-surface);
+  border-bottom: 1.5px solid var(--brand-primary);
+}
+
+.tableHeader th {
+  padding: 5px 4px;
+  font-size: 10px;
   font-weight: 700;
-  text-transform: uppercase;
-  background: none;
+  color: var(--brand-primary-dark);
 }
 
-.thDesc  { text-align: left;width: 42%; }
-.thQty   { text-align: center; border-left: 1px solid;width: 10%; }
-.thPrice { text-align: center; border-left: 1px solid;width: 23%; }
-.thTotal { text-align: center; border-left: 1px solid;width: 25%;  }
+.tableRow {
+  border-bottom: 1px dashed #ebebeb;
+}
 
 .tableRow td {
-  padding: 8px 4px;
+  padding: 6px 4px;
   font-size: 10px;
-  color: #2a2a2a;
 }
 
 
-.tdDesc  { 
-  text-align: left; 
-  font-weight: 600; 
-  word-break: break-word;
-  width: 42%; 
-}
-.tdQty   { 
-  text-align: center; 
-  border-left: 1px solid; 
-  width: 10%; 
-}
-.tdPrice { 
-  text-align: center; 
-  border-left: 1px solid;  
-  font-variant-numeric: tabular-nums; 
-  font-feature-settings: "tnum"; 
-  width: 23%;
-}
-.tdTotal { 
-  text-align: center; 
-  border-left: 1px solid;  
-  font-variant-numeric: tabular-nums; 
-  font-feature-settings: "tnum"; 
-  width: 25%;
+th.colSn,    td.colSn    { text-align: left; }
+th.colDesc,  td.colDesc  { 
+   text-align: left; 
+   word-break: break-word; 
 }
 
-.tableFooterRule {
-  padding: 0;
-  height: 2px;
-  border-top: 2px solid currentColor;
+th.colQty, td.colQty {
+  text-align: center;
+  padding-left: 6px;   
+  padding-right: 6px;  
 }
 
-.breakdownBlock {
-  width: 100%;
-  padding: 8px 0 4px;
-  border-bottom: 1px solid #f0f0f0;
+th.colPrice, td.colPrice {
+  text-align: center;
+  padding-right: 8px;  
+}
+th.colTotal, td.colTotal { 
+   text-align: center; 
 }
 
-.breakdownRow {
+.tableBody {
+  padding: 5px 0;
+}
+
+
+.bottom { 
+   margin-top: auto;
+   display: flex; 
+   justify-content: space-between;
+   gap: 7px; 
+   padding: 8px 16px 14px; 
+}
+
+.box { 
+   background: var(--brand-gradient); 
+   color: var(--brand-on-primary); 
+   padding: 9px 10px; 
+   border-radius: 3px; 
+   width: 105px;
+   flex-shrink: 0;
+   font-size: 8.5px;
+   word-break: break-word;
+   overflow-wrap: break-word;
+}
+.boxTitle { 
+   font-weight: 700; 
+   font-size: 9px; 
+   margin-bottom: 2px; 
+}
+.boxName { 
+   font-weight: 700; 
+   font-size: 10px; 
+}
+.boxAddr {
+  font-size: 8.5px;
+}
+.paymentInfo { 
+   font-size: 9px; 
+}
+.paymentLabel { 
+   font-weight: 700; 
+   font-size: 10px; 
+   margin-bottom: 2px; 
+   color: var(--brand-primary); 
+}
+
+/* ── Invoice summary block — 55% right-aligned (matches Template 3) ── */
+.summaryBlock {
+  margin-left: auto;
+  width: 55%;
+  padding-top: 10px;
+  margin-top: 14px;
+}
+
+.summaryRow {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  column-gap: 12px;
   padding: 3px 0;
 }
 
-.breakdownKey {
-  font-size: 9.5px;
+.summaryKey {
+  font-size: 9px;
   color: #6b7280;
-  font-weight: 500;
 }
 
-.breakdownVal {
-  font-size: 9.5px;
+.summaryVal {
+  font-size: 9px;
   font-weight: 500;
-  color: #2a2a2a;
+  color: #1a1a1a;
   font-variant-numeric: tabular-nums;
   font-feature-settings: "tnum";
 }
 
-.breakdownKeyDiscount { color: #15803d; }
-.breakdownValDiscount { color: #15803d; font-weight: 700; }
+.summaryKeyDiscount {
+  color: #15803d;
+}
 
-.orderTotalWrap {
+.summaryValDiscount {
+  color: #15803d;
+  font-weight: 700;
+}
+
+.summaryDivider {
+  height: 1.5px;
+  background: var(--brand-primary-dark, #a07d20);
+  margin: 5px 0;
+}
+
+.summaryTotalRow {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 7px 0 2px;
-  border-top: 1px solid var(--brand-primary);
+  column-gap: 12px;
+  padding: 4px 0;
 }
 
-.orderTotalLabel,.grandTotalLabel {
-  font-size: 11px;
-  font-weight: 800;
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
-  color: var(--brand-primary-dark);
+.summaryTotalKey {
+  font-size: 10px;
+  font-weight: 900;
+  color: var(--brand-primary-dark, #a07d20);
+  letter-spacing: 0.03em;
 }
 
-
-.orderTotalValue {
-  font-size: 11px;
+.summaryTotalVal {
+  font-size: 10px;
   font-weight: 900;
   color: #1a1a1a;
   font-variant-numeric: tabular-nums;
   font-feature-settings: "tnum";
 }
 
+/* ── Receipt payment history ── */
 .historySection {
-  margin: 14px 0 10px;
+  padding-top: 10px;
 }
 
-.historyHeading {
-  font-size: 8.5px;
-  font-weight: 700;
+.sectionLabel {
+  font-size: 8px;
+  font-weight: 800;
+  letter-spacing: 0.14em;
   text-transform: uppercase;
-  letter-spacing: 1px;
-  padding-bottom: 5px;
-  margin-bottom: 6px;
+  margin-bottom: 8px;
 }
 
-.historyRow {
+.paymentRow {
   display: flex;
   align-items: center;
   gap: 8px;
   padding: 7px 0;
 }
 
-.historyRow:last-of-type {
-  border-bottom: none;
+.paymentRow:last-of-type {
+  border-bottom: 1px solid var(--brand-primary-dark);
 }
 
 .emoji {
@@ -325,16 +311,6 @@
   font-variant-numeric: tabular-nums;
 }
 
-.historyAmount {
-  font-size: 10px;
-  font-weight: 600;
-  color: #1a1a1a;
-  font-variant-numeric: tabular-nums;
-  font-feature-settings: "tnum";
-  white-space: nowrap;
-  flex-shrink: 0;
-}
-
 .amountCurrent {
   color: #16a34a;
   font-weight: 700;
@@ -352,179 +328,196 @@
   line-height: 1;
 }
 
-.totalsSection {
-  display: flex;
-  justify-content: flex-end;
-  margin-top: 14px;
-}
-
-.totalsBlock {
-  display: flex;
-  flex-direction: column;
-  gap: 0;
-  width: 55%;
+.paymentAmount {
+  font-size: 10px;
+  font-weight: 600;
+  color: #1a1a1a;
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum";
+  white-space: nowrap;
+  flex-shrink: 0;
 }
 
 .totalsRow {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 5px 0;
+  column-gap: 12px;
+  padding: 4px 0;
+  margin-left: auto;
 }
 
-.tLabel {
+.totalsKey {
   font-size: 9px;
-  font-weight: 700;
+  color: #6b7280;
 }
 
-.tVal {
-  font-size: 10px;
-  color: #2a2a2a;
+.totalsVal {
+  font-size: 9px;
+  font-weight: 500;
+  color: #1a1a1a;
   font-variant-numeric: tabular-nums;
   font-feature-settings: "tnum";
 }
 
-.tValDiscount {
-  color: #15803d;
-  font-weight: 700;
-}
-
-.tValPaid {
+.amountPaid {
   color: #16a34a;
   font-weight: 700;
+  font-size: 10px;
+  font-variant-numeric: tabular-nums;
 }
 
-.totalDueRow {
+.totalsDivider {
+  margin: 8px 0;
+}
+
+.totalPaidRow {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 9px 0px;
-  margin-top: 6px;
-  border-top: 2px solid var(--brand-primary);
-
+  column-gap: 12px;
+  padding: 4px 0 10px;
 }
 
-.tdLabel {
+.totalPaidKey {
   font-size: 9px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 1.2px;
+  font-weight: 900;
+  color: #1a1a1a;
+  letter-spacing: 0.02em;
 }
 
-.tdVal {
-  font-size: 12px;
-  font-weight: 700;
+.totalPaidVal {
+  font-size: 10px;
+  font-weight: 900;
+  color: #1a1a1a;
   font-variant-numeric: tabular-nums;
   font-feature-settings: "tnum";
 }
 
-.balanceRow {
+.balanceCallout,
+.paidCallout {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 5px 0 0;
+  column-gap: 12px;
+  padding: 4px 0;
 }
 
 .balanceLabel {
-  font-size: 8.5px;
+  font-size: 10px;
   font-weight: 900;
-  color: #dc2626;
+  color: red;
   text-transform: uppercase;
-  letter-spacing: 0.6px;
 }
 
-.balanceVal {
-  font-size: 11px;
+.balanceAmount {
+  font-size: 13px;
   font-weight: 900;
-  color: #dc2626;
+  color: red;
   font-variant-numeric: tabular-nums;
   font-feature-settings: "tnum";
-}
-
-.paidRow {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 5px 0 0;
+  white-space: nowrap;
 }
 
 .paidLabel {
   font-size: 8.5px;
-  font-weight: 900;
+  font-weight: 800;
   color: #16a34a;
+  letter-spacing: 0.01em;
   text-transform: uppercase;
-  letter-spacing: 0.6px;
 }
 
-.paidVal {
+.paidAmount {
+  color: #16a34a;
+  font-size: 10px;
+  font-weight: 900;
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum";
+  white-space: nowrap;
+}
+
+/* ── Thank you footer ── */
+.thankYouFooter {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px 12px;
+  text-transform: uppercase;
+  font-style: italic;
+}
+.thankYouLine {
+  flex: 1;
+  height: 1px;
+  background: var(--brand-muted);
+}
+.thankYouText {
+  font-size: 9px;
+  font-weight: 700;
+  color: var(--brand-primary);
+  white-space: nowrap;
+}
+
+/* ── Receipt order total summary ── */
+.orderTotalLabel {
+  font-size: 11px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--brand-primary-dark);
+}
+.orderTotalValue {
   font-size: 11px;
   font-weight: 900;
-  color: #16a34a;
+  color: #1a1a1a;
   font-variant-numeric: tabular-nums;
   font-feature-settings: "tnum";
 }
 
-.footer {
+.summarySection {
+  width: 100%;
+  margin-top: 0;
+}
+
+.breakdownBlock {
+  width: 100%;
+  padding: 8px 0 4px;
+  border-bottom: 1px solid var(--brand-primary-dark);
+  margin-bottom: 0;
+}
+
+.breakdownRow {
   display: flex;
   justify-content: space-between;
-  gap: 30px;
-  font-size: 10px;
-  line-height: 1.5;
-  margin-top: 18px;
-}
-
-.footerItem {
-  min-width: 0;
-  flex: 1;
-}
-
-.footerHeading {
-  font-size: 8px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 1.2px;
-  margin-bottom: 6px;
-  color: var(--brand-primary-dark);
-}
-
-.footerLabel {
-  font-weight: 900;
-  font-size: 9px;
-  margin-bottom: 2px;
-}
-
-.brandName{
-  font-weight: 600;
-  font-size: 9px;
-  margin-bottom: 2px;
-  text-transform: uppercase;
-}
-
-.iconRow {
-  display: flex;
-  align-items: flex-start;
-  gap: 5px;
-  font-size: 9px;
-  color: #444;
-  line-height: 1.5;
-  margin-top: 2px;
-}
-
-.icon {
-  flex-shrink: 0;
-  width: 10px;
-  height: 10px;
-  margin-top: 1px;
-  display: flex;
   align-items: center;
+  padding: 3px 0;
 }
 
-.icon svg {
-  width: 10px;
-  height: 10px;
-  opacity: 0.6;
-  fill: none;
-  stroke-width: 1.5;
-  stroke-linecap: round;
-  stroke-linejoin: round;
+.breakdownKey {
+  font-size: 9.5px;
+  color: #6b7280;
+  font-weight: 500;
+}
+
+.breakdownVal {
+  font-size: 9.5px;
+  font-weight: 500;
+  color: #1a1a1a;
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum";
+}
+
+.breakdownKeyDiscount {
+  color: #15803d;
+}
+
+.breakdownValDiscount {
+  color: #15803d;
+  font-weight: 700;
+}
+
+.orderTotalWrap {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 7px 0;
 }

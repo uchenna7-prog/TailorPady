@@ -4,193 +4,204 @@
   font-family: "Manrope", sans-serif;
   font-size: 10px;
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
+  padding: 0;
   position: relative;
   min-height: 565px;
-  overflow: hidden;
 }
 
-.sidebar {
-  width: 36px;
-  flex-shrink: 0;
+.topShapeWrap {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 22%;
+  height: auto;
+  z-index: 0;
+  line-height: 0;
+  font-size: 0;
+}
+
+.bottomShapeRow {
   display: flex;
-  flex-direction: column;
+  align-items: stretch;
+  flex-shrink: 0;
+  position: relative;
+  z-index: 0;
+  min-height: 50px;
+}
+
+.bottomShapeSvgWrap {
+  flex: 0 0 38%;
+  line-height: 0;
+  font-size: 0;
+}
+
+.bottomShapeSvgWrap svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.bottomShapeNote {
+  flex: 1;
+  display: flex;
   align-items: center;
   justify-content: flex-end;
-  padding-bottom: 16px;
-  border-right: 1px solid var(--brand-primary-dark);
-  position: relative;
-}
-
-.sidebarTitle {
-  position: absolute;
-  bottom: 77px;
-  left: 50%;
-  transform: translateX(-50%) rotate(-90deg);
-  transform-origin: center center;
-  font-size: 26px;
-  font-weight: 900;
-  letter-spacing: 0.04em;
-  line-height: 1;
+  padding: 8px 14px 8px 6px;
+  font-size: 8px;
+  font-weight: 700;
+  font-style: italic;
   text-transform: uppercase;
-  white-space: nowrap;
-  color: var(--brand-primary-dark);
+  letter-spacing: 0.08em;
+  color: #888;
+  text-align: right;
+  line-height: 1.5;
+  word-break: break-word;
 }
 
-.main {
-  flex: 1;
-  min-width: 0;
+.content {
+  position: relative;
+  z-index: 2;
   display: flex;
   flex-direction: column;
-}
-
-.topSection {
-  display: flex;
-  flex-direction: column;
-  padding: 20px 14px 12px;
-  border-bottom: 1px solid #efefef;
-  gap: 10px;
-}
-
-.headerRow {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  gap: 12px;
+  flex: 1 0 auto;
+  padding: 0 16px;
 }
 
 .logoBlock {
+  margin-top: 30px;
+  margin-bottom: 22px;
+  padding-right: 26%;
   display: flex;
-  flex-direction: row;
   align-items: center;
-  gap: 8px;
-  flex-shrink: 0;
-  margin-bottom: 25px;
-  flex: 1;
+  gap: 10px;
 }
 
-.brandTextBlock {
+
+
+
+.logoText {
   display: flex;
   flex-direction: column;
-  gap: 2px;
 }
 
 .brandName {
-  font-size: 9px;
-  font-weight: 800;
+  font-size: 11px;
   text-transform: uppercase;
-  letter-spacing: 0.12em;
-  color: #1a1a1a;
-  margin-top: 2px;
+  font-weight: 900;
+  line-height: 1.1;
 }
 
 .brandTagline {
-  font-size: 8px;
+  margin-top: 2px;
+  font-size: 9px;
   color: #999;
   font-weight: 400;
-  letter-spacing: 0.06em;
 }
 
-.metaBlock {
+.topInfo {
   display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  gap: 2px;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.billBlock {
   flex: 1;
+  min-width: 0;
 }
 
-.invoiceMetaLine {
+.billLabel {
+  font-size: 10px;
+  color: #888;
+  margin-bottom: 3px;
+}
+
+.billName {
+  font-size: 13px;
+  font-weight: 800;
+  color: #222;
+  margin-bottom: 2px;
+}
+
+.billDetails {
+  font-size: 9px;
+  line-height: 1.75;
+  color: #666;
+  word-break: break-word;
+}
+
+.invoiceMeta {
+  flex-shrink: 0;
+  text-align: left;
+  padding-right: 2px;
+  min-width: 110px;
+}
+
+.invoiceTitle {
+  font-size: 20px;
+  font-weight: 900;
+  margin-bottom: 6px;
+  letter-spacing: 0.03em;
+}
+
+.metaLine {
   display: flex;
-  gap: 5px;
-  font-size: 8.8px;
-  line-height: 1.6;
+  align-items: baseline;
+  font-size: 9px;
+  gap: 4px;
+  line-height: 1.85;
 }
 
 .metaKey {
-  font-weight: 700;
+  color: #888;
 }
 
 .metaVal {
-  font-size: 8.8px;
+  font-weight: 600;
+  color: #222;
 }
 
-.clientRow {
-  width: 100%;
-}
-
-.clientBlock {
+.orderDescRow {
   display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-}
-
-.clientName {
-  font-size: 9px;
-  font-weight: 700;
-  color: #1a1a1a;
-  margin-bottom: 2px;
-  margin-top: 3px;
-}
-
-.clientDetail {
-  display: flex;
-  flex-direction: column;
-  gap: 1px;
-}
-
-.iconRow {
-  display: flex;
-  align-items: flex-start;
-  gap: 5px;
-  font-size: 9px;
-  color: inherit;
-  line-height: 1.5;
-  margin-top: 2px;
-}
-
-.icon {
-  flex-shrink: 0;
-  width: 10px;
-  height: 10px;
-  margin-top: 1px;
-  display: flex;
-  align-items: center;
-  color: inherit;
-}
-
-.icon svg {
-  width: 10px;
-  height: 10px;
-  stroke: currentColor;
-  fill: none;
-  stroke-width: 1.5;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-  opacity: 0.55;
-}
-
-.orderDescriptionRow {
-  display: flex;
-  gap: 5px;
   align-items: baseline;
-  padding: 10px 5px 12px;
+  gap: 5px;
+  margin-bottom: 6px;
+  font-size: 9px;
 }
 
-.tableSection {
-  padding: 10px 14px 0;
+.orderLabel {
+  font-weight: 900;
+  color: #1a1a1a;
+}
+
+.orderDesc {
+  color: #444;
+}
+
+.tableWrap {
+  position: relative;
+  width: 100%;
+  margin-bottom: 0;
+}
+
+.table {
   width: 100%;
   border-collapse: collapse;
   table-layout: auto;
 }
 
-.tableHeader {
-  padding: 0 0 6px;
-  border-bottom: 1.5px solid var(--brand-primary-dark);
-  margin-bottom: 4px;
+.tableHeadRow {
+  position: relative;
+  height: 30px;
 }
 
-.tableHeader th {
-  color: var(--brand-primary-dark);
+.tableHeadRow th {
+  position: relative;
+  z-index: 1;
+  padding: 0 6px;
+  color: var(--brand-on-primary);
   font-size: 8.5px;
   font-weight: 700;
   text-transform: uppercase;
@@ -200,117 +211,122 @@
   white-space: nowrap;
 }
 
-.thDesc  { text-align: left; width: 42%; padding-left: 5px; }
-.thQty   { text-align: center; width: 10%; }
-.thRate  { text-align: center; width: 23%; }
-.thTotal { text-align: center; width: 25%; }
-
-.tableBody {
-  width: 100%;
-}
-
-.tableRow {
-  padding: 6px 0;
-  border-bottom: 1px solid #efefef;
-}
-
 .tableRow td {
-  padding: 6px 4px;
-  font-size: 10px;
+  padding: 6px 6px;
+  border-bottom: 1px dashed #ebebeb;
+  color: #555;
+  font-size: 9px;
+  vertical-align: middle;
+  overflow-wrap: break-word;
+  word-break: break-word;
 }
 
-.tdItemName {
-  padding-left: 5px;
-  font-size: 8.5px;
-  font-weight: 800;
-  color: #1a1a1a;
-  width: 42%;
+.colSn    { text-align: left;   white-space: nowrap; }
+.colDesc  { text-align: center; word-break: break-word; white-space: normal; min-width: 80px; }
+.colPrice { text-align: center; white-space: nowrap; }
+.colQty   { text-align: center; white-space: nowrap; }
+.colTotal { text-align: center; white-space: nowrap; }
+
+.colSn    { width: 6%; }
+.colDesc  { width: 40%; }
+.colPrice { width: 20%; }
+.colQty   { width: 10%; }
+.colTotal { width: 22%; }
+
+th.colSn { 
+  text-align: left;   
+  width: 6%;  
+  top: 10px; 
 }
 
-.tdQty {
-  text-align: center;
-  font-size: 8.5px;
-  color: #333;
-  padding-top: 1px;
-  width: 10%;
+th.colDesc  { 
+  text-align: center; 
+  width: 40%; 
+  left: 6%;  
+  top: 10px; 
 }
 
-.tdRate {
-  text-align: center;
-  font-size: 8.5px;
-  color: #333;
-  padding-top: 1px;
-  width: 23%;
+th.colPrice { 
+  text-align: center; 
+  width: 20%; 
+  left: 46%; 
+  top: 10px;
+  color: var(--brand-primary); 
 }
 
-.tdTotal {
-  text-align: center;
-  font-size: 8.5px;
-  font-weight: 700;
-  color: #1a1a1a;
-  padding-top: 1px;
-  font-variant-numeric: tabular-nums;
-  width: 25%;
+th.colQty   { 
+  text-align: center; 
+  width: 10%; 
+  left: 66%; 
+  top: 10px;
+  color: var(--brand-primary);
 }
 
-.totalsSection {
-  padding: 10px 5px 5px;
+th.colTotal { 
+  text-align: center; 
+  width: 22%; 
+  left: 76%; 
+  top: 10px;
+  color: var(--brand-primary); 
+}
+
+.breakdownSection {
+  padding: 10px 0 0;
+}
+
+.breakdownRow {
   display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  gap: 0;
-  border-top: 1px solid var(--brand-primary-dark);
+  justify-content: space-between;
+  align-items: center;
+  padding: 2px 0;
+}
+
+.breakdownKey {
+  font-size: 9.5px;
+  color: #6b7280;
+}
+
+.breakdownVal {
+  font-size: 9.5px;
+  font-weight: 500;
+  color: #1a1a1a;
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum";
+}
+
+
+.discountVal { 
+  color: #15803d !important; 
+  font-weight: 700; 
+
+}
+
+.orderTotalRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 5px 0 3px;
+  border-top: 1px solid #d1d5db;
   margin-top: 4px;
 }
 
-.totalsRow {
+.orderTotalRowStandalone {
   display: flex;
-  align-items: baseline;
-  padding: 5px 0;
-  padding-right: 10px;
-  width: 100%;
   justify-content: space-between;
+  align-items: center;
+  padding: 5px 0 4px;
+  border-top: 1px solid #e5e5e5;
 }
 
-.totalsKey {
-  font-size: 8.5px;
-  color: #555;
-}
-
-.totalsVal {
-  font-size: 9px;
-  font-weight: 600;
-  color: #1a1a1a;
-  min-width: 52px;
-  text-align: right;
-  font-variant-numeric: tabular-nums;
-  font-feature-settings: "tnum";
-}
-
-.discountVal {
-  color: #15803d;
-}
-
-.grandTotalRow {
-  display: flex;
-  align-items: baseline;
-  padding: 5px 10px 2px;
-  border-top: 1px solid var(--brand-primary-dark);
-  margin-top: 3px;
-  width: 100%;
-  justify-content: space-between;
-  padding-left: 0;
-}
-
-.grandTotalKey {
-  font-size: 9.5px;
-  font-weight: 900;
-  color: #1a1a1a;
+.orderTotalKey {
+  font-size: 10px;
+  font-weight: 800;
   text-transform: uppercase;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.06em;
+  color: #1a1a1a;
 }
 
-.grandTotalVal {
+.orderTotalVal {
   font-size: 10px;
   font-weight: 900;
   color: #1a1a1a;
@@ -318,73 +334,69 @@
   font-feature-settings: "tnum";
 }
 
-.dueDateRow {
-  padding: 6px 14px 2px;
-  text-align: right;
-  font-size: 8.5px;
-  color: #888;
-  line-height: 1.6;
-}
-
 .historySection {
-  padding: 10px 5px 0;
+  padding: 8px 0 0;
 }
 
 .historySectionLabel {
-  font-size: 9px;
+  font-size: 8px;
   font-weight: 800;
   letter-spacing: 0.12em;
   text-transform: uppercase;
   margin-bottom: 5px;
-  color: var(--brand-primary-dark);
 }
 
-.historyRow {
+.paymentHistoryRow {
   display: flex;
   align-items: center;
+  gap: 6px;
   padding: 5px 0;
-  padding-right: 10px;
-  border-bottom: 1px solid #efefef;
+  border-bottom: 1px dashed #ebebeb;
 }
 
-.historyEmoji {
-  font-size: 12px;
+.paymentHistoryRow:last-of-type {
+  border-bottom: 1px solid #d1d5db;
+}
+
+.paymentMethodIcon {
+  font-size: 13px;
   line-height: 1;
   flex-shrink: 0;
-  width: 18px;
+  width: 20px;
   text-align: center;
 }
 
-.historyMeta {
+.paymentHistoryMeta {
   flex: 1;
   min-width: 0;
 }
 
-.historyMethod {
-  font-size: 8.5px;
+.paymentHistoryMethod {
+  font-size: 9px;
   font-weight: 600;
   display: flex;
   align-items: center;
   gap: 4px;
 }
 
-.historyDate {
+.paymentHistoryDate {
   font-size: 8px;
-  color: #aaa;
+  color: #a8a8a8;
   margin-top: 1px;
   font-variant-numeric: tabular-nums;
 }
 
-.historyAmount {
+.paymentHistoryAmount {
   font-size: 9px;
   font-weight: 600;
   color: #1a1a1a;
   font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum";
   white-space: nowrap;
   flex-shrink: 0;
 }
 
-.historyAmountCurrent {
+.amountCurrent {
   color: #16a34a;
   font-weight: 700;
 }
@@ -401,157 +413,251 @@
   line-height: 1;
 }
 
-.paidSummarySection {
-  padding: 4px 14px 0;
+.bottomArea {
   display: flex;
-  flex-direction: column;
-  margin-top: 6px;
-  width: 55%;
-  margin-left: auto;
-}
-
-.paidSummarySection > div {
-  display: flex;
-  align-items: baseline;
   justify-content: space-between;
-  padding: 3px 0;
-  width: 100%;
+  gap: 20px;
+  margin-top: 14px;
 }
 
-.totalPaidRow {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  padding: 4px 0;
-  width: 100%;
-  border-top: 1.5px solid var(--brand-primary-dark);
-  margin-top: 2px;
-}
-
-.totalPaidKey {
+.paymentBlock {
+  flex: 1;
+  min-width: 0;
   font-size: 9px;
+  line-height: 1.7;
+  padding-bottom: 16px;
+}
+
+.paymentHeading {
   font-weight: 700;
-  color: #1a1a1a;
+  font-size: 9px;
   text-transform: uppercase;
-  letter-spacing: 0.04em;
+  margin-top: 10px;
+  margin-bottom: 8px;
 }
 
-.totalPaidVal {
+.paymentDetails {
+  color: #555;
   font-size: 9px;
-  font-weight: 700;
+  line-height: 1.75;
+}
+
+.totalsBlock {
+  flex-shrink: 0;
+  min-width: 155px;
+  padding-bottom: 16px;
+}
+
+.totalsRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  padding: 3px 0;
+}
+
+.totalsKey {
+  font-size: 9px;
+  color: #6b7280;
+}
+
+.totalsVal {
+  font-size: 9px;
+  font-weight: 500;
   color: #1a1a1a;
   font-variant-numeric: tabular-nums;
   font-feature-settings: "tnum";
 }
 
-.balanceCallout {
-  display: flex;
-  align-items: baseline;
-  gap: 20px;
-  padding: 3px 0;
-  width: 100%;
-  justify-content: flex-end;
+.amountPaid {
+  color: #16a34a;
+  font-weight: 700;
 }
 
-.balanceKey {
-  font-size: 9px;
+.grandTotalBox {
+  position: relative;
+  height: 34px;
+  margin-top: 10px;
+  margin-bottom: 6px;
+  overflow: hidden;
+}
+
+.grandTotalSvg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.grandTotalContent {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 10px;
+}
+
+.grandTotalLabel {
+  color: var(--brand-primary);
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  padding-top: 5px;
+}
+
+.grandTotalVal {
+  font-size: 11px;
+  font-weight: 900;
+  color: var(--brand-on-primary);
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum";
+  white-space: nowrap;
+}
+
+.balanceCallout {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 0 0;
+}
+
+.balanceLabel {
+  font-size: 8.5px;
   font-weight: 900;
   color: #dc2626;
   text-transform: uppercase;
   letter-spacing: 0.04em;
 }
 
-.balanceVal {
-  font-size: 10px;
+.balanceAmount {
+  font-size: 11px;
   font-weight: 900;
   color: #dc2626;
-  padding-right: 10px;
   font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum";
+  white-space: nowrap;
 }
 
 .paidCallout {
   display: flex;
-  align-items: baseline;
-  gap: 20px;
-  padding: 3px 0;
-  width: 100%;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 0 0;
 }
 
-.paidKey {
-  font-size: 9px;
+.paidLabel {
+  font-size: 8.5px;
   font-weight: 900;
   color: #16a34a;
   text-transform: uppercase;
   letter-spacing: 0.04em;
 }
 
-.paidVal {
+.paidAmount {
   font-size: 10px;
   font-weight: 900;
   color: #16a34a;
   font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum";
+  white-space: nowrap;
 }
 
-.footer {
-  margin-top: auto;
+.contactStrip {
   display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  gap: 30px;
-  padding: 12px 16px 16px;
-  padding-left: 5px;
-  border-top: 1px solid var(--brand-primary-dark);
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 14px;
+  padding: 10px 0 12px;
+  border-top: 1px solid #e5e5e5;
 }
 
-.footerLeft {
-  flex: 1;
+.contactStripItem {
+  display: flex;
+  align-items: center;
+  gap: 5px;
   font-size: 8.5px;
   color: #555;
-  line-height: 1.8;
+  min-width: 0;
+  overflow: hidden;
 }
 
-.footerBrand {
-  font-weight: 600;
-  font-size: 9px;
-  margin-bottom: 4px;
-  text-transform: uppercase;
+.contactStripIcon {
+  display: inline-flex;
+  align-items: center;
+  flex-shrink: 0;
+  width: 9px;
+  height: 9px;
+  opacity: 0.55;
 }
 
-.footerRight {
+.contactStripIcon svg {
+  width: 100%;
+  height: 100%;
+}
+
+.contactStripText {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  min-width: 0;
+}
+
+.billDetailLine {
   display: flex;
-  flex: 1;
-  flex-direction: column;
-  font-size: 8.5px;
-  color: #555;
-  line-height: 1.8;
+  align-items: center;
+  gap: 5px;
+  line-height: 1.75;
 }
 
-.footerPayLabel {
-  font-size: 8.5px;
-  font-weight: 800;
-  color: #1a1a1a;
-  margin-bottom: 2px;
-  color: var(--brand-primary-dark);
-  text-transform: uppercase;
+
+.billDetailIcon {
+  display: inline-flex;
+  align-items: flex-end;
+  flex-shrink: 0;
+  width: 9px;
+  height: 9px;
+  opacity: 0.6;
 }
+
+.billDetailIconAddress {
+  display: inline-flex;
+  align-items: center;
+  align-self: flex-start;
+  flex-shrink: 0;
+  padding-top: 5px;
+  width: 9px;
+  height: 9px;
+  opacity: 0.6;
+}
+
+.billDetailIcon svg {
+  width: 100%;
+  height: 100%;
+}
+
 
 .termsSection {
-  padding: 14px 14px 6px;
-  margin-top: 2px;
-  padding-left: 5px;
+  margin-top: 16px;
+  padding-bottom: 4px;
 }
 
 .termsSectionLabel {
   font-size: 8px;
-  font-weight: 800;
+  font-weight: 900;
   letter-spacing: 0.18em;
   text-transform: uppercase;
-  color: var(--brand-primary-dark);
+  color: var(--brand-primary);
   margin-bottom: 6px;
   display: flex;
   align-items: center;
   gap: 6px;
 }
+
 
 .termsList {
   list-style: none;
@@ -575,7 +681,7 @@
   position: absolute;
   left: 0;
   font-size: 5px;
-  color: var(--brand-primary-dark);
+  color: var(--brand-primary);
   top: 3px;
   opacity: 0.7;
 }

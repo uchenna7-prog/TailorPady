@@ -112,7 +112,7 @@ export function InlinePaymentForm({ order, onSave, saving }) {
       >
         {saving
           ? <><div className={styles.inlineSpinner} />Saving…</>
-          : <><span className="mi" style={{ fontSize: '1.1rem' }}>payments</span>Record Payment</>
+          : <><span className="mi" style={{ fontSize: '1.1rem',textTransform: "lowercase" }}>payments</span>Record Payment</>
         }
       </button>
     </div>

@@ -15,15 +15,17 @@ import blouseBelowBust from '../../assets/femaleBodyMeasurementImages/blouseBelo
 import armHole from '../../assets/femaleBodyMeasurementImages/armHole.jpg'
 import biceps from '../../assets/femaleBodyMeasurementImages/biceps.jpg'
 import armLength from '../../assets/femaleBodyMeasurementImages/armLength.jpg'
-import elbowLength from '../../assets/femaleBodyMeasurementImages/elbowLength.jpg'
-import sleeveLengthHalf from '../../assets/femaleBodyMeasurementImages/sleeveLengthHalf.jpg'
-import capSleeve from '../../assets/femaleBodyMeasurementImages/capSleeve.jpg'
-import capSleeveCircular from '../../assets/femaleBodyMeasurementImages/capSleeveCircular.jpg'
-import elbowCircular from '../../assets/femaleBodyMeasurementImages/elbowCircular.jpg'
-import threeFourthSleeveLength from '../../assets/femaleBodyMeasurementImages/threeFourthSleeveLength.jpg'
-import threeFourthSleeveLengthCircular from '../../assets/femaleBodyMeasurementImages/threeFourthSleeveLengthCircular.jpg'
 import fullSleeveLength from '../../assets/femaleBodyMeasurementImages/fullSleeveLength.jpg'
 import fullSleeveLengthCircular from '../../assets/femaleBodyMeasurementImages/fullSleeveLengthCircular.jpg'
+import sleeveLengthHalf from '../../assets/femaleBodyMeasurementImages/sleeveLengthHalf.jpg'
+import threeFourthSleeveLength from '../../assets/femaleBodyMeasurementImages/threeFourthSleeveLength.jpg'
+import threeFourthSleeveLengthCircular from '../../assets/femaleBodyMeasurementImages/threeFourthSleeveLengthCircular.jpg'
+import elbowLength from '../../assets/femaleBodyMeasurementImages/elbowLength.jpg'
+import elbowCircular from '../../assets/femaleBodyMeasurementImages/elbowCircular.jpg'
+import shortSleeveLength from "../../assets/femaleBodyMeasurementImages/shortSleeveLength.jpg"
+import shortSleeveLengthCircular from "../../assets/femaleBodyMeasurementImages/shortSleeveLengthCircular.jpg"
+import capSleeve from '../../assets/femaleBodyMeasurementImages/capSleeve.jpg'
+import capSleeveCircular from '../../assets/femaleBodyMeasurementImages/capSleeveCircular.jpg'
 import wrist from '../../assets/femaleBodyMeasurementImages/wrist.jpg'
 import stomach from '../../assets/femaleBodyMeasurementImages/stomach.jpg'
 import waist from '../../assets/femaleBodyMeasurementImages/waist.jpg'
@@ -51,12 +53,12 @@ export const FEMALE_BODY_MEASUREMENTS = [
   'Shoulder', 'Half Shoulder', 'Front Shoulder', 'Back Shoulder',
   'Shoulder To Apex', 'Apex To Apex',
   'Upper Chest', 'Bust', 'Chest', 'Blouse Chest', 'Blouse Below Bust',
-  'Arm Hole', 'Biceps', 'Arm Length',
-  'Elbow Length', 'Sleeve Length Half',
-  'Cap Sleeve', 'Cap Sleeve Circular',
-  'Elbow Circular',
+  'Arm Hole', 'Biceps', 'Arm Length','Full Sleeve Length', 
+  'Full Sleeve Length Circular','Sleeve Length Half',
   'Three Fourth Sleeve Length', 'Three Fourth Sleeve Length Circular',
-  'Full Sleeve Length', 'Full Sleeve Length Circular',
+  'Elbow Length', 'Elbow Circular',
+  "Short Sleeve Length","Short Sleeve Length Circular",
+  'Cap Sleeve', 'Cap Sleeve Circular',
   'Wrist',
   // Mid body
   'Stomach', 'Waist',
@@ -88,15 +90,20 @@ export const FEMALE_BODY_MEASUREMENT_IMAGES = {
   'Arm Hole': armHole,
   'Biceps': biceps,
   'Arm Length': armLength,
-  'Elbow Length': elbowLength,
-  'Sleeve Length Half': sleeveLengthHalf,
-  'Cap Sleeve': capSleeve,
-  'Cap Sleeve Circular': capSleeveCircular,
-  'Elbow Circular': elbowCircular,
-  'Three Fourth Sleeve Length': threeFourthSleeveLength,
-  'Three Fourth Sleeve Length Circular': threeFourthSleeveLengthCircular,
   'Full Sleeve Length': fullSleeveLength,
   'Full Sleeve Length Circular': fullSleeveLengthCircular,
+  'Sleeve Length Half': sleeveLengthHalf,
+  'Three Fourth Sleeve Length': threeFourthSleeveLength,
+  'Three Fourth Sleeve Length Circular': threeFourthSleeveLengthCircular,
+  'Elbow Length': elbowLength,
+  'Elbow Circular': elbowCircular,
+  "Short Sleeve Length": shortSleeveLength,
+  "Short Sleeve Length Circular": shortSleeveLengthCircular,
+  'Cap Sleeve': capSleeve,
+  'Cap Sleeve Circular': capSleeveCircular,
+
+
+
   'Wrist': wrist,
   // Mid body
   'Stomach': stomach,

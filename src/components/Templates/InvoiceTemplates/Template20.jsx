@@ -5,17 +5,17 @@ import { PhoneIcon, EmailIcon, LocationIcon, WebsiteIcon } from "../components/i
 
 
 export function InvoiceTemplate20({ invoice, customer, invoiceBrandSettings }) {
-  const dueDate    = getDueDate(invoice, invoiceBrandSettings.dueDays)
+  const dueDate = getDueDate(invoice, invoiceBrandSettings.dueDays)
   const { currency, showTax, invoiceTaxRate: invoiceBrandSettingsTaxRate } = invoiceBrandSettings
 
   const subtotal = invoice.items?.length > 0
     ? invoice.items.reduce((sum, item) => sum + ((item.qty ?? 1) * (parseFloat(item.price) || 0)), 0)
     : 0
 
-  const shippingFee    = parseFloat(invoice.shippingFee)    || 0
-  const discountAmount = parseFloat(invoice.discountAmount)  || 0
-  const discountType   = invoice.discountType                || null
-  const discountValue  = parseFloat(invoice.discountValue)   || 0
+  const shippingFee    = parseFloat(invoice.shippingFee)   || 0
+  const discountAmount = parseFloat(invoice.discountAmount) || 0
+  const discountType   = invoice.discountType               || null
+  const discountValue  = parseFloat(invoice.discountValue)  || 0
   const useTax         = invoice.taxRate != null ? invoice.taxRate > 0 : (showTax && invoiceBrandSettingsTaxRate > 0)
   const taxRate        = invoice.taxRate != null ? invoice.taxRate : invoiceBrandSettingsTaxRate
   const taxAmount      = parseFloat(invoice.taxAmount) || calcTax(subtotal, taxRate, useTax)
@@ -23,102 +23,96 @@ export function InvoiceTemplate20({ invoice, customer, invoiceBrandSettings }) {
     ? parseFloat(invoice.totalAmount)
     : subtotal + shippingFee - discountAmount + taxAmount
 
-  const discountLabel = discountType === "percent" ? `Discount (${discountValue}%)` : "Discount"
+  const discountLabel = discountType === 'percent' ? `Discount (${discountValue}%)` : 'Discount'
   const hasExtras     = shippingFee > 0 || discountAmount > 0 || (useTax && taxAmount > 0)
-  const brandName     = invoiceBrandSettings.name || invoiceBrandSettings.ownerName
+  const terms         = invoiceBrandSettings.paymentTerms || []
 
   return (
     <div className={styles.template}>
 
-      <div className={styles.topRow}>
-        <div className={styles.titleBox}>
-          <span className={styles.titleText}>Invoice</span>
+      <div className={styles.sidebar}>
+        <div className={styles.sidebarTop}>
+          {(invoiceBrandSettings.name || invoiceBrandSettings.ownerName || 'Your Business').toUpperCase()}
         </div>
-        <div className={styles.logoBox}>
-          {invoiceBrandSettings.logo ? (
-            <img src={invoiceBrandSettings.logo} alt="logo" className={styles.logoBoxImage} />
-          ) : (
-            <span className={styles.logoBoxText}>LOGO</span>
-          )}
-        </div>
+        <div className={styles.sidebarBottom}>Invoice</div>
       </div>
 
-      <div className={styles.infoRow}>
-        <div className={styles.infoBox}>
-          <div className={styles.infoBoxLabel}>Issued to:</div>
-          <div className={styles.infoBoxName}>{customer.name}</div>
+      <div className={styles.main}>
 
-          <div className={styles.infoBoxDetail}>
+        <div className={styles.topSection}>
+          <div className={styles.billTo}>
+            <div className={styles.billToLabel}>Bill To</div>
+            <div className={styles.billToName}>{customer.name}</div>
+            {customer.phone && (
+              <div className={`${styles.billToDetail} ${styles.noWrap}`}>
+                <span className={styles.icon}><PhoneIcon /></span>
+                {customer.phone}
+              </div>
+            )}
+            {customer.address && (
+              <div className={styles.billToDetail}>
+                <span className={styles.icon}><LocationIcon /></span>
+                {customer.address}
+              </div>
+            )}
+            {customer.email && (
+              <div className={styles.billToDetail}>
+                <span className={styles.icon}><EmailIcon /></span>
+                {customer.email}
+              </div>
+            )}
+          </div>
 
-            {customer.phone && 
-            <div>
-              <span className={styles.infoBoxIcon}><PhoneIcon /></span>
-              {customer.phone} 
+          <div className={styles.metaBlock}>
+            <div className={styles.metaRow}>
+              <span className={styles.metaKey}>Date:</span>
+              <span className={styles.metaVal}>{invoice.date}</span>
             </div>
-            }
-
-
-            {customer.email  && 
-            <div>
-              <span className={styles.infoBoxIcon}><EmailIcon /></span>
-              {customer.email } 
+            <div className={styles.metaRow}>
+              <span className={styles.metaKey}>Due Date:</span>
+              <span className={styles.metaVal}>{dueDate}</span>
             </div>
-            }
-
-
-            {customer.address && 
-            <div>
-              <span className={styles.infoBoxIcon}><LocationIcon /></span>
-              {customer.address} 
+            <div className={styles.metaInvoiceRow}>
+              <span className={styles.metaInvoiceKey}>Invoice No:</span>
+              <span className={styles.metaInvoiceVal}>{invoice.number}</span>
             </div>
-            }
-
-
-  
           </div>
         </div>
 
-        <div className={styles.infoBox}>
-          <div className={styles.infoBoxMeta}>
-            <span>Invoice No. {invoice.number}<br /></span>
-            <span>Date: {invoice.date}</span>
-            {dueDate        && <span><br />Due: {dueDate}</span>}
-            {invoice.orderDesc && <span><br />Order: {invoice.orderDesc}</span>}
+        {invoice.orderDesc && (
+          <div className={styles.orderDescRow}>
+            <span className={styles.orderDescLabel}>Order:</span>
+            <span className={styles.orderDescVal}>{invoice.orderDesc}</span>
           </div>
-        </div>
-      </div>
+        )}
 
-      <div className={styles.tableBox}>
-        <table>
-              
-          <thead className={styles.tableHeader}>
-            <tr>
-
-              <th className={styles.thDesc}>Description</th>
-              <th className={styles.thPrice}>Unit Price</th>
-              <th className={styles.thQty}>Qty</th>
-              <th className={styles.thSub}>Subtotal</th>
-
+        <table className={styles.table}>
+          <thead>
+            <tr className={styles.tableHead}>
+              <th className={styles.colDesc}>Description</th>
+              <th className={styles.colPrice}>Price</th>
+              <th className={styles.colQty}>Qty</th>
+              <th className={styles.colTotal}>Total</th>
             </tr>
-
           </thead>
+          <tbody>
+            {invoice.items?.map((item, i) => {
+              const qty        = item.qty ?? 1
+              const unitPrice  = parseFloat(item.price) || 0
+              const lineAmount = qty * unitPrice
+              return (
+                <tr key={i} className={styles.tableRow}>
+                  <td className={styles.colDesc}>{item.name}</td>
+                  <td className={styles.colPrice}>{formatMoney(currency, unitPrice)}</td>
+                  <td className={styles.colQty}>{qty}</td>
+                  <td className={styles.colTotal}>{formatMoney(currency, lineAmount)}</td>
+                </tr>
+              )
+            })}
+          </tbody>
+        </table>
 
-          {invoice.items?.map((item, i) => {
-            const qty = item.qty ?? 1
-            const unitPrice  = parseFloat(item.price) || 0
-            const lineAmount = qty * unitPrice
-            return (
-              <tr key={i} className={styles.tableRow}>
-                <td className={styles.tdDesc}>{item.name}</td>
-                <td className={styles.tdPrice}>{formatMoney(currency, unitPrice)}</td>
-                <td className={styles.tdQty}>{qty}</td>
-                <td className={styles.tdSub}>{formatMoney(currency, lineAmount)}</td>
-              </tr>
-            )
-          })}
-
-            </table>
-        <div className={styles.totalsArea}>
+        <div className={styles.totalsSection}>
           {hasExtras && (
             <>
               <div className={styles.totalsRow}>
@@ -127,85 +121,96 @@ export function InvoiceTemplate20({ invoice, customer, invoiceBrandSettings }) {
               </div>
               {shippingFee > 0 && (
                 <div className={styles.totalsRow}>
-                  <span className={styles.totalsKey}>Shipping</span>
+                  <span className={styles.totalsKey}>Shipping &amp; Delivery</span>
                   <span className={styles.totalsVal}>{formatMoney(currency, shippingFee)}</span>
                 </div>
               )}
               {discountAmount > 0 && (
                 <div className={styles.totalsRow}>
-                  <span className={styles.totalsKey}>{discountLabel}</span>
-                  <span className={`${styles.totalsVal} ${styles.discountVal}`}>-{formatMoney(currency, discountAmount)}</span>
+                  <span className={`${styles.totalsKey} ${styles.totalsKeyDiscount}`}>{discountLabel}</span>
+                  <span className={`${styles.totalsVal} ${styles.totalsValDiscount}`}>−{formatMoney(currency, discountAmount)}</span>
                 </div>
               )}
               {useTax && taxAmount > 0 && (
                 <div className={styles.totalsRow}>
-                  <span className={styles.totalsKey}>Tax ({taxRate}%)</span>
+                  <span className={styles.totalsKey}>VAT ({taxRate}%)</span>
                   <span className={styles.totalsVal}>{formatMoney(currency, taxAmount)}</span>
                 </div>
               )}
             </>
           )}
-          <div className={styles.grandTotalRow}>
-            <span className={styles.grandTotalKey}>Total</span>
-            <span className={styles.grandTotalVal}>{formatMoney(currency, grandTotal)}</span>
-          </div>
-        </div>
-      </div>
-
-      <div className={styles.footer}>
-        <div className={styles.footerLeft}>
-          <div className={styles.footerPayLabel}>Payment Information</div>
-          <div className={styles.footerDetail}>
-            {invoiceBrandSettings.accountBank   && <span>Bank: {invoiceBrandSettings.accountBank}</span>}<br />
-             {invoiceBrandSettings.accountNumber && <span>Account Number: {invoiceBrandSettings.accountNumber}</span>}<br />
-            {invoiceBrandSettings.accountName   && <span>Account Name: {invoiceBrandSettings.accountName}</span>}<br />
-           
+          <div className={styles.orderTotalRow}>
+            <span className={styles.totalsKeyFinal}>Order Total</span>
+            <span className={styles.totalsValFinal}>{formatMoney(currency, grandTotal)}</span>
           </div>
         </div>
 
-        <div className={styles.footerRight}>
+        <div className={styles.bottomSection}>
+          {(invoiceBrandSettings.accountBank || invoiceBrandSettings.name || invoiceBrandSettings.ownerName) && (
+            <div>
+              <div className={styles.payableLabel}>Payable To</div>
+              <div className={styles.payableName}>{invoiceBrandSettings.name || invoiceBrandSettings.ownerName}</div>
 
-          {(invoiceBrandSettings.name || invoiceBrandSettings.ownerName) && (
-            <div className={styles.brandName}>
-              {invoiceBrandSettings.name || invoiceBrandSettings.ownerName}
+              {invoiceBrandSettings.accountBank && (
+                <div className={styles.payableDetail}>Bank: {invoiceBrandSettings.accountBank}</div>
+              )}
+              {invoiceBrandSettings.accountNumber && (
+                <div className={styles.payableDetail}>Account Number: {invoiceBrandSettings.accountNumber}</div>
+              )}
+
+              {invoiceBrandSettings.accountName && (
+                <div className={styles.payableDetail}>Account Name: {invoiceBrandSettings.accountName}</div>
+              )}
+              {invoiceBrandSettings.phone && (
+                <div className={`${styles.payableDetail} ${styles.noWrap}`}>
+                  <span className={styles.icon}><PhoneIcon /></span>
+                  {invoiceBrandSettings.phone}
+                </div>
+              )}
+              {invoiceBrandSettings.email && (
+                <div className={styles.payableDetail}>
+                  <span className={styles.icon}><EmailIcon /></span>
+                  {invoiceBrandSettings.email}
+                </div>
+              )}
+              {invoiceBrandSettings.website && (
+                <div className={styles.payableDetail}>
+                  <span className={styles.icon}><WebsiteIcon /></span>
+                  {invoiceBrandSettings.website}
+                </div>
+              )}
+              {invoiceBrandSettings.address && (
+                <div className={styles.payableDetail}>
+                  <span className={styles.icon}><LocationIcon /></span>
+                  {invoiceBrandSettings.address}
+                </div>
+              )}
             </div>
           )}
 
-          {invoiceBrandSettings.phone && (
-            <div className={styles.footerContactRow}>
-              <span className={styles.footerIcon}><PhoneIcon /></span>
-              <span className={styles.footerContactText}>{invoiceBrandSettings.phone}</span>
+          {terms.length > 0 && (
+            <div className={styles.termsBlock}>
+              <div className={styles.termsLabel}>Notes</div>
+              {terms.map((term, i) => (
+                <div key={i} className={styles.termItem}>
+                  <span className={styles.termBullet}>◆</span>
+                  <span>{term}</span>
+                </div>
+              ))}
             </div>
           )}
-          {invoiceBrandSettings.email && (
-            <div className={styles.footerContactRow}>
-              <span className={styles.footerIcon}><EmailIcon /></span>
-              <span className={styles.footerContactText}>{invoiceBrandSettings.email}</span>
-            </div>
-          )}
-
-          {invoiceBrandSettings.website && (
-            <div className={styles.footerContactRow}>
-              <span className={styles.footerIcon}><WebsiteIcon /></span>
-              <span className={styles.footerContactText}>{invoiceBrandSettings.website}</span>
-            </div>
-          )}
-
-          {invoiceBrandSettings.address && (
-            <div className={styles.footerContactRow}>
-              <span className={styles.footerIcon}><LocationIcon /></span>
-              <span className={styles.footerContactText}>{invoiceBrandSettings.address}</span>
-            </div>
-          )}
-          
-
         </div>
+
+        <div className={styles.footer}>
+          {invoiceBrandSettings.footer || 'Thank you for your business.'}
+        </div>
+
       </div>
-
-      {invoiceBrandSettings.footer && (
-        <div className={styles.thankYou}>{invoiceBrandSettings.footer || "Thank You"}  </div>
-      )}
-
     </div>
   )
 }
+
+
+
+
+

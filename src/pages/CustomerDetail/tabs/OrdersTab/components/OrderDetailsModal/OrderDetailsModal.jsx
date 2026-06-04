@@ -315,9 +315,9 @@ export function OrderDetailsModal({
           className={`${styles.shareReviewButton} ${!canReview ? styles.shareReviewButton_disabled : ''}`}
           onClick={handleReviewClick}
         >
-          <span className="mi" style={{ fontSize: '1.15rem' }}>rate_review</span>
+          <span className="mi" style={{ fontSize: '1.15rem',textTransform: "lowercase"}}>rate_review</span>
           Share Review Link via WhatsApp
-          <span className="mi" style={{ fontSize: '1rem', marginLeft: 'auto' }}>open_in_new</span>
+          <span className="mi" style={{ fontSize: '1rem', marginLeft: 'auto',textTransform: "lowercase" }}>open_in_new</span>
         </button>
 
         {hint === 'review' && (
@@ -332,7 +332,7 @@ export function OrderDetailsModal({
           onClick={() => onGenerateInvoice(order.id)}
           style={{ marginTop: 4 }}
         >
-          <span className="mi" style={{ fontSize: '1.2rem', verticalAlign: 'middle', marginRight: 6 }}>receipt_long</span>
+          <span className="mi" style={{ fontSize: '1.2rem', verticalAlign: 'middle', marginRight: 6,textTransform: "lowercase" }}>receipt_long</span>
           Generate Invoice
         </button>
 

@@ -81,7 +81,7 @@ export function AddInvoiceModal({
 
       {showAllInvoiced && (
         <div className={styles.pickerEmpty}>
-          <span className="mi" style={{ fontSize: '2rem', color: 'var(--text3)' }}>receipt_long</span>
+          <span className="mi" style={{ fontSize: '2rem', color: 'var(--text3)',textTransform: "lowercase" }}>receipt_long</span>
           <p>All orders already have invoices.</p>
         </div>
       )}
@@ -213,7 +213,7 @@ export function AddInvoiceModal({
                       </>
                     ) : (
                       <>
-                        <span className="mi" style={{ fontSize: '1.1rem', color:"var(--text)" }}>receipt_long</span>
+                        <span className="mi" style={{ fontSize: '1.1rem', color:"var(--text)",textTransform: "lowercase" }}>receipt_long</span>
                         {selectedOrders.length > 1
                           ? `Generate ${selectedOrders.length} Invoices`
                           : 'Generate Invoice'

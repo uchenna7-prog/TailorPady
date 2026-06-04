@@ -21,7 +21,7 @@ export function LogoOrName({ invoiceBrandSettings, receiptBrandSettings, darkBg 
     )
   }
 
-  if (name) {
+  if (!logo) {
     return (
       <div
         className={styles.logoPlaceholder}

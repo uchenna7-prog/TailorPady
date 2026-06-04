@@ -432,9 +432,9 @@ export default function OrderDetailModal({
             className={`${styles.reviewBtn} ${!canReview ? styles.reviewBtn_disabled : ''}`}
             onClick={handleReviewClick}
           >
-            <span className="mi" style={{ fontSize: '1.15rem' }}>rate_review</span>
+            <span className="mi" style={{ fontSize: '1.15rem',textTransform: "lowercase"  }}>rate_review</span>
             Share Review Link via WhatsApp
-            <span className="mi" style={{ fontSize: '1rem', marginLeft: 'auto' }}>open_in_new</span>
+            <span className="mi" style={{ fontSize: '1rem', marginLeft: 'auto',textTransform: "lowercase"  }}>open_in_new</span>
           </button>
 
           {hint === 'review' && (

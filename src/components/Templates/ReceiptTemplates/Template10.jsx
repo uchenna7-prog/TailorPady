@@ -1,17 +1,26 @@
 import styles from "../styles/Template10.module.css"
 import { calcTax } from "../utils/receiptUtils"
-import { ReceiptPaymentSummary } from "../components/ReceiptPaymentSummary/ReceiptPaymentSummary"
+import { resolveCumulativePaid, buildPaymentRows } from "../../ReceiptViewer/utils"
 import { formatMoney } from "../../../utils/moneyUtils"
-import {
-  PhoneIcon,
-  EmailIcon,
-  LocationIcon,
-} from "../components/icons/icons"
+import { PhoneIcon, EmailIcon, LocationIcon } from "../components/icons/icons"
 import { LogoOrName } from "../components/LogoOrBrandName/LogoOrBrandName"
 
+const METHOD_EMOJI = {
+  cash:     "💵",
+  transfer: "🏦",
+  card:     "💳",
+}
+
+function methodEmoji(method) {
+  return METHOD_EMOJI[(method || "").toLowerCase()] ?? "🧾"
+}
+
+function capitalize(str) {
+  return str ? str.charAt(0).toUpperCase() + str.slice(1) : ""
+}
 
 export function ReceiptTemplate10({ receipt, customer, receiptBrandSettings }) {
-  const accentColor = receiptBrandSettings.colour || '#1C1814'
+  const accentColor = receiptBrandSettings.colour || "#1a1a2e"
   const { currency, showTax, receiptTaxRate: receiptBrandSettingsTaxRate } = receiptBrandSettings
 
   const subtotal = receipt.items?.length > 0
@@ -29,174 +38,309 @@ export function ReceiptTemplate10({ receipt, customer, receiptBrandSettings }) {
     ? parseFloat(receipt.totalAmount)
     : subtotal + shippingFee - discountAmount + taxAmount
 
-  const discountLabel = discountType === 'percent' ? `Discount (${discountValue}%)` : 'Discount'
-  const hasExtras     = shippingFee > 0 || discountAmount > 0 || (useTax && taxAmount > 0)
+  const discountLabel  = discountType === "percent" ? `Discount (${discountValue}%)` : "Discount"
+  const hasExtras      = shippingFee > 0 || discountAmount > 0 || (useTax && taxAmount > 0)
+
+  const paymentRows = buildPaymentRows(receipt)
+
+  const previouslyPaid = paymentRows
+    .filter(p => !p._isCurrent)
+    .reduce((sum, p) => sum + (parseFloat(p.amount) || 0), 0)
+
+  const thisPaymentTotal = paymentRows
+    .filter(p => p._isCurrent)
+    .reduce((sum, p) => sum + (parseFloat(p.amount) || 0), 0)
+
+  const balanceRemaining = parseFloat(receipt.balance) >= 0
+    ? parseFloat(receipt.balance)
+    : Math.max(0, grandTotal - resolveCumulativePaid(receipt))
+
+  const isFullyPaid = receipt.isFullPayment ?? (balanceRemaining <= 0)
+
+  const hasBottomInfo = receiptBrandSettings.accountBank
+    || receiptBrandSettings.phone
+    || receiptBrandSettings.email
+    || receiptBrandSettings.address
+    || receiptBrandSettings.website
 
   return (
     <div className={styles.template}>
 
-      <div className={styles.header}>
-        <div>
-          <div className={styles.logoRow}>
-            
-            <LogoOrName receiptBrandSettings={receiptBrandSettings} darkBg={false} />
+      <div className={styles.header} style={{ background: accentColor }}>
+        <div className={styles.headerContent}>
+          <div className={styles.headerLeft}>
+            <LogoOrName receiptBrandSettings={receiptBrandSettings} darkBg={true} />
+            <div className={styles.brandInfo}>
+              <div className={styles.brandName}>{receiptBrandSettings.name || receiptBrandSettings.ownerName}</div>
+              {receiptBrandSettings.tagline && (
+                <div className={styles.brandTagline}>{receiptBrandSettings.tagline}</div>
+              )}
+            </div>
+          </div>
 
-            <div>
-              <span className={styles.companyName}>{(receiptBrandSettings.name || receiptBrandSettings.ownerName || '').toUpperCase()}</span>
-              {receiptBrandSettings.tagline && <div className={styles.companySub}>{receiptBrandSettings.tagline}</div>}
+          <div className={styles.headerRight}>
+            <div className={styles.invoiceLabel}>RECEIPT</div>
+          </div>
+        </div>
+
+        <ThornBorder />
+      </div>
+
+      <div className={styles.clientRow}>
+        <div className={styles.clientBlock}>
+          <div className={styles.sectionLabel} style={{ color: accentColor }}>Received From</div>
+          <div className={styles.clientName}>{customer.name}</div>
+          <div className={styles.clientDetails}>
+            {customer.phone && (
+              <div className={styles.iconRow}>
+                <span className={styles.icon}><PhoneIcon /></span>
+                <span>{customer.phone}</span>
+              </div>
+            )}
+            {customer.address && (
+              <div className={styles.iconRow}>
+                <span className={styles.icon}><LocationIcon /></span>
+                <span>{customer.address}</span>
+              </div>
+            )}
+            {customer.email && (
+              <div className={styles.iconRow}>
+                <span className={styles.icon}><EmailIcon /></span>
+                <span>{customer.email}</span>
+              </div>
+            )}
+          </div>
+        </div>
+
+        <div className={styles.invoiceMetaBlock}>
+          <div className={styles.metaTable}>
+            <div className={styles.metaRow}>
+              <span className={styles.metaKey}>Receipt #:</span>
+              <span className={styles.metaVal}>{receipt.number}</span>
+            </div>
+            <div className={styles.metaRow}>
+              <span className={styles.metaKey}>Date:</span>
+              <span className={styles.metaVal}>{receipt.date}</span>
             </div>
           </div>
         </div>
-        <div className={styles.receiptTitle} style={{ color: accentColor }}>RECEIPT</div>
       </div>
 
-      <div className={styles.numberBar}>
-        <span>RECEIPT # {receipt.number}</span>
-        <span>DATE : {receipt.date}</span>
-      </div>
-
-      <div className={styles.billShip}>
-        <div>
-          <span className={styles.billLabel}>Received From: </span>
-          <div><strong>{customer.name}</strong></div>
-          {customer.phone && (
-            <div className={styles.billDetailLine}>
-              <span className={styles.billDetailIcon}><PhoneIcon /></span>
-              {customer.phone}
-            </div>
-          )}
-          {customer.email && (
-            <div className={styles.billDetailLine}>
-              <span className={styles.billDetailIcon}><EmailIcon /></span>
-              {customer.email}
-            </div>
-          )}
-          {customer.address && (
-            <div className={styles.billDetailLine}>
-              <span className={styles.billDetailIcon}><LocationIcon /></span>
-              {customer.address}
-            </div>
-          )}
+      {receipt.orderDesc && (
+        <div className={styles.orderDescRow}>
+          <span className={styles.orderLabel}>Order:</span>
+          <span className={styles.orderDesc}>{receipt.orderDesc}</span>
         </div>
-        <div>
-          <span className={styles.billLabel}>Received By: </span>
-          <div><strong>{receiptBrandSettings.name || receiptBrandSettings.ownerName}</strong></div>
-          {receiptBrandSettings.phone && (
-            <div className={styles.billDetailLine}>
-              <span className={styles.billDetailIcon}><PhoneIcon /></span>
-              {receiptBrandSettings.phone}
-            </div>
-          )}
-          {receiptBrandSettings.email && (
-            <div className={styles.billDetailLine}>
-              <span className={styles.billDetailIcon}><EmailIcon /></span>
-              {receiptBrandSettings.email}
-            </div>
-          )}
-          {receiptBrandSettings.address && (
-            <div className={styles.billDetailLine}>
-              <span className={styles.billDetailIcon}><LocationIcon /></span>
-              {receiptBrandSettings.address}
-            </div>
-          )}
-        </div>
-      </div>
+      )}
 
       <div className={styles.tableWrapper}>
-
-        <div className={styles.orderDescriptionRow}>
-          <div className={styles.orderText}>ORDER:</div>
-          <div className={styles.orderDescLabel}>{receipt.orderDesc || 'Garment Order'}</div>
-        </div>
-
-        <table className={styles.table}>
+        <table className={styles.tableSection}>
           <thead>
-            <tr className={styles.tableHeader}>
-              <th className={styles.colDesc}>Item Description</th>
-              <th className={styles.colQty}>Qty</th>
-              <th className={styles.colPrice}>Unit Price</th>
-              <th className={styles.colTotal}>Total</th>
+            <tr className={styles.tableHeader} style={{ background: accentColor }}>
+              <th className={styles.thDesc}>Description</th>
+              <th className={styles.thQty}>Qty</th>
+              <th className={styles.thPrice}>Unit Price</th>
+              <th className={styles.thTotal}>Total</th>
             </tr>
           </thead>
-          <tbody className={styles.tableBody}>
+          <tbody>
             {receipt.items?.map((item, i) => {
               const qty        = item.qty ?? 1
               const unitPrice  = parseFloat(item.price) || 0
               const lineAmount = qty * unitPrice
               return (
                 <tr key={i} className={styles.tableRow}>
-                  <td className={styles.colDesc}>{item.name}</td>
-                  <td className={styles.colQty}>{qty}</td>
-                  <td className={styles.colPrice}>{formatMoney(currency, unitPrice)}</td>
-                  <td className={styles.colTotal}>{formatMoney(currency, lineAmount)}</td>
+                  <td className={styles.tdDesc}>{item.name}</td>
+                  <td className={styles.tdQty}>{qty}</td>
+                  <td className={styles.tdPrice}>{formatMoney(currency, unitPrice)}</td>
+                  <td className={styles.tdTotal}>{formatMoney(currency, lineAmount)}</td>
                 </tr>
               )
             })}
           </tbody>
         </table>
+      </div>
 
-        <div>
-          {hasExtras && (
-            <div className={styles.breakdownBlock}>
+      <div className={styles.orderTotalsBlock}>
+        {hasExtras && (
+          <div className={styles.breakdownSection}>
+            <div className={styles.breakdownRow}>
+              <span className={styles.breakdownKey}>Subtotal</span>
+              <span className={styles.breakdownVal}>{formatMoney(currency, subtotal)}</span>
+            </div>
+            {shippingFee > 0 && (
               <div className={styles.breakdownRow}>
-                <span className={styles.breakdownKey}>Subtotal</span>
-                <span className={styles.breakdownVal}>{formatMoney(currency, subtotal)}</span>
+                <span className={styles.breakdownKey}>Shipping &amp; Delivery</span>
+                <span className={styles.breakdownVal}>{formatMoney(currency, shippingFee)}</span>
               </div>
-              {shippingFee > 0 && (
-                <div className={styles.breakdownRow}>
-                  <span className={styles.breakdownKey}>Shipping &amp; Delivery</span>
-                  <span className={styles.breakdownVal}>{formatMoney(currency, shippingFee)}</span>
+            )}
+            {discountAmount > 0 && (
+              <div className={styles.breakdownRow}>
+                <span className={`${styles.breakdownKey} ${styles.breakdownKeyDiscount}`}>{discountLabel}</span>
+                <span className={`${styles.breakdownVal} ${styles.breakdownValDiscount}`}>−{formatMoney(currency, discountAmount)}</span>
+              </div>
+            )}
+            {useTax && taxAmount > 0 && (
+              <div className={styles.breakdownRow}>
+                <span className={styles.breakdownKey}>Tax ({taxRate}%)</span>
+                <span className={styles.breakdownVal}>{formatMoney(currency, taxAmount)}</span>
+              </div>
+            )}
+          </div>
+        )}
+
+        <div className={styles.orderTotalWrap}>
+          <span className={styles.orderTotalLabel}>Order Total</span>
+          <span className={styles.orderTotalValue}>{formatMoney(currency, grandTotal)}</span>
+        </div>
+      </div>
+
+      {paymentRows.length > 0 && (
+        <div className={styles.historySection}>
+          <div className={styles.sectionLabel} style={{ color: accentColor }}>Payment History</div>
+          {paymentRows.map((payment, index) => {
+            const isCurrent = payment._isCurrent
+            const method    = payment.method || ""
+            return (
+              <div
+                key={payment.id ?? index}
+                className={styles.paymentRow}
+                style={{ borderBottom: "1px solid #eaeaea" }}
+              >
+                <span className={styles.emoji}>{methodEmoji(method)}</span>
+                <div className={styles.paymentMeta}>
+                  <div className={styles.paymentMethod} style={{ color: accentColor }}>
+                    {capitalize(method)}
+                    {isCurrent && <span className={styles.latestBadge}>Latest</span>}
+                  </div>
+                  <div className={styles.paymentDate}>
+                    {payment.date}{payment.time ? ` · ${payment.time}` : ""}
+                  </div>
                 </div>
-              )}
-              {discountAmount > 0 && (
-                <div className={styles.breakdownRow}>
-                  <span className={`${styles.breakdownKey} ${styles.breakdownKeyDiscount}`}>{discountLabel}</span>
-                  <span className={`${styles.breakdownVal} ${styles.breakdownValDiscount}`}>−{formatMoney(currency, discountAmount)}</span>
-                </div>
-              )}
-              {useTax && taxAmount > 0 && (
-                <div className={styles.breakdownRow}>
-                  <span className={styles.breakdownKey}>VAT ({taxRate}%)</span>
-                  <span className={styles.breakdownVal}>{formatMoney(currency, taxAmount)}</span>
-                </div>
+                <span
+                  className={`${styles.paymentAmount} ${isCurrent ? styles.amountCurrent : ""}`}
+                  style={{ color: accentColor }}
+                >
+                  {formatMoney(currency, payment.amount)}
+                </span>
+              </div>
+            )
+          })}
+        </div>
+      )}
+
+      <div className={styles.footerSection}>
+        <div className={styles.footerLeft} />
+        <div className={styles.footerRight}>
+          <div className={styles.totalsBlock}>
+            {previouslyPaid > 0 && (
+              <div className={styles.totalRow}>
+                <span className={styles.totalRowLabel}>Previously Paid</span>
+                <span className={styles.totalRowValue}>{formatMoney(currency, previouslyPaid)}</span>
+              </div>
+            )}
+            {thisPaymentTotal > 0 && (
+              <div className={styles.totalRow}>
+                <span className={styles.totalRowLabel}>This Payment</span>
+                <span className={styles.totalRowValue}>+{formatMoney(currency, thisPaymentTotal)}</span>
+              </div>
+            )}
+            <div className={styles.grandTotalRow} style={{ background: accentColor }}>
+              <span className={styles.grandLabel}>Total Paid</span>
+              <span className={styles.grandValue}>{formatMoney(currency, thisPaymentTotal + previouslyPaid)}</span>
+            </div>
+            {!isFullyPaid ? (
+              <div className={styles.balanceRow}>
+                <span className={styles.balanceLabel}>Balance</span>
+                <span className={styles.balanceValue}>{formatMoney(currency, balanceRemaining)}</span>
+              </div>
+            ) : (
+              <div className={styles.paidRow}>
+                <span className={styles.paidLabel}>Paid In Full</span>
+                <span className={styles.paidValue}>{formatMoney(currency, grandTotal)}</span>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+
+      {hasBottomInfo && (
+        <div className={styles.bottomInfoSection}>
+          {receiptBrandSettings.accountBank && (
+            <div className={styles.bottomInfoLeft}>
+              <div className={styles.bottomInfoLabel}>Payment Details</div>
+              {receiptBrandSettings.accountName && (
+                <div className={styles.bottomInfoDetail}>Received By: {receiptBrandSettings.accountName}</div>
               )}
             </div>
           )}
-          <div className={styles.orderTotalWrap}>
-            <div className={styles.orderTotalLabel}>Order Total</div>
-            <div className={styles.orderTotalValue}>{formatMoney(currency, grandTotal)}</div>
-          </div>
-        </div>
 
-        <ReceiptPaymentSummary receipt={receipt} receiptBrandSettings={receiptBrandSettings} />
-
-      </div>
-
-      <div style={{ marginTop: 'auto' }}>
-        <div className={styles.footer}>
-          <div>
-            {receiptBrandSettings.accountBank && (
-              <>
-                <div className={styles.thankYou}>Payment Details</div>
-                {receiptBrandSettings.name && <div>Received By : {receiptBrandSettings.name}</div>}
-              </>
+          <div className={styles.bottomInfoRight}>
+            <div className={styles.bottomInfoLabel}>Contact</div>
+            {receiptBrandSettings.phone && (
+              <div className={styles.iconRow}>
+                <span className={styles.icon}><PhoneIcon /></span>
+                <span>{receiptBrandSettings.phone}</span>
+              </div>
             )}
-            <div className={styles.paymentNote} style={{ fontWeight: 900, color: "var(--brand-primary-dark)" }}>
-              {receiptBrandSettings.footer}
-            </div>
-          </div>
-          <div className={styles.signArea}>
-            <div className={styles.signLine} />
-            <div className={styles.signLabel}>Signature</div>
+            {receiptBrandSettings.email && (
+              <div className={styles.iconRow}>
+                <span className={styles.icon}><EmailIcon /></span>
+                <span>{receiptBrandSettings.email}</span>
+              </div>
+            )}
+            {receiptBrandSettings.website && (
+              <div className={styles.iconRow}>
+                <span className={styles.icon}><LocationIcon /></span>
+                <span>{receiptBrandSettings.website}</span>
+              </div>
+            )}
+            {receiptBrandSettings.address && (
+              <div className={styles.iconRow}>
+                <span className={styles.icon}><LocationIcon /></span>
+                <span>{receiptBrandSettings.address}</span>
+              </div>
+            )}
           </div>
         </div>
-        <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-          <svg style={{ display: 'block', width: 50, height: 50 }} viewBox="0 0 50 50">
-            <polygon points="50,0 50,50 0,50" fill={accentColor} opacity="0.5" />
-          </svg>
-        </div>
+      )}
+
+      <div className={styles.thankYouText}>
+        {receiptBrandSettings.footer || "Thank you for your business. Your payment has been received."}
       </div>
 
     </div>
   )
 }
+
+function ThornBorder() {
+  const thorns = Array.from({ length: 40 })
+  return (
+    <svg
+      className={styles.thornBorder}
+      viewBox="0 0 800 24"
+      preserveAspectRatio="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <polygon
+        fill="#ffffff"
+        points={thorns.map((_, i) => {
+          const w    = 800 / thorns.length
+          const x0   = i * w
+          const xMid = x0 + w / 2
+          const x1   = x0 + w
+          return `${x0},24 ${xMid},0 ${x1},24`
+        }).join(" ")}
+      />
+    </svg>
+  )
+}
+
+
+
+
+
+
+
+
+

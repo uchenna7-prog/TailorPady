@@ -229,8 +229,8 @@ export function MeasurementDetailsModal({ measurement, onClose, onDelete, onUpda
           title={measurement.name}
           onBackClick={onClose}
           customActions={[
-            { icon: 'edit',           onClick: enterEditMode },
-            { icon: 'delete_outline', onClick: onDelete, color: 'var(--danger)' },
+            { icon: 'edit', onClick: enterEditMode, outlined: true  },
+            { icon: 'delete', onClick: onDelete, color: 'var(--danger)', outlined: true },
           ]}
         />
 
