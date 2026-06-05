@@ -10,6 +10,7 @@ import { TaskProvider }                   from './contexts/TaskContext'
 import { InvoiceProvider }                from './contexts/InvoiceContext'
 import { ReceiptProvider }                from './contexts/ReceiptContext'
 import { PaymentProvider }                from './contexts/PaymentContext'
+import { RevenueGoalProvider }            from './contexts/RevenueGoalContext'
 import { AppointmentProvider }            from './contexts/AppointmentContext'
 import { NotificationProvider }           from './contexts/NotificationContext'
 import { PremiumProvider }                from './contexts/PremiumContext'
@@ -41,15 +42,17 @@ ReactDOM.createRoot(document.getElementById('root')).render(
                             <InvoiceProvider>
                               <ReceiptProvider>
                                 <PaymentProvider>
-                                  <AppointmentProvider>
-                                    <BadgeProvider>
-                                      <AgentProvider>
-                                        <NotificationProvider>
-                                          <App />
-                                        </NotificationProvider>
-                                      </AgentProvider>
-                                    </BadgeProvider>
-                                  </AppointmentProvider>
+                                  <RevenueGoalProvider>
+                                    <AppointmentProvider>
+                                      <BadgeProvider>
+                                        <AgentProvider>
+                                          <NotificationProvider>
+                                            <App />
+                                          </NotificationProvider>
+                                        </AgentProvider>
+                                      </BadgeProvider>
+                                    </AppointmentProvider>
+                                  </RevenueGoalProvider>
                                 </PaymentProvider>
                               </ReceiptProvider>
                             </InvoiceProvider>

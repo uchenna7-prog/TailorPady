@@ -1,4 +1,4 @@
-.revenueCard {
+.card {
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: 10px;
@@ -10,56 +10,144 @@
   gap: 16px;
   cursor: pointer;
   transition: background 0.15s;
+  min-height: 110px;
 }
 
-.revenueCard:active { 
-    background: var(--surface2); 
+.card:active {
+  background: var(--surface2);
 }
 
-.revenueCardLeft  { 
-    display: flex; 
-    flex-direction: column; 
-    gap: 4px; 
-    min-width: 0; 
-}
-.revenueLabel { 
-    font-size: 0.62rem; 
-    font-weight: 700; 
-    text-transform: uppercase; 
-    letter-spacing: 0.8px; 
-    color: var(--text3); 
+.left {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+  flex: 1;
 }
 
-.revenueAmount { 
-    font-size: 1.7rem; 
-    font-weight: 800; 
-    color: var(--text); 
-    line-height: 1.1; 
-    letter-spacing: -0.5px; 
+.label {
+  font-size: 0.62rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  color: var(--text3);
+  margin-bottom: 2px;
 }
 
-.revenueTarget { 
-    font-size: 0.72rem; 
-    font-weight: 500; 
-    color: var(--text3); 
+.amount {
+  font-size: 1.7rem;
+  font-weight: 800;
+  color: var(--text);
+  line-height: 1.1;
+  letter-spacing: -0.5px;
 }
 
-.revenueVs { 
-    display: flex; 
-    align-items: center; 
-    margin-top: 2px; 
+.target {
+  font-size: 0.72rem;
+  font-weight: 500;
+  color: var(--text3);
 }
 
-.revenueDonutWrap { 
-    flex-shrink: 0; 
-    display: flex; 
-    align-items: center; 
-    justify-content: center; 
+.delta {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  margin-top: 2px;
+}
+
+.right {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  flex-shrink: 0;
+  gap: 6px;
+}
+
+.donutWrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.menuWrap {
+  position: relative;
+  align-self: flex-end;
+}
+
+.menuBtn {
+  background: none;
+  border: none;
+  padding: 4px 6px;
+  border-radius: 6px;
+  color: var(--text3);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  transition: background 0.12s, color 0.12s;
+  line-height: 1;
+}
+
+.menuBtn:hover {
+  background: var(--surface2);
+  color: var(--text);
+}
+
+.dropdown {
+  position: absolute;
+  top: calc(100% + 4px);
+  right: 0;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+  min-width: 148px;
+  z-index: 50;
+  overflow: hidden;
+  animation: dropIn 0.12s ease;
+}
+
+@keyframes dropIn {
+  from { opacity: 0; transform: translateY(-4px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.dropdownItem {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 10px 14px;
+  background: none;
+  border: none;
+  font-family: inherit;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--text2);
+  cursor: pointer;
+  text-align: left;
+  transition: background 0.1s;
+}
+
+.dropdownItem:hover {
+  background: var(--surface2);
+}
+
+.dropdownItemDanger {
+  color: var(--danger);
+}
+
+.dropdownItemDanger:hover {
+  background: var(--danger-soft);
+}
+
+.dropdownDivider {
+  height: 1px;
+  background: var(--border);
+  margin: 2px 0;
 }
 
 @media (max-width: 600px) {
-
-  .revenueCard   { padding: 16px 18px; margin-bottom: 12px; }
-  .revenueAmount { font-size: 1.5rem; }
-
+  .card   { padding: 16px 18px; }
+  .amount { font-size: 1.5rem; }
 }

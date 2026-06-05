@@ -29,9 +29,10 @@ export default function CustomerDetail({ onMenuClick }) {
   const { id } = useParams()
   const navigate = useNavigate()
 
-  const { getCustomer, deleteCustomer, updateCustomer } = useCustomers()
+  const { getCustomer, deleteCustomer, updateCustomer, deleteCustomerAndAllData } = useCustomers()
   const { allOrders } = useOrders()
   const { isPremium } = usePremium()
+  const isDeletingRef = useRef(false)
 
   const customerData = useCustomerData(id)
   const orders = allOrders.filter(o => o.customerId === id)
@@ -58,11 +59,11 @@ export default function CustomerDetail({ onMenuClick }) {
     toastTimerRef.current = setTimeout(() => setToastMsg(''), 2400)
   }, [])
 
-  const { handleGenerateInvoice, handleInvoicePaid } = useInvoiceActions({
-    customerData,
-    orders,
-    showToast,
-    setActiveTab,
+  const { handleGenerateInvoice, handleInvoicePaid, handleDeleteInvoice } = useInvoiceActions({
+  customerData,
+  orders,
+  showToast,
+  setActiveTab,
   })
 
   const { handleGenerateReceipt, handleDeleteReceipt } = useReceiptActions({
@@ -176,19 +177,21 @@ export default function CustomerDetail({ onMenuClick }) {
   }, [id, updateCustomer, showToast])
 
   const handleDeleteConfirm = useCallback(async () => {
-    try {
-      await deleteCustomer(id)
-      setDeleteModalOpen(false)
-      navigate('/customers', { replace: true })
-    } catch {
-      showToast('Failed to delete customer. Try again.')
-      setDeleteModalOpen(false)
-    }
-  }, [id, deleteCustomer, navigate, showToast])
-
+  try {
+    isDeletingRef.current = true
+    await deleteCustomerAndAllData(id)
+    setDeleteModalOpen(false)
+    navigate('/customers', { replace: true })
+  } catch {
+    isDeletingRef.current = false
+    showToast('Failed to delete customer. Try again.')
+    setDeleteModalOpen(false)
+  }
+  }, [id, deleteCustomerAndAllData, navigate, showToast])
 
   const customer = getCustomer(id)
-  if (!customer) return null
+  if (!customer && !isDeletingRef.current) return null
+
 
   const initials      = getInitials(customer.name)
   const birthday      = getBirthday(customer.birthday)
@@ -466,7 +469,7 @@ export default function CustomerDetail({ onMenuClick }) {
             measurements={customerData.measurements}
             customer={customer}
             onSave={customerData.saveInvoice}
-            onDelete={customerData.deleteInvoice}
+            onDelete={handleDeleteInvoice}
             onStatusChange={customerData.updateInvoiceStatus}
             onGenerateInvoice={handleGenerateInvoice}
             showToast={showToast}

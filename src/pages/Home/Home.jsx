@@ -12,22 +12,19 @@ import { useGeneralSettings } from '../../contexts/GeneralSettingsContext'
 import { usePayments } from '../../contexts/PaymentContext'
 import { useAutonomousAgent } from '../../contexts/AgentContext'
 import { useProfileSettings } from '../../contexts/ProfileSettingsContext'
+import { useRevenueGoal } from '../../contexts/RevenueGoalContext'
 import { APPOINTMENT_TYPE_ICONS } from '../../datas/appointmentDatas'
 import {
   getGreeting, getGreetingEmoji, getRandomSubtext, formatUpdatedTime,
   isTaskOverdue, formatDateShort, dueThisWeek,
   isDateInLastMonth, formatNairaCompact, getWindowStart, getPrevWindowStart,
-  periodLabel, getDisplayName, loadRevenueGoal, loadNotificationDismissed,
+  periodLabel, getDisplayName, loadNotificationDismissed,
 } from './utils'
-import {
-  REVENUE_GOAL_STORAGE_KEY,
-  NOTIFICATION_DISMISSED_KEY,
-} from './datas'
+import { NOTIFICATION_DISMISSED_KEY } from './datas'
 import { NotificationBanner } from './components/NotificationBanner/NotificationBanner'
 import { InstallBanner } from './components/InstallBanner/InstallBanner'
 import { ProfileSetupCard } from './components/ProfileSetupCard/ProfileSetupCard'
 import { CustomerInsightsCard } from './components/CustomerInsightsCard/CustomerInsightsCard'
-import { RevenueDonut } from './components/RevenueDonut/RevenueDonut'
 import { RevenueGoalModal } from './components/RevenueGoalModal/RevenueGoalModal'
 import { StatCard } from './components/StatCard/StatCard'
 import { UrgentStrip } from './components/UrgentStrip/UrgentStrip'
@@ -47,20 +44,16 @@ import styles from './Home.module.css'
 import Skeleton from 'react-loading-skeleton'
 import 'react-loading-skeleton/dist/skeleton.css'
 
-
 function CardSkeleton({ height = 88 }) {
   return <Skeleton height={height} borderRadius={10} style={{ marginBottom: 12, display: 'block' }} />
 }
-
 
 function useInvoiceDueDate(generalSettings) {
   return function getInvoiceDueDate(invoice) {
     const explicitDue = invoice.due || invoice.dueDate || invoice.due_date || invoice.dueOn
     if (explicitDue) return explicitDue
-
     const createdAt = invoice.createdAt
     if (!createdAt) return null
-
     let timestampMs = null
     if (typeof createdAt.toMillis === 'function')    timestampMs = createdAt.toMillis()
     else if (typeof createdAt.toDate === 'function') timestampMs = createdAt.toDate().getTime()
@@ -68,77 +61,51 @@ function useInvoiceDueDate(generalSettings) {
     else if (typeof createdAt === 'number')          timestampMs = createdAt
     else if (typeof createdAt === 'string')          timestampMs = new Date(createdAt).getTime()
     else if (createdAt instanceof Date)              timestampMs = createdAt.getTime()
-
     if (!timestampMs || isNaN(timestampMs)) return null
-
     const dueDays = generalSettings.invoiceDueDays ?? 7
     return new Date(timestampMs + dueDays * 86_400_000).toISOString().slice(0, 10)
   }
 }
 
-
 const PROFILE_STEP_LABELS = {
-  brandName:   'Add your business name',
-  brandLogo:   'Upload your logo',
-  brandColour: 'Pick a brand colour',
-  contactInfo: 'Add a phone or email',
+  brandName:    'Add your business name',
+  brandLogo:    'Upload your logo',
+  brandColour:  'Pick a brand colour',
+  contactInfo:  'Add a phone or email',
   brandAddress: 'Add your address',
-  bankDetails: 'Add bank details',
+  bankDetails:  'Add bank details',
 }
 
 function buildProfileSteps(profileSettings) {
   return [
-    {
-      key:  'brandName',
-      done: !!profileSettings.brandName?.trim(),
-    },
-    {
-      key:  'brandLogo',
-      done: !!profileSettings.brandLogo,
-    },
-    {
-      key:  'brandColour',
-      done: !!(profileSettings.brandColour?.trim() && profileSettings.brandColour !== '#1C1814'),
-    },
-    {
-      key:  'contactInfo',
-      done: !!(profileSettings.brandPhone?.trim() || profileSettings.brandEmail?.trim()),
-    },
-    {
-      key:  'brandAddress',
-      done: !!profileSettings.brandAddress?.trim(),
-    },
-    {
-      key:  'bankDetails',
-      done: !!(
-        profileSettings.accountBank?.trim() &&
-        profileSettings.accountNumber?.trim() &&
-        profileSettings.accountName?.trim()
-      ),
-    },
+    { key: 'brandName',    done: !!profileSettings.brandName?.trim() },
+    { key: 'brandLogo',    done: !!profileSettings.brandLogo },
+    { key: 'brandColour',  done: !!(profileSettings.brandColour?.trim() && profileSettings.brandColour !== '#1C1814') },
+    { key: 'contactInfo',  done: !!(profileSettings.brandPhone?.trim() || profileSettings.brandEmail?.trim()) },
+    { key: 'brandAddress', done: !!profileSettings.brandAddress?.trim() },
+    { key: 'bankDetails',  done: !!(profileSettings.accountBank?.trim() && profileSettings.accountNumber?.trim() && profileSettings.accountName?.trim()) },
   ]
 }
 
-
 function Home({ onMenuClick, onGoToCustomer }) {
-
   const navigate = useNavigate()
-  const { user } = useAuth()
-  const { customers, loading: loadingCustomers } = useCustomers()
-  const { allOrders } = useOrders()
-  const { tasks, loading: loadingTasks } = useTasks()
-  const { allInvoices } = useInvoices()
+
+  const { user }                                                          = useAuth()
+  const { customers, loading: loadingCustomers }                          = useCustomers()
+  const { allOrders }                                                     = useOrders()
+  const { tasks, loading: loadingTasks }                                  = useTasks()
+  const { allInvoices }                                                   = useInvoices()
   const { upcoming, todayAppointments, recent: recentAppts, missedCount, upcomingThisWeek } = useAppointments()
-  const { pushEnabled, requestPushPermission } = useNotifications()
-  const { generalSettings } = useGeneralSettings()
-  const { allPayments } = usePayments()
-  const { drafts } = useAutonomousAgent()
-  const { profileSettings, isLoading: profileLoading } = useProfileSettings()
+  const { pushEnabled, requestPushPermission }                            = useNotifications()
+  const { generalSettings }                                               = useGeneralSettings()
+  const { allPayments }                                                   = usePayments()
+  const { drafts }                                                        = useAutonomousAgent()
+  const { profileSettings, isLoading: profileLoading }                   = useProfileSettings()
+  const { goal, derived, loading: goalLoading, saveGoal, removeGoal }    = useRevenueGoal()
 
   const [isBannerDismissed, setIsBannerDismissed] = useState(loadNotificationDismissed)
-  const [revenueGoal, setRevenueGoal]             = useState(loadRevenueGoal)
-  const [isGoalModalOpen, setIsGoalModalOpen]     = useState(false)
-  const [selectedOrder, setSelectedOrder]         = useState(null)
+  const [isGoalModalOpen,   setIsGoalModalOpen]   = useState(false)
+  const [selectedOrder,     setSelectedOrder]     = useState(null)
 
   const greetingTextRef  = useRef(getGreeting())
   const greetingEmojiRef = useRef(getGreetingEmoji())
@@ -182,36 +149,28 @@ function Home({ onMenuClick, onGoToCustomer }) {
     return new Date(`${dueDate}T23:59:59`) < new Date()
   }
 
-  const totalCustomers = customers.length
-
-  const newCustomersThisMonth = customers.filter(customer => {
-    if (!customer.date) return false
-    const date = new Date(customer.date)
+  const totalCustomers        = customers.length
+  const newCustomersThisMonth = customers.filter(c => {
+    if (!c.date) return false
+    const date = new Date(c.date)
     return date.getMonth() === now.getMonth() && date.getFullYear() === now.getFullYear()
   }).length
 
   const topCustomer = (() => {
     if (!customers.length) return { name: '—', orderCount: 0, totalSpend: 0 }
-
     const orderCountById = {}
     const totalSpendById = {}
-
     allOrders.forEach(order => {
       if (!order.customerId) return
       orderCountById[order.customerId] = (orderCountById[order.customerId] || 0) + 1
       totalSpendById[order.customerId] = (totalSpendById[order.customerId] || 0) + (Number(order.price) || 0)
     })
-
-    let topId    = null
-    let topCount = 0
-
+    let topId = null, topCount = 0
     Object.entries(orderCountById).forEach(([id, count]) => {
       if (count > topCount) { topCount = count; topId = id }
     })
-
     const topData = topId ? customers.find(c => c.id === topId) : customers[0]
     if (!topData) return { name: '—', orderCount: 0, totalSpend: 0 }
-
     return {
       name:       topData.name || `${topData.firstName ?? ''} ${topData.lastName ?? ''}`.trim() || '—',
       orderCount: orderCountById[topData.id] || 0,
@@ -222,7 +181,7 @@ function Home({ onMenuClick, onGoToCustomer }) {
   const topCustomerMeta = (() => {
     const { orderCount, totalSpend } = topCustomer
     if (!orderCount) return null
-    const parts      = []
+    const parts = []
     const spendLabel = formatNairaCompact(totalSpend)
     if (spendLabel) parts.push(spendLabel)
     parts.push(`${orderCount} order${orderCount !== 1 ? 's' : ''}`)
@@ -237,11 +196,11 @@ function Home({ onMenuClick, onGoToCustomer }) {
     return o.createdAt && new Date(o.createdAt) >= oneWeekAgo
   }).length
 
-  const overdueInvoices         = allInvoices.filter(isInvoiceOverdue)
-  const zeroPaymentInvoices     = allInvoices.filter(i => i.status === 'unpaid')
-  const overdueCount            = overdueInvoices.length
-  const zeroPaymentDueToday     = zeroPaymentInvoices.filter(i => getInvoiceDueDate(i) === todayStr).length
-  const zeroPaymentDueThisWeek  = zeroPaymentInvoices.filter(i => dueThisWeek(getInvoiceDueDate(i))).length
+  const overdueInvoices        = allInvoices.filter(isInvoiceOverdue)
+  const zeroPaymentInvoices    = allInvoices.filter(i => i.status === 'unpaid')
+  const overdueCount           = overdueInvoices.length
+  const zeroPaymentDueToday    = zeroPaymentInvoices.filter(i => getInvoiceDueDate(i) === todayStr).length
+  const zeroPaymentDueThisWeek = zeroPaymentInvoices.filter(i => dueThisWeek(getInvoiceDueDate(i))).length
 
   const pendingTasks         = tasks.filter(t => !t.done && !isTaskOverdue(t))
   const overdueTasks         = tasks.filter(t => isTaskOverdue(t))
@@ -254,33 +213,11 @@ function Home({ onMenuClick, onGoToCustomer }) {
 
   const todayAppointmentCount = todayAppointments.length
 
-  function sumPaymentsInRange(fromDate, toDate = null) {
-    if (!revenueGoal) return 0
-    return allPayments
-      .flatMap(p => (p.installments || []).filter(inst => {
-        const dateStr = inst.date || p.date
-        if (!dateStr) return false
-        const date = new Date(dateStr)
-        if (date < fromDate) return false
-        if (toDate && date >= toDate) return false
-        return true
-      }))
-      .reduce((sum, inst) => sum + (Number(inst.amount) || 0), 0)
-  }
-
-  const currentPeriodStart  = revenueGoal ? getWindowStart(revenueGoal.period)     : null
-  const previousPeriodStart = revenueGoal ? getPrevWindowStart(revenueGoal.period) : null
-  const revenueThisPeriod   = revenueGoal ? sumPaymentsInRange(currentPeriodStart) : 0
-  const revenueLastPeriod   = revenueGoal ? sumPaymentsInRange(previousPeriodStart, currentPeriodStart) : 0
-  const revenueGoalPercent  = revenueGoal?.goal > 0 ? Math.min(Math.round((revenueThisPeriod / revenueGoal.goal) * 100), 100) : 0
-  const revenueDelta        = revenueThisPeriod - revenueLastPeriod
-  const isRevenueUp         = revenueDelta >= 0
-
   const urgentItems = []
 
   const soonAppointment = upcoming.find(appt => {
     if (!appt.date || !appt.time || appt.date !== todayStr) return false
-    const [h, m]  = appt.time.split(':').map(Number)
+    const [h, m]   = appt.time.split(':').map(Number)
     const apptTime = new Date(); apptTime.setHours(h, m, 0, 0)
     const msUntil  = apptTime - Date.now()
     return msUntil > 0 && msUntil < 2 * 60 * 60 * 1000
@@ -291,36 +228,17 @@ function Home({ onMenuClick, onGoToCustomer }) {
     const apptTime = new Date(); apptTime.setHours(h, m, 0, 0)
     const minsLeft = Math.round((apptTime - Date.now()) / 60_000)
     const suffix   = soonAppointment.customerName ? ` · ${soonAppointment.customerName}` : ''
-    urgentItems.push({
-      icon:  APPOINTMENT_TYPE_ICONS[soonAppointment.type] || 'event',
-      text:  `Appointment in ${minsLeft} min${minsLeft !== 1 ? 's' : ''}${suffix}`,
-      route: '/appointments',
-    })
+    urgentItems.push({ icon: APPOINTMENT_TYPE_ICONS[soonAppointment.type] || 'event', text: `Appointment in ${minsLeft} min${minsLeft !== 1 ? 's' : ''}${suffix}`, route: '/appointments' })
   }
-
-  if (overdueTasks.length > 0) urgentItems.push({
-    icon:  'assignment_late',
-    text:  `${overdueTasks.length} overdue task${overdueTasks.length > 1 ? 's' : ''}`,
-    route: '/tasks',
-  })
-
-  if (activeOrdersDueToday > 0) urgentItems.push({
-    icon:  'local_shipping',
-    text:  `${activeOrdersDueToday} order${activeOrdersDueToday > 1 ? 's' : ''} due today`,
-    route: '/orders',
-  })
-
-  if (overdueCount > 0) urgentItems.push({
-    icon:  'receipt_long',
-    text:  `${overdueCount} overdue invoice${overdueCount > 1 ? 's' : ''}`,
-    route: '/invoices',
-  })
+  if (overdueTasks.length > 0)     urgentItems.push({ icon: 'assignment_late', text: `${overdueTasks.length} overdue task${overdueTasks.length > 1 ? 's' : ''}`,         route: '/tasks'        })
+  if (activeOrdersDueToday > 0)    urgentItems.push({ icon: 'local_shipping',  text: `${activeOrdersDueToday} order${activeOrdersDueToday > 1 ? 's' : ''} due today`,    route: '/orders'       })
+  if (overdueCount > 0)            urgentItems.push({ icon: 'receipt_long',    text: `${overdueCount} overdue invoice${overdueCount > 1 ? 's' : ''}`,                    route: '/invoices'     })
 
   const orderStatSub = (() => {
-    if (activeOrders.length === 0)    return { text: 'All orders sent',                        color: '#22c55e' }
-    if (activeOrdersDueToday > 0)     return { text: `${activeOrdersDueToday} due today`,      color: '#ef4444' }
-    if (activeOrdersDueThisWeek > 0)  return { text: `${activeOrdersDueThisWeek} due this wk`, color: '#fb923c' }
-    if (ordersCreatedThisWeek > 0)    return { text: `${ordersCreatedThisWeek} new this wk`,   color: '#818cf8' }
+    if (activeOrders.length === 0)   return { text: 'All orders sent',                        color: '#22c55e' }
+    if (activeOrdersDueToday > 0)    return { text: `${activeOrdersDueToday} due today`,      color: '#ef4444' }
+    if (activeOrdersDueThisWeek > 0) return { text: `${activeOrdersDueThisWeek} due this wk`, color: '#fb923c' }
+    if (ordersCreatedThisWeek > 0)   return { text: `${ordersCreatedThisWeek} new this wk`,   color: '#818cf8' }
     return null
   })()
 
@@ -340,64 +258,25 @@ function Home({ onMenuClick, onGoToCustomer }) {
   })()
 
   const taskStatSub = (() => {
-    if (pendingTasks.length === 0 && overdueTasks.length === 0) return { text: '+ New task',                  color: '#22c55e' }
-    if (overdueTasks.length > 0)  return { text: `${overdueTasks.length} overdue`,          color: '#ef4444' }
-    if (tasksDueToday > 0)        return { text: `${tasksDueToday} due today`,              color: '#ef4444' }
-    if (tasksDueThisWeek > 0)     return { text: `${tasksDueThisWeek} due this wk`,         color: '#fb923c' }
-    if (tasksCreatedThisWeek > 0) return { text: `${tasksCreatedThisWeek} new this wk`,     color: '#818cf8' }
+    if (pendingTasks.length === 0 && overdueTasks.length === 0) return { text: '+ New task',              color: '#22c55e' }
+    if (overdueTasks.length > 0)  return { text: `${overdueTasks.length} overdue`,      color: '#ef4444' }
+    if (tasksDueToday > 0)        return { text: `${tasksDueToday} due today`,          color: '#ef4444' }
+    if (tasksDueThisWeek > 0)     return { text: `${tasksDueThisWeek} due this wk`,     color: '#fb923c' }
+    if (tasksCreatedThisWeek > 0) return { text: `${tasksCreatedThisWeek} new this wk`, color: '#818cf8' }
     return null
   })()
 
   const STAT_CARDS = [
-    {
-      desktopIcon: 'shopping_bag',
-      value:       activeOrders.length,
-      label:       'Active Orders',
-      sub:         orderStatSub?.text ?? null,
-      subColor:    orderStatSub?.color ?? 'var(--text3)',
-      route:       '/orders',
-    },
-    {
-      desktopIcon: 'receipt_long',
-      value:       zeroPaymentInvoices.length,
-      label:       'Unpaid Invoices',
-      sub:         invoiceStatSub?.text ?? null,
-      subColor:    invoiceStatSub?.color ?? 'var(--text3)',
-      route:       '/invoices',
-      tooltip:     'Only invoices with no payment recorded yet.',
-    },
-    {
-      desktopIcon: 'event',
-      value:       todayAppointmentCount,
-      label:       "Today's Appts",
-      sub:         appointmentStatSub?.text ?? null,
-      subColor:    appointmentStatSub?.color ?? 'var(--text3)',
-      route:       '/appointments',
-    },
-    {
-      desktopIcon: 'task_alt',
-      value:       pendingTasks.length,
-      label:       'Pending Tasks',
-      sub:         taskStatSub?.text ?? null,
-      subColor:    taskStatSub?.color ?? 'var(--text3)',
-      route:       '/tasks',
-    },
+    { desktopIcon: 'shopping_bag',  value: activeOrders.length,        label: 'Active Orders',   sub: orderStatSub?.text       ?? null, subColor: orderStatSub?.color       ?? 'var(--text3)', route: '/orders'       },
+    { desktopIcon: 'receipt_long',  value: zeroPaymentInvoices.length, label: 'Unpaid Invoices', sub: invoiceStatSub?.text     ?? null, subColor: invoiceStatSub?.color     ?? 'var(--text3)', route: '/invoices',    tooltip: 'Only invoices with no payment recorded yet.' },
+    { desktopIcon: 'event',         value: todayAppointmentCount,      label: "Today's Appts",   sub: appointmentStatSub?.text ?? null, subColor: appointmentStatSub?.color ?? 'var(--text3)', route: '/appointments' },
+    { desktopIcon: 'task_alt',      value: pendingTasks.length,        label: 'Pending Tasks',   sub: taskStatSub?.text        ?? null, subColor: taskStatSub?.color        ?? 'var(--text3)', route: '/tasks'        },
   ]
 
-  const recentActiveOrders = activeOrders.slice(0, 3)
-
-  const recentTasks = [...tasks].sort(
-    (a, b) => new Date(b.updatedAt || b.createdAt || 0) - new Date(a.updatedAt || a.createdAt || 0)
-  ).slice(0, 3)
-
+  const recentActiveOrders   = activeOrders.slice(0, 3)
+  const recentTasks          = [...tasks].sort((a, b) => new Date(b.updatedAt || b.createdAt || 0) - new Date(a.updatedAt || a.createdAt || 0)).slice(0, 3)
   const upcomingAppointments = upcoming.slice(0, 3)
   const pastAppointments     = recentAppts.slice(0, 3)
-
-  function handleSaveRevenueGoal(goalData) {
-    setRevenueGoal(goalData)
-    localStorage.setItem(REVENUE_GOAL_STORAGE_KEY, JSON.stringify(goalData))
-    setIsGoalModalOpen(false)
-  }
 
   async function handleEnableNotifications() {
     await requestPushPermission()
@@ -409,10 +288,8 @@ function Home({ onMenuClick, onGoToCustomer }) {
     localStorage.setItem(NOTIFICATION_DISMISSED_KEY, 'true')
   }
 
-
   return (
     <div className={styles.pageWrapper}>
-
       <Header onMenuClick={onMenuClick} agentPendingCount={agentDraftCount} />
 
       <main className={styles.main}>
@@ -432,10 +309,7 @@ function Home({ onMenuClick, onGoToCustomer }) {
           </section>
 
           {showNotificationBanner && (
-            <NotificationBanner
-              onEnable={handleEnableNotifications}
-              onDismiss={dismissNotificationBanner}
-            />
+            <NotificationBanner onEnable={handleEnableNotifications} onDismiss={dismissNotificationBanner} />
           )}
 
           {showInstallBanner && <InstallBanner />}
@@ -454,29 +328,23 @@ function Home({ onMenuClick, onGoToCustomer }) {
 
           <section className={styles.statsGrid}>
             {ordersReady && invoicesReady && appointmentsReady && tasksReady ? (
-              STAT_CARDS.map((card, i) => (
-                <StatCard key={i} card={card} navigate={navigate} />
-              ))
+              STAT_CARDS.map((card, i) => <StatCard key={i} card={card} navigate={navigate} />)
             ) : (
               [0, 1, 2, 3].map(i => <StatCardSkeleton key={i} />)
             )}
           </section>
 
-          {paymentsReady ? (
-            revenueGoal ? (
-              <RevenueGoalCard
-                goal={revenueGoal}
-                earned={revenueThisPeriod}
-                goalPercent={revenueGoalPercent}
-                delta={revenueDelta}
-                isUp={isRevenueUp}
-                onOpen={() => setIsGoalModalOpen(true)}
-              />
-            ) : (
-              <EmptyRevenueCard onOpen={() => setIsGoalModalOpen(true)} />
-            )
+          {goalLoading ? (
+            <CardSkeleton height={110} />
+          ) : goal && derived ? (
+            <RevenueGoalCard
+              goal={goal}
+              derived={derived}
+              onEdit={() => setIsGoalModalOpen(true)}
+              onDelete={removeGoal}
+            />
           ) : (
-            <CardSkeleton height={100} />
+            <EmptyRevenueCard onOpen={() => setIsGoalModalOpen(true)} />
           )}
 
           {customersReady ? (
@@ -493,8 +361,9 @@ function Home({ onMenuClick, onGoToCustomer }) {
 
           {isGoalModalOpen && (
             <RevenueGoalModal
-              onSave={handleSaveRevenueGoal}
+              onSave={async (data) => { await saveGoal(data); setIsGoalModalOpen(false) }}
               onClose={() => setIsGoalModalOpen(false)}
+              existingGoal={goal}
             />
           )}
 
@@ -510,14 +379,12 @@ function Home({ onMenuClick, onGoToCustomer }) {
             <SectionSkeleton />
           )}
 
-          {appointmentsReady ? (
-            pastAppointments.length > 0 && (
-              <PastAppointmentsSection
-                appointments={pastAppointments}
-                onSeeAll={() => navigate('/appointments')}
-              />
-            )
-          ) : null}
+          {appointmentsReady && pastAppointments.length > 0 && (
+            <PastAppointmentsSection
+              appointments={pastAppointments}
+              onSeeAll={() => navigate('/appointments')}
+            />
+          )}
 
           <QuickActionsSection onNavigate={navigate} />
 
@@ -535,10 +402,7 @@ function Home({ onMenuClick, onGoToCustomer }) {
 
           {tasksReady ? (
             recentTasks.length > 0 && (
-              <RecentTasksSection
-                tasks={recentTasks}
-                onSeeAll={() => navigate('/tasks')}
-              />
+              <RecentTasksSection tasks={recentTasks} onSeeAll={() => navigate('/tasks')} />
             )
           ) : (
             <SectionSkeleton />
@@ -557,7 +421,6 @@ function Home({ onMenuClick, onGoToCustomer }) {
       </main>
 
       <BottomNav />
-
     </div>
   )
 }

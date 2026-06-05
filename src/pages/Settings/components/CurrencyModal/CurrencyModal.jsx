@@ -8,6 +8,7 @@ import styles from './CurrencyModal.module.css'
 
 
 function formatPreview(currency, symbolPosition, decimals, numberFormat) {
+
   const symbol = currency?.symbol ?? '₦'
   const amount = 1234.5
 
@@ -42,7 +43,7 @@ export function CurrencyModal({ currentSettings, onBack, onSave }) {
 
   return (
     <>
-      <FullModal title="Currency" onBack={onBack} onSave={handleSave}>
+      <FullModal title="Apps's Currency" onBack={onBack} onSave={handleSave}>
         <div>
 
           <FieldGroup>

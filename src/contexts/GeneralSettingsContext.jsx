@@ -9,6 +9,11 @@ export const DEFAULTS = {
   accentColor:  null,
   dateFormat: 'DD/MM/YYYY',
 
+  currency: '₦',
+  currencySymbolPosition: 'prefix',
+  currencyDecimals: 2,
+  currencyNumberFormat: 'anglophone',
+
   measureUnit:   'in',
   measureFormat: 'decimal',
 

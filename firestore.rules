@@ -81,6 +81,10 @@ service cloud.firestore {
         allow read, write: if request.auth != null && request.auth.uid == uid;
       }
 
+      match /revenueGoal/{docId} {
+        allow read, write: if request.auth != null && request.auth.uid == uid;
+      }
+
       match /reviews/{reviewId} {
         allow read: if true;
         allow write: if request.auth != null && request.auth.uid == uid;

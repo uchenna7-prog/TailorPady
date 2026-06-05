@@ -4,36 +4,11 @@ import styles from './BottomNav.module.css'
 
 
 const NAV_ITEMS = [
-  { 
-    icon: 'dashboard',     
-    label: 'Dashboard',    
-    route: '/'             
-  },
-
-  { 
-    icon: 'groups',        
-    label: 'Customers',    
-    route: '/customers'    
-  },
-
-  { 
-    icon: 'event',         
-    label: 'Appointments', 
-    route: '/appointments' 
-  },
-
-  { 
-    icon: 'shopping_cart', 
-    label: 'All Orders',       
-    route: '/orders'       
-  },
-
-  { 
-    icon: 'assignment',    
-    label: 'Tasks',        
-    route: '/tasks'        
-  },
-
+  { icon: 'dashboard',     label: 'Dashboard',    route: '/'             },
+  { icon: 'groups',        label: 'Customers',    route: '/customers'    },
+  { icon: 'event',         label: 'Appointments', route: '/appointments' },
+  { icon: 'shopping_cart', label: 'All Orders',   route: '/orders'       },
+  { icon: 'assignment',    label: 'Tasks',        route: '/tasks'        },
 ]
 
 function BottomNav() {
@@ -42,15 +17,13 @@ function BottomNav() {
   const { pathname } = useLocation()
   const [hidden, setHidden] = useState(false)
 
-  const lastY   = useRef(0)
-  const ticking = useRef(false)
+  const lastY      = useRef(0)
+  const ticking    = useRef(false)
+  const hiddenRef  = useRef(false)
 
   useEffect(() => {
-
     const onScroll = (e) => {
-
-      const target = e.target
-      if (!target || target === document) return
+      const target = e.target.scrollingElement ?? e.target
 
       if (ticking.current) return
       ticking.current = true
@@ -59,8 +32,14 @@ function BottomNav() {
         const currentY = target.scrollTop
         const delta    = currentY - lastY.current
 
-        if (Math.abs(delta) > 4) {
-          setHidden(delta > 0 && currentY > 60)
+        if (Math.abs(delta) > 6) {
+          const shouldHide = delta > 0 && currentY > 80
+
+          if (shouldHide !== hiddenRef.current) {
+            hiddenRef.current = shouldHide
+            setHidden(shouldHide)
+          }
+
           lastY.current = currentY
         }
 
@@ -69,12 +48,10 @@ function BottomNav() {
     }
 
     setHidden(false)
+    hiddenRef.current = false
     lastY.current = 0
 
-    document.addEventListener('scroll', onScroll, { 
-      capture: true, 
-      passive: true 
-    })
+    document.addEventListener('scroll', onScroll, { capture: true, passive: true })
     return () => document.removeEventListener('scroll', onScroll, { capture: true })
   }, [pathname])
 

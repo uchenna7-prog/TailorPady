@@ -137,5 +137,17 @@ export function useInvoiceActions({ customerData, orders, showToast, setActiveTa
     }
   }, [customerData, showToast])
 
-  return { handleGenerateInvoice, handleInvoicePaid }
+
+  const handleDeleteInvoice = useCallback(async (invoiceId) => {
+  try {
+    await customerData.deleteInvoice(invoiceId)
+    showToast('Invoice deleted')
+  } catch {
+    showToast('Failed to delete invoice.')
+  }
+}, [customerData, showToast])
+
+  return { handleGenerateInvoice, handleInvoicePaid, handleDeleteInvoice }
+
+ 
 }

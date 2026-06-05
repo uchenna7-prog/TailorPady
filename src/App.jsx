@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { Routes, Route, Navigate, useNavigate } from 'react-router-dom'
 import { useAuth } from './contexts/AuthContext'
 import RequireAuth from './components/RequireAuth/RequireAuth'
+import ScrollToTop from './components/ScrollToTop/ScrollToTop'
 import SideBar from './components/SideBar/SideBar'
 import Login from './pages/Login/Login'
 import Signup from './pages/Signup/Signup'
@@ -35,34 +36,34 @@ function GuestRoute({ children }) {
 
 function AppShell() {
   const [sidebarOpen, setSidebarOpen] = useState(false)
-  const menuClick = () => setSidebarOpen(true)
-  const navigate  = useNavigate()
+  const navigate = useNavigate()
 
   return (
     <div className="appShell">
       <SideBar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
       <div className="appContent">
+        <ScrollToTop />
         <Routes>
-          <Route path="/"                              element={<Home onMenuClick={menuClick} />} />
-          <Route path="/appointments"                  element={<Appointments onMenuClick={menuClick} />} />
-          <Route path="/customers"                     element={<Customers onMenuClick={menuClick} />} />
-          <Route path="/customers/:id"                 element={<CustomerDetail onMenuClick={menuClick} />} />
-          <Route path="/customers/:id/body-measurements" element={<CustomerBodyMeasurements onMenuClick={menuClick} />} />
-          <Route path="/tasks"                         element={<Tasks onMenuClick={menuClick} />} />
-          <Route path="/orders"                        element={<Orders onMenuClick={menuClick} onGoToCustomer={id => navigate(`/customers/${id}`)} />} />
-          <Route path="/invoices"                      element={<Invoices onMenuClick={menuClick} />} />
-          <Route path="/receipts"                      element={<Receipts onMenuClick={menuClick} />} />
-          <Route path="/payments"                      element={<AllPayments onMenuClick={menuClick} />} />
-          <Route path="/inventory"                     element={<Inventory onMenuClick={menuClick} />} />
-          <Route path="/reports"                       element={<Reports onMenuClick={menuClick} />} />
-          <Route path="/gallery"                       element={<Gallery onMenuClick={menuClick} />} />
-          <Route path="/settings"                      element={<Settings onMenuClick={menuClick} />} />
-          <Route path="/profile"                       element={<Profile onMenuClick={menuClick} />} />
-          <Route path="/contact"                       element={<Contact onMenuClick={menuClick} />} />
-          <Route path="/faq"                           element={<FAQ onMenuClick={menuClick} />} />
-          <Route path="/reviews"                       element={<Reviews onMenuClick={menuClick} />} />
-          <Route path="/agent"                         element={<Agent onMenuClick={menuClick} />} />
-          <Route path="*"                              element={<Navigate to="/" replace />} />
+          <Route path="/"                                element={<Home                    onMenuClick={() => setSidebarOpen(true)} />} />
+          <Route path="/appointments"                    element={<Appointments            onMenuClick={() => setSidebarOpen(true)} />} />
+          <Route path="/customers"                       element={<Customers               onMenuClick={() => setSidebarOpen(true)} />} />
+          <Route path="/customers/:id"                   element={<CustomerDetail          onMenuClick={() => setSidebarOpen(true)} />} />
+          <Route path="/customers/:id/body-measurements" element={<CustomerBodyMeasurements onMenuClick={() => setSidebarOpen(true)} />} />
+          <Route path="/tasks"                           element={<Tasks                   onMenuClick={() => setSidebarOpen(true)} />} />
+          <Route path="/orders"                          element={<Orders                  onMenuClick={() => setSidebarOpen(true)} onGoToCustomer={id => navigate(`/customers/${id}`)} />} />
+          <Route path="/invoices"                        element={<Invoices                onMenuClick={() => setSidebarOpen(true)} />} />
+          <Route path="/receipts"                        element={<Receipts                onMenuClick={() => setSidebarOpen(true)} />} />
+          <Route path="/payments"                        element={<AllPayments             onMenuClick={() => setSidebarOpen(true)} />} />
+          <Route path="/inventory"                       element={<Inventory               onMenuClick={() => setSidebarOpen(true)} />} />
+          <Route path="/reports"                         element={<Reports                 onMenuClick={() => setSidebarOpen(true)} />} />
+          <Route path="/gallery"                         element={<Gallery                 onMenuClick={() => setSidebarOpen(true)} />} />
+          <Route path="/settings"                        element={<Settings                onMenuClick={() => setSidebarOpen(true)} />} />
+          <Route path="/profile"                         element={<Profile                 onMenuClick={() => setSidebarOpen(true)} />} />
+          <Route path="/contact"                         element={<Contact                 onMenuClick={() => setSidebarOpen(true)} />} />
+          <Route path="/faq"                             element={<FAQ                     onMenuClick={() => setSidebarOpen(true)} />} />
+          <Route path="/reviews"                         element={<Reviews                 onMenuClick={() => setSidebarOpen(true)} />} />
+          <Route path="/agent"                           element={<Agent                   onMenuClick={() => setSidebarOpen(true)} />} />
+          <Route path="*"                                element={<Navigate to="/" replace />} />
         </Routes>
       </div>
     </div>
@@ -72,7 +73,7 @@ function AppShell() {
 export default function App() {
   return (
     <Routes>
-      <Route path="/login"  element={<GuestRoute><Login /></GuestRoute>} />
+      <Route path="/login"  element={<GuestRoute><Login  /></GuestRoute>} />
       <Route path="/signup" element={<GuestRoute><Signup /></GuestRoute>} />
       <Route
         path="/*"
