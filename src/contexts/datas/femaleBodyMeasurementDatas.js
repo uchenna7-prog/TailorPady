@@ -17,9 +17,9 @@ import biceps from '../../assets/femaleBodyMeasurementImages/biceps.jpg'
 import armLength from '../../assets/femaleBodyMeasurementImages/armLength.jpg'
 import fullSleeveLength from '../../assets/femaleBodyMeasurementImages/fullSleeveLength.jpg'
 import fullSleeveLengthCircular from '../../assets/femaleBodyMeasurementImages/fullSleeveLengthCircular.jpg'
-import sleeveLengthHalf from '../../assets/femaleBodyMeasurementImages/sleeveLengthHalf.jpg'
-import threeFourthSleeveLength from '../../assets/femaleBodyMeasurementImages/threeFourthSleeveLength.jpg'
-import threeFourthSleeveLengthCircular from '../../assets/femaleBodyMeasurementImages/threeFourthSleeveLengthCircular.jpg'
+import armLengthHalf from '../../assets/femaleBodyMeasurementImages/armLengthHalf.jpg'
+import threeQuarterSleeveLength from '../../assets/femaleBodyMeasurementImages/threeQuarterSleeveLength.jpg'
+import threeQuarterSleeveLengthCircular from '../../assets/femaleBodyMeasurementImages/threeQuarterSleeveLengthCircular.jpg'
 import elbowLength from '../../assets/femaleBodyMeasurementImages/elbowLength.jpg'
 import elbowCircular from '../../assets/femaleBodyMeasurementImages/elbowCircular.jpg'
 import shortSleeveLength from "../../assets/femaleBodyMeasurementImages/shortSleeveLength.jpg"
@@ -31,10 +31,10 @@ import stomach from '../../assets/femaleBodyMeasurementImages/stomach.jpg'
 import waist from '../../assets/femaleBodyMeasurementImages/waist.jpg'
 import blouseLength from '../../assets/femaleBodyMeasurementImages/blouseLength.jpg'
 import shirtLength from '../../assets/femaleBodyMeasurementImages/shirtLength.jpg'
-import stomachLength from '../../assets/femaleBodyMeasurementImages/stomachLength.jpg'
-import waistLength from '../../assets/femaleBodyMeasurementImages/waistLength.jpg'
+import shoulderToStomachLength from '../../assets/femaleBodyMeasurementImages/shoulderToStomachLength.jpg'
+import shoulderToWaistLength from '../../assets/femaleBodyMeasurementImages/shoulderToWaistLength.jpg'
 import hip from '../../assets/femaleBodyMeasurementImages/hip.jpg'
-import hipLength from '../../assets/femaleBodyMeasurementImages/hipLength.jpg'
+import shoulderToHipLength from '../../assets/femaleBodyMeasurementImages/shoulderToHipLength.jpg'
 import crotch from '../../assets/femaleBodyMeasurementImages/crotch.jpg'
 import thigh from '../../assets/femaleBodyMeasurementImages/thigh.jpg'
 import thighLength from '../../assets/femaleBodyMeasurementImages/thighLength.jpg'
@@ -54,17 +54,19 @@ export const FEMALE_BODY_MEASUREMENTS = [
   'Shoulder To Apex', 'Apex To Apex',
   'Upper Chest', 'Bust', 'Chest', 'Blouse Chest', 'Blouse Below Bust',
   'Arm Hole', 'Biceps', 'Arm Length','Full Sleeve Length', 
-  'Full Sleeve Length Circular','Sleeve Length Half',
-  'Three Fourth Sleeve Length', 'Three Fourth Sleeve Length Circular',
+  'Full Sleeve Length Circular','Arm Length Half',
+  'Three Quarter Sleeve Length', 'Three Quarter Sleeve Length Circular',
   'Elbow Length', 'Elbow Circular',
   "Short Sleeve Length","Short Sleeve Length Circular",
   'Cap Sleeve', 'Cap Sleeve Circular',
   'Wrist',
+
   // Mid body
-  'Stomach', 'Waist',
-  'Blouse Length', 'Shirt Length', 'Stomach Length', 'Waist Length',
+  'Blouse Length', 'Shirt Length','Shoulder To Waist Length', 'Shoulder To Stomach Length', 'Shoulder To Hip Length',
+  'Waist','Stomach' ,'Hip',  
+  
   // Lower body
-  'Hip', 'Hip Length', 'Crotch',
+  'Crotch',
   'Thigh', 'Thigh Length', 'Knee Length',
   'Calf', 'Calf To Ankle', 'Ankle',
   'Wrist To Ankle', 'Full Height', 'Kurthi Height',
@@ -92,29 +94,28 @@ export const FEMALE_BODY_MEASUREMENT_IMAGES = {
   'Arm Length': armLength,
   'Full Sleeve Length': fullSleeveLength,
   'Full Sleeve Length Circular': fullSleeveLengthCircular,
-  'Sleeve Length Half': sleeveLengthHalf,
-  'Three Fourth Sleeve Length': threeFourthSleeveLength,
-  'Three Fourth Sleeve Length Circular': threeFourthSleeveLengthCircular,
+  'Arm Length Half': armLengthHalf,
+  'Three Quarter Sleeve Length': threeQuarterSleeveLength,
+  'Three Quarter Sleeve Length Circular': threeQuarterSleeveLengthCircular,
   'Elbow Length': elbowLength,
   'Elbow Circular': elbowCircular,
   "Short Sleeve Length": shortSleeveLength,
   "Short Sleeve Length Circular": shortSleeveLengthCircular,
   'Cap Sleeve': capSleeve,
   'Cap Sleeve Circular': capSleeveCircular,
-
-
-
   'Wrist': wrist,
+
   // Mid body
-  'Stomach': stomach,
-  'Waist': waist,
   'Blouse Length': blouseLength,
   'Shirt Length': shirtLength,
-  'Stomach Length': stomachLength,
-  'Waist Length': waistLength,
-  // Lower body 
+  'Shoulder To Waist Length': shoulderToWaistLength,
+  'Shoulder To Stomach Length': shoulderToStomachLength,
+  'Shoulder To Hip Length': shoulderToHipLength,
+  'Waist': waist,
+  'Stomach': stomach,
   'Hip': hip,
-  'Hip Length': hipLength,
+
+  // Lower body 
   'Crotch': crotch,
   'Thigh': thigh,
   'Thigh Length': thighLength,
