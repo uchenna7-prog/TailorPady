@@ -1,142 +1,103 @@
-// src/services/cloudinaryService.js
-// ─────────────────────────────────────────────────────────────
-// Cloudinary upload utility.
-// Compresses images client-side before uploading to save
-// bandwidth and Cloudinary quota, without distorting images.
-// ─────────────────────────────────────────────────────────────
+const CLOUDINARY_CLOUD_NAME   = 'dzqrelgbd'
+const CLOUDINARY_UPLOAD_PRESET = 'TailorPadyUploads'
+const CLOUDINARY_UPLOAD_URL    = `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/image/upload`
 
-const CLOUD_NAME  = 'dzqrelgbd'
-const UPLOAD_PRESET = 'TailorPadyUploads'
-const UPLOAD_URL  = `https://api.cloudinary.com/v1_1/${CLOUD_NAME}/image/upload`
+const MAX_IMAGE_DIMENSION = 1200
+const JPEG_QUALITY        = 0.82
 
-// ── Compression config ────────────────────────────────────────
-const MAX_DIMENSION = 1200   // px — longest side, aspect ratio preserved
-const QUALITY       = 0.82   // 82% — visually identical, ~60% smaller
 
-/**
- * Compresses an image File/Blob before upload.
- * Maintains aspect ratio — never stretches or crops.
- * Returns a Blob.
- */
-async function compressImage(file) {
+async function compressImageBeforeUpload(imageFile) {
   return new Promise((resolve, reject) => {
-    const img = new Image()
-    const url = URL.createObjectURL(file)
+    const image    = new Image()
+    const imageUrl = URL.createObjectURL(imageFile)
 
-    img.onload = () => {
-      URL.revokeObjectURL(url)
+    image.onload = () => {
+      URL.revokeObjectURL(imageUrl)
 
-      let { width, height } = img
+      let targetWidth  = image.width
+      let targetHeight = image.height
 
-      // Only downscale — never upscale
-      if (width > MAX_DIMENSION || height > MAX_DIMENSION) {
-        if (width >= height) {
-          height = Math.round((height / width) * MAX_DIMENSION)
-          width  = MAX_DIMENSION
+      const needsDownscaling = targetWidth > MAX_IMAGE_DIMENSION || targetHeight > MAX_IMAGE_DIMENSION
+
+      if (needsDownscaling) {
+        const isLandscape = targetWidth >= targetHeight
+        if (isLandscape) {
+          targetHeight = Math.round((targetHeight / targetWidth) * MAX_IMAGE_DIMENSION)
+          targetWidth  = MAX_IMAGE_DIMENSION
         } else {
-          width  = Math.round((width / height) * MAX_DIMENSION)
-          height = MAX_DIMENSION
+          targetWidth  = Math.round((targetWidth / targetHeight) * MAX_IMAGE_DIMENSION)
+          targetHeight = MAX_IMAGE_DIMENSION
         }
       }
 
-      const canvas = document.createElement('canvas')
-      canvas.width  = width
-      canvas.height = height
+      const canvas        = document.createElement('canvas')
+      canvas.width        = targetWidth
+      canvas.height       = targetHeight
 
       const ctx = canvas.getContext('2d')
-      ctx.drawImage(img, 0, 0, width, height)
+      ctx.drawImage(image, 0, 0, targetWidth, targetHeight)
 
-      // Preserve format: PNG stays PNG (lossless), everything else → JPEG
-      const mimeType = file.type === 'image/png' ? 'image/png' : 'image/jpeg'
-      const quality  = mimeType === 'image/png' ? 1 : QUALITY
+      const outputMimeType = imageFile.type === 'image/png' ? 'image/png' : 'image/jpeg'
+      const outputQuality  = outputMimeType === 'image/png' ? 1 : JPEG_QUALITY
 
       canvas.toBlob(
-        (blob) => blob ? resolve(blob) : reject(new Error('Canvas compression failed')),
-        mimeType,
-        quality
+        (compressedBlob) => compressedBlob
+          ? resolve(compressedBlob)
+          : reject(new Error('Image compression failed')),
+        outputMimeType,
+        outputQuality,
       )
     }
 
-    img.onerror = () => {
-      URL.revokeObjectURL(url)
+    image.onerror = () => {
+      URL.revokeObjectURL(imageUrl)
       reject(new Error('Failed to load image for compression'))
     }
 
-    img.src = url
+    image.src = imageUrl
   })
 }
 
-/**
- * Uploads a file to Cloudinary.
- *
- * @param {File}   file    - The image file to upload
- * @param {string} folder  - Cloudinary folder e.g. 'orders', 'gallery', 'customers', 'invoices'
- * @param {function} onProgress - Optional callback (0–100)
- * @returns {Promise<string>} - The secure Cloudinary URL
- */
-export async function uploadToCloudinary(file, folder = 'general', onProgress = null) {
-  // 1. Compress
-  const compressed = await compressImage(file)
 
-  // 2. Build form data
+export async function uploadToCloudinary(imageFile, folder = 'general', onProgress = null) {
+
+  const compressedImage = await compressImageBeforeUpload(imageFile)
+
   const formData = new FormData()
-  formData.append('file',          compressed)
-  formData.append('upload_preset', UPLOAD_PRESET)
-  formData.append('folder',        `TailorPady/${folder}`)
+  formData.append('file',          compressedImage)
+  formData.append('upload_preset', CLOUDINARY_UPLOAD_PRESET)
+  formData.append('folder', `tailorpady/${folder}`)
 
-  // 3. Upload via XHR so we can track progress
   return new Promise((resolve, reject) => {
     const xhr = new XMLHttpRequest()
-    xhr.open('POST', UPLOAD_URL)
+    xhr.open('POST', CLOUDINARY_UPLOAD_URL)
 
     if (onProgress) {
-      xhr.upload.onprogress = (e) => {
-        if (e.lengthComputable) {
-          onProgress(Math.round((e.loaded / e.total) * 100))
+      xhr.upload.onprogress = (progressEvent) => {
+        if (progressEvent.lengthComputable) {
+          const percentageUploaded = Math.round((progressEvent.loaded / progressEvent.total) * 100)
+          onProgress(percentageUploaded)
         }
       }
     }
 
     xhr.onload = () => {
       if (xhr.status === 200) {
-        try {
-          const data = JSON.parse(xhr.responseText)
-          resolve(data.secure_url)
-        } catch {
-          reject(new Error('Invalid Cloudinary response'))
-        }
+        const responseData = JSON.parse(xhr.responseText)
+        resolve(responseData.secure_url)
       } else {
-        reject(new Error(`Cloudinary upload failed: ${xhr.status}`))
+      
+        reject(new Error(`Upload failed with status ${xhr.status}`))
       }
     }
 
     xhr.onerror = () => reject(new Error('Network error during upload'))
+
     xhr.send(formData)
   })
 }
 
-/**
- * Deletes a Cloudinary image by its public_id.
- * NOTE: Deletion from the frontend requires a signed request or
- * a backend/Cloud Function. For now this is a no-op placeholder.
- * Old base64 images in Firestore are unaffected.
- */
-export async function deleteFromCloudinary(publicId) {
-  // Implement via a Firebase Cloud Function if needed.
-  console.warn('[Cloudinary] Client-side deletion not supported. Use a Cloud Function.', publicId)
-}
 
-/**
- * Checks whether a string is a base64 image (legacy Firestore data).
- * Useful to conditionally show old base64 images while new ones use URLs.
- */
-export function isBase64Image(str) {
-  return typeof str === 'string' && str.startsWith('data:image')
-}
-
-/**
- * Returns true if the string is a Cloudinary URL.
- */
-export function isCloudinaryUrl(str) {
-  return typeof str === 'string' && str.includes('cloudinary.com')
+export function isCloudinaryUrl(value) {
+  return typeof value === 'string' && value.includes('cloudinary.com')
 }

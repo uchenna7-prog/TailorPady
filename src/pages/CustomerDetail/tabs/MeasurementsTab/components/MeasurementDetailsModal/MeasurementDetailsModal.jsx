@@ -100,29 +100,29 @@ export function MeasurementDetailsModal({ measurement, onClose, onDelete, onUpda
   }
 
   async function handleSave() {
-    const errors = validateDraft(draftName, draftFields)
+  const errors = validateDraft(draftName, draftFields)
 
-    if (Object.keys(errors).length > 0) {
-      setValidationErrors(errors)
-      return
-    }
-
-    const filledFields = draftFields
-      .filter(f => f.name.trim())
-      .map(f => ({ name: f.name.trim(), value: f.value }))
-
-    setIsSaving(true)
-    await onUpdate(measurement.id, {
-      name:   draftName.trim(),
-      unit:   draftUnit,
-      fields: filledFields,
-      imgSrcs: measurement.imgSrcs ?? [],
-      imgSrc:  measurement.imgSrcs?.[0] ?? measurement.imgSrc ?? null,
-    })
-    setIsSaving(false)
-    setIsEditing(false)
+  if (Object.keys(errors).length > 0) {
+    setValidationErrors(errors)
+    return
   }
 
+  const filledFields = draftFields
+    .filter(f => f.name.trim())
+    .map(f => ({ name: f.name.trim(), value: f.value }))
+
+  const updatedData = {
+    name:    draftName.trim(),
+    unit:    draftUnit,
+    fields:  filledFields,
+    imgSrcs: measurement.imgSrcs ?? [],
+    imgSrc:  measurement.imgSrcs?.[0] ?? measurement.imgSrc ?? null,
+  }
+
+  setIsEditing(false)
+  onClose()
+  onUpdate(measurement.id, updatedData)
+  }
 
   if (isEditing) {
     return (

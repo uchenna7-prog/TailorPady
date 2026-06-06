@@ -9,12 +9,12 @@ import ConfirmSheet from '../../../../components/ConfirmSheet/ConfirmSheet'
 import styles from './MeasurementsTab.module.css'
 
 
+export default function MeasurementsTab({ measurements, loading, onSave, onUpdate, onDelete, showToast }) {
 
-export default function MeasurementsTab({ measurements, loading, onSave, onDelete, showToast }) {
+  const [isAddModalOpen,       setIsAddModalOpen]       = useState(false)
+  const [selectedMeasurement,  setSelectedMeasurement]  = useState(null)
+  const [measurementToDelete,  setMeasurementToDelete]  = useState(null)
 
-  const [isAddModalOpen, setIsAddModalOpen] = useState(false)
-  const [selectedMeasurement, setSelectedMeasurement] = useState(null)
-  const [measurementToDelete, setMeasurementToDelete] = useState(null)
 
   useEffect(() => {
     const handleOpenAddModal = () => setIsAddModalOpen(true)
@@ -29,6 +29,11 @@ export default function MeasurementsTab({ measurements, loading, onSave, onDelet
     setIsAddModalOpen(false)
   }
 
+  function handleUpdate(measurementId, updatedData) {
+    onUpdate(measurementId, updatedData)
+    showToast('Measurement updated ✓')
+  }
+
   function handleCardTap(measurement) {
     setSelectedMeasurement(measurement)
   }
@@ -40,9 +45,10 @@ export default function MeasurementsTab({ measurements, loading, onSave, onDelet
 
   function handleDeleteConfirm() {
     if (!measurementToDelete) return
-    onDelete(measurementToDelete.id)
-    showToast('Measurement deleted')
+    const target = measurementToDelete
     setMeasurementToDelete(null)
+    onDelete(target.id)
+    showToast('Measurement deleted')
   }
 
   function handleDeleteCancel() {
@@ -95,6 +101,7 @@ export default function MeasurementsTab({ measurements, loading, onSave, onDelet
           measurement={selectedMeasurement}
           onClose={() => setSelectedMeasurement(null)}
           onDelete={() => handleRequestDelete(selectedMeasurement)}
+          onUpdate={handleUpdate}
         />
       )}
 

@@ -43,15 +43,16 @@ export default function OrdersTab({ customerId, orders, loading, measurements, s
   }
 
   async function handleDeleteConfirm() {
-    if (!orderToDelete) return
-    try {
-      await deleteOrder(customerId, orderToDelete.id)
-      showToast('Order deleted')
-    } catch {
-      showToast('Failed to delete order')
-    }
-    setOrderToDelete(null)
-    setSelectedOrder(null)
+  if (!orderToDelete) return
+  const target = orderToDelete
+  setOrderToDelete(null)
+  setSelectedOrder(null)
+  try {
+    await deleteOrder(customerId, target.id)
+    showToast('Order deleted')
+  } catch {
+    showToast('Failed to delete order')
+  }
   }
 
   async function handleStatusChange(orderId, newStatus) {

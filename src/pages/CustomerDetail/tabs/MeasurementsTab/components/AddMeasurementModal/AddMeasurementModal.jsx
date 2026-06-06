@@ -1,6 +1,8 @@
 import { useState, useRef } from "react"
 import { createBlankCard } from "../../utils"
 import { MultiImageUploader } from "../MultiImageUploader/MultiImageUploader"
+import { uploadToCloudinary } from "../../../../../../services/cloudinaryService"
+import {useNetworkStatus} from "../../../../../../hooks/useNetworkStatus"
 import { UNIT_FULL } from "../../../../../../datas/measurementDatas"
 import Header from "../../../../../../components/Header/Header"
 import styles from "./AddMeasurementModal.module.css"
@@ -10,16 +12,12 @@ function validateCards(cards) {
   const errors = {}
 
   cards.forEach(card => {
-    const cardErrors = {}
+    const cardErrors  = {}
+    const hasName     = card.name.trim().length > 0
+    const hasOneField = card.fields.some(f => f.name.trim().length > 0)
 
-    if (!card.name.trim()) {
-      cardErrors.name = 'Please enter a cloth type name'
-    }
-
-    const namedFields = card.fields.filter(f => f.name.trim())
-    if (namedFields.length === 0) {
-      cardErrors.fields = 'Add at least one measurement field'
-    }
+    if (!hasName)     cardErrors.name   = 'Please enter a cloth type name'
+    if (!hasOneField) cardErrors.fields = 'Add at least one measurement field'
 
     if (Object.keys(cardErrors).length > 0) {
       errors[card.id] = cardErrors
@@ -30,14 +28,33 @@ function validateCards(cards) {
 }
 
 
+async function uploadCardImages(slots) {
+  const uploadedUrls = await Promise.all(
+    slots.map(async slot => {
+      if (slot.file) {
+        return await uploadToCloudinary(slot.file, 'measurements')
+      }
+      return slot.localSrc
+    })
+  )
+  return uploadedUrls.filter(Boolean)
+}
+
+
 export function AddMeasurementModal({ isOpen, onClose, onSave }) {
-  const [unit, setUnit] = useState('in')
-  const [cards, setCards] = useState(() => [createBlankCard(1)])
+  const [unit,             setUnit]             = useState('in')
+  const [cards,            setCards]            = useState(() => [createBlankCard(1)])
   const [validationErrors, setValidationErrors] = useState({})
-  const cardRefs = useRef({})
+  const [isSaving,         setIsSaving]         = useState(false)
+  const isOnline                                = useNetworkStatus()
+  const cardRefs                                = useRef({})
+
 
   function updateCard(cardId, key, value) {
-    setCards(prev => prev.map(card => card.id === cardId ? { ...card, [key]: value } : card))
+    setCards(prev => prev.map(card =>
+      card.id === cardId ? { ...card, [key]: value } : card
+    ))
+
     if (validationErrors[cardId]?.[key]) {
       setValidationErrors(prev => {
         const updated = { ...prev }
@@ -48,9 +65,11 @@ export function AddMeasurementModal({ isOpen, onClose, onSave }) {
     }
   }
 
+
   function addCard() {
     setCards(prev => [...prev, createBlankCard(prev.length + 1)])
   }
+
 
   function removeCard(cardId) {
     setCards(prev => prev.filter(card => card.id !== cardId))
@@ -61,13 +80,16 @@ export function AddMeasurementModal({ isOpen, onClose, onSave }) {
     })
   }
 
+
   function addField(cardId) {
+    const newField = { id: Date.now() + Math.random(), name: '', value: '' }
     setCards(prev => prev.map(card =>
       card.id === cardId
-        ? { ...card, fields: [...card.fields, { id: Date.now() + Math.random(), name: '', value: '' }] }
+        ? { ...card, fields: [...card.fields, newField] }
         : card
     ))
   }
+
 
   function removeField(cardId, fieldId) {
     setCards(prev => prev.map(card =>
@@ -77,13 +99,16 @@ export function AddMeasurementModal({ isOpen, onClose, onSave }) {
     ))
   }
 
+
   function updateField(cardId, fieldId, key, value) {
     setCards(prev => prev.map(card =>
       card.id === cardId
         ? { ...card, fields: card.fields.map(f => f.id === fieldId ? { ...f, [key]: value } : f) }
         : card
     ))
-    if (key === 'name' && validationErrors[cardId]?.fields) {
+
+    const isNameFieldAndHadError = key === 'name' && validationErrors[cardId]?.fields
+    if (isNameFieldAndHadError) {
       setValidationErrors(prev => {
         const updated = { ...prev }
         delete updated[cardId].fields
@@ -93,67 +118,74 @@ export function AddMeasurementModal({ isOpen, onClose, onSave }) {
     }
   }
 
-  function scrollToFirstError(errors) {
+
+  function scrollToFirstErrorCard(errors) {
     const firstErrorCardId = Object.keys(errors)[0]
     if (!firstErrorCardId) return
-    const cardElement = cardRefs.current[firstErrorCardId]
-    if (cardElement) {
-      cardElement.scrollIntoView({ behavior: 'smooth', block: 'start' })
-    }
+    cardRefs.current[firstErrorCardId]?.scrollIntoView({ behavior: 'smooth', block: 'start' })
   }
 
-  function handleSave() {
+
+  async function handleSave() {
     const errors = validateCards(cards)
 
     if (Object.keys(errors).length > 0) {
       setValidationErrors(errors)
-      scrollToFirstError(errors)
+      scrollToFirstErrorCard(errors)
       return
     }
+
+    setIsSaving(true)
 
     const today = new Date().toLocaleDateString('en-US', {
       month: 'short', day: 'numeric', year: 'numeric',
     })
 
-    cards.forEach(card => {
-      if (!card.name.trim()) return
+    for (const card of cards) {
+      if (!card.name.trim()) continue
+
       const filledFields = card.fields
         .filter(f => f.name.trim())
         .map(f => ({ name: f.name, value: f.value }))
 
+      const imageUrls = card.slots?.length > 0
+        ? await uploadCardImages(card.slots)
+        : []
+
       onSave({
         id:      Date.now() + Math.random(),
         name:    card.name.trim(),
-        imgSrcs: card.imgSrcs,
-        imgSrc:  card.imgSrcs[0] ?? null,
+        imgSrcs: imageUrls,
+        imgSrc:  imageUrls[0] ?? null,
         unit,
         fields:  filledFields,
         date:    today,
       })
-    })
+    }
 
+    setIsSaving(false)
+    resetAndClose()
+  }
+
+
+  function resetAndClose() {
     setCards([createBlankCard(1)])
     setUnit('in')
     setValidationErrors({})
     onClose()
   }
 
-  function handleClose() {
-    setCards([createBlankCard(1)])
-    setUnit('in')
-    setValidationErrors({})
-    onClose()
-  }
 
   return (
     <div className={`${styles.formOverlay} ${isOpen ? styles.formOverlay_open : ''}`}>
       <Header
         type="back"
         title="New Measurement"
-        onBackClick={handleClose}
+        onBackClick={resetAndClose}
         customActions={[{
-          label:   'Save',
-          onClick: handleSave,
+          label:    isSaving ? 'Saving...' : 'Save',
+          onClick:  handleSave,
+          disabled: isSaving,
         }]}
       />
 
@@ -177,7 +209,7 @@ export function AddMeasurementModal({ isOpen, onClose, onSave }) {
 
           {cards.map((card, index) => {
             const cardErrors = validationErrors[card.id] || {}
-            const hasError = Object.keys(cardErrors).length > 0
+            const hasError   = Object.keys(cardErrors).length > 0
 
             return (
               <div
@@ -213,7 +245,8 @@ export function AddMeasurementModal({ isOpen, onClose, onSave }) {
                 <MultiImageUploader
                   images={card.imgSrcs}
                   cardId={card.id}
-                  onChange={urls => updateCard(card.id, 'imgSrcs', urls)}
+                  isOnline={isOnline}
+                  onChange={slots => updateCard(card.id, 'slots', slots)}
                 />
 
                 <label className={styles.fieldLabel} style={{ marginTop: 4 }}>Measurements</label>

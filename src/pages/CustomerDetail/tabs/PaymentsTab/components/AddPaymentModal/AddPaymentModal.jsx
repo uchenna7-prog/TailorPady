@@ -1,4 +1,4 @@
-import { useEffect,useRef,useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import { InlinePaymentForm } from "../InlinePaymentForm/InlinePaymentForm"
 import OrderMosaic from "../../../../../../components/OrderMosaic/OrderMosaic"
 import styles from "./AddPaymentModal.module.css"
@@ -7,21 +7,23 @@ import Header from "../../../../../../components/Header/Header"
 
 export function AddPaymentModal({ isOpen, onClose, orders, payments, onSave }) {
 
-  
   const [selectedOrderId, setSelectedOrderId] = useState(null)
-  const [search, setSearch] = useState('')
-  const [saving, setSaving] = useState(false)
-  const expandedRef = useRef(null)
+  const [search,          setSearch]          = useState('')
+  const [saving,          setSaving]          = useState(false)
+  const expandedRef                           = useRef(null)
+
 
   useEffect(() => {
     if (!isOpen) { setSelectedOrderId(null); setSearch(''); setSaving(false) }
   }, [isOpen])
+
 
   useEffect(() => {
     if (selectedOrderId && expandedRef.current) {
       setTimeout(() => expandedRef.current?.scrollIntoView({ behavior: 'smooth', block: 'nearest' }), 60)
     }
   }, [selectedOrderId])
+
 
   const orderIdsWithPayments = new Set(payments.map(p => String(p.orderId)))
   const eligibleOrders       = orders.filter(order => !orderIdsWithPayments.has(String(order.id)))
@@ -38,30 +40,38 @@ export function AddPaymentModal({ isOpen, onClose, orders, payments, onSave }) {
     )
   })
 
+
   function handleToggleOrder(order) {
     setSelectedOrderId(prev => prev === order.id ? null : order.id)
   }
 
+
   async function handleSave(paymentData) {
     setSaving(true)
-    try { await onSave(paymentData); onClose() }
-    catch { setSaving(false) }
+    onClose()
+    try {
+      await onSave(paymentData)
+    } catch {
+      setSaving(false)
+    }
   }
+
 
   const showAllHavePayments = eligibleOrders.length === 0
   const showNoSearchMatch   = eligibleOrders.length > 0 && filteredOrders.length === 0
+
 
   return (
     <div className={`${styles.pickerOverlay} ${isOpen ? styles.pickerOverlay_open : ''}`}>
       <Header
         type="back"
         title="New Payment"
-        onBackClick={saving ? undefined : onClose}
+        onBackClick={onClose}
       />
 
       {showAllHavePayments && (
         <div className={styles.pickerEmpty}>
-          <span className="mi" style={{ fontSize: '2rem', color: 'var(--text3)',textTransform: "lowercase" }}>assignment</span>
+          <span className="mi" style={{ fontSize: '2rem', color: 'var(--text3)', textTransform: 'lowercase' }}>assignment</span>
           <p>All orders already have a payment recorded.</p>
           <p>Open an existing payment to add an instalment.</p>
         </div>
@@ -69,7 +79,7 @@ export function AddPaymentModal({ isOpen, onClose, orders, payments, onSave }) {
 
       {showNoSearchMatch && (
         <div className={styles.pickerEmpty}>
-          <span className="mi" style={{ fontSize: '2rem', color: 'var(--text3)',textTransform: "lowercase"}}>search_off</span>
+          <span className="mi" style={{ fontSize: '2rem', color: 'var(--text3)', textTransform: 'lowercase' }}>search_off</span>
           <p>No orders match your search</p>
         </div>
       )}
@@ -82,7 +92,7 @@ export function AddPaymentModal({ isOpen, onClose, orders, payments, onSave }) {
 
             {showSearch && (
               <div className={styles.clothSearchBar}>
-                <span className="mi" style={{ fontSize: '1.1rem', color: 'var(--text3)',textTransform: "lowercase" }}>search</span>
+                <span className="mi" style={{ fontSize: '1.1rem', color: 'var(--text3)', textTransform: 'lowercase' }}>search</span>
                 <input
                   type="text"
                   className={styles.clothSearchInput}
@@ -95,7 +105,7 @@ export function AddPaymentModal({ isOpen, onClose, orders, payments, onSave }) {
                     style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text3)', display: 'flex', alignItems: 'center', padding: 0 }}
                     onClick={() => setSearch('')}
                   >
-                    <span className="mi" style={{ fontSize: '1rem',textTransform: "lowercase" }}>close</span>
+                    <span className="mi" style={{ fontSize: '1rem', textTransform: 'lowercase' }}>close</span>
                   </button>
                 )}
               </div>

@@ -39,14 +39,14 @@ export default function PaymentsTab({
   const groupedByDate = groupPaymentsByDate(payments)
 
   async function handleSavePayment(paymentData) {
-    try {
-      await onSavePayment(paymentData)
-      showToast('Payment recorded ✓')
-      if (paymentData.status === 'paid')      onInvoicePaid?.(paymentData.orderId, 'paid')
-      else if (paymentData.status === 'part') onInvoicePaid?.(paymentData.orderId, 'part_paid')
-    } catch {
-      showToast('Failed to save payment.')
-    }
+  try {
+    await onSavePayment(paymentData)
+    showToast('Payment recorded ✓')
+    if (paymentData.status === 'paid')      onInvoicePaid?.(paymentData.orderId, 'paid')
+    else if (paymentData.status === 'part') onInvoicePaid?.(paymentData.orderId, 'part_paid')
+  } catch {
+    showToast('Failed to save payment.')
+  }
   }
 
   async function handleStatusChange(paymentId, newStatus) {
@@ -82,15 +82,16 @@ export default function PaymentsTab({
   }
 
   async function handleConfirmDelete() {
-    if (!deleteTarget) return
-    try {
-      await onDeletePayment(deleteTarget.id)
-      showToast('Payment deleted')
-    } catch {
-      showToast('Failed to delete.')
-    }
-    setDeleteTarget(null)
-    setViewingPayment(null)
+  if (!deleteTarget) return
+  const target = deleteTarget
+  setDeleteTarget(null)
+  setViewingPayment(null)
+  try {
+    await onDeletePayment(target.id)
+    showToast('Payment deleted')
+  } catch {
+    showToast('Failed to delete.')
+  }
   }
 
   return (

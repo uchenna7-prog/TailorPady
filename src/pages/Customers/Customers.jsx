@@ -15,9 +15,9 @@ import styles from './Customers.module.css'
 export default function Customers({ onMenuClick }) {
 
   const navigate = useNavigate()
-  const { customers, addCustomer, deleteCustomer } = useCustomers()
+  const {customers, addCustomer,deleteCustomerAndAllData } = useCustomers()
   const { isPremium } = usePremium()
-
+  const [deleteConfirmModalOpen, setDeleteConfirmModalOpen] = useState(false)
   const [query,        setQuery]        = useState('')
   const [formOpen,     setFormOpen]     = useState(false)
   const [deleteTarget, setDeleteTarget] = useState(null)
@@ -88,13 +88,18 @@ export default function Customers({ onMenuClick }) {
     }
   }
 
-  const handleDeleteConfirm = () => {
-    if (!deleteTarget) return
-    deleteCustomer(deleteTarget.id)
-    showToast(`${deleteTarget.name} deleted`)
-    setDeleteTarget(null)
+  const handleDeleteConfirm = async () => {
+  const target = deleteTarget
+  setDeleteConfirmModalOpen(false)
+  setDeleteTarget(null)
+  showToast(`${target.name} deleted`)
+  try {
+    await deleteCustomerAndAllData(target.id)
+  } catch {
+    showToast('Failed to delete customer. Try again.')
   }
-
+}
+  
   const filtered = query.trim()
     ? customers.filter(c =>
         c.name.toLowerCase().includes(query.toLowerCase()) ||
@@ -215,7 +220,10 @@ export default function Customers({ onMenuClick }) {
                 customer={c}
                 isLast={idx === groupCustomers.length - 1}
                 onOpen={() => navigate(`/customers/${c.id}`)}
-                onDelete={(cust) => setDeleteTarget(cust)}
+                onDelete={(cust) => {
+                  setDeleteTarget(cust)
+                  setDeleteConfirmModalOpen(true)
+                }}
               />
             ))}
           </div>
@@ -233,11 +241,16 @@ export default function Customers({ onMenuClick }) {
         isPremium={isPremium}
       />
 
+      {deleteConfirmModalOpen && deleteTarget && (
       <DeleteConfirmSheet
         customer={deleteTarget}
         onConfirm={handleDeleteConfirm}
-        onCancel={() => setDeleteTarget(null)}
+        onCancel={() => {
+          setDeleteConfirmModalOpen(false)
+          setDeleteTarget(null)
+        }}
       />
+    )}
 
       <Toast message={toastMsg} />
       <BottomNav />

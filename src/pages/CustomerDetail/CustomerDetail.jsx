@@ -29,7 +29,7 @@ export default function CustomerDetail({ onMenuClick }) {
   const { id } = useParams()
   const navigate = useNavigate()
 
-  const { getCustomer, deleteCustomer, updateCustomer, deleteCustomerAndAllData } = useCustomers()
+  const { getCustomer, updateCustomer, deleteCustomerAndAllData } = useCustomers()
   const { allOrders } = useOrders()
   const { isPremium } = usePremium()
   const isDeletingRef = useRef(false)
@@ -179,15 +179,14 @@ export default function CustomerDetail({ onMenuClick }) {
   const handleDeleteConfirm = useCallback(async () => {
   try {
     isDeletingRef.current = true
-    await deleteCustomerAndAllData(id)
     setDeleteModalOpen(false)
-    navigate('/customers', { replace: true })
+    navigate('/customers', { replace: true })  
+    await deleteCustomerAndAllData(id) 
   } catch {
     isDeletingRef.current = false
     showToast('Failed to delete customer. Try again.')
-    setDeleteModalOpen(false)
   }
-  }, [id, deleteCustomerAndAllData, navigate, showToast])
+ }, [id, deleteCustomerAndAllData, navigate, showToast])
 
   const customer = getCustomer(id)
   if (!customer && !isDeletingRef.current) return null
@@ -200,18 +199,30 @@ export default function CustomerDetail({ onMenuClick }) {
   const hasEmail      = Boolean(customer.email?.trim())
 
   const lastOrder = orders.length > 0
-    ? orders.reduce((latest, order) => {
-        const orderDate  = order.createdAt?.toDate?.() || new Date(order.createdAt || 0)
-        const latestDate = latest.createdAt?.toDate?.() || new Date(latest.createdAt || 0)
-        return orderDate > latestDate ? order : latest
-      }, orders[0])
-    : null
+  ? orders.reduce((latest, order) => {
+      const toMs = (o) => {
+        if (o.createdAt?.toDate)   return o.createdAt.toDate().getTime()
+        if (o.createdAt?.seconds)  return o.createdAt.seconds * 1000
+        if (o.createdAt)           return new Date(o.createdAt).getTime()
+        if (o.takenAt)             return new Date(o.takenAt).getTime()
+        return 0
+      }
+      return toMs(order) > toMs(latest) ? order : latest
+    }, orders[0])
+  : null
 
   const lastOrderLabel = lastOrder
-    ? `${lastOrder.desc || 'Order'} · ${formatLastOrderDate(
-        lastOrder.createdAt?.toDate?.()?.toISOString?.() || lastOrder.createdAt || ''
-      )}`
-    : null
+  ? (() => {
+      const rawDate =
+        lastOrder.createdAt?.toDate?.()?.toISOString?.() ||
+        (lastOrder.createdAt?.seconds ? new Date(lastOrder.createdAt.seconds * 1000).toISOString() : null) ||
+        lastOrder.createdAt ||
+        lastOrder.takenAt  ||
+        null
+      const dateStr = rawDate ? formatLastOrderDate(rawDate) : 'Recently'
+      return `${lastOrder.desc || 'Order'} · ${dateStr}`
+    })()
+  : null
 
   const totalBilled = orders.reduce(
     (sum, order) => sum + (parseFloat(order.totalAmount || order.price) || 0), 0
@@ -447,6 +458,7 @@ export default function CustomerDetail({ onMenuClick }) {
             measurements={customerData.measurements}
             loading={customerData.measurementsLoading}
             onSave={customerData.saveMeasurement}
+            onUpdate={customerData.updateMeasurement}
             onDelete={customerData.deleteMeasurement}
             showToast={showToast}
           />
