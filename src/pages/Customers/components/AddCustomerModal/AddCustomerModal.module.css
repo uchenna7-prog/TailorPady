@@ -17,7 +17,6 @@
 .formPanel {
   display: flex;
   flex-direction: column;
-  flex: 1;
   min-height: 0;
   overflow: hidden;
 }
@@ -517,6 +516,12 @@
   color: var(--text);
 }
 
+@media (max-width: 768px) {
+  .formPanel {
+    flex: 1;
+  }
+}
+
 @media (min-width: 769px) {
   .formOverlay {
     background: rgba(0, 0, 0, 0.45);
@@ -540,6 +545,7 @@
     border-left: 1px solid var(--border);
     display: flex;
     flex-direction: column;
+    min-height: 0;
     overflow: hidden;
   }
 

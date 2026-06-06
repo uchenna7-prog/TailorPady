@@ -4,14 +4,33 @@ const InstallContext = createContext(null)
 
 export function InstallProvider({ children }) {
   const [installPrompt, setInstallPrompt] = useState(null)
+  const [isInstalled,   setIsInstalled]   = useState(false)
 
   useEffect(() => {
-    const handler = (e) => {
+    const standaloneQuery = window.matchMedia('(display-mode: standalone)')
+
+    setIsInstalled(standaloneQuery.matches || navigator.standalone === true)
+
+    const onDisplayModeChange = (e) => setIsInstalled(e.matches)
+    standaloneQuery.addEventListener('change', onDisplayModeChange)
+
+    const onBeforeInstallPrompt = (e) => {
       e.preventDefault()
       setInstallPrompt(e)
     }
-    window.addEventListener('beforeinstallprompt', handler)
-    return () => window.removeEventListener('beforeinstallprompt', handler)
+    window.addEventListener('beforeinstallprompt', onBeforeInstallPrompt)
+
+    const onAppInstalled = () => {
+      setIsInstalled(true)
+      setInstallPrompt(null)
+    }
+    window.addEventListener('appinstalled', onAppInstalled)
+
+    return () => {
+      standaloneQuery.removeEventListener('change', onDisplayModeChange)
+      window.removeEventListener('beforeinstallprompt', onBeforeInstallPrompt)
+      window.removeEventListener('appinstalled', onAppInstalled)
+    }
   }, [])
 
   const triggerInstall = async () => {
@@ -25,7 +44,7 @@ export function InstallProvider({ children }) {
   }
 
   return (
-    <InstallContext.Provider value={{ installPrompt, triggerInstall }}>
+    <InstallContext.Provider value={{ installPrompt, isInstalled, triggerInstall }}>
       {children}
     </InstallContext.Provider>
   )

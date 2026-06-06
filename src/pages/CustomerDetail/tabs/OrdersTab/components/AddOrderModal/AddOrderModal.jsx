@@ -7,7 +7,7 @@ import styles from "./AddOrderModal.module.css"
 const VISIBLE_MEASUREMENT_LIMIT = 3
 
 
-function validateOrder(hasItems, selectedItems, orderDesc) {
+function validateOrder(hasItems, selectedItems, orderDesc, dueDate) {
   const errors = {}
 
   if (!hasItems && !orderDesc.trim()) {
@@ -21,6 +21,10 @@ function validateOrder(hasItems, selectedItems, orderDesc) {
     if (incompleteItem) {
       errors.pricing = `Please enter both price and quantity for "${incompleteItem.name}"`
     }
+  }
+
+  if (!dueDate) {
+    errors.dueDate = 'Due date is required'
   }
 
   return errors
@@ -41,7 +45,8 @@ export function AddOrderModal({ isOpen, onClose, measurements, onSave, taxRate, 
   const [validationErrors, setValidationErrors] = useState({})
 
   const pricingCardRef = useRef(null)
-  const orderDescRef = useRef(null)
+  const orderDescRef   = useRef(null)
+  const dueDateRef     = useRef(null)
 
   function resetForm() {
     setSelectedItems([])
@@ -131,11 +136,13 @@ export function AddOrderModal({ isOpen, onClose, measurements, onSave, taxRate, 
       pricingCardRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' })
     } else if (errors.orderDesc && orderDescRef.current) {
       orderDescRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    } else if (errors.dueDate && dueDateRef.current) {
+      dueDateRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' })
     }
   }
 
   function handleSave() {
-    const errors = validateOrder(hasItems, selectedItems, orderDesc)
+    const errors = validateOrder(hasItems, selectedItems, orderDesc, dueDate)
 
     if (Object.keys(errors).length > 0) {
       setValidationErrors(errors)
@@ -504,15 +511,29 @@ export function AddOrderModal({ isOpen, onClose, measurements, onSave, taxRate, 
             )}
 
             <div style={{ display: 'flex', gap: 14, marginBottom: 20 }}>
-              <div style={{ flex: 1 }}>
-                <label className={styles.fieldLabel}>Due Date</label>
+              <div style={{ flex: 1 }} ref={dueDateRef}>
+                <label className={styles.fieldLabel}>
+                  Due Date <span className={styles.requiredStar}>*</span>
+                </label>
                 <input
                   type="date"
-                  className={styles.underlineInput}
+                  className={`${styles.underlineInput} ${validationErrors.dueDate ? styles.underlineInput_error : ''}`}
                   style={{ marginBottom: 0 }}
                   value={dueDate}
-                  onChange={e => setDueDate(e.target.value)}
+                  onChange={e => {
+                    setDueDate(e.target.value)
+                    if (validationErrors.dueDate) {
+                      setValidationErrors(prev => {
+                        const updated = { ...prev }
+                        delete updated.dueDate
+                        return updated
+                      })
+                    }
+                  }}
                 />
+                {validationErrors.dueDate && (
+                  <p className={styles.inlineError}>{validationErrors.dueDate}</p>
+                )}
               </div>
               <div style={{ flex: 1 }}>
                 <label className={styles.fieldLabel}>Total Qty</label>

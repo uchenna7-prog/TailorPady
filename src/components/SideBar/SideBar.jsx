@@ -84,7 +84,7 @@ function SideBar({ isOpen, onClose }) {
   const location            = useLocation()
   const navigate            = useNavigate()
   const { generalSettings } = useGeneralSettings()
-  const { triggerInstall }  = useInstall()
+  const { triggerInstall, isInstalled } = useInstall()
   const badges              = useBadges()
 
   const [scrolled, setScrolled] = useState(false)
@@ -106,8 +106,8 @@ function SideBar({ isOpen, onClose }) {
     if (navigator.share) {
       try {
         await navigator.share({
-          title: 'TailorPady',
-          text:  'The operating system for tailors — check out TailorPady!',
+          title: 'Sew Padi',
+          text:  'The operating system for tailors — check out Sew Padi!',
           url:   window.location.origin,
         })
       } catch {}
@@ -138,11 +138,11 @@ function SideBar({ isOpen, onClose }) {
           <div className={styles.brand}>
             <img
               src={generalSettings.theme === 'light' ? logoLightMode : logoDarkMode}
-              alt="TailorPady"
+              alt="Sew Padi"
               className={styles.brandIcon}
             />
             <div className={styles.brandText}>
-              <span className={styles.brandName}>TailorPady</span>
+              <span className={styles.brandName}>Sew Padi</span>
               <span className={styles.tagline}>The operating system for tailors</span>
             </div>
           </div>
@@ -154,37 +154,46 @@ function SideBar({ isOpen, onClose }) {
           onScroll={handleScroll}
         >
           <div className={styles.nav}>
-            {NAV_SECTIONS.map((section, i) => (
-              <div
-                key={section.key}
-                className={`${styles.section} ${i > 0 ? styles.sectionBordered : ''}`}
-              >
-                <div className={styles.sectionLabel}>{section.label}</div>
+            {NAV_SECTIONS.map((section, i) => {
+              const visibleItems = section.items.filter(item => {
+                if (item.action === 'install') return !isInstalled
+                return true
+              })
 
-                {section.items.map((item) => {
-                  const badge    = item.badgeKey ? badgeMap[item.badgeKey] : null
-                  const isActive = item.path && location.pathname === item.path
+              if (visibleItems.length === 0) return null
 
-                  return (
-                    <button
-                      key={item.action ?? item.path}
-                      className={`
-                        ${styles.navItem}
-                        ${isActive    ? styles.active : ''}
-                        ${item.danger ? styles.danger : ''}
-                      `}
-                      onClick={() =>
-                        item.action ? handleAction(item.action) : handleNav(item.path)
-                      }
-                    >
-                      <span className="mi">{item.icon}</span>
-                      <span className={styles.navLabel}>{item.label}</span>
-                      {badge && <NavBadge count={badge.count} variant={badge.variant} />}
-                    </button>
-                  )
-                })}
-              </div>
-            ))}
+              return (
+                <div
+                  key={section.key}
+                  className={`${styles.section} ${i > 0 ? styles.sectionBordered : ''}`}
+                >
+                  <div className={styles.sectionLabel}>{section.label}</div>
+
+                  {visibleItems.map((item) => {
+                    const badge    = item.badgeKey ? badgeMap[item.badgeKey] : null
+                    const isActive = item.path && location.pathname === item.path
+
+                    return (
+                      <button
+                        key={item.action ?? item.path}
+                        className={`
+                          ${styles.navItem}
+                          ${isActive    ? styles.active : ''}
+                          ${item.danger ? styles.danger : ''}
+                        `}
+                        onClick={() =>
+                          item.action ? handleAction(item.action) : handleNav(item.path)
+                        }
+                      >
+                        <span className="mi">{item.icon}</span>
+                        <span className={styles.navLabel}>{item.label}</span>
+                        {badge && <NavBadge count={badge.count} variant={badge.variant} />}
+                      </button>
+                    )
+                  })}
+                </div>
+              )
+            })}
           </div>
 
           <div className={styles.footer}>

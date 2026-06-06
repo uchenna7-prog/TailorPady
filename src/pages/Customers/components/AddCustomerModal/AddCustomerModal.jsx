@@ -298,8 +298,11 @@ export function AddCustomerModal({ isOpen, onClose, onSave }) {
 
   return (
     <>
-      <div className={`${styles.formOverlay} ${isOpen ? styles.formOverlayOpen : ''}`}>
-        <div className={styles.formPanel}>
+      <div
+        className={`${styles.formOverlay} ${isOpen ? styles.formOverlayOpen : ''}`}
+        onClick={handleClose}
+      >
+        <div className={styles.formPanel} onClick={e => e.stopPropagation()}>
 
           <Header
             type="back"
