@@ -197,9 +197,9 @@ function SideBar({ isOpen, onClose }) {
           </div>
 
           <div className={styles.footer}>
-            <button className={styles.footerLink} onClick={() => navigate('/terms')}>Terms & Conditions</button>
-            <button className={styles.footerLink} onClick={() => navigate('/refund')}>Refund / Cancellation Policy</button>
-            <button className={styles.footerLink} onClick={() => navigate('/privacy')}>Privacy Policy</button>
+            <button className={styles.footerLink} onClick={() => handleNav('/terms')}>Terms & Conditions</button>
+            <button className={styles.footerLink} onClick={() => handleNav('/refund')}>Refund / Cancellation Policy</button>
+            <button className={styles.footerLink} onClick={() => handleNav('/privacy')}>Privacy Policy</button>
           </div>
         </div>
 
