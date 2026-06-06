@@ -25,6 +25,9 @@ import FAQ from './pages/FAQ/FAQ'
 import Appointments from './pages/Appointments/Appointments'
 import Reviews from './pages/Reviews/Reviews'
 import Agent from './pages/Agent/Agent'
+import TermsAndConditions from './pages/TermsAndConditions/TermsAndConditions'
+import RefundPolicy from './pages/RefundPolicy/RefundPolicy'
+import PrivacyPolicy from './pages/PrivacyPolicy/PrivacyPolicy'
 import './index.css'
 
 function GuestRoute({ children }) {
@@ -63,6 +66,9 @@ function AppShell() {
           <Route path="/faq"                             element={<FAQ                     onMenuClick={() => setSidebarOpen(true)} />} />
           <Route path="/reviews"                         element={<Reviews                 onMenuClick={() => setSidebarOpen(true)} />} />
           <Route path="/agent"                           element={<Agent                   onMenuClick={() => setSidebarOpen(true)} />} />
+          <Route path="/terms"                           element={<TermsAndConditions      onMenuClick={() => setSidebarOpen(true)}/>} />
+          <Route path="/refund"                          element={<RefundPolicy            onMenuClick={() => setSidebarOpen(true)}/>} />
+          <Route path="/privacy"                         element={<PrivacyPolicy           onMenuClick={() => setSidebarOpen(true)}/>} />
           <Route path="*"                                element={<Navigate to="/" replace />} />
         </Routes>
       </div>

@@ -106,8 +106,8 @@ function SideBar({ isOpen, onClose }) {
     if (navigator.share) {
       try {
         await navigator.share({
-          title: 'Sew Padi',
-          text:  'The operating system for tailors — check out Sew Padi!',
+          title: 'TailorPady',
+          text:  'The operating system for tailors — check out TailorPady!',
           url:   window.location.origin,
         })
       } catch {}
@@ -138,11 +138,11 @@ function SideBar({ isOpen, onClose }) {
           <div className={styles.brand}>
             <img
               src={generalSettings.theme === 'light' ? logoLightMode : logoDarkMode}
-              alt="Sew Padi"
+              alt="TailorPady"
               className={styles.brandIcon}
             />
             <div className={styles.brandText}>
-              <span className={styles.brandName}>Sew Padi</span>
+              <span className={styles.brandName}>TailorPady</span>
               <span className={styles.tagline}>The operating system for tailors</span>
             </div>
           </div>
@@ -197,9 +197,9 @@ function SideBar({ isOpen, onClose }) {
           </div>
 
           <div className={styles.footer}>
-            <button className={styles.footerLink}>Terms &amp; Conditions</button>
-            <button className={styles.footerLink}>Refund / Cancellation Policy</button>
-            <button className={styles.footerLink}>Privacy Policy</button>
+            <button className={styles.footerLink} onClick={() => navigate('/terms')}>Terms & Conditions</button>
+            <button className={styles.footerLink} onClick={() => navigate('/refund')}>Refund / Cancellation Policy</button>
+            <button className={styles.footerLink} onClick={() => navigate('/privacy')}>Privacy Policy</button>
           </div>
         </div>
 

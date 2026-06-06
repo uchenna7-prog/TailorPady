@@ -1,0 +1,104 @@
+.page {
+  padding: 24px 20px calc(80px + var(--sb));
+}
+
+.hero {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 32px 0 28px;
+  margin-bottom: 8px;
+}
+
+.heroIcon {
+  width: 60px;
+  height: 60px;
+  border-radius: 18px;
+  background: color-mix(in srgb, var(--accent) 12%, transparent);
+  color: var(--accent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 16px;
+}
+
+.heroIcon .mi {
+  font-size: 1.8rem;
+}
+
+.heroTitle {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: var(--text);
+  letter-spacing: -0.4px;
+  margin-bottom: 6px;
+}
+
+.heroSub {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text3);
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+}
+
+.intro {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 16px 18px;
+  font-size: 0.88rem;
+  font-weight: 500;
+  color: var(--text2);
+  line-height: 1.6;
+  margin-bottom: 28px;
+}
+
+.sections {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.section {
+  display: flex;
+  gap: 16px;
+  padding: 20px 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.section:last-child {
+  border-bottom: none;
+}
+
+.sectionNumber {
+  font-size: 0.6rem;
+  font-weight: 800;
+  color: var(--accent);
+  letter-spacing: 0.5px;
+  min-width: 24px;
+  padding-top: 3px;
+  flex-shrink: 0;
+}
+
+.sectionContent {
+  flex: 1;
+  min-width: 0;
+}
+
+.sectionTitle {
+  font-size: 0.9rem;
+  font-weight: 800;
+  color: var(--text);
+  margin-bottom: 8px;
+  letter-spacing: -0.1px;
+}
+
+.sectionBody {
+  font-size: 0.83rem;
+  font-weight: 500;
+  color: var(--text2);
+  line-height: 1.7;
+  white-space: pre-line;
+}
