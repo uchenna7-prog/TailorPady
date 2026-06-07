@@ -11,8 +11,6 @@ import BrandColourPicker from "../../../../components/BrandColourPicker/BrandCol
 import styles from "./BrandModal.module.css"
 
 const DEFAULT_COLOUR_ID = 'midnight'
-const MAX_TERMS        = 3
-const MAX_TERM_LENGTH  = 60
 
 export function BrandModal({ onBack, showToast }) {
 
@@ -24,47 +22,17 @@ export function BrandModal({ onBack, showToast }) {
   const [sigUploading, setSigUploading]   = useState(false)
   const [sigProgress, setSigProgress]     = useState(0)
 
-  const parseTerms = raw => {
-    if (Array.isArray(raw)) return raw.length > 0 ? raw : ['', '']
-    if (typeof raw === 'string' && raw.trim()) return raw.split('\n').filter(Boolean)
-    return ['', '']
-  }
-
   const [local, setLocal] = useState({
-    brandName:           profileSettings.brandName            || '',
-    brandTagline:        profileSettings.brandTagline         || '',
-    brandColourId:       (profileSettings.brandColourId && !profileSettings.brandColourId.startsWith('#'))
-                           ? profileSettings.brandColourId
-                           : DEFAULT_COLOUR_ID,
-    brandLogo:           profileSettings.brandLogo            || null,
-    brandMilestone:      profileSettings.brandMilestone       || '',
-    brandSignatureStyle: profileSettings.brandSignatureStyle  || '',
-    brandSignature:      profileSettings.brandSignature       || null,
-    brandPaymentTerms:   parseTerms(profileSettings.brandPaymentTerms),
+    brandName:      profileSettings.brandName      || '',
+    brandTagline:   profileSettings.brandTagline   || '',
+    brandColourId:  (profileSettings.brandColourId && !profileSettings.brandColourId.startsWith('#'))
+                      ? profileSettings.brandColourId
+                      : DEFAULT_COLOUR_ID,
+    brandLogo:      profileSettings.brandLogo      || null,
+    brandSignature: profileSettings.brandSignature || null,
   })
 
   const set = key => val => setLocal(p => ({ ...p, [key]: val }))
-
-  const setTerm = (index, value) => {
-    setLocal(p => {
-      const updated = [...p.brandPaymentTerms]
-      updated[index] = value
-      return { ...p, brandPaymentTerms: updated }
-    })
-  }
-
-  const addTerm = () => {
-    if (local.brandPaymentTerms.length >= MAX_TERMS) return
-    setLocal(p => ({ ...p, brandPaymentTerms: [...p.brandPaymentTerms, ''] }))
-  }
-
-  const removeTerm = index => {
-    setLocal(p => {
-      const updated = p.brandPaymentTerms.filter((_, i) => i !== index)
-      const padded  = updated.length >= 2 ? updated : updated.concat(Array(2 - updated.length).fill(''))
-      return { ...p, brandPaymentTerms: padded }
-    })
-  }
 
   const handleLogoChange = async e => {
     const file = e.target.files?.[0]
@@ -110,14 +78,12 @@ export function BrandModal({ onBack, showToast }) {
       setSigProgress(0)
     }
 
-    const filledTerms = local.brandPaymentTerms.filter(t => t.trim())
-    const entry       = getPaletteById(local.brandColourId)
+    const entry = getPaletteById(local.brandColourId)
 
     updateManyProfileSettings({
       ...local,
-      brandSignature:    signatureUrl,
-      brandPaymentTerms: filledTerms,
-      brandColour:       entry?.tokens.primary || '#1C1814',
+      brandSignature: signatureUrl,
+      brandColour:    entry?.tokens.primary || '#1C1814',
     })
 
     showToast('Brand info saved')
@@ -125,12 +91,6 @@ export function BrandModal({ onBack, showToast }) {
   }
 
   const isSaving = logoUploading || sigUploading
-
-  const termPlaceholder = i => {
-    if (i === 0) return 'e.g. 50% deposit required before cutting begins'
-    if (i === 1) return 'e.g. Balance due on pickup'
-    return 'Add another term…'
-  }
 
   return (
     <FullModal title="Brand Identity" onBack={onBack} onSave={isSaving ? undefined : save}>
@@ -175,52 +135,6 @@ export function BrandModal({ onBack, showToast }) {
       <FieldGroup>
         <Field label="Brand Colour" hint="Choose your brand colour. We've curated shades that look great on your portfolio and invoices.">
           <BrandColourPicker value={local.brandColourId} onChange={set('brandColourId')} />
-        </Field>
-      </FieldGroup>
-
-      <FieldGroup>
-        <Field label="Milestone" hint="A proud achievement shown on your portfolio. e.g. 500+ happy clients">
-          <TextInput value={local.brandMilestone} onChange={set('brandMilestone')} placeholder="e.g. 500+ happy clients" />
-        </Field>
-        <Field label="Signature Style" hint="What you're known for. e.g. Hand-embroidered agbada">
-          <TextInput value={local.brandSignatureStyle} onChange={set('brandSignatureStyle')} placeholder="e.g. Hand-embroidered agbada" />
-        </Field>
-      </FieldGroup>
-
-      <FieldGroup>
-        <Field label="Payment Terms" hint="Up to 3 short terms printed on invoices. Each appears as a bullet point.">
-          <div className={styles.termsList}>
-            {local.brandPaymentTerms.map((term, i) => (
-              <div key={i} className={styles.termRow}>
-                <span className={styles.termBullet}>•</span>
-                <div className={styles.termInputWrap}>
-                  <input
-                    className={styles.termInput}
-                    type="text"
-                    value={term}
-                    maxLength={MAX_TERM_LENGTH}
-                    onChange={e => setTerm(i, e.target.value)}
-                    placeholder={termPlaceholder(i)}
-                  />
-                  <span className={`${styles.termCounter} ${term.length >= MAX_TERM_LENGTH ? styles.termCounterMax : ''}`}>
-                    {term.length}/{MAX_TERM_LENGTH}
-                  </span>
-                </div>
-                {local.brandPaymentTerms.length > 2 && (
-                  <button className={styles.termRemove} onClick={() => removeTerm(i)}>
-                    <span className="mi" style={{ fontSize: 16 }}>close</span>
-                  </button>
-                )}
-              </div>
-            ))}
-          </div>
-
-          {local.brandPaymentTerms.length < MAX_TERMS && (
-            <button className={styles.addTermBtn} onClick={addTerm}>
-              <span className="mi" style={{ fontSize: 16 }}>add</span>
-              Add another term
-            </button>
-          )}
         </Field>
       </FieldGroup>
 

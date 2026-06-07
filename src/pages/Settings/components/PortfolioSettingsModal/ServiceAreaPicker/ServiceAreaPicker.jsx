@@ -1,5 +1,5 @@
 import { useState } from "react"
-import { NIGERIAN_STATES } from "../../datas"
+import { NIGERIAN_STATES } from "../datas"
 import styles from "./ServiceAreaPicker.module.css"
 
 export function ServiceAreaPicker({ value, onChange }) {

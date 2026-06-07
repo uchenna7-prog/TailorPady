@@ -8,150 +8,80 @@
   margin-bottom: 6px;
 }
 
-
-/* Image picker layout */
-
-.imgPicker {
-  display: flex;
-  gap: 10px;
-  align-items: flex-start;
-}
-
-.imgPickerWide {
-  flex-direction: column;
-}
-
-
-/* Preview box */
-
-.imgPreview {
-  width: 72px;
-  height: 72px;
-  border-radius: 10px;
-  border: 1px solid var(--border);
-  background: var(--surface2);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-  position: relative;
-  overflow: hidden;
-}
-
-.imgPreviewWide {
-  width: 100%;
-  height: 96px;
-  border-radius: 10px;
-}
-
-.imgPreviewCircle {
-  border-radius: 50%;
-}
-
-.imgPreviewHasImg .imgPreviewPlaceholder {
-  display: none;
-}
-
-.imgPreviewImg {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  border-radius: inherit;
-}
-
-.imgPreviewPlaceholder {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 4px;
-}
-
-.imgPreviewNone {
-  font-size: 0.65rem;
-  color: var(--text3);
-  font-weight: 500;
-}
-
-.imgPreviewBadge {
-  position: absolute;
-  bottom: 6px;
-  right: 6px;
-  background: rgba(0, 0, 0, 0.5);
-  color: #fff;
-  font-size: 0.6rem;
-  font-weight: 700;
-  padding: 2px 6px;
-  border-radius: 20px;
-  letter-spacing: 0.04em;
-  pointer-events: none;
-}
-
-
-/* Controls */
-
-.imgControls {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  gap: 7px;
-}
-
-.imgControlsWide {
-  flex-direction: row;
-}
-
 .uploadBtn {
+  width: 100%;
+  padding: 24px;
+  background: var(--surface2);
+  border: 1.5px dashed var(--border);
+  border-radius: 12px;
+  color: var(--text2);
+  font-weight: 700;
+  cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 7px;
-  background: var(--surface2);
+  gap: 10px;
+}
+
+.previewWrap {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.preview {
+  width: 80px;
+  height: 80px;
+  object-fit: contain;
+  border-radius: 12px;
   border: 1px solid var(--border);
-  border-radius: 10px;
-  padding: 9px 12px;
-  font-size: 0.82rem;
-  font-weight: 600;
-  color: var(--text);
-  cursor: pointer;
-  font-family: inherit;
-  transition: background 0.12s;
-  flex: 1;
-}
-
-.uploadBtn:hover {
-  background: var(--surface3, var(--surface2));
-}
-
-.uploadBtn:active {
-  opacity: 0.75;
+  background: #fff;
 }
 
 .removeBtn {
+  padding: 8px 12px;
+  border-radius: 8px;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  cursor: pointer;
+  color: var(--text);
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.availabilityRow {
+  display: flex;
+  gap: 10px;
+}
+
+.availBtn {
+  flex: 1;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 6px;
-  background: none;
-  border: 1px solid var(--border);
-  border-radius: 10px;
-  padding: 8px 12px;
-  font-size: 0.78rem;
-  font-weight: 500;
+  gap: 7px;
+  padding: 12px 10px;
+  border-radius: 12px;
+  border: 1.5px solid var(--border);
+  background: var(--surface2);
   color: var(--text3);
-  cursor: pointer;
   font-family: inherit;
-  transition: color 0.12s, border-color 0.12s;
-  flex: 1;
+  font-size: 0.8rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.15s;
 }
 
-.removeBtn:not(:disabled):hover {
-  color: #e53e3e;
-  border-color: #fc8181;
+.availBtnOpen {
+  border-color: #22c55e;
+  color: #22c55e;
+  background: rgba(34, 197, 94, 0.08);
 }
 
-.removeBtn:disabled {
-  opacity: 0.35;
-  cursor: not-allowed;
+.availBtnBooked {
+  border-color: #ef4444;
+  color: #ef4444;
+  background: rgba(239, 68, 68, 0.08);
 }

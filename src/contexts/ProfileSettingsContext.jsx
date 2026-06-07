@@ -31,17 +31,9 @@ export const DEFAULTS = {
   brandAddress: '',
   brandWebsite: '',
 
-  brandFoundedYear:       '',
-  brandTurnaround:        '',
-  brandServiceArea:       '',
-  brandAvailability:      'open',
-  brandAvailableUntil:    '',
-  brandStyleStatement:    '',
-  brandSignatureStyle:    "",
-  brandMilestone:         '',
-  brandSocials:           [],
-  brandSignature:         null,
-  brandPaymentTerms:      [],
+  brandFoundedYear: '',
+  brandSocials:     [],
+  brandSignature:   null,
 
   accountBank:   '',
   accountNumber: '',
@@ -62,10 +54,7 @@ function loadFromLocalStorage() {
 function saveToLocalStorage(settings) {
   try {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(settings))
-  } 
-  catch {
-    
-  }
+  } catch {}
 }
 
 
@@ -75,11 +64,10 @@ export function ProfileSettingsProvider({ children }) {
 
   const { user } = useAuth()
 
-  const cachedSettings              = loadFromLocalStorage()
-  const [settings, setSettings]     = useState(cachedSettings ?? { ...DEFAULTS })
-  const [isLoading, setIsLoading]   = useState(!cachedSettings)
-  const hasLoadedFromFirestore      = useRef(false)
-
+  const cachedSettings          = loadFromLocalStorage()
+  const [settings, setSettings] = useState(cachedSettings ?? { ...DEFAULTS })
+  const [isLoading, setIsLoading] = useState(!cachedSettings)
+  const hasLoadedFromFirestore  = useRef(false)
 
   useEffect(() => {
     if (!user?.uid) return
@@ -115,12 +103,10 @@ export function ProfileSettingsProvider({ children }) {
     return () => { cancelled = true }
   }, [user?.uid])
 
-
   useEffect(() => {
     if (!hasLoadedFromFirestore.current) return
     saveToLocalStorage(settings)
   }, [settings])
-
 
   useEffect(() => {
     if (!hasLoadedFromFirestore.current) return
@@ -133,7 +119,6 @@ export function ProfileSettingsProvider({ children }) {
 
     return () => clearTimeout(debounceTimer)
   }, [user?.uid, settings])
-
 
   function updateSetting(key, value) {
     setSettings(prev => ({ ...prev, [key]: value }))
@@ -149,7 +134,7 @@ export function ProfileSettingsProvider({ children }) {
 
   return (
     <ProfileSettingsContext.Provider value={{
-      profileSettings: settings,
+      profileSettings:           settings,
       isLoading,
       updateProfileSetting:      updateSetting,
       updateManyProfileSettings: updateManySettings,

@@ -1,108 +1,59 @@
-import { 
-  doc, 
-  setDoc, 
-  getDoc, 
-  serverTimestamp 
-} from 'firebase/firestore'
+import { doc, setDoc, getDoc } from 'firebase/firestore'
 import { db } from '../firebase'
-import { DEFAULT_COLOUR_ID } from '../config/brandPalette'
 
-
-function brandDocRef(uid) {
-  return doc(db, 'users', uid, 'publicProfile', 'brand')
+function brandDoc(uid) {
+  return doc(db, 'users', uid, 'tailorProfile', 'brand')
 }
 
-
-function personalInfoDocRef(uid) {
-  return doc(db, 'users', uid, 'personalProfile', 'brand')
+function personalDoc(uid) {
+  return doc(db, 'users', uid, 'tailorProfile', 'personal')
 }
 
-
-export async function saveBrandDataToFirestore(uid, profileSettings) {
-
-  if (!uid) return
-
-  await setDoc(brandDocRef(uid), {
-
-    brandName: profileSettings.brandName  || '',
-    brandTagline: profileSettings.brandTagline || '',
-    brandColourId: profileSettings.brandColourId  || DEFAULT_COLOUR_ID,
-    brandColour: profileSettings.brandColour || '#1C1814',
-    brandLogo: profileSettings.brandLogo || null,
-
-    brandMilestone: profileSettings.brandMilestone || '',
-    brandSignatureStyle: profileSettings.brandSignatureStyle || '',
-
-    brandPaymentTerms: profileSettings.brandPaymentTerms || [],
-    brandSignature: profileSettings.brandSignature  || null,
-
-    brandPhone: profileSettings.brandPhone || '',
-    brandEmail: profileSettings.brandEmail || '',
-    brandAddress: profileSettings.brandAddress || '',
-    brandWebsite: profileSettings.brandWebsite || "",
- 
-    brandFoundedYear: profileSettings?.brandFoundedYear || '',
-    brandAvailability: profileSettings.brandAvailability || 'open',
-    brandAvailableUntil: profileSettings.brandAvailableUntil || '',
-    brandTurnaround: profileSettings.brandTurnaround || '',
-    brandServiceArea: profileSettings.brandServiceArea || '',
-    brandStyleStatement: profileSettings.brandStyleStatement || '',
-    
-    
-    brandSocials: profileSettings.brandSocials || [],
-    
-
-    accountBank:  profileSettings.accountBank || '',
-    accountNumber: profileSettings.accountNumber || '',
-    accountName: profileSettings.accountName || '',
-
-    updatedAt: serverTimestamp(),
-
-
-
-  })
-}
-
-
-export async function getBrandDataFromFirestore(uid) {
-
-  if (!uid) return null
-  const snapshot= await getDoc(brandDocRef(uid))
-  return snapshot.exists() ? snapshot.data() : null
-}
-
-
-
-export async function savePersonalInfosToFirestore(uid, profileSettings) {
-
-  if (!uid) return
-
-  await setDoc(personalInfoDocRef(uid), {
-
-    personalFullName: profileSettings.personalFullName || '',
-    personalEmail: profileSettings.personalEmail || '',
-    personalPhone: profileSettings.personalPhone || '',
-    personalCity: profileSettings.personalCity || '',
-    personalCountry: profileSettings.personalCountry || '',
-    personalSex: profileSettings.personalSex || '',
-    personalBirthMonth: profileSettings.personalBirthMonth || '',
-    personalBirthDay: profileSettings.personalBirthDay || '',
-
-    updatedAt: serverTimestamp(),
-
+export async function saveBrandDataToFirestore(uid, settings) {
+  await setDoc(brandDoc(uid), {
+    brandName:        settings.brandName        ?? '',
+    brandTagline:     settings.brandTagline     ?? '',
+    brandColourId:    settings.brandColourId    ?? 'classic-warm-black',
+    brandColour:      settings.brandColour      ?? '#1C1814',
+    brandLogo:        settings.brandLogo        ?? null,
+    brandPhone:       settings.brandPhone       ?? '',
+    brandEmail:       settings.brandEmail       ?? '',
+    brandAddress:     settings.brandAddress     ?? '',
+    brandWebsite:     settings.brandWebsite     ?? '',
+    brandFoundedYear: settings.brandFoundedYear ?? '',
+    brandSocials:     settings.brandSocials     ?? [],
+    brandSignature:   settings.brandSignature   ?? null,
+    accountBank:      settings.accountBank      ?? '',
+    accountNumber:    settings.accountNumber    ?? '',
+    accountName:      settings.accountName      ?? '',
+    updatedAt:        new Date().toISOString(),
   }, { merge: true })
 }
 
+export async function getBrandDataFromFirestore(uid) {
+  const snap = await getDoc(brandDoc(uid))
+  if (!snap.exists()) return {}
+  const { updatedAt, ...rest } = snap.data()
+  return rest
+}
+
+export async function savePersonalInfosToFirestore(uid, settings) {
+  await setDoc(personalDoc(uid), {
+    personalFullName:   settings.personalFullName   ?? '',
+    personalEmail:      settings.personalEmail      ?? '',
+    personalPhone:      settings.personalPhone      ?? '',
+    personalCity:       settings.personalCity       ?? '',
+    personalCountry:    settings.personalCountry    ?? '',
+    personalSex:        settings.personalSex        ?? '',
+    personalBirthMonth: settings.personalBirthMonth ?? '',
+    personalBirthDay:   settings.personalBirthDay   ?? '',
+    updatedAt:          new Date().toISOString(),
+  }, { merge: true })
+}
 
 export async function getPersonalInfosFromFirestore(uid) {
-  if (!uid) return null
-  try {
-
-    const snapshot = await getDoc(personalInfoDocRef(uid))
-    if (snapshot.exists()) return snapshot.data()
-    return null
-  } catch (err) {
-
-    return null
-  }
+  const snap = await getDoc(personalDoc(uid))
+  if (!snap.exists()) return {}
+  const { updatedAt, ...rest } = snap.data()
+  return rest
 }

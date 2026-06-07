@@ -13,10 +13,8 @@ import { InfoRow } from './component/InfoRow/InfoRow'
 import { Avatar } from './component/Avatar/Avatar'
 import { PersonalInfoModal } from './component/PersonalInfoModal/PersonalInfoModal'
 import { BrandModal } from './component/BrandModal/BrandModal'
-import { BusinessInfoModal } from './component/BusinessInfoModal/BusinessInfoModal'
 import { BusinessContactModal } from './component/BusinessContactModal/BusinessContactModal'
 import { SocialsModal } from './component/SocialsModal/SocialsModal'
-import { AccountDetailsModal } from './component/AccountDetailsModal/AccountDetailsModal'
 import { ChangePasswordModal } from './component/ChangePasswordModal/ChangePasswordModal'
 import { ChangeEmailModal } from './component/ChangeEmailModal/ChangeEmailModal'
 import { ConnectedAccountsModal } from './component/ConnectedAccountsModal/ConnectedAccountsModal'
@@ -36,11 +34,11 @@ export default function Profile({ onMenuClick, isPremium = false, onUpgrade = ()
   const { user, logout } = useAuth()
   const navigate = useNavigate()
 
-  const [personalInfo, setPersonalInfo] = useState(() => loadPersonalInfo(user))
-  const [activeModal,  setActiveModal]  = useState(null)
-  const [logoutConfirm,  setLogoutConfirm]  = useState(false)
-  const [deleteConfirm,  setDeleteConfirm]  = useState(false)
-  const [toastMsg, setToastMsg] = useState('')
+  const [personalInfo,  setPersonalInfo]  = useState(() => loadPersonalInfo(user))
+  const [activeModal,   setActiveModal]   = useState(null)
+  const [logoutConfirm, setLogoutConfirm] = useState(false)
+  const [deleteConfirm, setDeleteConfirm] = useState(false)
+  const [toastMsg,      setToastMsg]      = useState('')
   const toastTimer = useRef(null)
 
   const joinDate = getOrSetJoinDate()
@@ -90,8 +88,7 @@ export default function Profile({ onMenuClick, isPremium = false, onUpgrade = ()
     }
   }
 
-  const hasBrand          = !!(profileSettings.brandName || profileSettings.brandLogo)
-  const hasAccountDetails = !!(profileSettings.accountBank || profileSettings.accountNumber)
+  const hasBrand           = !!(profileSettings.brandName || profileSettings.brandLogo)
   const hasBusinessContact = !!(profileSettings.brandPhone || profileSettings.brandEmail || profileSettings.brandAddress)
 
   const brandColourHex = getPaletteById(profileSettings.brandColourId)?.tokens.primary
@@ -142,9 +139,9 @@ export default function Profile({ onMenuClick, isPremium = false, onUpgrade = ()
 
         <SectionHeader icon="person" label="Personal Info" />
 
-        <InfoRow icon="badge"  label="Full Name" value={personalInfo.fullName}  placeholder="Not set" />
+        <InfoRow icon="badge"  label="Full Name" value={personalInfo.fullName}            placeholder="Not set" />
         <InfoRow icon="mail"   label="Email"     value={personalInfo.email || user?.email} placeholder="Not set" />
-        <InfoRow icon="call"   label="Phone"     value={personalInfo.phone}     placeholder="Not set" />
+        <InfoRow icon="call"   label="Phone"     value={personalInfo.phone}                placeholder="Not set" />
         <InfoRow
           icon="public"
           label="Location"
@@ -183,13 +180,12 @@ export default function Profile({ onMenuClick, isPremium = false, onUpgrade = ()
           </div>
         )}
 
-        <InfoRow icon="store"          label="Brand Name"       value={profileSettings.brandName}             placeholder="Not set" />
-        <InfoRow icon="emoji_events"   label="Milestone"        value={profileSettings.brandMilestone}        placeholder="Not set" />
-        <InfoRow icon="auto_fix_high"  label="Signature Style"  value={profileSettings.brandFeaturedTechnique} placeholder="Not set" />
+        <InfoRow icon="store"         label="Brand Name" value={profileSettings.brandName}    placeholder="Not set" />
+        <InfoRow icon="format_quote"  label="Tagline"    value={profileSettings.brandTagline} placeholder="Not set" />
         <TappableRow
           icon="edit"
           label="Edit Brand Identity"
-          sub="Logo, colours, milestone, signature style"
+          sub="Logo, colours, tagline, signature"
           onClick={() => setActiveModal('brand')}
           divider={false}
         />
@@ -223,23 +219,7 @@ export default function Profile({ onMenuClick, isPremium = false, onUpgrade = ()
           divider={false}
         />
 
-        <SectionHeader icon="business_center" label="Business Info" />
-
-        <InfoRow icon="schedule" label="Turnaround Time" value={profileSettings.brandTurnaround}  placeholder="Not set" />
-        <InfoRow icon="public"   label="Service Area"    value={profileSettings.brandServiceArea}  placeholder="Not set" />
-        <InfoRow
-          icon={profileSettings.brandAvailability === 'booked' ? 'block' : 'check_circle'}
-          label="Availability"
-          value={
-            profileSettings.brandAvailability === 'booked'
-              ? `Fully Booked${profileSettings.brandAvailableUntil ? ` · Available from ${profileSettings.brandAvailableUntil}` : ''}`
-              : 'Accepting Orders'
-          }
-          placeholder="Not set"
-        />
-        {profileSettings.brandPaymentTerms && (
-          <InfoRow icon="receipt_long" label="Payment Terms" value="Set" placeholder="Not set" />
-        )}
+       
         {profileSettings.brandSignature && (
           <div className={styles.row}>
             <div className={styles.rowIcon}>
@@ -251,13 +231,6 @@ export default function Profile({ onMenuClick, isPremium = false, onUpgrade = ()
             </div>
           </div>
         )}
-        <TappableRow
-          icon="edit"
-          label="Edit Business Info"
-          sub="Availability, turnaround, service area, payment terms, signature"
-          onClick={() => setActiveModal('businessInfo')}
-          divider={false}
-        />
 
         <SectionHeader icon="share" label="Social Media" />
 
@@ -285,29 +258,6 @@ export default function Profile({ onMenuClick, isPremium = false, onUpgrade = ()
           label="Edit Social Links"
           sub="Instagram, TikTok, Facebook and more"
           onClick={() => setActiveModal('socials')}
-          divider={false}
-        />
-
-        <SectionHeader icon="account_balance" label="Account Details" />
-
-        {hasAccountDetails ? (
-          <>
-            <InfoRow icon="account_balance" label="Bank"           value={profileSettings.accountBank}   placeholder="Not set" />
-            <InfoRow icon="tag"             label="Account Number" value={profileSettings.accountNumber} placeholder="Not set" />
-            <InfoRow icon="badge"           label="Account Name"   value={profileSettings.accountName}   placeholder="Not set" />
-          </>
-        ) : (
-          <div className={`${styles.row} ${styles.brandEmpty}`}>
-            <span className="mi" style={{ fontSize: '1.5rem', color: 'var(--text3)' }}>account_balance</span>
-            <span className={styles.brandEmptyText}>No account details yet</span>
-          </div>
-        )}
-
-        <TappableRow
-          icon="edit"
-          label="Edit Account Details"
-          sub="Bank info printed on invoices for client payments"
-          onClick={() => setActiveModal('accountDetails')}
           divider={false}
         />
 
@@ -411,13 +361,6 @@ export default function Profile({ onMenuClick, isPremium = false, onUpgrade = ()
         <BusinessContactModal onBack={() => setActiveModal(null)} showToast={showToast} />
       )}
 
-      {activeModal === 'accountDetails' && (
-        <AccountDetailsModal onBack={() => setActiveModal(null)} showToast={showToast} />
-      )}
-
-      {activeModal === 'businessInfo' && (
-        <BusinessInfoModal onBack={() => setActiveModal(null)} showToast={showToast} />
-      )}
 
       {activeModal === 'socials' && (
         <SocialsModal onBack={() => setActiveModal(null)} showToast={showToast} />
