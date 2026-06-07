@@ -1,7 +1,10 @@
 import { useState, useRef, useMemo, useCallback, useEffect, useLayoutEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useBrandTokens } from '../../../../hooks/useBrandTokens'
+import { useProfileSettings } from '../../../../contexts/ProfileSettingsContext'
+import { useGeneralSettings } from '../../../../contexts/GeneralSettingsContext'
 import Header from '../../../../components/Header/Header'
+import { ZoomOverlay } from './ZoomOverlay/ZoomOverlay'
 import { INVOICE_TEMPLATE_GROUPS } from '../../datas/invoiceTemplateGroups'
 import { RECEIPT_TEMPLATE_GROUPS } from '../../datas/receiptTemplateGroups'
 import {
@@ -35,22 +38,32 @@ const FIELD_META = {
   paymentTerms:  { label: 'Payment terms'    },
 }
 
-function isMissing(key, settings) {
-  const value = settings[key]
+const FIELD_TO_PROFILE_KEY = {
+  name:          'brandName',
+  tagline:       'brandTagline',
+  phone:         'brandPhone',
+  email:         'brandEmail',
+  address:       'brandAddress',
+  website:       'brandWebsite',
+  logo:          'brandLogo',
+  signature:     'brandSignature',
+  accountBank:   'accountBank',
+  accountNumber: 'accountNumber',
+  accountName:   'accountName',
+  paymentTerms:  'brandPaymentTerms',
+}
+
+function isMissing(key, profileSettings) {
+  const rawKey = FIELD_TO_PROFILE_KEY[key]
+  const value  = rawKey ? profileSettings[rawKey] : null
   if (value === null || value === undefined) return true
   if (typeof value === 'string' && value.trim() === '') return true
   if (Array.isArray(value) && value.length === 0) return true
   return false
 }
 
-function getMissingFields(requires, invoiceSettings, receiptSettings) {
-  const missing = new Set()
-  for (const key of requires) {
-    if (isMissing(key, invoiceSettings) || isMissing(key, receiptSettings)) {
-      missing.add(key)
-    }
-  }
-  return Array.from(missing)
+function getMissingFields(requires, profileSettings) {
+  return requires.filter(key => isMissing(key, profileSettings))
 }
 
 function getUnionRequires(invoiceTemplateId, receiptTemplateId) {
@@ -75,6 +88,7 @@ export function TemplateModal({
 }) {
   const navigate = useNavigate()
 
+  const { profileSettings }    = useProfileSettings()
   const RECEIPT_BRAND_SETTINGS = useReceiptBrandSettings()
   const INVOICE_BRAND_SETTINGS = useInvoiceBrandSettings()
 
@@ -83,9 +97,6 @@ export function TemplateModal({
   const filterBarRef = useRef(null)
   const chipRefs     = useRef({})
   const cardRefs     = useRef({})
-  const zoomInnerRef = useRef(null)
-  const touchStartX  = useRef(null)
-  const touchStartY  = useRef(null)
 
   const [selectedInvoiceTemplate, setSelectedInvoiceTemplate] = useState(
     currentInvoiceTemplate || 'invoiceTemplate1'
@@ -181,24 +192,6 @@ export function TemplateModal({
     container.scrollTo({ top: offset, behavior: 'smooth' })
   }
 
-  const handleZoomClose = useCallback(() => {
-    setZoomedTemplate(null)
-    setZoomIndex(null)
-    setSlideDir(null)
-  }, [])
-
-  const handleZoomNav = useCallback((dir) => {
-    setZoomIndex(prev => {
-      const next = prev + dir
-      if (next < 0 || next >= filteredTemplates.length) return prev
-      setSlideDir(dir)
-      setSlideKey(k => k + 1)
-      setZoomedTemplate(filteredTemplates[next])
-      if (zoomInnerRef.current) zoomInnerRef.current.scrollTop = 0
-      return next
-    })
-  }, [filteredTemplates])
-
   useLayoutEffect(() => {
     if (!isOpen) return
     setActiveFilter('all')
@@ -217,17 +210,6 @@ export function TemplateModal({
       scrollSelectedCardIntoView(activeTabObject.selectedId)
     })
   }, [activeTab])
-
-  useEffect(() => {
-    if (!zoomedTemplate) return
-    const handle = (e) => {
-      if (e.key === 'ArrowRight') handleZoomNav(1)
-      if (e.key === 'ArrowLeft')  handleZoomNav(-1)
-      if (e.key === 'Escape')     handleZoomClose()
-    }
-    window.addEventListener('keydown', handle)
-    return () => window.removeEventListener('keydown', handle)
-  }, [zoomedTemplate, handleZoomNav, handleZoomClose])
 
   const handleTabSwitch = useCallback((tabKey) => {
     if (tabKey === activeTab) return
@@ -260,9 +242,34 @@ export function TemplateModal({
     }
   }, [activeTabObject, inActiveTabObject])
 
+  const handleZoomOpen = useCallback((template) => {
+    const idx = filteredTemplates.findIndex(t => t.id === template.id)
+    setZoomedTemplate(template)
+    setZoomIndex(idx)
+    setSlideDir(null)
+    setSlideKey(k => k + 1)
+  }, [filteredTemplates])
+
+  const handleZoomClose = useCallback(() => {
+    setZoomedTemplate(null)
+    setZoomIndex(null)
+    setSlideDir(null)
+  }, [])
+
+  const handleZoomNav = useCallback((dir) => {
+    setZoomIndex(prev => {
+      const next = prev + dir
+      if (next < 0 || next >= filteredTemplates.length) return prev
+      setSlideDir(dir)
+      setSlideKey(k => k + 1)
+      setZoomedTemplate(filteredTemplates[next])
+      return next
+    })
+  }, [filteredTemplates])
+
   const handleSavePress = useCallback(() => {
     const unionRequires = getUnionRequires(selectedInvoiceTemplate, selectedReceiptTemplate)
-    const missing = getMissingFields(unionRequires, INVOICE_BRAND_SETTINGS, RECEIPT_BRAND_SETTINGS)
+    const missing       = getMissingFields(unionRequires, profileSettings)
     if (missing.length > 0) {
       setMissingSheet(missing)
       return
@@ -277,8 +284,7 @@ export function TemplateModal({
   }, [
     selectedInvoiceTemplate,
     selectedReceiptTemplate,
-    INVOICE_BRAND_SETTINGS,
-    RECEIPT_BRAND_SETTINGS,
+    profileSettings,
     onSelect,
     onClose,
   ])
@@ -300,39 +306,7 @@ export function TemplateModal({
     navigate('/profile')
   }, [navigate, onClose])
 
-  const handleZoomOpen = useCallback((template) => {
-    const idx = filteredTemplates.findIndex(t => t.id === template.id)
-    setZoomedTemplate(template)
-    setZoomIndex(idx)
-    setSlideDir(null)
-    setSlideKey(k => k + 1)
-    if (zoomInnerRef.current) zoomInnerRef.current.scrollTop = 0
-  }, [filteredTemplates])
-
-  const handleZoomTouchStart = useCallback((e) => {
-    touchStartX.current = e.touches[0].clientX
-    touchStartY.current = e.touches[0].clientY
-  }, [])
-
-  const handleZoomTouchEnd = useCallback((e) => {
-    if (touchStartX.current === null) return
-    const dx = e.changedTouches[0].clientX - touchStartX.current
-    const dy = e.changedTouches[0].clientY - touchStartY.current
-    if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 48) {
-      handleZoomNav(dx < 0 ? 1 : -1)
-    }
-    touchStartX.current = null
-    touchStartY.current = null
-  }, [handleZoomNav])
-
   if (!isOpen) return null
-
-  const zoomedIsSelected = zoomedTemplate
-    ? activeTabObject.selectedId === zoomedTemplate.id
-    : false
-
-  const canNavPrev = zoomIndex > 0
-  const canNavNext = zoomIndex < filteredTemplates.length - 1
 
   const slideClass = slideDir === 1
     ? styles.zoomSlideEnterFromRight
@@ -351,8 +325,8 @@ export function TemplateModal({
         onBackClick={onClose}
         showBorderBottom={false}
         customActions={[{
-          label: 'Save',
-          onClick: handleSavePress,
+          label:    'Save',
+          onClick:  handleSavePress,
           disabled: !hasChanges,
         }]}
       />
@@ -454,73 +428,20 @@ export function TemplateModal({
       </div>
 
       {zoomedTemplate && (
-        <div
-          className={styles.zoomOverlay}
-          onClick={handleZoomClose}
-          onTouchStart={handleZoomTouchStart}
-          onTouchEnd={handleZoomTouchEnd}
-        >
-          <div className={styles.zoomOverlayHeader} onClick={e => e.stopPropagation()}>
-            <button
-              className={styles.zoomOverlayClose}
-              onClick={handleZoomClose}
-              aria-label="Close preview"
-            >
-              <span className="mi" style={{ fontSize: '1rem' }}>close</span>
-            </button>
-
-            <div className={styles.zoomOverlayMeta}>
-              <span className={styles.zoomOverlayName}>{zoomedTemplate.label}</span>
-              <span className={styles.zoomOverlayCounter}>
-                {zoomIndex + 1} of {filteredTemplates.length}
-              </span>
-            </div>
-
-            <button
-              className={`${styles.zoomSelectButton} ${zoomedIsSelected ? styles.zoomSelectButtonSelected : ''}`}
-              onClick={() => !zoomedIsSelected && handleTemplateSelect(zoomedTemplate)}
-            >
-              {zoomedIsSelected
-                ? <><span className="mi" style={{ fontSize: '0.85rem' }}>check</span> Selected</>
-                : 'Select'
-              }
-            </button>
-          </div>
-
-          <div className={styles.zoomOverlayViewport} onClick={e => e.stopPropagation()}>
-            <div
-              key={slideKey}
-              className={`${styles.zoomOverlayInner} ${slideClass}`}
-              ref={zoomInnerRef}
-            >
-              <div className={styles.zoomPreviewScaler}>
-                <zoomedTemplate.Component {...activeTabObject.getSampleProps()} />
-              </div>
-            </div>
-
-            {canNavPrev && (
-              <button
-                className={`${styles.zoomNavButton} ${styles.zoomNavPrev}`}
-                onClick={e => { e.stopPropagation(); handleZoomNav(-1) }}
-                aria-label="Previous template"
-              >
-                <span className="mi" style={{ fontSize: '1.25rem' }}>chevron_left</span>
-              </button>
-            )}
-
-            {canNavNext && (
-              <button
-                className={`${styles.zoomNavButton} ${styles.zoomNavNext}`}
-                onClick={e => { e.stopPropagation(); handleZoomNav(1) }}
-                aria-label="Next template"
-              >
-                <span className="mi" style={{ fontSize: '1.25rem' }}>chevron_right</span>
-              </button>
-            )}
-          </div>
-
-          <div className={styles.zoomOverlayBottomPad} />
-        </div>
+        <ZoomOverlay
+          template={zoomedTemplate}
+          index={zoomIndex}
+          total={filteredTemplates.length}
+          isSelected={activeTabObject.selectedId === zoomedTemplate.id}
+          sampleProps={sampleProps}
+          onClose={handleZoomClose}
+          onSelect={handleTemplateSelect}
+          onNav={handleZoomNav}
+          canNavPrev={zoomIndex > 0}
+          canNavNext={zoomIndex < filteredTemplates.length - 1}
+          slideClass={slideClass}
+          slideKey={slideKey}
+        />
       )}
 
       {missingSheet !== null && (
