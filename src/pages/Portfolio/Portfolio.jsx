@@ -200,7 +200,7 @@ export default function Portfolio() {
   const [resolvedUid,   setResolvedUid]   = useState(null)
   const [brand,         setBrand]         = useState(null)
   const [photos,        setPhotos]        = useState([])
-  const [dressTypes,    setDressTypes]    = useState([])
+  const [GarmentTypes,    setGarmentTypes]    = useState([])
   const [loading,       setLoading]       = useState(true)
   const [notFound,      setNotFound]      = useState(false)
   const [activeTab,     setActiveTab]     = useState(null)
@@ -255,8 +255,8 @@ export default function Portfolio() {
   useEffect(() => {
     if (!resolvedUid) return
     return onSnapshot(
-      doc(db, 'users', resolvedUid, 'galleryDressTypes', 'completed_works'),
-      snap => setDressTypes(snap.exists() ? (snap.data().types ?? []) : []),
+      doc(db, 'users', resolvedUid, 'galleryGarmentTypes', 'completed_works'),
+      snap => setGarmentTypes(snap.exists() ? (snap.data().types ?? []) : []),
       () => {}
     )
   }, [resolvedUid])
@@ -441,11 +441,11 @@ export default function Portfolio() {
                 </div>
               )}
 
-              {dressTypes.length > 0 && (
+              {GarmentTypes.length > 0 && (
                 <div className={styles.aboutSpecialties}>
                   <p className={styles.aboutSpecialtiesLabel}>Specialises in</p>
                   <div className={styles.aboutSpecialtiesList}>
-                    {dressTypes.map(t => <span key={t.id} className={styles.aboutSpecialtyPill}>{t.label}</span>)}
+                    {GarmentTypes.map(t => <span key={t.id} className={styles.aboutSpecialtyPill}>{t.label}</span>)}
                   </div>
                 </div>
               )}
@@ -473,10 +473,10 @@ export default function Portfolio() {
       </section>
 
       {/* ── MARQUEE ── */}
-      {dressTypes.length > 0 && (
+      {GarmentTypes.length > 0 && (
         <div className={styles.marqueeWrap}>
           <div className={styles.marqueeTrack}>
-            {[...dressTypes, ...dressTypes, ...dressTypes, ...dressTypes].map((t, i) => (
+            {[...GarmentTypes, ...GarmentTypes, ...GarmentTypes, ...GarmentTypes].map((t, i) => (
               <span key={i} className={styles.marqueeItem}>
                 {t.label}
                 <span className="mi" style={{ fontSize: '0.5rem', margin: '0 16px', opacity: 0.4, verticalAlign: 'middle' }}>fiber_manual_record</span>
@@ -493,11 +493,11 @@ export default function Portfolio() {
           <h2 className={styles.worksTitle}>Completed Works</h2>
           <p className={styles.worksSub}>Every piece is a testament to precision and craft.</p>
         </div>
-        {dressTypes.length > 0 && (
+        {GarmentTypes.length > 0 && (
           <div className={styles.filterBar}>
             <div className={styles.filterScroll} ref={filterScrollRef}>
               <button data-tab="all" className={`${styles.filterPill} ${!activeTab ? styles.filterPillActive : ''}`} onClick={() => handleTabChange(null)}>All</button>
-              {dressTypes.map(t => (
+              {GarmentTypes.map(t => (
                 <button key={t.id} data-tab={t.id} className={`${styles.filterPill} ${activeTab === t.id ? styles.filterPillActive : ''}`} onClick={() => handleTabChange(t.id)}>{t.label}</button>
               ))}
             </div>

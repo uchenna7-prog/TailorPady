@@ -27,7 +27,7 @@ service cloud.firestore {
         allow write: if request.auth != null && request.auth.uid == uid;
       }
 
-      match /galleryDressTypes/{docId} {
+      match /galleryGarmentTypes/{docId} {
         allow read: if true;
         allow write: if request.auth != null && request.auth.uid == uid;
       }

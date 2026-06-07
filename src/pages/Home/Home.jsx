@@ -37,9 +37,13 @@ import { QuickActionsSection } from './components/QuickActionsSection/QuickActio
 import { RecentOrdersSection } from './components/RecentOrdersSection/RecentOrdersSection'
 import { StatCardSkeleton } from './components/StatCardSkeleton/StatCardSkeleton'
 import { SectionSkeleton } from './components/SectionSkeleton/SectionSkeleton'
+import { AppointmentDetail } from '../../components/AppointmentDetail/AppointmentDetail'
+import TaskDetail from '../../components/TaskDetail/TaskDetail'
 import Header from '../../components/Header/Header'
 import BottomNav from '../../components/BottomNav/BottomNav'
 import OrderDetailModal from '../../components/OrderDetailModal/OrderDetailModal'
+import ConfirmSheet from '../../components/ConfirmSheet/ConfirmSheet'
+import Toast from '../../components/Toast/Toast'
 import styles from './Home.module.css'
 import Skeleton from 'react-loading-skeleton'
 import 'react-loading-skeleton/dist/skeleton.css'
@@ -87,15 +91,22 @@ function buildProfileSteps(profileSettings) {
   ]
 }
 
+const STATUS_LABELS = {
+  upcoming:  'Upcoming',
+  done:      'Done',
+  missed:    'Missed',
+  cancelled: 'Cancelled',
+}
+
 function Home({ onMenuClick, onGoToCustomer }) {
   const navigate = useNavigate()
 
   const { user }                                                          = useAuth()
   const { customers, loading: loadingCustomers }                          = useCustomers()
   const { allOrders }                                                     = useOrders()
-  const { tasks, loading: loadingTasks }                                  = useTasks()
+  const { tasks, loading: loadingTasks, toggleTask, deleteTask }          = useTasks()
   const { allInvoices }                                                   = useInvoices()
-  const { upcoming, todayAppointments, recent: recentAppts, missedCount, upcomingThisWeek } = useAppointments()
+  const { upcoming, todayAppointments, recent: recentAppts, missedCount, upcomingThisWeek, allAppointments, updateAppointment, deleteAppointment } = useAppointments()
   const { pushEnabled, requestPushPermission }                            = useNotifications()
   const { generalSettings }                                               = useGeneralSettings()
   const { allPayments }                                                   = usePayments()
@@ -106,6 +117,12 @@ function Home({ onMenuClick, onGoToCustomer }) {
   const [isBannerDismissed, setIsBannerDismissed] = useState(loadNotificationDismissed)
   const [isGoalModalOpen,   setIsGoalModalOpen]   = useState(false)
   const [selectedOrder,     setSelectedOrder]     = useState(null)
+  const [detailAppt,        setDetailAppt]        = useState(null)
+  const [detailTask,        setDetailTask]        = useState(null)
+  const [confirmDelAppt,    setConfirmDelAppt]     = useState(null)
+  const [confirmDelTask,    setConfirmDelTask]     = useState(null)
+  const [toastMsg,          setToastMsg]          = useState('')
+  const toastTimer = useRef(null)
 
   const greetingTextRef  = useRef(getGreeting())
   const greetingEmojiRef = useRef(getGreetingEmoji())
@@ -141,6 +158,61 @@ function Home({ onMenuClick, onGoToCustomer }) {
 
   const now      = new Date()
   const todayStr = now.toISOString().slice(0, 10)
+
+  function showToast(msg) {
+    setToastMsg(msg)
+    clearTimeout(toastTimer.current)
+    toastTimer.current = setTimeout(() => setToastMsg(''), 2400)
+  }
+
+  function handleApptStatusChange(id, newStatus) {
+    updateAppointment(id, { status: newStatus })
+      .then(() => showToast(`Marked as ${STATUS_LABELS[newStatus] ?? newStatus}`))
+      .catch(() => showToast('Failed to update status.'))
+  }
+
+  function handleApptDeleteRequest(appt) {
+    setDetailAppt(null)
+    setConfirmDelAppt(appt)
+  }
+
+  async function handleApptDeleteConfirm() {
+    if (!confirmDelAppt) return
+    try {
+      await deleteAppointment(confirmDelAppt.id)
+      showToast('Appointment deleted')
+    } catch {
+      showToast('Failed to delete appointment.')
+    }
+    setConfirmDelAppt(null)
+  }
+
+  async function handleTaskToggle(id, currentDone) {
+    try {
+      await toggleTask(id, currentDone)
+      setDetailTask(prev =>
+        prev && String(prev.id) === String(id) ? { ...prev, done: !currentDone } : prev
+      )
+    } catch {
+      showToast('Failed to update task.')
+    }
+  }
+
+  function handleTaskDeleteRequest(task) {
+    setDetailTask(null)
+    setConfirmDelTask(task)
+  }
+
+  async function handleTaskDeleteConfirm() {
+    if (!confirmDelTask) return
+    try {
+      await deleteTask(confirmDelTask.id)
+      showToast('Task deleted')
+    } catch {
+      showToast('Failed to delete task.')
+    }
+    setConfirmDelTask(null)
+  }
 
   function isInvoiceOverdue(invoice) {
     if (invoice.status === 'paid') return false
@@ -372,7 +444,9 @@ function Home({ onMenuClick, onGoToCustomer }) {
               <UpcomingAppointmentsSection
                 appointments={upcomingAppointments}
                 todayAppointments={todayAppointments}
+                allOrders={allOrders}
                 onSeeAll={() => navigate('/appointments')}
+                onSelectAppointment={setDetailAppt}
               />
             )
           ) : (
@@ -381,9 +455,11 @@ function Home({ onMenuClick, onGoToCustomer }) {
 
           {appointmentsReady && pastAppointments.length > 0 && (
             <PastAppointmentsSection
-              appointments={pastAppointments}
-              onSeeAll={() => navigate('/appointments')}
-            />
+            appointments={pastAppointments}
+            allOrders={allOrders}
+            onSeeAll={() => navigate('/appointments')}
+            onSelectAppointment={setDetailAppt}
+          />
           )}
 
           <QuickActionsSection onNavigate={navigate} />
@@ -402,7 +478,12 @@ function Home({ onMenuClick, onGoToCustomer }) {
 
           {tasksReady ? (
             recentTasks.length > 0 && (
-              <RecentTasksSection tasks={recentTasks} onSeeAll={() => navigate('/tasks')} />
+            <RecentTasksSection
+              tasks={recentTasks}
+              allOrders={allOrders}
+              onSeeAll={() => navigate('/tasks')}
+              onSelectTask={setDetailTask}
+            />
             )
           ) : (
             <SectionSkeleton />
@@ -417,9 +498,44 @@ function Home({ onMenuClick, onGoToCustomer }) {
             />
           )}
 
+          {detailAppt && (
+            <AppointmentDetail
+              appt={detailAppt}
+              onClose={() => setDetailAppt(null)}
+              onStatusChange={handleApptStatusChange}
+              onDelete={handleApptDeleteRequest}
+            />
+          )}
+
+          {detailTask && (
+            <TaskDetail
+              task={detailTask}
+              onClose={() => setDetailTask(null)}
+              onToggle={handleTaskToggle}
+              onDelete={handleTaskDeleteRequest}
+            />
+          )}
+
+          <ConfirmSheet
+            open={!!confirmDelAppt}
+            title="Delete Appointment?"
+            message="This can't be undone."
+            onConfirm={handleApptDeleteConfirm}
+            onCancel={() => setConfirmDelAppt(null)}
+          />
+
+          <ConfirmSheet
+            open={!!confirmDelTask}
+            title="Delete Task?"
+            message="This can't be undone."
+            onConfirm={handleTaskDeleteConfirm}
+            onCancel={() => setConfirmDelTask(null)}
+          />
+
         </SkeletonTheme>
       </main>
 
+      <Toast message={toastMsg} />
       <BottomNav />
     </div>
   )

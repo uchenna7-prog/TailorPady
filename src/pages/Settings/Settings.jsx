@@ -11,6 +11,7 @@ import { SectionHeader } from './components/SectionHeader/SectionHeader'
 import { TemplateModal } from './components/TemplateModal/TemplateModal'
 import { ReceiptSettingsModal } from './components/ReceiptSettingsModal/ReceiptSettingsModal'
 import { InvoiceSettingsModal } from './components/InvoiceSettingsModal/InvoiceSettingsModal'
+import { PortfolioSettingsModal } from './components/PortfolioSettingsModal/PortfolioSettingsModal'
 import { AgentSettingsModal } from './components/AgentSettingsModal/AgentSettingsModal'
 import { PortfolioTemplateModal } from './components/PortfolioTemplateModal/PortfolioTemplateModal'
 import { CurrencyModal } from './components/CurrencyModal/CurrencyModal'
@@ -30,6 +31,7 @@ export default function Settings({ onMenuClick }) {
   const [isInvoiceModalOpen, setIsInvoiceModalOpen] = useState(false)
   const [isReceiptModalOpen, setIsReceiptModalOpen] = useState(false)
   const [isAgentModalOpen, setIsAgentModalOpen] = useState(false)
+  const [isPortfolioModalOpen, setIsPortfolioModalOpen] = useState(false)
   const [isPortfolioTemplateModalOpen, setIsPortfolioTemplateModalOpen] = useState(false)
   const [isCurrencyModalOpen, setIsCurrencyModalOpen] = useState(false)
   const [isAppearanceModalOpen, setIsAppearanceModalOpen] = useState(false)
@@ -123,6 +125,15 @@ export default function Settings({ onMenuClick }) {
     return current ? (map[current] ?? 'Custom') : 'Choose a layout for your public page'
   }
 
+  function getPortfolioSettingsSub() {
+    const parts = []
+    if (generalSettings.heroBgImage)     parts.push('Hero bg')
+    if (generalSettings.heroAvatarImage) parts.push('Avatar')
+    if (generalSettings.footerBgImage)   parts.push('Footer bg')
+    if (generalSettings.footerLogoImage) parts.push('Logo')
+    return parts.length > 0 ? parts.join(' · ') : 'Hero and footer images'
+  }
+
   function getCurrencySub() {
     const c = generalSettings.currency
     if (!c) return 'Nigerian Naira · NGN · ₦'
@@ -207,6 +218,14 @@ export default function Settings({ onMenuClick }) {
         />
 
         <SectionHeader icon="public" label="Portfolio" />
+
+        <SettingRow
+          icon="image"
+          label="Portfolio Settings"
+          sub={getPortfolioSettingsSub()}
+          onClick={() => setIsPortfolioModalOpen(true)}
+          chevron
+        />
 
         <SettingRow
           icon="web"
@@ -313,6 +332,13 @@ export default function Settings({ onMenuClick }) {
       {isAgentModalOpen && (
         <AgentSettingsModal
           onBack={() => setIsAgentModalOpen(false)}
+          showToast={showToast}
+        />
+      )}
+
+      {isPortfolioModalOpen && (
+        <PortfolioSettingsModal
+          onBack={() => setIsPortfolioModalOpen(false)}
           showToast={showToast}
         />
       )}

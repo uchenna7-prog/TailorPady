@@ -1,0 +1,117 @@
+.taskRow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 0;
+  cursor: pointer;
+  transition: background 0.15s;
+  background: var(--bg);
+  position: relative;
+}
+
+.taskRow::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: var(--border);
+}
+
+.taskRowLast::after { display: none; }
+.taskRow:active { background: var(--surface); }
+.taskRowDone { opacity: 0.5; }
+
+.taskRowIcon {
+  width: 80px;
+  height: 80px;
+  border-radius: 12px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.taskRowInfo {
+  flex: 1;
+  min-width: 0;
+}
+
+.taskRowDesc {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 3px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.taskRowDescDone {
+  text-decoration: line-through;
+  color: var(--text3);
+}
+
+.taskRowMeta {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-bottom: 2px;
+}
+
+.taskRowMetaText {
+  font-size: 0.75rem;
+  font-weight: 400;
+  color: var(--text2);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.taskRowMetaOverdue {
+  color: #ef4444;
+  font-weight: 600;
+}
+
+.taskRowRight {
+  text-align: right;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 3px;
+}
+
+.taskRowStatus {
+  display: inline-block;
+  font-size: 0.6rem;
+  font-weight: 700;
+  text-transform: capitalize;
+  letter-spacing: 0.2px;
+  border: 1px solid;
+  border-radius: 5px;
+  padding: 2px 7px;
+}
+
+.taskRowCategory {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  font-size: 0.6rem;
+  font-weight: 600;
+  color: var(--text3);
+  white-space: nowrap;
+  max-width: 110px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.taskRowUntil {
+  font-size: 0.6rem;
+  font-weight: 700;
+  color: #ef4444;
+  white-space: nowrap;
+}

@@ -2,11 +2,11 @@ import { createContext, useContext, useState, useEffect, useCallback } from 'rea
 import { useAuth } from './AuthContext'
 import {
   subscribeToPhotos,
-  subscribeToDressTypes,
+  subscribeToGarmentTypes,
   addPhoto  as addPhotoToDb,
   updatePhoto as updatePhotoInDb,
   deletePhoto as deletePhotoFromDb,
-  saveDressTypes as saveDressTypesToDb,
+  saveGarmentTypes as saveGarmentTypesToDb,
 } from '../services/galleryService'
 
 
@@ -17,7 +17,7 @@ export function GalleryProvider({ children }) {
   const { user } = useAuth()
 
   const [photos,     setPhotos]     = useState([])
-  const [dressTypes, setDressTypes] = useState({
+  const [GarmentTypes, setGarmentTypes] = useState({
     completed_works: [],
     designs:         [],
     inspiration:     [],
@@ -29,7 +29,7 @@ export function GalleryProvider({ children }) {
   useEffect(() => {
     if (!user) {
       setPhotos([])
-      setDressTypes({ completed_works: [], designs: [], inspiration: [] })
+      setGarmentTypes({ completed_works: [], designs: [], inspiration: [] })
       setLoading(false)
       return
     }
@@ -43,15 +43,15 @@ export function GalleryProvider({ children }) {
       (err)  => { setError(err.message); setLoading(false) }
     )
 
-    const unsubDressTypes = subscribeToDressTypes(
+    const unsubGarmentTypes = subscribeToGarmentTypes(
       user.uid,
-      (data) => setDressTypes(data),
+      (data) => setGarmentTypes(data),
       (err)  => setError(err.message)
     )
 
     return () => {
       unsubPhotos()
-      unsubDressTypes()
+      unsubGarmentTypes()
     }
   }, [user])
 
@@ -72,21 +72,21 @@ export function GalleryProvider({ children }) {
     await deletePhotoFromDb(user.uid, String(id))
   }, [user])
 
-  const saveDressTypes = useCallback(async (tabId, types) => {
+  const saveGarmentTypes = useCallback(async (tabId, types) => {
     if (!user) return
-    await saveDressTypesToDb(user.uid, tabId, types)
+    await saveGarmentTypesToDb(user.uid, tabId, types)
   }, [user])
 
   return (
     <GalleryContext.Provider value={{
       photos,
-      dressTypes,
+      GarmentTypes,
       loading,
       error,
       addPhoto,
       updatePhoto,
       deletePhoto,
-      saveDressTypes,
+      saveGarmentTypes,
     }}>
       {children}
     </GalleryContext.Provider>

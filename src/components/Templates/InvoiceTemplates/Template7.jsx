@@ -25,7 +25,6 @@ export function InvoiceTemplate7({ invoice, customer, invoiceBrandSettings }) {
 
   const discountLabel = discountType === "percent" ? `Discount (${discountValue}%)` : "Discount"
   const hasExtras     = shippingFee > 0 || discountAmount > 0 || (useTax && taxAmount > 0)
-  const brandName     = invoiceBrandSettings.name || invoiceBrandSettings.ownerName
 
   return (
     <div className={styles.template}>
@@ -47,34 +46,25 @@ export function InvoiceTemplate7({ invoice, customer, invoiceBrandSettings }) {
         <div className={styles.infoBox}>
           <div className={styles.infoBoxLabel}>Issued to:</div>
           <div className={styles.infoBoxName}>{customer.name}</div>
-
           <div className={styles.infoBoxDetail}>
-
-            {customer.phone && 
-            <div>
-              <span className={styles.infoBoxIcon}><PhoneIcon /></span>
-              {customer.phone} 
-            </div>
-            }
-
-
-            {customer.email  && 
-            <div>
-              <span className={styles.infoBoxIcon}><EmailIcon /></span>
-              {customer.email } 
-            </div>
-            }
-
-
-            {customer.address && 
-            <div>
-              <span className={styles.infoBoxIcon}><LocationIcon /></span>
-              {customer.address} 
-            </div>
-            }
-
-
-  
+            {customer.phone && (
+              <div>
+                <span className={styles.infoBoxIcon}><PhoneIcon /></span>
+                {customer.phone}
+              </div>
+            )}
+            {customer.email && (
+              <div>
+                <span className={styles.infoBoxIcon}><EmailIcon /></span>
+                {customer.email}
+              </div>
+            )}
+            {customer.address && (
+              <div>
+                <span className={styles.infoBoxIcon}><LocationIcon /></span>
+                {customer.address}
+              </div>
+            )}
           </div>
         </div>
 
@@ -82,7 +72,7 @@ export function InvoiceTemplate7({ invoice, customer, invoiceBrandSettings }) {
           <div className={styles.infoBoxMeta}>
             <span>Invoice No. {invoice.number}<br /></span>
             <span>Date: {invoice.date}</span>
-            {dueDate        && <span><br />Due: {dueDate}</span>}
+            {dueDate           && <span><br />Due: {dueDate}</span>}
             {invoice.orderDesc && <span><br />Order: {invoice.orderDesc}</span>}
           </div>
         </div>
@@ -90,34 +80,31 @@ export function InvoiceTemplate7({ invoice, customer, invoiceBrandSettings }) {
 
       <div className={styles.tableBox}>
         <table>
-              
           <thead className={styles.tableHeader}>
             <tr>
-
               <th className={styles.thDesc}>Description</th>
               <th className={styles.thPrice}>Unit Price</th>
               <th className={styles.thQty}>Qty</th>
               <th className={styles.thSub}>Subtotal</th>
-
             </tr>
-
           </thead>
+          <tbody>
+            {invoice.items?.map((item, i) => {
+              const qty        = item.qty ?? 1
+              const unitPrice  = parseFloat(item.price) || 0
+              const lineAmount = qty * unitPrice
+              return (
+                <tr key={i} className={styles.tableRow}>
+                  <td className={styles.tdDesc}>{item.name}</td>
+                  <td className={styles.tdPrice}>{formatMoney(currency, unitPrice)}</td>
+                  <td className={styles.tdQty}>{qty}</td>
+                  <td className={styles.tdSub}>{formatMoney(currency, lineAmount)}</td>
+                </tr>
+              )
+            })}
+          </tbody>
+        </table>
 
-          {invoice.items?.map((item, i) => {
-            const qty = item.qty ?? 1
-            const unitPrice  = parseFloat(item.price) || 0
-            const lineAmount = qty * unitPrice
-            return (
-              <tr key={i} className={styles.tableRow}>
-                <td className={styles.tdDesc}>{item.name}</td>
-                <td className={styles.tdPrice}>{formatMoney(currency, unitPrice)}</td>
-                <td className={styles.tdQty}>{qty}</td>
-                <td className={styles.tdSub}>{formatMoney(currency, lineAmount)}</td>
-              </tr>
-            )
-          })}
-
-            </table>
         <div className={styles.totalsArea}>
           {hasExtras && (
             <>
@@ -157,20 +144,17 @@ export function InvoiceTemplate7({ invoice, customer, invoiceBrandSettings }) {
           <div className={styles.footerPayLabel}>Payment Information</div>
           <div className={styles.footerDetail}>
             {invoiceBrandSettings.accountBank   && <span>Bank: {invoiceBrandSettings.accountBank}</span>}<br />
-             {invoiceBrandSettings.accountNumber && <span>Account Number: {invoiceBrandSettings.accountNumber}</span>}<br />
+            {invoiceBrandSettings.accountNumber && <span>Account Number: {invoiceBrandSettings.accountNumber}</span>}<br />
             {invoiceBrandSettings.accountName   && <span>Account Name: {invoiceBrandSettings.accountName}</span>}<br />
-           
           </div>
         </div>
 
         <div className={styles.footerRight}>
-
           {(invoiceBrandSettings.name || invoiceBrandSettings.ownerName) && (
             <div className={styles.brandName}>
               {invoiceBrandSettings.name || invoiceBrandSettings.ownerName}
             </div>
           )}
-
           {invoiceBrandSettings.phone && (
             <div className={styles.footerContactRow}>
               <span className={styles.footerIcon}><PhoneIcon /></span>
@@ -183,33 +167,25 @@ export function InvoiceTemplate7({ invoice, customer, invoiceBrandSettings }) {
               <span className={styles.footerContactText}>{invoiceBrandSettings.email}</span>
             </div>
           )}
-
           {invoiceBrandSettings.website && (
             <div className={styles.footerContactRow}>
               <span className={styles.footerIcon}><WebsiteIcon /></span>
               <span className={styles.footerContactText}>{invoiceBrandSettings.website}</span>
             </div>
           )}
-
           {invoiceBrandSettings.address && (
             <div className={styles.footerContactRow}>
               <span className={styles.footerIcon}><LocationIcon /></span>
               <span className={styles.footerContactText}>{invoiceBrandSettings.address}</span>
             </div>
           )}
-          
-
         </div>
       </div>
 
       {invoiceBrandSettings.footer && (
-        <div className={styles.thankYou}>{invoiceBrandSettings.footer || "Thank You"}  </div>
+        <div className={styles.thankYou}>{invoiceBrandSettings.footer || "Thank You"}</div>
       )}
 
     </div>
   )
 }
-
-
-
-

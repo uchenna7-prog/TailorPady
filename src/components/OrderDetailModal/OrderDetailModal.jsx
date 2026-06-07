@@ -422,9 +422,9 @@ export default function OrderDetailModal({
               className={styles.customerBtn}
               onClick={() => { onClose(); onGoToCustomer(local.customerId) }}
             >
-              <span className="mi" style={{ fontSize: '1.1rem' }}>account_circle</span>
+              <span className="mi" style={{ fontSize: '1.1rem',textTransform: "lowercase"  }}>account_circle</span>
               Go to {local.customerName || 'Customer'}'s Profile
-              <span className="mi" style={{ marginLeft: 'auto', fontSize: '1rem' }}>arrow_forward_ios</span>
+              <span className="mi" style={{ marginLeft: 'auto', fontSize: '1rem',textTransform: "lowercase"  }}>arrow_forward_ios</span>
             </button>
           )}
 

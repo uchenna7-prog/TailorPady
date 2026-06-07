@@ -2,11 +2,12 @@ import { useState, useRef, useCallback, useEffect } from 'react'
 import { useCustomers } from '../../contexts/CustomerContext'
 import { useOrders } from '../../contexts/OrdersContext'
 import { useAppointments } from '../../contexts/AppointmentContext'
+import { AppointmentDetail } from '../../components/AppointmentDetail/AppointmentDetail'
+import { AppointmentRow, STATUS_CONFIG, isApptOverdue } from '../../components/AppointmentRow/AppointmentRow'
 import Header from '../../components/Header/Header'
 import ConfirmSheet from '../../components/ConfirmSheet/ConfirmSheet'
 import Toast from '../../components/Toast/Toast'
 import BottomNav from '../../components/BottomNav/BottomNav'
-import OrderMosaic from '../../components/OrderMosaic/OrderMosaic'
 import styles from './Appointments.module.css'
 
 
@@ -19,15 +20,6 @@ const APPT_TYPES = [
   { id: 'other',        label: 'Other',        icon: 'calendar_today' },
 ]
 
-const TYPE_ICONS = Object.fromEntries(APPT_TYPES.map(t => [t.id, t.icon]))
-
-const STATUS_CONFIG = {
-  upcoming:  { label: 'Upcoming',  color: '#818cf8', bg: 'rgba(99,102,241,0.12)',  border: 'rgba(99,102,241,0.4)'  },
-  done:      { label: 'Done',      color: '#22c55e', bg: 'rgba(34,197,94,0.12)',   border: 'rgba(34,197,94,0.4)'   },
-  missed:    { label: 'Missed',    color: '#ef4444', bg: 'rgba(239,68,68,0.12)',   border: 'rgba(239,68,68,0.4)'   },
-  cancelled: { label: 'Cancelled', color: '#94a3b8', bg: 'rgba(148,163,184,0.12)', border: 'rgba(148,163,184,0.4)' },
-}
-
 const TABS = [
   { id: 'all',      label: 'All'      },
   { id: 'upcoming', label: 'Upcoming' },
@@ -35,76 +27,25 @@ const TABS = [
   { id: 'missed',   label: 'Missed'   },
 ]
 
-
-function formatDate(dateStr) {
-  if (!dateStr) return ''
-  return new Date(dateStr + 'T00:00:00').toLocaleDateString('en-US', {
-    month: 'short', day: 'numeric', year: 'numeric',
-  })
-}
-
-function formatShortDate(dateStr) {
-  if (!dateStr) return ''
-  return new Date(dateStr + 'T00:00:00').toLocaleDateString('en-US', {
-    month: 'short', day: 'numeric',
-  })
-}
-
-function formatTime(timeStr) {
-  if (!timeStr) return ''
-  const [h, m] = timeStr.split(':')
-  const hour   = parseInt(h, 10)
-  const ampm   = hour >= 12 ? 'PM' : 'AM'
-  const display = hour % 12 === 0 ? 12 : hour % 12
-  return `${display}:${m} ${ampm}`
-}
-
-function isOverdue(appt) {
-  if (!appt.date || appt.status === 'done' || appt.status === 'cancelled') return false
-  const apptDateTime = appt.time
-    ? new Date(`${appt.date}T${appt.time}`)
-    : new Date(appt.date + 'T23:59:59')
-  return apptDateTime < new Date()
-}
-
-function timeUntil(dateStr, timeStr) {
-  if (!dateStr) return null
-  const now      = new Date()
-  const appt     = timeStr ? new Date(`${dateStr}T${timeStr}`) : new Date(dateStr + 'T00:00:00')
-  const diffMins = Math.round((appt - now) / 60000)
-
-  if (diffMins < 0) {
-    const abs = Math.abs(diffMins)
-    if (abs < 60)   return `${abs}m ago`
-    if (abs < 1440) return `${Math.round(abs / 60)}h ago`
-    return `${Math.round(abs / 1440)}d ago`
-  }
-  if (diffMins < 60)   return `In ${diffMins}m`
-  if (diffMins < 1440) return `In ${Math.round(diffMins / 60)}h`
-  const days = Math.round(diffMins / 1440)
-  if (days === 1) return 'Tomorrow'
-  return `In ${days}d`
-}
-
 function getInitials(name) {
   return name.trim().split(/\s+/).map(w => w[0]).slice(0, 2).join('').toUpperCase()
 }
 
 
 function AddAppointmentModal({ isOpen, onClose, onSave, customers, allOrders }) {
-  const [title,        setTitle]        = useState('')
-  const [type,         setType]         = useState('fitting')
-  const [date,         setDate]         = useState('')
-  const [time,         setTime]         = useState('')
-  const [location,     setLocation]     = useState('')
-  const [notes,        setNotes]        = useState('')
-  const [custQuery,    setCustQuery]    = useState('')
-  const [selectedCust, setSelectedCust] = useState(null)
-  const [custDropOpen, setCustDropOpen] = useState(false)
-  const [selectedOrder,setSelectedOrder]= useState(null)
-  const [orderDropOpen,setOrderDropOpen]= useState(false)
-  const [reminder,     setReminder]     = useState(true)
-  const [errors,       setErrors]       = useState({})
+  const [title,         setTitle]         = useState('')
+  const [type,          setType]          = useState('fitting')
+  const [date,          setDate]          = useState('')
+  const [time,          setTime]          = useState('')
+  const [location,      setLocation]      = useState('')
+  const [notes,         setNotes]         = useState('')
+  const [custQuery,     setCustQuery]     = useState('')
+  const [selectedCust,  setSelectedCust]  = useState(null)
+  const [custDropOpen,  setCustDropOpen]  = useState(false)
+  const [selectedOrder, setSelectedOrder] = useState(null)
+  const [orderDropOpen, setOrderDropOpen] = useState(false)
+  const [reminder,      setReminder]      = useState(true)
+  const [errors,        setErrors]        = useState({})
 
   const custOrders = selectedCust
     ? allOrders.filter(o => String(o.customerId) === String(selectedCust.id))
@@ -127,10 +68,10 @@ function AddAppointmentModal({ isOpen, onClose, onSave, customers, allOrders }) 
 
   const validate = () => {
     const newErrors = {}
-    if (!title.trim())   newErrors.title = 'Appointment title is required'
-    if (!date)           newErrors.date  = 'Date is required'
-    if (!time)           newErrors.time  = 'Time is required'
-    if (!selectedCust)   newErrors.cust  = 'Please select a client'
+    if (!title.trim()) newErrors.title = 'Appointment title is required'
+    if (!date)         newErrors.date  = 'Date is required'
+    if (!time)         newErrors.time  = 'Time is required'
+    if (!selectedCust) newErrors.cust  = 'Please select a client'
     setErrors(newErrors)
     return Object.keys(newErrors).length === 0
   }
@@ -374,191 +315,9 @@ function AddAppointmentModal({ isOpen, onClose, onSave, customers, allOrders }) 
 }
 
 
-function AppointmentRow({ appt, isLast, allOrders, onOpen }) {
-  const overdue       = isOverdue(appt) && appt.status === 'upcoming'
-  const icon          = TYPE_ICONS[appt.type] || 'calendar_today'
-  const until         = timeUntil(appt.date, appt.time)
-  const effectiveSc   = STATUS_CONFIG[overdue ? 'missed' : appt.status] ?? STATUS_CONFIG.upcoming
-  const dateIsOverdue = overdue || appt.status === 'missed'
-
-  const linkedOrder      = appt.orderId ? allOrders.find(o => String(o.id) === String(appt.orderId)) : null
-  const linkedOrderItems = linkedOrder?.items ?? []
-
-  return (
-    <div
-      className={`${styles.apptRow} ${isLast ? styles.apptRow_last : ''}`}
-      onClick={onOpen}
-    >
-      {linkedOrder ? (
-        <OrderMosaic items={linkedOrderItems} size="md" overdue={overdue} />
-      ) : (
-        <div className={styles.apptRowIcon}>
-          <span className="mi" style={{ fontSize: '1.3rem', color: effectiveSc.color }}>{icon}</span>
-        </div>
-      )}
-
-      <div className={styles.apptRowInfo}>
-        <div className={styles.apptRowTitle}>{appt.title}</div>
-        {appt.customerName && (
-          <div className={styles.apptRowMeta}>
-            <span className="mi" style={{ fontSize: '0.75rem', color: 'var(--text3)' }}>person</span>
-            <span className={styles.apptRowMetaText}>{appt.customerName}</span>
-          </div>
-        )}
-        <div className={styles.apptRowMeta}>
-          <span className="mi" style={{ fontSize: '0.75rem', color: dateIsOverdue ? '#ef4444' : 'var(--text3)' }}>schedule</span>
-          <span className={`${styles.apptRowMetaText} ${dateIsOverdue ? styles.apptRowMetaOverdue : ''}`}>
-            {formatShortDate(appt.date)}{appt.time ? ` · ${formatTime(appt.time)}` : ''}
-          </span>
-        </div>
-      </div>
-
-      <div className={styles.apptRowRight}>
-        <span
-          className={styles.apptRowStatus}
-          style={{ background: effectiveSc.bg, color: effectiveSc.color, borderColor: effectiveSc.border }}
-        >
-          {overdue ? 'Missed' : effectiveSc.label}
-        </span>
-        {appt.location && (
-          <div className={styles.apptRowLocation}>
-            <span className="mi" style={{ fontSize: '0.65rem' }}>place</span>
-            {appt.location}
-          </div>
-        )}
-        {until && appt.status === 'upcoming' && (
-          <div className={styles.apptRowUntil}>{until}</div>
-        )}
-      </div>
-    </div>
-  )
-}
-
-
-function AppointmentDetail({ appt, onClose, onStatusChange, onDelete }) {
-  if (!appt) return null
-  const overdue = isOverdue(appt) && appt.status === 'upcoming'
-
-  return (
-    <div
-      className={styles.detailOverlay}
-      onClick={e => e.target === e.currentTarget && onClose()}
-    >
-      <div className={styles.detailPanel}>
-        <div className={styles.detailHandle} />
-
-        <div className={styles.detailHeader}>
-          <button className={styles.detailCloseBtn} onClick={onClose}>
-            <span className="mi" style={{ fontSize: '1.35rem' }}>close</span>
-          </button>
-          <div className={styles.detailHeaderTitle}>Appointment</div>
-          <button className={styles.detailHeaderDelete} onClick={() => onDelete(appt)}>
-            <span className="mi" style={{ fontSize: '1.1rem' }}>delete_outline</span>
-          </button>
-        </div>
-
-        <div className={styles.detailBody}>
-
-          <div className={styles.detailStatusRow}>
-            {Object.entries(STATUS_CONFIG).map(([key, cfg]) => (
-              <button
-                key={key}
-                className={`${styles.detailStatusBtn} ${appt.status === key ? styles.detailStatusBtn_active : ''}`}
-                style={appt.status === key ? {
-                  background:  cfg.bg,
-                  borderColor: cfg.border,
-                  color:       cfg.color,
-                } : {}}
-                onClick={() => onStatusChange(appt.id, key)}
-              >
-                {cfg.label}
-              </button>
-            ))}
-          </div>
-
-          <div className={styles.detailTitle}>{appt.title}</div>
-
-          <div className={styles.detailGrid}>
-            <div className={styles.detailCell}>
-              <div className={styles.detailCellLabel}>Type</div>
-              <div className={styles.detailCellVal} style={{ textTransform: 'capitalize' }}>
-                {APPT_TYPES.find(t => t.id === appt.type)?.label || appt.type}
-              </div>
-            </div>
-            <div className={styles.detailCell}>
-              <div className={styles.detailCellLabel}>Date</div>
-              <div className={`${styles.detailCellVal} ${overdue ? styles.overdueText : ''}`}>
-                {formatDate(appt.date)}
-              </div>
-            </div>
-            {appt.time && (
-              <div className={styles.detailCell}>
-                <div className={styles.detailCellLabel}>Time</div>
-                <div className={styles.detailCellVal}>{formatTime(appt.time)}</div>
-              </div>
-            )}
-            {appt.location && (
-              <div className={styles.detailCell}>
-                <div className={styles.detailCellLabel}>Location</div>
-                <div className={styles.detailCellVal}>{appt.location}</div>
-              </div>
-            )}
-          </div>
-
-          {(appt.customerName || appt.orderDesc) && (
-            <div className={styles.detailSectionCard}>
-              <div className={styles.detailSectionLabel}>Linked To</div>
-              {appt.customerName && (
-                <div className={styles.detailLinkedRow}>
-                  <span className="mi" style={{ fontSize: '1rem', color: 'var(--text3)' }}>person</span>
-                  <div style={{ flex: 1 }}>
-                    <div style={{ fontWeight: 700, fontSize: '0.88rem', color: 'var(--text)' }}>{appt.customerName}</div>
-                    {appt.customerPhone && (
-                      <div style={{ fontSize: '0.75rem', color: 'var(--text3)' }}>{appt.customerPhone}</div>
-                    )}
-                  </div>
-                  {appt.customerPhone && (
-                    <a
-                      href={`tel:${appt.customerPhone}`}
-                      className={styles.callBtn}
-                      onClick={e => e.stopPropagation()}
-                    >
-                      <span className="mi" style={{ fontSize: '1rem' }}>call</span>
-                    </a>
-                  )}
-                </div>
-              )}
-              {appt.orderDesc && (
-                <div className={styles.detailLinkedRow}>
-                  <span className="mi" style={{ fontSize: '1rem', color: 'var(--text3)' }}>content_cut</span>
-                  <span style={{ fontWeight: 600, fontSize: '0.88rem', color: 'var(--text)' }}>{appt.orderDesc}</span>
-                </div>
-              )}
-            </div>
-          )}
-
-          {appt.notes && (
-            <div className={styles.detailSectionCard}>
-              <div className={styles.detailSectionLabel}>Notes</div>
-              <p className={styles.detailNoteText}>{appt.notes}</p>
-            </div>
-          )}
-
-          <button className={styles.detailDeleteBtn} onClick={() => onDelete(appt)}>
-            <span className="mi" style={{ fontSize: '1rem' }}>delete_outline</span>
-            Delete Appointment
-          </button>
-
-        </div>
-      </div>
-    </div>
-  )
-}
-
-
 export default function Appointments({ onMenuClick }) {
-  const { customers }  = useCustomers()
-  const { allOrders }  = useOrders()
+  const { customers } = useCustomers()
+  const { allOrders } = useOrders()
   const {
     allAppointments,
     addAppointment,
@@ -619,17 +378,17 @@ export default function Appointments({ onMenuClick }) {
 
   const tabFiltered = allAppointments.filter(a => {
     if (activeTab === 'all')      return true
-    if (activeTab === 'upcoming') return a.status === 'upcoming' && !isOverdue(a)
+    if (activeTab === 'upcoming') return a.status === 'upcoming' && !isApptOverdue(a)
     if (activeTab === 'done')     return a.status === 'done'
-    if (activeTab === 'missed')   return a.status === 'missed' || (isOverdue(a) && a.status === 'upcoming')
+    if (activeTab === 'missed')   return a.status === 'missed' || (isApptOverdue(a) && a.status === 'upcoming')
     return true
   })
 
   const counts = {
     all:      allAppointments.length,
-    upcoming: allAppointments.filter(a => a.status === 'upcoming' && !isOverdue(a)).length,
+    upcoming: allAppointments.filter(a => a.status === 'upcoming' && !isApptOverdue(a)).length,
     done:     allAppointments.filter(a => a.status === 'done').length,
-    missed:   allAppointments.filter(a => a.status === 'missed' || (isOverdue(a) && a.status === 'upcoming')).length,
+    missed:   allAppointments.filter(a => a.status === 'missed' || (isApptOverdue(a) && a.status === 'upcoming')).length,
   }
 
   const searchFiltered = search.trim()
@@ -641,7 +400,9 @@ export default function Appointments({ onMenuClick }) {
     : tabFiltered
 
   const grouped = searchFiltered.reduce((acc, a) => {
-    const key = a.date ? formatDate(a.date) : 'No Date'
+    const key = a.date ? new Date(a.date + 'T00:00:00').toLocaleDateString('en-US', {
+      month: 'short', day: 'numeric', year: 'numeric',
+    }) : 'No Date'
     if (!acc[key]) acc[key] = []
     acc[key].push(a)
     return acc
@@ -689,8 +450,8 @@ export default function Appointments({ onMenuClick }) {
               >
                 <span className="mi" style={{ fontSize: '1.1rem' }}>
                   {t.id === 'upcoming' ? 'event_available'
-                    : t.id === 'done'   ? 'check_circle'
-                    : t.id === 'missed' ? 'event_busy'
+                    : t.id === 'done'  ? 'check_circle'
+                    : t.id === 'missed'? 'event_busy'
                     : 'calendar_today'}
                 </span>
                 {t.label}
@@ -724,9 +485,9 @@ export default function Appointments({ onMenuClick }) {
         {searchFiltered.length === 0 && (
           <div className={styles.emptyState}>
             <span className="mi" style={{ fontSize: '2.8rem', opacity: 0.2 }}>
-              {activeTab === 'done'       ? 'check_circle'
-                : activeTab === 'missed'  ? 'event_busy'
-                : activeTab === 'upcoming'? 'event_available'
+              {activeTab === 'done'         ? 'check_circle'
+                : activeTab === 'missed'   ? 'event_busy'
+                : activeTab === 'upcoming' ? 'event_available'
                 : 'calendar_today'}
             </span>
             <p>
