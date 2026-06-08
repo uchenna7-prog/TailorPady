@@ -332,7 +332,8 @@ export default function Appointments({ onMenuClick }) {
   const [toastMsg,   setToastMsg]   = useState('')
   const [search,     setSearch]     = useState('')
   const [filterOpen, setFilterOpen] = useState(false)
-  const toastTimer = useRef(null)
+  const toastTimer  = useRef(null)
+  const touchStart  = useRef(null)
 
   useEffect(() => {
     if (!detailAppt) return
@@ -376,6 +377,32 @@ export default function Appointments({ onMenuClick }) {
     setDetailAppt(null)
   }
 
+  const handleListTouchStart = (e) => {
+    const touch = e.touches[0]
+    touchStart.current = { x: touch.clientX, y: touch.clientY }
+  }
+
+  const handleListTouchEnd = (e) => {
+    if (!touchStart.current) return
+    const touch = e.changedTouches[0]
+    const dx = touch.clientX - touchStart.current.x
+    const dy = touch.clientY - touchStart.current.y
+    touchStart.current = null
+
+    const isHorizontalSwipe = Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy) * 1.5
+
+    if (!isHorizontalSwipe) return
+
+    const tabIds   = TABS.map(t => t.id)
+    const curIndex = tabIds.indexOf(activeTab)
+
+    if (dx < 0 && curIndex < tabIds.length - 1) {
+      setActiveTab(tabIds[curIndex + 1])
+    } else if (dx > 0 && curIndex > 0) {
+      setActiveTab(tabIds[curIndex - 1])
+    }
+  }
+
   const tabFiltered = allAppointments.filter(a => {
     if (activeTab === 'all')      return true
     if (activeTab === 'upcoming') return a.status === 'upcoming' && !isApptOverdue(a)
@@ -400,9 +427,11 @@ export default function Appointments({ onMenuClick }) {
     : tabFiltered
 
   const grouped = searchFiltered.reduce((acc, a) => {
-    const key = a.date ? new Date(a.date + 'T00:00:00').toLocaleDateString('en-US', {
-      month: 'short', day: 'numeric', year: 'numeric',
-    }) : 'No Date'
+    const key = a.date
+      ? new Date(a.date + 'T00:00:00').toLocaleDateString('en-US', {
+          month: 'short', day: 'numeric', year: 'numeric',
+        })
+      : 'No Date'
     if (!acc[key]) acc[key] = []
     acc[key].push(a)
     return acc
@@ -481,7 +510,12 @@ export default function Appointments({ onMenuClick }) {
         ))}
       </div>
 
-      <div className={styles.listArea} onClick={() => filterOpen && setFilterOpen(false)}>
+      <div
+        className={styles.listArea}
+        onClick={() => filterOpen && setFilterOpen(false)}
+        onTouchStart={handleListTouchStart}
+        onTouchEnd={handleListTouchEnd}
+      >
         {searchFiltered.length === 0 && (
           <div className={styles.emptyState}>
             <span className="mi" style={{ fontSize: '2.8rem', opacity: 0.2 }}>

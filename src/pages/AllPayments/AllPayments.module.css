@@ -1,5 +1,3 @@
-/* src/pages/AllPayments/AllPayments.module.css */
-
 .page {
   background: var(--bg);
   min-height: 100dvh;
@@ -7,7 +5,7 @@
   flex-direction: column;
 }
 
-/* ── SEARCH + FILTER (matches Inventory) ── */
+/* ── SEARCH + FILTER ── */
 .searchContainer {
   padding: 14px 16px 10px;
   flex-shrink: 0;
@@ -70,7 +68,6 @@
   background: color-mix(in srgb, var(--accent) 10%, transparent);
 }
 
-/* Total received — sits under search bar */
 .totalRow {
   display: flex;
   align-items: center;
@@ -92,7 +89,6 @@
   font-variant-numeric: tabular-nums;
 }
 
-/* Filter dropdown */
 .filterDropdown {
   position: absolute;
   top: calc(100% - 4px);
@@ -142,7 +138,7 @@
 .filterOption:active { background: var(--surface2); }
 .filterOptionActive  { color: var(--text); background: var(--surface2); font-weight: 700; }
 
-/* -- TABS -- */
+/* ── TABS ── */
 .tabs {
   display: flex;
   border-bottom: 1px solid var(--border);
@@ -179,21 +175,7 @@
   white-space: nowrap;
 }
 
-.tabActive {
-  color: var(--accent);
-  font-weight: 800;
-}
-
-.tabActive::after {
-  content: '';
-  position: absolute;
-  bottom: 0;
-  left: 10%;
-  right: 10%;
-  height: 2px;
-  background: var(--accent);
-  border-radius: 1px;
-}
+.tabActive { color: var(--accent); font-weight: 800; }
 
 .tabBadge {
   display: inline-flex;
@@ -215,7 +197,19 @@
   border-color: rgba(239,68,68,0.3);
 }
 
-/* -- LIST AREA -- */
+.tabUnderlineTrack {
+  position: absolute;
+  bottom: 0;
+  left: var(--tab-offset);
+  width: var(--tab-width);
+  height: 2px;
+  background: var(--accent);
+  border-radius: 1px;
+  transition: left 0.05s linear;
+  pointer-events: none;
+}
+
+/* ── LIST AREA ── */
 .listArea {
   flex: 1;
   overflow-y: auto;
@@ -223,7 +217,7 @@
   -webkit-overflow-scrolling: touch;
 }
 
-/* -- DATE GROUP -- */
+/* ── DATE GROUP ── */
 .dateGroup { margin-bottom: 16px; }
 
 .dateLabel {
@@ -240,7 +234,7 @@
   margin-left: -16px;
 }
 
-/* -- ROW -- */
+/* ── ROW ── */
 .row {
   display: flex;
   align-items: center;
@@ -265,39 +259,38 @@
 .rowLast::after { display: none; }
 .row:active { background: var(--surface); }
 
-/* Icon box */
-.iconOuter {
-  width: 72px;
-  height: 72px;
+/* ── MOSAIC THUMBNAIL ──
+   mosaicWrap is a thin shell that applies the status tint (border + bg)
+   via CSS custom properties set as inline style in JSX.
+   mosaicOverride targets OrderMosaic's own .outer element via the
+   className prop, stripping its default border/bg so the wrapper owns
+   the visual treatment. The inner pill (.inner) keeps its own --surface2
+   background — we only want to remove the outer shell's styling. */
+
+.mosaicWrap {
+  width:         72px;
+  height:        72px;
   border-radius: 12px;
-  background: var(--surface);
-  border: 1px solid var(--border);
-  display: flex;
-  align-items: center;
+  border:        1px solid var(--mosaic-border, var(--border));
+  background:    var(--mosaic-bg, var(--surface));
+  display:       flex;
+  align-items:   center;
   justify-content: center;
-  flex-shrink: 0;
+  flex-shrink:   0;
+  overflow:      hidden;
 }
 
-.iconInner {
-  width: 52px;
-  height: 52px;
-  border-radius: 10px;
-  background: #fff;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  overflow: hidden;
+/* Applied to OrderMosaic's outermost div (.outer in OrderMosaic.module.css).
+   We zero out its own sizing/border/bg so mosaicWrap is the visual container. */
+.mosaicOverride {
+  width:         100% !important;
+  height:        100% !important;
+  border-radius: 0 !important;
+  border:        none !important;
+  background:    transparent !important;
 }
 
-/* Order image inside card icon box */
-.orderImg {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  border-radius: 10px;
-}
-
-/* Info (left column) */
+/* ── CENTRE INFO ── */
 .info {
   flex: 1;
   min-width: 0;
@@ -321,7 +314,6 @@
   min-width: 0;
 }
 
-/* "2/4" installment badge */
 .installBadge {
   font-size: 0.6rem;
   font-weight: 800;
@@ -349,14 +341,27 @@
   text-overflow: ellipsis;
 }
 
-/* ── Amount column (right) ── */
+.statusPill {
+  display: inline-block;
+  font-size: 0.58rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 2px 8px;
+  border-radius: 6px;
+  border: 1px solid;
+  white-space: nowrap;
+  margin-bottom: 2px;
+}
+
+/* ── RIGHT COLUMN: amount → progress → method ── */
 .amountCol {
   display: flex;
   flex-direction: column;
   align-items: flex-end;
-  gap: 6px;
+  gap: 5px;
   flex-shrink: 0;
-  min-width: 80px;
+  min-width: 84px;
 }
 
 .amount {
@@ -366,7 +371,6 @@
   white-space: nowrap;
 }
 
-/* Progress bar — right column, under the amount */
 .progressWrapRight {
   width: 100%;
   height: 3px;
@@ -381,20 +385,20 @@
   transition: width 0.4s ease;
 }
 
-.statusPill {
-  display: inline-block;
-  font-size: 0.58rem;
-  font-weight: 800;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  padding: 2px 8px;
-  border-radius: 6px;
-  border: 1px solid;
-  white-space: nowrap;
-  margin-bottom: 2px;
+.methodRow {
+  display: flex;
+  align-items: center;
+  gap: 4px;
 }
 
-/* -- EMPTY STATE -- */
+.methodLabel {
+  font-size: 0.68rem;
+  font-weight: 600;
+  color: var(--text3);
+  white-space: nowrap;
+}
+
+/* ── EMPTY STATE ── */
 .emptyState {
   display: flex;
   flex-direction: column;
@@ -409,7 +413,7 @@
   color: var(--text3);
 }
 
-/* -- BOTTOM SHEET -- */
+/* ── BOTTOM SHEET ── */
 .sheetOverlay {
   position: fixed;
   inset: 0;
@@ -468,7 +472,6 @@
   padding: 20px 20px calc(24px + var(--sb));
 }
 
-/* Amount hero */
 .amountHero {
   display: flex;
   flex-direction: column;
@@ -494,7 +497,6 @@
   border: 1px solid;
 }
 
-/* Order image inside detail modal hero */
 .detailImgWrap {
   width: 80px;
   height: 80px;
@@ -510,7 +512,6 @@
   object-fit: cover;
 }
 
-/* Cell grid */
 .cellGrid {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -541,7 +542,6 @@
   line-height: 1.3;
 }
 
-/* Progress section in sheet */
 .progressSection {
   background: var(--bg);
   border: 1px solid var(--border);
@@ -583,7 +583,6 @@
   transition: width 0.5s ease;
 }
 
-/* Notes */
 .notesBox {
   background: var(--bg);
   border: 1px solid var(--border);
@@ -607,7 +606,6 @@
   line-height: 1.5;
 }
 
-/* View customer button */
 .viewCustomerBtn {
   width: 100%;
   display: flex;
@@ -627,83 +625,3 @@
 }
 
 .viewCustomerBtn:active { opacity: 0.7; }
-
-/* ══════════════════════════════════════════
-   PAYMENT MOSAIC THUMBNAIL
-   Lives inside iconOuter (72px) → iconInner (52px).
-   Prefixed pm- to stay isolated.
-   ══════════════════════════════════════════ */
-
-.pmMosaicInner {
-  padding: 0 !important;
-  display: flex !important;
-  flex-direction: row !important;
-  align-items: stretch !important;
-  overflow: hidden;
-  border-radius: 10px;
-}
-
-.pmMosaicLeft {
-  flex: 0 0 60%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  overflow: hidden;
-  background: #fff;
-  height: 100%;
-}
-
-.pmMosaicRight {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-  background: #fff;
-}
-
-.pmMosaicRightCell {
-  flex: 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  overflow: hidden;
-  position: relative;
-  background: #fff;
-}
-
-.pmMosaicDividerV {
-  width: 1.5px;
-  flex-shrink: 0;
-  background: var(--border);
-  align-self: stretch;
-}
-
-.pmMosaicDividerH {
-  height: 1.5px;
-  flex-shrink: 0;
-  background: var(--border);
-  width: 100%;
-}
-
-.pmMosaicImg {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  display: block;
-}
-
-.pmMosaicOverlayWrap { position: relative; }
-
-.pmMosaicOverlay {
-  position: absolute;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.52);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #fff;
-  font-size: 0.58rem;
-  font-weight: 800;
-  letter-spacing: 0.3px;
-  pointer-events: none;
-}

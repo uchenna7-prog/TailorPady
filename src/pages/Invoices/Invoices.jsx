@@ -1,6 +1,6 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState, useRef } from 'react'
 import { useAuth } from '../../contexts/AuthContext'
-import { useGeneralSettings }  from '../../contexts/GeneralSettingsContext'
+import { useGeneralSettings } from '../../contexts/GeneralSettingsContext'
 import { useOrders } from '../../contexts/OrdersContext'
 import { useInvoices } from '../../contexts/InvoiceContext'
 import { INVOICE_STATUS_STYLES, INVOICE_STATUS_LABELS } from '../../datas/invoiceDatas'
@@ -27,38 +27,21 @@ function formatDate(dateStr) {
 
 
 const TABS = [
-  { 
-    id: 'all',       
-    label: 'All'          
-  },
-  { 
-    id: 'unpaid',    
-    label: 'Unpaid'       
-  },
-  { 
-    id: 'part_paid', 
-    label: 'Part Payment' 
-  },
-  { 
-    id: 'paid',      
-    label: 'Paid'         
-  },
-  { 
-    id: 'overdue',   
-    label: 'Overdue'      
-  },
+  { id: 'all',       label: 'All'          },
+  { id: 'unpaid',    label: 'Unpaid'       },
+  { id: 'part_paid', label: 'Part Payment' },
+  { id: 'paid',      label: 'Paid'         },
+  { id: 'overdue',   label: 'Overdue'      },
 ]
 
 
-
 function InvoiceRow({ invoice, currency, onTap, isLast, orderItems }) {
-
   const total = invoice.items?.length > 0
     ? invoice.items.reduce((sum, item) => sum + (parseFloat(item.price) || 0), 0)
     : (parseFloat(invoice.price) || 0)
-  const overdue = isOverdue(invoice)
+  const overdue   = isOverdue(invoice)
   const statusKey = overdue && invoice.status !== 'paid' ? 'overdue' : (invoice.status || 'unpaid')
-  const style = INVOICE_STATUS_STYLES[statusKey] ?? INVOICE_STATUS_STYLES.unpaid
+  const style     = INVOICE_STATUS_STYLES[statusKey] ?? INVOICE_STATUS_STYLES.unpaid
 
   return (
     <div
@@ -78,11 +61,14 @@ function InvoiceRow({ invoice, currency, onTap, isLast, orderItems }) {
 
       <div className={styles.invoiceListRight}>
         <div className={styles.invoiceListAmount}>{formatMoney(currency, total)}</div>
-        <span className={styles.invoiceStatusPill} style={{
-          background: style.bg,
-          color: style.color,
-          border: `1px solid ${style.border}`,
-        }}>
+        <span
+          className={styles.invoiceStatusPill}
+          style={{
+            background: style.bg,
+            color:      style.color,
+            border:     `1px solid ${style.border}`,
+          }}
+        >
           {INVOICE_STATUS_LABELS[statusKey] ?? statusKey}
         </span>
       </div>
@@ -92,72 +78,90 @@ function InvoiceRow({ invoice, currency, onTap, isLast, orderItems }) {
 
 
 export default function Invoices({ onMenuClick }) {
+  const { user }               = useAuth()
+  const { generalSettings }    = useGeneralSettings()
+  const { allOrders }          = useOrders()
+  const { allInvoices }        = useInvoices()
+  const currency               = generalSettings.invoiceCurrency || '₦'
 
-  const { user } = useAuth()
-  const { generalSettings } = useGeneralSettings()
-  const { allOrders } = useOrders()
-  const currency = generalSettings.invoiceCurrency || '₦'
-
-  const [activeTab, setActiveTab] = useState('all')
-  const [viewing, setViewing] = useState(null)
-  const [search, setSearch]  = useState('')
+  const [activeTab,  setActiveTab]  = useState('all')
+  const [viewing,    setViewing]    = useState(null)
+  const [search,     setSearch]     = useState('')
   const [filterOpen, setFilterOpen] = useState(false)
+  const touchStart = useRef(null)
 
- const { allInvoices } = useInvoices()
- 
   const orderItemsMap = {}
   for (const order of allOrders) {
-
     if (order.customerId && order.id) {
       orderItemsMap[`${order.customerId}__${order.id}`] = order.items || []
     }
   }
 
   const filtered = allInvoices.filter(inv => {
-
-    if (activeTab === 'all') return true
-    if (activeTab === 'paid') return inv.status === 'paid'
-    if (activeTab === 'unpaid') return inv.status !== 'paid' && inv.status !== 'part_paid' && !isOverdue(inv)
+    if (activeTab === 'all')       return true
+    if (activeTab === 'paid')      return inv.status === 'paid'
+    if (activeTab === 'unpaid')    return inv.status !== 'paid' && inv.status !== 'part_paid' && !isOverdue(inv)
     if (activeTab === 'part_paid') return inv.status === 'part_paid' && !isOverdue(inv)
-    if (activeTab === 'overdue') return isOverdue(inv)
+    if (activeTab === 'overdue')   return isOverdue(inv)
     return true
   })
 
- 
   const counts = {
-    all: allInvoices.length,
-    unpaid: allInvoices.filter(i => i.status !== 'paid' && i.status !== 'part_paid' && !isOverdue(i)).length,
+    all:       allInvoices.length,
+    unpaid:    allInvoices.filter(i => i.status !== 'paid' && i.status !== 'part_paid' && !isOverdue(i)).length,
     part_paid: allInvoices.filter(i => i.status === 'part_paid' && !isOverdue(i)).length,
-    paid: allInvoices.filter(i => i.status === 'paid').length,
-    overdue: allInvoices.filter(i => isOverdue(i)).length,
+    paid:      allInvoices.filter(i => i.status === 'paid').length,
+    overdue:   allInvoices.filter(i => isOverdue(i)).length,
   }
 
   const EMPTY_STATE_TEXTS = {
-    all: 'No invoices yet.',
-    unpaid: 'No unpaid invoices.',
+    all:       'No invoices yet.',
+    unpaid:    'No unpaid invoices.',
     part_paid: 'No part-payment invoices.',
-    paid: 'No paid invoices yet.',
-    overdue: 'No overdue invoices. All good!',
+    paid:      'No paid invoices yet.',
+    overdue:   'No overdue invoices. All good!',
   }
-
 
   const searchFiltered = search.trim()
     ? filtered.filter(inv =>
-        (inv.orderDesc || '').toLowerCase().includes(search.toLowerCase()) ||
+        (inv.orderDesc    || '').toLowerCase().includes(search.toLowerCase()) ||
         (inv.customerName || '').toLowerCase().includes(search.toLowerCase()) ||
-        (inv.number || '').toLowerCase().includes(search.toLowerCase())
+        (inv.number       || '').toLowerCase().includes(search.toLowerCase())
       )
     : filtered
 
- 
   const grouped = searchFiltered.reduce((acc, inv) => {
-
     const key = inv.date || 'Unknown Date'
     if (!acc[key]) acc[key] = []
-
     acc[key].push(inv)
     return acc
   }, {})
+
+  const handleListTouchStart = (e) => {
+    const touch = e.touches[0]
+    touchStart.current = { x: touch.clientX, y: touch.clientY }
+  }
+
+  const handleListTouchEnd = (e) => {
+    if (!touchStart.current) return
+    const touch = e.changedTouches[0]
+    const dx = touch.clientX - touchStart.current.x
+    const dy = touch.clientY - touchStart.current.y
+    touchStart.current = null
+
+    const isHorizontalSwipe = Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy) * 1.5
+
+    if (!isHorizontalSwipe) return
+
+    const tabIds   = TABS.map(t => t.id)
+    const curIndex = tabIds.indexOf(activeTab)
+
+    if (dx < 0 && curIndex < tabIds.length - 1) {
+      setActiveTab(tabIds[curIndex + 1])
+    } else if (dx > 0 && curIndex > 0) {
+      setActiveTab(tabIds[curIndex - 1])
+    }
+  }
 
   return (
     <div className={styles.page}>
@@ -165,11 +169,8 @@ export default function Invoices({ onMenuClick }) {
       <Header title="All Invoices" onMenuClick={onMenuClick} />
 
       <div className={styles.searchContainer}>
-
         <div className={styles.searchRow}>
-
           <div className={styles.searchBox}>
-
             <span className="mi" style={{ color: 'var(--text3)', fontSize: '1.1rem' }}>search</span>
             <input
               type="text"
@@ -186,7 +187,6 @@ export default function Invoices({ onMenuClick }) {
               </button>
             )}
           </div>
-
           <button
             className={`${styles.filterBtn} ${filterOpen ? styles.filterBtnActive : ''}`}
             onClick={() => setFilterOpen(p => !p)}
@@ -202,16 +202,19 @@ export default function Invoices({ onMenuClick }) {
               <button
                 key={t.id}
                 className={`${styles.filterOption} ${activeTab === t.id ? styles.filterOptionActive : ''}`}
-                onClick={() => { 
-                  setActiveTab(t.id); 
-                  setFilterOpen(false) 
-                }}
+                onClick={() => { setActiveTab(t.id); setFilterOpen(false) }}
               >
                 <span className="mi" style={{ fontSize: '1.1rem' }}>
-                  {t.id === 'paid' ? 'check_circle' : t.id === 'unpaid' ? 'pending' : t.id === 'part_paid' ? 'payments' : t.id === 'overdue' ? 'alarm' : 'receipt_long'}
+                  {t.id === 'paid'      ? 'check_circle'
+                    : t.id === 'unpaid'    ? 'pending'
+                    : t.id === 'part_paid' ? 'payments'
+                    : t.id === 'overdue'   ? 'alarm'
+                    : 'receipt_long'}
                 </span>
                 {t.label}
-                {activeTab === t.id && <span className="mi" style={{ fontSize: '1rem', marginLeft: 'auto', color: 'var(--accent)' }}>check</span>}
+                {activeTab === t.id && (
+                  <span className="mi" style={{ fontSize: '1rem', marginLeft: 'auto', color: 'var(--accent)' }}>check</span>
+                )}
               </button>
             ))}
           </div>
@@ -238,7 +241,12 @@ export default function Invoices({ onMenuClick }) {
         ))}
       </div>
 
-      <div className={styles.listArea} onClick={() => filterOpen && setFilterOpen(false)}>
+      <div
+        className={styles.listArea}
+        onClick={() => filterOpen && setFilterOpen(false)}
+        onTouchStart={handleListTouchStart}
+        onTouchEnd={handleListTouchEnd}
+      >
         {searchFiltered.length === 0 ? (
           <div className={styles.emptyState}>
             <span className="mi" style={{ fontSize: '2.8rem', opacity: 0.2 }}>receipt_long</span>
@@ -269,13 +277,12 @@ export default function Invoices({ onMenuClick }) {
         )}
       </div>
 
-
       {viewing && (
         <InvoiceViewer
           invoice={viewing}
           customer={{
-            name: viewing.customerName || '—',
-            phone: viewing.customerPhone || '',
+            name:    viewing.customerName    || '—',
+            phone:   viewing.customerPhone   || '',
             address: viewing.customerAddress || '',
           }}
           onClose={() => setViewing(null)}
@@ -283,26 +290,20 @@ export default function Invoices({ onMenuClick }) {
             try {
               await updateInvoiceStatus(user.uid, id, newStatus)
               setViewing(prev => prev ? { ...prev, status: newStatus } : null)
-            } 
-            catch {
-       
-            }
+            } catch {}
           }}
           onDelete={async (id) => {
             try {
               await deleteInvoice(user.uid, id)
               setViewing(null)
-            } 
-            catch {  
-
-            }
+            } catch {}
           }}
           showToast={() => {}}
         />
       )}
 
-      <BottomNav></BottomNav>
-      
+      <BottomNav />
+
     </div>
   )
 }

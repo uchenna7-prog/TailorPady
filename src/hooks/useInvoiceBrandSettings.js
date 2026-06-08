@@ -32,7 +32,9 @@ export function useInvoiceBrandSettings() {
         website: profileSettings.brandWebsite || PLACEHOLDERS.website,
 
         signature: profileSettings.brandSignature || null,
-        paymentTerms: profileSettings.brandPaymentTerms || ["payement Term1", "payement Term2"],
+        paymentTerms: profileSettings.brandPaymentTerms?.length > 0
+        ? profileSettings.brandPaymentTerms
+        : ['Payment Term 1', 'Payment Term 2'],
 
         accountBank: profileSettings.accountBank || PLACEHOLDERS.accountBank,
         accountNumber: profileSettings.accountNumber || PLACEHOLDERS.accountNumber,

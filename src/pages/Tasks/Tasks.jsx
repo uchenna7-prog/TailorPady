@@ -40,6 +40,9 @@ const TABS = [
   { id: 'overdue', label: 'Overdue'   },
 ]
 
+const SWIPE_THRESHOLD    = 50
+const SWIPE_MAX_VERTICAL = 80
+
 function formatDate(dateStr) {
   if (!dateStr) return ''
   return new Date(dateStr + 'T00:00:00').toLocaleDateString('en-US', {
@@ -351,13 +354,58 @@ export default function Tasks({ onMenuClick }) {
   const [toastMsg,   setToastMsg]   = useState('')
   const [search,     setSearch]     = useState('')
   const [filterOpen, setFilterOpen] = useState(false)
+
   const toastTimer = useRef(null)
+  const tabsRef    = useRef(null)
+  const swipeRef   = useRef({ startX: 0, startY: 0, tracking: false })
+
+  const activeIndex = TABS.findIndex(t => t.id === activeTab)
 
   const showToast = useCallback((msg) => {
     setToastMsg(msg)
     clearTimeout(toastTimer.current)
     toastTimer.current = setTimeout(() => setToastMsg(''), 2400)
   }, [])
+
+  function goToTab(index) {
+    if (index < 0 || index >= TABS.length) return
+    const tab = TABS[index]
+    setActiveTab(tab.id)
+    scrollTabIntoView(tab.id)
+  }
+
+  function scrollTabIntoView(tabId) {
+    const bar = tabsRef.current
+    if (!bar) return
+    const chip = bar.querySelector(`[data-tab="${tabId}"]`)
+    if (!chip) return
+    const barRect  = bar.getBoundingClientRect()
+    const chipRect = chip.getBoundingClientRect()
+    const offset   = chipRect.left - barRect.left - barRect.width / 2 + chipRect.width / 2
+    bar.scrollBy({ left: offset, behavior: 'smooth' })
+  }
+
+  function handleTouchStart(e) {
+    const touch = e.touches[0]
+    swipeRef.current = { startX: touch.clientX, startY: touch.clientY, tracking: true }
+  }
+
+  function handleTouchEnd(e) {
+    if (!swipeRef.current.tracking) return
+    const touch  = e.changedTouches[0]
+    const deltaX = touch.clientX - swipeRef.current.startX
+    const deltaY = touch.clientY - swipeRef.current.startY
+    swipeRef.current.tracking = false
+
+    if (Math.abs(deltaY) > SWIPE_MAX_VERTICAL) return
+    if (Math.abs(deltaX) < SWIPE_THRESHOLD) return
+
+    if (deltaX < 0) {
+      goToTab(activeIndex + 1)
+    } else {
+      goToTab(activeIndex - 1)
+    }
+  }
 
   const handleAdd = async (taskData) => {
     try {
@@ -477,12 +525,13 @@ export default function Tasks({ onMenuClick }) {
         )}
       </div>
 
-      <div className={styles.tabs} onClick={() => filterOpen && setFilterOpen(false)}>
+      <div className={styles.tabs} ref={tabsRef} onClick={() => filterOpen && setFilterOpen(false)}>
         {TABS.map(tab => (
           <div
             key={tab.id}
+            data-tab={tab.id}
             className={`${styles.tab} ${activeTab === tab.id ? styles.tabActive : ''}`}
-            onClick={() => setActiveTab(tab.id)}
+            onClick={() => { setActiveTab(tab.id); scrollTabIntoView(tab.id) }}
           >
             {tab.label}
             {counts[tab.id] > 0 && (
@@ -494,7 +543,12 @@ export default function Tasks({ onMenuClick }) {
         ))}
       </div>
 
-      <div className={styles.listArea} onClick={() => filterOpen && setFilterOpen(false)}>
+      <div
+        className={styles.listArea}
+        onClick={() => filterOpen && setFilterOpen(false)}
+        onTouchStart={handleTouchStart}
+        onTouchEnd={handleTouchEnd}
+      >
         {searchFiltered.length === 0 && (
           <div className={styles.emptyState}>
             <span className="mi" style={{ fontSize: '2.8rem', opacity: 0.2 }}>

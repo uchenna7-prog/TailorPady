@@ -45,6 +45,9 @@ const EMPTY_CONFIG = {
   overdue:       { icon: 'alarm_on',       text: 'No overdue orders. Good job!' },
 }
 
+const SWIPE_THRESHOLD    = 50
+const SWIPE_MAX_VERTICAL = 80
+
 export default function Orders({ onMenuClick, onGoToCustomer }) {
   const { allOrders } = useOrders()
 
@@ -52,11 +55,55 @@ export default function Orders({ onMenuClick, onGoToCustomer }) {
   const [detailOrder, setDetailOrder] = useState(null)
   const [search,      setSearch]      = useState('')
   const [filterOpen,  setFilterOpen]  = useState(false)
-  const tabsRef = useRef(null)
 
-  const handleTabClick = (e, tabId) => {
+  const tabsRef     = useRef(null)
+  const swipeRef    = useRef({ startX: 0, startY: 0, tracking: false })
+
+  const activeIndex = TABS.findIndex(t => t.id === activeTab)
+
+  function goToTab(index) {
+    if (index < 0 || index >= TABS.length) return
+    const tab = TABS[index]
+    setActiveTab(tab.id)
+    scrollTabIntoView(tab.id)
+  }
+
+  function scrollTabIntoView(tabId) {
+    const bar = tabsRef.current
+    if (!bar) return
+    const chip = bar.querySelector(`[data-tab="${tabId}"]`)
+    if (!chip) return
+    const barRect  = bar.getBoundingClientRect()
+    const chipRect = chip.getBoundingClientRect()
+    const offset   = chipRect.left - barRect.left - barRect.width / 2 + chipRect.width / 2
+    bar.scrollBy({ left: offset, behavior: 'smooth' })
+  }
+
+  function handleTabClick(e, tabId) {
     setActiveTab(tabId)
     e.currentTarget.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' })
+  }
+
+  function handleTouchStart(e) {
+    const touch = e.touches[0]
+    swipeRef.current = { startX: touch.clientX, startY: touch.clientY, tracking: true }
+  }
+
+  function handleTouchEnd(e) {
+    if (!swipeRef.current.tracking) return
+    const touch  = e.changedTouches[0]
+    const deltaX = touch.clientX - swipeRef.current.startX
+    const deltaY = touch.clientY - swipeRef.current.startY
+    swipeRef.current.tracking = false
+
+    if (Math.abs(deltaY) > SWIPE_MAX_VERTICAL) return
+    if (Math.abs(deltaX) < SWIPE_THRESHOLD) return
+
+    if (deltaX < 0) {
+      goToTab(activeIndex + 1)
+    } else {
+      goToTab(activeIndex - 1)
+    }
   }
 
   const filtered = allOrders.filter(o => {
@@ -155,6 +202,7 @@ export default function Orders({ onMenuClick, onGoToCustomer }) {
         {TABS.map(tab => (
           <div
             key={tab.id}
+            data-tab={tab.id}
             className={`${styles.tab} ${activeTab === tab.id ? styles.tabActive : ''}`}
             onClick={e => handleTabClick(e, tab.id)}
           >
@@ -168,7 +216,12 @@ export default function Orders({ onMenuClick, onGoToCustomer }) {
         ))}
       </div>
 
-      <div className={styles.listArea} onClick={() => filterOpen && setFilterOpen(false)}>
+      <div
+        className={styles.listArea}
+        onClick={() => filterOpen && setFilterOpen(false)}
+        onTouchStart={handleTouchStart}
+        onTouchEnd={handleTouchEnd}
+      >
         {searchFiltered.length === 0 ? (
           <div className={styles.emptyState}>
             <span className="mi" style={{ fontSize: '2.8rem', opacity: 0.2 }}>

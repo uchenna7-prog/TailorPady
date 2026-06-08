@@ -4,6 +4,7 @@ import { usePayments }  from '../../contexts/PaymentContext'
 import { useOrders }    from '../../contexts/OrdersContext'
 import Header           from '../../components/Header/Header'
 import Toast            from '../../components/Toast/Toast'
+import OrderMosaic      from '../../components/OrderMosaic/OrderMosaic'
 import styles from './AllPayments.module.css'
 import BottomNav from '../../components/BottomNav/BottomNav'
 
@@ -31,40 +32,13 @@ const STATUS_META = {
   not_paid: { label: 'Not Paid',      color: '#dc2626', bg: 'rgba(239,68,68,0.12)',   border: 'rgba(239,68,68,0.3)'   },
 }
 
-// ── Flatten all payments into individual installment rows ─────
-//
-// Each row:
-// {
-//   rowKey       — unique key for React
-//   paymentId    — parent payment doc id
-//   customerId
-//   customerName
-//   orderId
-//   orderDesc
-//   orderPrice
-//   paymentStatus — mirrors the parent payment's original status (paid / part / not_paid)
-//   amount        — this installment's amount
-//   method        — this installment's method
-//   date          — this installment's date (for grouping)
-//   installIndex  — position in parent installments array
-//   totalInstallments — how many installments total for this payment
-//   totalPaid     — running total across all installments
-// }
-//
-// If a payment has NO installments (status = not_paid), we still
-// show one row so it's visible in the feed.
-// ─────────────────────────────────────────────────────────────
-
-
 function flattenPayments(allPayments) {
   const rows = []
 
   for (const p of allPayments) {
     const installments = p.installments || []
-    const fullPrice    = parseFloat(p.orderPrice) || 0
 
     if (installments.length === 0) {
-      // No money has moved yet — show a placeholder row on creation date
       rows.push({
         rowKey:            `${p.id}__none`,
         paymentId:         p.id,
@@ -83,24 +57,14 @@ function flattenPayments(allPayments) {
         notes:             p.notes,
       })
     } else {
-      // Each installment row gets its OWN snapshot:
-      //   - totalPaid = cumulative sum UP TO AND INCLUDING this installment
-      //   - paymentStatus:
-      //       * Single installment  -> trust p.status ('paid' = Full Payment, 'part' = Part Payment)
-      //         The user explicitly chose Full or Part when creating it.
-      //       * Multiple installments -> always 'part', regardless of p.status.
-      //         p.status may have been upgraded to 'paid' after the final installment
-      //         cleared the balance, but every row in this payment was part of a
-      //         part-payment journey and must stay orange in the Part Payment tab.
       const isSingleInstallment = installments.length === 1
       let runningTotal = 0
       installments.forEach((inst, idx) => {
-        const previousPaid = runningTotal  // what was paid BEFORE this installment
+        const previousPaid = runningTotal
         runningTotal += parseFloat(inst.amount) || 0
 
         const rowStatus = isSingleInstallment ? p.status : 'part'
 
-        // previousInstallments = all installments before this one (for detail sheet)
         const previousInstallments = installments.slice(0, idx).map(i => ({
           amount: i.amount,
           method: i.method || 'cash',
@@ -133,10 +97,8 @@ function flattenPayments(allPayments) {
   return rows
 }
 
-// ── Sort rows newest-first by date ────────────────────────────
 function sortRows(rows) {
   return [...rows].sort((a, b) => {
-    // Try to parse as a real date for comparison
     const parseD = (str) => {
       if (!str || str === 'Unknown Date') return 0
       const d = new Date(str)
@@ -146,87 +108,11 @@ function sortRows(rows) {
   })
 }
 
-// ── TABS ──────────────────────────────────────────────────────
 const TABS = [
   { id: 'all',           label: 'All'           },
   { id: 'full_payment',  label: 'Full Payments' },
   { id: 'part',          label: 'Part Payment'  },
 ]
-
-// ── PAYMENT MOSAIC THUMBNAIL ──────────────────────────────────
-// Renders inside iconOuter (72px) → iconInner (52px).
-// Same layout as the Orders page mosaic, sized for these boxes.
-
-function PaymentMosaic({ orderItems, isPending, sm }) {
-  const covers = (orderItems || []).map(i => i.imgSrc ?? null).filter(Boolean)
-  const total  = orderItems?.length ?? 0
-
-  if (!covers.length) {
-    return (
-      <div className={styles.iconInner}>
-        <span className="mi" style={{ fontSize: '1.4rem', color: isPending ? '#94a3b8' : sm.color }}>
-          {isPending ? 'hourglass_empty' : 'payments'}
-        </span>
-      </div>
-    )
-  }
-
-  if (total === 1) {
-    return (
-      <div className={styles.iconInner}>
-        <img src={covers[0]} alt="" className={styles.orderImg} />
-      </div>
-    )
-  }
-
-  if (total === 2) {
-    return (
-      <div className={`${styles.iconInner} ${styles.pmMosaicInner}`}>
-        <div className={styles.pmMosaicLeft}>
-          <img src={covers[0]} alt="" className={styles.pmMosaicImg} />
-        </div>
-        <div className={styles.pmMosaicDividerV} />
-        <div className={styles.pmMosaicRight}>
-          <div className={styles.pmMosaicRightCell}>
-            {covers[1]
-              ? <img src={covers[1]} alt="" className={styles.pmMosaicImg} />
-              : <span className="mi" style={{ fontSize: '0.65rem', color: 'var(--text3)' }}>checkroom</span>
-            }
-          </div>
-        </div>
-      </div>
-    )
-  }
-
-  const extra = total > 3 ? total - 3 : 0
-  return (
-    <div className={`${styles.iconInner} ${styles.pmMosaicInner}`}>
-      <div className={styles.pmMosaicLeft}>
-        {covers[0]
-          ? <img src={covers[0]} alt="" className={styles.pmMosaicImg} />
-          : <span className="mi" style={{ fontSize: '0.75rem', color: 'var(--text3)' }}>checkroom</span>
-        }
-      </div>
-      <div className={styles.pmMosaicDividerV} />
-      <div className={styles.pmMosaicRight}>
-        <div className={styles.pmMosaicRightCell}>
-          {covers[1]
-            ? <img src={covers[1]} alt="" className={styles.pmMosaicImg} />
-            : <span className="mi" style={{ fontSize: '0.65rem', color: 'var(--text3)' }}>checkroom</span>
-          }
-        </div>
-        <div className={styles.pmMosaicDividerH} />
-        <div className={`${styles.pmMosaicRightCell} ${extra > 0 ? styles.pmMosaicOverlayWrap : ''}`}>
-          {covers[2]
-            ? <img src={covers[2]} alt="" className={styles.pmMosaicImg} />
-            : <span className="mi" style={{ fontSize: '0.65rem', color: 'var(--text3)' }}>checkroom</span>
-          }
-          {extra > 0 && <div className={styles.pmMosaicOverlay}>+{extra}</div>}
-        </div>
-      </div>
-    </div>
-  )
-}
 
 // ── PAYMENT ROW ───────────────────────────────────────────────
 
@@ -236,7 +122,6 @@ function PaymentRow({ row, isLast, onTap, orderItems }) {
   const mLabel    = METHOD_LABELS[row.method] ?? 'Cash'
   const fullPrice = parseFloat(row.orderPrice) || 0
 
-  // Show 100% bar when fully paid (balance cleared), else cap at 99% for partial rows
   const rawPct = fullPrice > 0 && row.totalPaid > 0 ? (row.totalPaid / fullPrice) * 100 : 0
   const pct    = rawPct >= 100 ? 100 : Math.min(99, rawPct)
 
@@ -249,18 +134,23 @@ function PaymentRow({ row, isLast, onTap, orderItems }) {
       className={`${styles.row} ${isLast ? styles.rowLast : ''}`}
       onClick={() => onTap(row)}
     >
-      {/* ── Icon box ── */}
+      {/* ── Thumbnail: wrap OrderMosaic so we can tint the outer border/bg ── */}
       <div
-        className={styles.iconOuter}
+        className={styles.mosaicWrap}
         style={{
-          borderColor: !isPending ? sm.border : undefined,
-          background:  !isPending ? sm.bg     : undefined,
+          '--mosaic-border': isPending ? 'var(--border)' : sm.border,
+          '--mosaic-bg':     isPending ? 'var(--surface)' : sm.bg,
         }}
       >
-        <PaymentMosaic orderItems={orderItems} isPending={isPending} sm={sm} />
+        <OrderMosaic
+          items={orderItems}
+          size="md"
+          overdue={false}
+          className={styles.mosaicOverride}
+        />
       </div>
 
-      {/* ── Info (left column) ── */}
+      {/* ── Centre info column ── */}
       <div className={styles.info}>
         <div className={styles.titleRow}>
           <span className={styles.desc}>{row.orderDesc || 'Payment'}</span>
@@ -271,30 +161,20 @@ function PaymentRow({ row, isLast, onTap, orderItems }) {
           )}
         </div>
 
-        {/* Customer name */}
         <div className={styles.metaRow}>
           <span className="mi" style={{ fontSize: '0.78rem', color: 'var(--text3)' }}>person</span>
           <span className={styles.metaText}>{row.customerName}</span>
         </div>
 
-        {/* Status pill */}
         <span
           className={styles.statusPill}
           style={{ background: sm.bg, color: sm.color, borderColor: sm.border }}
         >
           {sm.label}
         </span>
-
-        {/* Method */}
-        {row.method && (
-          <div className={styles.metaRow} style={{ marginTop: 4 }}>
-            <span className="mi" style={{ fontSize: '0.78rem', color: 'var(--text3)' }}>{mIcon}</span>
-            <span className={styles.metaText}>{mLabel}</span>
-          </div>
-        )}
       </div>
 
-      {/* ── Amount + progress bar (right column) ── */}
+      {/* ── Right column: amount → progress bar → method ── */}
       <div className={styles.amountCol}>
         <div
           className={styles.amount}
@@ -303,13 +183,19 @@ function PaymentRow({ row, isLast, onTap, orderItems }) {
           {isPending ? '—' : fmt(row.amount)}
         </div>
 
-        {/* Progress bar sits directly under the amount */}
         {showProgress && (
           <div className={styles.progressWrapRight}>
             <div
               className={styles.progressBarRight}
               style={{ width: `${pct}%`, background: pct >= 100 ? '#15803d' : sm.color }}
             />
+          </div>
+        )}
+
+        {row.method && (
+          <div className={styles.methodRow}>
+            <span className="mi" style={{ fontSize: '0.7rem', color: 'var(--text3)' }}>{mIcon}</span>
+            <span className={styles.methodLabel}>{mLabel}</span>
           </div>
         )}
       </div>
@@ -362,7 +248,6 @@ function PaymentDetail({ row, onClose, onNavigateToCustomer, orderImageUrl }) {
 
         <div className={styles.sheetBody}>
 
-          {/* ── Amount hero ── */}
           <div className={styles.amountHero}>
             {orderImageUrl && (
               <div className={styles.detailImgWrap}>
@@ -385,7 +270,6 @@ function PaymentDetail({ row, onClose, onNavigateToCustomer, orderImageUrl }) {
             </div>
           </div>
 
-          {/* ── Info cells ── */}
           <div className={styles.cellGrid}>
             <div style={cellStyle}>
               <div style={cellLbl}>Customer</div>
@@ -405,11 +289,9 @@ function PaymentDetail({ row, onClose, onNavigateToCustomer, orderImageUrl }) {
             </div>
           </div>
 
-          {/* ── Smart payment breakdown (like ReceiptView) ── */}
           {fullPrice > 0 && (
             <div className={styles.progressSection}>
 
-              {/* Order value */}
               <div className={styles.progressLabelRow}>
                 <span className={styles.progressLabel}>Order Value</span>
                 <span className={styles.progressFigure} style={{ color: 'var(--text)', fontWeight: 700 }}>
@@ -417,7 +299,6 @@ function PaymentDetail({ row, onClose, onNavigateToCustomer, orderImageUrl }) {
                 </span>
               </div>
 
-              {/* Previous payments (2nd installment onwards) */}
               {hasPrevious && (
                 <>
                   {(row.previousInstallments || []).map((p, i) => (
@@ -430,7 +311,6 @@ function PaymentDetail({ row, onClose, onNavigateToCustomer, orderImageUrl }) {
                       </span>
                     </div>
                   ))}
-                  {/* Balance before this payment */}
                   <div className={styles.progressLabelRow} style={{ marginTop: 8, paddingTop: 8, borderTop: '1px solid var(--border)' }}>
                     <span className={styles.progressLabel}>Balance Before This Payment</span>
                     <span className={styles.progressFigure} style={{ color: '#f59e0b', fontWeight: 700 }}>
@@ -440,7 +320,6 @@ function PaymentDetail({ row, onClose, onNavigateToCustomer, orderImageUrl }) {
                 </>
               )}
 
-              {/* This payment */}
               <div className={styles.progressLabelRow} style={{ marginTop: 8 }}>
                 <span className={styles.progressLabel}>This Payment</span>
                 <span className={styles.progressFigure} style={{ color: '#22c55e', fontWeight: 700 }}>
@@ -448,7 +327,6 @@ function PaymentDetail({ row, onClose, onNavigateToCustomer, orderImageUrl }) {
                 </span>
               </div>
 
-              {/* Balance remaining after this payment */}
               {balanceAfter > 0 && (
                 <div className={styles.progressLabelRow} style={{ marginTop: 6 }}>
                   <span className={styles.progressLabel}>Balance Remaining</span>
@@ -466,7 +344,6 @@ function PaymentDetail({ row, onClose, onNavigateToCustomer, orderImageUrl }) {
                 </div>
               )}
 
-              {/* Progress bar — cumulative up to this installment */}
               <div className={styles.progressTrack} style={{ marginTop: 12 }}>
                 <div
                   className={styles.progressFill}
@@ -491,7 +368,6 @@ function PaymentDetail({ row, onClose, onNavigateToCustomer, orderImageUrl }) {
             </div>
           )}
 
-          {/* Navigate to customer */}
           <button
             className={styles.viewCustomerBtn}
             onClick={() => { onClose(); onNavigateToCustomer(row.customerId) }}
@@ -513,16 +389,22 @@ export default function AllPayments({ onMenuClick }) {
   const { allPayments }  = usePayments()
   const { allOrders }    = useOrders()
 
-  const [activeTab,  setActiveTab]  = useState('all')
-  const [detailRow,  setDetailRow]  = useState(null)
-  const [toastMsg,   setToastMsg]   = useState('')
-  const [search,     setSearch]     = useState('')
-  const [filterOpen, setFilterOpen] = useState(false)
-  const [filterStatus, setFilterStatus] = useState('all')
-  const toastTimer = useRef(null)
-  const tabsRef    = useRef(null)
+  const [activeTab,     setActiveTab]     = useState('all')
+  const [detailRow,     setDetailRow]     = useState(null)
+  const [toastMsg,      setToastMsg]      = useState('')
+  const [search,        setSearch]        = useState('')
+  const [filterOpen,    setFilterOpen]    = useState(false)
+  const [filterStatus,  setFilterStatus]  = useState('all')
+  const [swipeProgress, setSwipeProgress] = useState(0)
 
-  // Smooth-scroll the active tab into view whenever it changes
+  const touchStartX     = useRef(null)
+  const touchStartY     = useRef(null)
+  const swipeAxisLocked = useRef(null)
+  const toastTimer      = useRef(null)
+  const tabsRef         = useRef(null)
+
+  const activeTabIdx = TABS.findIndex(t => t.id === activeTab)
+
   useEffect(() => {
     if (!tabsRef.current) return
     const activeEl = tabsRef.current.querySelector(`.${styles.tabActive}`)
@@ -537,7 +419,6 @@ export default function AllPayments({ onMenuClick }) {
     toastTimer.current = setTimeout(() => setToastMsg(''), 2400)
   }, [])
 
-  // ── Build order items lookup: "customerId__orderId" → items[] ──
   const orderItemsMap = {}
   for (const order of allOrders) {
     if (order.customerId && order.id && order.items?.length) {
@@ -545,10 +426,8 @@ export default function AllPayments({ onMenuClick }) {
     }
   }
 
-  // ── Flatten → sort ────────────────────────────────────────
   const allRows = sortRows(flattenPayments(allPayments))
 
-  // ── Filter by tab ─────────────────────────────────────────
   const tabFiltered = allRows.filter(r => {
     if (activeTab === 'all')          return true
     if (activeTab === 'full_payment') return r.paymentStatus === 'paid'
@@ -556,7 +435,6 @@ export default function AllPayments({ onMenuClick }) {
     return true
   })
 
-  // ── Search by customer name or order desc ─────────────────
   const filtered = search.trim()
     ? tabFiltered.filter(r =>
         r.customerName?.toLowerCase().includes(search.toLowerCase()) ||
@@ -564,19 +442,16 @@ export default function AllPayments({ onMenuClick }) {
       )
     : tabFiltered
 
-  // ── Tab counts ────────────────────────────────────────────
   const counts = {
     all:          allRows.length,
     full_payment: allRows.filter(r => r.paymentStatus === 'paid').length,
     part:         allRows.filter(r => r.paymentStatus === 'part').length,
   }
 
-  // ── Total received across visible rows ────────────────────
   const totalReceived = filtered
     .filter(r => r.amount !== null)
     .reduce((s, r) => s + (parseFloat(r.amount) || 0), 0)
 
-  // ── Group by date ─────────────────────────────────────────
   const grouped = filtered.reduce((acc, row) => {
     const key = row.date || 'Unknown Date'
     if (!acc[key]) acc[key] = []
@@ -584,11 +459,62 @@ export default function AllPayments({ onMenuClick }) {
     return acc
   }, {})
 
+  const handleTouchStart = useCallback((e) => {
+    touchStartX.current     = e.touches[0].clientX
+    touchStartY.current     = e.touches[0].clientY
+    swipeAxisLocked.current = null
+  }, [])
+
+  const handleTouchMove = useCallback((e) => {
+    if (touchStartX.current === null) return
+
+    const dx = e.touches[0].clientX - touchStartX.current
+    const dy = e.touches[0].clientY - touchStartY.current
+
+    if (swipeAxisLocked.current === null) {
+      if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 8) {
+        swipeAxisLocked.current = 'horizontal'
+      } else if (Math.abs(dy) > 8) {
+        swipeAxisLocked.current = 'vertical'
+      }
+    }
+
+    if (swipeAxisLocked.current !== 'horizontal') return
+
+    const screenW     = window.innerWidth || 375
+    const rawProgress = dx / screenW
+
+    const atStart = activeTabIdx === 0
+    const atEnd   = activeTabIdx === TABS.length - 1
+
+    let clamped = rawProgress
+    if (atStart && rawProgress > 0) clamped = rawProgress * 0.15
+    if (atEnd   && rawProgress < 0) clamped = rawProgress * 0.15
+
+    setSwipeProgress(Math.max(-1, Math.min(1, clamped)))
+  }, [activeTabIdx])
+
+  const handleTouchEnd = useCallback(() => {
+    if (swipeAxisLocked.current === 'horizontal' && Math.abs(swipeProgress) > 0.2) {
+      if (swipeProgress < 0 && activeTabIdx < TABS.length - 1) {
+        setActiveTab(TABS[activeTabIdx + 1].id)
+      } else if (swipeProgress > 0 && activeTabIdx > 0) {
+        setActiveTab(TABS[activeTabIdx - 1].id)
+      }
+    }
+
+    touchStartX.current     = null
+    touchStartY.current     = null
+    swipeAxisLocked.current = null
+    setSwipeProgress(0)
+  }, [swipeProgress, activeTabIdx])
+
+  const tabUnderlineOffset = ((activeTabIdx + (-swipeProgress)) / TABS.length) * 100
+
   return (
     <div className={styles.page}>
       <Header onMenuClick={onMenuClick} title="All Payments" />
 
-      {/* ── Search + filter ── */}
       <div className={styles.searchContainer}>
         <div className={styles.searchRow}>
           <div className={styles.searchBox}>
@@ -616,7 +542,6 @@ export default function AllPayments({ onMenuClick }) {
           </button>
         </div>
 
-        {/* Total received — sits under search bar */}
         <div className={styles.totalRow}>
           <span className={styles.totalLabel}>Total Received</span>
           <span className={styles.totalVal} style={{ color: '#15803d' }}>{fmt(totalReceived)}</span>
@@ -642,28 +567,47 @@ export default function AllPayments({ onMenuClick }) {
         )}
       </div>
 
-      {/* ── Tabs ── */}
       <div className={styles.tabs} ref={tabsRef}>
-        {TABS.map(tab => (
-          <div
-            key={tab.id}
-            className={`${styles.tab} ${activeTab === tab.id ? styles.tabActive : ''}`}
-            style={{ whiteSpace: 'nowrap' }}
-            onClick={() => setActiveTab(tab.id)}
-          >
-            {tab.label}
-            {counts[tab.id] > 0 && (
-              <span className={styles.tabBadge}>
-                {counts[tab.id]}
-              </span>
-            )}
-          </div>
-        ))}
+        {TABS.map((tab, idx) => {
+          const distanceFromActive = idx - activeTabIdx
+          const colorProgress      = Math.max(0, 1 - Math.abs(distanceFromActive + (-swipeProgress)))
+          const isActive           = tab.id === activeTab
+
+          const textColor = colorProgress > 0.5
+            ? 'var(--accent)'
+            : isActive
+              ? 'var(--accent)'
+              : 'var(--text3)'
+
+          return (
+            <div
+              key={tab.id}
+              className={`${styles.tab} ${isActive ? styles.tabActive : ''}`}
+              style={{ whiteSpace: 'nowrap', color: textColor }}
+              onClick={() => setActiveTab(tab.id)}
+            >
+              {tab.label}
+              {counts[tab.id] > 0 && (
+                <span className={styles.tabBadge}>
+                  {counts[tab.id]}
+                </span>
+              )}
+            </div>
+          )
+        })}
+
+        <div
+          className={styles.tabUnderlineTrack}
+          style={{ '--tab-offset': `${tabUnderlineOffset}%`, '--tab-width': `${100 / TABS.length}%` }}
+        />
       </div>
 
-      {/* ── List ── */}
-      <div className={styles.listArea}>
-
+      <div
+        className={styles.listArea}
+        onTouchStart={handleTouchStart}
+        onTouchMove={handleTouchMove}
+        onTouchEnd={handleTouchEnd}
+      >
         {filtered.length === 0 && (
           <div className={styles.emptyState}>
             <span className="mi" style={{ fontSize: '2.8rem', opacity: 0.2 }}>
@@ -699,7 +643,6 @@ export default function AllPayments({ onMenuClick }) {
         <div style={{ height: 32 }} />
       </div>
 
-      {/* ── Detail sheet ── */}
       {detailRow && (
         <PaymentDetail
           row={detailRow}
@@ -710,7 +653,7 @@ export default function AllPayments({ onMenuClick }) {
       )}
 
       <Toast message={toastMsg} />
-      <BottomNav></BottomNav>
+      <BottomNav />
     </div>
   )
 }

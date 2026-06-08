@@ -84,15 +84,17 @@ export function TaskRow({ task, isLast, allOrders, onOpen }) {
         <OrderMosaic items={linkedOrderItems} size="md" overdue={overdue} />
       ) : (
         <div className={styles.taskRowIcon}>
-          <span
-            className="mi"
-            style={{
-              fontSize: '1.3rem',
-              color: overdue ? '#ef4444' : task.done ? '#22c55e' : pc.text,
-            }}
-          >
-            {catIcon}
-          </span>
+          <div className={styles.taskRowIconInner}>
+            <span
+              className="mi"
+              style={{
+                fontSize: '1.3rem',
+                color: overdue ? '#ef4444' : task.done ? '#22c55e' : pc.text,
+              }}
+            >
+              {catIcon}
+            </span>
+          </div>
         </div>
       )}
 

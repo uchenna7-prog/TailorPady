@@ -155,17 +155,6 @@
 
 .tabActive { color: var(--accent); font-weight: 800; }
 
-.tabActive::after {
-  content: '';
-  position: absolute;
-  bottom: 0;
-  left: 15%;
-  right: 15%;
-  height: 2px;
-  background: var(--accent);
-  border-radius: 1px;
-}
-
 .tabBadge {
   display: inline-flex;
   align-items: center;
@@ -178,6 +167,18 @@
   padding: 1px 6px;
   min-width: 18px;
   border: 1px solid var(--border);
+}
+
+.tabUnderlineTrack {
+  position: absolute;
+  bottom: 0;
+  left: var(--tab-offset);
+  width: var(--tab-width);
+  height: 2px;
+  background: var(--accent);
+  border-radius: 1px;
+  transition: left 0.05s linear;
+  pointer-events: none;
 }
 
 /* ── LIST ── */
@@ -218,7 +219,6 @@
 .receiptListItemLast::after { display: none; }
 .receiptListItem:active { background: var(--surface); }
 
-/* Outer grey box */
 .receiptListOuter {
   width: 80px;
   height: 80px;
@@ -231,7 +231,6 @@
   flex-shrink: 0;
 }
 
-/* Inner white box */
 .receiptListInner {
   width: 58px;
   height: 58px;
@@ -249,7 +248,6 @@
   object-fit: cover;
   border-radius: 10px;
 }
-
 
 /* ── CARD COLUMNS ── */
 .receiptListInfo {

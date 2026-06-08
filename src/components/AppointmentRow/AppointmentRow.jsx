@@ -63,10 +63,10 @@ function timeUntil(dateStr, timeStr) {
 
 
 export function AppointmentRow({ appt, isLast, allOrders, onOpen }) {
-  const overdue     = isApptOverdue(appt) && appt.status === 'upcoming'
-  const icon        = TYPE_ICONS[appt.type] || 'calendar_today'
-  const until       = timeUntil(appt.date, appt.time)
-  const effectiveSc = STATUS_CONFIG[overdue ? 'missed' : appt.status] ?? STATUS_CONFIG.upcoming
+  const overdue      = isApptOverdue(appt) && appt.status === 'upcoming'
+  const icon         = TYPE_ICONS[appt.type] || 'calendar_today'
+  const until        = timeUntil(appt.date, appt.time)
+  const effectiveSc  = STATUS_CONFIG[overdue ? 'missed' : appt.status] ?? STATUS_CONFIG.upcoming
   const dateIsOverdue = overdue || appt.status === 'missed'
 
   const linkedOrder      = appt.orderId ? allOrders.find(o => String(o.id) === String(appt.orderId)) : null
@@ -81,7 +81,9 @@ export function AppointmentRow({ appt, isLast, allOrders, onOpen }) {
         <OrderMosaic items={linkedOrderItems} size="md" overdue={overdue} />
       ) : (
         <div className={styles.apptRowIcon}>
-          <span className="mi" style={{ fontSize: '1.3rem', color: effectiveSc.color }}>{icon}</span>
+          <div className={styles.apptRowIconInner}>
+            <span className="mi" style={{ fontSize: '1.3rem', color: effectiveSc.color }}>{icon}</span>
+          </div>
         </div>
       )}
 

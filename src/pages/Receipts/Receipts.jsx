@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useRef, useCallback } from 'react'
 import { useAuth } from '../../contexts/AuthContext'
 import { useGeneralSettings } from '../../contexts/GeneralSettingsContext'
 import { useOrders } from '../../contexts/OrdersContext'
@@ -87,10 +87,16 @@ export default function Receipts({ onMenuClick }) {
 
   const currency = generalSettings.invoiceCurrency || '₦'
 
-  const [activeTab,  setActiveTab]  = useState('all')
-  const [viewing,    setViewing]    = useState(null)
-  const [search,     setSearch]     = useState('')
-  const [filterOpen, setFilterOpen] = useState(false)
+  const [activeTab,     setActiveTab]     = useState('all')
+  const [viewing,       setViewing]       = useState(null)
+  const [search,        setSearch]        = useState('')
+  const [filterOpen,    setFilterOpen]    = useState(false)
+  const [swipeProgress, setSwipeProgress] = useState(0)
+
+  const touchStartX   = useRef(null)
+  const touchStartY   = useRef(null)
+  const swipeAxisLocked = useRef(null)
+  const activeTabIdx  = TABS.findIndex(t => t.id === activeTab)
 
   const orderItemsMap = {}
   for (const order of allOrders) {
@@ -131,6 +137,58 @@ export default function Receipts({ onMenuClick }) {
     acc[key].push(rec)
     return acc
   }, {})
+
+  const handleTouchStart = useCallback((e) => {
+    touchStartX.current   = e.touches[0].clientX
+    touchStartY.current   = e.touches[0].clientY
+    swipeAxisLocked.current = null
+  }, [])
+
+  const handleTouchMove = useCallback((e) => {
+    if (touchStartX.current === null) return
+
+    const dx = e.touches[0].clientX - touchStartX.current
+    const dy = e.touches[0].clientY - touchStartY.current
+
+    if (swipeAxisLocked.current === null) {
+      if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 8) {
+        swipeAxisLocked.current = 'horizontal'
+      } else if (Math.abs(dy) > 8) {
+        swipeAxisLocked.current = 'vertical'
+      }
+    }
+
+    if (swipeAxisLocked.current !== 'horizontal') return
+
+    const screenW   = window.innerWidth || 375
+    const rawProgress = dx / screenW
+
+    const atStart = activeTabIdx === 0
+    const atEnd   = activeTabIdx === TABS.length - 1
+
+    let clamped = rawProgress
+    if (atStart && rawProgress > 0) clamped = rawProgress * 0.15
+    if (atEnd   && rawProgress < 0) clamped = rawProgress * 0.15
+
+    setSwipeProgress(Math.max(-1, Math.min(1, clamped)))
+  }, [activeTabIdx])
+
+  const handleTouchEnd = useCallback(() => {
+    if (swipeAxisLocked.current === 'horizontal' && Math.abs(swipeProgress) > 0.2) {
+      if (swipeProgress < 0 && activeTabIdx < TABS.length - 1) {
+        setActiveTab(TABS[activeTabIdx + 1].id)
+      } else if (swipeProgress > 0 && activeTabIdx > 0) {
+        setActiveTab(TABS[activeTabIdx - 1].id)
+      }
+    }
+
+    touchStartX.current     = null
+    touchStartY.current     = null
+    swipeAxisLocked.current = null
+    setSwipeProgress(0)
+  }, [swipeProgress, activeTabIdx])
+
+  const tabUnderlineOffset = ((activeTabIdx + (-swipeProgress)) / TABS.length) * 100
 
   return (
     <div className={styles.page}>
@@ -186,24 +244,48 @@ export default function Receipts({ onMenuClick }) {
       </div>
 
       <div className={styles.tabs} onClick={() => filterOpen && setFilterOpen(false)}>
-        {TABS.map(tab => (
-          <div
-            key={tab.id}
-            className={`${styles.tab} ${activeTab === tab.id ? styles.tabActive : ''}`}
-            onClick={(e) => {
-              setActiveTab(tab.id)
-              e.currentTarget.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' })
-            }}
-          >
-            {tab.label}
-            {counts[tab.id] > 0 && (
-              <span className={styles.tabBadge}>{counts[tab.id]}</span>
-            )}
-          </div>
-        ))}
+        {TABS.map((tab, idx) => {
+          const distanceFromActive = idx - activeTabIdx
+          const colorProgress      = Math.max(0, 1 - Math.abs(distanceFromActive + (-swipeProgress)))
+          const isActive           = tab.id === activeTab
+
+          const textColor = colorProgress > 0.5
+            ? 'var(--accent)'
+            : isActive
+              ? 'var(--accent)'
+              : 'var(--text3)'
+
+          return (
+            <div
+              key={tab.id}
+              className={`${styles.tab} ${isActive ? styles.tabActive : ''}`}
+              style={{ color: textColor }}
+              onClick={(e) => {
+                setActiveTab(tab.id)
+                e.currentTarget.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' })
+              }}
+            >
+              {tab.label}
+              {counts[tab.id] > 0 && (
+                <span className={styles.tabBadge}>{counts[tab.id]}</span>
+              )}
+            </div>
+          )
+        })}
+
+        <div
+          className={styles.tabUnderlineTrack}
+          style={{ '--tab-offset': `${tabUnderlineOffset}%`, '--tab-width': `${100 / TABS.length}%` }}
+        />
       </div>
 
-      <div className={styles.listArea} onClick={() => filterOpen && setFilterOpen(false)}>
+      <div
+        className={styles.listArea}
+        onClick={() => filterOpen && setFilterOpen(false)}
+        onTouchStart={handleTouchStart}
+        onTouchMove={handleTouchMove}
+        onTouchEnd={handleTouchEnd}
+      >
         {searchFiltered.length === 0 ? (
           <div className={styles.emptyState}>
             <span className="mi" style={{ fontSize: '2.8rem', opacity: 0.2 }}>receipt</span>
@@ -238,8 +320,8 @@ export default function Receipts({ onMenuClick }) {
         <ReceiptViewer
           receipt={viewing}
           customer={{
-            name:    viewing.customerName  || '—',
-            phone:   viewing.customerPhone || '',
+            name:    viewing.customerName   || '—',
+            phone:   viewing.customerPhone  || '',
             address: viewing.customerAddress || '',
           }}
           onClose={() => setViewing(null)}

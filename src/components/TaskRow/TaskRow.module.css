@@ -35,6 +35,16 @@
   flex-shrink: 0;
 }
 
+.taskRowIconInner {
+  width: 58px;
+  height: 58px;
+  border-radius: 10px;
+  background: var(--surface2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
 .taskRowInfo {
   flex: 1;
   min-width: 0;
