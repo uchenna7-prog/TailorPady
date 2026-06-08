@@ -16,7 +16,8 @@ const DEFAULTS = {
   brandAvailability:   'open',
   brandAvailableUntil: '',
   brandTurnaround:     '1 weeks',
-  brandServiceArea:    '',
+  brandServiceArea:    [],
+  brandBookingNote:    '',
 }
 
 export async function savePortfolioSettings(uid, settings) {
@@ -30,7 +31,7 @@ export function subscribeToPortfolioSettings(uid, callback, onError) {
   return onSnapshot(
     settingsDoc(uid),
     snap => callback(snap.exists() ? { ...DEFAULTS, ...snap.data() } : { ...DEFAULTS }),
-    err => { console.error('[portfolioSettingsService]', err); onError?.(err) }
+    err => { onError?.(err) }
   )
 }
 

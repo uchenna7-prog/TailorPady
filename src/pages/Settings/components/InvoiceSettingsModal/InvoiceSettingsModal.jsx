@@ -100,21 +100,21 @@ export function InvoiceSettingsModal({ onBack, showToast }) {
   }
 
   const [localGeneral, setLocalGeneral] = useState({
-    invoicePrefix:     generalSettings.invoicePrefix,
-    invoiceCurrency:   typeof generalSettings.invoiceCurrency === 'object'
-                         ? (generalSettings.invoiceCurrency?.symbol ?? '₦')
-                         : (generalSettings.invoiceCurrency ?? '₦'),
-    invoiceDueDays:    generalSettings.invoiceDueDays ?? 7,
-    invoiceShowTax:    generalSettings.invoiceShowTax,
-    invoiceTaxRate:    generalSettings.invoiceTaxRate,
-    invoiceFooter:     generalSettings.invoiceFooter,
-    brandPaymentTerms: parseTerms(generalSettings.brandPaymentTerms),
+    invoicePrefix:   generalSettings.invoicePrefix,
+    invoiceCurrency: typeof generalSettings.invoiceCurrency === 'object'
+                       ? (generalSettings.invoiceCurrency?.symbol ?? '₦')
+                       : (generalSettings.invoiceCurrency ?? '₦'),
+    invoiceDueDays:  generalSettings.invoiceDueDays ?? 7,
+    invoiceShowTax:  generalSettings.invoiceShowTax,
+    invoiceTaxRate:  generalSettings.invoiceTaxRate,
+    invoiceFooter:   generalSettings.invoiceFooter,
   })
 
   const [localProfile, setLocalProfile] = useState({
-    accountBank:   profileSettings.accountBank   || '',
-    accountNumber: profileSettings.accountNumber || '',
-    accountName:   profileSettings.accountName   || '',
+    accountBank:       profileSettings.accountBank       || '',
+    accountNumber:     profileSettings.accountNumber     || '',
+    accountName:       profileSettings.accountName       || '',
+    brandPaymentTerms: parseTerms(profileSettings.brandPaymentTerms),
   })
 
   const [isCurrencySheetOpen, setIsCurrencySheetOpen] = useState(false)
@@ -123,7 +123,7 @@ export function InvoiceSettingsModal({ onBack, showToast }) {
   const setProfile = key => val => setLocalProfile(p => ({ ...p, [key]: val }))
 
   const setTerm = (index, value) => {
-    setLocalGeneral(p => {
+    setLocalProfile(p => {
       const updated = [...p.brandPaymentTerms]
       updated[index] = value
       return { ...p, brandPaymentTerms: updated }
@@ -131,12 +131,12 @@ export function InvoiceSettingsModal({ onBack, showToast }) {
   }
 
   const addTerm = () => {
-    if (localGeneral.brandPaymentTerms.length >= MAX_TERMS) return
-    setLocalGeneral(p => ({ ...p, brandPaymentTerms: [...p.brandPaymentTerms, ''] }))
+    if (localProfile.brandPaymentTerms.length >= MAX_TERMS) return
+    setLocalProfile(p => ({ ...p, brandPaymentTerms: [...p.brandPaymentTerms, ''] }))
   }
 
   const removeTerm = index => {
-    setLocalGeneral(p => {
+    setLocalProfile(p => {
       const updated = p.brandPaymentTerms.filter((_, i) => i !== index)
       const padded  = updated.length >= 2 ? updated : updated.concat(Array(2 - updated.length).fill(''))
       return { ...p, brandPaymentTerms: padded }
@@ -150,9 +150,9 @@ export function InvoiceSettingsModal({ onBack, showToast }) {
   }
 
   function save() {
-    const filledTerms = localGeneral.brandPaymentTerms.filter(t => t.trim())
-    updateManyGeneralSettings({ ...localGeneral, brandPaymentTerms: filledTerms })
-    updateManyProfileSettings(localProfile)
+    const filledTerms = localProfile.brandPaymentTerms.filter(t => t.trim())
+    updateManyGeneralSettings({ ...localGeneral })
+    updateManyProfileSettings({ ...localProfile, brandPaymentTerms: filledTerms })
     showToast('Invoice settings saved')
     onBack()
   }
@@ -220,14 +220,28 @@ export function InvoiceSettingsModal({ onBack, showToast }) {
 
         <div style={{ height: 20 }} />
 
-        <div className={styles.sectionLabel}>Footer</div>
+        <div className={styles.sectionLabel}>Payment Details</div>
         <FieldGroup>
-          <Field label="Invoice Footer Text" hint="Printed at the bottom of every invoice.">
-            <Textarea
-              value={localGeneral.invoiceFooter}
-              onChange={setGeneral('invoiceFooter')}
-              placeholder="Thank you for your patronage 🙏"
-              rows={3}
+          <Field label="Bank Name" hint="e.g. GTBank, Access, OPay">
+            <TextInput
+              value={localProfile.accountBank}
+              onChange={setProfile('accountBank')}
+              placeholder="e.g. GTBank"
+            />
+          </Field>
+          <Field label="Account Number">
+            <TextInput
+              value={localProfile.accountNumber}
+              onChange={setProfile('accountNumber')}
+              placeholder="e.g. 0123456789"
+              type="tel"
+            />
+          </Field>
+          <Field label="Account Name" hint="Name registered on the bank account">
+            <TextInput
+              value={localProfile.accountName}
+              onChange={setProfile('accountName')}
+              placeholder="e.g. Amara Okonkwo"
             />
           </Field>
         </FieldGroup>
@@ -238,7 +252,7 @@ export function InvoiceSettingsModal({ onBack, showToast }) {
         <FieldGroup>
           <Field hint="Up to 3 short terms printed on invoices. Each appears as a bullet point.">
             <div className={styles.termsList}>
-              {localGeneral.brandPaymentTerms.map((term, i) => (
+              {localProfile.brandPaymentTerms.map((term, i) => (
                 <div key={i} className={styles.termRow}>
                   <span className={styles.termBullet}>•</span>
                   <div className={styles.termInputWrap}>
@@ -254,7 +268,7 @@ export function InvoiceSettingsModal({ onBack, showToast }) {
                       {term.length}/{MAX_TERM_LENGTH}
                     </span>
                   </div>
-                  {localGeneral.brandPaymentTerms.length > 2 && (
+                  {localProfile.brandPaymentTerms.length > 2 && (
                     <button className={styles.termRemove} onClick={() => removeTerm(i)}>
                       <span className="mi" style={{ fontSize: 16 }}>close</span>
                     </button>
@@ -262,7 +276,7 @@ export function InvoiceSettingsModal({ onBack, showToast }) {
                 </div>
               ))}
             </div>
-            {localGeneral.brandPaymentTerms.length < MAX_TERMS && (
+            {localProfile.brandPaymentTerms.length < MAX_TERMS && (
               <button className={styles.addTermBtn} onClick={addTerm}>
                 <span className="mi" style={{ fontSize: 16 }}>add</span>
                 Add another term
@@ -273,16 +287,15 @@ export function InvoiceSettingsModal({ onBack, showToast }) {
 
         <div style={{ height: 20 }} />
 
-        <div className={styles.sectionLabel}>Payment Details</div>
+        <div className={styles.sectionLabel}>Footer</div>
         <FieldGroup>
-          <Field label="Bank Name" hint="e.g. GTBank, Access, OPay">
-            <TextInput value={localProfile.accountBank} onChange={setProfile('accountBank')} placeholder="e.g. GTBank" />
-          </Field>
-          <Field label="Account Number">
-            <TextInput value={localProfile.accountNumber} onChange={setProfile('accountNumber')} placeholder="e.g. 0123456789" type="tel" />
-          </Field>
-          <Field label="Account Name" hint="Name registered on the bank account">
-            <TextInput value={localProfile.accountName} onChange={setProfile('accountName')} placeholder="e.g. Amara Okonkwo" />
+          <Field label="Invoice Footer Text" hint="Printed at the bottom of every invoice.">
+            <Textarea
+              value={localGeneral.invoiceFooter}
+              onChange={setGeneral('invoiceFooter')}
+              placeholder="Thank you for your patronage 🙏"
+              rows={3}
+            />
           </Field>
         </FieldGroup>
 

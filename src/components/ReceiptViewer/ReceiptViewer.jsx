@@ -33,8 +33,15 @@ export default function ReceiptViewer({
 
   const templateKey = receipt.template || generalSettings.receiptTemplate || 'receiptTemplate1'
   const Template = TEMPLATE_MAPPINGS[templateKey] || TEMPLATE_MAPPINGS.receiptTemplate1
-  const snapshotedReceiptBrandSettings = receipt.brandSnapshot ? { ...RECEIPT_BRAND_SETTINGS, ...receipt.brandSnapshot } : RECEIPT_BRAND_SETTINGS
-  const brandCSSVars = getBrandCSSVars(snapshotedReceiptBrandSettings.colour)
+  const snapShotedReceiptBrandSettings = receipt.brandSnapshot
+  ? {
+      ...RECEIPT_BRAND_SETTINGS,
+      ...Object.fromEntries(
+        Object.entries(receipt.brandSnapshot).filter(([, v]) => v !== '' && v !== null && v !== undefined)
+      ),
+    }
+  : RECEIPT_BRAND_SETTINGS
+  const brandCSSVars = getBrandCSSVars(snapShotedReceiptBrandSettings.colour)
   const filename = `Receipt-${receipt.number}-${customer.name.replace(/\s+/g, '_')}.pdf`
 
   const cumulativePaid = resolveCumulativePaid(receipt)
@@ -66,7 +73,7 @@ export default function ReceiptViewer({
     showToast?.('Preparing…')
     try {
       const exactHeight = Math.ceil(paperRef.current.getBoundingClientRect().height)
-      const message = buildReceiptWhatsAppMessage(receipt, customer, snapshotedReceiptBrandSettings)
+      const message = buildReceiptWhatsAppMessage(receipt, customer, snapShotedReceiptBrandSettings)
       await sharePDF(paperRef.current, filename, message, brandCSSVars, exactHeight)
       showToast?.('Shared ✓')
     } 
@@ -116,7 +123,7 @@ export default function ReceiptViewer({
         
         <div className={styles.paperWrap}>
           <div className={styles.paperInner} ref={paperRef} style={brandCSSVars}>
-            <Template receipt={receipt} customer={customer} receiptBrandSettings={snapshotedReceiptBrandSettings} />
+            <Template receipt={receipt} customer={customer} receiptBrandSettings={snapShotedReceiptBrandSettings} />
           </div>
         </div>
        

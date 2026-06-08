@@ -85,6 +85,19 @@ export function useInvoiceActions({ customerData, orders, showToast, setActiveTa
       dueDays:  localSnap.invoiceDueDays  || 7,
     })
 
+    const getDueDate =  (dueDays)=>{
+
+    try {
+      const date = new Date(invoice.date)
+      date.setDate(date.getDate() + (dueDays || 7))
+      return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+    } 
+    catch { 
+      return '' 
+    }
+
+    }
+
     const newInvoice = {
       id:             Date.now() + Math.random(),
       orderId,
@@ -97,8 +110,7 @@ export function useInvoiceActions({ customerData, orders, showToast, setActiveTa
       qty:            order.qty,
       items:          Array.isArray(order.items) ? order.items : [],
       linkedNames:    linkedMeasurementNames,
-      due:            order.due,
-      notes:          order.notes,
+      due:            getDueDate(generalSettings.invoiceDueDays || localSnap.invoiceDueDays || 7),
       shippingFee:    order.shippingFee    ?? 0,
       discountType:   order.discountType   ?? null,
       discountValue:  order.discountValue  ?? 0,

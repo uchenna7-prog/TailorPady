@@ -32,7 +32,7 @@ export function useInvoiceBrandSettings() {
         website: profileSettings.brandWebsite || PLACEHOLDERS.website,
 
         signature: profileSettings.brandSignature || null,
-        paymentTerms: profileSettings.brandPaymentTerms || [],
+        paymentTerms: profileSettings.brandPaymentTerms || ["payement Term1", "payement Term2"],
 
         accountBank: profileSettings.accountBank || PLACEHOLDERS.accountBank,
         accountNumber: profileSettings.accountNumber || PLACEHOLDERS.accountNumber,
@@ -41,6 +41,7 @@ export function useInvoiceBrandSettings() {
         prefix: generalSettings.invoicePrefix || 'INV',
         currency: generalSettings.invoiceCurrency || '₦',
         template: generalSettings.invoiceTemplate || 'invoiceTemplate1',
+        dueDays: generalSettings.invoiceDueDays || 7,
         showTax: generalSettings.invoiceShowTax || false,
         taxRate: generalSettings.invoiceTaxRate || 0,
         footer: generalSettings.invoiceFooter || 'Thank you for your patronage 🙏',

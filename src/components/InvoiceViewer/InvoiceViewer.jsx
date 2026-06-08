@@ -38,7 +38,14 @@ export default function InvoiceViewer({
 
   const templateKey = invoice.template || generalSettings.invoiceTemplate || 'invoiceTemplate1'
   const Template = TEMPLATE_MAPPINGS[templateKey] || TEMPLATE_MAPPINGS.invoiceTemplate1
-  const snapShotedInvoiceBrandSettings = invoice.brandSnapshot ? { ...INVOICE_BRAND_SETTINGS, ...invoice.brandSnapshot } : INVOICE_BRAND_SETTINGS
+  const snapShotedInvoiceBrandSettings = invoice.brandSnapshot
+  ? {
+      ...INVOICE_BRAND_SETTINGS,
+      ...Object.fromEntries(
+        Object.entries(invoice.brandSnapshot).filter(([, v]) => v !== '' && v !== null && v !== undefined)
+      ),
+    }
+  : INVOICE_BRAND_SETTINGS
   const brandCSSVars = getBrandCSSVars(snapShotedInvoiceBrandSettings.colour)
   const filename = `Invoice-${invoice.number}-${customer.name.replace(/\s+/g, '_')}.pdf`
 

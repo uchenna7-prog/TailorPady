@@ -38,7 +38,9 @@ function NotifItem({ n, onRead, onNavigate }) {
       style={{ cursor: (n.type === 'review' || n.unread) ? 'pointer' : 'default' }}
     >
       <div className={styles.notifIcon} style={{ background: NOTIF_TYPE_BG[n.type] || 'var(--surface2)' }}>
-        {n.icon}
+        <span className={n.icon.outlined ? 'mi-outlined' : 'mi'} style={{ fontSize: '1.2rem' }}>
+          {n.icon.name}
+        </span>
       </div>
       <div className={styles.notifContent}>
         <h5>{n.title}</h5>
@@ -113,7 +115,7 @@ function Header({
   const openNotif  = () => { setNotifTab('all'); setNotifOpen(true) }
   const closeNotif = () => setNotifOpen(false)
 
-  const handleBack   = () => onBackClick ? onBackClick() : navigate(-1)
+  const handleBack     = () => onBackClick ? onBackClick() : navigate(-1)
   const handleBotClick = () => navigate('/agent')
 
   const visibleNotifs = (() => {
@@ -168,15 +170,12 @@ function Header({
 
           {customTitle?.title ? (
             <div className={`${styles.customTitleWrap} ${isScrolledProp && scrolledAvatar ? styles.titleShifted : ''}`}>
-
               {isAgentPage && (
-                  <span className={`${styles.agentDot} ${agentActive ? styles.agentDotActive : ''}`} />
-                )}
+                <span className={`${styles.agentDot} ${agentActive ? styles.agentDotActive : ''}`} />
+              )}
               <div className={styles.customTitle}>
-
                 <div>{customTitle.iconComponent && <customTitle.iconComponent />}</div>
                 <div>{customTitle.title}</div>
-
               </div>
             </div>
           ) : (

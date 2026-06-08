@@ -18,13 +18,14 @@ const DEFAULTS = {
   brandAvailability:   'open',
   brandAvailableUntil: '',
   brandTurnaround:     '1 weeks',
-  brandServiceArea:    '',
+  brandServiceArea:    [],
+  brandBookingNote:    '',
 }
 
 export function PortfolioSettingsProvider({ children }) {
   const { user } = useAuth()
   const [portfolioSettings, setPortfolioSettings] = useState(DEFAULTS)
-  const [settled, setSettled] = useState(false)
+  const [settled, setSettled]                     = useState(false)
 
   useEffect(() => {
     if (!user?.uid) return

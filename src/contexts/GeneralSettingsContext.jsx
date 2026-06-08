@@ -4,6 +4,7 @@ const STORAGE_KEY = 'TailorPady_general_settings'
 const THEME_TRANSITION_MS = 350
 
 export const DEFAULTS = {
+
   theme:      'light',
   accentId:    'default',
   accentColor:  null,

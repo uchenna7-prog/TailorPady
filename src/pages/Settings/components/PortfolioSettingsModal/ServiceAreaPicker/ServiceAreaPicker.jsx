@@ -4,7 +4,7 @@ import styles from "./ServiceAreaPicker.module.css"
 
 export function ServiceAreaPicker({ value, onChange }) {
 
-  const selected = value ? value.split(',').map(s => s.trim()).filter(Boolean) : []
+  const selected = Array.isArray(value) ? value : []
   const [dropdownValue, setDropdownValue] = useState('')
 
   const hasNationwide    = selected.includes('Nationwide')
@@ -21,12 +21,12 @@ export function ServiceAreaPicker({ value, onChange }) {
       const next = hasNationwide
         ? selected.filter(s => s !== 'Nationwide')
         : [...selected, 'Nationwide']
-      onChange(next.join(', '))
+      onChange(next)
     } else {
       const next = hasInternational
         ? selected.filter(s => s !== 'International')
         : [...selected, 'International']
-      onChange(next.join(', '))
+      onChange(next)
     }
   }
 
@@ -34,10 +34,10 @@ export function ServiceAreaPicker({ value, onChange }) {
     const state = e.target.value
     if (!state || isStatesDisabled) return
     setDropdownValue('')
-    onChange([...selected, state].join(', '))
+    onChange([...selected, state])
   }
 
-  const removeChip = item => onChange(selected.filter(s => s !== item).join(', '))
+  const removeChip = item => onChange(selected.filter(s => s !== item))
 
   return (
     <div className={styles.wrap}>

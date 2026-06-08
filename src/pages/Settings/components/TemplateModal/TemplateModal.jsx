@@ -5,6 +5,7 @@ import { useProfileSettings } from '../../../../contexts/ProfileSettingsContext'
 import { useGeneralSettings } from '../../../../contexts/GeneralSettingsContext'
 import Header from '../../../../components/Header/Header'
 import { ZoomOverlay } from './ZoomOverlay/ZoomOverlay'
+import { MissingFieldsSheet } from './MissingFieldsSheet/MissingFieldsSheet'
 import { INVOICE_TEMPLATE_GROUPS } from '../../datas/invoiceTemplateGroups'
 import { RECEIPT_TEMPLATE_GROUPS } from '../../datas/receiptTemplateGroups'
 import {
@@ -22,21 +23,6 @@ const STYLE_FILTERS = [
   { id: 'Accent', label: 'Accent' },
   { id: 'Solid',  label: 'Solid'  },
 ]
-
-const FIELD_META = {
-  logo:          { label: 'Business logo'    },
-  name:          { label: 'Business name'    },
-  tagline:       { label: 'Tagline'          },
-  address:       { label: 'Business address' },
-  phone:         { label: 'Phone number'     },
-  email:         { label: 'Email address'    },
-  website:       { label: 'Website'          },
-  signature:     { label: 'Signature'        },
-  accountBank:   { label: 'Bank name'        },
-  accountNumber: { label: 'Account number'   },
-  accountName:   { label: 'Account name'     },
-  paymentTerms:  { label: 'Payment terms'    },
-}
 
 const FIELD_TO_PROFILE_KEY = {
   name:          'brandName',
@@ -67,11 +53,11 @@ function getMissingFields(requires, profileSettings) {
 }
 
 function getUnionRequires(invoiceTemplateId, receiptTemplateId) {
-  const allInvoice = INVOICE_TEMPLATE_GROUPS.flatMap(g => g.templates)
-  const allReceipt = RECEIPT_TEMPLATE_GROUPS.flatMap(g => g.templates)
+  const allInvoice      = INVOICE_TEMPLATE_GROUPS.flatMap(g => g.templates)
+  const allReceipt      = RECEIPT_TEMPLATE_GROUPS.flatMap(g => g.templates)
   const invoiceTemplate = allInvoice.find(t => t.id === invoiceTemplateId)
   const receiptTemplate = allReceipt.find(t => t.id === receiptTemplateId)
-  const combined = new Set([
+  const combined        = new Set([
     ...(invoiceTemplate?.requires ?? []),
     ...(receiptTemplate?.requires ?? []),
   ])
@@ -118,7 +104,7 @@ export function TemplateModal({
   const [zoomIndex,      setZoomIndex]      = useState(null)
   const [slideDir,       setSlideDir]       = useState(null)
   const [slideKey,       setSlideKey]       = useState(0)
-  const [missingSheet,   setMissingSheet]   = useState(null)
+  const [missingFields,  setMissingFields]  = useState(null)
 
   useBrandTokens(colourId, modalRef)
 
@@ -271,7 +257,7 @@ export function TemplateModal({
     const unionRequires = getUnionRequires(selectedInvoiceTemplate, selectedReceiptTemplate)
     const missing       = getMissingFields(unionRequires, profileSettings)
     if (missing.length > 0) {
-      setMissingSheet(missing)
+      setMissingFields(missing)
       return
     }
     onSelect({
@@ -290,7 +276,7 @@ export function TemplateModal({
   ])
 
   const handleSkipAndSave = useCallback(() => {
-    setMissingSheet(null)
+    setMissingFields(null)
     onSelect({
       invoiceTemplate: selectedInvoiceTemplate,
       receiptTemplate: selectedReceiptTemplate,
@@ -301,9 +287,15 @@ export function TemplateModal({
   }, [onSelect, onClose, selectedInvoiceTemplate, selectedReceiptTemplate])
 
   const handleGoToProfile = useCallback(() => {
-    setMissingSheet(null)
+    setMissingFields(null)
     onClose()
     navigate('/profile')
+  }, [navigate, onClose])
+
+  const handleGoToInvoiceSettings = useCallback(() => {
+    setMissingFields(null)
+    onClose()
+    navigate('/settings/invoice')
   }, [navigate, onClose])
 
   if (!isOpen) return null
@@ -444,41 +436,14 @@ export function TemplateModal({
         />
       )}
 
-      {missingSheet !== null && (
-        <div className={styles.sheetBackdrop} onClick={() => setMissingSheet(null)}>
-          <div className={styles.sheet} onClick={e => e.stopPropagation()}>
-            <div className={styles.sheetHandle} />
-
-            <div className={styles.sheetHeader}>
-              <div className={styles.sheetIconWrap}>
-                <span className="mi">inventory_2</span>
-              </div>
-              <p className={styles.sheetTitle}>A few details would help</p>
-              <p className={styles.sheetSubtitle}>
-                This template pulls from your profile to look its best.
-                The fields below are currently empty — you can fill them now or save and come back later.
-              </p>
-            </div>
-
-            <ul className={styles.missingList}>
-              {missingSheet.map(key => (
-                <li key={key} className={styles.missingItem}>
-                  <span className={`mi ${styles.missingDot}`}>fiber_manual_record</span>
-                  <span className={styles.missingLabel}>{FIELD_META[key]?.label ?? key}</span>
-                </li>
-              ))}
-            </ul>
-
-            <div className={styles.sheetActions}>
-              <button className={styles.sheetActionPrimary} onClick={handleGoToProfile}>
-                Fill in profile
-              </button>
-              <button className={styles.sheetActionSecondary} onClick={handleSkipAndSave}>
-                Save anyway
-              </button>
-            </div>
-          </div>
-        </div>
+      {missingFields !== null && (
+        <MissingFieldsSheet
+          missingFields={missingFields}
+          onClose={() => setMissingFields(null)}
+          onGoToProfile={handleGoToProfile}
+          onGoToInvoiceSettings={handleGoToInvoiceSettings}
+          onSkipAndSave={handleSkipAndSave}
+        />
       )}
 
     </div>

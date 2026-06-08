@@ -86,34 +86,6 @@ export function PortfolioSettingsModal({ onBack, showToast }) {
     <FullModal title="Portfolio Settings" onBack={onBack} onSave={save}>
       <div>
 
-        <div className={styles.sectionLabel}>About You</div>
-        <FieldGroup>
-          <Field label="Milestone" hint="A proud achievement shown on your portfolio. e.g. 500+ happy clients">
-            <TextInput
-              value={local.brandMilestone}
-              onChange={set('brandMilestone')}
-              placeholder="e.g. 500+ happy clients"
-            />
-          </Field>
-          <Field label="Signature Style" hint="What you're known for. e.g. Hand-embroidered agbada">
-            <TextInput
-              value={local.brandSignatureStyle}
-              onChange={set('brandSignatureStyle')}
-              placeholder="e.g. Hand-embroidered agbada"
-            />
-          </Field>
-          <Field label="Style Statement" hint="Describe your craft. Shown on your portfolio.">
-            <Textarea
-              value={local.brandStyleStatement}
-              onChange={set('brandStyleStatement')}
-              placeholder="e.g. I specialise in bold Ankara fusion pieces that blend traditional Yoruba aesthetics with modern silhouettes..."
-              rows={5}
-            />
-          </Field>
-        </FieldGroup>
-
-        <div style={{ height: 20 }} />
-
         <div className={styles.sectionLabel}>Availability</div>
         <FieldGroup>
           <Field label="Status">
@@ -146,11 +118,59 @@ export function PortfolioSettingsModal({ onBack, showToast }) {
               />
             </Field>
           )}
+        </FieldGroup>
+
+        <div style={{ height: 20 }} />
+
+        <div className={styles.sectionLabel}>About You</div>
+        <FieldGroup>
+          <Field label="Milestone" hint="A proud achievement shown on your portfolio. e.g. 500+ happy clients">
+            <TextInput
+              value={local.brandMilestone}
+              onChange={set('brandMilestone')}
+              placeholder="e.g. 500+ happy clients"
+            />
+          </Field>
+          <Field label="Signature Style" hint="What you're known for. e.g. Hand-embroidered agbada">
+            <TextInput
+              value={local.brandSignatureStyle}
+              onChange={set('brandSignatureStyle')}
+              placeholder="e.g. Hand-embroidered agbada"
+            />
+          </Field>
+          <Field label="Style Statement" hint="Describe your craft. Shown on your portfolio.">
+            <Textarea
+              value={local.brandStyleStatement}
+              onChange={set('brandStyleStatement')}
+              placeholder="e.g. I specialise in bold Ankara fusion pieces that blend traditional Yoruba aesthetics with modern silhouettes..."
+              rows={5}
+            />
+          </Field>
+        </FieldGroup>
+
+        <div style={{ height: 20 }} />
+
+        <div className={styles.sectionLabel}>Services</div>
+        <FieldGroup>
           <Field label="Standard Turnaround Time" hint="How long does it typically take to complete an order?">
             <TurnaroundPicker value={local.brandTurnaround} onChange={set('brandTurnaround')} />
           </Field>
           <Field label="Service Area" hint="Select all states you deliver or offer services to.">
             <ServiceAreaPicker value={local.brandServiceArea} onChange={set('brandServiceArea')} />
+          </Field>
+        </FieldGroup>
+
+        <div style={{ height: 20 }} />
+
+        <div className={styles.sectionLabel}>Booking</div>
+        <FieldGroup>
+          <Field label="Booking Note" hint="A short note shown to clients on your booking form. e.g. Include your measurements when booking.">
+            <Textarea
+              value={local.brandBookingNote}
+              onChange={set('brandBookingNote')}
+              placeholder="e.g. Please include your measurement chart and fabric preference when reaching out."
+              rows={3}
+            />
           </Field>
         </FieldGroup>
 

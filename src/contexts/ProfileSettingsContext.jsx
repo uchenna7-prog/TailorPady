@@ -31,9 +31,10 @@ export const DEFAULTS = {
   brandAddress: '',
   brandWebsite: '',
 
-  brandFoundedYear: '',
-  brandSocials:     [],
-  brandSignature:   null,
+  brandFoundedYear:    '',
+  brandSocials:        [],
+  brandSignature:      null,
+  brandPaymentTerms:   [],
 
   accountBank:   '',
   accountNumber: '',
