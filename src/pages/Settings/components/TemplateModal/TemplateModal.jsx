@@ -1,8 +1,6 @@
 import { useState, useRef, useMemo, useCallback, useEffect, useLayoutEffect } from 'react'
-import { useNavigate } from 'react-router-dom'
 import { useBrandTokens } from '../../../../hooks/useBrandTokens'
 import { useProfileSettings } from '../../../../contexts/ProfileSettingsContext'
-import { useGeneralSettings } from '../../../../contexts/GeneralSettingsContext'
 import Header from '../../../../components/Header/Header'
 import { ZoomOverlay } from './ZoomOverlay/ZoomOverlay'
 import { MissingFieldsSheet } from './MissingFieldsSheet/MissingFieldsSheet'
@@ -71,9 +69,8 @@ export function TemplateModal({
   colourId,
   onClose,
   onSelect,
+  onOpenInvoiceSettings,
 }) {
-  const navigate = useNavigate()
-
   const { profileSettings }    = useProfileSettings()
   const RECEIPT_BRAND_SETTINGS = useReceiptBrandSettings()
   const INVOICE_BRAND_SETTINGS = useInvoiceBrandSettings()
@@ -267,13 +264,7 @@ export function TemplateModal({
     setAppliedInvoiceTemplate(selectedInvoiceTemplate)
     setAppliedReceiptTemplate(selectedReceiptTemplate)
     onClose()
-  }, [
-    selectedInvoiceTemplate,
-    selectedReceiptTemplate,
-    profileSettings,
-    onSelect,
-    onClose,
-  ])
+  }, [selectedInvoiceTemplate, selectedReceiptTemplate, profileSettings, onSelect, onClose])
 
   const handleSkipAndSave = useCallback(() => {
     setMissingFields(null)
@@ -289,14 +280,13 @@ export function TemplateModal({
   const handleGoToProfile = useCallback(() => {
     setMissingFields(null)
     onClose()
-    navigate('/profile')
-  }, [navigate, onClose])
+  }, [onClose])
 
   const handleGoToInvoiceSettings = useCallback(() => {
     setMissingFields(null)
     onClose()
-    navigate('/settings/invoice')
-  }, [navigate, onClose])
+    onOpenInvoiceSettings()
+  }, [onClose, onOpenInvoiceSettings])
 
   if (!isOpen) return null
 
@@ -369,29 +359,26 @@ export function TemplateModal({
           <div key={gridAnimKey} className={styles.templateGrid}>
             {filteredTemplates.map((template, index) => {
               const isSelected = activeTabObject.selectedId === template.id
-
               return (
                 <div
                   key={template.id}
                   ref={el => { cardRefs.current[template.id] = el }}
                   className={styles.templateItem}
                   onClick={() => handleTemplateSelect(template)}
-                  onContextMenu={(e) => e.preventDefault()}
+                  onContextMenu={e => e.preventDefault()}
                 >
                   <div className={`${styles.templateCard} ${isSelected ? styles.templateCardSelected : ''}`}>
                     <div className={styles.previewShell}>
                       <div className={styles.previewScaler}>
                         <template.Component {...sampleProps} />
                       </div>
-
                       <button
                         className={styles.zoomTrigger}
-                        onClick={(e) => { e.stopPropagation(); handleZoomOpen(template) }}
+                        onClick={e => { e.stopPropagation(); handleZoomOpen(template) }}
                         aria-label="Preview template"
                       >
                         <span className="mi" style={{ fontSize: '0.9rem' }}>open_in_full</span>
                       </button>
-
                       {isSelected && (
                         <div className={styles.selectedBadge}>
                           <span className="mi" style={{ fontSize: '0.75rem' }}>check</span>
@@ -399,7 +386,6 @@ export function TemplateModal({
                       )}
                     </div>
                   </div>
-
                   <div className={styles.templateMeta}>
                     {template.tags && template.tags.length > 0 && (
                       <div className={styles.tagList}>

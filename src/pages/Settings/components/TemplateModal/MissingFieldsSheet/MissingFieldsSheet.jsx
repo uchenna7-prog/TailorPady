@@ -2,18 +2,18 @@ import { useCallback } from 'react'
 import styles from './MissingFieldsSheet.module.css'
 
 const FIELD_META = {
-  logo:          { label: 'Business logo',    icon: 'image'         },
-  name:          { label: 'Business name',    icon: 'badge'         },
-  tagline:       { label: 'Tagline',          icon: 'format_quote'  },
-  address:       { label: 'Business address', icon: 'location_on'   },
-  phone:         { label: 'Phone number',     icon: 'phone'         },
-  email:         { label: 'Email address',    icon: 'mail'          },
-  website:       { label: 'Website',          icon: 'language'      },
-  signature:     { label: 'Signature',        icon: 'draw'          },
+  logo:          { label: 'Business logo',    icon: 'image'           },
+  name:          { label: 'Business name',    icon: 'badge'           },
+  tagline:       { label: 'Tagline',          icon: 'format_quote'    },
+  address:       { label: 'Business address', icon: 'location_on'     },
+  phone:         { label: 'Phone number',     icon: 'phone'           },
+  email:         { label: 'Email address',    icon: 'mail'            },
+  website:       { label: 'Website',          icon: 'language'        },
+  signature:     { label: 'Signature',        icon: 'draw'            },
   accountBank:   { label: 'Bank name',        icon: 'account_balance' },
-  accountNumber: { label: 'Account number',   icon: 'pin'           },
-  accountName:   { label: 'Account name',     icon: 'person'        },
-  paymentTerms:  { label: 'Payment terms',    icon: 'gavel'         },
+  accountNumber: { label: 'Account number',   icon: 'pin'             },
+  accountName:   { label: 'Account name',     icon: 'person'          },
+  paymentTerms:  { label: 'Payment terms',    icon: 'gavel'           },
 }
 
 const INVOICE_SETTINGS_FIELDS = new Set([
@@ -24,9 +24,8 @@ const INVOICE_SETTINGS_FIELDS = new Set([
 ])
 
 function partitionMissingFields(missingFields) {
-  const profileFields        = []
+  const profileFields         = []
   const invoiceSettingsFields = []
-
   for (const key of missingFields) {
     if (INVOICE_SETTINGS_FIELDS.has(key)) {
       invoiceSettingsFields.push(key)
@@ -34,7 +33,6 @@ function partitionMissingFields(missingFields) {
       profileFields.push(key)
     }
   }
-
   return { profileFields, invoiceSettingsFields }
 }
 
@@ -60,13 +58,11 @@ function DestinationGroup({ icon, title, subtitle, fields, actionLabel, onAction
           <p className={styles.groupSubtitle}>{subtitle}</p>
         </div>
       </div>
-
       <div className={styles.pillList}>
         {fields.map(key => (
           <FieldPill key={key} fieldKey={key} />
         ))}
       </div>
-
       <button className={styles.groupAction} onClick={onAction}>
         {actionLabel}
         <span className="mi" style={{ fontSize: '0.9rem' }}>arrow_forward</span>
@@ -75,63 +71,64 @@ function DestinationGroup({ icon, title, subtitle, fields, actionLabel, onAction
   )
 }
 
-export function MissingFieldsSheet({ missingFields, onClose, onGoToProfile, onGoToInvoiceSettings, onSkipAndSave }) {
+export function MissingFieldsSheet({
+  missingFields,
+  onClose,
+  onGoToProfile,
+  onGoToInvoiceSettings,
+  onSkipAndSave,
+}) {
   const { profileFields, invoiceSettingsFields } = partitionMissingFields(missingFields)
 
-  const handleBackdropClick = useCallback(() => {
-    onClose()
-  }, [onClose])
-
-  const stopPropagation = useCallback((e) => {
-    e.stopPropagation()
-  }, [])
+  const stopPropagation = useCallback(e => e.stopPropagation(), [])
 
   return (
-    <div className={styles.backdrop} onClick={handleBackdropClick}>
+    <div className={styles.backdrop} onClick={onClose}>
       <div className={styles.sheet} onClick={stopPropagation}>
 
-        <div className={styles.handle} />
-
-        <div className={styles.sheetHeader}>
-          <div className={styles.warningIconWrap}>
-            <span className="mi">checklist</span>
-          </div>
-          <div>
-            <p className={styles.sheetTitle}>Complete your profile</p>
-            <p className={styles.sheetSubtitle}>
-              This template needs a few details to look its best. Fill them in below or save and come back later.
-            </p>
+        <div className={styles.sheetTop}>
+          <div className={styles.handle} />
+          <div className={styles.sheetHeader}>
+            <div className={styles.warningIconWrap}>
+              <span className="mi">checklist</span>
+            </div>
+            <div>
+              <p className={styles.sheetTitle}>Complete your profile</p>
+              <p className={styles.sheetSubtitle}>
+                This template needs a few details to look its best. Fill them in or save and come back later.
+              </p>
+            </div>
           </div>
         </div>
 
-        <div className={styles.groupList}>
-          {profileFields.length > 0 && (
-            <DestinationGroup
-              icon="manage_accounts"
-              title="Profile"
-              subtitle="Your business identity and contact info"
-              fields={profileFields}
-              actionLabel="Go to Profile"
-              onAction={onGoToProfile}
-            />
-          )}
-
-          {invoiceSettingsFields.length > 0 && (
-            <>
-              {profileFields.length > 0 && <div className={styles.divider} />}
+        <div className={styles.scrollBody}>
+          <div className={styles.groupList}>
+            {profileFields.length > 0 && (
               <DestinationGroup
-                icon="receipt_long"
-                title="Invoice Settings"
-                subtitle="Payment and bank account details"
-                fields={invoiceSettingsFields}
-                actionLabel="Go to Invoice Settings"
-                onAction={onGoToInvoiceSettings}
+                icon="manage_accounts"
+                title="Profile"
+                subtitle="Your business identity and contact info"
+                fields={profileFields}
+                actionLabel="Go to Profile"
+                onAction={onGoToProfile}
               />
-            </>
-          )}
-        </div>
+            )}
 
-        <div className={styles.footer}>
+            {invoiceSettingsFields.length > 0 && (
+              <>
+                {profileFields.length > 0 && <div className={styles.divider} />}
+                <DestinationGroup
+                  icon="receipt_long"
+                  title="Invoice Settings"
+                  subtitle="Payment and bank account details"
+                  fields={invoiceSettingsFields}
+                  actionLabel="Go to Invoice Settings"
+                  onAction={onGoToInvoiceSettings}
+                />
+              </>
+            )}
+          </div>
+
           <button className={styles.skipButton} onClick={onSkipAndSave}>
             Save anyway
           </button>

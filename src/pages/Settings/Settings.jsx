@@ -27,17 +27,16 @@ export default function Settings({ onMenuClick }) {
   const [toastMessage, setToastMessage] = useState('')
   const toastTimerRef = useRef(null)
 
-  const [isTemplateModalOpen, setIsTemplateModalOpen] = useState(false)
-  const [isInvoiceModalOpen, setIsInvoiceModalOpen] = useState(false)
-  const [isReceiptModalOpen, setIsReceiptModalOpen] = useState(false)
-  const [isAgentModalOpen, setIsAgentModalOpen] = useState(false)
-  const [isPortfolioModalOpen, setIsPortfolioModalOpen] = useState(false)
+  const [isTemplateModalOpen,          setIsTemplateModalOpen]          = useState(false)
+  const [isInvoiceModalOpen,           setIsInvoiceModalOpen]           = useState(false)
+  const [isReceiptModalOpen,           setIsReceiptModalOpen]           = useState(false)
+  const [isAgentModalOpen,             setIsAgentModalOpen]             = useState(false)
+  const [isPortfolioModalOpen,         setIsPortfolioModalOpen]         = useState(false)
   const [isPortfolioTemplateModalOpen, setIsPortfolioTemplateModalOpen] = useState(false)
-  const [isCurrencyModalOpen, setIsCurrencyModalOpen] = useState(false)
-  const [isAppearanceModalOpen, setIsAppearanceModalOpen] = useState(false)
-
-  const [isClearDataConfirmOpen, setIsClearDataConfirmOpen] = useState(false)
-  const [isResetSettingsConfirmOpen, setIsResetSettingsConfirmOpen] = useState(false)
+  const [isCurrencyModalOpen,          setIsCurrencyModalOpen]          = useState(false)
+  const [isAppearanceModalOpen,        setIsAppearanceModalOpen]        = useState(false)
+  const [isClearDataConfirmOpen,       setIsClearDataConfirmOpen]       = useState(false)
+  const [isResetSettingsConfirmOpen,   setIsResetSettingsConfirmOpen]   = useState(false)
 
   const isDarkMode = generalSettings.theme === 'dark'
 
@@ -55,6 +54,11 @@ export default function Settings({ onMenuClick }) {
     showToast('Template selected')
   }
 
+  function handleOpenInvoiceSettingsFromTemplate() {
+    setIsTemplateModalOpen(false)
+    setIsInvoiceModalOpen(true)
+  }
+
   function handlePortfolioTemplateSelect(templateId) {
     updateGeneralSetting('portfolioTemplate', templateId)
     setIsPortfolioTemplateModalOpen(false)
@@ -63,10 +67,10 @@ export default function Settings({ onMenuClick }) {
 
   function handleCurrencySave(settings) {
     updateManyGeneralSettings({
-      currency: settings.currency,
+      currency:               settings.currency,
       currencySymbolPosition: settings.symbolPosition,
-      currencyDecimals: settings.decimals,
-      currencyNumberFormat: settings.numberFormat,
+      currencyDecimals:       settings.decimals,
+      currencyNumberFormat:   settings.numberFormat,
     })
     setIsCurrencyModalOpen(false)
     showToast('Currency updated')
@@ -95,8 +99,8 @@ export default function Settings({ onMenuClick }) {
   }
 
   function getSelectedTemplates() {
-    const invoiceTemplate = generalSettings.invoiceTemplate
-    const receiptTemplate = generalSettings.receiptTemplate
+    const invoiceTemplate       = generalSettings.invoiceTemplate
+    const receiptTemplate       = generalSettings.receiptTemplate
     const invoiceTemplateNumber = invoiceTemplate.replace('invoiceTemplate', '')
     const receiptTemplateNumber = receiptTemplate.replace('receiptTemplate', '')
     if (invoiceTemplateNumber === receiptTemplateNumber) {
@@ -120,7 +124,7 @@ export default function Settings({ onMenuClick }) {
   }
 
   function getPortfolioTemplateSub() {
-    const map = { minimal: 'Minimal', editorial: 'Editorial', bold: 'Bold' }
+    const map     = { minimal: 'Minimal', editorial: 'Editorial', bold: 'Bold' }
     const current = generalSettings.portfolioTemplate
     return current ? (map[current] ?? 'Custom') : 'Choose a layout for your public page'
   }
@@ -141,7 +145,7 @@ export default function Settings({ onMenuClick }) {
   }
 
   function getAppearanceSub() {
-    const theme = isDarkMode ? 'Dark' : 'Light'
+    const theme    = isDarkMode ? 'Dark' : 'Light'
     const accentMap = {
       charcoal: 'Charcoal', indigo: 'Indigo', burgundy: 'Burgundy',
       camel: 'Camel', olive: 'Olive', slate: 'Slate', forest: 'Forest', gold: 'Gold',
@@ -152,15 +156,15 @@ export default function Settings({ onMenuClick }) {
 
   const currentCurrencySettings = {
     currency: generalSettings.currency ?? {
-      country: 'Nigeria',
-      countryCode: 'NG',
+      country:      'Nigeria',
+      countryCode:  'NG',
       currencyCode: 'NGN',
       currencyName: 'Nigerian Naira',
-      symbol: '₦',
+      symbol:       '₦',
     },
     symbolPosition: generalSettings.currencySymbolPosition ?? 'prefix',
-    decimals: generalSettings.currencyDecimals ?? 2,
-    numberFormat: generalSettings.currencyNumberFormat ?? 'anglophone',
+    decimals:       generalSettings.currencyDecimals       ?? 2,
+    numberFormat:   generalSettings.currencyNumberFormat   ?? 'anglophone',
   }
 
   return (
@@ -313,6 +317,7 @@ export default function Settings({ onMenuClick }) {
         colourId={profileSettings.brandColourId}
         onClose={() => setIsTemplateModalOpen(false)}
         onSelect={handleTemplateSelect}
+        onOpenInvoiceSettings={handleOpenInvoiceSettingsFromTemplate}
       />
 
       {isInvoiceModalOpen && (
