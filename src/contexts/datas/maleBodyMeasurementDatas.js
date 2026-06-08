@@ -8,7 +8,6 @@ import biceps from '../../assets/maleBodyMeasurementImages/biceps.jpg'
 import calf from '../../assets/maleBodyMeasurementImages/calf.jpg'
 import calfToAnkle from '../../assets/maleBodyMeasurementImages/calfToAnkle.jpg'
 import chest from '../../assets/maleBodyMeasurementImages/chest.jpg'
-import coatWaist from '../../assets/maleBodyMeasurementImages/coatWaist.jpg'
 import crossBack from '../../assets/maleBodyMeasurementImages/crossBack.jpg'
 import crotch from '../../assets/maleBodyMeasurementImages/crotch.jpg'
 import crotchToKnee from '../../assets/maleBodyMeasurementImages/crotchToKnee.jpg'
@@ -20,7 +19,6 @@ import jacketLength from '../../assets/maleBodyMeasurementImages/jacketLength.jp
 import kneeToCalf from '../../assets/maleBodyMeasurementImages/kneeToCalf.jpg'
 import neck from '../../assets/maleBodyMeasurementImages/neck.jpg'
 import pantsLength from '../../assets/maleBodyMeasurementImages/pantsLength.jpg'
-import seat from '../../assets/maleBodyMeasurementImages/seat.jpg'
 import shirtLength from '../../assets/maleBodyMeasurementImages/shirtLength.jpg'
 import shortsLength from '../../assets/maleBodyMeasurementImages/shortsLength.jpg'
 import shoulderWidth from '../../assets/maleBodyMeasurementImages/shoulderWidth.jpg'
@@ -38,7 +36,7 @@ export const MALE_BODY_MEASUREMENTS = [
   'Arm Hole', 'Biceps', 'Arm Length', 'Sleeve Length', 'Coat Sleeve', 'Wrist',
   'Shirt Length', 'Jacket Length',
   // Mid body
-  'Waist', 'Hip', 'Seat', 'Coat Waist',
+  'Waist', 'Hip',
   'Crotch', 'Fly', 'Inseam',
   // Lower body
   'Thighs', 'Crotch To Knee', 'Above Knee', 'Below Knee',
@@ -65,8 +63,6 @@ export const MALE_BODY_MEASUREMENT_IMAGES = {
   // Mid body
   'Waist': waist,
   'Hip': hip,
-  'Seat': seat,
-  'Coat Waist': coatWaist,
   'Crotch': crotch,
   'Fly': fly,
   'Inseam': inseam,
