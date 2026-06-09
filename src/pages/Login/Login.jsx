@@ -104,7 +104,7 @@ export default function Login() {
           disabled={isLoading}
         >
           <GoogleIcon />
-          {googleLoading ? 'Redirecting to Google…' : 'Continue with Google'}
+          {googleLoading ? 'Loading…' : 'Continue with Google'}
         </button>
 
         <div className={styles.orRow}>
