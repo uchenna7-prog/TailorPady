@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { useAuth } from '../../contexts/AuthContext'
 import { useGeneralSettings } from '../../contexts/GeneralSettingsContext'
 import { useOrders } from '../../contexts/OrdersContext'
@@ -34,11 +34,14 @@ const TABS = [
   { id: 'overdue',   label: 'Overdue'      },
 ]
 
+const TAB_IDS = TABS.map(t => t.id)
+
 
 function InvoiceRow({ invoice, currency, onTap, isLast, orderItems }) {
   const total = invoice.items?.length > 0
     ? invoice.items.reduce((sum, item) => sum + (parseFloat(item.price) || 0), 0)
     : (parseFloat(invoice.price) || 0)
+
   const overdue   = isOverdue(invoice)
   const statusKey = overdue && invoice.status !== 'paid' ? 'overdue' : (invoice.status || 'unpaid')
   const style     = INVOICE_STATUS_STYLES[statusKey] ?? INVOICE_STATUS_STYLES.unpaid
@@ -78,17 +81,28 @@ function InvoiceRow({ invoice, currency, onTap, isLast, orderItems }) {
 
 
 export default function Invoices({ onMenuClick }) {
-  const { user }               = useAuth()
-  const { generalSettings }    = useGeneralSettings()
-  const { allOrders }          = useOrders()
-  const { allInvoices }        = useInvoices()
-  const currency               = generalSettings.invoiceCurrency || '₦'
+  const { user }            = useAuth()
+  const { generalSettings } = useGeneralSettings()
+  const { allOrders }       = useOrders()
+  const { allInvoices }     = useInvoices()
+  const currency            = generalSettings.invoiceCurrency || '₦'
 
   const [activeTab,  setActiveTab]  = useState('all')
   const [viewing,    setViewing]    = useState(null)
   const [search,     setSearch]     = useState('')
   const [filterOpen, setFilterOpen] = useState(false)
-  const touchStart = useRef(null)
+
+  const touchStart  = useRef(null)
+  const tabsRef     = useRef(null)
+  const tabItemsRef = useRef({})
+
+  useEffect(() => {
+    const tabEl       = tabItemsRef.current[activeTab]
+    const containerEl = tabsRef.current
+    if (!tabEl || !containerEl) return
+
+    tabEl.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' })
+  }, [activeTab])
 
   const orderItemsMap = {}
   for (const order of allOrders) {
@@ -144,22 +158,21 @@ export default function Invoices({ onMenuClick }) {
 
   const handleListTouchEnd = (e) => {
     if (!touchStart.current) return
+
     const touch = e.changedTouches[0]
-    const dx = touch.clientX - touchStart.current.x
-    const dy = touch.clientY - touchStart.current.y
+    const dx    = touch.clientX - touchStart.current.x
+    const dy    = touch.clientY - touchStart.current.y
     touchStart.current = null
 
     const isHorizontalSwipe = Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy) * 1.5
-
     if (!isHorizontalSwipe) return
 
-    const tabIds   = TABS.map(t => t.id)
-    const curIndex = tabIds.indexOf(activeTab)
+    const curIndex = TAB_IDS.indexOf(activeTab)
 
-    if (dx < 0 && curIndex < tabIds.length - 1) {
-      setActiveTab(tabIds[curIndex + 1])
+    if (dx < 0 && curIndex < TAB_IDS.length - 1) {
+      setActiveTab(TAB_IDS[curIndex + 1])
     } else if (dx > 0 && curIndex > 0) {
-      setActiveTab(tabIds[curIndex - 1])
+      setActiveTab(TAB_IDS[curIndex - 1])
     }
   }
 
@@ -221,15 +234,17 @@ export default function Invoices({ onMenuClick }) {
         )}
       </div>
 
-      <div className={styles.tabs} onClick={() => filterOpen && setFilterOpen(false)}>
+      <div
+        ref={tabsRef}
+        className={styles.tabs}
+        onClick={() => filterOpen && setFilterOpen(false)}
+      >
         {TABS.map(tab => (
           <div
             key={tab.id}
+            ref={el => tabItemsRef.current[tab.id] = el}
             className={`${styles.tab} ${activeTab === tab.id ? styles.tabActive : ''}`}
-            onClick={(e) => {
-              setActiveTab(tab.id)
-              e.currentTarget.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' })
-            }}
+            onClick={() => setActiveTab(tab.id)}
           >
             {tab.label}
             {counts[tab.id] > 0 && (

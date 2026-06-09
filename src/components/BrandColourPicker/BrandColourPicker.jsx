@@ -1,23 +1,58 @@
-import { useRef, useState } from 'react'
+import { useRef, useState, useEffect } from 'react'
 import { STYLE_GROUPS, getPalettesByStyle, getPaletteById, DEFAULT_COLOUR_ID } from '../../config/brandPalette'
 import styles from './BrandColourPicker.module.css'
 
 export default function BrandColourPicker({ value, onChange }) {
 
-  const selected    = getPaletteById(value) || getPaletteById(DEFAULT_COLOUR_ID)
+  const selected   = getPaletteById(value) || getPaletteById(DEFAULT_COLOUR_ID)
   const [activeStyle, setActiveStyle] = useState(selected?.style || 'Classic')
-  const swatches    = getPalettesByStyle(activeStyle)
-  const tabRefs     = useRef({})
+  const swatches   = getPalettesByStyle(activeStyle)
 
-  const handleTabClick = style => {
-    setActiveStyle(style)
+  const tabsRef    = useRef(null)
+  const tabRefs    = useRef({})
+  const touchStart = useRef(null)
+
+  const scrollActiveTabIntoView = (style) => {
     tabRefs.current[style]?.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' })
+  }
+
+  useEffect(() => {
+    scrollActiveTabIntoView(activeStyle)
+  }, [activeStyle])
+
+  const handleTabClick = (style) => {
+    setActiveStyle(style)
+  }
+
+  const handleTouchStart = (e) => {
+    const touch = e.touches[0]
+    touchStart.current = { x: touch.clientX, y: touch.clientY }
+  }
+
+  const handleTouchEnd = (e) => {
+    if (!touchStart.current) return
+
+    const touch = e.changedTouches[0]
+    const dx    = touch.clientX - touchStart.current.x
+    const dy    = touch.clientY - touchStart.current.y
+    touchStart.current = null
+
+    const isHorizontalSwipe = Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy) * 1.5
+    if (!isHorizontalSwipe) return
+
+    const curIndex = STYLE_GROUPS.indexOf(activeStyle)
+
+    if (dx < 0 && curIndex < STYLE_GROUPS.length - 1) {
+      setActiveStyle(STYLE_GROUPS[curIndex + 1])
+    } else if (dx > 0 && curIndex > 0) {
+      setActiveStyle(STYLE_GROUPS[curIndex - 1])
+    }
   }
 
   return (
     <div className={styles.picker}>
 
-      <div className={styles.tabs}>
+      <div ref={tabsRef} className={styles.tabs}>
         {STYLE_GROUPS.map(style => (
           <button
             key={style}
@@ -31,7 +66,11 @@ export default function BrandColourPicker({ value, onChange }) {
         ))}
       </div>
 
-      <div className={styles.swatches}>
+      <div
+        className={styles.swatches}
+        onTouchStart={handleTouchStart}
+        onTouchEnd={handleTouchEnd}
+      >
         {swatches.map(colour => {
           const isSelected = value === colour.id
           return (
