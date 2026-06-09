@@ -1,15 +1,14 @@
-
-import { useState,useRef,useEffect } from "react"
-import styles from "./CountryCodePicker.module.css"
+import { useState, useRef, useEffect } from 'react'
+import styles from './CountryCodePicker.module.css'
 
 
 export function CountryCodePicker({ selected, onSelect }) {
 
-  const [open, setOpen] = useState(false)
-  const [search, setSearch] = useState('')
+  const [open,      setOpen]      = useState(false)
+  const [search,    setSearch]    = useState('')
   const [countries, setCountries] = useState([])
-  const [loading, setLoading] = useState(false)
-  const dropdownRef  = useRef(null)
+  const [loading,   setLoading]   = useState(false)
+  const dropdownRef = useRef(null)
 
   useEffect(() => {
     if (!open || countries.length > 0) return
@@ -19,8 +18,8 @@ export function CountryCodePicker({ selected, onSelect }) {
       .then(data => {
         const list = []
         data.forEach(c => {
-          const root   = c.idd?.root || ''
-          const suffix = c.idd?.suffixes
+          const root     = c.idd?.root || ''
+          const suffix   = c.idd?.suffixes
           if (!root) return
           const suffixes = Array.isArray(suffix) && suffix.length === 1 ? suffix : (suffix || [''])
           suffixes.forEach(s => {
@@ -77,7 +76,6 @@ export function CountryCodePicker({ selected, onSelect }) {
           <div className={styles.ccSearchWrap}>
             <span className="mi" style={{ fontSize: '1rem', color: 'var(--text3)' }}>search</span>
             <input
-              autoFocus
               type="text"
               placeholder="Search country or code…"
               value={search}

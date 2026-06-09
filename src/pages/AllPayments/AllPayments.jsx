@@ -8,8 +8,6 @@ import OrderMosaic      from '../../components/OrderMosaic/OrderMosaic'
 import styles from './AllPayments.module.css'
 import BottomNav from '../../components/BottomNav/BottomNav'
 
-// ── Helpers ───────────────────────────────────────────────────
-
 function fmt(amount) {
   if (amount === null || amount === undefined || amount === '') return '—'
   return `₦${Number(amount).toLocaleString('en-NG')}`
@@ -114,8 +112,6 @@ const TABS = [
   { id: 'part',          label: 'Part Payment'  },
 ]
 
-// ── PAYMENT ROW ───────────────────────────────────────────────
-
 function PaymentRow({ row, isLast, onTap, orderItems }) {
   const sm        = STATUS_META[row.paymentStatus] ?? STATUS_META.not_paid
   const mIcon     = METHOD_ICONS[row.method] ?? 'payments'
@@ -134,7 +130,6 @@ function PaymentRow({ row, isLast, onTap, orderItems }) {
       className={`${styles.row} ${isLast ? styles.rowLast : ''}`}
       onClick={() => onTap(row)}
     >
-      {/* ── Thumbnail: wrap OrderMosaic so we can tint the outer border/bg ── */}
       <div
         className={styles.mosaicWrap}
         style={{
@@ -150,7 +145,6 @@ function PaymentRow({ row, isLast, onTap, orderItems }) {
         />
       </div>
 
-      {/* ── Centre info column ── */}
       <div className={styles.info}>
         <div className={styles.titleRow}>
           <span className={styles.desc}>{row.orderDesc || 'Payment'}</span>
@@ -174,7 +168,6 @@ function PaymentRow({ row, isLast, onTap, orderItems }) {
         </span>
       </div>
 
-      {/* ── Right column: amount → progress bar → method ── */}
       <div className={styles.amountCol}>
         <div
           className={styles.amount}
@@ -202,8 +195,6 @@ function PaymentRow({ row, isLast, onTap, orderItems }) {
     </div>
   )
 }
-
-// ── ROW DETAIL SHEET ──────────────────────────────────────────
 
 function PaymentDetail({ row, onClose, onNavigateToCustomer, orderImageUrl }) {
   if (!row) return null
@@ -247,7 +238,6 @@ function PaymentDetail({ row, onClose, onNavigateToCustomer, orderImageUrl }) {
         </div>
 
         <div className={styles.sheetBody}>
-
           <div className={styles.amountHero}>
             {orderImageUrl && (
               <div className={styles.detailImgWrap}>
@@ -291,7 +281,6 @@ function PaymentDetail({ row, onClose, onNavigateToCustomer, orderImageUrl }) {
 
           {fullPrice > 0 && (
             <div className={styles.progressSection}>
-
               <div className={styles.progressLabelRow}>
                 <span className={styles.progressLabel}>Order Value</span>
                 <span className={styles.progressFigure} style={{ color: 'var(--text)', fontWeight: 700 }}>
@@ -375,14 +364,11 @@ function PaymentDetail({ row, onClose, onNavigateToCustomer, orderImageUrl }) {
             <span className="mi" style={{ fontSize: '1rem' }}>open_in_new</span>
             View {row.customerName}'s Profile
           </button>
-
         </div>
       </div>
     </div>
   )
 }
-
-// ── MAIN PAGE ─────────────────────────────────────────────────
 
 export default function AllPayments({ onMenuClick }) {
   const navigate         = useNavigate()
@@ -397,21 +383,55 @@ export default function AllPayments({ onMenuClick }) {
   const [filterStatus,  setFilterStatus]  = useState('all')
   const [swipeProgress, setSwipeProgress] = useState(0)
 
+  // Stores measured { left, width } for each tab by index
+  const [tabMeasurements, setTabMeasurements] = useState([])
+
   const touchStartX     = useRef(null)
   const touchStartY     = useRef(null)
   const swipeAxisLocked = useRef(null)
   const toastTimer      = useRef(null)
   const tabsRef         = useRef(null)
+  const tabItemRefs     = useRef([])
 
   const activeTabIdx = TABS.findIndex(t => t.id === activeTab)
 
+  // Measure each tab's position relative to the tabs container
+  // so the underline can be positioned precisely regardless of tab width.
+  const measureTabs = useCallback(() => {
+    if (!tabsRef.current) return
+    const containerRect = tabsRef.current.getBoundingClientRect()
+    const scrollLeft    = tabsRef.current.scrollLeft
+
+    const measurements = tabItemRefs.current.map(el => {
+      if (!el) return { left: 0, width: 0 }
+      const rect = el.getBoundingClientRect()
+      return {
+        left:  rect.left - containerRect.left + scrollLeft,
+        width: rect.width,
+      }
+    })
+
+    setTabMeasurements(measurements)
+  }, [])
+
+  // Re-measure on mount, tab change, and resize
+  useEffect(() => {
+    measureTabs()
+  }, [activeTab, measureTabs])
+
+  useEffect(() => {
+    window.addEventListener('resize', measureTabs)
+    return () => window.removeEventListener('resize', measureTabs)
+  }, [measureTabs])
+
+  // Scroll active tab into view when it changes
   useEffect(() => {
     if (!tabsRef.current) return
-    const activeEl = tabsRef.current.querySelector(`.${styles.tabActive}`)
+    const activeEl = tabItemRefs.current[activeTabIdx]
     if (activeEl) {
       activeEl.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' })
     }
-  }, [activeTab])
+  }, [activeTab, activeTabIdx])
 
   const showToast = useCallback((msg) => {
     setToastMsg(msg)
@@ -509,7 +529,30 @@ export default function AllPayments({ onMenuClick }) {
     setSwipeProgress(0)
   }, [swipeProgress, activeTabIdx])
 
-  const tabUnderlineOffset = ((activeTabIdx + (-swipeProgress)) / TABS.length) * 100
+  // Calculate underline position using measured pixel values.
+  // Interpolates between current and neighbouring tab during a swipe gesture.
+  const getUnderlineStyle = () => {
+    const current = tabMeasurements[activeTabIdx]
+    if (!current) return { left: 0, width: 0 }
+
+    if (swipeProgress === 0) {
+      return { left: current.left, width: current.width }
+    }
+
+    const neighbourIdx = swipeProgress < 0 ? activeTabIdx + 1 : activeTabIdx - 1
+    const neighbour    = tabMeasurements[neighbourIdx]
+    if (!neighbour) {
+      return { left: current.left, width: current.width }
+    }
+
+    const t    = Math.abs(swipeProgress)
+    const left  = current.left  + (neighbour.left  - current.left)  * t
+    const width = current.width + (neighbour.width - current.width) * t
+
+    return { left, width }
+  }
+
+  const underlineStyle = getUnderlineStyle()
 
   return (
     <div className={styles.page}>
@@ -582,6 +625,7 @@ export default function AllPayments({ onMenuClick }) {
           return (
             <div
               key={tab.id}
+              ref={el => { tabItemRefs.current[idx] = el }}
               className={`${styles.tab} ${isActive ? styles.tabActive : ''}`}
               style={{ whiteSpace: 'nowrap', color: textColor }}
               onClick={() => setActiveTab(tab.id)}
@@ -596,9 +640,14 @@ export default function AllPayments({ onMenuClick }) {
           )
         })}
 
+        {/* Underline positioned with measured pixel values, not percentages */}
         <div
           className={styles.tabUnderlineTrack}
-          style={{ '--tab-offset': `${tabUnderlineOffset}%`, '--tab-width': `${100 / TABS.length}%` }}
+          style={{
+            left:      underlineStyle.left,
+            width:     underlineStyle.width,
+            transform: 'none',
+          }}
         />
       </div>
 

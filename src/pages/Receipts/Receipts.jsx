@@ -1,4 +1,4 @@
-import { useState, useRef, useCallback } from 'react'
+import { useState, useRef, useCallback, useEffect } from 'react'
 import { useAuth } from '../../contexts/AuthContext'
 import { useGeneralSettings } from '../../contexts/GeneralSettingsContext'
 import { useOrders } from '../../contexts/OrdersContext'
@@ -92,11 +92,47 @@ export default function Receipts({ onMenuClick }) {
   const [search,        setSearch]        = useState('')
   const [filterOpen,    setFilterOpen]    = useState(false)
   const [swipeProgress, setSwipeProgress] = useState(0)
+  const [tabMeasurements, setTabMeasurements] = useState([])
 
-  const touchStartX   = useRef(null)
-  const touchStartY   = useRef(null)
+  const touchStartX     = useRef(null)
+  const touchStartY     = useRef(null)
   const swipeAxisLocked = useRef(null)
-  const activeTabIdx  = TABS.findIndex(t => t.id === activeTab)
+  const tabsRef         = useRef(null)
+  const tabItemRefs     = useRef([])
+  const activeTabIdx    = TABS.findIndex(t => t.id === activeTab)
+
+  const measureTabs = useCallback(() => {
+    if (!tabsRef.current) return
+    const containerRect = tabsRef.current.getBoundingClientRect()
+    const scrollLeft    = tabsRef.current.scrollLeft
+
+    const measurements = tabItemRefs.current.map(el => {
+      if (!el) return { left: 0, width: 0 }
+      const rect = el.getBoundingClientRect()
+      return {
+        left:  rect.left - containerRect.left + scrollLeft,
+        width: rect.width,
+      }
+    })
+
+    setTabMeasurements(measurements)
+  }, [])
+
+  useEffect(() => {
+    measureTabs()
+  }, [activeTab, measureTabs])
+
+  useEffect(() => {
+    window.addEventListener('resize', measureTabs)
+    return () => window.removeEventListener('resize', measureTabs)
+  }, [measureTabs])
+
+  useEffect(() => {
+    const activeEl = tabItemRefs.current[activeTabIdx]
+    if (activeEl) {
+      activeEl.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' })
+    }
+  }, [activeTab, activeTabIdx])
 
   const orderItemsMap = {}
   for (const order of allOrders) {
@@ -139,8 +175,8 @@ export default function Receipts({ onMenuClick }) {
   }, {})
 
   const handleTouchStart = useCallback((e) => {
-    touchStartX.current   = e.touches[0].clientX
-    touchStartY.current   = e.touches[0].clientY
+    touchStartX.current     = e.touches[0].clientX
+    touchStartY.current     = e.touches[0].clientY
     swipeAxisLocked.current = null
   }, [])
 
@@ -160,7 +196,7 @@ export default function Receipts({ onMenuClick }) {
 
     if (swipeAxisLocked.current !== 'horizontal') return
 
-    const screenW   = window.innerWidth || 375
+    const screenW     = window.innerWidth || 375
     const rawProgress = dx / screenW
 
     const atStart = activeTabIdx === 0
@@ -188,7 +224,26 @@ export default function Receipts({ onMenuClick }) {
     setSwipeProgress(0)
   }, [swipeProgress, activeTabIdx])
 
-  const tabUnderlineOffset = ((activeTabIdx + (-swipeProgress)) / TABS.length) * 100
+  const getUnderlineStyle = () => {
+    const current = tabMeasurements[activeTabIdx]
+    if (!current) return { left: 0, width: 0 }
+
+    if (swipeProgress === 0) {
+      return { left: current.left, width: current.width }
+    }
+
+    const neighbourIdx = swipeProgress < 0 ? activeTabIdx + 1 : activeTabIdx - 1
+    const neighbour    = tabMeasurements[neighbourIdx]
+    if (!neighbour) return { left: current.left, width: current.width }
+
+    const t     = Math.abs(swipeProgress)
+    const left  = current.left  + (neighbour.left  - current.left)  * t
+    const width = current.width + (neighbour.width - current.width) * t
+
+    return { left, width }
+  }
+
+  const underlineStyle = getUnderlineStyle()
 
   return (
     <div className={styles.page}>
@@ -243,7 +298,11 @@ export default function Receipts({ onMenuClick }) {
         )}
       </div>
 
-      <div className={styles.tabs} onClick={() => filterOpen && setFilterOpen(false)}>
+      <div
+        className={styles.tabs}
+        ref={tabsRef}
+        onClick={() => filterOpen && setFilterOpen(false)}
+      >
         {TABS.map((tab, idx) => {
           const distanceFromActive = idx - activeTabIdx
           const colorProgress      = Math.max(0, 1 - Math.abs(distanceFromActive + (-swipeProgress)))
@@ -258,12 +317,10 @@ export default function Receipts({ onMenuClick }) {
           return (
             <div
               key={tab.id}
+              ref={el => { tabItemRefs.current[idx] = el }}
               className={`${styles.tab} ${isActive ? styles.tabActive : ''}`}
               style={{ color: textColor }}
-              onClick={(e) => {
-                setActiveTab(tab.id)
-                e.currentTarget.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' })
-              }}
+              onClick={() => setActiveTab(tab.id)}
             >
               {tab.label}
               {counts[tab.id] > 0 && (
@@ -275,7 +332,10 @@ export default function Receipts({ onMenuClick }) {
 
         <div
           className={styles.tabUnderlineTrack}
-          style={{ '--tab-offset': `${tabUnderlineOffset}%`, '--tab-width': `${100 / TABS.length}%` }}
+          style={{
+            left:  underlineStyle.left,
+            width: underlineStyle.width,
+          }}
         />
       </div>
 
@@ -320,8 +380,8 @@ export default function Receipts({ onMenuClick }) {
         <ReceiptViewer
           receipt={viewing}
           customer={{
-            name:    viewing.customerName   || '—',
-            phone:   viewing.customerPhone  || '',
+            name:    viewing.customerName    || '—',
+            phone:   viewing.customerPhone   || '',
             address: viewing.customerAddress || '',
           }}
           onClose={() => setViewing(null)}

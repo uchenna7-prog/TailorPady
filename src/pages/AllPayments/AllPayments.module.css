@@ -5,7 +5,6 @@
   flex-direction: column;
 }
 
-/* ── SEARCH + FILTER ── */
 .searchContainer {
   padding: 14px 16px 10px;
   flex-shrink: 0;
@@ -31,7 +30,9 @@
   transition: border-color 0.2s;
 }
 
-.searchBox:focus-within { border-color: var(--border2); }
+.searchBox:focus-within {
+  border-color: var(--border2);
+}
 
 .searchBox input {
   background: transparent;
@@ -43,7 +44,9 @@
   outline: none;
 }
 
-.searchBox input::placeholder { color: var(--text3); }
+.searchBox input::placeholder {
+  color: var(--text3);
+}
 
 .filterBtn {
   width: 46px;
@@ -60,7 +63,9 @@
   transition: border-color 0.2s;
 }
 
-.filterBtn:active { background: var(--surface); }
+.filterBtn:active {
+  background: var(--surface);
+}
 
 .filterBtnActive {
   border-color: var(--accent);
@@ -98,7 +103,7 @@
   border-radius: 14px;
   padding: 8px;
   min-width: 220px;
-  box-shadow: 0 8px 24px rgba(0,0,0,0.18);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18);
   z-index: 200;
   animation: dropIn 0.18s ease;
 }
@@ -135,10 +140,18 @@
   transition: background 0.15s;
 }
 
-.filterOption:active { background: var(--surface2); }
-.filterOptionActive  { color: var(--text); background: var(--surface2); font-weight: 700; }
+.filterOption:active {
+  background: var(--surface2);
+}
+
+.filterOptionActive {
+  color: var(--text);
+  background: var(--surface2);
+  font-weight: 700;
+}
 
 /* ── TABS ── */
+
 .tabs {
   display: flex;
   border-bottom: 1px solid var(--border);
@@ -154,7 +167,9 @@
   -ms-overflow-style: none;
 }
 
-.tabs::-webkit-scrollbar { display: none; }
+.tabs::-webkit-scrollbar {
+  display: none;
+}
 
 .tab {
   flex: 1;
@@ -175,7 +190,10 @@
   white-space: nowrap;
 }
 
-.tabActive { color: var(--accent); font-weight: 800; }
+.tabActive {
+  color: var(--accent);
+  font-weight: 800;
+}
 
 .tabBadge {
   display: inline-flex;
@@ -192,24 +210,29 @@
 }
 
 .badgeRed {
-  background: rgba(239,68,68,0.12);
+  background: rgba(239, 68, 68, 0.12);
   color: #ef4444;
-  border-color: rgba(239,68,68,0.3);
+  border-color: rgba(239, 68, 68, 0.3);
 }
 
+/*
+  The underline is positioned with pixel values set directly via inline style
+  (left and width) so it aligns precisely with each tab regardless of how
+  wide the tab labels and badges are. The transition animates both properties
+  smoothly during swipe gestures and tap navigation.
+*/
 .tabUnderlineTrack {
   position: absolute;
   bottom: 0;
-  left: var(--tab-offset);
-  width: var(--tab-width);
   height: 2px;
   background: var(--accent);
   border-radius: 1px;
-  transition: left 0.05s linear;
   pointer-events: none;
+  transition: left 0.2s ease, width 0.2s ease;
 }
 
 /* ── LIST AREA ── */
+
 .listArea {
   flex: 1;
   overflow-y: auto;
@@ -218,7 +241,10 @@
 }
 
 /* ── DATE GROUP ── */
-.dateGroup { margin-bottom: 16px; }
+
+.dateGroup {
+  margin-bottom: 16px;
+}
 
 .dateLabel {
   font-size: 0.72rem;
@@ -235,6 +261,7 @@
 }
 
 /* ── ROW ── */
+
 .row {
   display: flex;
   align-items: center;
@@ -256,41 +283,44 @@
   background: var(--border);
 }
 
-.rowLast::after { display: none; }
-.row:active { background: var(--surface); }
-
-/* ── MOSAIC THUMBNAIL ──
-   mosaicWrap is a thin shell that applies the status tint (border + bg)
-   via CSS custom properties set as inline style in JSX.
-   mosaicOverride targets OrderMosaic's own .outer element via the
-   className prop, stripping its default border/bg so the wrapper owns
-   the visual treatment. The inner pill (.inner) keeps its own --surface2
-   background — we only want to remove the outer shell's styling. */
-
-.mosaicWrap {
-  width:         72px;
-  height:        72px;
-  border-radius: 12px;
-  border:        1px solid var(--mosaic-border, var(--border));
-  background:    var(--mosaic-bg, var(--surface));
-  display:       flex;
-  align-items:   center;
-  justify-content: center;
-  flex-shrink:   0;
-  overflow:      hidden;
+.rowLast::after {
+  display: none;
 }
 
-/* Applied to OrderMosaic's outermost div (.outer in OrderMosaic.module.css).
-   We zero out its own sizing/border/bg so mosaicWrap is the visual container. */
+.row:active {
+  background: var(--surface);
+}
+
+/*
+  mosaicWrap is a thin shell that applies the status tint via CSS custom
+  properties set as inline style in JSX. mosaicOverride targets OrderMosaic's
+  own .outer element via the className prop, stripping its default border/bg
+  so the wrapper owns the visual treatment.
+*/
+
+.mosaicWrap {
+  width: 72px;
+  height: 72px;
+  border-radius: 12px;
+  border: 1px solid var(--mosaic-border, var(--border));
+  background: var(--mosaic-bg, var(--surface));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  overflow: hidden;
+}
+
 .mosaicOverride {
-  width:         100% !important;
-  height:        100% !important;
+  width: 100% !important;
+  height: 100% !important;
   border-radius: 0 !important;
-  border:        none !important;
-  background:    transparent !important;
+  border: none !important;
+  background: transparent !important;
 }
 
 /* ── CENTRE INFO ── */
+
 .info {
   flex: 1;
   min-width: 0;
@@ -317,9 +347,9 @@
 .installBadge {
   font-size: 0.6rem;
   font-weight: 800;
-  background: rgba(251,146,60,0.14);
+  background: rgba(251, 146, 60, 0.14);
   color: #fb923c;
-  border: 1px solid rgba(251,146,60,0.3);
+  border: 1px solid rgba(251, 146, 60, 0.3);
   border-radius: 20px;
   padding: 1px 7px;
   flex-shrink: 0;
@@ -354,7 +384,8 @@
   margin-bottom: 2px;
 }
 
-/* ── RIGHT COLUMN: amount → progress → method ── */
+/* ── RIGHT COLUMN ── */
+
 .amountCol {
   display: flex;
   flex-direction: column;
@@ -399,6 +430,7 @@
 }
 
 /* ── EMPTY STATE ── */
+
 .emptyState {
   display: flex;
   flex-direction: column;
@@ -414,10 +446,11 @@
 }
 
 /* ── BOTTOM SHEET ── */
+
 .sheetOverlay {
   position: fixed;
   inset: 0;
-  background: rgba(0,0,0,0.7);
+  background: rgba(0, 0, 0, 0.7);
   z-index: 3000;
   display: flex;
   align-items: flex-end;
@@ -624,4 +657,6 @@
   transition: opacity 0.15s;
 }
 
-.viewCustomerBtn:active { opacity: 0.7; }
+.viewCustomerBtn:active {
+  opacity: 0.7;
+}
