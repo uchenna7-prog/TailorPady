@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 import styles from './InvoiceSettingsModal.module.css'
 import { FullModal } from '../../../../components/FullModal/FullModal'
 import { useGeneralSettings } from '../../../../contexts/GeneralSettingsContext'
@@ -15,6 +15,35 @@ const DUE_DAY_PRESETS = [3, 7, 14, 21, 30, 45, 60, 90]
 const MAX_TERMS       = 3
 const MAX_TERM_LENGTH = 60
 
+const DEFAULT_CURRENCY = {
+  country:      'Nigeria',
+  countryCode:  'NG',
+  currencyCode: 'NGN',
+  currencyName: 'Nigerian Naira',
+  symbol:       '₦',
+}
+
+function normaliseCurrency(raw) {
+  if (!raw) return DEFAULT_CURRENCY
+  if (typeof raw === 'string') return { ...DEFAULT_CURRENCY, symbol: raw }
+  return raw
+}
+
+function parseTerms(raw) {
+  if (Array.isArray(raw)) return raw.length > 0 ? raw : ['', '']
+  if (typeof raw === 'string' && raw.trim()) return raw.split('\n').filter(Boolean)
+  return ['', '']
+}
+
+function getFlagEmoji(countryCode) {
+  if (!countryCode || countryCode.length !== 2) return '🏳'
+  return countryCode
+    .toUpperCase()
+    .split('')
+    .map(c => String.fromCodePoint(0x1f1e6 - 65 + c.charCodeAt(0)))
+    .join('')
+}
+
 
 function DueDayPicker({ value, onChange }) {
   const isCustom = !DUE_DAY_PRESETS.includes(value)
@@ -29,8 +58,7 @@ function DueDayPicker({ value, onChange }) {
 
   function activateCustom() {
     setShowCustom(true)
-    const days = parseInt(customValue, 10) || value
-    onChange(days)
+    onChange(parseInt(customValue, 10) || value)
   }
 
   function handleCustomChange(e) {
@@ -93,17 +121,9 @@ export function InvoiceSettingsModal({ onBack, showToast }) {
   const { generalSettings, updateManyGeneralSettings } = useGeneralSettings()
   const { profileSettings, updateManyProfileSettings } = useProfileSettings()
 
-  const parseTerms = raw => {
-    if (Array.isArray(raw)) return raw.length > 0 ? raw : ['', '']
-    if (typeof raw === 'string' && raw.trim()) return raw.split('\n').filter(Boolean)
-    return ['', '']
-  }
-
   const [localGeneral, setLocalGeneral] = useState({
     invoicePrefix:   generalSettings.invoicePrefix,
-    invoiceCurrency: typeof generalSettings.invoiceCurrency === 'object'
-                       ? (generalSettings.invoiceCurrency?.symbol ?? '₦')
-                       : (generalSettings.invoiceCurrency ?? '₦'),
+    invoiceCurrency: normaliseCurrency(generalSettings.invoiceCurrency),
     invoiceDueDays:  generalSettings.invoiceDueDays ?? 7,
     invoiceShowTax:  generalSettings.invoiceShowTax,
     invoiceTaxRate:  generalSettings.invoiceTaxRate,
@@ -117,7 +137,8 @@ export function InvoiceSettingsModal({ onBack, showToast }) {
     brandPaymentTerms: parseTerms(profileSettings.brandPaymentTerms),
   })
 
-  const [isCurrencySheetOpen, setIsCurrencySheetOpen] = useState(false)
+  const [currencyPickerOpen, setCurrencyPickerOpen] = useState(false)
+  const currencyTriggerRef                          = useRef(null)
 
   const setGeneral = key => val => setLocalGeneral(p => ({ ...p, [key]: val }))
   const setProfile = key => val => setLocalProfile(p => ({ ...p, [key]: val }))
@@ -157,159 +178,175 @@ export function InvoiceSettingsModal({ onBack, showToast }) {
     onBack()
   }
 
+  const currency = localGeneral.invoiceCurrency
+
   return (
-    <FullModal title="Invoice Settings" onBack={onBack} onSave={save}>
-      <div>
+    <>
+      <FullModal title="Invoice Settings" onBack={onBack} onSave={save}>
+        <div>
 
-        <div className={styles.sectionLabel}>Invoice</div>
-        <FieldGroup>
-          <Field label="Invoice Number Prefix" hint="Shown before the number, e.g. INV-0042.">
-            <TextInput
-              value={localGeneral.invoicePrefix}
-              onChange={setGeneral('invoicePrefix')}
-              placeholder="INV"
-            />
-          </Field>
-          <Field label="Currency" hint="Default currency for new invoices.">
-            <button
-              className={styles.currencyBtn}
-              onClick={() => setIsCurrencySheetOpen(true)}
-            >
-              <span className={styles.currencyBtnText}>{localGeneral.invoiceCurrency}</span>
-              <span className="mi" style={{ fontSize: '1rem', color: 'var(--text-sub)' }}>expand_more</span>
-            </button>
-          </Field>
-          <Field label="Default Due Period" hint="Days after issue date the invoice is due.">
-            <DueDayPicker
-              value={localGeneral.invoiceDueDays}
-              onChange={setGeneral('invoiceDueDays')}
-            />
-          </Field>
-        </FieldGroup>
-
-        <div style={{ height: 20 }} />
-
-        <div className={styles.sectionLabel}>Tax</div>
-        <FieldGroup>
-          <div
-            className={styles.row}
-            style={{ borderBottom: localGeneral.invoiceShowTax ? '1px solid var(--border)' : 'none' }}
-          >
-            <div className={styles.rowIcon}>
-              <span className="mi" style={{ fontSize: '1.15rem' }}>percent</span>
-            </div>
-            <div className={styles.rowText}>
-              <div className={styles.rowLabel}>Show Tax Line</div>
-              <div className={styles.rowSub}>Add a VAT / tax row to invoice totals</div>
-            </div>
-            <div className={styles.rowRight}>
-              <Toggle value={localGeneral.invoiceShowTax} onChange={setGeneral('invoiceShowTax')} />
-            </div>
-          </div>
-          {localGeneral.invoiceShowTax && (
-            <Field label="Tax Rate (%)" hint="e.g. 7.5 for 7.5% VAT">
+          <div className={styles.sectionLabel}>Invoice</div>
+          <FieldGroup>
+            <Field label="Invoice Number Prefix" hint="Shown before the number, e.g. INV-0042.">
               <TextInput
-                type="number"
-                value={String(localGeneral.invoiceTaxRate)}
-                onChange={v => setGeneral('invoiceTaxRate')(parseFloat(v) || 0)}
-                placeholder="7.5"
+                value={localGeneral.invoicePrefix}
+                onChange={setGeneral('invoicePrefix')}
+                placeholder="INV"
               />
             </Field>
-          )}
-        </FieldGroup>
 
-        <div style={{ height: 20 }} />
-
-        <div className={styles.sectionLabel}>Payment Details</div>
-        <FieldGroup>
-          <Field label="Bank Name" hint="e.g. GTBank, Access, OPay">
-            <TextInput
-              value={localProfile.accountBank}
-              onChange={setProfile('accountBank')}
-              placeholder="e.g. GTBank"
-            />
-          </Field>
-          <Field label="Account Number">
-            <TextInput
-              value={localProfile.accountNumber}
-              onChange={setProfile('accountNumber')}
-              placeholder="e.g. 0123456789"
-              type="tel"
-            />
-          </Field>
-          <Field label="Account Name" hint="Name registered on the bank account">
-            <TextInput
-              value={localProfile.accountName}
-              onChange={setProfile('accountName')}
-              placeholder="e.g. Amara Okonkwo"
-            />
-          </Field>
-        </FieldGroup>
-
-        <div style={{ height: 20 }} />
-
-        <div className={styles.sectionLabel}>Payment Terms</div>
-        <FieldGroup>
-          <Field hint="Up to 3 short terms printed on invoices. Each appears as a bullet point.">
-            <div className={styles.termsList}>
-              {localProfile.brandPaymentTerms.map((term, i) => (
-                <div key={i} className={styles.termRow}>
-                  <span className={styles.termBullet}>•</span>
-                  <div className={styles.termInputWrap}>
-                    <input
-                      className={styles.termInput}
-                      type="text"
-                      value={term}
-                      maxLength={MAX_TERM_LENGTH}
-                      onChange={e => setTerm(i, e.target.value)}
-                      placeholder={termPlaceholder(i)}
-                    />
-                    <span className={`${styles.termCounter} ${term.length >= MAX_TERM_LENGTH ? styles.termCounterMax : ''}`}>
-                      {term.length}/{MAX_TERM_LENGTH}
-                    </span>
+            <Field label="Currency" hint="Default currency for new invoices.">
+              <button
+                ref={currencyTriggerRef}
+                className={styles.currencyBtn}
+                onClick={() => setCurrencyPickerOpen(v => !v)}
+              >
+                <div className={styles.currencyBtnLeft}>
+                  <span className={styles.currencyFlag}>{getFlagEmoji(currency.countryCode)}</span>
+                  <div className={styles.currencyText}>
+                    <span className={styles.currencyCountry}>{currency.country}</span>
+                    <span className={styles.currencyName}>{currency.currencyName}</span>
                   </div>
-                  {localProfile.brandPaymentTerms.length > 2 && (
-                    <button className={styles.termRemove} onClick={() => removeTerm(i)}>
-                      <span className="mi" style={{ fontSize: 16 }}>close</span>
-                    </button>
-                  )}
                 </div>
-              ))}
-            </div>
-            {localProfile.brandPaymentTerms.length < MAX_TERMS && (
-              <button className={styles.addTermBtn} onClick={addTerm}>
-                <span className="mi" style={{ fontSize: 16 }}>add</span>
-                Add another term
+                <div className={styles.currencyBtnRight}>
+                  <span className={styles.currencyCode}>{currency.currencyCode}</span>
+                  <span className="mi" style={{ fontSize: '1rem', color: 'var(--text3)' }}>expand_more</span>
+                </div>
               </button>
+            </Field>
+
+            <Field label="Default Due Period" hint="Days after issue date the invoice is due.">
+              <DueDayPicker
+                value={localGeneral.invoiceDueDays}
+                onChange={setGeneral('invoiceDueDays')}
+              />
+            </Field>
+          </FieldGroup>
+
+          <div style={{ height: 20 }} />
+
+          <div className={styles.sectionLabel}>Tax</div>
+          <FieldGroup>
+            <div
+              className={styles.row}
+              style={{ borderBottom: localGeneral.invoiceShowTax ? '1px solid var(--border)' : 'none' }}
+            >
+              <div className={styles.rowIcon}>
+                <span className="mi" style={{ fontSize: '1.15rem' }}>percent</span>
+              </div>
+              <div className={styles.rowText}>
+                <div className={styles.rowLabel}>Show Tax Line</div>
+                <div className={styles.rowSub}>Add a VAT / tax row to invoice totals</div>
+              </div>
+              <div className={styles.rowRight}>
+                <Toggle value={localGeneral.invoiceShowTax} onChange={setGeneral('invoiceShowTax')} />
+              </div>
+            </div>
+            {localGeneral.invoiceShowTax && (
+              <Field label="Tax Rate (%)" hint="e.g. 7.5 for 7.5% VAT">
+                <TextInput
+                  type="number"
+                  value={String(localGeneral.invoiceTaxRate)}
+                  onChange={v => setGeneral('invoiceTaxRate')(parseFloat(v) || 0)}
+                  placeholder="7.5"
+                />
+              </Field>
             )}
-          </Field>
-        </FieldGroup>
+          </FieldGroup>
 
-        <div style={{ height: 20 }} />
+          <div style={{ height: 20 }} />
 
-        <div className={styles.sectionLabel}>Footer</div>
-        <FieldGroup>
-          <Field label="Invoice Footer Text" hint="Printed at the bottom of every invoice.">
-            <Textarea
-              value={localGeneral.invoiceFooter}
-              onChange={setGeneral('invoiceFooter')}
-              placeholder="Thank you for your patronage 🙏"
-              rows={3}
-            />
-          </Field>
-        </FieldGroup>
+          <div className={styles.sectionLabel}>Payment Details</div>
+          <FieldGroup>
+            <Field label="Bank Name" hint="e.g. GTBank, Access, OPay">
+              <TextInput
+                value={localProfile.accountBank}
+                onChange={setProfile('accountBank')}
+                placeholder="e.g. GTBank"
+              />
+            </Field>
+            <Field label="Account Number">
+              <TextInput
+                value={localProfile.accountNumber}
+                onChange={setProfile('accountNumber')}
+                placeholder="e.g. 0123456789"
+                type="tel"
+              />
+            </Field>
+            <Field label="Account Name" hint="Name registered on the bank account">
+              <TextInput
+                value={localProfile.accountName}
+                onChange={setProfile('accountName')}
+                placeholder="e.g. Amara Okonkwo"
+              />
+            </Field>
+          </FieldGroup>
 
-        <div style={{ height: 8 }} />
+          <div style={{ height: 20 }} />
 
-      </div>
+          <div className={styles.sectionLabel}>Payment Terms</div>
+          <FieldGroup>
+            <Field hint="Up to 3 short terms printed on invoices. Each appears as a bullet point.">
+              <div className={styles.termsList}>
+                {localProfile.brandPaymentTerms.map((term, i) => (
+                  <div key={i} className={styles.termRow}>
+                    <span className={styles.termBullet}>•</span>
+                    <div className={styles.termInputWrap}>
+                      <input
+                        className={styles.termInput}
+                        type="text"
+                        value={term}
+                        maxLength={MAX_TERM_LENGTH}
+                        onChange={e => setTerm(i, e.target.value)}
+                        placeholder={termPlaceholder(i)}
+                      />
+                      <span className={`${styles.termCounter} ${term.length >= MAX_TERM_LENGTH ? styles.termCounterMax : ''}`}>
+                        {term.length}/{MAX_TERM_LENGTH}
+                      </span>
+                    </div>
+                    {localProfile.brandPaymentTerms.length > 2 && (
+                      <button className={styles.termRemove} onClick={() => removeTerm(i)}>
+                        <span className="mi" style={{ fontSize: 16 }}>close</span>
+                      </button>
+                    )}
+                  </div>
+                ))}
+              </div>
+              {localProfile.brandPaymentTerms.length < MAX_TERMS && (
+                <button className={styles.addTermBtn} onClick={addTerm}>
+                  <span className="mi" style={{ fontSize: 16 }}>add</span>
+                  Add another term
+                </button>
+              )}
+            </Field>
+          </FieldGroup>
+
+          <div style={{ height: 20 }} />
+
+          <div className={styles.sectionLabel}>Footer</div>
+          <FieldGroup>
+            <Field label="Invoice Footer Text" hint="Printed at the bottom of every invoice.">
+              <Textarea
+                value={localGeneral.invoiceFooter}
+                onChange={setGeneral('invoiceFooter')}
+                placeholder="Thank you for your patronage 🙏"
+                rows={3}
+              />
+            </Field>
+          </FieldGroup>
+
+          <div style={{ height: 8 }} />
+
+        </div>
+      </FullModal>
 
       <CurrencyPickerSheet
-        isOpen={isCurrencySheetOpen}
-        currentSymbol={localGeneral.invoiceCurrency}
+        anchorRef={currencyTriggerRef}
+        isOpen={currencyPickerOpen}
+        onClose={() => setCurrencyPickerOpen(false)}
+        selected={currency}
         onSelect={setGeneral('invoiceCurrency')}
-        onClose={() => setIsCurrencySheetOpen(false)}
       />
-
-    </FullModal>
+    </>
   )
 }

@@ -1,11 +1,13 @@
 import { getTotalPaid, getStatusMeta, getProgressPercent } from '../../utils'
 import { formatMoney } from '../../../../../../utils/moneyUtils'
+import { useGeneralSettings } from '../../../../../../contexts/GeneralSettingsContext'
 import OrderMosaic from '../../../../../../components/OrderMosaic/OrderMosaic'
 import styles from './PaymentRow.module.css'
 
 
 export function PaymentRow({ payment, index, datePayments, orderItemsMap, onTap }) {
 
+  const { generalSettings } = useGeneralSettings()
   const statusMeta   = getStatusMeta(payment.status)
   const isLast       = index === datePayments.length - 1
   const installments = payment.installments || []
@@ -35,10 +37,10 @@ export function PaymentRow({ payment, index, datePayments, orderItemsMap, onTap 
 
       <div className={styles.paymentRowRight}>
         <div className={styles.paymentRowAmount}>
-          {fullPrice > 0 ? formatMoney(totalPaid) : formatMoney(installments[0]?.amount)}
+          {fullPrice > 0 ? formatMoney(generalSettings.currency.symbol, totalPaid) : formatMoney(generalSettings.currency.symbol, installments[0]?.amount)}
         </div>
         {fullPrice > 0 && totalPaid < fullPrice && (
-          <div className={styles.paymentRowSubAmount}>of {formatMoney(fullPrice)}</div>
+          <div className={styles.paymentRowSubAmount}>of {formatMoney(generalSettings.currency.symbol, fullPrice)}</div>
         )}
         {fullPrice > 0 && (
           <div className={styles.miniProgressTrack}>

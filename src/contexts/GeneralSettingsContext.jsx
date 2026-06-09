@@ -1,7 +1,15 @@
 import { createContext, useContext, useState, useEffect } from 'react'
 
-const STORAGE_KEY = 'TailorPady_general_settings'
+const STORAGE_KEY         = 'TailorPady_general_settings'
 const THEME_TRANSITION_MS = 350
+
+const DEFAULT_CURRENCY = {
+  country:      'Nigeria',
+  countryCode:  'NG',
+  currencyCode: 'NGN',
+  currencyName: 'Nigerian Naira',
+  symbol:       '₦',
+}
 
 export const DEFAULTS = {
 
@@ -10,16 +18,16 @@ export const DEFAULTS = {
   accentColor:  null,
   dateFormat: 'DD/MM/YYYY',
 
-  currency: '₦',
+  currency:               DEFAULT_CURRENCY,
   currencySymbolPosition: 'prefix',
-  currencyDecimals: 2,
-  currencyNumberFormat: 'anglophone',
+  currencyDecimals:       2,
+  currencyNumberFormat:   'anglophone',
 
   measureUnit:   'in',
   measureFormat: 'decimal',
 
   invoicePrefix:   'INV',
-  invoiceCurrency: '₦',
+  invoiceCurrency: DEFAULT_CURRENCY,
   invoiceTemplate: 'invoiceTemplate1',
   invoiceDueDays:  7,
   invoiceShowTax:  false,
@@ -27,7 +35,7 @@ export const DEFAULTS = {
   invoiceFooter:   'Thank you for your patronage 🙏',
 
   receiptPrefix:   'RCP',
-  receiptCurrency: '₦',
+  receiptCurrency: DEFAULT_CURRENCY,
   receiptTemplate: 'receiptTemplate1',
   receiptShowTax:  false,
   receiptTaxRate:  0,
@@ -137,7 +145,7 @@ export function GeneralSettingsProvider({ children }) {
   }, [])
 
   useEffect(() => {
-    const currentTheme = document.documentElement.getAttribute('data-theme')
+    const currentTheme  = document.documentElement.getAttribute('data-theme')
     const resolvedTheme = resolveTheme(settings.theme)
 
     let cleanup
@@ -147,7 +155,7 @@ export function GeneralSettingsProvider({ children }) {
 
     if (settings.theme !== 'system') return cleanup
 
-    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)')
+    const mediaQuery              = window.matchMedia('(prefers-color-scheme: dark)')
     const handleSystemThemeChange = () => applyTheme('system', true)
     mediaQuery.addEventListener('change', handleSystemThemeChange)
 

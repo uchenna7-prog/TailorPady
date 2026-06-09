@@ -19,6 +19,26 @@ import { AppearanceModal } from './components/AppearanceModal/AppearanceModal'
 import styles from './Settings.module.css'
 
 
+function resolveCurrencySymbol(raw) {
+  if (!raw) return '₦'
+  if (typeof raw === 'string') return raw
+  return raw.symbol ?? raw.currencyCode ?? '₦'
+}
+
+function resolveCurrencyObject(raw) {
+  const fallback = {
+    country:      'Nigeria',
+    countryCode:  'NG',
+    currencyCode: 'NGN',
+    currencyName: 'Nigerian Naira',
+    symbol:       '₦',
+  }
+  if (!raw) return fallback
+  if (typeof raw === 'string') return { ...fallback, symbol: raw }
+  return raw
+}
+
+
 export default function Settings({ onMenuClick }) {
 
   const { generalSettings, updateGeneralSetting, updateManyGeneralSettings, resetGeneralSettings } = useGeneralSettings()
@@ -139,9 +159,21 @@ export default function Settings({ onMenuClick }) {
   }
 
   function getCurrencySub() {
-    const c = generalSettings.currency
-    if (!c) return 'Nigerian Naira · NGN · ₦'
+    const c = resolveCurrencyObject(generalSettings.currency)
     return `${c.currencyName} · ${c.currencyCode} · ${c.symbol}`
+  }
+
+  function getInvoiceSub() {
+    const symbol = resolveCurrencySymbol(generalSettings.invoiceCurrency)
+    const prefix = generalSettings.invoicePrefix  ?? 'INV'
+    const days   = generalSettings.invoiceDueDays ?? 7
+    return `${symbol} · ${prefix} · Due ${days}d`
+  }
+
+  function getReceiptSub() {
+    const symbol = resolveCurrencySymbol(generalSettings.receiptCurrency)
+    const prefix = generalSettings.receiptPrefix ?? 'RCP'
+    return `${symbol} · ${prefix}`
   }
 
   function getAppearanceSub() {
@@ -155,13 +187,7 @@ export default function Settings({ onMenuClick }) {
   }
 
   const currentCurrencySettings = {
-    currency: generalSettings.currency ?? {
-      country:      'Nigeria',
-      countryCode:  'NG',
-      currencyCode: 'NGN',
-      currencyName: 'Nigerian Naira',
-      symbol:       '₦',
-    },
+    currency:       resolveCurrencyObject(generalSettings.currency),
     symbolPosition: generalSettings.currencySymbolPosition ?? 'prefix',
     decimals:       generalSettings.currencyDecimals       ?? 2,
     numberFormat:   generalSettings.currencyNumberFormat   ?? 'anglophone',
@@ -199,7 +225,7 @@ export default function Settings({ onMenuClick }) {
         <SettingRow
           icon="tune"
           label="Invoice Settings"
-          sub={`${generalSettings.invoiceCurrency} · ${generalSettings.invoicePrefix} · Due ${generalSettings.invoiceDueDays}d`}
+          sub={getInvoiceSub()}
           onClick={() => setIsInvoiceModalOpen(true)}
           chevron
         />
@@ -207,7 +233,7 @@ export default function Settings({ onMenuClick }) {
         <SettingRow
           icon="request_quote"
           label="Receipt Settings"
-          sub="Prefix, footer text and receipt defaults"
+          sub={getReceiptSub()}
           onClick={() => setIsReceiptModalOpen(true)}
           chevron
         />

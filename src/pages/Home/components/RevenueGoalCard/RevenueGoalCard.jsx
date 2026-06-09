@@ -12,15 +12,22 @@ function formatAmount(amount, symbol, position, decimals, numberFormat) {
   return position === 'prefix' ? `${symbol}${formatted}` : `${formatted}${symbol}`
 }
 
+function resolveCurrencySymbol(raw) {
+  if (!raw) return '₦'
+  if (typeof raw === 'string') return raw
+  return raw.symbol ?? '₦'
+}
+
+
 export function RevenueGoalCard({ goal, derived, onEdit, onDelete }) {
   const { generalSettings } = useGeneralSettings()
   const [menuOpen, setMenuOpen] = useState(false)
   const menuRef = useRef(null)
 
-  const symbol       = generalSettings.currency               ?? '₦'
-  const position     = generalSettings.currencySymbolPosition  ?? 'prefix'
-  const decimals     = generalSettings.currencyDecimals        ?? 0
-  const numberFormat = generalSettings.currencyNumberFormat    ?? 'anglophone'
+  const symbol       = resolveCurrencySymbol(generalSettings.currency)
+  const position     = generalSettings.currencySymbolPosition ?? 'prefix'
+  const decimals     = generalSettings.currencyDecimals       ?? 0
+  const numberFormat = generalSettings.currencyNumberFormat   ?? 'anglophone'
 
   const fmt        = (n) => formatAmount(n, symbol, position, decimals, numberFormat)
   const periodName = goal.period === 'weekly' ? 'week' : goal.period === 'monthly' ? 'month' : 'year'

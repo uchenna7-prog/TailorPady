@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 import { FullModal } from '../../../../components/FullModal/FullModal'
 import { CurrencyPickerSheet } from '../CurrencyPickerSheet/CurrencyPickerSheet'
 import { SegmentControl } from '../../components/SegmentControl/SegmentControl'
@@ -6,18 +6,29 @@ import { Field } from '../Field/Field'
 import { FieldGroup } from '../FieldGroup/FieldGroup'
 import styles from './CurrencyModal.module.css'
 
+const DEFAULT_CURRENCY = {
+  country:      'Nigeria',
+  countryCode:  'NG',
+  currencyCode: 'NGN',
+  currencyName: 'Nigerian Naira',
+  symbol:       '₦',
+}
+
+function normaliseCurrency(raw) {
+  if (!raw) return DEFAULT_CURRENCY
+  if (typeof raw === 'string') return { ...DEFAULT_CURRENCY, symbol: raw }
+  return raw
+}
 
 function formatPreview(currency, symbolPosition, decimals, numberFormat) {
-
-  const symbol = currency?.symbol ?? '₦'
-  const amount = 1234.5
-
+  const symbol    = currency?.symbol ?? '₦'
+  const amount    = 1234.5
   const thousands = numberFormat === 'francophone' ? '\u00A0' : ','
-  const decimal   = numberFormat === 'francophone' ? ','       : '.'
+  const decimal   = numberFormat === 'francophone' ? ','      : '.'
 
   const [whole, fraction] = amount.toFixed(2).split('.')
-  const formattedWhole = whole.replace(/\B(?=(\d{3})+(?!\d))/g, thousands)
-  const formattedAmount = decimals === 0
+  const formattedWhole    = whole.replace(/\B(?=(\d{3})+(?!\d))/g, thousands)
+  const formattedAmount   = decimals === 0
     ? formattedWhole
     : `${formattedWhole}${decimal}${fraction}`
 
@@ -26,16 +37,26 @@ function formatPreview(currency, symbolPosition, decimals, numberFormat) {
     : `${formattedAmount} ${symbol}`
 }
 
+function getFlagEmoji(countryCode) {
+  if (!countryCode || countryCode.length !== 2) return '🏳'
+  return countryCode
+    .toUpperCase()
+    .split('')
+    .map(c => String.fromCodePoint(0x1f1e6 - 65 + c.charCodeAt(0)))
+    .join('')
+}
+
 
 export function CurrencyModal({ currentSettings, onBack, onSave }) {
 
-  const [currency, setCurrency]           = useState(currentSettings?.currency ?? null)
+  const [currency, setCurrency]             = useState(normaliseCurrency(currentSettings?.currency))
   const [symbolPosition, setSymbolPosition] = useState(currentSettings?.symbolPosition ?? 'prefix')
-  const [decimals, setDecimals]           = useState(currentSettings?.decimals ?? 2)
-  const [numberFormat, setNumberFormat]   = useState(currentSettings?.numberFormat ?? 'anglophone')
-  const [pickerOpen, setPickerOpen]       = useState(false)
+  const [decimals, setDecimals]             = useState(currentSettings?.decimals ?? 2)
+  const [numberFormat, setNumberFormat]     = useState(currentSettings?.numberFormat ?? 'anglophone')
+  const [pickerOpen, setPickerOpen]         = useState(false)
 
-  const preview = formatPreview(currency, symbolPosition, decimals, numberFormat)
+  const triggerRef = useRef(null)
+  const preview    = formatPreview(currency, symbolPosition, decimals, numberFormat)
 
   function handleSave() {
     onSave({ currency, symbolPosition, decimals, numberFormat })
@@ -43,7 +64,7 @@ export function CurrencyModal({ currentSettings, onBack, onSave }) {
 
   return (
     <>
-      <FullModal title="Apps's Currency" onBack={onBack} onSave={handleSave}>
+      <FullModal title="App's Currency" onBack={onBack} onSave={handleSave}>
         <div>
 
           <FieldGroup>
@@ -52,8 +73,9 @@ export function CurrencyModal({ currentSettings, onBack, onSave }) {
               hint="Used across your dashboard, totals, and reports. You can still bill clients in a different currency on individual invoices and receipts."
             >
               <button
+                ref={triggerRef}
                 className={styles.currencyBtn}
-                onClick={() => setPickerOpen(true)}
+                onClick={() => setPickerOpen(v => !v)}
               >
                 <div className={styles.currencyBtnLeft}>
                   {currency ? (
@@ -93,8 +115,8 @@ export function CurrencyModal({ currentSettings, onBack, onSave }) {
             <Field label="Decimal places" hint="How many decimal places to show on amounts.">
               <SegmentControl
                 options={[
-                  { label: 'None',      value: 0 },
-                  { label: '2 places',  value: 2 },
+                  { label: 'None',     value: 0 },
+                  { label: '2 places', value: 2 },
                 ]}
                 value={decimals}
                 onChange={setDecimals}
@@ -127,24 +149,12 @@ export function CurrencyModal({ currentSettings, onBack, onSave }) {
       </FullModal>
 
       <CurrencyPickerSheet
+        anchorRef={triggerRef}
         isOpen={pickerOpen}
-        currentCurrency={currency}
         onClose={() => setPickerOpen(false)}
-        onSelect={c => {
-          setCurrency(c)
-          setPickerOpen(false)
-        }}
+        selected={currency}
+        onSelect={setCurrency}
       />
     </>
   )
-}
-
-
-function getFlagEmoji(countryCode) {
-  if (!countryCode || countryCode.length !== 2) return '🏳'
-  return countryCode
-    .toUpperCase()
-    .split('')
-    .map(c => String.fromCodePoint(0x1f1e6 - 65 + c.charCodeAt(0)))
-    .join('')
 }

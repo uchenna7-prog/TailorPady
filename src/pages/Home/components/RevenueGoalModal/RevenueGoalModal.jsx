@@ -15,7 +15,7 @@ const PERIOD_HINTS = {
   yearly:  { icon: 'event_repeat',   text: 'Resets on January 1st each year' },
 }
 
-const SWIPE_CLOSE_THRESHOLD = 80
+const SWIPE_CLOSE_THRESHOLD  = 80
 const SWIPE_VELOCITY_THRESHOLD = 0.4
 
 function formatAmount(amount, symbol, position, decimals, numberFormat) {
@@ -35,9 +35,16 @@ function formatInputDisplay(raw, numberFormat) {
   return Number(digits).toLocaleString(locale)
 }
 
+function resolveCurrencySymbol(raw) {
+  if (!raw) return '₦'
+  if (typeof raw === 'string') return raw
+  return raw.symbol ?? '₦'
+}
+
 function haptic(pattern = 10) {
   navigator.vibrate?.(pattern)
 }
+
 
 export function RevenueGoalModal({
   onSave,
@@ -53,15 +60,15 @@ export function RevenueGoalModal({
   const inputRef            = useRef(null)
   const dragState           = useRef({ startY: 0, startTime: 0, dragging: false })
 
-  const symbol       = generalSettings.currency               ?? '₦'
-  const position     = generalSettings.currencySymbolPosition  ?? 'prefix'
-  const decimals     = generalSettings.currencyDecimals        ?? 0
-  const numberFormat = generalSettings.currencyNumberFormat    ?? 'anglophone'
+  const symbol       = resolveCurrencySymbol(generalSettings.currency)
+  const position     = generalSettings.currencySymbolPosition ?? 'prefix'
+  const decimals     = generalSettings.currencyDecimals       ?? 0
+  const numberFormat = generalSettings.currencyNumberFormat   ?? 'anglophone'
 
   const [period,        setPeriod]        = useState(existingGoal?.period ?? 'monthly')
   const [rawGoal,       setRawGoal]       = useState(existingGoal ? String(existingGoal.goal) : '')
   const [confirmDelete, setConfirmDelete] = useState(false)
-  const [sheetOffset,   setSheetOffset]  = useState(0)
+  const [sheetOffset,   setSheetOffset]   = useState(0)
   const [debouncedGoal, setDebouncedGoal] = useState(rawGoal)
 
   const isEditing = !!existingGoal
@@ -108,9 +115,9 @@ export function RevenueGoalModal({
   const handleTouchStart = useCallback((e) => {
     const touch = e.touches[0]
     dragState.current = {
-      startY:   touch.clientY,
+      startY:    touch.clientY,
       startTime: Date.now(),
-      dragging: true,
+      dragging:  true,
     }
   }, [])
 
@@ -147,18 +154,18 @@ export function RevenueGoalModal({
   }
 
   const handleSave = () => {
-  if (isDisabled) return
-  haptic([6, 30, 6])
-  onClose()
-  onSave({ period, goal: numericGoal })
-}
+    if (isDisabled) return
+    haptic([6, 30, 6])
+    onClose()
+    onSave({ period, goal: numericGoal })
+  }
 
   const handleDeleteConfirm = () => {
-  haptic([10, 40, 10])
-  setConfirmDelete(false)
-  onClose()
-  onDelete?.()
-}
+    haptic([10, 40, 10])
+    setConfirmDelete(false)
+    onClose()
+    onDelete?.()
+  }
 
   const fmt = (n) => formatAmount(n, symbol, position, decimals, numberFormat)
 
