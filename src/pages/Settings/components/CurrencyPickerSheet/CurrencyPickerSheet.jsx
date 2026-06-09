@@ -130,7 +130,6 @@ function CurrencyList({ selected, onSelect, onClose }) {
       <div className={styles.searchWrap}>
         <span className="mi" style={{ fontSize: '1rem', color: 'var(--text3)' }}>search</span>
         <input
-          autoFocus
           type="text"
           placeholder="Search country or currency…"
           value={search}
