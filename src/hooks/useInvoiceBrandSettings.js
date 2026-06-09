@@ -41,7 +41,7 @@ export function useInvoiceBrandSettings() {
         accountName: profileSettings.accountName || PLACEHOLDERS.accountName,
 
         prefix: generalSettings.invoicePrefix || 'INV',
-        currency: generalSettings.invoiceCurrency || '₦',
+        currency: generalSettings.invoiceCurrency.symbol || '₦',
         template: generalSettings.invoiceTemplate || 'invoiceTemplate1',
         dueDays: generalSettings.invoiceDueDays || 7,
         showTax: generalSettings.invoiceShowTax || false,

@@ -1,5 +1,7 @@
 import { useRef, useEffect, useState, useCallback } from 'react'
 import styles from './SignatureSection.module.css'
+import { useSignatureUsage } from '../hooks/useSignatureUsage'
+import { uploadToCloudinary } from '../../../../services/cloudinaryService'
 
 const FONTS = [
   { id: 'dancing',  label: 'Dancing Script', family: "'Dancing Script', cursive" },
@@ -8,8 +10,23 @@ const FONTS = [
   { id: 'pinyon',   label: 'Pinyon Script',  family: "'Pinyon Script', cursive"  },
 ]
 
+const VERCEL_API_URL = import.meta.env.VITE_VERCEL_API_URL
 
-// ── Draw Tab ─────────────────────────────────────────────────────────────────
+
+async function removeBackground(imageFile) {
+  const formData = new FormData()
+  formData.append('image', imageFile)
+
+  const response = await fetch(`${VERCEL_API_URL}/api/remove-bg`, {
+    method: 'POST',
+    body: formData,
+  })
+
+  if (!response.ok) throw new Error('Background removal failed')
+  const data = await response.json()
+  return data.image
+}
+
 
 function DrawTab({ value, onChange }) {
   const canvasRef = useRef(null)
@@ -19,8 +36,8 @@ function DrawTab({ value, onChange }) {
 
   useEffect(() => {
     if (!value || !canvasRef.current) return
-    const img = new Image()
-    img.onload = () => {
+    const img    = new Image()
+    img.onload   = () => {
       const ctx = canvasRef.current.getContext('2d')
       ctx.clearRect(0, 0, canvasRef.current.width, canvasRef.current.height)
       ctx.drawImage(img, 0, 0)
@@ -71,8 +88,7 @@ function DrawTab({ value, onChange }) {
     e.preventDefault()
     drawing.current = true
     points.current  = [getPos(e)]
-    const ctx = canvasRef.current.getContext('2d')
-    ctx.beginPath()
+    canvasRef.current.getContext('2d').beginPath()
   }, [getPos])
 
   const draw = useCallback((e) => {
@@ -125,95 +141,119 @@ function DrawTab({ value, onChange }) {
 }
 
 
-// ── Upload Tab ────────────────────────────────────────────────────────────────
-
-function UploadTab({ onChange }) {
+function PhotoTab({ onChange, userId }) {
   const [preview,    setPreview]    = useState(null)
   const [processing, setProcessing] = useState(false)
+  const [error,      setError]      = useState(null)
   const fileRef = useRef(null)
 
-  function removeBackground(imageEl) {
-    const canvas  = document.createElement('canvas')
-    canvas.width  = imageEl.naturalWidth  || imageEl.width
-    canvas.height = imageEl.naturalHeight || imageEl.height
-    const ctx     = canvas.getContext('2d')
-    ctx.drawImage(imageEl, 0, 0)
+  const {
+    cachedUrl,
+    attemptsLeft,
+    canAttempt,
+    loading,
+    incrementAttempts,
+    saveSignatureUrl,
+    clearSignatureCache,
+  } = useSignatureUsage(userId)
 
-    const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height)
-    const data      = imageData.data
-
-    const corners = [
-      { r: data[0],                                              g: data[1],                                              b: data[2]                                              },
-      { r: data[(canvas.width - 1) * 4],                        g: data[(canvas.width - 1) * 4 + 1],                     b: data[(canvas.width - 1) * 4 + 2]                     },
-      { r: data[(canvas.width * (canvas.height - 1)) * 4],      g: data[(canvas.width * (canvas.height - 1)) * 4 + 1],   b: data[(canvas.width * (canvas.height - 1)) * 4 + 2]   },
-      { r: data[(canvas.width * canvas.height - 1) * 4],        g: data[(canvas.width * canvas.height - 1) * 4 + 1],     b: data[(canvas.width * canvas.height - 1) * 4 + 2]     },
-    ]
-    const bgR = Math.round(corners.reduce((s, c) => s + c.r, 0) / 4)
-    const bgG = Math.round(corners.reduce((s, c) => s + c.g, 0) / 4)
-    const bgB = Math.round(corners.reduce((s, c) => s + c.b, 0) / 4)
-
-    const threshold = 40
-    for (let i = 0; i < data.length; i += 4) {
-      const dr = Math.abs(data[i]     - bgR)
-      const dg = Math.abs(data[i + 1] - bgG)
-      const db = Math.abs(data[i + 2] - bgB)
-      if (dr < threshold && dg < threshold && db < threshold) {
-        data[i + 3] = 0
-      }
+  useEffect(() => {
+    if (cachedUrl) {
+      setPreview(cachedUrl)
+      onChange(cachedUrl)
     }
+  }, [cachedUrl])
 
-    ctx.putImageData(imageData, 0, 0)
-    return canvas.toDataURL('image/png')
-  }
-
-  function handleFile(e) {
+  async function handleFile(e) {
     const file = e.target.files?.[0]
     if (!file) return
+    e.target.value = ''
+
+    if (!canAttempt) {
+      setError('No attempts left this month.')
+      return
+    }
+
+    setError(null)
     setProcessing(true)
 
-    const reader = new FileReader()
-    reader.onload = (ev) => {
-      const img  = new Image()
-      img.onload = () => {
-        const result = removeBackground(img)
-        setPreview(result)
-        setProcessing(false)
-      }
-      img.src = ev.target.result
+    try {
+      const cleanedDataUrl = await removeBackground(file)
+      const cleanedBlob    = await fetch(cleanedDataUrl).then(r => r.blob())
+      const cleanedFile    = new File([cleanedBlob], 'signature.png', { type: 'image/png' })
+      const cloudinaryUrl  = await uploadToCloudinary(cleanedFile, 'signatures')
+      await incrementAttempts()
+      await saveSignatureUrl(cloudinaryUrl)
+      setPreview(cloudinaryUrl)
+      onChange(cloudinaryUrl)
+    } catch (err) {
+      setError('Something went wrong. Please try again.')
+    } finally {
+      setProcessing(false)
     }
-    reader.readAsDataURL(file)
-    e.target.value = ''
   }
 
-  function handleAccept() {
-    onChange(preview)
-  }
-
-  function handleRetake() {
+  async function handleRetake() {
+    await clearSignatureCache()
     setPreview(null)
+    setError(null)
     onChange(null)
+  }
+
+  if (loading) {
+    return (
+      <div className={styles.tabPane}>
+        <div className={styles.uploadZone}>
+          <div className={styles.processingSpinner} />
+        </div>
+      </div>
+    )
   }
 
   return (
     <div className={styles.tabPane}>
       {!preview && !processing && (
-        <div
-          className={styles.uploadZone}
-          onClick={() => fileRef.current?.click()}
-        >
-          <input
-            ref={fileRef}
-            type="file"
-            accept="image/*"
-            capture="environment"
-            className={styles.hiddenInput}
-            onChange={handleFile}
-          />
-          <span className="mi" style={{ fontSize: '2rem', color: 'var(--text3)' }}>photo_camera</span>
-          <p className={styles.uploadTitle}>Snap or upload your signature</p>
-          <p className={styles.uploadSub}>Sign on white paper, take a photo — background is removed automatically</p>
-          <span className={styles.uploadBtn}>Choose Photo</span>
-        </div>
+        <>
+          <div
+            className={`${styles.uploadZone} ${!canAttempt ? styles.uploadZone_disabled : ''}`}
+            onClick={() => canAttempt && fileRef.current?.click()}
+          >
+            <input
+              ref={fileRef}
+              type="file"
+              accept="image/*"
+              capture="environment"
+              className={styles.hiddenInput}
+              onChange={handleFile}
+            />
+            <span className="mi" style={{ fontSize: '2rem', color: 'var(--text3)' }}>photo_camera</span>
+            <p className={styles.uploadTitle}>
+              {canAttempt ? 'Snap or upload your signature' : 'No attempts left this month'}
+            </p>
+            <p className={styles.uploadSub}>
+              {canAttempt
+                ? 'Sign on white paper, take a photo — background is removed automatically'
+                : 'Your 5 monthly attempts have been used. Resets next month.'}
+            </p>
+            {canAttempt && <span className={styles.uploadBtn}>Choose Photo</span>}
+          </div>
+
+          <div className={styles.attemptsBar}>
+            <span className={styles.attemptsText}>
+              {attemptsLeft} of 5 attempts remaining this month
+            </span>
+            <div className={styles.attemptsDots}>
+              {Array.from({ length: 5 }).map((_, i) => (
+                <span
+                  key={i}
+                  className={`${styles.dot} ${i < attemptsLeft ? styles.dot_active : styles.dot_used}`}
+                />
+              ))}
+            </div>
+          </div>
+
+          {error && <p className={styles.errorText}>{error}</p>}
+        </>
       )}
 
       {processing && (
@@ -232,9 +272,9 @@ function UploadTab({ onChange }) {
             <button type="button" className={styles.clearBtn} onClick={handleRetake}>
               <span className="mi" style={{ fontSize: '0.9rem' }}>refresh</span>Retake
             </button>
-            <button type="button" className={styles.acceptBtn} onClick={handleAccept}>
-              <span className="mi" style={{ fontSize: '0.9rem' }}>check</span>Use this
-            </button>
+            <div className={styles.attemptsInline}>
+              <span className={styles.attemptsText}>{attemptsLeft} of 5 left this month</span>
+            </div>
           </div>
         </div>
       )}
@@ -242,8 +282,6 @@ function UploadTab({ onChange }) {
   )
 }
 
-
-// ── Type Tab ──────────────────────────────────────────────────────────────────
 
 function TypeTab({ onChange }) {
   const [name,       setName]       = useState('')
@@ -253,8 +291,7 @@ function TypeTab({ onChange }) {
   const renderToCanvas = useCallback((text, fontFamily) => {
     const canvas = canvasRef.current
     if (!canvas || !text.trim()) return
-    const ctx    = canvas.getContext('2d')
-
+    const ctx        = canvas.getContext('2d')
     ctx.clearRect(0, 0, canvas.width, canvas.height)
     ctx.font         = `64px ${fontFamily}`
     ctx.fillStyle    = getComputedStyle(document.documentElement)
@@ -282,7 +319,6 @@ function TypeTab({ onChange }) {
         onChange={e => setName(e.target.value)}
         maxLength={40}
       />
-
       <div className={styles.fontGrid}>
         {FONTS.map(font => (
           <button
@@ -296,9 +332,7 @@ function TypeTab({ onChange }) {
           </button>
         ))}
       </div>
-
       <canvas ref={canvasRef} width={600} height={200} className={styles.hiddenCanvas} />
-
       {!name.trim() && (
         <p className={styles.sigHint} style={{ textAlign: 'center', marginTop: 8 }}>
           Type your name above to preview
@@ -309,16 +343,14 @@ function TypeTab({ onChange }) {
 }
 
 
-// ── SignatureSection ──────────────────────────────────────────────────────────
-
 const TABS = [
-  { id: 'draw',   label: 'Draw',  icon: 'draw'         },
-  { id: 'upload', label: 'Photo', icon: 'photo_camera' },
-  { id: 'type',   label: 'Type',  icon: 'title'        },
+  { id: 'photo', label: 'Photo', icon: 'photo_camera' },
+  { id: 'draw',  label: 'Draw',  icon: 'draw'         },
+  { id: 'type',  label: 'Type',  icon: 'title'        },
 ]
 
-export function SignatureSection({ value, onChange }) {
-  const [activeTab, setActiveTab] = useState('draw')
+export function SignatureSection({ value, onChange, userId }) {
+  const [activeTab, setActiveTab] = useState('photo')
 
   function handleTabChange(tabId) {
     setActiveTab(tabId)
@@ -341,9 +373,9 @@ export function SignatureSection({ value, onChange }) {
         ))}
       </div>
 
-      {activeTab === 'draw'   && <DrawTab   value={value} onChange={onChange} />}
-      {activeTab === 'upload' && <UploadTab              onChange={onChange} />}
-      {activeTab === 'type'   && <TypeTab                onChange={onChange} />}
+      {activeTab === 'photo' && <PhotoTab onChange={onChange} userId={userId} />}
+      {activeTab === 'draw'  && <DrawTab  value={value} onChange={onChange} />}
+      {activeTab === 'type'  && <TypeTab  onChange={onChange} />}
     </div>
   )
 }

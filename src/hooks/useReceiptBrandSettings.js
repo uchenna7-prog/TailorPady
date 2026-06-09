@@ -38,7 +38,7 @@ export function useReceiptBrandSettings() {
         accountName: profileSettings.accountName || PLACEHOLDERS.accountName,
 
         prefix: generalSettings.receiptPrefix || 'RCP',
-        currency: generalSettings.receiptCurrency || '₦',
+        currency: generalSettings.receiptCurrency.symbol || '₦',
         template: generalSettings.receiptTemplate || 'receiptTemplate1',
         showTax: generalSettings.receiptShowTax || false,
         taxRate: generalSettings.receiptTaxRate || 0,
