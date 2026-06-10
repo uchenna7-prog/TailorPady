@@ -1,6 +1,6 @@
 import { useRef, useEffect, useState, useCallback } from 'react'
 import styles from './SignatureSection.module.css'
-import { useSignatureUsage } from '../hooks/useSignatureUsage'
+import { useSignatureUsage } from '../../../../hooks/useSignatureUsage'
 import { uploadToCloudinary } from '../../../../services/cloudinaryService'
 
 const FONTS = [

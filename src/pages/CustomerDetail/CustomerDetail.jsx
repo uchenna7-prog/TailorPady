@@ -1,41 +1,42 @@
+
 import { useState, useRef, useCallback, useEffect } from 'react'
-import { useParams, useNavigate } from 'react-router-dom'
-import { useCustomers } from '../../contexts/CustomerContext'
-import { useOrders } from '../../contexts/OrdersContext'
-import { usePremium } from '../../contexts/PremiumContext'
-import { useCustomerData } from '../../hooks/useCustomerData'
-import { useInvoiceActions } from './hooks/useInvoiceActions'
-import { useReceiptActions } from './hooks/useReceiptActions'
-import { formatMoney } from '../../utils/moneyUtils'
-import { getInitials } from '../../utils/nameUtils'
-import { getBirthday, formatLastOrderDate } from './utils'
-import { PhotoOverlay } from './components/PhotoOverlay/PhotoOverlay'
-import { DeleteConfirmModal } from './components/DeleteConfirmModal/DeleteConfirmModal'
-import { EditCustomerModal } from './components/EditCustomerModal/EditCustomerModal'
-import { WhatsAppIcon } from './components/WhatsAppIcon/WhatsAppIcon'
-import { TABS, TAB_IDS, TAB_MODAL_EVENTS } from './datas'
-import Header from '../../components/Header/Header'
-import Toast from '../../components/Toast/Toast'
-import MeasurementsTab from './tabs/MeasurementsTab/MeasurementsTab'
-import OrdersTab from './tabs/OrdersTab/OrdersTab'
-import InvoicesTab from './tabs/InvoicesTab/InvoicesTab'
-import PaymentsTab from './tabs/PaymentsTab/PaymentsTab'
-import ReceiptsTab from './tabs/ReceiptsTab/ReceiptsTab'
-import styles from './CustomerDetail.module.css'
+import { useParams, useNavigate }                   from 'react-router-dom'
+import { useCustomers }                             from '../../contexts/CustomerContext'
+import { useOrders }                                from '../../contexts/OrdersContext'
+import { usePremium }                               from '../../contexts/PremiumContext'
+import { useCustomerData }                          from '../../hooks/useCustomerData'
+import { useInvoiceActions }                        from './hooks/useInvoiceActions'
+import { useReceiptActions }                        from './hooks/useReceiptActions'
+import { formatMoney }                              from '../../utils/moneyUtils'
+import { getInitials }                              from '../../utils/nameUtils'
+import { getBirthday, formatLastOrderDate }         from './utils'
+import { PhotoOverlay }                             from './components/PhotoOverlay/PhotoOverlay'
+import { DeleteConfirmModal }                       from './components/DeleteConfirmModal/DeleteConfirmModal'
+import { EditCustomerModal }                        from './components/EditCustomerModal/EditCustomerModal'
+import { WhatsAppIcon }                             from './components/WhatsAppIcon/WhatsAppIcon'
+import { TABS, TAB_IDS, TAB_MODAL_EVENTS }          from './datas'
+import Header                                       from '../../components/Header/Header'
+import Toast                                        from '../../components/Toast/Toast'
+import MeasurementsTab                              from './tabs/MeasurementsTab/MeasurementsTab'
+import OrdersTab                                    from './tabs/OrdersTab/OrdersTab'
+import InvoicesTab                                  from './tabs/InvoicesTab/InvoicesTab'
+import PaymentsTab                                  from './tabs/PaymentsTab/PaymentsTab'
+import ReceiptsTab                                  from './tabs/ReceiptsTab/ReceiptsTab'
+import styles                                       from './CustomerDetail.module.css'
 
 
 export default function CustomerDetail({ onMenuClick }) {
 
-  const { id } = useParams()
-  const navigate = useNavigate()
+  const { id }       = useParams()
+  const navigate     = useNavigate()
 
   const { getCustomer, updateCustomer, deleteCustomerAndAllData } = useCustomers()
-  const { allOrders } = useOrders()
-  const { isPremium } = usePremium()
-  const isDeletingRef = useRef(false)
+  const { allOrders }  = useOrders()
+  const { isPremium }  = usePremium()
+  const isDeletingRef  = useRef(false)
 
   const customerData = useCustomerData(id)
-  const orders = allOrders.filter(o => o.customerId === id)
+  const orders       = allOrders.filter(o => o.customerId === id)
 
   const [activeTab,       setActiveTab]       = useState('measurements')
   const [isScrolled,      setIsScrolled]      = useState(false)
@@ -60,10 +61,10 @@ export default function CustomerDetail({ onMenuClick }) {
   }, [])
 
   const { handleGenerateInvoice, handleInvoicePaid, handleDeleteInvoice } = useInvoiceActions({
-  customerData,
-  orders,
-  showToast,
-  setActiveTab,
+    customerData,
+    orders,
+    showToast,
+    setActiveTab,
   })
 
   const { handleGenerateReceipt, handleDeleteReceipt } = useReceiptActions({
@@ -97,7 +98,9 @@ export default function CustomerDetail({ onMenuClick }) {
       if (amountPaid <= 0) continue
 
       const unpaidInvoice = customerData.invoices.find(
-        invoice => String(invoice.orderId) === String(payment.orderId) && invoice.status === 'unpaid'
+        invoice =>
+          String(invoice.orderId) === String(payment.orderId) &&
+          invoice.status === 'unpaid'
       )
       if (!unpaidInvoice) continue
 
@@ -177,52 +180,53 @@ export default function CustomerDetail({ onMenuClick }) {
   }, [id, updateCustomer, showToast])
 
   const handleDeleteConfirm = useCallback(async () => {
-  try {
-    isDeletingRef.current = true
-    setDeleteModalOpen(false)
-    navigate('/customers', { replace: true })  
-    await deleteCustomerAndAllData(id) 
-  } catch {
-    isDeletingRef.current = false
-    showToast('Failed to delete customer. Try again.')
-  }
- }, [id, deleteCustomerAndAllData, navigate, showToast])
+    try {
+      isDeletingRef.current = true
+      setDeleteModalOpen(false)
+      navigate('/customers', { replace: true })
+      await deleteCustomerAndAllData(id)
+    } catch {
+      isDeletingRef.current = false
+      showToast('Failed to delete customer. Try again.')
+    }
+  }, [id, deleteCustomerAndAllData, navigate, showToast])
 
   const customer = getCustomer(id)
   if (!customer && !isDeletingRef.current) return null
 
-
-  const initials      = getInitials(customer.name)
-  const birthday      = getBirthday(customer.birthday)
-  const hasPhoto      = isPremium && customer.photo
-  const isOnWhatsApp  = customer.onWhatsApp === true
-  const hasEmail      = Boolean(customer.email?.trim())
+  const initials     = getInitials(customer.name)
+  const birthday     = getBirthday(customer.birthday)
+  const hasPhoto     = isPremium && customer.photo
+  const isOnWhatsApp = customer.onWhatsApp === true
+  const hasEmail     = Boolean(customer.email?.trim())
 
   const lastOrder = orders.length > 0
-  ? orders.reduce((latest, order) => {
-      const toMs = (o) => {
-        if (o.createdAt?.toDate)   return o.createdAt.toDate().getTime()
-        if (o.createdAt?.seconds)  return o.createdAt.seconds * 1000
-        if (o.createdAt)           return new Date(o.createdAt).getTime()
-        if (o.takenAt)             return new Date(o.takenAt).getTime()
-        return 0
-      }
-      return toMs(order) > toMs(latest) ? order : latest
-    }, orders[0])
-  : null
+    ? orders.reduce((latest, order) => {
+        const toMs = (o) => {
+          if (o.createdAt?.toDate)  return o.createdAt.toDate().getTime()
+          if (o.createdAt?.seconds) return o.createdAt.seconds * 1000
+          if (o.createdAt)          return new Date(o.createdAt).getTime()
+          if (o.takenAt)            return new Date(o.takenAt).getTime()
+          return 0
+        }
+        return toMs(order) > toMs(latest) ? order : latest
+      }, orders[0])
+    : null
 
   const lastOrderLabel = lastOrder
-  ? (() => {
-      const rawDate =
-        lastOrder.createdAt?.toDate?.()?.toISOString?.() ||
-        (lastOrder.createdAt?.seconds ? new Date(lastOrder.createdAt.seconds * 1000).toISOString() : null) ||
-        lastOrder.createdAt ||
-        lastOrder.takenAt  ||
-        null
-      const dateStr = rawDate ? formatLastOrderDate(rawDate) : 'Recently'
-      return `${lastOrder.desc || 'Order'} · ${dateStr}`
-    })()
-  : null
+    ? (() => {
+        const rawDate =
+          lastOrder.createdAt?.toDate?.()?.toISOString?.() ||
+          (lastOrder.createdAt?.seconds
+            ? new Date(lastOrder.createdAt.seconds * 1000).toISOString()
+            : null) ||
+          lastOrder.createdAt ||
+          lastOrder.takenAt   ||
+          null
+        const dateStr = rawDate ? formatLastOrderDate(rawDate) : 'Recently'
+        return `${lastOrder.desc || 'Order'} · ${dateStr}`
+      })()
+    : null
 
   const totalBilled = orders.reduce(
     (sum, order) => sum + (parseFloat(order.totalAmount || order.price) || 0), 0
@@ -233,15 +237,17 @@ export default function CustomerDetail({ onMenuClick }) {
       (s, installment) => s + (parseFloat(installment.amount) || 0), 0
     ), 0
   )
+
   const balanceDue = Math.max(0, totalBilled - totalPaid)
 
   const tabItemCounts = {
     measurements: customerData.measurements?.length ?? 0,
     orders:       orders.length,
-    invoices:     customerData.invoices?.length ?? 0,
-    payments:     customerData.payments?.length ?? 0,
-    receipts:     customerData.receipts?.length ?? 0,
+    invoices:     customerData.invoices?.length  ?? 0,
+    payments:     customerData.payments?.length  ?? 0,
+    receipts:     customerData.receipts?.length  ?? 0,
   }
+
   const activeTabIsEmpty = tabItemCounts[activeTab] === 0
 
   const scrolledAvatar = {
@@ -457,6 +463,7 @@ export default function CustomerDetail({ onMenuClick }) {
           <MeasurementsTab
             measurements={customerData.measurements}
             loading={customerData.measurementsLoading}
+            gender={customer.sex}
             onSave={customerData.saveMeasurement}
             onUpdate={customerData.updateMeasurement}
             onDelete={customerData.deleteMeasurement}
@@ -543,3 +550,4 @@ export default function CustomerDetail({ onMenuClick }) {
     </div>
   )
 }
+

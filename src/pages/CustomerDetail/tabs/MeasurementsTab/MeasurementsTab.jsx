@@ -1,19 +1,20 @@
-import { useState, useEffect } from 'react'
-import { EmptyState } from './components/EmptyState/EmptyState'
-import { MeasurementRow } from './components/MeasurementRow/MeasurementRow'
-import { MeasurementDetailsModal } from './components/MeasurementDetailsModal/MeasurementDetailsModal'
-import { MeasurementRowSkeleton } from './components/MeasurementRowSkeleton/MeasurementRowSkeleton'
-import { AddMeasurementModal } from './components/AddMeasurementModal/AddMeasurementModal'
-import { groupMeasurementsByDate } from './utils'
-import ConfirmSheet from '../../../../components/ConfirmSheet/ConfirmSheet'
-import styles from './MeasurementsTab.module.css'
+
+import { useState, useEffect }           from 'react'
+import { EmptyState }                    from './components/EmptyState/EmptyState'
+import { MeasurementRow }                from './components/MeasurementRow/MeasurementRow'
+import { MeasurementDetailsModal }       from './components/MeasurementDetailsModal/MeasurementDetailsModal'
+import { MeasurementRowSkeleton }        from './components/MeasurementRowSkeleton/MeasurementRowSkeleton'
+import { AddMeasurementModal }           from './components/AddMeasurementModal/AddMeasurementModal'
+import { groupMeasurementsByDate }       from './utils'
+import ConfirmSheet                      from '../../../../components/ConfirmSheet/ConfirmSheet'
+import styles                            from './MeasurementsTab.module.css'
 
 
-export default function MeasurementsTab({ measurements, loading, onSave, onUpdate, onDelete, showToast }) {
+export default function MeasurementsTab({ measurements, loading, gender, onSave, onUpdate, onDelete, showToast }) {
 
-  const [isAddModalOpen,       setIsAddModalOpen]       = useState(false)
-  const [selectedMeasurement,  setSelectedMeasurement]  = useState(null)
-  const [measurementToDelete,  setMeasurementToDelete]  = useState(null)
+  const [isAddModalOpen,      setIsAddModalOpen]      = useState(false)
+  const [selectedMeasurement, setSelectedMeasurement] = useState(null)
+  const [measurementToDelete, setMeasurementToDelete] = useState(null)
 
 
   useEffect(() => {
@@ -92,6 +93,7 @@ export default function MeasurementsTab({ measurements, loading, onSave, onUpdat
 
       <AddMeasurementModal
         isOpen={isAddModalOpen}
+        gender={gender}
         onClose={() => setIsAddModalOpen(false)}
         onSave={handleSave}
       />
@@ -115,3 +117,4 @@ export default function MeasurementsTab({ measurements, loading, onSave, onUpdat
     </div>
   )
 }
+
