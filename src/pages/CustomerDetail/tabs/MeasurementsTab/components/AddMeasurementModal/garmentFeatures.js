@@ -1,18 +1,17 @@
-// ─── Male lower-wear imports (existing) ──────────────────────────────────────
-import jettedOneBackPocket             from '../../../../../../assets/maleGarmentFeatures/lowerWearFeatures/backPocketType/jettedOnePocket.jpg'
-import jettedTwoBackPocket             from '../../../../../../assets/maleGarmentFeatures/lowerWearFeatures/backPocketType/jettedTwoPockets.jpg'
-import jettedOneBackPocketWithFlap     from '../../../../../../assets/maleGarmentFeatures/lowerWearFeatures/backPocketType/jettedWithFlapOnePocket.jpg'
-import jettedTwoBackPocketWithFlap     from '../../../../../../assets/maleGarmentFeatures/lowerWearFeatures/backPocketType/jettedWithFlapTwoPockets.jpg'
-import jettedOneBackPocketWithTab      from '../../../../../../assets/maleGarmentFeatures/lowerWearFeatures/backPocketType/jettedWithTabOnePocket.jpg'
-import jettedTwoBackPocketWithTab      from '../../../../../../assets/maleGarmentFeatures/lowerWearFeatures/backPocketType/jettedWithTabTwoPockets.jpg'
-import jettedOneBackPocketWithZip      from '../../../../../../assets/maleGarmentFeatures/lowerWearFeatures/backPocketType/jettedWithZipOnePocket.jpg'
-import jettedTwoBackPocketWithZip      from '../../../../../../assets/maleGarmentFeatures/lowerWearFeatures/backPocketType/jettedWithZipTwoPockets.jpg'
-import weltOneBackPocket               from '../../../../../../assets/maleGarmentFeatures/lowerWearFeatures/backPocketType/weltOnePocket.jpg'
-import weltTwoBackPocket               from '../../../../../../assets/maleGarmentFeatures/lowerWearFeatures/backPocketType/weltTwoPockets.jpg'
-import weltOneBackPocketWithButton     from '../../../../../../assets/maleGarmentFeatures/lowerWearFeatures/backPocketType/weltWithButtonOnePocket.jpg'
-import weltTwoBackPocketWithButton     from '../../../../../../assets/maleGarmentFeatures/lowerWearFeatures/backPocketType/weltWithButtonTwoPockets.jpg'
-import weltOneBackPocketWithTopStitch  from '../../../../../../assets/maleGarmentFeatures/lowerWearFeatures/backPocketType/weltWithTopStitchOnePocket.jpg'
-import weltTwoBackPocketWithTopStitch  from '../../../../../../assets/maleGarmentFeatures/lowerWearFeatures/backPocketType/weltWithTopStitchTwoPockets.jpg'
+import jettedOneBackPocket            from '../../../../../../assets/maleGarmentFeatures/lowerWearFeatures/backPocketType/jettedOnePocket.jpg'
+import jettedTwoBackPocket            from '../../../../../../assets/maleGarmentFeatures/lowerWearFeatures/backPocketType/jettedTwoPockets.jpg'
+import jettedOneBackPocketWithFlap    from '../../../../../../assets/maleGarmentFeatures/lowerWearFeatures/backPocketType/jettedWithFlapOnePocket.jpg'
+import jettedTwoBackPocketWithFlap    from '../../../../../../assets/maleGarmentFeatures/lowerWearFeatures/backPocketType/jettedWithFlapTwoPockets.jpg'
+import jettedOneBackPocketWithTab     from '../../../../../../assets/maleGarmentFeatures/lowerWearFeatures/backPocketType/jettedWithTabOnePocket.jpg'
+import jettedTwoBackPocketWithTab     from '../../../../../../assets/maleGarmentFeatures/lowerWearFeatures/backPocketType/jettedWithTabTwoPockets.jpg'
+import jettedOneBackPocketWithZip     from '../../../../../../assets/maleGarmentFeatures/lowerWearFeatures/backPocketType/jettedWithZipOnePocket.jpg'
+import jettedTwoBackPocketWithZip     from '../../../../../../assets/maleGarmentFeatures/lowerWearFeatures/backPocketType/jettedWithZipTwoPockets.jpg'
+import weltOneBackPocket              from '../../../../../../assets/maleGarmentFeatures/lowerWearFeatures/backPocketType/weltOnePocket.jpg'
+import weltTwoBackPocket              from '../../../../../../assets/maleGarmentFeatures/lowerWearFeatures/backPocketType/weltTwoPockets.jpg'
+import weltOneBackPocketWithButton    from '../../../../../../assets/maleGarmentFeatures/lowerWearFeatures/backPocketType/weltWithButtonOnePocket.jpg'
+import weltTwoBackPocketWithButton    from '../../../../../../assets/maleGarmentFeatures/lowerWearFeatures/backPocketType/weltWithButtonTwoPockets.jpg'
+import weltOneBackPocketWithTopStitch from '../../../../../../assets/maleGarmentFeatures/lowerWearFeatures/backPocketType/weltWithTopStitchOnePocket.jpg'
+import weltTwoBackPocketWithTopStitch from '../../../../../../assets/maleGarmentFeatures/lowerWearFeatures/backPocketType/weltWithTopStitchTwoPockets.jpg'
 
 import dRingBeltLoop                  from '../../../../../../assets/maleGarmentFeatures/lowerWearFeatures/beltLoopStyle/dRingBeltLoop.jpg'
 import noBeltLoop                     from '../../../../../../assets/maleGarmentFeatures/lowerWearFeatures/beltLoopStyle/noBeltLoop.jpg'
@@ -56,12 +55,23 @@ import roundTwoFrontPockets           from '../../../../../../assets/maleGarment
 import squareOneFrontPocket           from '../../../../../../assets/maleGarmentFeatures/upperWearFeatures/frontPocketType/squareOneFrontPocket.jpg'
 import squareTwoFrontPockets          from '../../../../../../assets/maleGarmentFeatures/upperWearFeatures/frontPocketType/squareTwoFrontPockets.jpg'
 
-// ─── Male lining imports (NEW) ────────────────────────────────────────────────
 import maleFullLining                 from '../../../../../../assets/maleGarmentFeatures/lowerWearFeatures/liningType/fullLining.jpg'
 import maleHalfLining                 from '../../../../../../assets/maleGarmentFeatures/lowerWearFeatures/liningType/halfLining.jpg'
 import maleNoLining                   from '../../../../../../assets/maleGarmentFeatures/lowerWearFeatures/liningType/noLining.jpg'
 
-// ─── Female lower-wear imports (NEW) ─────────────────────────────────────────
+import buttonDownCollar               from '../../../../../../assets/maleGarmentFeatures/upperWearFeatures/collarType/buttonDownCollar.jpg'
+import classicCollar                  from '../../../../../../assets/maleGarmentFeatures/upperWearFeatures/collarType/classicCollar.jpg'
+import mandarinCollar                 from '../../../../../../assets/maleGarmentFeatures/upperWearFeatures/collarType/mandarinCollar.jpg'
+
+import angledShirtCuff                from '../../../../../../assets/maleGarmentFeatures/upperWearFeatures/shirtCuffType/angledShirtCuff.jpg'
+import frenchAngledShirtCuff          from '../../../../../../assets/maleGarmentFeatures/upperWearFeatures/shirtCuffType/frenchAngledShirtCuff.jpg'
+import frenchRoundedShirtCuff         from '../../../../../../assets/maleGarmentFeatures/upperWearFeatures/shirtCuffType/frenchRoundedShirtCuff.jpg'
+import frenchShirtCuff                from '../../../../../../assets/maleGarmentFeatures/upperWearFeatures/shirtCuffType/frenchShirtCuff.jpg'
+import frenchSquareShirtCuff          from '../../../../../../assets/maleGarmentFeatures/upperWearFeatures/shirtCuffType/frenchSquareShirtCuff.jpg'
+import milaneseShirtCuff              from '../../../../../../assets/maleGarmentFeatures/upperWearFeatures/shirtCuffType/milaneseShirtCuff.jpg'
+import roundedShirtCuff               from '../../../../../../assets/maleGarmentFeatures/upperWearFeatures/shirtCuffType/roundedShirtCuff.jpg'
+import squareShirtCurve               from '../../../../../../assets/maleGarmentFeatures/upperWearFeatures/shirtCuffType/squareShirtCurve.jpg'
+
 import femAsymmetricBottom            from '../../../../../../assets/femaleGarmentFeatures/lowerWearFeatures/bottomType/asymmetricBottom.jpg'
 import femRuffledBottom               from '../../../../../../assets/femaleGarmentFeatures/lowerWearFeatures/bottomType/ruffledBottom.jpg'
 import femSlitBottom                  from '../../../../../../assets/femaleGarmentFeatures/lowerWearFeatures/bottomType/slitBottom.jpg'
@@ -89,8 +99,16 @@ import femHighWaist                   from '../../../../../../assets/femaleGarme
 import femLowWaist                    from '../../../../../../assets/femaleGarmentFeatures/lowerWearFeatures/waistType/lowWaist.jpg'
 import femMidWaist                    from '../../../../../../assets/femaleGarmentFeatures/lowerWearFeatures/waistType/midWaist.jpg'
 
+import femUNeck                       from '../../../../../../assets/femaleGarmentFeatures/upperWearFeatures/frontNeckType/U-Neck.jpg'
+import femVNeck                       from '../../../../../../assets/femaleGarmentFeatures/upperWearFeatures/frontNeckType/V-Neck.jpg'
+import femBasketNeck                  from '../../../../../../assets/femaleGarmentFeatures/upperWearFeatures/frontNeckType/basketNeck.jpg'
+import femBoatNeck                    from '../../../../../../assets/femaleGarmentFeatures/upperWearFeatures/frontNeckType/boatNeck.jpg'
+import femCollarNeck                  from '../../../../../../assets/femaleGarmentFeatures/upperWearFeatures/frontNeckType/collarNeck.jpg'
+import femDeepUNeck                   from '../../../../../../assets/femaleGarmentFeatures/upperWearFeatures/frontNeckType/deepUNeck.jpg'
+import femHalterNeck                  from '../../../../../../assets/femaleGarmentFeatures/upperWearFeatures/frontNeckType/halterNeck.jpg'
+import femRoundNeck                   from '../../../../../../assets/femaleGarmentFeatures/upperWearFeatures/frontNeckType/roundNeck.jpg'
+import femWideSquareNeck              from '../../../../../../assets/femaleGarmentFeatures/upperWearFeatures/frontNeckType/wideSquareNeck.jpg'
 
-// ─── Image maps ───────────────────────────────────────────────────────────────
 
 const POCKET_IMGS = {
   jettedOneBackPocket,
@@ -146,41 +164,66 @@ const LOWER_WEAR_IMGS = {
   singlePleatWaistBand,
 }
 
-// NEW: male lining image map
 const MALE_LINING_IMGS = {
-  fullLining:  maleFullLining,
-  halfLining:  maleHalfLining,
-  noLining:    maleNoLining,
+  fullLining: maleFullLining,
+  halfLining: maleHalfLining,
+  noLining:   maleNoLining,
 }
 
-// NEW: female lower wear image map
+const MALE_COLLAR_IMGS = {
+  buttonDown: buttonDownCollar,
+  classic:    classicCollar,
+  mandarin:   mandarinCollar,
+}
+
+const MALE_CUFF_IMGS = {
+  angled:        angledShirtCuff,
+  frenchAngled:  frenchAngledShirtCuff,
+  frenchRounded: frenchRoundedShirtCuff,
+  french:        frenchShirtCuff,
+  frenchSquare:  frenchSquareShirtCuff,
+  milanese:      milaneseShirtCuff,
+  rounded:       roundedShirtCuff,
+  squareCurve:   squareShirtCurve,
+}
+
 const FEMALE_LOWER_WEAR_IMGS = {
-  asymmetricBottom:  femAsymmetricBottom,
-  ruffledBottom:     femRuffledBottom,
-  slitBottom:        femSlitBottom,
-  straightBottom:    femStraightBottom,
-  fullLining:        femFullLining,
-  halfLining:        femHalfLining,
-  noLining:          femNoLining,
-  kneeLengthSkirt:   femKneeLengthSkirt,
-  maxiSkirt:         femMaxiSkirt,
-  midiSkirt:         femMidiSkirt,
-  miniSkirt:         femMiniSkirt,
-  aLineShape:        femALineShape,
-  flaredShape:       femFlaredShape,
-  layeredShape:      femLayeredShape,
-  pencilShape:       femPencilShape,
-  pleatedShape:      femPleatedShape,
-  wrapShape:         femWrapShape,
-  drawStringWaist:   femDrawStringWaist,
-  elasticatedWaist:  femElasticatedWaist,
-  highWaist:         femHighWaist,
-  lowWaist:          femLowWaist,
-  midWaist:          femMidWaist,
+  asymmetricBottom: femAsymmetricBottom,
+  ruffledBottom:    femRuffledBottom,
+  slitBottom:       femSlitBottom,
+  straightBottom:   femStraightBottom,
+  fullLining:       femFullLining,
+  halfLining:       femHalfLining,
+  noLining:         femNoLining,
+  kneeLengthSkirt:  femKneeLengthSkirt,
+  maxiSkirt:        femMaxiSkirt,
+  midiSkirt:        femMidiSkirt,
+  miniSkirt:        femMiniSkirt,
+  aLineShape:       femALineShape,
+  flaredShape:      femFlaredShape,
+  layeredShape:     femLayeredShape,
+  pencilShape:      femPencilShape,
+  pleatedShape:     femPleatedShape,
+  wrapShape:        femWrapShape,
+  drawStringWaist:  femDrawStringWaist,
+  elasticatedWaist: femElasticatedWaist,
+  highWaist:        femHighWaist,
+  lowWaist:         femLowWaist,
+  midWaist:         femMidWaist,
 }
 
+const FEMALE_NECK_IMGS = {
+  uNeck:      femUNeck,
+  vNeck:      femVNeck,
+  basket:     femBasketNeck,
+  boat:       femBoatNeck,
+  collar:     femCollarNeck,
+  deepU:      femDeepUNeck,
+  halter:     femHalterNeck,
+  round:      femRoundNeck,
+  wideSquare: femWideSquareNeck,
+}
 
-// ─── Exports ──────────────────────────────────────────────────────────────────
 
 export const GARMENT_CATEGORIES = [
   { id: 'upper_body', label: 'Upper Body' },
@@ -199,24 +242,13 @@ export const FULL_WEAR_TYPES = [
   { id: 'bubu',     label: 'Bubu'     },
 ]
 
+export const FEMALE_LOWER_BODY_TYPES = [
+  { id: 'skirt',    label: 'Skirt'    },
+  { id: 'trousers', label: 'Trousers' },
+]
 
-// ─── Shared slots ─────────────────────────────────────────────────────────────
 
 const SHARED_SLOTS = {
-  neckline: {
-    id:      'neckline',
-    label:   'Neckline',
-    options: [
-      { id: 'round',        label: 'Round Neck',   img: null },
-      { id: 'v_neck',       label: 'V-Neck',       img: null },
-      { id: 'square',       label: 'Square Neck',  img: null },
-      { id: 'sweetheart',   label: 'Sweetheart',   img: null },
-      { id: 'boat',         label: 'Boat Neck',    img: null },
-      { id: 'halter',       label: 'Halter',       img: null },
-      { id: 'off_shoulder', label: 'Off-Shoulder', img: null },
-      { id: 'turtleneck',   label: 'Turtleneck',   img: null },
-    ],
-  },
   sleeve: {
     id:      'sleeve',
     label:   'Sleeve',
@@ -240,10 +272,22 @@ const SHARED_SLOTS = {
       { id: 'oversized', label: 'Oversized', img: null },
     ],
   },
+  neckline: {
+    id:      'neckline',
+    label:   'Neckline',
+    options: [
+      { id: 'round',        label: 'Round Neck',   img: null },
+      { id: 'v_neck',       label: 'V-Neck',       img: null },
+      { id: 'square',       label: 'Square Neck',  img: null },
+      { id: 'sweetheart',   label: 'Sweetheart',   img: null },
+      { id: 'boat',         label: 'Boat Neck',    img: null },
+      { id: 'halter',       label: 'Halter',       img: null },
+      { id: 'off_shoulder', label: 'Off-Shoulder', img: null },
+      { id: 'turtleneck',   label: 'Turtleneck',   img: null },
+    ],
+  },
 }
 
-
-// ─── Pocket slots ─────────────────────────────────────────────────────────────
 
 const POCKET_SLOT_MALE_BACK = {
   id:       'back_pocket',
@@ -317,8 +361,6 @@ const POCKET_SLOT_FEMALE = {
   ],
 }
 
-
-// ─── Male lower-wear slots (existing) ────────────────────────────────────────
 
 const MALE_LOWER_FRONT_POCKET_SLOT = {
   id:      'front_pocket_style',
@@ -397,7 +439,6 @@ const BOTTOM_TYPE_SLOT = {
   ],
 }
 
-// NEW: male lining slot
 const MALE_LINING_SLOT = {
   id:      'lining_type',
   label:   'Lining',
@@ -408,8 +449,31 @@ const MALE_LINING_SLOT = {
   ],
 }
 
+const MALE_COLLAR_SLOT = {
+  id:      'collar_type',
+  label:   'Collar Type',
+  options: [
+    { id: 'classic',     label: 'Classic',     img: MALE_COLLAR_IMGS.classic    },
+    { id: 'button_down', label: 'Button Down', img: MALE_COLLAR_IMGS.buttonDown },
+    { id: 'mandarin',    label: 'Mandarin',    img: MALE_COLLAR_IMGS.mandarin   },
+  ],
+}
 
-// ─── Female lower-wear slots (NEW) ───────────────────────────────────────────
+const MALE_CUFF_SLOT = {
+  id:      'cuff_type',
+  label:   'Shirt Cuff',
+  options: [
+    { id: 'angled',        label: 'Angled',        img: MALE_CUFF_IMGS.angled        },
+    { id: 'french_angled', label: 'French Angled', img: MALE_CUFF_IMGS.frenchAngled  },
+    { id: 'french_round',  label: 'French Round',  img: MALE_CUFF_IMGS.frenchRounded },
+    { id: 'french',        label: 'French',        img: MALE_CUFF_IMGS.french        },
+    { id: 'french_square', label: 'French Square', img: MALE_CUFF_IMGS.frenchSquare  },
+    { id: 'milanese',      label: 'Milanese',      img: MALE_CUFF_IMGS.milanese      },
+    { id: 'rounded',       label: 'Rounded',       img: MALE_CUFF_IMGS.rounded       },
+    { id: 'square_curve',  label: 'Square Curve',  img: MALE_CUFF_IMGS.squareCurve   },
+  ],
+}
+
 
 const FEMALE_WAIST_STYLE_SLOT = {
   id:      'waist_style',
@@ -436,7 +500,7 @@ const FEMALE_SKIRT_SHAPE_SLOT = {
   ],
 }
 
-const FEMALE_LENGTH_SLOT = {
+const FEMALE_SKIRT_LENGTH_SLOT = {
   id:      'length',
   label:   'Length',
   options: [
@@ -470,73 +534,55 @@ const FEMALE_LINING_SLOT = {
   ],
 }
 
-
-// ─── Builder functions ────────────────────────────────────────────────────────
-
-function buildUpperWearSlots(gender) {
-  const base = [
-    SHARED_SLOTS.neckline,
-    SHARED_SLOTS.sleeve,
-    {
-      id:      'length',
-      label:   'Length',
-      options: [
-        { id: 'crop',  label: 'Crop',  img: null },
-        { id: 'waist', label: 'Waist', img: null },
-        { id: 'hip',   label: 'Hip',   img: null },
-        { id: 'tunic', label: 'Tunic', img: null },
-      ],
-    },
-    SHARED_SLOTS.fit,
-  ]
-
-  if (gender === 'Male') return [...base, POCKET_SLOT_MALE_FRONT]
-
-  return base
+const FEMALE_NECKLINE_SLOT = {
+  id:      'neckline',
+  label:   'Neckline',
+  options: [
+    { id: 'round',       label: 'Round Neck',  img: FEMALE_NECK_IMGS.round      },
+    { id: 'v_neck',      label: 'V-Neck',      img: FEMALE_NECK_IMGS.vNeck      },
+    { id: 'u_neck',      label: 'U-Neck',      img: FEMALE_NECK_IMGS.uNeck      },
+    { id: 'deep_u',      label: 'Deep U-Neck', img: FEMALE_NECK_IMGS.deepU      },
+    { id: 'boat',        label: 'Boat Neck',   img: FEMALE_NECK_IMGS.boat       },
+    { id: 'basket',      label: 'Basket Neck', img: FEMALE_NECK_IMGS.basket     },
+    { id: 'halter',      label: 'Halter',      img: FEMALE_NECK_IMGS.halter     },
+    { id: 'collar',      label: 'Collar Neck', img: FEMALE_NECK_IMGS.collar     },
+    { id: 'wide_square', label: 'Wide Square', img: FEMALE_NECK_IMGS.wideSquare },
+  ],
 }
 
-
-function buildLowerWearSlots(gender) {
-  if (gender === 'Female') {
-    return [
-      FEMALE_WAIST_STYLE_SLOT,
-      FEMALE_SKIRT_SHAPE_SLOT,
-      {
-        id:      'leg_style',
-        label:   'Leg Style',
-        options: [
-          { id: 'straight', label: 'Straight', img: null },
-          { id: 'flared',   label: 'Flared',   img: null },
-          { id: 'tapered',  label: 'Tapered',  img: null },
-          { id: 'wide_leg', label: 'Wide Leg', img: null },
-          { id: 'skinny',   label: 'Skinny',   img: null },
-          { id: 'bootcut',  label: 'Bootcut',  img: null },
-        ],
-      },
-      FEMALE_LENGTH_SLOT,
-      FEMALE_BOTTOM_STYLE_SLOT,
-      FEMALE_LINING_SLOT,
-      POCKET_SLOT_FEMALE,
-      SHARED_SLOTS.fit,
-    ]
-  }
-
-  // Male lower wear
-  return [
-    WAIST_BAND_SLOT,
-    FLY_TYPE_SLOT,
-    BELT_LOOP_SLOT,
-    MALE_LOWER_FRONT_POCKET_SLOT,
-    POCKET_SLOT_MALE_BACK,
-    LEG_SHAPE_SLOT,
-    MALE_LENGTH_SLOT,
-    BOTTOM_TYPE_SLOT,
-    MALE_LINING_SLOT,  // NEW
-  ]
+const UPPER_WEAR_LENGTH_SLOT = {
+  id:      'length',
+  label:   'Length',
+  options: [
+    { id: 'crop',  label: 'Crop',  img: null },
+    { id: 'waist', label: 'Waist', img: null },
+    { id: 'hip',   label: 'Hip',   img: null },
+    { id: 'tunic', label: 'Tunic', img: null },
+  ],
 }
 
+const TROUSER_SLOTS = [
+  WAIST_BAND_SLOT,
+  FLY_TYPE_SLOT,
+  BELT_LOOP_SLOT,
+  MALE_LOWER_FRONT_POCKET_SLOT,
+  POCKET_SLOT_MALE_BACK,
+  LEG_SHAPE_SLOT,
+  MALE_LENGTH_SLOT,
+  BOTTOM_TYPE_SLOT,
+  MALE_LINING_SLOT,
+]
 
-// ─── Full-wear slots ──────────────────────────────────────────────────────────
+const SKIRT_SLOTS = [
+  FEMALE_WAIST_STYLE_SLOT,
+  FEMALE_SKIRT_SHAPE_SLOT,
+  FEMALE_SKIRT_LENGTH_SLOT,
+  FEMALE_BOTTOM_STYLE_SLOT,
+  FEMALE_LINING_SLOT,
+  POCKET_SLOT_FEMALE,
+  SHARED_SLOTS.fit,
+]
+
 
 const FULL_WEAR_SLOTS = {
   gown: [
@@ -720,14 +766,43 @@ const FULL_WEAR_SLOTS = {
 }
 
 
-// ─── Main export ──────────────────────────────────────────────────────────────
+function buildUpperWearSlots(gender) {
+  if (gender === 'Female') {
+    return [
+      FEMALE_NECKLINE_SLOT,
+      SHARED_SLOTS.sleeve,
+      UPPER_WEAR_LENGTH_SLOT,
+      SHARED_SLOTS.fit,
+    ]
+  }
 
-export function getSlotsForCard(category, fullWearType, gender) {
+  return [
+    MALE_COLLAR_SLOT,
+    SHARED_SLOTS.sleeve,
+    MALE_CUFF_SLOT,
+    UPPER_WEAR_LENGTH_SLOT,
+    SHARED_SLOTS.fit,
+    POCKET_SLOT_MALE_FRONT,
+  ]
+}
+
+function buildLowerWearSlots(gender, lowerBodyType) {
+  if (gender === 'Female') {
+    if (lowerBodyType === 'trousers') return TROUSER_SLOTS
+    if (lowerBodyType === 'skirt')    return SKIRT_SLOTS
+    return []
+  }
+
+  return TROUSER_SLOTS
+}
+
+
+export function getSlotsForCard(category, fullWearType, gender, lowerBodyType) {
   if (!category) return []
 
   if (category === 'upper_body') return buildUpperWearSlots(gender)
 
-  if (category === 'lower_body') return buildLowerWearSlots(gender)
+  if (category === 'lower_body') return buildLowerWearSlots(gender, lowerBodyType)
 
   if (category === 'full_body') {
     if (!fullWearType) return []

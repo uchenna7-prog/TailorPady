@@ -1,11 +1,11 @@
-import { useState, useRef }                                      from 'react'
-import { MultiImageUploader }                                   from '../MultiImageUploader/MultiImageUploader'
-import { uploadToCloudinary }                                   from '../../../../../../services/cloudinaryService'
-import { useNetworkStatus }                                     from '../../../../../../hooks/useNetworkStatus'
-import { UNIT_FULL }                                            from '../../../../../../datas/measurementDatas'
-import { GARMENT_CATEGORIES, FULL_WEAR_TYPES, getSlotsForCard } from './garmentFeatures'
-import Header                                                   from '../../../../../../components/Header/Header'
-import styles                                                   from './AddMeasurementModal.module.css'
+import { useState, useRef }                                                          from 'react'
+import { MultiImageUploader }                                                       from '../MultiImageUploader/MultiImageUploader'
+import { uploadToCloudinary }                                                       from '../../../../../../services/cloudinaryService'
+import { useNetworkStatus }                                                         from '../../../../../../hooks/useNetworkStatus'
+import { UNIT_FULL }                                                                from '../../../../../../datas/measurementDatas'
+import { GARMENT_CATEGORIES, FULL_WEAR_TYPES, FEMALE_LOWER_BODY_TYPES, getSlotsForCard } from './garmentFeatures'
+import Header                                                                       from '../../../../../../components/Header/Header'
+import styles                                                                       from './AddMeasurementModal.module.css'
 
 
 function createBlankField() {
@@ -16,6 +16,7 @@ function createBlankMeasurement() {
   return {
     category:        '',
     fullWearType:    '',
+    lowerBodyType:   '',
     styleSelections: {},
     name:            '',
     fields:          [createBlankField()],
@@ -85,6 +86,7 @@ export function AddMeasurementModal({ isOpen, onClose, onSave, gender }) {
       ...prev,
       category:        categoryId,
       fullWearType:    '',
+      lowerBodyType:   '',
       styleSelections: {},
     }))
     setOpenSlotId(null)
@@ -94,6 +96,15 @@ export function AddMeasurementModal({ isOpen, onClose, onSave, gender }) {
     setMeasurement(prev => ({
       ...prev,
       fullWearType:    typeId,
+      styleSelections: {},
+    }))
+    setOpenSlotId(null)
+  }
+
+  function updateLowerBodyType(typeId) {
+    setMeasurement(prev => ({
+      ...prev,
+      lowerBodyType:   typeId,
       styleSelections: {},
     }))
     setOpenSlotId(null)
@@ -174,8 +185,9 @@ export function AddMeasurementModal({ isOpen, onClose, onSave, gender }) {
     onSave({
       id:              Date.now() + Math.random(),
       name:            measurement.name.trim(),
-      category:        measurement.category     || null,
-      fullWearType:    measurement.fullWearType || null,
+      category:        measurement.category      || null,
+      fullWearType:    measurement.fullWearType  || null,
+      lowerBodyType:   measurement.lowerBodyType || null,
       styleSelections: measurement.styleSelections,
       imgSrcs:         imageUrls,
       imgSrc:          imageUrls[0] ?? null,
@@ -199,8 +211,10 @@ export function AddMeasurementModal({ isOpen, onClose, onSave, gender }) {
   }
 
 
-  const slots     = getSlotsForCard(measurement.category, measurement.fullWearType, gender)
-  const needsType = measurement.category === 'full_body' && !measurement.fullWearType
+  const isFemaleLoweBody = gender === 'Female' && measurement.category === 'lower_body'
+  const needsLowerType   = isFemaleLoweBody && !measurement.lowerBodyType
+  const needsFullType    = measurement.category === 'full_body' && !measurement.fullWearType
+  const slots            = getSlotsForCard(measurement.category, measurement.fullWearType, gender, measurement.lowerBodyType)
 
   return (
     <div className={`${styles.formOverlay} ${isOpen ? styles.formOverlay_open : ''}`}>
@@ -346,7 +360,7 @@ export function AddMeasurementModal({ isOpen, onClose, onSave, gender }) {
               </div>
             )}
 
-            {measurement.category && needsType && (
+            {measurement.category === 'full_body' && needsFullType && (
               <>
                 <label className={styles.fieldLabel}>Garment Type</label>
                 <div className={styles.typeChipRow}>
@@ -361,6 +375,29 @@ export function AddMeasurementModal({ isOpen, onClose, onSave, gender }) {
                   ))}
                 </div>
               </>
+            )}
+
+            {isFemaleLoweBody && (
+              <div className={styles.lowerBodyTypePicker}>
+                {FEMALE_LOWER_BODY_TYPES.map(type => {
+                  const isSelected = measurement.lowerBodyType === type.id
+                  return (
+                    <button
+                      key={type.id}
+                      className={`${styles.lowerBodyTypeOption} ${isSelected ? styles.lowerBodyTypeOption_active : ''}`}
+                      onClick={() => updateLowerBodyType(type.id)}
+                    >
+                      <span className={`mi-outlined ${styles.lowerBodyTypeIcon}`}>
+                        {type.id === 'skirt' ? 'accessibility_new' : 'straighten'}
+                      </span>
+                      <span className={styles.lowerBodyTypeLabel}>{type.label}</span>
+                      {isSelected && (
+                        <span className={`mi ${styles.lowerBodyTypeCheck}`}>check_circle</span>
+                      )}
+                    </button>
+                  )
+                })}
+              </div>
             )}
 
             {slots.length > 0 && (
