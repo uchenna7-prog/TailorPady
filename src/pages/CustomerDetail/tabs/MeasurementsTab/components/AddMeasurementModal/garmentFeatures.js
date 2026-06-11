@@ -22,9 +22,9 @@ import squareTwoFrontPockets           from '../../../../../../assets/maleGarmen
 
 
 export const GARMENT_CATEGORIES = [
-  { id: 'upper_wear', label: 'Upper Wear' },
-  { id: 'lower_wear', label: 'Lower Wear' },
-  { id: 'full_wear',  label: 'Full Wear'  },
+  { id: 'upper_body', label: 'Upper Body' },
+  { id: 'lower_body', label: 'Lower Body' },
+  { id: 'full_body',  label: 'Full Body'  },
 ]
 
 
@@ -438,11 +438,11 @@ const FULL_WEAR_SLOTS = {
 export function getSlotsForCard(category, fullWearType, gender) {
   if (!category) return []
 
-  if (category === 'upper_wear') return buildUpperWearSlots(gender)
+  if (category === 'upper_body') return buildUpperWearSlots(gender)
 
-  if (category === 'lower_wear') return buildLowerWearSlots(gender)
+  if (category === 'lower_body') return buildLowerWearSlots(gender)
 
-  if (category === 'full_wear') {
+  if (category === 'full_body') {
     if (!fullWearType) return []
     return FULL_WEAR_SLOTS[fullWearType] || []
   }

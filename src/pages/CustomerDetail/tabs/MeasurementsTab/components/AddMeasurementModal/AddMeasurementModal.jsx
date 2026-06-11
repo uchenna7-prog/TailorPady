@@ -1,164 +1,117 @@
 import { useState, useRef }                                      from 'react'
-import { createBlankCard }                                       from '../../utils'
-import { MultiImageUploader }                                    from '../MultiImageUploader/MultiImageUploader'
-import { uploadToCloudinary }                                    from '../../../../../../services/cloudinaryService'
-import { useNetworkStatus }                                      from '../../../../../../hooks/useNetworkStatus'
-import { UNIT_FULL }                                             from '../../../../../../datas/measurementDatas'
+import { MultiImageUploader }                                   from '../MultiImageUploader/MultiImageUploader'
+import { uploadToCloudinary }                                   from '../../../../../../services/cloudinaryService'
+import { useNetworkStatus }                                     from '../../../../../../hooks/useNetworkStatus'
+import { UNIT_FULL }                                            from '../../../../../../datas/measurementDatas'
 import { GARMENT_CATEGORIES, FULL_WEAR_TYPES, getSlotsForCard } from './garmentFeatures'
-import Header                                                    from '../../../../../../components/Header/Header'
-import styles                                                    from './AddMeasurementModal.module.css'
+import Header                                                   from '../../../../../../components/Header/Header'
+import styles                                                   from './AddMeasurementModal.module.css'
 
 
-function validateCards(cards) {
-  const errors = {}
-
-  cards.forEach(card => {
-    const cardErrors  = {}
-    const hasName     = card.name.trim().length > 0
-    const hasOneField = card.fields.some(f => f.name.trim().length > 0)
-
-    if (!hasName)     cardErrors.name   = 'Please enter a cloth type name'
-    if (!hasOneField) cardErrors.fields = 'Add at least one measurement field'
-
-    if (Object.keys(cardErrors).length > 0) {
-      errors[card.id] = cardErrors
-    }
-  })
-
-  return errors
+function createBlankField() {
+  return { id: Date.now() + Math.random(), name: '', value: '' }
 }
 
+function createBlankMeasurement() {
+  return {
+    category:        '',
+    fullWearType:    '',
+    styleSelections: {},
+    name:            '',
+    fields:          [createBlankField()],
+    slots:           [],
+  }
+}
 
-async function uploadCardImages(slots) {
-  const uploadedUrls = await Promise.all(
-    slots.map(async slot => {
-      if (slot.file) return await uploadToCloudinary(slot.file, 'measurements')
-      return slot.localSrc
-    })
-  )
-  return uploadedUrls.filter(Boolean)
+function validateMeasurement(measurement) {
+  const errors = {}
+  if (!measurement.name.trim())                                 errors.name   = 'Please enter a garment name'
+  if (!measurement.fields.some(f => f.name.trim().length > 0)) errors.fields = 'Add at least one measurement field'
+  return errors
 }
 
 
 export function AddMeasurementModal({ isOpen, onClose, onSave, gender }) {
   const [activeTab,        setActiveTab]        = useState('measurements')
   const [unit,             setUnit]             = useState('in')
-  const [cards,            setCards]            = useState(() => [createBlankCard(1)])
+  const [measurement,      setMeasurement]      = useState(createBlankMeasurement)
   const [validationErrors, setValidationErrors] = useState({})
   const [isSaving,         setIsSaving]         = useState(false)
   const isOnline                                = useNetworkStatus()
-  const cardRefs                                = useRef({})
+  const detailsRef                              = useRef(null)
 
 
-  function updateCard(cardId, key, value) {
-    setCards(prev => prev.map(card =>
-      card.id === cardId ? { ...card, [key]: value } : card
-    ))
-
-    if (validationErrors[cardId]?.[key]) {
+  function updateMeasurement(key, value) {
+    setMeasurement(prev => ({ ...prev, [key]: value }))
+    if (validationErrors[key]) {
       setValidationErrors(prev => {
         const updated = { ...prev }
-        delete updated[cardId][key]
-        if (Object.keys(updated[cardId]).length === 0) delete updated[cardId]
+        delete updated[key]
         return updated
       })
     }
   }
 
-
-  function updateCardCategory(cardId, categoryId) {
-    setCards(prev => prev.map(card =>
-      card.id === cardId
-        ? { ...card, category: categoryId, fullWearType: '', styleSelections: {} }
-        : card
-    ))
+  function updateCategory(categoryId) {
+    setMeasurement(prev => ({
+      ...prev,
+      category:        categoryId,
+      fullWearType:    '',
+      styleSelections: {},
+    }))
   }
 
-
-  function updateFullWearType(cardId, typeId) {
-    setCards(prev => prev.map(card =>
-      card.id === cardId
-        ? { ...card, fullWearType: typeId, styleSelections: {} }
-        : card
-    ))
+  function updateFullWearType(typeId) {
+    setMeasurement(prev => ({
+      ...prev,
+      fullWearType:    typeId,
+      styleSelections: {},
+    }))
   }
 
-
-  function updateStyleSelection(cardId, slotId, value) {
-    setCards(prev => prev.map(card =>
-      card.id === cardId
-        ? { ...card, styleSelections: { ...card.styleSelections, [slotId]: value } }
-        : card
-    ))
+  function updateStyleSelection(slotId, value) {
+    setMeasurement(prev => ({
+      ...prev,
+      styleSelections: { ...prev.styleSelections, [slotId]: value },
+    }))
   }
 
-
-  function addCard() {
-    setCards(prev => [...prev, createBlankCard(prev.length + 1)])
+  function addField() {
+    setMeasurement(prev => ({
+      ...prev,
+      fields: [...prev.fields, createBlankField()],
+    }))
   }
 
-
-  function removeCard(cardId) {
-    setCards(prev => prev.filter(card => card.id !== cardId))
-    setValidationErrors(prev => {
-      const updated = { ...prev }
-      delete updated[cardId]
-      return updated
-    })
+  function removeField(fieldId) {
+    setMeasurement(prev => ({
+      ...prev,
+      fields: prev.fields.filter(f => f.id !== fieldId),
+    }))
   }
 
+  function updateField(fieldId, key, value) {
+    setMeasurement(prev => ({
+      ...prev,
+      fields: prev.fields.map(f => f.id === fieldId ? { ...f, [key]: value } : f),
+    }))
 
-  function addField(cardId) {
-    const newField = { id: Date.now() + Math.random(), name: '', value: '' }
-    setCards(prev => prev.map(card =>
-      card.id === cardId
-        ? { ...card, fields: [...card.fields, newField] }
-        : card
-    ))
-  }
-
-
-  function removeField(cardId, fieldId) {
-    setCards(prev => prev.map(card =>
-      card.id === cardId
-        ? { ...card, fields: card.fields.filter(f => f.id !== fieldId) }
-        : card
-    ))
-  }
-
-
-  function updateField(cardId, fieldId, key, value) {
-    setCards(prev => prev.map(card =>
-      card.id === cardId
-        ? { ...card, fields: card.fields.map(f => f.id === fieldId ? { ...f, [key]: value } : f) }
-        : card
-    ))
-
-    const isNameFieldWithError = key === 'name' && validationErrors[cardId]?.fields
-    if (isNameFieldWithError) {
+    if (key === 'name' && validationErrors.fields) {
       setValidationErrors(prev => {
         const updated = { ...prev }
-        delete updated[cardId].fields
-        if (Object.keys(updated[cardId]).length === 0) delete updated[cardId]
+        delete updated.fields
         return updated
       })
     }
-  }
-
-
-  function scrollToFirstErrorCard(errors) {
-    const firstErrorCardId = Object.keys(errors)[0]
-    if (!firstErrorCardId) return
-    cardRefs.current[firstErrorCardId]?.scrollIntoView({ behavior: 'smooth', block: 'start' })
   }
 
 
   async function handleSave() {
-    const errors = validateCards(cards)
+    const errors = validateMeasurement(measurement)
 
     if (Object.keys(errors).length > 0) {
       setValidationErrors(errors)
-      scrollToFirstErrorCard(errors)
+      detailsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
       setActiveTab('measurements')
       return
     }
@@ -169,30 +122,27 @@ export function AddMeasurementModal({ isOpen, onClose, onSave, gender }) {
       month: 'short', day: 'numeric', year: 'numeric',
     })
 
-    for (const card of cards) {
-      if (!card.name.trim()) continue
+    const imageUrls = measurement.slots?.length > 0
+      ? await Promise.all(
+          measurement.slots.map(async slot => {
+            if (slot.file) return await uploadToCloudinary(slot.file, 'measurements')
+            return slot.localSrc
+          })
+        ).then(urls => urls.filter(Boolean))
+      : []
 
-      const filledFields = card.fields
-        .filter(f => f.name.trim())
-        .map(f => ({ name: f.name, value: f.value }))
-
-      const imageUrls = card.slots?.length > 0
-        ? await uploadCardImages(card.slots)
-        : []
-
-      onSave({
-        id:              Date.now() + Math.random(),
-        name:            card.name.trim(),
-        category:        card.category        || null,
-        fullWearType:    card.fullWearType    || null,
-        styleSelections: card.styleSelections || {},
-        imgSrcs:         imageUrls,
-        imgSrc:          imageUrls[0] ?? null,
-        unit,
-        fields:          filledFields,
-        date:            today,
-      })
-    }
+    onSave({
+      id:              Date.now() + Math.random(),
+      name:            measurement.name.trim(),
+      category:        measurement.category     || null,
+      fullWearType:    measurement.fullWearType || null,
+      styleSelections: measurement.styleSelections,
+      imgSrcs:         imageUrls,
+      imgSrc:          imageUrls[0] ?? null,
+      unit,
+      fields:          measurement.fields.filter(f => f.name.trim()).map(f => ({ name: f.name, value: f.value })),
+      date:            today,
+    })
 
     setIsSaving(false)
     resetAndClose()
@@ -200,7 +150,7 @@ export function AddMeasurementModal({ isOpen, onClose, onSave, gender }) {
 
 
   function resetAndClose() {
-    setCards([createBlankCard(1)])
+    setMeasurement(createBlankMeasurement())
     setUnit('in')
     setActiveTab('measurements')
     setValidationErrors({})
@@ -209,12 +159,8 @@ export function AddMeasurementModal({ isOpen, onClose, onSave, gender }) {
 
 
   function renderOptionChipRow(options, selectedValue, onSelect) {
-    const cols = Math.min(options.length, 4)
     return (
-      <div
-        className={styles.optionChipRow}
-        style={{ gridTemplateColumns: `repeat(${cols}, 1fr)` }}
-      >
+      <div className={styles.optionChipRow}>
         {options.map(opt => {
           const isSelected = selectedValue === opt.id
           return (
@@ -238,6 +184,9 @@ export function AddMeasurementModal({ isOpen, onClose, onSave, gender }) {
     )
   }
 
+
+  const slots     = getSlotsForCard(measurement.category, measurement.fullWearType, gender)
+  const needsType = measurement.category === 'full_body' && !measurement.fullWearType
 
   return (
     <div className={`${styles.formOverlay} ${isOpen ? styles.formOverlay_open : ''}`}>
@@ -271,6 +220,7 @@ export function AddMeasurementModal({ isOpen, onClose, onSave, gender }) {
 
         {activeTab === 'measurements' && (
           <div className={styles.tabSection}>
+
             <p className={styles.stepHeading}>1. Unit of Measurement</p>
             <div className={styles.unitChipRow}>
               {['in', 'cm', 'yd'].map(u => (
@@ -284,109 +234,89 @@ export function AddMeasurementModal({ isOpen, onClose, onSave, gender }) {
               ))}
             </div>
 
-            <p className={styles.stepHeading} style={{ marginTop: 24 }}>2. Cloth Types</p>
-
-            {cards.map((card, index) => {
-              const cardErrors = validationErrors[card.id] || {}
-              const hasError   = Object.keys(cardErrors).length > 0
-
-              return (
-                <div
-                  key={card.id}
-                  ref={element => { cardRefs.current[card.id] = element }}
-                  className={`${styles.clothCard} ${hasError ? styles.clothCard_error : ''}`}
+            <p className={styles.stepHeading} style={{ marginTop: 24 }}>2. Garment Category</p>
+            <p className={styles.stepSubheading}>Where on the body is this garment worn?</p>
+            <div className={styles.categoryChipRow}>
+              {GARMENT_CATEGORIES.map(cat => (
+                <button
+                  key={cat.id}
+                  className={`${styles.categoryChip} ${measurement.category === cat.id ? styles.categoryChip_active : ''}`}
+                  onClick={() => updateCategory(cat.id)}
                 >
-                  <div className={styles.clothCardHeader}>
-                    <span className={styles.clothCardLabel}>{card.label}</span>
-                    {index > 0 && (
-                      <button className={styles.removeCardButton} onClick={() => removeCard(card.id)}>
-                        <span className="mi" style={{ fontSize: '1.1rem' }}>cancel</span>
-                      </button>
-                    )}
+                  {cat.label}
+                </button>
+              ))}
+            </div>
+
+            <p className={styles.stepHeading} style={{ marginTop: 24 }}>3. Garment Details</p>
+
+            <div
+              ref={detailsRef}
+              className={`${styles.clothCard} ${Object.keys(validationErrors).length > 0 ? styles.clothCard_error : ''}`}
+            >
+              <label className={styles.fieldLabel}>Name</label>
+              <input
+                type="text"
+                className={`${styles.underlineInput} ${validationErrors.name ? styles.underlineInput_error : ''}`}
+                placeholder="e.g. Agbada Top"
+                value={measurement.name}
+                onChange={e => updateMeasurement('name', e.target.value)}
+              />
+              {validationErrors.name && (
+                <p className={styles.inlineError}>{validationErrors.name}</p>
+              )}
+
+              <label className={styles.fieldLabel}>Design References</label>
+              <MultiImageUploader
+                images={measurement.slots}
+                cardId="single"
+                isOnline={isOnline}
+                onChange={slots => updateMeasurement('slots', slots)}
+              />
+
+              <label className={styles.fieldLabel} style={{ marginTop: 4 }}>Measurements</label>
+
+              <div className={styles.measureFieldList}>
+                {measurement.fields.map(field => (
+                  <div key={field.id} className={styles.measureFieldRow}>
+                    <div className={styles.measureFieldColumn}>
+                      <label>Field</label>
+                      <input
+                        type="text"
+                        className={styles.measureFieldInput}
+                        placeholder="e.g. Neck"
+                        value={field.name}
+                        onChange={e => updateField(field.id, 'name', e.target.value)}
+                      />
+                    </div>
+                    <div className={styles.measureFieldColumn}>
+                      <label>Value</label>
+                      <input
+                        type="number"
+                        className={styles.measureFieldInput}
+                        placeholder="0"
+                        inputMode="decimal"
+                        value={field.value}
+                        onChange={e => updateField(field.id, 'value', e.target.value)}
+                      />
+                    </div>
+                    <button className={styles.removeFieldButton} onClick={() => removeField(field.id)}>
+                      <span className="mi" style={{ fontSize: '1.1rem' }}>remove_circle_outline</span>
+                    </button>
                   </div>
+                ))}
+              </div>
 
-                  <label className={styles.fieldLabel}>Garment Category</label>
-                  <div className={styles.categoryChipRow}>
-                    {GARMENT_CATEGORIES.map(cat => (
-                      <button
-                        key={cat.id}
-                        className={`${styles.categoryChip} ${card.category === cat.id ? styles.categoryChip_active : ''}`}
-                        onClick={() => updateCardCategory(card.id, cat.id)}
-                      >
-                        {cat.label}
-                      </button>
-                    ))}
-                  </div>
+              {validationErrors.fields && (
+                <p className={styles.inlineError}>{validationErrors.fields}</p>
+              )}
 
-                  <label className={styles.fieldLabel}>Name</label>
-                  <input
-                    type="text"
-                    className={`${styles.underlineInput} ${cardErrors.name ? styles.underlineInput_error : ''}`}
-                    placeholder="e.g. Shirt"
-                    value={card.name}
-                    onChange={e => updateCard(card.id, 'name', e.target.value)}
-                  />
-                  {cardErrors.name && (
-                    <p className={styles.inlineError}>{cardErrors.name}</p>
-                  )}
+              <button className={styles.addFieldButton} onClick={addField}>
+                <span className="mi" style={{ fontSize: '0.9rem' }}>add</span>
+                Add Field
+              </button>
+            </div>
 
-                  <label className={styles.fieldLabel}>Design References</label>
-                  <MultiImageUploader
-                    images={card.imgSrcs}
-                    cardId={card.id}
-                    isOnline={isOnline}
-                    onChange={slots => updateCard(card.id, 'slots', slots)}
-                  />
-
-                  <label className={styles.fieldLabel} style={{ marginTop: 4 }}>Measurements</label>
-
-                  <div className={styles.measureFieldList}>
-                    {card.fields.map(field => (
-                      <div key={field.id} className={styles.measureFieldRow}>
-                        <div className={styles.measureFieldColumn}>
-                          <label>Field</label>
-                          <input
-                            type="text"
-                            className={styles.measureFieldInput}
-                            placeholder="e.g. Neck"
-                            value={field.name}
-                            onChange={e => updateField(card.id, field.id, 'name', e.target.value)}
-                          />
-                        </div>
-                        <div className={styles.measureFieldColumn}>
-                          <label>Value</label>
-                          <input
-                            type="number"
-                            className={styles.measureFieldInput}
-                            placeholder="0"
-                            inputMode="decimal"
-                            value={field.value}
-                            onChange={e => updateField(card.id, field.id, 'value', e.target.value)}
-                          />
-                        </div>
-                        <button className={styles.removeFieldButton} onClick={() => removeField(card.id, field.id)}>
-                          <span className="mi" style={{ fontSize: '1.1rem' }}>remove_circle_outline</span>
-                        </button>
-                      </div>
-                    ))}
-                  </div>
-
-                  {cardErrors.fields && (
-                    <p className={styles.inlineError}>{cardErrors.fields}</p>
-                  )}
-
-                  <button className={styles.addFieldButton} onClick={() => addField(card.id)}>
-                    <span className="mi" style={{ fontSize: '0.9rem' }}>add</span>
-                    Add Field
-                  </button>
-                </div>
-              )
-            })}
-
-            <button className={styles.addClothButton} onClick={addCard}>
-              <span className="mi">add_circle_outline</span>
-              Add Another Cloth Type
-            </button>
           </div>
         )}
 
@@ -394,79 +324,57 @@ export function AddMeasurementModal({ isOpen, onClose, onSave, gender }) {
           <div className={styles.tabSection}>
             <p className={styles.stepHeading}>Garment Features</p>
 
-            {cards.map(card => {
-              const slots      = getSlotsForCard(card.category, card.fullWearType, gender)
-              const cardName   = card.name.trim() || card.label
-              const needsType  = card.category === 'full_wear' && !card.fullWearType
-              const noCategory = !card.category
+            {!measurement.category && (
+              <div className={styles.featureEmptyState}>
+                <span className="mi-outlined" style={{ fontSize: '2rem', color: 'var(--text3)' }}>category</span>
+                <p>No category selected</p>
+                <span>Go to the Measurements tab and pick a garment category first.</span>
+              </div>
+            )}
 
-              return (
-                <div key={card.id} className={styles.clothCard}>
-                  <div className={styles.clothCardHeader}>
-                    <span className={styles.clothCardLabel}>{cardName}</span>
-                    {card.category && (
-                      <span className={styles.categoryBadge}>
-                        {GARMENT_CATEGORIES.find(c => c.id === card.category)?.label}
-                      </span>
-                    )}
-                  </div>
-
-                  {noCategory && (
-                    <div className={styles.featureEmptyState}>
-                      <span className="mi-outlined" style={{ fontSize: '2rem', color: 'var(--text3)' }}>
-                        category
-                      </span>
-                      <p>No category selected</p>
-                      <span>Go to the Measurements tab and pick a garment category for this cloth type.</span>
-                    </div>
-                  )}
-
-                  {!noCategory && needsType && (
-                    <>
-                      <label className={styles.fieldLabel}>Garment Type</label>
-                      <div className={styles.typeChipRow}>
-                        {FULL_WEAR_TYPES.map(type => (
-                          <button
-                            key={type.id}
-                            className={`${styles.typeChip} ${card.fullWearType === type.id ? styles.typeChip_active : ''}`}
-                            onClick={() => updateFullWearType(card.id, type.id)}
-                          >
-                            {type.label}
-                          </button>
-                        ))}
-                      </div>
-                    </>
-                  )}
-
-                  {slots.map(slot => (
-                    <div key={slot.id} className={styles.slotGroup}>
-                      <label className={styles.fieldLabel}>{slot.label}</label>
-
-                      {slot.type === 'grouped' ? (
-                        <div className={styles.groupedSlot}>
-                          {slot.subSlots.map(subSlot => (
-                            <div key={subSlot.id} className={styles.subSlotGroup}>
-                              <p className={styles.subSlotLabel}>{subSlot.label}</p>
-                              {renderOptionChipRow(
-                                subSlot.options,
-                                card.styleSelections?.[subSlot.id],
-                                value => updateStyleSelection(card.id, subSlot.id, value)
-                              )}
-                            </div>
-                          ))}
-                        </div>
-                      ) : (
-                        renderOptionChipRow(
-                          slot.options,
-                          card.styleSelections?.[slot.id],
-                          value => updateStyleSelection(card.id, slot.id, value)
-                        )
-                      )}
-                    </div>
+            {measurement.category && needsType && (
+              <>
+                <label className={styles.fieldLabel}>Garment Type</label>
+                <div className={styles.typeChipRow}>
+                  {FULL_WEAR_TYPES.map(type => (
+                    <button
+                      key={type.id}
+                      className={`${styles.typeChip} ${measurement.fullWearType === type.id ? styles.typeChip_active : ''}`}
+                      onClick={() => updateFullWearType(type.id)}
+                    >
+                      {type.label}
+                    </button>
                   ))}
                 </div>
-              )
-            })}
+              </>
+            )}
+
+            {slots.map(slot => (
+              <div key={slot.id} className={styles.slotGroup}>
+                <label className={styles.fieldLabel}>{slot.label}</label>
+
+                {slot.type === 'grouped' ? (
+                  <div className={styles.groupedSlot}>
+                    {slot.subSlots.map(subSlot => (
+                      <div key={subSlot.id} className={styles.subSlotGroup}>
+                        <p className={styles.subSlotLabel}>{subSlot.label}</p>
+                        {renderOptionChipRow(
+                          subSlot.options,
+                          measurement.styleSelections?.[subSlot.id],
+                          value => updateStyleSelection(subSlot.id, value)
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  renderOptionChipRow(
+                    slot.options,
+                    measurement.styleSelections?.[slot.id],
+                    value => updateStyleSelection(slot.id, value)
+                  )
+                )}
+              </div>
+            ))}
           </div>
         )}
 
