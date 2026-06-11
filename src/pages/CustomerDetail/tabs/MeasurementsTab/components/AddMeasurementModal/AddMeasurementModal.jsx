@@ -30,6 +30,33 @@ function validateMeasurement(measurement) {
   return errors
 }
 
+function getSlotSummary(slot, styleSelections) {
+  if (slot.type === 'grouped') {
+    const picked = slot.subSlots
+      .map(sub => {
+        const selectedId = styleSelections?.[sub.id]
+        if (!selectedId) return null
+        return sub.options.find(o => o.id === selectedId)
+      })
+      .filter(Boolean)
+
+    if (picked.length === 0) return null
+
+    return {
+      label: picked.map(o => o.label).join(', '),
+      img:   picked[0]?.img ?? null,
+    }
+  }
+
+  const selectedId = styleSelections?.[slot.id]
+  if (!selectedId) return null
+
+  const option = slot.options.find(o => o.id === selectedId)
+  if (!option) return null
+
+  return { label: option.label, img: option.img ?? null }
+}
+
 
 export function AddMeasurementModal({ isOpen, onClose, onSave, gender }) {
   const [activeTab,        setActiveTab]        = useState('measurements')
@@ -37,6 +64,7 @@ export function AddMeasurementModal({ isOpen, onClose, onSave, gender }) {
   const [measurement,      setMeasurement]      = useState(createBlankMeasurement)
   const [validationErrors, setValidationErrors] = useState({})
   const [isSaving,         setIsSaving]         = useState(false)
+  const [openSlotId,       setOpenSlotId]       = useState(null)
   const isOnline                                = useNetworkStatus()
   const detailsRef                              = useRef(null)
 
@@ -59,6 +87,7 @@ export function AddMeasurementModal({ isOpen, onClose, onSave, gender }) {
       fullWearType:    '',
       styleSelections: {},
     }))
+    setOpenSlotId(null)
   }
 
   function updateFullWearType(typeId) {
@@ -67,13 +96,24 @@ export function AddMeasurementModal({ isOpen, onClose, onSave, gender }) {
       fullWearType:    typeId,
       styleSelections: {},
     }))
+    setOpenSlotId(null)
   }
 
-  function updateStyleSelection(slotId, value) {
+  function updateStyleSelection(slotId, optionId) {
     setMeasurement(prev => ({
       ...prev,
-      styleSelections: { ...prev.styleSelections, [slotId]: value },
+      styleSelections: { ...prev.styleSelections, [slotId]: optionId },
     }))
+  }
+
+  function toggleSlot(slotId) {
+    setOpenSlotId(prev => prev === slotId ? null : slotId)
+  }
+
+  function handleOptionSelect(slotId, optionId, parentSlotId) {
+    const currentValue = measurement.styleSelections?.[slotId]
+    updateStyleSelection(slotId, currentValue === optionId ? '' : optionId)
+    if (!parentSlotId) setOpenSlotId(null)
   }
 
   function addField() {
@@ -154,34 +194,8 @@ export function AddMeasurementModal({ isOpen, onClose, onSave, gender }) {
     setUnit('in')
     setActiveTab('measurements')
     setValidationErrors({})
+    setOpenSlotId(null)
     onClose()
-  }
-
-
-  function renderOptionChipRow(options, selectedValue, onSelect) {
-    return (
-      <div className={styles.optionChipRow}>
-        {options.map(opt => {
-          const isSelected = selectedValue === opt.id
-          return (
-            <div key={opt.id} className={styles.optionChipWrapper}>
-              <button
-                className={`${styles.optionChip} ${isSelected ? styles.optionChip_active : ''}`}
-                onClick={() => onSelect(isSelected ? '' : opt.id)}
-              >
-                {opt.img
-                  ? <img src={opt.img} alt={opt.label} className={styles.optionChipImg} />
-                  : <span className={styles.optionChipText}>{opt.label}</span>
-                }
-              </button>
-              {opt.img && (
-                <span className={styles.optionChipLabel}>{opt.label}</span>
-              )}
-            </div>
-          )
-        })}
-      </div>
-    )
   }
 
 
@@ -349,32 +363,119 @@ export function AddMeasurementModal({ isOpen, onClose, onSave, gender }) {
               </>
             )}
 
-            {slots.map(slot => (
-              <div key={slot.id} className={styles.slotGroup}>
-                <label className={styles.fieldLabel}>{slot.label}</label>
+            {slots.length > 0 && (
+              <div className={styles.slotAccordionList}>
+                {slots.map(slot => {
+                  const isOpen  = openSlotId === slot.id
+                  const summary = getSlotSummary(slot, measurement.styleSelections)
 
-                {slot.type === 'grouped' ? (
-                  <div className={styles.groupedSlot}>
-                    {slot.subSlots.map(subSlot => (
-                      <div key={subSlot.id} className={styles.subSlotGroup}>
-                        <p className={styles.subSlotLabel}>{subSlot.label}</p>
-                        {renderOptionChipRow(
-                          subSlot.options,
-                          measurement.styleSelections?.[subSlot.id],
-                          value => updateStyleSelection(subSlot.id, value)
-                        )}
+                  return (
+                    <div key={slot.id}>
+                      <div
+                        className={`${styles.slotCard} ${isOpen ? styles.slotCard_open : ''}`}
+                        onClick={() => toggleSlot(slot.id)}
+                      >
+                        <div className={styles.slotCardLeft}>
+                          {summary?.img
+                            ? <img src={summary.img} alt={summary.label} className={styles.slotCardThumb} />
+                            : (
+                              <div className={styles.slotCardThumbPlaceholder}>
+                                <span className="mi-outlined" style={{ fontSize: '1rem', color: 'var(--text3)' }}>
+                                  style
+                                </span>
+                              </div>
+                            )
+                          }
+                          <div className={styles.slotCardInfo}>
+                            <span className={styles.slotCardLabel}>{slot.label}</span>
+                            {summary
+                              ? <span className={styles.slotCardValue}>{summary.label}</span>
+                              : <span className={styles.slotCardHint}>Tap to choose</span>
+                            }
+                          </div>
+                        </div>
+
+                        <div className={styles.slotCardRight}>
+                          {summary && (
+                            <div className={styles.slotCheckCircle}>
+                              <span className="mi" style={{ fontSize: '0.85rem' }}>check</span>
+                            </div>
+                          )}
+                          <span
+                            className="mi"
+                            style={{
+                              fontSize:   '1.1rem',
+                              color:      'var(--text3)',
+                              transition: 'transform 0.2s',
+                              transform:  isOpen ? 'rotate(180deg)' : 'rotate(0deg)',
+                            }}
+                          >
+                            expand_more
+                          </span>
+                        </div>
                       </div>
-                    ))}
-                  </div>
-                ) : (
-                  renderOptionChipRow(
-                    slot.options,
-                    measurement.styleSelections?.[slot.id],
-                    value => updateStyleSelection(slot.id, value)
+
+                      {isOpen && (
+                        <div className={styles.slotAccordionBody}>
+                          {slot.type === 'grouped'
+                            ? slot.subSlots.map((subSlot, index) => (
+                                <div key={subSlot.id}>
+                                  {index > 0 && <div className={styles.subSlotDivider} />}
+                                  <p className={styles.subSlotLabel}>{subSlot.label}</p>
+                                  <div className={styles.optionChipGrid}>
+                                    {subSlot.options.map(opt => {
+                                      const isSelected = measurement.styleSelections?.[subSlot.id] === opt.id
+                                      return (
+                                        <div key={opt.id} className={styles.optionChipWrapper}>
+                                          <button
+                                            className={`${styles.optionChip} ${isSelected ? styles.optionChip_active : ''}`}
+                                            onClick={e => { e.stopPropagation(); handleOptionSelect(subSlot.id, opt.id, slot.id) }}
+                                          >
+                                            {opt.img
+                                              ? <img src={opt.img} alt={opt.label} className={styles.optionChipImg} />
+                                              : <span className={styles.optionChipText}>{opt.label}</span>
+                                            }
+                                          </button>
+                                          {opt.img && (
+                                            <span className={styles.optionChipLabel}>{opt.label}</span>
+                                          )}
+                                        </div>
+                                      )
+                                    })}
+                                  </div>
+                                </div>
+                              ))
+                            : (
+                              <div className={styles.optionChipGrid}>
+                                {slot.options.map(opt => {
+                                  const isSelected = measurement.styleSelections?.[slot.id] === opt.id
+                                  return (
+                                    <div key={opt.id} className={styles.optionChipWrapper}>
+                                      <button
+                                        className={`${styles.optionChip} ${isSelected ? styles.optionChip_active : ''}`}
+                                        onClick={e => { e.stopPropagation(); handleOptionSelect(slot.id, opt.id, null) }}
+                                      >
+                                        {opt.img
+                                          ? <img src={opt.img} alt={opt.label} className={styles.optionChipImg} />
+                                          : <span className={styles.optionChipText}>{opt.label}</span>
+                                        }
+                                      </button>
+                                      {opt.img && (
+                                        <span className={styles.optionChipLabel}>{opt.label}</span>
+                                      )}
+                                    </div>
+                                  )
+                                })}
+                              </div>
+                            )
+                          }
+                        </div>
+                      )}
+                    </div>
                   )
-                )}
+                })}
               </div>
-            ))}
+            )}
           </div>
         )}
 

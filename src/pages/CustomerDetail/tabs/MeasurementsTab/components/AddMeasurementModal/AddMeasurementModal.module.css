@@ -343,24 +343,138 @@
   border-color: var(--accent);
 }
 
-.slotGroup {
-  margin-bottom: 20px;
-}
 
-.groupedSlot {
-  display:        flex;
-  flex-direction: column;
-  gap:            16px;
-  background:     var(--surface2);
-  border:         1px solid var(--border);
-  border-radius:  12px;
-  padding:        12px;
-}
+/* ─── Slot accordion list ───────────────────────────────────────────────────── */
 
-.subSlotGroup {
+.slotAccordionList {
   display:        flex;
   flex-direction: column;
   gap:            8px;
+}
+
+
+/* ─── Slot card (accordion header) ─────────────────────────────────────────── */
+
+.slotCard {
+  display:         flex;
+  align-items:     center;
+  justify-content: space-between;
+  gap:             12px;
+  background:      var(--surface);
+  border:          1px solid var(--border);
+  border-radius:   14px;
+  padding:         12px 14px;
+  cursor:          pointer;
+  transition:      border-color 0.2s, background 0.15s;
+}
+
+.slotCard_open {
+  border-color:              var(--accent);
+  background:                var(--surface2);
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+  border-bottom-color:       transparent;
+}
+
+.slotCardLeft {
+  display:     flex;
+  align-items: center;
+  gap:         12px;
+  min-width:   0;
+  flex:        1;
+}
+
+.slotCardThumb {
+  width:         40px;
+  height:        40px;
+  border-radius: 8px;
+  object-fit:    cover;
+  flex-shrink:   0;
+}
+
+.slotCardThumbPlaceholder {
+  width:           40px;
+  height:          40px;
+  border-radius:   8px;
+  background:      var(--surface2);
+  border:          1px solid var(--border);
+  display:         flex;
+  align-items:     center;
+  justify-content: center;
+  flex-shrink:     0;
+}
+
+.slotCardInfo {
+  display:        flex;
+  flex-direction: column;
+  gap:            2px;
+  min-width:      0;
+}
+
+.slotCardLabel {
+  font-size:      0.6rem;
+  font-weight:    800;
+  color:          var(--text3);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.slotCardValue {
+  font-size:     0.88rem;
+  font-weight:   700;
+  color:         var(--text);
+  white-space:   nowrap;
+  overflow:      hidden;
+  text-overflow: ellipsis;
+}
+
+.slotCardHint {
+  font-size:   0.78rem;
+  font-weight: 500;
+  color:       var(--text3);
+}
+
+.slotCardRight {
+  display:     flex;
+  align-items: center;
+  gap:         8px;
+  flex-shrink: 0;
+}
+
+.slotCheckCircle {
+  width:           20px;
+  height:          20px;
+  border-radius:   50%;
+  background:      var(--accent);
+  display:         flex;
+  align-items:     center;
+  justify-content: center;
+  color:           var(--bg);
+}
+
+
+/* ─── Slot accordion body ───────────────────────────────────────────────────── */
+
+.slotAccordionBody {
+  background:                var(--surface2);
+  border:                    1px solid var(--accent);
+  border-top:                none;
+  border-bottom-left-radius: 14px;
+  border-bottom-right-radius: 14px;
+  padding:                   16px 14px;
+  animation:                 accordionOpen 0.22s cubic-bezier(0.4, 0, 0.2, 1);
+  overflow:                  hidden;
+}
+
+@keyframes accordionOpen {
+  from { opacity: 0; transform: translateY(-8px); }
+  to   { opacity: 1; transform: translateY(0);    }
+}
+
+.subSlotDivider {
+  height:     1px;
+  background: var(--border);
+  margin:     14px 0;
 }
 
 .subSlotLabel {
@@ -369,13 +483,13 @@
   color:          var(--text3);
   text-transform: uppercase;
   letter-spacing: 0.5px;
-  margin:         0;
+  margin:         0 0 10px 0;
 }
 
 
-/* ─── Option chips (Garment Features) ──────────────────────────────────────── */
+/* ─── Option chip grid ──────────────────────────────────────────────────────── */
 
-.optionChipRow {
+.optionChipGrid {
   display:               grid;
   grid-template-columns: repeat(3, 1fr);
   gap:                   12px;
@@ -396,7 +510,7 @@
   aspect-ratio:    4 / 3;
   border-radius:   12px;
   border:          1px solid var(--border2);
-  background:      var(--surface2);
+  background:      var(--surface);
   cursor:          pointer;
   overflow:        hidden;
   padding:         0;
