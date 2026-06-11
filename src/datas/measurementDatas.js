@@ -4,7 +4,7 @@ export const UNIT_SHORT = {
     yd: 'yd' 
 }
 export const UNIT_FULL  = { 
-    in: 'Inches (")', 
-    cm: 'Centimetres (cm)', 
-    yd: 'Yards (yd)' 
+    in: 'Inches', 
+    cm: 'Centimetres', 
+    yd: 'Yards' 
 }

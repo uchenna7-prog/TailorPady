@@ -272,7 +272,7 @@ export function AddMeasurementModal({ isOpen, onClose, onSave, gender }) {
               <input
                 type="text"
                 className={`${styles.underlineInput} ${validationErrors.name ? styles.underlineInput_error : ''}`}
-                placeholder="e.g. Agbada Top"
+                placeholder="e.g. Shirt"
                 value={measurement.name}
                 onChange={e => updateMeasurement('name', e.target.value)}
               />
