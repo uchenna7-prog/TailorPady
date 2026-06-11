@@ -13,12 +13,42 @@ import weltTwoBackPocketWithButton     from '../../../../../../assets/maleGarmen
 import weltOneBackPocketWithTopStitch  from '../../../../../../assets/maleGarmentFeatures/lowerWearFeatures/backPocketType/weltWithTopStitchOnePocket.jpg'
 import weltTwoBackPocketWithTopStitch  from '../../../../../../assets/maleGarmentFeatures/lowerWearFeatures/backPocketType/weltWithTopStitchTwoPockets.jpg'
 
-import classicOneFrontPocket           from '../../../../../../assets/maleGarmentFeatures/upperWearFeatures/frontPocketType/classicOneFrontPockets.jpg'
-import classicTwoFrontPocket           from '../../../../../../assets/maleGarmentFeatures/upperWearFeatures/frontPocketType/classicTwoFrontPocket.jpg'
-import roundOneFrontPocket             from '../../../../../../assets/maleGarmentFeatures/upperWearFeatures/frontPocketType/roundOneFrontPocket.jpg'
-import roundTwoFrontPockets            from '../../../../../../assets/maleGarmentFeatures/upperWearFeatures/frontPocketType/roundTwoFrontPockets.jpg'
-import squareOneFrontPocket            from '../../../../../../assets/maleGarmentFeatures/upperWearFeatures/frontPocketType/squareOneFrontPocket.jpg'
-import squareTwoFrontPockets           from '../../../../../../assets/maleGarmentFeatures/upperWearFeatures/frontPocketType/squareTwoFrontPockets.jpg'
+import dRingBeltLoop                  from '../../../../../../assets/maleGarmentFeatures/lowerWearFeatures/beltLoopStyle/dRingBeltLoop.jpg'
+import noBeltLoop                     from '../../../../../../assets/maleGarmentFeatures/lowerWearFeatures/beltLoopStyle/noBeltLoop.jpg'
+import standardBeltLoop               from '../../../../../../assets/maleGarmentFeatures/lowerWearFeatures/beltLoopStyle/standardBeltLoop.jpg'
+
+import elasticatedBottom              from '../../../../../../assets/maleGarmentFeatures/lowerWearFeatures/bottomType/elasticatedBottom.jpg'
+import plainHemBottom                 from '../../../../../../assets/maleGarmentFeatures/lowerWearFeatures/bottomType/plainHemBottom.jpg'
+import rawHemBottom                   from '../../../../../../assets/maleGarmentFeatures/lowerWearFeatures/bottomType/rawHemBottom.jpg'
+import turnedUpBottom                 from '../../../../../../assets/maleGarmentFeatures/lowerWearFeatures/bottomType/turnedUpBottom.jpg'
+
+import buttonFly                      from '../../../../../../assets/maleGarmentFeatures/lowerWearFeatures/flyType/buttonFly.jpg'
+import zipFly                         from '../../../../../../assets/maleGarmentFeatures/lowerWearFeatures/flyType/zipFly.jpg'
+
+import coinFrontPocket                from '../../../../../../assets/maleGarmentFeatures/lowerWearFeatures/frontPocketType/coinFrontPocket.jpg'
+import noFrontPocket                  from '../../../../../../assets/maleGarmentFeatures/lowerWearFeatures/frontPocketType/noFrontPocket.jpg'
+import slantFrontPocket               from '../../../../../../assets/maleGarmentFeatures/lowerWearFeatures/frontPocketType/slantFrontPocket.jpg'
+import straightFrontPocket            from '../../../../../../assets/maleGarmentFeatures/lowerWearFeatures/frontPocketType/straightFrontPocket.jpg'
+import weltFrontPocket                from '../../../../../../assets/maleGarmentFeatures/lowerWearFeatures/frontPocketType/weltFrontPocket.jpg'
+
+import bootCutLegShape                from '../../../../../../assets/maleGarmentFeatures/lowerWearFeatures/legShape/bootCutLegShape.jpg'
+import joggeredBottomLegShape         from '../../../../../../assets/maleGarmentFeatures/lowerWearFeatures/legShape/joggeredBottomLegShape.jpg'
+import slimLegShape                   from '../../../../../../assets/maleGarmentFeatures/lowerWearFeatures/legShape/slimLegShape.jpg'
+import straightLegShape               from '../../../../../../assets/maleGarmentFeatures/lowerWearFeatures/legShape/straightLegShape.jpg'
+import wideLegShape                   from '../../../../../../assets/maleGarmentFeatures/lowerWearFeatures/legShape/wideLegShape.jpg'
+
+import doublePleatWaistBand           from '../../../../../../assets/maleGarmentFeatures/lowerWearFeatures/waistBandType/doublePleatWaistBand.jpg'
+import drawStringWaistBand            from '../../../../../../assets/maleGarmentFeatures/lowerWearFeatures/waistBandType/drawStringWaistBand.jpg'
+import elasticatedWaistBand           from '../../../../../../assets/maleGarmentFeatures/lowerWearFeatures/waistBandType/elasticatedWaistBand.jpg'
+import flatFrontWaistBand             from '../../../../../../assets/maleGarmentFeatures/lowerWearFeatures/waistBandType/flatFrontWaistBand.jpg'
+import singlePleatWaistBand           from '../../../../../../assets/maleGarmentFeatures/lowerWearFeatures/waistBandType/singlePleatWaistBand.jpg'
+
+import classicOneFrontPocket          from '../../../../../../assets/maleGarmentFeatures/upperWearFeatures/frontPocketType/classicOneFrontPockets.jpg'
+import classicTwoFrontPocket          from '../../../../../../assets/maleGarmentFeatures/upperWearFeatures/frontPocketType/classicTwoFrontPocket.jpg'
+import roundOneFrontPocket            from '../../../../../../assets/maleGarmentFeatures/upperWearFeatures/frontPocketType/roundOneFrontPocket.jpg'
+import roundTwoFrontPockets           from '../../../../../../assets/maleGarmentFeatures/upperWearFeatures/frontPocketType/roundTwoFrontPockets.jpg'
+import squareOneFrontPocket           from '../../../../../../assets/maleGarmentFeatures/upperWearFeatures/frontPocketType/squareOneFrontPocket.jpg'
+import squareTwoFrontPockets          from '../../../../../../assets/maleGarmentFeatures/upperWearFeatures/frontPocketType/squareTwoFrontPockets.jpg'
 
 
 export const GARMENT_CATEGORIES = [
@@ -61,6 +91,33 @@ const POCKET_IMGS = {
   roundTwoFrontPockets,
   squareOneFrontPocket,
   squareTwoFrontPockets,
+}
+
+const LOWER_WEAR_IMGS = {
+  dRingBeltLoop,
+  noBeltLoop,
+  standardBeltLoop,
+  elasticatedBottom,
+  plainHemBottom,
+  rawHemBottom,
+  turnedUpBottom,
+  buttonFly,
+  zipFly,
+  coinFrontPocket,
+  noFrontPocket,
+  slantFrontPocket,
+  straightFrontPocket,
+  weltFrontPocket,
+  bootCutLegShape,
+  joggeredBottomLegShape,
+  slimLegShape,
+  straightLegShape,
+  wideLegShape,
+  doublePleatWaistBand,
+  drawStringWaistBand,
+  elasticatedWaistBand,
+  flatFrontWaistBand,
+  singlePleatWaistBand,
 }
 
 
@@ -169,11 +226,77 @@ const POCKET_SLOT_FEMALE = {
   id:      'pocket_style',
   label:   'Pocket Style',
   options: [
-    { id: 'none',        label: 'None',             img: null },
-    { id: 'side_seam',   label: 'Side Seam',        img: null },
-    { id: 'patch',       label: 'Patch Pocket',     img: null },
-    { id: 'welt',        label: 'Welt',             img: POCKET_IMGS.weltOneBackPocket           },
+    { id: 'none',        label: 'None',             img: null                               },
+    { id: 'side_seam',   label: 'Side Seam',        img: null                               },
+    { id: 'patch',       label: 'Patch Pocket',     img: null                               },
+    { id: 'welt',        label: 'Welt',             img: POCKET_IMGS.weltOneBackPocket      },
     { id: 'welt_button', label: 'Welt with Button', img: POCKET_IMGS.weltOneBackPocketWithButton },
+  ],
+}
+
+const MALE_LOWER_FRONT_POCKET_SLOT = {
+  id:      'front_pocket_style',
+  label:   'Front Pocket Style',
+  options: [
+    { id: 'none',     label: 'None',     img: LOWER_WEAR_IMGS.noFrontPocket       },
+    { id: 'slant',    label: 'Slant',    img: LOWER_WEAR_IMGS.slantFrontPocket    },
+    { id: 'straight', label: 'Straight', img: LOWER_WEAR_IMGS.straightFrontPocket },
+    { id: 'coin',     label: 'Coin',     img: LOWER_WEAR_IMGS.coinFrontPocket     },
+    { id: 'welt',     label: 'Welt',     img: LOWER_WEAR_IMGS.weltFrontPocket     },
+  ],
+}
+
+const WAIST_BAND_SLOT = {
+  id:      'waist_band',
+  label:   'Waist Band',
+  options: [
+    { id: 'flat_front',    label: 'Flat Front',    img: LOWER_WEAR_IMGS.flatFrontWaistBand    },
+    { id: 'single_pleat',  label: 'Single Pleat',  img: LOWER_WEAR_IMGS.singlePleatWaistBand  },
+    { id: 'double_pleat',  label: 'Double Pleat',  img: LOWER_WEAR_IMGS.doublePleatWaistBand  },
+    { id: 'elasticated',   label: 'Elasticated',   img: LOWER_WEAR_IMGS.elasticatedWaistBand  },
+    { id: 'drawstring',    label: 'Drawstring',    img: LOWER_WEAR_IMGS.drawStringWaistBand   },
+  ],
+}
+
+const FLY_TYPE_SLOT = {
+  id:      'fly_type',
+  label:   'Fly Type',
+  options: [
+    { id: 'zip',    label: 'Zip',    img: LOWER_WEAR_IMGS.zipFly    },
+    { id: 'button', label: 'Button', img: LOWER_WEAR_IMGS.buttonFly },
+  ],
+}
+
+const BELT_LOOP_SLOT = {
+  id:      'belt_loop',
+  label:   'Belt Loop Style',
+  options: [
+    { id: 'standard', label: 'Standard', img: LOWER_WEAR_IMGS.standardBeltLoop },
+    { id: 'd_ring',   label: 'D-Ring',   img: LOWER_WEAR_IMGS.dRingBeltLoop    },
+    { id: 'none',     label: 'None',     img: LOWER_WEAR_IMGS.noBeltLoop        },
+  ],
+}
+
+const LEG_SHAPE_SLOT = {
+  id:      'leg_shape',
+  label:   'Leg Shape',
+  options: [
+    { id: 'straight',        label: 'Straight',         img: LOWER_WEAR_IMGS.straightLegShape        },
+    { id: 'slim',            label: 'Slim',             img: LOWER_WEAR_IMGS.slimLegShape            },
+    { id: 'wide',            label: 'Wide Leg',         img: LOWER_WEAR_IMGS.wideLegShape            },
+    { id: 'bootcut',         label: 'Bootcut',          img: LOWER_WEAR_IMGS.bootCutLegShape         },
+    { id: 'joggered_bottom', label: 'Joggered Bottom',  img: LOWER_WEAR_IMGS.joggeredBottomLegShape  },
+  ],
+}
+
+const BOTTOM_TYPE_SLOT = {
+  id:      'bottom_type',
+  label:   'Bottom Hem Type',
+  options: [
+    { id: 'plain_hem',   label: 'Plain Hem',   img: LOWER_WEAR_IMGS.plainHemBottom   },
+    { id: 'raw_hem',     label: 'Raw Hem',     img: LOWER_WEAR_IMGS.rawHemBottom     },
+    { id: 'turned_up',   label: 'Turned Up',   img: LOWER_WEAR_IMGS.turnedUpBottom   },
+    { id: 'elasticated', label: 'Elasticated', img: LOWER_WEAR_IMGS.elasticatedBottom },
   ],
 }
 
@@ -202,52 +325,66 @@ function buildUpperWearSlots(gender) {
 
 
 function buildLowerWearSlots(gender) {
-  const pocketSlot = gender === 'Female' ? POCKET_SLOT_FEMALE : POCKET_SLOT_MALE_BACK
+  if (gender === 'Female') {
+    return [
+      {
+        id:      'waist_style',
+        label:   'Waist Style',
+        options: [
+          { id: 'high',       label: 'High Waist', img: null },
+          { id: 'mid',        label: 'Mid Waist',  img: null },
+          { id: 'low',        label: 'Low Waist',  img: null },
+          { id: 'elastic',    label: 'Elastic',    img: null },
+          { id: 'drawstring', label: 'Drawstring', img: null },
+        ],
+      },
+      {
+        id:      'leg_style',
+        label:   'Leg Style',
+        options: [
+          { id: 'straight', label: 'Straight', img: null },
+          { id: 'flared',   label: 'Flared',   img: null },
+          { id: 'tapered',  label: 'Tapered',  img: null },
+          { id: 'wide_leg', label: 'Wide Leg', img: null },
+          { id: 'skinny',   label: 'Skinny',   img: null },
+          { id: 'bootcut',  label: 'Bootcut',  img: null },
+        ],
+      },
+      {
+        id:      'length',
+        label:   'Length',
+        options: [
+          { id: 'mini',        label: 'Mini',        img: null },
+          { id: 'knee',        label: 'Knee Length', img: null },
+          { id: 'midi',        label: 'Midi',        img: null },
+          { id: 'ankle',       label: 'Ankle',       img: null },
+          { id: 'full_length', label: 'Full Length', img: null },
+        ],
+      },
+      POCKET_SLOT_FEMALE,
+      SHARED_SLOTS.fit,
+    ]
+  }
 
   return [
-    {
-      id:      'waist_style',
-      label:   'Waist Style',
-      options: [
-        { id: 'high',       label: 'High Waist',  img: null },
-        { id: 'mid',        label: 'Mid Waist',   img: null },
-        { id: 'low',        label: 'Low Waist',   img: null },
-        { id: 'elastic',    label: 'Elastic',     img: null },
-        { id: 'drawstring', label: 'Drawstring',  img: null },
-      ],
-    },
-    {
-      id:      'leg_style',
-      label:   'Leg Style',
-      options: [
-        { id: 'straight', label: 'Straight', img: null },
-        { id: 'flared',   label: 'Flared',   img: null },
-        { id: 'tapered',  label: 'Tapered',  img: null },
-        { id: 'wide_leg', label: 'Wide Leg', img: null },
-        { id: 'skinny',   label: 'Skinny',   img: null },
-        { id: 'bootcut',  label: 'Bootcut',  img: null },
-      ],
-    },
+    WAIST_BAND_SLOT,
+    FLY_TYPE_SLOT,
+    BELT_LOOP_SLOT,
+    MALE_LOWER_FRONT_POCKET_SLOT,
+    POCKET_SLOT_MALE_BACK,
+    LEG_SHAPE_SLOT,
     {
       id:      'length',
       label:   'Length',
-      options: gender === 'Female'
-        ? [
-            { id: 'mini',        label: 'Mini',        img: null },
-            { id: 'knee',        label: 'Knee Length', img: null },
-            { id: 'midi',        label: 'Midi',        img: null },
-            { id: 'ankle',       label: 'Ankle',       img: null },
-            { id: 'full_length', label: 'Full Length', img: null },
-          ]
-        : [
-            { id: 'shorts',    label: 'Shorts',        img: null },
-            { id: 'knee',      label: 'Knee Length',   img: null },
-            { id: 'three_qtr', label: 'Three-Quarter', img: null },
-            { id: 'ankle',     label: 'Ankle',         img: null },
-            { id: 'full',      label: 'Full Length',   img: null },
-          ],
+      options: [
+        { id: 'shorts',    label: 'Shorts',         img: null },
+        { id: 'knee',      label: 'Knee Length',    img: null },
+        { id: 'three_qtr', label: 'Three-Quarter',  img: null },
+        { id: 'ankle',     label: 'Ankle',          img: null },
+        { id: 'full',      label: 'Full Length',    img: null },
+      ],
     },
-    pocketSlot,
+    BOTTOM_TYPE_SLOT,
     SHARED_SLOTS.fit,
   ]
 }
