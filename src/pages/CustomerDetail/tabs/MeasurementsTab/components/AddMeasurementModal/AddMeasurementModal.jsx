@@ -1,11 +1,11 @@
-import { useState, useRef }                                                          from 'react'
-import { MultiImageUploader }                                                       from '../MultiImageUploader/MultiImageUploader'
-import { uploadToCloudinary }                                                       from '../../../../../../services/cloudinaryService'
-import { useNetworkStatus }                                                         from '../../../../../../hooks/useNetworkStatus'
-import { UNIT_FULL }                                                                from '../../../../../../datas/measurementDatas'
+import { useState, useRef }                                                               from 'react'
+import { MultiImageUploader }                                                            from '../MultiImageUploader/MultiImageUploader'
+import { uploadToCloudinary }                                                            from '../../../../../../services/cloudinaryService'
+import { useNetworkStatus }                                                              from '../../../../../../hooks/useNetworkStatus'
+import { UNIT_FULL }                                                                     from '../../../../../../datas/measurementDatas'
 import { GARMENT_CATEGORIES, FULL_WEAR_TYPES, FEMALE_LOWER_BODY_TYPES, getSlotsForCard } from './garmentFeatures'
-import Header                                                                       from '../../../../../../components/Header/Header'
-import styles                                                                       from './AddMeasurementModal.module.css'
+import Header                                                                            from '../../../../../../components/Header/Header'
+import styles                                                                            from './AddMeasurementModal.module.css'
 
 
 function createBlankField() {
@@ -58,6 +58,37 @@ function getSlotSummary(slot, styleSelections) {
   return { label: option.label, img: option.img ?? null }
 }
 
+function buildSavePayload(measurement, unit, imageUrls) {
+  const today = new Date().toLocaleDateString('en-US', {
+    month: 'short', day: 'numeric', year: 'numeric',
+  })
+
+  return {
+    id:              Date.now() + Math.random(),
+    name:            measurement.name.trim(),
+    category:        measurement.category      || null,
+    fullWearType:    measurement.fullWearType  || null,
+    lowerBodyType:   measurement.lowerBodyType || null,
+    styleSelections: measurement.styleSelections,
+    imgSrcs:         imageUrls,
+    imgSrc:          imageUrls[0] ?? null,
+    unit,
+    fields:          measurement.fields.filter(f => f.name.trim()).map(f => ({ name: f.name, value: f.value })),
+    date:            today,
+  }
+}
+
+async function uploadMeasurementImages(slots) {
+  if (!slots?.length) return []
+  const urls = await Promise.all(
+    slots.map(slot => slot.file ? uploadToCloudinary(slot.file, 'measurements') : slot.localSrc)
+  )
+  return urls.filter(Boolean)
+}
+
+const hasStyleSelections = styleSelections =>
+  Object.values(styleSelections).some(v => v && v !== '')
+
 
 export function AddMeasurementModal({ isOpen, onClose, onSave, gender }) {
   const [activeTab,        setActiveTab]        = useState('measurements')
@@ -68,6 +99,8 @@ export function AddMeasurementModal({ isOpen, onClose, onSave, gender }) {
   const [openSlotId,       setOpenSlotId]       = useState(null)
   const isOnline                                = useNetworkStatus()
   const detailsRef                              = useRef(null)
+  const scrollBodyRef                           = useRef(null)
+  const slotCardRefs                            = useRef({})
 
 
   function updateMeasurement(key, value) {
@@ -118,7 +151,19 @@ export function AddMeasurementModal({ isOpen, onClose, onSave, gender }) {
   }
 
   function toggleSlot(slotId) {
+    const isOpening = openSlotId !== slotId
     setOpenSlotId(prev => prev === slotId ? null : slotId)
+
+    if (isOpening) {
+      requestAnimationFrame(() => {
+        const card       = slotCardRefs.current[slotId]
+        const scrollBody = scrollBodyRef.current
+        if (!card || !scrollBody) return
+        const cardTop    = card.getBoundingClientRect().top
+        const bodyTop    = scrollBody.getBoundingClientRect().top
+        scrollBody.scrollBy({ top: cardTop - bodyTop - 16, behavior: 'smooth' })
+      })
+    }
   }
 
   function handleOptionSelect(slotId, optionId, parentSlotId) {
@@ -158,44 +203,32 @@ export function AddMeasurementModal({ isOpen, onClose, onSave, gender }) {
 
 
   async function handleSave() {
-    const errors = validateMeasurement(measurement)
-
-    if (Object.keys(errors).length > 0) {
-      setValidationErrors(errors)
-      detailsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
-      setActiveTab('measurements')
+    if (activeTab === 'measurements') {
+      const errors = validateMeasurement(measurement)
+      if (Object.keys(errors).length > 0) {
+        setValidationErrors(errors)
+        detailsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+        return
+      }
+      setActiveTab('features')
       return
     }
 
     setIsSaving(true)
+    const imageUrls = await uploadMeasurementImages(measurement.slots)
+    onSave(buildSavePayload(measurement, unit, imageUrls))
+    setIsSaving(false)
+    resetAndClose()
+  }
 
-    const today = new Date().toLocaleDateString('en-US', {
-      month: 'short', day: 'numeric', year: 'numeric',
-    })
-
-    const imageUrls = measurement.slots?.length > 0
-      ? await Promise.all(
-          measurement.slots.map(async slot => {
-            if (slot.file) return await uploadToCloudinary(slot.file, 'measurements')
-            return slot.localSrc
-          })
-        ).then(urls => urls.filter(Boolean))
-      : []
-
+  async function handleSkip() {
+    setIsSaving(true)
+    const imageUrls = await uploadMeasurementImages(measurement.slots)
     onSave({
-      id:              Date.now() + Math.random(),
-      name:            measurement.name.trim(),
-      category:        measurement.category      || null,
-      fullWearType:    measurement.fullWearType  || null,
-      lowerBodyType:   measurement.lowerBodyType || null,
-      styleSelections: measurement.styleSelections,
-      imgSrcs:         imageUrls,
-      imgSrc:          imageUrls[0] ?? null,
-      unit,
-      fields:          measurement.fields.filter(f => f.name.trim()).map(f => ({ name: f.name, value: f.value })),
-      date:            today,
+      ...buildSavePayload(measurement, unit, imageUrls),
+      styleSelections: {},
+      skippedFeatures: true,
     })
-
     setIsSaving(false)
     resetAndClose()
   }
@@ -211,10 +244,20 @@ export function AddMeasurementModal({ isOpen, onClose, onSave, gender }) {
   }
 
 
-  const isFemaleLoweBody = gender === 'Female' && measurement.category === 'lower_body'
-  const needsLowerType   = isFemaleLoweBody && !measurement.lowerBodyType
-  const needsFullType    = measurement.category === 'full_body' && !measurement.fullWearType
-  const slots            = getSlotsForCard(measurement.category, measurement.fullWearType, gender, measurement.lowerBodyType)
+  const isFemaleLoweBody   = gender === 'Female' && measurement.category === 'lower_body'
+  const needsFullType      = measurement.category === 'full_body' && !measurement.fullWearType
+  const slots              = getSlotsForCard(measurement.category, measurement.fullWearType, gender, measurement.lowerBodyType)
+  const hasFeatures        = hasStyleSelections(measurement.styleSelections)
+
+  const headerAction = (() => {
+    if (activeTab === 'measurements') {
+      return { label: 'Save', onClick: handleSave, disabled: isSaving }
+    }
+    if (hasFeatures) {
+      return { label: isSaving ? 'Saving...' : 'Save', onClick: handleSave, disabled: isSaving }
+    }
+    return { label: isSaving ? 'Saving...' : 'Skip', onClick: handleSkip, color: 'var(--text2)', disabled: isSaving }
+  })()
 
   return (
     <div className={`${styles.formOverlay} ${isOpen ? styles.formOverlay_open : ''}`}>
@@ -222,11 +265,7 @@ export function AddMeasurementModal({ isOpen, onClose, onSave, gender }) {
         type="back"
         title="New Measurement"
         onBackClick={resetAndClose}
-        customActions={[{
-          label:    isSaving ? 'Saving...' : 'Save',
-          onClick:  handleSave,
-          disabled: isSaving,
-        }]}
+        customActions={[headerAction]}
       />
 
       <div className={styles.formTabs}>
@@ -244,7 +283,7 @@ export function AddMeasurementModal({ isOpen, onClose, onSave, gender }) {
         </button>
       </div>
 
-      <div className={styles.formScrollBody}>
+      <div className={styles.formScrollBody} ref={scrollBodyRef}>
 
         {activeTab === 'measurements' && (
           <div className={styles.tabSection}>
@@ -407,7 +446,7 @@ export function AddMeasurementModal({ isOpen, onClose, onSave, gender }) {
                   const summary = getSlotSummary(slot, measurement.styleSelections)
 
                   return (
-                    <div key={slot.id}>
+                    <div key={slot.id} ref={el => slotCardRefs.current[slot.id] = el}>
                       <div
                         className={`${styles.slotCard} ${isOpen ? styles.slotCard_open : ''}`}
                         onClick={() => toggleSlot(slot.id)}
