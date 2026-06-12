@@ -8,7 +8,7 @@ export function InvoiceTemplate14({ invoice, customer, invoiceBrandSettings }) {
 
 
   const dueDate = getDueDate(invoice, invoiceBrandSettings.dueDays)
-  const accentColor = invoiceBrandSettings.colour || '#1C1814'
+  const accentColor = invoiceBrandSettings.colour || '#0A0A0A'
   const { currency, showTax, invoiceTaxRate: invoiceBrandSettingsTaxRate } = invoiceBrandSettings
 
   const subtotal = invoice.items?.length > 0

@@ -22,8 +22,8 @@ export const DEFAULTS = {
 
   brandName:     '',
   brandTagline:  '',
-  brandColourId: 'classic-warm-black',
-  brandColour:   '#1C1814',
+  brandColourId: 'fashion-jet-black',
+  brandColour:   '#0A0A0A',
   brandLogo:     null,
 
   brandPhone:   '',

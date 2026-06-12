@@ -83,7 +83,7 @@
 
 .billToDetail {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   gap: 5px;
   font-size: 9px;
   color: var(--brand-on-primary);

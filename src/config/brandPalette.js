@@ -2075,4 +2075,4 @@ export function getPalettesByStyle(style) {
 }
 
 
-export const DEFAULT_COLOUR_ID = 'classic-warm-black'
+export const DEFAULT_COLOUR_ID = 'fashion-jet-black'

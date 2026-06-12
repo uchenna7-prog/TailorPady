@@ -8,7 +8,7 @@ import { PhoneIcon, EmailIcon, LocationIcon } from "../components/icons/icons"
 
 export function ReceiptTemplate8({ receipt, customer, receiptBrandSettings }) {
 
-  const bannerBg = receiptBrandSettings.colour || '#1C1814'
+  const bannerBg = receiptBrandSettings.colour || '#0A0A0A'
 
   return (
 

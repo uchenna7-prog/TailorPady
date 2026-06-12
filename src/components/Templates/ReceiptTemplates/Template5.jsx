@@ -6,7 +6,7 @@ import { PhoneIcon, EmailIcon, LocationIcon } from "../components/icons/icons"
 
 export function ReceiptTemplate5({ receipt, customer, receiptBrandSettings }) {
 
-  const barColor = receiptBrandSettings.colour || '#1C1814'
+  const barColor = receiptBrandSettings.colour || '#0A0A0A'
   const { currency, showTax, receiptTaxRate: receiptBrandSettingsTaxRate } = receiptBrandSettings
 
   const subtotal = receipt.items?.length > 0

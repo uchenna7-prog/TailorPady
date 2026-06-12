@@ -11,7 +11,7 @@ import { LogoOrName } from "../components/LogoOrBrandName/LogoOrBrandName"
 
 
 export function ReceiptTemplate11({ receipt, customer, receiptBrandSettings }) {
-  const accentColor = receiptBrandSettings.colour || '#1C1814'
+  const accentColor = receiptBrandSettings.colour || '#0A0A0A'
   const { currency, showTax, receiptTaxRate: receiptBrandSettingsTaxRate } = receiptBrandSettings
 
   const subtotal = receipt.items?.length > 0

@@ -7,7 +7,7 @@ import { PhoneIcon, EmailIcon, LocationIcon } from "../components/icons/icons"
 export function InvoiceTemplate1({ invoice, customer, invoiceBrandSettings }) {
 
   const dueDate   = getDueDate(invoice, invoiceBrandSettings.dueDays)
-  const lineColor = invoiceBrandSettings.colour || "#1C1814"
+  const lineColor = invoiceBrandSettings.colour || "#0A0A0A"
 
   return (
 

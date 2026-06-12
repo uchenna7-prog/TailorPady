@@ -6,7 +6,7 @@ import { PhoneIcon, EmailIcon, LocationIcon } from "../components/icons/icons"
 export function InvoiceTemplate5({ invoice, customer, invoiceBrandSettings }) {
 
   const dueDate  = getDueDate(invoice, invoiceBrandSettings.dueDays)
-  const barColor = invoiceBrandSettings.colour || '#1C1814'
+  const barColor = invoiceBrandSettings.colour || '#0A0A0A'
 
   const { currency, showTax, invoiceTaxRate: invoiceBrandSettingsTaxRate } = invoiceBrandSettings
 

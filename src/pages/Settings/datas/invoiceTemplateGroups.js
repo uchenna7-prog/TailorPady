@@ -60,7 +60,7 @@ export const INVOICE_TEMPLATE_GROUPS = [
       {
         id: 'invoiceTemplate3',
         label: 'Spine',
-        tags: ['clean', 'has logo', 'terms'],
+        tags: ['clean', 'has logo', 'payment terms'],
         requires: [
           'logo',
           'name',
@@ -274,7 +274,7 @@ export const INVOICE_TEMPLATE_GROUPS = [
       {
         id: 'invoiceTemplate15',
         label: 'Simple Footer',
-        tags: ['accent', 'no logo', 'notes'],
+        tags: ['accent', 'no logo'],
         requires: [
           'name',
           'tagline',
@@ -290,7 +290,7 @@ export const INVOICE_TEMPLATE_GROUPS = [
       {
         id: 'invoiceTemplate16',
         label: 'Stitched Split',
-        tags: ['accent', 'has logo', 'terms'],
+        tags: ['accent', 'has logo', 'payment terms'],
         requires: [
           'logo',
           'name',
@@ -349,7 +349,7 @@ export const INVOICE_TEMPLATE_GROUPS = [
       {
         id: 'invoiceTemplate19',
         label: 'Full Background',
-        tags: ['solid', 'no logo', 'terms'],
+        tags: ['solid', 'no logo', 'payment terms'],
         requires: [
           'name',
           'address',
@@ -365,7 +365,7 @@ export const INVOICE_TEMPLATE_GROUPS = [
       {
         id: 'invoiceTemplate20',
         label: 'Colour Block',
-        tags: ['solid', 'no logo', 'terms'],
+        tags: ['solid', 'no logo', 'payment terms'],
         requires: [
           'name',
           'address',

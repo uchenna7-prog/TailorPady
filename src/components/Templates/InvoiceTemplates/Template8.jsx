@@ -7,7 +7,7 @@ import { PhoneIcon, EmailIcon, LocationIcon } from "../components/icons/icons"
 
 export function InvoiceTemplate8({ invoice, customer, invoiceBrandSettings }) {
 
-  const bannerBg = invoiceBrandSettings.colour || '#1C1814'
+  const bannerBg = invoiceBrandSettings.colour || '#0A0A0A'
   const dueDate  = getDueDate(invoice, invoiceBrandSettings.dueDays)
   const hasBank  = !!invoiceBrandSettings.accountBank
 

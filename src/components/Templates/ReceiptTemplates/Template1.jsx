@@ -6,7 +6,7 @@ import { PhoneIcon, EmailIcon, LocationIcon } from "../components/icons/icons"
 
 export function ReceiptTemplate1({ receipt, customer, receiptBrandSettings }) {
 
-  const lineColor = receiptBrandSettings.colour || "#1C1814"
+  const lineColor = receiptBrandSettings.colour || "#0A0A0A"
 
   return (
 
