@@ -90,7 +90,7 @@
   color: var(--bg);
   border: none;
   border-radius: 12px;
-  font-family: 'DM Sans', sans-serif;
+  font-family: 'Manrope', sans-serif;
   font-size: 0.85rem;
   font-weight: 700;
   cursor: pointer;
@@ -257,7 +257,7 @@
   border-radius: 8px;
   font-weight: 800;
   font-size: 0.8rem;
-  font-family: 'DM Sans', sans-serif;
+  font-family: 'Manrope', sans-serif;
   cursor: pointer;
   transition: opacity 0.2s;
   flex-shrink: 0;
@@ -335,7 +335,7 @@
   border-radius: 12px;
   padding: 14px 16px;
   color: var(--text);
-  font-family: 'DM Sans', sans-serif;
+  font-family: 'Manrope', sans-serif;
   font-size: 0.9rem;
   outline: none;
   transition: border-color 0.2s;
@@ -384,7 +384,7 @@
   color: var(--text2);
   padding: 10px 16px;
   border-radius: 10px;
-  font-family: 'DM Sans', sans-serif;
+  font-family: 'Manrope', sans-serif;
   font-size: 0.75rem;
   font-weight: 700;
   cursor: pointer;

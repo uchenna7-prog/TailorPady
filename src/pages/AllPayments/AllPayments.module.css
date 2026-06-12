@@ -38,7 +38,7 @@
   background: transparent;
   border: none;
   color: var(--text);
-  font-family: 'DM Sans', sans-serif;
+  font-family: 'Manrope', sans-serif;
   font-size: 0.9rem;
   width: 100%;
   outline: none;
@@ -132,7 +132,7 @@
   border: none;
   background: transparent;
   color: var(--text2);
-  font-family: 'DM Sans', sans-serif;
+  font-family: 'Manrope', sans-serif;
   font-size: 0.82rem;
   font-weight: 600;
   cursor: pointer;
@@ -653,7 +653,7 @@
   font-size: 0.85rem;
   font-weight: 700;
   cursor: pointer;
-  font-family: 'DM Sans', sans-serif;
+  font-family: 'Manrope', sans-serif;
   transition: opacity 0.15s;
 }
 

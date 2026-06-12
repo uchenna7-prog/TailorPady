@@ -73,7 +73,7 @@
 }
 
 .pillLabel {
-  font-family: 'DM Sans', sans-serif;
+  font-family: 'Manrope', sans-serif;
   font-size: 0.68rem;
   font-weight: 800;
   letter-spacing: 0.1px;
@@ -178,7 +178,7 @@
   border: 1.5px solid var(--border2);
   background: var(--surface);
   color: var(--text3);
-  font-family: 'DM Sans', sans-serif;
+  font-family: 'Manrope', sans-serif;
   font-size: 0.72rem;
   font-weight: 700;
   white-space: nowrap;
@@ -228,7 +228,7 @@
   border: none;
   background: var(--text);
   color: var(--bg);
-  font-family: 'DM Sans', sans-serif;
+  font-family: 'Manrope', sans-serif;
   font-size: 0.76rem;
   font-weight: 800;
   cursor: pointer;
@@ -260,7 +260,7 @@
   border: none;
   outline: none;
   color: var(--text);
-  font-family: 'DM Sans', sans-serif;
+  font-family: 'Manrope', sans-serif;
   font-size: 0.88rem;
   padding: 11px 0;
 }
@@ -406,7 +406,7 @@
   border: none;
   outline: none;
   color: var(--text);
-  font-family: 'DM Sans', sans-serif;
+  font-family: 'Manrope', sans-serif;
   font-size: 0.9rem;
   padding: 13px 0;
 }
@@ -433,7 +433,7 @@
   width: 100%;
   text-align: left;
   cursor: pointer;
-  font-family: 'DM Sans', sans-serif;
+  font-family: 'Manrope', sans-serif;
 }
 .dropItem:active { background: var(--surface2); }
 .dropAvatar {

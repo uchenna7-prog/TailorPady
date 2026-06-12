@@ -50,7 +50,6 @@
   border:      none;
   outline:     none;
   color:       var(--text);
-  font-family: 'DM Sans', sans-serif;
   font-size:   0.85rem;
   font-weight: 600;
   padding:     12px 0;
@@ -301,7 +300,6 @@
   font-size:       0.9rem;
   font-weight:     700;
   outline:         none;
-  font-family:     'DM Sans', sans-serif;
   -moz-appearance: textfield;
 }
 
@@ -433,7 +431,6 @@
   color:           var(--text);
   font-size:       0.9rem;
   font-weight:     700;
-  font-family:     'DM Sans', sans-serif;
   padding:         10px 0;
   -moz-appearance: textfield;
 }
@@ -486,7 +483,6 @@
   padding:     8px 12px;
   font-size:   0.8rem;
   font-weight: 800;
-  font-family: 'DM Sans', sans-serif;
   background:  transparent;
   border:      none;
   color:       var(--text3);
@@ -574,7 +570,6 @@
   border-bottom:  1px solid var(--border2);
   padding-bottom: 10px;
   margin-bottom:  20px;
-  font-family:    'DM Sans', sans-serif;
 }
 
 .underlineInput_error {
@@ -638,6 +633,5 @@
   outline:        none;
   resize:         none;
   min-height:     70px;
-  font-family:    'DM Sans', sans-serif;
   padding-bottom: 8px;
 }

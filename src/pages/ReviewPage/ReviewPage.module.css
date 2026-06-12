@@ -7,7 +7,7 @@
   align-items: center;
   justify-content: center;
   padding: 24px 16px calc(40px + env(safe-area-inset-bottom));
-  font-family: 'DM Sans', sans-serif;
+  font-family: 'Manrope', sans-serif;
 }
 
 .loadingWrap {
@@ -129,7 +129,7 @@
   border-radius: 12px;
   padding: 13px 14px;
   color: var(--text, #000000);
-  font-family: 'DM Sans', sans-serif;
+  font-family: 'Manrope', sans-serif;
   font-size: 0.95rem;
   font-weight: 500;
   outline: none;
@@ -152,7 +152,7 @@
   border-radius: 12px;
   padding: 13px 14px;
   color: var(--text, #000000);
-  font-family: 'DM Sans', sans-serif;
+  font-family: 'Manrope', sans-serif;
   font-size: 0.9rem;
   font-weight: 400;
   outline: none;
@@ -224,7 +224,7 @@
   border: none;
   background: var(--accent, #000000);
   color: var(--bg, #ffffff);
-  font-family: 'DM Sans', sans-serif;
+  font-family: 'Manrope', sans-serif;
   font-size: 0.92rem;
   font-weight: 800;
   cursor: pointer;

@@ -184,7 +184,7 @@
   border: 1.5px dashed var(--border2);
   background: transparent;
   color: var(--text2);
-  font-family: 'DM Sans', sans-serif;
+  font-family: 'Manrope', sans-serif;
   font-size: 0.82rem;
   font-weight: 700;
   display: flex;
@@ -232,7 +232,7 @@
   background: transparent;
   text-align: center;
   transition: all 0.2s;
-  font-family: 'DM Sans', sans-serif;
+  font-family: 'Manrope', sans-serif;
 }
 
 .typeChipActive { font-weight: 800; }

@@ -129,7 +129,7 @@
   font-weight: 800;
   cursor: pointer;
   text-align: center;
-  font-family: 'DM Sans', sans-serif;
+  font-family: 'Manrope', sans-serif;
   transition: all 0.15s;
 }
 
@@ -236,5 +236,5 @@
   font-weight: 700;
   margin-top: 8px;
   cursor: pointer;
-  font-family: 'DM Sans', sans-serif;
+  font-family: 'Manrope', sans-serif;
 }

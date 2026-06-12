@@ -260,301 +260,306 @@ export function AddMeasurementModal({ isOpen, onClose, onSave, gender }) {
   })()
 
   return (
-    <div className={`${styles.formOverlay} ${isOpen ? styles.formOverlay_open : ''}`}>
-      <Header
-        type="back"
-        title="New Measurement"
-        onBackClick={resetAndClose}
-        customActions={[headerAction]}
-      />
+    <div
+      className={`${styles.formOverlay} ${isOpen ? styles.formOverlay_open : ''}`}
+      onClick={resetAndClose}
+    >
+      <div className={styles.formPanel} onClick={e => e.stopPropagation()}>
+        <Header
+          type="back"
+          title="New Measurement"
+          onBackClick={resetAndClose}
+          customActions={[headerAction]}
+        />
 
-      <div className={styles.formTabs}>
-        <button
-          className={`${styles.formTab} ${activeTab === 'measurements' ? styles.formTab_active : ''}`}
-          onClick={() => setActiveTab('measurements')}
-        >
-          Measurements
-        </button>
-        <button
-          className={`${styles.formTab} ${activeTab === 'features' ? styles.formTab_active : ''}`}
-          onClick={() => setActiveTab('features')}
-        >
-          Garment Features
-        </button>
-      </div>
+        <div className={styles.formTabs}>
+          <button
+            className={`${styles.formTab} ${activeTab === 'measurements' ? styles.formTab_active : ''}`}
+            onClick={() => setActiveTab('measurements')}
+          >
+            Measurements
+          </button>
+          <button
+            className={`${styles.formTab} ${activeTab === 'features' ? styles.formTab_active : ''}`}
+            onClick={() => setActiveTab('features')}
+          >
+            Garment Features
+          </button>
+        </div>
 
-      <div className={styles.formScrollBody} ref={scrollBodyRef}>
+        <div className={styles.formScrollBody} ref={scrollBodyRef}>
 
-        {activeTab === 'measurements' && (
-          <div className={styles.tabSection}>
+          {activeTab === 'measurements' && (
+            <div className={styles.tabSection}>
 
-            <p className={styles.stepHeading}>1. Unit of Measurement</p>
-            <div className={styles.unitChipRow}>
-              {['in', 'cm', 'yd'].map(u => (
-                <button
-                  key={u}
-                  className={`${styles.unitChip} ${unit === u ? styles.unitChip_active : ''}`}
-                  onClick={() => setUnit(u)}
-                >
-                  {UNIT_FULL[u]}
-                </button>
-              ))}
-            </div>
-
-            <p className={styles.stepHeading} style={{ marginTop: 24 }}>2. Garment Category</p>
-            <p className={styles.stepSubheading}>Where on the body is this garment worn?</p>
-            <div className={styles.categoryChipRow}>
-              {GARMENT_CATEGORIES.map(cat => (
-                <button
-                  key={cat.id}
-                  className={`${styles.categoryChip} ${measurement.category === cat.id ? styles.categoryChip_active : ''}`}
-                  onClick={() => updateCategory(cat.id)}
-                >
-                  {cat.label}
-                </button>
-              ))}
-            </div>
-
-            <p className={styles.stepHeading} style={{ marginTop: 24 }}>3. Garment Details</p>
-
-            <div
-              ref={detailsRef}
-              className={`${styles.clothCard} ${Object.keys(validationErrors).length > 0 ? styles.clothCard_error : ''}`}
-            >
-              <label className={styles.fieldLabel}>Name</label>
-              <input
-                type="text"
-                className={`${styles.underlineInput} ${validationErrors.name ? styles.underlineInput_error : ''}`}
-                placeholder="e.g. Shirt"
-                value={measurement.name}
-                onChange={e => updateMeasurement('name', e.target.value)}
-              />
-              {validationErrors.name && (
-                <p className={styles.inlineError}>{validationErrors.name}</p>
-              )}
-
-              <label className={styles.fieldLabel}>Design References</label>
-              <MultiImageUploader
-                images={measurement.slots}
-                cardId="single"
-                isOnline={isOnline}
-                onChange={slots => updateMeasurement('slots', slots)}
-              />
-
-              <label className={styles.fieldLabel} style={{ marginTop: 4 }}>Measurements</label>
-
-              <div className={styles.measureFieldList}>
-                {measurement.fields.map(field => (
-                  <div key={field.id} className={styles.measureFieldRow}>
-                    <div className={styles.measureFieldColumn}>
-                      <label>Field</label>
-                      <input
-                        type="text"
-                        className={styles.measureFieldInput}
-                        placeholder="e.g. Neck"
-                        value={field.name}
-                        onChange={e => updateField(field.id, 'name', e.target.value)}
-                      />
-                    </div>
-                    <div className={styles.measureFieldColumn}>
-                      <label>Value</label>
-                      <input
-                        type="number"
-                        className={styles.measureFieldInput}
-                        placeholder="0"
-                        inputMode="decimal"
-                        value={field.value}
-                        onChange={e => updateField(field.id, 'value', e.target.value)}
-                      />
-                    </div>
-                    <button className={styles.removeFieldButton} onClick={() => removeField(field.id)}>
-                      <span className="mi" style={{ fontSize: '1.1rem' }}>remove_circle_outline</span>
-                    </button>
-                  </div>
+              <p className={styles.stepHeading}>1. Unit of Measurement</p>
+              <div className={styles.unitChipRow}>
+                {['in', 'cm', 'yd'].map(u => (
+                  <button
+                    key={u}
+                    className={`${styles.unitChip} ${unit === u ? styles.unitChip_active : ''}`}
+                    onClick={() => setUnit(u)}
+                  >
+                    {UNIT_FULL[u]}
+                  </button>
                 ))}
               </div>
 
-              {validationErrors.fields && (
-                <p className={styles.inlineError}>{validationErrors.fields}</p>
-              )}
-
-              <button className={styles.addFieldButton} onClick={addField}>
-                <span className="mi" style={{ fontSize: '0.9rem' }}>add</span>
-                Add Field
-              </button>
-            </div>
-
-          </div>
-        )}
-
-        {activeTab === 'features' && (
-          <div className={styles.tabSection}>
-            <p className={styles.stepHeading}>Garment Features</p>
-
-            {!measurement.category && (
-              <div className={styles.featureEmptyState}>
-                <span className="mi-outlined" style={{ fontSize: '2rem', color: 'var(--text3)' }}>category</span>
-                <p>No category selected</p>
-                <span>Go to the Measurements tab and pick a garment category first.</span>
+              <p className={styles.stepHeading} style={{ marginTop: 24 }}>2. Garment Category</p>
+              <p className={styles.stepSubheading}>Where on the body is this garment worn?</p>
+              <div className={styles.categoryChipRow}>
+                {GARMENT_CATEGORIES.map(cat => (
+                  <button
+                    key={cat.id}
+                    className={`${styles.categoryChip} ${measurement.category === cat.id ? styles.categoryChip_active : ''}`}
+                    onClick={() => updateCategory(cat.id)}
+                  >
+                    {cat.label}
+                  </button>
+                ))}
               </div>
-            )}
 
-            {measurement.category === 'full_body' && needsFullType && (
-              <>
-                <label className={styles.fieldLabel}>Garment Type</label>
-                <div className={styles.typeChipRow}>
-                  {FULL_WEAR_TYPES.map(type => (
-                    <button
-                      key={type.id}
-                      className={`${styles.typeChip} ${measurement.fullWearType === type.id ? styles.typeChip_active : ''}`}
-                      onClick={() => updateFullWearType(type.id)}
-                    >
-                      {type.label}
-                    </button>
+              <p className={styles.stepHeading} style={{ marginTop: 24 }}>3. Garment Details</p>
+
+              <div
+                ref={detailsRef}
+                className={`${styles.clothCard} ${Object.keys(validationErrors).length > 0 ? styles.clothCard_error : ''}`}
+              >
+                <label className={styles.fieldLabel}>Name</label>
+                <input
+                  type="text"
+                  className={`${styles.underlineInput} ${validationErrors.name ? styles.underlineInput_error : ''}`}
+                  placeholder="e.g. Shirt"
+                  value={measurement.name}
+                  onChange={e => updateMeasurement('name', e.target.value)}
+                />
+                {validationErrors.name && (
+                  <p className={styles.inlineError}>{validationErrors.name}</p>
+                )}
+
+                <label className={styles.fieldLabel}>Design References</label>
+                <MultiImageUploader
+                  images={measurement.slots}
+                  cardId="single"
+                  isOnline={isOnline}
+                  onChange={slots => updateMeasurement('slots', slots)}
+                />
+
+                <label className={styles.fieldLabel} style={{ marginTop: 4 }}>Measurements</label>
+
+                <div className={styles.measureFieldList}>
+                  {measurement.fields.map(field => (
+                    <div key={field.id} className={styles.measureFieldRow}>
+                      <div className={styles.measureFieldColumn}>
+                        <label>Field</label>
+                        <input
+                          type="text"
+                          className={styles.measureFieldInput}
+                          placeholder="e.g. Neck"
+                          value={field.name}
+                          onChange={e => updateField(field.id, 'name', e.target.value)}
+                        />
+                      </div>
+                      <div className={styles.measureFieldColumn}>
+                        <label>Value</label>
+                        <input
+                          type="number"
+                          className={styles.measureFieldInput}
+                          placeholder="0"
+                          inputMode="decimal"
+                          value={field.value}
+                          onChange={e => updateField(field.id, 'value', e.target.value)}
+                        />
+                      </div>
+                      <button className={styles.removeFieldButton} onClick={() => removeField(field.id)}>
+                        <span className="mi" style={{ fontSize: '1.1rem' }}>remove_circle_outline</span>
+                      </button>
+                    </div>
                   ))}
                 </div>
-              </>
-            )}
 
-            {isFemaleLoweBody && (
-              <div className={styles.lowerBodyTypePicker}>
-                {FEMALE_LOWER_BODY_TYPES.map(type => {
-                  const isSelected = measurement.lowerBodyType === type.id
-                  return (
-                    <button
-                      key={type.id}
-                      className={`${styles.lowerBodyTypeOption} ${isSelected ? styles.lowerBodyTypeOption_active : ''}`}
-                      onClick={() => updateLowerBodyType(type.id)}
-                    >
-                      <span className={`mi-outlined ${styles.lowerBodyTypeIcon}`}>
-                        {type.id === 'skirt' ? 'accessibility_new' : 'straighten'}
-                      </span>
-                      <span className={styles.lowerBodyTypeLabel}>{type.label}</span>
-                      {isSelected && (
-                        <span className={`mi ${styles.lowerBodyTypeCheck}`}>check_circle</span>
-                      )}
-                    </button>
-                  )
-                })}
+                {validationErrors.fields && (
+                  <p className={styles.inlineError}>{validationErrors.fields}</p>
+                )}
+
+                <button className={styles.addFieldButton} onClick={addField}>
+                  <span className="mi" style={{ fontSize: '0.9rem' }}>add</span>
+                  Add Field
+                </button>
               </div>
-            )}
 
-            {slots.length > 0 && (
-              <div className={styles.slotAccordionList}>
-                {slots.map(slot => {
-                  const isOpen  = openSlotId === slot.id
-                  const summary = getSlotSummary(slot, measurement.styleSelections)
+            </div>
+          )}
 
-                  return (
-                    <div key={slot.id} ref={el => slotCardRefs.current[slot.id] = el}>
-                      <div
-                        className={`${styles.slotCard} ${isOpen ? styles.slotCard_open : ''}`}
-                        onClick={() => toggleSlot(slot.id)}
+          {activeTab === 'features' && (
+            <div className={styles.tabSection}>
+              <p className={styles.stepHeading}>Garment Features</p>
+
+              {!measurement.category && (
+                <div className={styles.featureEmptyState}>
+                  <span className="mi-outlined" style={{ fontSize: '2rem', color: 'var(--text3)' }}>category</span>
+                  <p>No category selected</p>
+                  <span>Go to the Measurements tab and pick a garment category first.</span>
+                </div>
+              )}
+
+              {measurement.category === 'full_body' && needsFullType && (
+                <>
+                  <label className={styles.fieldLabel}>Garment Type</label>
+                  <div className={styles.typeChipRow}>
+                    {FULL_WEAR_TYPES.map(type => (
+                      <button
+                        key={type.id}
+                        className={`${styles.typeChip} ${measurement.fullWearType === type.id ? styles.typeChip_active : ''}`}
+                        onClick={() => updateFullWearType(type.id)}
                       >
-                        <div className={styles.slotCardLeft}>
-                          {summary?.img
-                            ? <img src={summary.img} alt={summary.label} className={styles.slotCardThumb} />
-                            : (
-                              <div className={styles.slotCardThumbPlaceholder}>
-                                <span className="mi-outlined" style={{ fontSize: '1rem', color: 'var(--text3)' }}>
-                                  style
-                                </span>
-                              </div>
-                            )
-                          }
-                          <div className={styles.slotCardInfo}>
-                            <span className={styles.slotCardLabel}>{slot.label}</span>
-                            {summary
-                              ? <span className={styles.slotCardValue}>{summary.label}</span>
-                              : <span className={styles.slotCardHint}>Tap to choose</span>
+                        {type.label}
+                      </button>
+                    ))}
+                  </div>
+                </>
+              )}
+
+              {isFemaleLoweBody && (
+                <div className={styles.lowerBodyTypePicker}>
+                  {FEMALE_LOWER_BODY_TYPES.map(type => {
+                    const isSelected = measurement.lowerBodyType === type.id
+                    return (
+                      <button
+                        key={type.id}
+                        className={`${styles.lowerBodyTypeOption} ${isSelected ? styles.lowerBodyTypeOption_active : ''}`}
+                        onClick={() => updateLowerBodyType(type.id)}
+                      >
+                        <span className={`mi-outlined ${styles.lowerBodyTypeIcon}`}>
+                          {type.id === 'skirt' ? 'accessibility_new' : 'straighten'}
+                        </span>
+                        <span className={styles.lowerBodyTypeLabel}>{type.label}</span>
+                        {isSelected && (
+                          <span className={`mi ${styles.lowerBodyTypeCheck}`}>check_circle</span>
+                        )}
+                      </button>
+                    )
+                  })}
+                </div>
+              )}
+
+              {slots.length > 0 && (
+                <div className={styles.slotAccordionList}>
+                  {slots.map(slot => {
+                    const isOpen  = openSlotId === slot.id
+                    const summary = getSlotSummary(slot, measurement.styleSelections)
+
+                    return (
+                      <div key={slot.id} ref={el => slotCardRefs.current[slot.id] = el}>
+                        <div
+                          className={`${styles.slotCard} ${isOpen ? styles.slotCard_open : ''}`}
+                          onClick={() => toggleSlot(slot.id)}
+                        >
+                          <div className={styles.slotCardLeft}>
+                            {summary?.img
+                              ? <img src={summary.img} alt={summary.label} className={styles.slotCardThumb} />
+                              : (
+                                <div className={styles.slotCardThumbPlaceholder}>
+                                  <span className="mi-outlined" style={{ fontSize: '1rem', color: 'var(--text3)' }}>
+                                    style
+                                  </span>
+                                </div>
+                              )
                             }
+                            <div className={styles.slotCardInfo}>
+                              <span className={styles.slotCardLabel}>{slot.label}</span>
+                              {summary
+                                ? <span className={styles.slotCardValue}>{summary.label}</span>
+                                : <span className={styles.slotCardHint}>Tap to choose</span>
+                              }
+                            </div>
+                          </div>
+
+                          <div className={styles.slotCardRight}>
+                            {summary && (
+                              <div className={styles.slotCheckCircle}>
+                                <span className="mi" style={{ fontSize: '0.85rem' }}>check</span>
+                              </div>
+                            )}
+                            <span
+                              className="mi"
+                              style={{
+                                fontSize:   '1.1rem',
+                                color:      'var(--text3)',
+                                transition: 'transform 0.2s',
+                                transform:  isOpen ? 'rotate(180deg)' : 'rotate(0deg)',
+                              }}
+                            >
+                              expand_more
+                            </span>
                           </div>
                         </div>
 
-                        <div className={styles.slotCardRight}>
-                          {summary && (
-                            <div className={styles.slotCheckCircle}>
-                              <span className="mi" style={{ fontSize: '0.85rem' }}>check</span>
-                            </div>
-                          )}
-                          <span
-                            className="mi"
-                            style={{
-                              fontSize:   '1.1rem',
-                              color:      'var(--text3)',
-                              transition: 'transform 0.2s',
-                              transform:  isOpen ? 'rotate(180deg)' : 'rotate(0deg)',
-                            }}
-                          >
-                            expand_more
-                          </span>
-                        </div>
-                      </div>
-
-                      {isOpen && (
-                        <div className={styles.slotAccordionBody}>
-                          {slot.type === 'grouped'
-                            ? slot.subSlots.map((subSlot, index) => (
-                                <div key={subSlot.id}>
-                                  {index > 0 && <div className={styles.subSlotDivider} />}
-                                  <p className={styles.subSlotLabel}>{subSlot.label}</p>
-                                  <div className={styles.optionChipGrid}>
-                                    {subSlot.options.map(opt => {
-                                      const isSelected = measurement.styleSelections?.[subSlot.id] === opt.id
-                                      return (
-                                        <div key={opt.id} className={styles.optionChipWrapper}>
-                                          <button
-                                            className={`${styles.optionChip} ${isSelected ? styles.optionChip_active : ''}`}
-                                            onClick={e => { e.stopPropagation(); handleOptionSelect(subSlot.id, opt.id, slot.id) }}
-                                          >
-                                            {opt.img
-                                              ? <img src={opt.img} alt={opt.label} className={styles.optionChipImg} />
-                                              : <span className={styles.optionChipText}>{opt.label}</span>
-                                            }
-                                          </button>
-                                          {opt.img && (
-                                            <span className={styles.optionChipLabel}>{opt.label}</span>
-                                          )}
-                                        </div>
-                                      )
-                                    })}
-                                  </div>
-                                </div>
-                              ))
-                            : (
-                              <div className={styles.optionChipGrid}>
-                                {slot.options.map(opt => {
-                                  const isSelected = measurement.styleSelections?.[slot.id] === opt.id
-                                  return (
-                                    <div key={opt.id} className={styles.optionChipWrapper}>
-                                      <button
-                                        className={`${styles.optionChip} ${isSelected ? styles.optionChip_active : ''}`}
-                                        onClick={e => { e.stopPropagation(); handleOptionSelect(slot.id, opt.id, null) }}
-                                      >
-                                        {opt.img
-                                          ? <img src={opt.img} alt={opt.label} className={styles.optionChipImg} />
-                                          : <span className={styles.optionChipText}>{opt.label}</span>
-                                        }
-                                      </button>
-                                      {opt.img && (
-                                        <span className={styles.optionChipLabel}>{opt.label}</span>
-                                      )}
+                        {isOpen && (
+                          <div className={styles.slotAccordionBody}>
+                            {slot.type === 'grouped'
+                              ? slot.subSlots.map((subSlot, index) => (
+                                  <div key={subSlot.id}>
+                                    {index > 0 && <div className={styles.subSlotDivider} />}
+                                    <p className={styles.subSlotLabel}>{subSlot.label}</p>
+                                    <div className={styles.optionChipGrid}>
+                                      {subSlot.options.map(opt => {
+                                        const isSelected = measurement.styleSelections?.[subSlot.id] === opt.id
+                                        return (
+                                          <div key={opt.id} className={styles.optionChipWrapper}>
+                                            <button
+                                              className={`${styles.optionChip} ${isSelected ? styles.optionChip_active : ''}`}
+                                              onClick={e => { e.stopPropagation(); handleOptionSelect(subSlot.id, opt.id, slot.id) }}
+                                            >
+                                              {opt.img
+                                                ? <img src={opt.img} alt={opt.label} className={styles.optionChipImg} />
+                                                : <span className={styles.optionChipText}>{opt.label}</span>
+                                              }
+                                            </button>
+                                            {opt.img && (
+                                              <span className={styles.optionChipLabel}>{opt.label}</span>
+                                            )}
+                                          </div>
+                                        )
+                                      })}
                                     </div>
-                                  )
-                                })}
-                              </div>
-                            )
-                          }
-                        </div>
-                      )}
-                    </div>
-                  )
-                })}
-              </div>
-            )}
-          </div>
-        )}
+                                  </div>
+                                ))
+                              : (
+                                <div className={styles.optionChipGrid}>
+                                  {slot.options.map(opt => {
+                                    const isSelected = measurement.styleSelections?.[slot.id] === opt.id
+                                    return (
+                                      <div key={opt.id} className={styles.optionChipWrapper}>
+                                        <button
+                                          className={`${styles.optionChip} ${isSelected ? styles.optionChip_active : ''}`}
+                                          onClick={e => { e.stopPropagation(); handleOptionSelect(slot.id, opt.id, null) }}
+                                        >
+                                          {opt.img
+                                            ? <img src={opt.img} alt={opt.label} className={styles.optionChipImg} />
+                                            : <span className={styles.optionChipText}>{opt.label}</span>
+                                          }
+                                        </button>
+                                        {opt.img && (
+                                          <span className={styles.optionChipLabel}>{opt.label}</span>
+                                        )}
+                                      </div>
+                                    )
+                                  })}
+                                </div>
+                              )
+                            }
+                          </div>
+                        )}
+                      </div>
+                    )
+                  })}
+                </div>
+              )}
+            </div>
+          )}
 
+        </div>
       </div>
     </div>
   )

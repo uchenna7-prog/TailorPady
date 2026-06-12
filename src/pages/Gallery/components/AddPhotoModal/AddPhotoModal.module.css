@@ -106,7 +106,7 @@
   border: 1px solid var(--border2);
   background: var(--surface);
   color: var(--text);
-  font-family: 'DM Sans', sans-serif;
+  font-family: 'Manrope', sans-serif;
   font-size: 0.85rem;
   font-weight: 700;
   cursor: pointer;
@@ -199,7 +199,7 @@
   border: 1.5px solid var(--border2);
   background: var(--surface2);
   color: var(--text3);
-  font-family: 'DM Sans', sans-serif;
+  font-family: 'Manrope', sans-serif;
   font-size: 0.72rem;
   font-weight: 700;
   cursor: pointer;
@@ -239,7 +239,7 @@
   border-radius: 12px;
   padding: 11px 12px;
   color: var(--text);
-  font-family: 'DM Sans', sans-serif;
+  font-family: 'Manrope', sans-serif;
   font-size: 0.88rem;
   outline: none;
   transition: border-color 0.2s;
@@ -271,7 +271,7 @@
   border-radius: 12px;
   padding: 11px 36px 11px 12px;
   color: var(--text);
-  font-family: 'DM Sans', sans-serif;
+  font-family: 'Manrope', sans-serif;
   font-size: 0.88rem;
   font-weight: 600;
   outline: none;
@@ -326,7 +326,7 @@
   border: none;
   outline: none;
   color: var(--text);
-  font-family: 'DM Sans', sans-serif;
+  font-family: 'Manrope', sans-serif;
   font-size: 0.88rem;
   font-weight: 600;
   padding: 11px 12px 11px 0;
@@ -393,7 +393,7 @@
   border: 1px solid var(--border2);
   background: var(--surface);
   color: var(--text2);
-  font-family: 'DM Sans', sans-serif;
+  font-family: 'Manrope', sans-serif;
   font-size: 0.88rem;
   font-weight: 600;
   cursor: pointer;

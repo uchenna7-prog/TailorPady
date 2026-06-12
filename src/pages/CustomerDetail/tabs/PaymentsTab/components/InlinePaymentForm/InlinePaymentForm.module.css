@@ -47,7 +47,7 @@
   border: none;
   background: var(--text);
   color: var(--bg);
-  font-family: 'DM Sans', sans-serif;
+  font-family: 'Manrope', sans-serif;
   font-size: 0.82rem;
   font-weight: 800;
   text-transform: uppercase;
@@ -95,7 +95,7 @@
   cursor: pointer;
   background: transparent;
   transition: all 0.2s;
-  font-family: 'DM Sans', sans-serif;
+  font-family: 'Manrope', sans-serif;
 }
 
 .methodChipActive {
@@ -131,7 +131,7 @@
   outline: none;
   border-bottom: 1px solid var(--border2);
   padding-bottom: 10px;
-  font-family: 'DM Sans', sans-serif;
+  font-family: 'Manrope', sans-serif;
 }
 
 
@@ -145,7 +145,7 @@
   outline: none;
   resize: none;
   min-height: 60px;
-  font-family: 'DM Sans', sans-serif;
+  font-family: 'Manrope', sans-serif;
   padding-bottom: 8px;
 }
 
@@ -169,7 +169,7 @@
   background: transparent;
   text-align: center;
   transition: all 0.2s;
-  font-family: 'DM Sans', sans-serif;
+  font-family: 'Manrope', sans-serif;
 }
 
 .typeChipActive { font-weight: 800; }

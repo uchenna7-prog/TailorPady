@@ -30,14 +30,14 @@
 }
 
 .triggerSymbol {
-  font-family: 'DM Sans', sans-serif;
+  font-family: 'Manrope', sans-serif;
   font-size:   1rem;
   font-weight: 700;
   color:       var(--text);
 }
 
 .triggerCode {
-  font-family: 'DM Sans', sans-serif;
+  font-family: 'Manrope', sans-serif;
   font-size:   0.78rem;
   font-weight: 500;
   color:       var(--text2);
@@ -145,7 +145,7 @@
   border:      none;
   outline:     none;
   color:       var(--text);
-  font-family: 'DM Sans', sans-serif;
+  font-family: 'Manrope', sans-serif;
   font-size:   0.88rem;
 }
 
@@ -239,7 +239,7 @@
 }
 
 .optionCountry {
-  font-family:   'DM Sans', sans-serif;
+  font-family:   'Manrope', sans-serif;
   font-size:     0.84rem;
   font-weight:   500;
   color:         var(--text);
@@ -249,7 +249,7 @@
 }
 
 .optionCurrencyName {
-  font-family:   'DM Sans', sans-serif;
+  font-family:   'Manrope', sans-serif;
   font-size:     0.72rem;
   color:         var(--text3);
   white-space:   nowrap;
@@ -266,7 +266,7 @@
 }
 
 .optionCode {
-  font-family: 'DM Sans', sans-serif;
+  font-family: 'Manrope', sans-serif;
   font-size:   0.78rem;
   font-weight: 700;
   color:       var(--text);
