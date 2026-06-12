@@ -1,13 +1,10 @@
-import { useState, useEffect }                                                            from "react"
-import { ImageCarousel }                                                                  from "../ImageCarousel/ImageCarousel"
-import { ImageLightbox }                                                                  from "../ImageLightbox/ImageLightbox"
-import { UNIT_FULL, UNIT_SHORT }                                                          from "../../../../../../datas/measurementDatas"
-import { getSlotsForCard, GARMENT_CATEGORIES }                                            from "../AddMeasurementModal/garmentFeatures"
-import Header                                                                             from "../../../../../../components/Header/Header"
-import styles                                                                             from "./MeasurementDetailsModal.module.css"
-
-
-// ─── Helpers ─────────────────────────────────────────────────────────────────
+import { useState, useEffect } from "react"
+import { ImageCarousel } from "../ImageCarousel/ImageCarousel"
+import { ImageLightbox } from "../ImageLightbox/ImageLightbox"
+import { UNIT_FULL, UNIT_SHORT } from "../../../../../../datas/measurementDatas"
+import { getSlotsForCard, GARMENT_CATEGORIES } from "../AddMeasurementModal/garmentFeatures"
+import Header from "../../../../../../components/Header/Header"
+import styles from "./MeasurementDetailsModal.module.css"
 
 function DressFormPlaceholder() {
   return (
@@ -47,7 +44,6 @@ function getSelectedLabel(slot, styleSelections) {
   return slot.options.find(o => o.id === id)?.label ?? null
 }
 
-// Returns only the selected option(s) with image — never the full list
 function getSelectedOptionsWithImage(slot, styleSelections) {
   if (!styleSelections) return []
   if (slot.type === 'grouped') {
@@ -67,52 +63,33 @@ function getSelectedOptionsWithImage(slot, styleSelections) {
   return opt ? [{ label: opt.label, img: opt.img ?? null }] : []
 }
 
+function slotHasImages(slot, styleSelections) {
+  return getSelectedOptionsWithImage(slot, styleSelections).some(s => s.img)
+}
 
-// ─── Feature Slot: selected image tile(s) only ────────────────────────────────
-
-function ImageTileSlot({ slot, styleSelections }) {
-  const selectedItems = getSelectedOptionsWithImage(slot, styleSelections)
-  if (selectedItems.length === 0) return null
-
+function FeatureImageCard({ title, value, subLabel, img }) {
   return (
-    <div className={styles.featureSlot}>
-      <div className={styles.slotHeader}>
-        <span className={styles.slotName}>{slot.label}</span>
-        <span className={styles.slotSelectedLabel}>{selectedItems.map(i => i.label).join(', ')}</span>
+    <div className={styles.featureCard}>
+      <span className={styles.featureCardLabel}>{title}</span>
+      <div className={styles.featureCardImg}>
+        {img
+          ? <img src={img} alt={value} className={styles.featureCardImgSrc} />
+          : <span className="mi-outlined" style={{ fontSize: '1.4rem', color: 'var(--text3)' }}>style</span>}
       </div>
-      <div className={styles.selectedTileGrid}>
-        {selectedItems.map((item, i) => (
-          <div key={i} className={styles.selectedTile}>
-            <div className={styles.selectedTileImg}>
-              {item.img
-                ? <img src={item.img} alt={item.label} className={styles.tileImgSrc} />
-                : <span className="mi-outlined" style={{ fontSize: '1.4rem', color: 'var(--text3)' }}>style</span>
-              }
-            </div>
-            {item.subLabel && (
-              <span className={styles.selectedTileSubLabel}>{item.subLabel}</span>
-            )}
-            <span className={styles.selectedTileLabel}>{item.label}</span>
-          </div>
-        ))}
-      </div>
+      <span className={styles.featureCardValue}>
+        {subLabel ? `${subLabel}: ${value}` : value}
+      </span>
     </div>
   )
 }
-
-
-// ─── Feature Slot: chip row (selected only) ───────────────────────────────────
 
 function ChipSlot({ slot, styleSelections }) {
   const selectedItems = getSelectedOptionsWithImage(slot, styleSelections)
   if (selectedItems.length === 0) return null
 
   return (
-    <div className={styles.featureSlot}>
-      <div className={styles.slotHeader}>
-        <span className={styles.slotName}>{slot.label}</span>
-        <span className={styles.slotSelectedLabel}>{selectedItems.map(i => i.label).join(', ')}</span>
-      </div>
+    <div className={styles.chipSlot}>
+      <span className={styles.chipSlotLabel}>{slot.label}</span>
       <div className={styles.chipStrip}>
         {selectedItems.map((item, i) => (
           <span key={i} className={`${styles.featureChip} ${styles.featureChip_selected}`}>
@@ -124,75 +101,82 @@ function ChipSlot({ slot, styleSelections }) {
   )
 }
 
-function slotHasImages(slot, styleSelections) {
-  const selected = getSelectedOptionsWithImage(slot, styleSelections)
-  return selected.some(s => s.img)
-}
-
-
-// ─── Garment Features Section ─────────────────────────────────────────────────
-
 function GarmentFeaturesSection({ measurement }) {
   const { category, fullWearType, lowerBodyType, styleSelections, gender } = measurement
 
-  const hasSelections =
-    styleSelections && Object.values(styleSelections).some(v => v && v !== '')
+  const hasSelections = styleSelections && Object.values(styleSelections).some(v => v && v !== '')
   if (!category || !hasSelections) return null
 
   const slots = getSlotsForCard(category, fullWearType, gender ?? null, lowerBodyType)
-
-  const filledSlots = slots.filter(slot => {
-    const label = getSelectedLabel(slot, styleSelections)
-    return !!label
-  })
-
+  const filledSlots = slots.filter(slot => !!getSelectedLabel(slot, styleSelections))
   if (filledSlots.length === 0) return null
 
-  const categoryLabel =
-    GARMENT_CATEGORIES.find(c => c.id === category)?.label ?? category
+  const categoryLabel = GARMENT_CATEGORIES.find(c => c.id === category)?.label ?? category
+
+  const imageCards = []
+  const chipSlots = []
+
+  filledSlots.forEach(slot => {
+    if (slotHasImages(slot, styleSelections)) {
+      getSelectedOptionsWithImage(slot, styleSelections).forEach(item => {
+        imageCards.push({
+          key: `${slot.id}-${item.label}-${item.subLabel ?? ''}`,
+          title: slot.label,
+          value: item.label,
+          subLabel: item.subLabel,
+          img: item.img,
+        })
+      })
+    } else {
+      chipSlots.push(slot)
+    }
+  })
 
   return (
-    <div className={styles.featuresCard}>
-
-      <div className={styles.featuresTop}>
-        <div className={styles.featuresTopLeft}>
-          <div className={styles.featIconWrap}>
-            <span className="mi" style={{ fontSize: '0.85rem', color: 'var(--accent)' }}>auto_awesome</span>
-          </div>
-          <span className={styles.featTitle}>Garment Features</span>
+    <>
+      <div className={styles.infoGrid}>
+        <div className={styles.infoGridCell}>
+          <div className={styles.infoGridLabel}>Features</div>
+          <div className={styles.infoGridValue}>{filledSlots.length}</div>
         </div>
-        <span className={styles.categoryPill}>{categoryLabel}</span>
+        <div className={styles.infoGridCell}>
+          <div className={styles.infoGridLabel}>Worn On</div>
+          <div className={styles.infoGridValue}>{categoryLabel}</div>
+        </div>
       </div>
 
-      <div className={styles.featSlotList}>
-        {filledSlots.map((slot, index) => (
-          <div key={slot.id}>
-            {index > 0 && <div className={styles.slotDivider} />}
-            {slotHasImages(slot, styleSelections)
-              ? <ImageTileSlot slot={slot} styleSelections={styleSelections} />
-              : <ChipSlot     slot={slot} styleSelections={styleSelections} />
-            }
+      <div className={styles.featuresCard}>
+        {imageCards.length > 0 && (
+          <div className={styles.featureGrid}>
+            {imageCards.map(card => (
+              <FeatureImageCard
+                key={card.key}
+                title={card.title}
+                value={card.value}
+                subLabel={card.subLabel}
+                img={card.img}
+              />
+            ))}
           </div>
+        )}
+
+        {chipSlots.map(slot => (
+          <ChipSlot key={slot.id} slot={slot} styleSelections={styleSelections} />
         ))}
       </div>
-
-    </div>
+    </>
   )
 }
 
-
-// ─── Main Component ───────────────────────────────────────────────────────────
-
 export function MeasurementDetailsModal({ measurement, onClose, onDelete, onUpdate }) {
-
-  const [lightboxIndex,    setLightboxIndex]    = useState(null)
-  const [isEditing,        setIsEditing]        = useState(false)
-  const [isSaving,         setIsSaving]         = useState(false)
-  const [draftName,        setDraftName]        = useState('')
-  const [draftUnit,        setDraftUnit]        = useState('in')
-  const [draftFields,      setDraftFields]      = useState([])
+  const [lightboxIndex, setLightboxIndex] = useState(null)
+  const [isEditing, setIsEditing] = useState(false)
+  const [isSaving, setIsSaving] = useState(false)
+  const [draftName, setDraftName] = useState('')
+  const [draftUnit, setDraftUnit] = useState('in')
+  const [draftFields, setDraftFields] = useState([])
   const [validationErrors, setValidationErrors] = useState({})
-  const [activeTab,        setActiveTab]        = useState('details')
+  const [activeTab, setActiveTab] = useState('details')
 
   useEffect(() => {
     if (measurement) {
@@ -263,19 +247,16 @@ export function MeasurementDetailsModal({ measurement, onClose, onDelete, onUpda
       .filter(f => f.name.trim())
       .map(f => ({ name: f.name.trim(), value: f.value }))
     const updatedData = {
-      name:    draftName.trim(),
-      unit:    draftUnit,
-      fields:  filledFields,
+      name: draftName.trim(),
+      unit: draftUnit,
+      fields: filledFields,
       imgSrcs: measurement.imgSrcs ?? [],
-      imgSrc:  measurement.imgSrcs?.[0] ?? measurement.imgSrc ?? null,
+      imgSrc: measurement.imgSrcs?.[0] ?? measurement.imgSrc ?? null,
     }
     setIsEditing(false)
     onClose()
     onUpdate(measurement.id, updatedData)
   }
-
-
-  // ─── Edit Mode ──────────────────────────────────────────────────────────────
 
   if (isEditing) {
     return (
@@ -285,14 +266,13 @@ export function MeasurementDetailsModal({ measurement, onClose, onDelete, onUpda
           title="Edit Measurement"
           onBackClick={cancelEdit}
           customActions={[{
-            label:   isSaving ? 'Saving…' : 'Save',
+            label: isSaving ? 'Saving…' : 'Save',
             onClick: handleSave,
           }]}
         />
 
         <div className={styles.detailScrollBody}>
           <div className={styles.editBody}>
-
             <p className={styles.editSectionLabel}>Unit of Measurement</p>
             <div className={styles.unitChipRow}>
               {['in', 'cm', 'yd'].map(u => (
@@ -316,9 +296,7 @@ export function MeasurementDetailsModal({ measurement, onClose, onDelete, onUpda
                 value={draftName}
                 onChange={e => { setDraftName(e.target.value); clearNameError() }}
               />
-              {validationErrors.name && (
-                <p className={styles.inlineError}>{validationErrors.name}</p>
-              )}
+              {validationErrors.name && <p className={styles.inlineError}>{validationErrors.name}</p>}
             </div>
 
             <p className={styles.editSectionLabel} style={{ marginTop: 24 }}>Measurements</p>
@@ -347,37 +325,27 @@ export function MeasurementDetailsModal({ measurement, onClose, onDelete, onUpda
                         onChange={e => updateDraftField(field.id, 'value', e.target.value)}
                       />
                     </div>
-                    <button
-                      className={styles.removeFieldButton}
-                      onClick={() => removeDraftField(field.id)}
-                    >
+                    <button className={styles.removeFieldButton} onClick={() => removeDraftField(field.id)}>
                       <span className="mi" style={{ fontSize: '1.1rem' }}>remove_circle_outline</span>
                     </button>
                   </div>
                 ))}
               </div>
 
-              {validationErrors.fields && (
-                <p className={styles.inlineError}>{validationErrors.fields}</p>
-              )}
+              {validationErrors.fields && <p className={styles.inlineError}>{validationErrors.fields}</p>}
 
               <button className={styles.addFieldButton} onClick={addDraftField}>
                 <span className="mi" style={{ fontSize: '0.9rem' }}>add</span>
                 Add Field
               </button>
             </div>
-
           </div>
         </div>
       </div>
     )
   }
 
-
-  // ─── View Mode ──────────────────────────────────────────────────────────────
-
-  const hasStyleTab =
-    measurement.styleSelections &&
+  const hasStyleTab = measurement.styleSelections &&
     Object.values(measurement.styleSelections).some(v => v && v !== '')
 
   return (
@@ -388,12 +356,11 @@ export function MeasurementDetailsModal({ measurement, onClose, onDelete, onUpda
           title={measurement.name}
           onBackClick={onClose}
           customActions={[
-            { icon: 'edit',   onClick: enterEditMode, outlined: true                         },
-            { icon: 'delete', onClick: onDelete,      color: 'var(--danger)', outlined: true },
+            { icon: 'edit', onClick: enterEditMode, outlined: true },
+            { icon: 'delete', onClick: onDelete, color: 'var(--danger)', outlined: true },
           ]}
         />
 
-        {/* Tab bar — only shown when Style tab exists */}
         {hasStyleTab && (
           <div className={styles.tabBar}>
             <button
@@ -412,8 +379,6 @@ export function MeasurementDetailsModal({ measurement, onClose, onDelete, onUpda
         )}
 
         <div className={styles.detailScrollBody}>
-
-          {/* ── Details tab ── */}
           {activeTab === 'details' && (
             <>
               {images.length > 0
@@ -424,8 +389,7 @@ export function MeasurementDetailsModal({ measurement, onClose, onDelete, onUpda
                     onImageClick={(index) => setLightboxIndex(index)}
                   />
                 )
-                : <DressFormPlaceholder />
-              }
+                : <DressFormPlaceholder />}
 
               <div className={styles.infoGrid}>
                 <div className={styles.infoGridCell}>
@@ -444,32 +408,24 @@ export function MeasurementDetailsModal({ measurement, onClose, onDelete, onUpda
                 {measurement.fields.length === 0
                   ? <p style={{ color: 'var(--text3)', fontSize: '0.8rem' }}>No fields recorded.</p>
                   : measurement.fields.map((field, index) => (
-                      <div
-                        key={index}
-                        className={`${styles.measurementFieldRow} ${index === measurement.fields.length - 1 ? styles.measurementFieldRow_last : ''}`}
-                      >
-                        <span className={styles.measurementFieldName}>{field.name}</span>
-                        <span className={styles.measurementFieldValue}>
-                          {field.value || '—'}
-                          {field.value
-                            ? <span className={styles.measurementFieldUnit}>{UNIT_SHORT[measurement.unit] ?? ''}</span>
-                            : ''
-                          }
-                        </span>
-                      </div>
-                    ))
-                }
+                    <div
+                      key={index}
+                      className={`${styles.measurementFieldRow} ${index === measurement.fields.length - 1 ? styles.measurementFieldRow_last : ''}`}
+                    >
+                      <span className={styles.measurementFieldName}>{field.name}</span>
+                      <span className={styles.measurementFieldValue}>
+                        {field.value || '—'}
+                        {field.value && <span className={styles.measurementFieldUnit}>{UNIT_SHORT[measurement.unit] ?? ''}</span>}
+                      </span>
+                    </div>
+                  ))}
               </div>
 
               <div className={styles.detailFooterDate}>Saved on {measurement.date}</div>
             </>
           )}
 
-          {/* ── Style tab ── */}
-          {activeTab === 'style' && (
-            <GarmentFeaturesSection measurement={measurement} />
-          )}
-
+          {activeTab === 'style' && <GarmentFeaturesSection measurement={measurement} />}
         </div>
       </div>
 
