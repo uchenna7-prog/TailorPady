@@ -68,22 +68,23 @@ export default function InvoiceViewer({
   }
 
   const handleShare = async () => {
-    if (!paperRef.current || shareLoading) return
-    setShareLoading(true)
-    showToast?.('Preparing…')
-    try {
-      const exactHeight = Math.ceil(paperRef.current.getBoundingClientRect().height)
-      const message = buildInvoiceWhatsAppMessage(invoice, customer, snapShotedInvoiceBrandSettings)
-      await sharePDF(paperRef.current, filename, message, brandCSSVars, exactHeight)
-      showToast?.('Shared ✓')
-    } catch (err) {
-      if (err?.name !== 'AbortError') {
-        showToast?.('Share failed — please try again.')
-      }
-    } finally {
-      setShareLoading(false)
+  if (!paperRef.current || shareLoading) return
+  setShareLoading(true)
+  showToast?.('Preparing…')
+  try {
+    const exactHeight = Math.ceil(paperRef.current.getBoundingClientRect().height)
+    const message = buildInvoiceWhatsAppMessage(invoice, customer, snapShotedInvoiceBrandSettings)
+    await sharePDF(paperRef.current, filename, message, brandCSSVars, exactHeight)
+    showToast?.('Shared ✓')
+  } catch (err) {
+    console.error('Share error:', err)
+    if (err?.name !== 'AbortError') {
+      showToast?.('Share failed — please try again.')
     }
+  } finally {
+    setShareLoading(false)
   }
+}
 
   return (
     <div className={styles.overlay}>

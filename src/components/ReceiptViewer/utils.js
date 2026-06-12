@@ -90,8 +90,8 @@ export function buildReceiptWhatsAppMessage(receipt, customer, receiptBrandSetti
 
   if (receipt.items?.length > 0) {
     lines.push('*Order Breakdown*')
-    receipt.items.forEach(item => lines.push(`• ${item.name} — ${formatCurrency(currency, item.price)}`))
-    lines.push(`Order Total: ${formatCurrency(currency, orderTotal)}`)
+    receipt.items.forEach(item => lines.push(`• ${item.name} — ${formatMoney(currency, item.price)}`))
+    lines.push(`Order Total: ${formatMoney(currency, orderTotal)}`)
     lines.push('')
   }
 
@@ -100,7 +100,7 @@ export function buildReceiptWhatsAppMessage(receipt, customer, receiptBrandSetti
     receipt.payments.forEach((p, idx) => {
       const label  = receipt.payments.length > 1 ? `Payment ${idx + 1}` : 'Amount Paid'
       const method = p.method ? ` (${p.method.charAt(0).toUpperCase() + p.method.slice(1)})` : ''
-      lines.push(`${label}${method}: *${formatCurrency(currency, p.amount)}*`)
+      lines.push(`${label}${method}: *${formatMoney(currency, p.amount)}*`)
     })
     lines.push('')
   }
@@ -108,7 +108,7 @@ export function buildReceiptWhatsAppMessage(receipt, customer, receiptBrandSetti
   if (isFullPay) {
     lines.push('✅ *Your order is fully paid. Thank you!*')
   } else {
-    lines.push(`Balance Remaining: *${formatCurrency(currency, balanceLeft)}*`)
+    lines.push(`Balance Remaining: *${formatMoney(currency, balanceLeft)}*`)
     lines.push('Please note there is an outstanding balance on your order.')
   }
 
