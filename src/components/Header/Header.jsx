@@ -75,6 +75,7 @@ function Header({
   onBackClick,
   type = 'default',
   showBorderBottom = true,
+  showNotifications = true,
   title,
   customTitle = {},
   customActions = [],
@@ -224,16 +225,18 @@ function Header({
           </div>
         )}
 
-        {type === 'default' && (
+        {type === 'default' && (showNotifications || showBotButton) && (
           <div className={styles.right}>
-            <button className={styles.iconBtn} onClick={openNotif} aria-label="Notifications">
-              <span className="mi" style={{ fontSize: '1.4rem', color: 'var(--text2)' }}>notifications</span>
-              {unreadCount > 0 && (
-                <span className={styles.notifBadge}>
-                  {unreadCount > 9 ? '9+' : unreadCount}
-                </span>
-              )}
-            </button>
+            {showNotifications && (
+              <button className={styles.iconBtn} onClick={openNotif} aria-label="Notifications">
+                <span className="mi" style={{ fontSize: '1.4rem', color: 'var(--text2)' }}>notifications</span>
+                {unreadCount > 0 && (
+                  <span className={styles.notifBadge}>
+                    {unreadCount > 9 ? '9+' : unreadCount}
+                  </span>
+                )}
+              </button>
+            )}
 
             {showBotButton && (
               <button

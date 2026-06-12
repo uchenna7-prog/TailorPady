@@ -355,5 +355,5 @@
   text-align: center;
 }
 
-.emptyState p  { font-size: 0.85rem; color: var(--text3); }
-.emptyHint     { font-size: 0.75rem; color: var(--text3); opacity: 0.6; }
+.emptyState p  { font-size: 1rem; color: var(--text3); }
+.emptyHint     { font-size: 0.8rem; color: var(--text3); opacity: 0.6; }

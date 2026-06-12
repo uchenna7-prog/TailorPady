@@ -67,9 +67,9 @@ function InvoiceRow({ invoice, currency, onTap, isLast, orderItems }) {
         <span
           className={styles.invoiceStatusPill}
           style={{
-            background: style.bg,
+            background: style.background,
             color:      style.color,
-            border:     `1px solid ${style.border}`,
+            border:     `1px solid ${style.borderColor}`,
           }}
         >
           {INVOICE_STATUS_LABELS[statusKey] ?? statusKey}

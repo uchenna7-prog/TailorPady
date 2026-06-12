@@ -96,7 +96,7 @@ export default function RefundPolicy({ onMenuClick }) {
 
   return (
     <div className={styles.page}>
-      <Header onMenuClick={onMenuClick} title="Refund Policy" />
+      <Header onMenuClick={onMenuClick} title="Refund Policy" showNotifications = {false}  />
 
       <div className={styles.scrollArea} ref={scrollRef}>
         <div className={styles.hero}>

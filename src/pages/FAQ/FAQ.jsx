@@ -180,7 +180,7 @@ export default function FAQ({ onMenuClick }) {
 
   return (
     <div className={styles.page}>
-      <Header onMenuClick={onMenuClick} title="FAQs" />
+      <Header onMenuClick={onMenuClick} title="FAQs" showNotifications = {false} />
 
       <div className={styles.scrollArea}>
 
