@@ -16,16 +16,16 @@ import armHole from '../../assets/femaleBodyMeasurementImages/armHole.jpg'
 import biceps from '../../assets/femaleBodyMeasurementImages/biceps.jpg'
 import armLength from '../../assets/femaleBodyMeasurementImages/armLength.jpg'
 import fullSleeveLength from '../../assets/femaleBodyMeasurementImages/fullSleeveLength.jpg'
-import fullSleeveLengthCircular from '../../assets/femaleBodyMeasurementImages/fullSleeveLengthCircular.jpg'
+import fullSleeveLengthCircumference from '../../assets/femaleBodyMeasurementImages/fullSleeveLengthCircumference.jpg'
 import armLengthHalf from '../../assets/femaleBodyMeasurementImages/armLengthHalf.jpg'
 import threeQuarterSleeveLength from '../../assets/femaleBodyMeasurementImages/threeQuarterSleeveLength.jpg'
-import threeQuarterSleeveLengthCircular from '../../assets/femaleBodyMeasurementImages/threeQuarterSleeveLengthCircular.jpg'
-import elbowLength from '../../assets/femaleBodyMeasurementImages/elbowLength.jpg'
-import elbowCircular from '../../assets/femaleBodyMeasurementImages/elbowCircular.jpg'
+import threeQuarterSleeveLengthCircumference from '../../assets/femaleBodyMeasurementImages/threeQuarterSleeveLengthCircumference.jpg'
+import elbowSleeveLength from '../../assets/femaleBodyMeasurementImages/elbowSleeveLength.jpg'
+import elbowSleeveLengthCircumference from '../../assets/femaleBodyMeasurementImages/elbowSleeveLengthCircumference.jpg'
 import shortSleeveLength from "../../assets/femaleBodyMeasurementImages/shortSleeveLength.jpg"
-import shortSleeveLengthCircular from "../../assets/femaleBodyMeasurementImages/shortSleeveLengthCircular.jpg"
+import shortSleeveLengthCircumference from "../../assets/femaleBodyMeasurementImages/shortSleeveLengthCircumference.jpg"
 import capSleeve from '../../assets/femaleBodyMeasurementImages/capSleeve.jpg'
-import capSleeveCircular from '../../assets/femaleBodyMeasurementImages/capSleeveCircular.jpg'
+import capSleeveCircumference from '../../assets/femaleBodyMeasurementImages/capSleeveCircumference.jpg'
 import wrist from '../../assets/femaleBodyMeasurementImages/wrist.jpg'
 import stomach from '../../assets/femaleBodyMeasurementImages/stomach.jpg'
 import waist from '../../assets/femaleBodyMeasurementImages/waist.jpg'
@@ -54,11 +54,11 @@ export const FEMALE_BODY_MEASUREMENTS = [
   'Shoulder To Apex', 'Apex To Apex',
   'Upper Chest', 'Bust', 'Chest', 'Blouse Chest', 'Blouse Below Bust',
   'Arm Hole', 'Biceps', 'Arm Length','Full Sleeve Length', 
-  'Full Sleeve Length Circular','Arm Length Half',
-  'Three Quarter Sleeve Length', 'Three Quarter Sleeve Length Circular',
-  'Elbow Length', 'Elbow Circular',
-  "Short Sleeve Length","Short Sleeve Length Circular",
-  'Cap Sleeve', 'Cap Sleeve Circular',
+  'Full Sleeve Length Circumference','Arm Length Half',
+  'Three Quarter Sleeve Length', 'Three Quarter Sleeve Length Circumference',
+  'Elbow Sleeve Length', 'Elbow Sleeve Length Circumference',
+  "Short Sleeve Length","Short Sleeve Length Circumference",
+  'Cap Sleeve', 'Cap Sleeve Circumference',
   'Wrist',
 
   // Mid body
@@ -93,16 +93,16 @@ export const FEMALE_BODY_MEASUREMENT_IMAGES = {
   'Biceps': biceps,
   'Arm Length': armLength,
   'Full Sleeve Length': fullSleeveLength,
-  'Full Sleeve Length Circular': fullSleeveLengthCircular,
+  'Full Sleeve Length Circumference': fullSleeveLengthCircumference,
   'Arm Length Half': armLengthHalf,
   'Three Quarter Sleeve Length': threeQuarterSleeveLength,
-  'Three Quarter Sleeve Length Circular': threeQuarterSleeveLengthCircular,
-  'Elbow Length': elbowLength,
-  'Elbow Circular': elbowCircular,
+  'Three Quarter Sleeve Length Circumference': threeQuarterSleeveLengthCircumference,
+  'Elbow Sleeve Length': elbowSleeveLength,
+  'Elbow Sleeve Length Circumference': elbowSleeveLengthCircumference,
   "Short Sleeve Length": shortSleeveLength,
-  "Short Sleeve Length Circular": shortSleeveLengthCircular,
+  "Short Sleeve Length Circumference": shortSleeveLengthCircumference,
   'Cap Sleeve': capSleeve,
-  'Cap Sleeve Circular': capSleeveCircular,
+  'Cap Sleeve Circumference': capSleeveCircumference,
   'Wrist': wrist,
 
   // Mid body
