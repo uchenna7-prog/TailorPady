@@ -54,7 +54,7 @@ function todayISO() {
   return new Date().toISOString().slice(0, 10)
 }
 
-function formatCurrency(amount, currency = '₦') {
+function formatMoney(amount, currency = '₦') {
   if (!amount) return `${currency}0`
   return `${currency}${Number(amount).toLocaleString()}`
 }
@@ -357,7 +357,7 @@ export function AgentProvider({ children }) {
       const lines = [
         `✅ Order created for **${customer.name}**`,
         `📦 ${data.desc}`,
-        `💰 ${formatCurrency(data.price, generalSettings.invoiceCurrency)}`,
+        `💰 ${formatMoney(data.price, generalSettings.invoiceCurrency)}`,
         `📅 Due ${formatDateNice(data.dueDate)}`,
       ]
 
@@ -377,7 +377,7 @@ export function AgentProvider({ children }) {
       }
 
       if (hasDeposit) {
-        lines.push(`💵 Deposit of ${formatCurrency(depositAmount, generalSettings.invoiceCurrency)} noted — record it in Payments`)
+        lines.push(`💵 Deposit of ${formatMoney(depositAmount, generalSettings.invoiceCurrency)} noted — record it in Payments`)
       }
 
       actions.push({ label: 'Generate invoice now', action: 'gen_invoice', payload: { customerName: customer.name } })
@@ -411,7 +411,7 @@ export function AgentProvider({ children }) {
 
     const order = uninvoicedOrders[0]
     await agentReply(
-      `I found an uninvoiced order for ${customer.name}:\n📦 **${order.desc}** · ${formatCurrency(order.totalAmount || order.price, generalSettings.invoiceCurrency)}\n\nHead to the Invoices page to generate it.`,
+      `I found an uninvoiced order for ${customer.name}:\n📦 **${order.desc}** · ${formatMoney(order.totalAmount || order.price, generalSettings.invoiceCurrency)}\n\nHead to the Invoices page to generate it.`,
       null,
       [
         { label: 'Go to Invoices', action: 'navigate', payload: { route: '/invoices' } },
@@ -427,7 +427,7 @@ export function AgentProvider({ children }) {
     const method = /transfer/i.test(data.method) ? 'transfer' : /card/i.test(data.method) ? 'card' : 'cash'
 
     await agentReply(
-      `Got it — ${formatCurrency(data.amount, generalSettings.invoiceCurrency)} from **${customer.name}** via ${method}.\n\nHead to their profile to attach this payment to a specific order.`,
+      `Got it — ${formatMoney(data.amount, generalSettings.invoiceCurrency)} from **${customer.name}** via ${method}.\n\nHead to their profile to attach this payment to a specific order.`,
       null,
       [
         { label: 'Go to Payments', action: 'navigate', payload: { route: '/customers' } },
@@ -489,7 +489,7 @@ export function AgentProvider({ children }) {
 
         const lines = [
           `**${customer.name}**`,
-          totalOwed > 0 ? `💰 Outstanding: ${formatCurrency(balance, generalSettings.invoiceCurrency)}` : `✅ All paid up — no outstanding balance`,
+          totalOwed > 0 ? `💰 Outstanding: ${formatMoney(balance, generalSettings.invoiceCurrency)}` : `✅ All paid up — no outstanding balance`,
         ]
         if (customerInvoices.length) lines.push(`🧾 ${customerInvoices.length} unpaid invoice${customerInvoices.length > 1 ? 's' : ''}`)
 
@@ -937,7 +937,7 @@ export function useAutonomousAgent() {
               id,
               type:    'invoice',
               title:   `Invoice — ${order.customerName || 'Customer'}`,
-              preview: `Invoice for ${order.desc || 'order'} · Total: ${formatCurrency(order.totalAmount || order.price, currency)} · Due: ${order.due || 'not set'}.`,
+              preview: `Invoice for ${order.desc || 'order'} · Total: ${formatMoney(order.totalAmount || order.price, currency)} · Due: ${order.due || 'not set'}.`,
               tag:     'Invoice',
             })
           }
@@ -955,7 +955,7 @@ export function useAutonomousAgent() {
               id,
               type:    'receipt',
               title:   `Receipt — ${invoice.customerName || 'Customer'}`,
-              preview: `Payment receipt for ${formatCurrency(invoice.totalAmount || invoice.price, currency)} received from ${invoice.customerName || 'customer'}.`,
+              preview: `Payment receipt for ${formatMoney(invoice.totalAmount || invoice.price, currency)} received from ${invoice.customerName || 'customer'}.`,
               tag:     'Receipt',
             })
           }
@@ -1031,7 +1031,7 @@ export function useAutonomousAgent() {
               id,
               type:    'reminder',
               title:   `Payment reminder — ${invoice.customerName || 'Customer'}`,
-              preview: `Hi ${invoice.customerName || 'there'}, just a reminder that your balance of ${formatCurrency(invoice.totalAmount || invoice.price, currency)} is due on ${invoice.due}. Kindly make payment at your earliest convenience. Thank you!`,
+              preview: `Hi ${invoice.customerName || 'there'}, just a reminder that your balance of ${formatMoney(invoice.totalAmount || invoice.price, currency)} is due on ${invoice.due}. Kindly make payment at your earliest convenience. Thank you!`,
               tag:     'Reminder',
             })
           }

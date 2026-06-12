@@ -41,3 +41,132 @@
   text-align:     center;
   line-height:    1.5;
 }
+
+.uploadCarousel {
+  position:      relative;
+  width:         100%;
+  aspect-ratio:  4 / 3;
+  border-radius: 10px;
+  overflow:      hidden;
+  background:    var(--surface2);
+  border:        1px solid var(--border);
+}
+
+.uploadCarouselImage {
+  width:      100%;
+  height:     100%;
+  object-fit: cover;
+  display:    block;
+}
+
+.uploadRemoveButton {
+  position:        absolute;
+  top:             8px;
+  right:           8px;
+  width:           28px;
+  height:          28px;
+  border-radius:   50%;
+  background:      rgba(0, 0, 0, 0.55);
+  color:           #fff;
+  border:          none;
+  display:         flex;
+  align-items:     center;
+  justify-content: center;
+  cursor:          pointer;
+  z-index:         2;
+}
+
+.uploadRemoveButton:active {
+  background: rgba(0, 0, 0, 0.75);
+}
+
+.carouselArrow {
+  position:        absolute;
+  top:             50%;
+  transform:       translateY(-50%);
+  width:           32px;
+  height:          32px;
+  border-radius:   50%;
+  background:      rgba(0, 0, 0, 0.4);
+  color:           #fff;
+  border:          none;
+  display:         flex;
+  align-items:     center;
+  justify-content: center;
+  cursor:          pointer;
+  z-index:         2;
+}
+
+.carouselArrow:active {
+  background: rgba(0, 0, 0, 0.6);
+}
+
+.carouselArrow_left {
+  left: 8px;
+}
+
+.carouselArrow_right {
+  right: 8px;
+}
+
+.carouselDots {
+  position:        absolute;
+  bottom:          10px;
+  left:            0;
+  right:           0;
+  display:         flex;
+  align-items:     center;
+  justify-content: center;
+  gap:             6px;
+  z-index:         2;
+}
+
+.carouselDot {
+  width:         6px;
+  height:        6px;
+  border-radius: 50%;
+  border:        none;
+  background:    rgba(255, 255, 255, 0.5);
+  padding:       0;
+  cursor:        pointer;
+  transition:    background 0.2s, transform 0.2s;
+}
+
+.carouselDot_active {
+  background: #fff;
+  transform:  scale(1.3);
+}
+
+.uploadCarouselCounter {
+  position:       absolute;
+  top:            8px;
+  left:           8px;
+  background:     rgba(0, 0, 0, 0.55);
+  color:          #fff;
+  font-size:      0.62rem;
+  font-weight:    700;
+  padding:        3px 8px;
+  border-radius:  12px;
+  z-index:        2;
+}
+
+.addMoreImagesButton {
+  display:        flex;
+  align-items:    center;
+  justify-content: center;
+  gap:            6px;
+  margin-top:     10px;
+  padding:        9px 16px;
+  border:         1px solid var(--border2);
+  border-radius:  10px;
+  font-size:      0.68rem;
+  font-weight:    700;
+  color:          var(--text2);
+  cursor:         pointer;
+  transition:     border-color 0.2s, color 0.2s;
+}
+
+.addMoreImagesButton:active {
+  border-color: var(--accent);
+  color:        var(--accent);
+}
