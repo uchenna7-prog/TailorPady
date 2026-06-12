@@ -22,8 +22,8 @@ import pantsLength from '../../assets/maleBodyMeasurementImages/pantsLength.jpg'
 import shirtLength from '../../assets/maleBodyMeasurementImages/shirtLength.jpg'
 import shortsLength from '../../assets/maleBodyMeasurementImages/shortsLength.jpg'
 import shoulderWidth from '../../assets/maleBodyMeasurementImages/shoulderWidth.jpg'
-import sleeveLengthForSuit from '../../assets/maleBodyMeasurementImages/sleeveLengthForSuit.jpg'
-import sleeveLength from '../../assets/maleBodyMeasurementImages/sleeveLength.jpg'
+import longSleeveLength from '../../assets/maleBodyMeasurementImages/longSleeveLength.jpg'
+import halfArmLength from '../../assets/maleBodyMeasurementImages/halfArmLength.jpg'
 import thighs from '../../assets/maleBodyMeasurementImages/thighs.jpg'
 import waist from '../../assets/maleBodyMeasurementImages/waist.jpg'
 import waistToAnkle from '../../assets/maleBodyMeasurementImages/waistToAnkle.jpg'
@@ -33,7 +33,7 @@ import wrist from '../../assets/maleBodyMeasurementImages/wrist.jpg'
 export const MALE_BODY_MEASUREMENTS = [
   // Upper body 
   'Neck', 'Shoulder Width', 'Half Shoulder', 'Chest', 'Cross Back',
-  'Arm Hole', 'Biceps', 'Arm Length', 'Sleeve Length', 'Coat Sleeve', 'Wrist',
+  'Arm Hole', 'Biceps', 'Arm Length', 'Half Arm Length', 'Long Sleeve Length', 'Wrist',
   'Shirt Length', 'Jacket Length',
   // Mid body
   'Waist', 'Hip',
@@ -55,8 +55,8 @@ export const MALE_BODY_MEASUREMENT_IMAGES = {
   'Arm Hole': armHole,
   'Biceps': biceps,
   'Arm Length': armLength,
-  'Sleeve Length': sleeveLength,
-  'Coat Sleeve': sleeveLengthForSuit,
+  'Half Arm Length': halfArmLength,
+  'Long Sleeve Length': longSleeveLength,
   'Wrist': wrist,
   'Shirt Length': shirtLength,
   'Jacket Length': jacketLength,
