@@ -53,6 +53,54 @@ const STATUS_CONFIG = {
   out: { label: 'Out',       color: '#ef4444', bg: 'rgba(239,68,68,0.12)',  border: 'rgba(239,68,68,0.3)'  },
 }
 
+// ── Inventory Row ─────────────────────────────────────────────
+
+function InventoryRow({ item, isLast, onTap }) {
+  const cat    = CAT_MAP[item.category] ?? CAT_MAP.other
+  const status = stockStatus(item)
+  const sc     = STATUS_CONFIG[status]
+
+  return (
+    <div
+      className={`${styles.invRow} ${isLast ? styles.invRowLast : ''}`}
+      onClick={onTap}
+    >
+      <div className={styles.invRowIcon}>
+        <div className={styles.invRowIconInner}>
+          <span className="mi" style={{ fontSize: '1.3rem', color: sc.color }}>{cat.icon}</span>
+        </div>
+      </div>
+
+      <div className={styles.invRowInfo}>
+        <div className={styles.invRowName}>{item.name}</div>
+        {item.colour && (
+          <div className={styles.invRowMeta}>
+            <span className="mi" style={{ fontSize: '0.75rem', color: 'var(--text3)' }}>circle</span>
+            <span className={styles.invRowMetaText}>{item.colour}</span>
+          </div>
+        )}
+        <div className={styles.invRowMeta}>
+          <span className="mi" style={{ fontSize: '0.75rem', color: 'var(--text3)' }}>category</span>
+          <span className={styles.invRowMetaText}>{cat.label}</span>
+        </div>
+      </div>
+
+      <div className={styles.invRowRight}>
+        <span
+          className={styles.invRowStatus}
+          style={{ background: sc.bg, color: sc.color, borderColor: sc.border }}
+        >
+          {sc.label}
+        </span>
+        <div className={styles.invRowQty} style={{ color: sc.color }}>
+          {item.quantity}
+          <span className={styles.invRowUnit}>{item.unit}</span>
+        </div>
+      </div>
+    </div>
+  )
+}
+
 // ── Add / Edit Item Modal ─────────────────────────────────────
 
 function ItemModal({ isOpen, editItem, onClose, onSave }) {
@@ -445,60 +493,6 @@ function ItemDetail({ item, onClose, onEdit, onDelete, onAdjust }) {
   )
 }
 
-// ── Inventory Card ────────────────────────────────────────────
-
-function InventoryCard({ item, isLast, onTap }) {
-  const cat    = CAT_MAP[item.category] ?? CAT_MAP.other
-  const status = stockStatus(item)
-  const sc     = STATUS_CONFIG[status]
-
-  return (
-    <div
-      className={`${styles.card} ${isLast ? styles.cardLast : ''}`}
-      onClick={onTap}
-    >
-      <div
-        className={styles.cardOuter}
-        style={{
-          borderColor: status !== 'ok' ? sc.border : undefined,
-          background:  status !== 'ok' ? sc.bg      : undefined,
-        }}
-      >
-        <div className={styles.cardInner}>
-          <span className="mi" style={{ fontSize: '1.5rem', color: sc.color }}>{cat.icon}</span>
-        </div>
-      </div>
-
-      <div className={styles.cardInfo}>
-        <div className={styles.cardName}>{item.name}</div>
-        {item.colour && (
-          <div className={styles.cardColour}>
-            <span className="mi" style={{ fontSize: '0.75rem', color: 'var(--text3)' }}>circle</span>
-            <span>{item.colour}</span>
-          </div>
-        )}
-        <span
-          className={styles.statusPill}
-          style={{ background: sc.bg, color: sc.color, borderColor: sc.border, borderRadius: '6px' }}
-        >
-          {sc.label}
-        </span>
-        <div className={styles.cardMeta} style={{ marginTop: 4 }}>
-          <span className="mi" style={{ fontSize: '0.78rem', color: 'var(--text3)' }}>category</span>
-          <span>{cat.label}</span>
-        </div>
-      </div>
-
-      <div className={styles.cardRight}>
-        <div className={styles.cardQty} style={{ color: sc.color }}>
-          {item.quantity}
-          <span className={styles.cardUnit}>{item.unit}</span>
-        </div>
-      </div>
-    </div>
-  )
-}
-
 // ── Main Page ─────────────────────────────────────────────────
 
 export default function Inventory({ onMenuClick }) {
@@ -723,7 +717,7 @@ export default function Inventory({ onMenuClick }) {
             <div className={styles.groupLabel}>{groupLabel}</div>
             <div className={styles.groupDivider} />
             {groupItems.map((item, idx) => (
-              <InventoryCard
+              <InventoryRow
                 key={item.id}
                 item={item}
                 isLast={idx === groupItems.length - 1}

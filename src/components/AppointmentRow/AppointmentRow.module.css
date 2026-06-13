@@ -100,18 +100,6 @@
   padding: 2px 7px;
 }
 
-.apptRowLocation {
-  display: flex;
-  align-items: center;
-  gap: 2px;
-  font-size: 0.6rem;
-  font-weight: 600;
-  color: var(--text3);
-  white-space: nowrap;
-  max-width: 110px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
 
 .apptRowUntil {
   font-size: 0.6rem;

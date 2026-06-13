@@ -150,7 +150,6 @@
   font-weight: 700;
 }
 
-/* ── TABS ── */
 
 .tabs {
   display: flex;
@@ -215,12 +214,7 @@
   border-color: rgba(239, 68, 68, 0.3);
 }
 
-/*
-  The underline is positioned with pixel values set directly via inline style
-  (left and width) so it aligns precisely with each tab regardless of how
-  wide the tab labels and badges are. The transition animates both properties
-  smoothly during swipe gestures and tap navigation.
-*/
+
 .tabUnderlineTrack {
   position: absolute;
   bottom: 0;

@@ -110,12 +110,7 @@ export function AppointmentRow({ appt, isLast, allOrders, onOpen }) {
         >
           {overdue ? 'Missed' : effectiveSc.label}
         </span>
-        {appt.location && (
-          <div className={styles.apptRowLocation}>
-            <span className="mi" style={{ fontSize: '0.65rem' }}>place</span>
-            {appt.location}
-          </div>
-        )}
+      
         {until && appt.status === 'upcoming' && (
           <div className={styles.apptRowUntil}>{until}</div>
         )}
