@@ -19,7 +19,6 @@ import femPencilShape from '../../../assets/femaleGarmentFeatures/lowerWearFeatu
 import femPleatedShape from '../../../assets/femaleGarmentFeatures/lowerWearFeatures/skirtShape/pleatedShape.jpg'
 import femWrapShape from '../../../assets/femaleGarmentFeatures/lowerWearFeatures/skirtShape/wrapShape.jpg'
 
-
 import femDrawStringWaist from '../../../assets/femaleGarmentFeatures/lowerWearFeatures/waistType/drawStringWaist.jpg'
 import femElasticatedWaist from '../../../assets/femaleGarmentFeatures/lowerWearFeatures/waistType/elasticatedWaist.jpg'
 import femHighWaist from '../../../assets/femaleGarmentFeatures/lowerWearFeatures/waistType/highWaist.jpg'
@@ -36,8 +35,57 @@ import femHalterNeck from '../../../assets/femaleGarmentFeatures/upperWearFeatur
 import femRoundNeck from '../../../assets/femaleGarmentFeatures/upperWearFeatures/frontNeckType/roundNeck.jpg'
 import femWideSquareNeck from '../../../assets/femaleGarmentFeatures/upperWearFeatures/frontNeckType/wideSquareNeck.jpg'
 
-import weltOneBackPocket from '../../../assets/maleGarmentFeatures/lowerWearFeatures/backPocketType/weltOnePocket.jpg'
-import weltOneBackPocketWithButton from '../../../assets/maleGarmentFeatures/lowerWearFeatures/backPocketType/weltWithButtonOnePocket.jpg'
+import femBowBack from '../../../assets/femaleGarmentFeatures/upperWearFeatures/backDesign/bowBack.jpg'
+import femLaceUpBack from '../../../assets/femaleGarmentFeatures/upperWearFeatures/backDesign/laceUpBack.jpg'
+import femOpenBack from '../../../assets/femaleGarmentFeatures/upperWearFeatures/backDesign/openBack.jpg'
+import femPlainBack from '../../../assets/femaleGarmentFeatures/upperWearFeatures/backDesign/plainBack.jpg'
+import femPleatedBack from '../../../assets/femaleGarmentFeatures/upperWearFeatures/backDesign/pleatedBack.jpg'
+import femYokeBack from '../../../assets/femaleGarmentFeatures/upperWearFeatures/backDesign/yokeBack.jpg'
+import femZipperBack from '../../../assets/femaleGarmentFeatures/upperWearFeatures/backDesign/zipperBack.jpg'
+
+import femBoatBackNeck from '../../../assets/femaleGarmentFeatures/upperWearFeatures/backNeckDesign/boatNeck.jpg'
+import femBowBackNeck from '../../../assets/femaleGarmentFeatures/upperWearFeatures/backNeckDesign/bowBack.jpg'
+import femHalterBackNeck from '../../../assets/femaleGarmentFeatures/upperWearFeatures/backNeckDesign/halterNeck.jpg'
+import femKeyHoleBackNeck from '../../../assets/femaleGarmentFeatures/upperWearFeatures/backNeckDesign/keyHoleBack.jpg'
+import femOpenBackNeck from '../../../assets/femaleGarmentFeatures/upperWearFeatures/backNeckDesign/openBack.jpg'
+import femRoundBackNeck from '../../../assets/femaleGarmentFeatures/upperWearFeatures/backNeckDesign/roundNeck.jpg'
+import femSquareBackNeck from '../../../assets/femaleGarmentFeatures/upperWearFeatures/backNeckDesign/squareNeck.jpg'
+import femVBackNeck from '../../../assets/femaleGarmentFeatures/upperWearFeatures/backNeckDesign/v-Neck.jpg'
+
+import femDoubleBreasted from '../../../assets/femaleGarmentFeatures/upperWearFeatures/buttonStyle/doubleBreasted.jpg'
+import femHalfButton from '../../../assets/femaleGarmentFeatures/upperWearFeatures/buttonStyle/halfButton.jpg'
+import femHiddenPlacket from '../../../assets/femaleGarmentFeatures/upperWearFeatures/buttonStyle/hiddenPlacket.jpg'
+import femNoPlacket from '../../../assets/femaleGarmentFeatures/upperWearFeatures/buttonStyle/noPlacket.jpg'
+import femSingleBreasted from '../../../assets/femaleGarmentFeatures/upperWearFeatures/buttonStyle/singleBreasted.jpg'
+
+import femClassicPointedCollar from '../../../assets/femaleGarmentFeatures/upperWearFeatures/collarType/classicPointedCollar.jpg'
+import femMandarinCollar from '../../../assets/femaleGarmentFeatures/upperWearFeatures/collarType/mandarinCollar.jpg'
+import femPeterPanCollar from '../../../assets/femaleGarmentFeatures/upperWearFeatures/collarType/peterPanCollar.jpg'
+import femPussyBowCollar from '../../../assets/femaleGarmentFeatures/upperWearFeatures/collarType/pussyBowCollar.jpg'
+import femRuffleCollar from '../../../assets/femaleGarmentFeatures/upperWearFeatures/collarType/ruffleCollar.jpg'
+
+import femBarrelCuff from '../../../assets/femaleGarmentFeatures/upperWearFeatures/cuffType/barrelCuff.jpg'
+import femButtonedCuff from '../../../assets/femaleGarmentFeatures/upperWearFeatures/cuffType/buttonedCuff.jpg'
+import femElasticatedCuff from '../../../assets/femaleGarmentFeatures/upperWearFeatures/cuffType/elasticatedCuff.jpg'
+import femFrenchCuff from '../../../assets/femaleGarmentFeatures/upperWearFeatures/cuffType/frenchCuff.jpg'
+import femLaceCuff from '../../../assets/femaleGarmentFeatures/upperWearFeatures/cuffType/laceCuff.jpg'
+import femRuffleCuff from '../../../assets/femaleGarmentFeatures/upperWearFeatures/cuffType/ruffleCuff.jpg'
+import femSplitCuff from '../../../assets/femaleGarmentFeatures/upperWearFeatures/cuffType/splitCuff.jpg'
+
+import femBellSleeveShape from '../../../assets/femaleGarmentFeatures/upperWearFeatures/sleeveShape/bellSleeve.jpg'
+import femFlutterSleeveShape from '../../../assets/femaleGarmentFeatures/upperWearFeatures/sleeveShape/flutterSleeve.jpg'
+import femLanternSleeveShape from '../../../assets/femaleGarmentFeatures/upperWearFeatures/sleeveShape/lanternSleeve.jpg'
+import femPuffSleeveShape from '../../../assets/femaleGarmentFeatures/upperWearFeatures/sleeveShape/puffSleeve.jpg'
+import femStraightSleeveShape from '../../../assets/femaleGarmentFeatures/upperWearFeatures/sleeveShape/straightSleeve.jpg'
+import femTaperedSleeveShape from '../../../assets/femaleGarmentFeatures/upperWearFeatures/sleeveShape/taperedSleeve.jpg'
+
+import femCapSleeve from '../../../assets/femaleGarmentFeatures/upperWearFeatures/sleeveType/capSleeve.jpg'
+import femLongSleeve from '../../../assets/femaleGarmentFeatures/upperWearFeatures/sleeveType/longSleeve.jpg'
+import femOffShoulderSleeve from '../../../assets/femaleGarmentFeatures/upperWearFeatures/sleeveType/offShoulder.jpg'
+import femShortSleeve from '../../../assets/femaleGarmentFeatures/upperWearFeatures/sleeveType/shortSleeve.jpg'
+import femSleevelessType from '../../../assets/femaleGarmentFeatures/upperWearFeatures/sleeveType/sleeveless.jpg'
+import femSpaghettiStrapSleeve from '../../../assets/femaleGarmentFeatures/upperWearFeatures/sleeveType/spaghettiStrap.jpg'
+import femThreeQuarterSleeve from '../../../assets/femaleGarmentFeatures/upperWearFeatures/sleeveType/threeQuarterSleeve.jpg'
 
 const FEMALE_LOWER_WEAR_IMGS = {
   asymmetricBottom: femAsymmetricBottom,
@@ -76,6 +124,72 @@ const FEMALE_NECK_IMGS = {
   wideSquare: femWideSquareNeck,
 }
 
+const FEMALE_BACK_DESIGN_IMGS = {
+  bow: femBowBack,
+  laceUp: femLaceUpBack,
+  open: femOpenBack,
+  plain: femPlainBack,
+  pleated: femPleatedBack,
+  yoke: femYokeBack,
+  zipper: femZipperBack,
+}
+
+const FEMALE_BACK_NECK_IMGS = {
+  boat: femBoatBackNeck,
+  bow: femBowBackNeck,
+  halter: femHalterBackNeck,
+  keyHole: femKeyHoleBackNeck,
+  open: femOpenBackNeck,
+  round: femRoundBackNeck,
+  square: femSquareBackNeck,
+  vNeck: femVBackNeck,
+}
+
+const FEMALE_BUTTON_STYLE_IMGS = {
+  doubleBreasted: femDoubleBreasted,
+  halfButton: femHalfButton,
+  hiddenPlacket: femHiddenPlacket,
+  noPlacket: femNoPlacket,
+  singleBreasted: femSingleBreasted,
+}
+
+const FEMALE_COLLAR_TYPE_IMGS = {
+  classicPointed: femClassicPointedCollar,
+  mandarin: femMandarinCollar,
+  peterPan: femPeterPanCollar,
+  pussyBow: femPussyBowCollar,
+  ruffle: femRuffleCollar,
+}
+
+const FEMALE_CUFF_TYPE_IMGS = {
+  barrel: femBarrelCuff,
+  buttoned: femButtonedCuff,
+  elasticated: femElasticatedCuff,
+  french: femFrenchCuff,
+  lace: femLaceCuff,
+  ruffle: femRuffleCuff,
+  split: femSplitCuff,
+}
+
+const FEMALE_SLEEVE_SHAPE_IMGS = {
+  bell: femBellSleeveShape,
+  flutter: femFlutterSleeveShape,
+  lantern: femLanternSleeveShape,
+  puff: femPuffSleeveShape,
+  straight: femStraightSleeveShape,
+  tapered: femTaperedSleeveShape,
+}
+
+const FEMALE_SLEEVE_TYPE_IMGS = {
+  cap: femCapSleeve,
+  long: femLongSleeve,
+  offShoulder: femOffShoulderSleeve,
+  short: femShortSleeve,
+  sleeveless: femSleevelessType,
+  spaghettiStrap: femSpaghettiStrapSleeve,
+  threeQuarter: femThreeQuarterSleeve,
+}
+
 const FEMALE_WAIST_STYLE_SLOT = {
   id: 'waist_style',
   label: 'Waist Style',
@@ -109,8 +223,6 @@ const FEMALE_SKIRT_LENGTH_SLOT = {
     { id: 'knee', label: 'Knee Length', img: FEMALE_LOWER_WEAR_IMGS.kneeLengthSkirt },
     { id: 'midi', label: 'Midi', img: FEMALE_LOWER_WEAR_IMGS.midiSkirt },
     { id: 'maxi', label: 'Maxi', img: FEMALE_LOWER_WEAR_IMGS.maxiSkirt },
-    { id: 'ankle', label: 'Ankle', img: null },
-    { id: 'full_length', label: 'Full Length', img: null },
   ],
 }
 
@@ -135,18 +247,6 @@ const FEMALE_LINING_SLOT = {
   ],
 }
 
-const POCKET_SLOT_FEMALE = {
-  id: 'pocket_style',
-  label: 'Pocket Style',
-  options: [
-    { id: 'none', label: 'None', img: null },
-    { id: 'side_seam', label: 'Side Seam', img: null },
-    { id: 'patch', label: 'Patch Pocket', img: null },
-    { id: 'welt', label: 'Welt', img: weltOneBackPocket },
-    { id: 'welt_button', label: 'Welt with Button', img: weltOneBackPocketWithButton },
-  ],
-}
-
 export const FEMALE_NECKLINE_SLOT = {
   id: 'neckline',
   label: 'Neckline',
@@ -163,11 +263,104 @@ export const FEMALE_NECKLINE_SLOT = {
   ],
 }
 
+export const FEMALE_COLLAR_SLOT = {
+  id: 'collar_type',
+  label: 'Collar Type',
+  options: [
+    { id: 'classic_pointed', label: 'Classic Pointed', img: FEMALE_COLLAR_TYPE_IMGS.classicPointed },
+    { id: 'mandarin', label: 'Mandarin', img: FEMALE_COLLAR_TYPE_IMGS.mandarin },
+    { id: 'peter_pan', label: 'Peter Pan', img: FEMALE_COLLAR_TYPE_IMGS.peterPan },
+    { id: 'pussy_bow', label: 'Pussy Bow', img: FEMALE_COLLAR_TYPE_IMGS.pussyBow },
+    { id: 'ruffle', label: 'Ruffle', img: FEMALE_COLLAR_TYPE_IMGS.ruffle },
+  ],
+}
+
+export const FEMALE_SLEEVE_TYPE_SLOT = {
+  id: 'sleeve_type',
+  label: 'Sleeve Type',
+  options: [
+    { id: 'sleeveless', label: 'Sleeveless', img: FEMALE_SLEEVE_TYPE_IMGS.sleeveless },
+    { id: 'cap', label: 'Cap Sleeve', img: FEMALE_SLEEVE_TYPE_IMGS.cap },
+    { id: 'short', label: 'Short Sleeve', img: FEMALE_SLEEVE_TYPE_IMGS.short },
+    { id: 'three_quarter', label: 'Three Quarter', img: FEMALE_SLEEVE_TYPE_IMGS.threeQuarter },
+    { id: 'long', label: 'Long Sleeve', img: FEMALE_SLEEVE_TYPE_IMGS.long },
+    { id: 'off_shoulder', label: 'Off-Shoulder', img: FEMALE_SLEEVE_TYPE_IMGS.offShoulder },
+    { id: 'spaghetti_strap', label: 'Spaghetti Strap', img: FEMALE_SLEEVE_TYPE_IMGS.spaghettiStrap },
+  ],
+}
+
+export const FEMALE_SLEEVE_SHAPE_SLOT = {
+  id: 'sleeve_shape',
+  label: 'Sleeve Shape',
+  options: [
+    { id: 'straight', label: 'Straight', img: FEMALE_SLEEVE_SHAPE_IMGS.straight },
+    { id: 'tapered', label: 'Tapered', img: FEMALE_SLEEVE_SHAPE_IMGS.tapered },
+    { id: 'bell', label: 'Bell', img: FEMALE_SLEEVE_SHAPE_IMGS.bell },
+    { id: 'puff', label: 'Puff', img: FEMALE_SLEEVE_SHAPE_IMGS.puff },
+    { id: 'lantern', label: 'Lantern', img: FEMALE_SLEEVE_SHAPE_IMGS.lantern },
+    { id: 'flutter', label: 'Flutter', img: FEMALE_SLEEVE_SHAPE_IMGS.flutter },
+  ],
+}
+
+export const FEMALE_CUFF_SLOT = {
+  id: 'cuff_type',
+  label: 'Cuff Type',
+  options: [
+    { id: 'barrel', label: 'Barrel', img: FEMALE_CUFF_TYPE_IMGS.barrel },
+    { id: 'buttoned', label: 'Buttoned', img: FEMALE_CUFF_TYPE_IMGS.buttoned },
+    { id: 'french', label: 'French', img: FEMALE_CUFF_TYPE_IMGS.french },
+    { id: 'elasticated', label: 'Elasticated', img: FEMALE_CUFF_TYPE_IMGS.elasticated },
+    { id: 'ruffle', label: 'Ruffle', img: FEMALE_CUFF_TYPE_IMGS.ruffle },
+    { id: 'lace', label: 'Lace', img: FEMALE_CUFF_TYPE_IMGS.lace },
+    { id: 'split', label: 'Split', img: FEMALE_CUFF_TYPE_IMGS.split },
+  ],
+}
+
+export const FEMALE_BUTTON_STYLE_SLOT = {
+  id: 'button_style',
+  label: 'Button Style',
+  options: [
+    { id: 'single_breasted', label: 'Single Breasted', img: FEMALE_BUTTON_STYLE_IMGS.singleBreasted },
+    { id: 'double_breasted', label: 'Double Breasted', img: FEMALE_BUTTON_STYLE_IMGS.doubleBreasted },
+    { id: 'half_button', label: 'Half Button', img: FEMALE_BUTTON_STYLE_IMGS.halfButton },
+    { id: 'hidden_placket', label: 'Hidden Placket', img: FEMALE_BUTTON_STYLE_IMGS.hiddenPlacket },
+    { id: 'no_placket', label: 'No Placket', img: FEMALE_BUTTON_STYLE_IMGS.noPlacket },
+  ],
+}
+
+export const FEMALE_BACK_DESIGN_SLOT = {
+  id: 'back_design',
+  label: 'Back Design',
+  options: [
+    { id: 'plain', label: 'Plain Back', img: FEMALE_BACK_DESIGN_IMGS.plain },
+    { id: 'open', label: 'Open Back', img: FEMALE_BACK_DESIGN_IMGS.open },
+    { id: 'lace_up', label: 'Lace-Up Back', img: FEMALE_BACK_DESIGN_IMGS.laceUp },
+    { id: 'bow', label: 'Bow Back', img: FEMALE_BACK_DESIGN_IMGS.bow },
+    { id: 'pleated', label: 'Pleated Back', img: FEMALE_BACK_DESIGN_IMGS.pleated },
+    { id: 'yoke', label: 'Yoke Back', img: FEMALE_BACK_DESIGN_IMGS.yoke },
+    { id: 'zipper', label: 'Zipper Back', img: FEMALE_BACK_DESIGN_IMGS.zipper },
+  ],
+}
+
+export const FEMALE_BACK_NECK_SLOT = {
+  id: 'back_neck_design',
+  label: 'Back Neck Design',
+  options: [
+    { id: 'round', label: 'Round Neck', img: FEMALE_BACK_NECK_IMGS.round },
+    { id: 'v_neck', label: 'V-Neck', img: FEMALE_BACK_NECK_IMGS.vNeck },
+    { id: 'square', label: 'Square Neck', img: FEMALE_BACK_NECK_IMGS.square },
+    { id: 'boat', label: 'Boat Neck', img: FEMALE_BACK_NECK_IMGS.boat },
+    { id: 'halter', label: 'Halter', img: FEMALE_BACK_NECK_IMGS.halter },
+    { id: 'open', label: 'Open Back', img: FEMALE_BACK_NECK_IMGS.open },
+    { id: 'key_hole', label: 'Keyhole', img: FEMALE_BACK_NECK_IMGS.keyHole },
+    { id: 'bow', label: 'Bow', img: FEMALE_BACK_NECK_IMGS.bow },
+  ],
+}
+
 export const FEMALE_SKIRT_BASE_SLOTS = [
   FEMALE_WAIST_STYLE_SLOT,
   FEMALE_SKIRT_SHAPE_SLOT,
   FEMALE_SKIRT_LENGTH_SLOT,
   FEMALE_BOTTOM_STYLE_SLOT,
   FEMALE_LINING_SLOT,
-  POCKET_SLOT_FEMALE,
 ]
