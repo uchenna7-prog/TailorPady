@@ -72,6 +72,42 @@ import milaneseShirtCuff from '../../../assets/maleGarmentFeatures/upperWearFeat
 import roundedShirtCuff from '../../../assets/maleGarmentFeatures/upperWearFeatures/shirtCuffType/roundedShirtCuff.jpg'
 import squareShirtCurve from '../../../assets/maleGarmentFeatures/upperWearFeatures/shirtCuffType/squareShirtCurve.jpg'
 
+import boxBack from '../../../assets/maleGarmentFeatures/upperWearFeatures/backDesign/boxBack.jpg'
+import dartedBack from '../../../assets/maleGarmentFeatures/upperWearFeatures/backDesign/dartedBack.jpg'
+import plainBack from '../../../assets/maleGarmentFeatures/upperWearFeatures/backDesign/plainBack.jpg'
+import sidePleatsBack from '../../../assets/maleGarmentFeatures/upperWearFeatures/backDesign/sidePleats.jpg'
+import ventedBack from '../../../assets/maleGarmentFeatures/upperWearFeatures/backDesign/ventedBack.jpg'
+import yokeBack from '../../../assets/maleGarmentFeatures/upperWearFeatures/backDesign/yokeBack.jpg'
+
+import doubleBreastedButton from '../../../assets/maleGarmentFeatures/upperWearFeatures/buttonStyle/doubleBreastedButton.jpg'
+import halfButton from '../../../assets/maleGarmentFeatures/upperWearFeatures/buttonStyle/halfButton.jpg'
+import hiddenPlacketButton from '../../../assets/maleGarmentFeatures/upperWearFeatures/buttonStyle/hiddenPlacketButton.jpg'
+import mandarinNoPlacketButton from '../../../assets/maleGarmentFeatures/upperWearFeatures/buttonStyle/mandarinNoPlacket.jpg'
+import singleBreastedButton from '../../../assets/maleGarmentFeatures/upperWearFeatures/buttonStyle/singleBreastedButton.jpg'
+
+import athleticFit from '../../../assets/maleGarmentFeatures/upperWearFeatures/fitType/athleticFit.jpg'
+import oversizedFit from '../../../assets/maleGarmentFeatures/upperWearFeatures/fitType/oversizedFit.jpg'
+import regularFit from '../../../assets/maleGarmentFeatures/upperWearFeatures/fitType/regularFit.jpg'
+import relaxedFit from '../../../assets/maleGarmentFeatures/upperWearFeatures/fitType/relaxedFit.jpg'
+import slimFit from '../../../assets/maleGarmentFeatures/upperWearFeatures/fitType/slimFit.jpg'
+
+import henleyNeck from '../../../assets/maleGarmentFeatures/upperWearFeatures/frontNeckType/henleyNeck.jpg'
+import poloNeck from '../../../assets/maleGarmentFeatures/upperWearFeatures/frontNeckType/poloNeck.jpg'
+import roundNeck from '../../../assets/maleGarmentFeatures/upperWearFeatures/frontNeckType/roundNeck.jpg'
+import scoopNeck from '../../../assets/maleGarmentFeatures/upperWearFeatures/frontNeckType/scoopNeck.jpg'
+import turtleNeck from '../../../assets/maleGarmentFeatures/upperWearFeatures/frontNeckType/turtleNeck.jpg'
+import vNeckFront from '../../../assets/maleGarmentFeatures/upperWearFeatures/frontNeckType/v-Neck.jpg'
+
+import raglanSleeveShape from '../../../assets/maleGarmentFeatures/upperWearFeatures/sleeveShape/raglanSleeve.jpg'
+import straightSleeveShape from '../../../assets/maleGarmentFeatures/upperWearFeatures/sleeveShape/straightSleeve.jpg'
+import taperedSleeveShape from '../../../assets/maleGarmentFeatures/upperWearFeatures/sleeveShape/taperedSleeve.jpg'
+
+import longSleeveType from '../../../assets/maleGarmentFeatures/upperWearFeatures/sleeveType/longSleeve.jpg'
+import rolledUpSleeveType from '../../../assets/maleGarmentFeatures/upperWearFeatures/sleeveType/rolledUpSleeve.jpg'
+import shortSleeveType from '../../../assets/maleGarmentFeatures/upperWearFeatures/sleeveType/shortSleeve.jpg'
+import sleevelessType from '../../../assets/maleGarmentFeatures/upperWearFeatures/sleeveType/sleeveless.jpg'
+import threeQuarterSleeveType from '../../../assets/maleGarmentFeatures/upperWearFeatures/sleeveType/threeQuarterSleeve.jpg'
+
 const BACK_POCKET_IMGS = {
   jettedOneBackPocket,
   jettedTwoBackPocket,
@@ -150,6 +186,54 @@ const MALE_CUFF_IMGS = {
   milanese: milaneseShirtCuff,
   rounded: roundedShirtCuff,
   squareCurve: squareShirtCurve,
+}
+
+const MALE_FRONT_NECK_IMGS = {
+  round: roundNeck,
+  vNeck: vNeckFront,
+  polo: poloNeck,
+  henley: henleyNeck,
+  turtle: turtleNeck,
+  scoop: scoopNeck,
+}
+
+const MALE_SLEEVE_TYPE_IMGS = {
+  sleeveless: sleevelessType,
+  short: shortSleeveType,
+  threeQuarter: threeQuarterSleeveType,
+  long: longSleeveType,
+  rolledUp: rolledUpSleeveType,
+}
+
+const MALE_SLEEVE_SHAPE_IMGS = {
+  straight: straightSleeveShape,
+  raglan: raglanSleeveShape,
+  tapered: taperedSleeveShape,
+}
+
+const MALE_FIT_IMGS = {
+  slim: slimFit,
+  regular: regularFit,
+  relaxed: relaxedFit,
+  athletic: athleticFit,
+  oversized: oversizedFit,
+}
+
+const MALE_BACK_DESIGN_IMGS = {
+  plain: plainBack,
+  yoke: yokeBack,
+  boxPleat: boxBack,
+  sidePleats: sidePleatsBack,
+  darted: dartedBack,
+  vented: ventedBack,
+}
+
+const MALE_BUTTON_STYLE_IMGS = {
+  singleBreasted: singleBreastedButton,
+  doubleBreasted: doubleBreastedButton,
+  half: halfButton,
+  hiddenPlacket: hiddenPlacketButton,
+  mandarinNoPlacket: mandarinNoPlacketButton,
 }
 
 const POCKET_SLOT_MALE_BACK = {
@@ -321,6 +405,78 @@ export const MALE_CUFF_SLOT = {
     { id: 'milanese', label: 'Milanese', img: MALE_CUFF_IMGS.milanese },
     { id: 'rounded', label: 'Rounded', img: MALE_CUFF_IMGS.rounded },
     { id: 'square_curve', label: 'Square Curve', img: MALE_CUFF_IMGS.squareCurve },
+  ],
+}
+
+export const MALE_FRONT_NECK_SLOT = {
+  id: 'front_neck_type',
+  label: 'Front Neck Type',
+  options: [
+    { id: 'round', label: 'Round Neck', img: MALE_FRONT_NECK_IMGS.round },
+    { id: 'v_neck', label: 'V-Neck', img: MALE_FRONT_NECK_IMGS.vNeck },
+    { id: 'polo', label: 'Polo Neck', img: MALE_FRONT_NECK_IMGS.polo },
+    { id: 'henley', label: 'Henley Neck', img: MALE_FRONT_NECK_IMGS.henley },
+    { id: 'turtle', label: 'Turtle Neck', img: MALE_FRONT_NECK_IMGS.turtle },
+    { id: 'scoop', label: 'Scoop Neck', img: MALE_FRONT_NECK_IMGS.scoop },
+  ],
+}
+
+export const MALE_SLEEVE_TYPE_SLOT = {
+  id: 'sleeve_type',
+  label: 'Sleeve Type',
+  options: [
+    { id: 'sleeveless', label: 'Sleeveless', img: MALE_SLEEVE_TYPE_IMGS.sleeveless },
+    { id: 'short', label: 'Short Sleeve', img: MALE_SLEEVE_TYPE_IMGS.short },
+    { id: 'three_qtr', label: 'Three-Quarter Sleeve', img: MALE_SLEEVE_TYPE_IMGS.threeQuarter },
+    { id: 'long', label: 'Long Sleeve', img: MALE_SLEEVE_TYPE_IMGS.long },
+    { id: 'rolled_up', label: 'Rolled-Up Sleeve', img: MALE_SLEEVE_TYPE_IMGS.rolledUp },
+  ],
+}
+
+export const MALE_SLEEVE_SHAPE_SLOT = {
+  id: 'sleeve_shape',
+  label: 'Sleeve Shape',
+  options: [
+    { id: 'straight', label: 'Straight', img: MALE_SLEEVE_SHAPE_IMGS.straight },
+    { id: 'raglan', label: 'Raglan', img: MALE_SLEEVE_SHAPE_IMGS.raglan },
+    { id: 'tapered', label: 'Tapered', img: MALE_SLEEVE_SHAPE_IMGS.tapered },
+  ],
+}
+
+export const MALE_FIT_SLOT = {
+  id: 'fit',
+  label: 'Fit',
+  options: [
+    { id: 'slim', label: 'Slim Fit', img: MALE_FIT_IMGS.slim },
+    { id: 'regular', label: 'Regular Fit', img: MALE_FIT_IMGS.regular },
+    { id: 'relaxed', label: 'Relaxed Fit', img: MALE_FIT_IMGS.relaxed },
+    { id: 'athletic', label: 'Athletic Fit', img: MALE_FIT_IMGS.athletic },
+    { id: 'oversized', label: 'Oversized Fit', img: MALE_FIT_IMGS.oversized },
+  ],
+}
+
+export const MALE_BACK_DESIGN_SLOT = {
+  id: 'back_design',
+  label: 'Back Design',
+  options: [
+    { id: 'plain', label: 'Plain Back', img: MALE_BACK_DESIGN_IMGS.plain },
+    { id: 'yoke', label: 'Yoke Back', img: MALE_BACK_DESIGN_IMGS.yoke },
+    { id: 'box_pleat', label: 'Box Pleat', img: MALE_BACK_DESIGN_IMGS.boxPleat },
+    { id: 'side_pleats', label: 'Side Pleats', img: MALE_BACK_DESIGN_IMGS.sidePleats },
+    { id: 'darted', label: 'Darted', img: MALE_BACK_DESIGN_IMGS.darted },
+    { id: 'vented', label: 'Vented', img: MALE_BACK_DESIGN_IMGS.vented },
+  ],
+}
+
+export const MALE_BUTTON_STYLE_SLOT = {
+  id: 'button_style',
+  label: 'Button Style',
+  options: [
+    { id: 'single_breasted', label: 'Single Breasted', img: MALE_BUTTON_STYLE_IMGS.singleBreasted },
+    { id: 'double_breasted', label: 'Double Breasted', img: MALE_BUTTON_STYLE_IMGS.doubleBreasted },
+    { id: 'half', label: 'Half Button', img: MALE_BUTTON_STYLE_IMGS.half },
+    { id: 'hidden_placket', label: 'Hidden Placket', img: MALE_BUTTON_STYLE_IMGS.hiddenPlacket },
+    { id: 'mandarin_no_placket', label: 'Mandarin (No Placket)', img: MALE_BUTTON_STYLE_IMGS.mandarinNoPlacket },
   ],
 }
 
