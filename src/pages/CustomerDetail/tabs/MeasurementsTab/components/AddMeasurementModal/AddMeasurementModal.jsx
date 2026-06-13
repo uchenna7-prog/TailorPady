@@ -1,11 +1,11 @@
-import { useState, useRef }                                                               from 'react'
-import { MultiImageUploader }                                                            from '../MultiImageUploader/MultiImageUploader'
-import { uploadToCloudinary }                                                            from '../../../../../../services/cloudinaryService'
-import { useNetworkStatus }                                                              from '../../../../../../hooks/useNetworkStatus'
-import { UNIT_FULL }                                                                     from '../../../../../../datas/measurementDatas'
-import { GARMENT_CATEGORIES, FULL_WEAR_TYPES, FEMALE_LOWER_BODY_TYPES, getSlotsForCard } from './garmentFeatures'
-import Header                                                                            from '../../../../../../components/Header/Header'
-import styles                                                                            from './AddMeasurementModal.module.css'
+import { useState, useRef }  from 'react'
+import { MultiImageUploader }  from '../MultiImageUploader/MultiImageUploader'
+import { uploadToCloudinary } from '../../../../../../services/cloudinaryService'
+import { useNetworkStatus }  from '../../../../../../hooks/useNetworkStatus'
+import { useGarmentFeatures }  from '../../../../../../hooks/useGarmentFeatures/useGarmentFeatures'
+import { UNIT_FULL }   from '../../../../../../datas/measurementDatas'
+import Header  from '../../../../../../components/Header/Header'
+import styles  from './AddMeasurementModal.module.css'
 
 
 function createBlankField() {
@@ -101,6 +101,8 @@ export function AddMeasurementModal({ isOpen, onClose, onSave, gender }) {
   const detailsRef                              = useRef(null)
   const scrollBodyRef                           = useRef(null)
   const slotCardRefs                            = useRef({})
+
+  const { GARMENT_CATEGORIES, FULL_WEAR_TYPES, FEMALE_LOWER_BODY_TYPES, getSlotsForCard } = useGarmentFeatures()
 
 
   function updateMeasurement(key, value) {

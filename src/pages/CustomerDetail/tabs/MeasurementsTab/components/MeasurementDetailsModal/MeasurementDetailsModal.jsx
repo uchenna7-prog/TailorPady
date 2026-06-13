@@ -2,7 +2,7 @@ import { useState, useEffect } from "react"
 import { ImageCarousel } from "../ImageCarousel/ImageCarousel"
 import { ImageLightbox } from "../ImageLightbox/ImageLightbox"
 import { UNIT_FULL, UNIT_SHORT } from "../../../../../../datas/measurementDatas"
-import { getSlotsForCard, GARMENT_CATEGORIES } from "../AddMeasurementModal/garmentFeatures"
+import { useGarmentFeatures } from "../../../../../../hooks/useGarmentFeatures/useGarmentFeatures"
 import Header from "../../../../../../components/Header/Header"
 import styles from "./MeasurementDetailsModal.module.css"
 
@@ -103,6 +103,7 @@ function ChipSlot({ slot, styleSelections }) {
 
 function GarmentFeaturesSection({ measurement }) {
   const { category, fullWearType, lowerBodyType, styleSelections, gender } = measurement
+  const { getSlotsForCard, GARMENT_CATEGORIES } = useGarmentFeatures()
 
   const hasSelections = styleSelections && Object.values(styleSelections).some(v => v && v !== '')
   if (!category || !hasSelections) return null
