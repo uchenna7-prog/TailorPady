@@ -52,6 +52,12 @@ import maleFullLining from '../../../assets/maleGarmentFeatures/lowerWearFeature
 import maleHalfLining from '../../../assets/maleGarmentFeatures/lowerWearFeatures/liningType/halfLining.jpg'
 import maleNoLining from '../../../assets/maleGarmentFeatures/lowerWearFeatures/liningType/noLining.jpg'
 
+import lowerWearAthlecticFit from '../../../assets/maleGarmentFeatures/lowerWearFeatures/fitType/athleticFit.jpg'
+import lowerWearOversizedFit from '../../../assets/maleGarmentFeatures/lowerWearFeatures/fitType/oversizedFit.jpg'
+import lowerWearRegularFit from '../../../assets/maleGarmentFeatures/lowerWearFeatures/fitType/regularFit.jpg'
+import lowerWearRelaxedFit from '../../../assets/maleGarmentFeatures/lowerWearFeatures/fitType/relaxedFit.jpg'
+import lowerWearSlimFit from '../../../assets/maleGarmentFeatures/lowerWearFeatures/fitType/slimFit.jpg'
+
 import classicOneFrontPocket from '../../../assets/maleGarmentFeatures/upperWearFeatures/frontPocketType/classicOneFrontPockets.jpg'
 import classicTwoFrontPocket from '../../../assets/maleGarmentFeatures/upperWearFeatures/frontPocketType/classicTwoFrontPocket.jpg'
 import roundOneFrontPocket from '../../../assets/maleGarmentFeatures/upperWearFeatures/frontPocketType/roundOneFrontPocket.jpg'
@@ -163,6 +169,14 @@ const LOWER_WEAR_IMGS = {
   elasticatedWaistBand,
   flatFrontWaistBand,
   singlePleatWaistBand,
+}
+
+const MALE_LOWER_FIT_IMGS = {
+  slim: lowerWearSlimFit,
+  regular: lowerWearRegularFit,
+  relaxed: lowerWearRelaxedFit,
+  athletic: lowerWearAthlecticFit,
+  oversized: lowerWearOversizedFit,
 }
 
 const MALE_LINING_IMGS = {
@@ -383,6 +397,18 @@ const MALE_LINING_SLOT = {
   ],
 }
 
+const MALE_LOWER_FIT_SLOT = {
+  id: 'fit',
+  label: 'Fit',
+  options: [
+    { id: 'slim', label: 'Slim Fit', img: MALE_LOWER_FIT_IMGS.slim },
+    { id: 'regular', label: 'Regular Fit', img: MALE_LOWER_FIT_IMGS.regular },
+    { id: 'relaxed', label: 'Relaxed Fit', img: MALE_LOWER_FIT_IMGS.relaxed },
+    { id: 'athletic', label: 'Athletic Fit', img: MALE_LOWER_FIT_IMGS.athletic },
+    { id: 'oversized', label: 'Oversized Fit', img: MALE_LOWER_FIT_IMGS.oversized },
+  ],
+}
+
 export const MALE_COLLAR_SLOT = {
   id: 'collar_type',
   label: 'Collar Type',
@@ -481,13 +507,14 @@ export const MALE_BUTTON_STYLE_SLOT = {
 }
 
 export const TROUSER_SLOTS = [
+  MALE_LOWER_FIT_SLOT,
+  MALE_LENGTH_SLOT,
   WAIST_BAND_SLOT,
   FLY_TYPE_SLOT,
   BELT_LOOP_SLOT,
+  LEG_SHAPE_SLOT,
   MALE_LOWER_FRONT_POCKET_SLOT,
   POCKET_SLOT_MALE_BACK,
-  LEG_SHAPE_SLOT,
-  MALE_LENGTH_SLOT,
   BOTTOM_TYPE_SLOT,
   MALE_LINING_SLOT,
 ]

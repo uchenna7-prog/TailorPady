@@ -190,63 +190,6 @@ const FEMALE_SLEEVE_TYPE_IMGS = {
   threeQuarter: femThreeQuarterSleeve,
 }
 
-const FEMALE_WAIST_STYLE_SLOT = {
-  id: 'waist_style',
-  label: 'Waist Style',
-  options: [
-    { id: 'high', label: 'High Waist', img: FEMALE_LOWER_WEAR_IMGS.highWaist },
-    { id: 'mid', label: 'Mid Waist', img: FEMALE_LOWER_WEAR_IMGS.midWaist },
-    { id: 'low', label: 'Low Waist', img: FEMALE_LOWER_WEAR_IMGS.lowWaist },
-    { id: 'elastic', label: 'Elastic', img: FEMALE_LOWER_WEAR_IMGS.elasticatedWaist },
-    { id: 'drawstring', label: 'Drawstring', img: FEMALE_LOWER_WEAR_IMGS.drawStringWaist },
-  ],
-}
-
-const FEMALE_SKIRT_SHAPE_SLOT = {
-  id: 'skirt_shape',
-  label: 'Skirt Shape',
-  options: [
-    { id: 'a_line', label: 'A-Line', img: FEMALE_LOWER_WEAR_IMGS.aLineShape },
-    { id: 'flared', label: 'Flared', img: FEMALE_LOWER_WEAR_IMGS.flaredShape },
-    { id: 'layered', label: 'Layered', img: FEMALE_LOWER_WEAR_IMGS.layeredShape },
-    { id: 'pencil', label: 'Pencil', img: FEMALE_LOWER_WEAR_IMGS.pencilShape },
-    { id: 'pleated', label: 'Pleated', img: FEMALE_LOWER_WEAR_IMGS.pleatedShape },
-    { id: 'wrap', label: 'Wrap', img: FEMALE_LOWER_WEAR_IMGS.wrapShape },
-  ],
-}
-
-const FEMALE_SKIRT_LENGTH_SLOT = {
-  id: 'length',
-  label: 'Length',
-  options: [
-    { id: 'mini', label: 'Mini', img: FEMALE_LOWER_WEAR_IMGS.miniSkirt },
-    { id: 'knee', label: 'Knee Length', img: FEMALE_LOWER_WEAR_IMGS.kneeLengthSkirt },
-    { id: 'midi', label: 'Midi', img: FEMALE_LOWER_WEAR_IMGS.midiSkirt },
-    { id: 'maxi', label: 'Maxi', img: FEMALE_LOWER_WEAR_IMGS.maxiSkirt },
-  ],
-}
-
-const FEMALE_BOTTOM_STYLE_SLOT = {
-  id: 'bottom_style',
-  label: 'Bottom Style',
-  options: [
-    { id: 'straight', label: 'Straight', img: FEMALE_LOWER_WEAR_IMGS.straightBottom },
-    { id: 'asymmetric', label: 'Asymmetric', img: FEMALE_LOWER_WEAR_IMGS.asymmetricBottom },
-    { id: 'ruffled', label: 'Ruffled', img: FEMALE_LOWER_WEAR_IMGS.ruffledBottom },
-    { id: 'slit', label: 'Slit', img: FEMALE_LOWER_WEAR_IMGS.slitBottom },
-  ],
-}
-
-const FEMALE_LINING_SLOT = {
-  id: 'lining_type',
-  label: 'Lining',
-  options: [
-    { id: 'none', label: 'No Lining', img: FEMALE_LOWER_WEAR_IMGS.noLining },
-    { id: 'half', label: 'Half Lining', img: FEMALE_LOWER_WEAR_IMGS.halfLining },
-    { id: 'full', label: 'Full Lining', img: FEMALE_LOWER_WEAR_IMGS.fullLining },
-  ],
-}
-
 export const FEMALE_NECKLINE_SLOT = {
   id: 'neckline',
   label: 'Neckline',
@@ -272,6 +215,18 @@ export const FEMALE_COLLAR_SLOT = {
     { id: 'peter_pan', label: 'Peter Pan', img: FEMALE_COLLAR_TYPE_IMGS.peterPan },
     { id: 'pussy_bow', label: 'Pussy Bow', img: FEMALE_COLLAR_TYPE_IMGS.pussyBow },
     { id: 'ruffle', label: 'Ruffle', img: FEMALE_COLLAR_TYPE_IMGS.ruffle },
+  ],
+}
+
+export const FEMALE_BUTTON_STYLE_SLOT = {
+  id: 'button_style',
+  label: 'Button Style',
+  options: [
+    { id: 'single_breasted', label: 'Single Breasted', img: FEMALE_BUTTON_STYLE_IMGS.singleBreasted },
+    { id: 'double_breasted', label: 'Double Breasted', img: FEMALE_BUTTON_STYLE_IMGS.doubleBreasted },
+    { id: 'half_button', label: 'Half Button', img: FEMALE_BUTTON_STYLE_IMGS.halfButton },
+    { id: 'hidden_placket', label: 'Hidden Placket', img: FEMALE_BUTTON_STYLE_IMGS.hiddenPlacket },
+    { id: 'no_placket', label: 'No Placket', img: FEMALE_BUTTON_STYLE_IMGS.noPlacket },
   ],
 }
 
@@ -316,15 +271,18 @@ export const FEMALE_CUFF_SLOT = {
   ],
 }
 
-export const FEMALE_BUTTON_STYLE_SLOT = {
-  id: 'button_style',
-  label: 'Button Style',
+export const FEMALE_BACK_NECK_SLOT = {
+  id: 'back_neck_design',
+  label: 'Back Neck Design',
   options: [
-    { id: 'single_breasted', label: 'Single Breasted', img: FEMALE_BUTTON_STYLE_IMGS.singleBreasted },
-    { id: 'double_breasted', label: 'Double Breasted', img: FEMALE_BUTTON_STYLE_IMGS.doubleBreasted },
-    { id: 'half_button', label: 'Half Button', img: FEMALE_BUTTON_STYLE_IMGS.halfButton },
-    { id: 'hidden_placket', label: 'Hidden Placket', img: FEMALE_BUTTON_STYLE_IMGS.hiddenPlacket },
-    { id: 'no_placket', label: 'No Placket', img: FEMALE_BUTTON_STYLE_IMGS.noPlacket },
+    { id: 'round', label: 'Round Neck', img: FEMALE_BACK_NECK_IMGS.round },
+    { id: 'v_neck', label: 'V-Neck', img: FEMALE_BACK_NECK_IMGS.vNeck },
+    { id: 'square', label: 'Square Neck', img: FEMALE_BACK_NECK_IMGS.square },
+    { id: 'boat', label: 'Boat Neck', img: FEMALE_BACK_NECK_IMGS.boat },
+    { id: 'halter', label: 'Halter', img: FEMALE_BACK_NECK_IMGS.halter },
+    { id: 'open', label: 'Open Back', img: FEMALE_BACK_NECK_IMGS.open },
+    { id: 'key_hole', label: 'Keyhole', img: FEMALE_BACK_NECK_IMGS.keyHole },
+    { id: 'bow', label: 'Bow', img: FEMALE_BACK_NECK_IMGS.bow },
   ],
 }
 
@@ -342,25 +300,67 @@ export const FEMALE_BACK_DESIGN_SLOT = {
   ],
 }
 
-export const FEMALE_BACK_NECK_SLOT = {
-  id: 'back_neck_design',
-  label: 'Back Neck Design',
+const FEMALE_SKIRT_SHAPE_SLOT = {
+  id: 'skirt_shape',
+  label: 'Skirt Shape',
   options: [
-    { id: 'round', label: 'Round Neck', img: FEMALE_BACK_NECK_IMGS.round },
-    { id: 'v_neck', label: 'V-Neck', img: FEMALE_BACK_NECK_IMGS.vNeck },
-    { id: 'square', label: 'Square Neck', img: FEMALE_BACK_NECK_IMGS.square },
-    { id: 'boat', label: 'Boat Neck', img: FEMALE_BACK_NECK_IMGS.boat },
-    { id: 'halter', label: 'Halter', img: FEMALE_BACK_NECK_IMGS.halter },
-    { id: 'open', label: 'Open Back', img: FEMALE_BACK_NECK_IMGS.open },
-    { id: 'key_hole', label: 'Keyhole', img: FEMALE_BACK_NECK_IMGS.keyHole },
-    { id: 'bow', label: 'Bow', img: FEMALE_BACK_NECK_IMGS.bow },
+    { id: 'a_line', label: 'A-Line', img: FEMALE_LOWER_WEAR_IMGS.aLineShape },
+    { id: 'flared', label: 'Flared', img: FEMALE_LOWER_WEAR_IMGS.flaredShape },
+    { id: 'layered', label: 'Layered', img: FEMALE_LOWER_WEAR_IMGS.layeredShape },
+    { id: 'pencil', label: 'Pencil', img: FEMALE_LOWER_WEAR_IMGS.pencilShape },
+    { id: 'pleated', label: 'Pleated', img: FEMALE_LOWER_WEAR_IMGS.pleatedShape },
+    { id: 'wrap', label: 'Wrap', img: FEMALE_LOWER_WEAR_IMGS.wrapShape },
+  ],
+}
+
+const FEMALE_SKIRT_LENGTH_SLOT = {
+  id: 'length',
+  label: 'Length',
+  options: [
+    { id: 'mini', label: 'Mini', img: FEMALE_LOWER_WEAR_IMGS.miniSkirt },
+    { id: 'knee', label: 'Knee Length', img: FEMALE_LOWER_WEAR_IMGS.kneeLengthSkirt },
+    { id: 'midi', label: 'Midi', img: FEMALE_LOWER_WEAR_IMGS.midiSkirt },
+    { id: 'maxi', label: 'Maxi', img: FEMALE_LOWER_WEAR_IMGS.maxiSkirt },
+  ],
+}
+
+const FEMALE_WAIST_STYLE_SLOT = {
+  id: 'waist_style',
+  label: 'Waist Style',
+  options: [
+    { id: 'high', label: 'High Waist', img: FEMALE_LOWER_WEAR_IMGS.highWaist },
+    { id: 'mid', label: 'Mid Waist', img: FEMALE_LOWER_WEAR_IMGS.midWaist },
+    { id: 'low', label: 'Low Waist', img: FEMALE_LOWER_WEAR_IMGS.lowWaist },
+    { id: 'elastic', label: 'Elastic', img: FEMALE_LOWER_WEAR_IMGS.elasticatedWaist },
+    { id: 'drawstring', label: 'Drawstring', img: FEMALE_LOWER_WEAR_IMGS.drawStringWaist },
+  ],
+}
+
+const FEMALE_BOTTOM_STYLE_SLOT = {
+  id: 'bottom_style',
+  label: 'Bottom Style',
+  options: [
+    { id: 'straight', label: 'Straight', img: FEMALE_LOWER_WEAR_IMGS.straightBottom },
+    { id: 'asymmetric', label: 'Asymmetric', img: FEMALE_LOWER_WEAR_IMGS.asymmetricBottom },
+    { id: 'ruffled', label: 'Ruffled', img: FEMALE_LOWER_WEAR_IMGS.ruffledBottom },
+    { id: 'slit', label: 'Slit', img: FEMALE_LOWER_WEAR_IMGS.slitBottom },
+  ],
+}
+
+const FEMALE_LINING_SLOT = {
+  id: 'lining_type',
+  label: 'Lining',
+  options: [
+    { id: 'none', label: 'No Lining', img: FEMALE_LOWER_WEAR_IMGS.noLining },
+    { id: 'half', label: 'Half Lining', img: FEMALE_LOWER_WEAR_IMGS.halfLining },
+    { id: 'full', label: 'Full Lining', img: FEMALE_LOWER_WEAR_IMGS.fullLining },
   ],
 }
 
 export const FEMALE_SKIRT_BASE_SLOTS = [
-  FEMALE_WAIST_STYLE_SLOT,
   FEMALE_SKIRT_SHAPE_SLOT,
   FEMALE_SKIRT_LENGTH_SLOT,
+  FEMALE_WAIST_STYLE_SLOT,
   FEMALE_BOTTOM_STYLE_SLOT,
   FEMALE_LINING_SLOT,
 ]
