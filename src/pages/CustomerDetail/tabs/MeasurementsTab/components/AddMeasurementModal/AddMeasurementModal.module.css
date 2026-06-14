@@ -339,6 +339,41 @@
 }
 
 
+/* ─── Garment feature sub-tabs ──────────────────────────────────────────────── */
+
+.subTabRow {
+  display:        flex;
+  gap:            8px;
+  padding:        12px 16px;
+  margin:         -20px -16px 16px;
+  background:     var(--bg);
+  position:       sticky;
+  top:            0;
+  z-index:        5;
+  border-bottom:  1px solid var(--border);
+}
+
+.subTabChip {
+  flex:          1;
+  text-align:    center;
+  padding:       10px 4px;
+  border-radius: 12px;
+  border:        1px solid var(--border2);
+  font-size:     0.78rem;
+  font-weight:   700;
+  color:         var(--text2);
+  cursor:        pointer;
+  transition:    all 0.2s;
+  background:    transparent;
+}
+
+.subTabChip_active {
+  background:   var(--accent);
+  color:        var(--bg);
+  border-color: var(--accent);
+}
+
+
 /* ─── Slot accordion list ───────────────────────────────────────────────────── */
 
 .slotAccordionList {
@@ -546,62 +581,6 @@
   width:       100%;
 }
 
-
-.lowerBodyTypePicker {
-  display:        grid;
-  grid-template-columns: 1fr 1fr;
-  gap:            10px;
-  margin-bottom:  20px;
-}
-
-.lowerBodyTypeOption {
-  position:        relative;
-  display:         flex;
-  flex-direction:  column;
-  align-items:     center;
-  justify-content: center;
-  gap:             8px;
-  padding:         20px 16px;
-  background:      var(--surface);
-  border:          1.5px solid var(--border);
-  border-radius:   14px;
-  cursor:          pointer;
-  transition:      border-color 0.18s, background 0.18s;
-}
-
-.lowerBodyTypeOption_active {
-  border-color: var(--accent);
-  background:   color-mix(in srgb, var(--accent) 8%, var(--surface));
-}
-
-.lowerBodyTypeIcon {
-  font-size:  1.6rem;
-  color:      var(--text3);
-  transition: color 0.18s;
-}
-
-.lowerBodyTypeOption_active .lowerBodyTypeIcon {
-  color: var(--accent);
-}
-
-.lowerBodyTypeLabel {
-  font-size:   0.875rem;
-  font-weight: 500;
-  color:       var(--text2);
-  transition:  color 0.18s;
-}
-
-.lowerBodyTypeOption_active .lowerBodyTypeLabel {
-  color: var(--text);
-}
-
-.lowerBodyTypeCheck {
-  position:  absolute;
-  top:       10px;
-  right:     10px;
-  font-size: 1rem;
-  color:     var(--accent);
-}
 
 @media (min-width: 769px) {
   .formOverlay {

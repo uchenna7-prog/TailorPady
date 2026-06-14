@@ -87,6 +87,34 @@ import femSleevelessType from '../../../assets/femaleGarmentFeatures/upperWearFe
 import femSpaghettiStrapSleeve from '../../../assets/femaleGarmentFeatures/upperWearFeatures/sleeveType/spaghettiStrap.jpg'
 import femThreeQuarterSleeve from '../../../assets/femaleGarmentFeatures/upperWearFeatures/sleeveType/threeQuarterSleeve.jpg'
 
+import femGownFloorLength from '../../../assets/femaleGarmentFeatures/fullWearFeatures/gown/length/floorLength.jpg'
+import femGownKneeLength from '../../../assets/femaleGarmentFeatures/fullWearFeatures/gown/length/kneeLength.jpg'
+import femGownMaxiLength from '../../../assets/femaleGarmentFeatures/fullWearFeatures/gown/length/maxi.jpg'
+import femGownMidiLength from '../../../assets/femaleGarmentFeatures/fullWearFeatures/gown/length/midi.jpg'
+import femGownMiniLength from '../../../assets/femaleGarmentFeatures/fullWearFeatures/gown/length/mini.jpg'
+
+import femGownALineShape from '../../../assets/femaleGarmentFeatures/fullWearFeatures/gown/shape/a-Line.jpg'
+import femGownBallGownShape from '../../../assets/femaleGarmentFeatures/fullWearFeatures/gown/shape/ballGown.jpg'
+import femGownBodyConShape from '../../../assets/femaleGarmentFeatures/fullWearFeatures/gown/shape/bodyCon.jpg'
+import femGownFitAndFlareShape from '../../../assets/femaleGarmentFeatures/fullWearFeatures/gown/shape/fitAndFlare.jpg'
+import femGownMermaidShape from '../../../assets/femaleGarmentFeatures/fullWearFeatures/gown/shape/mermaid.jpg'
+import femGownShiftShape from '../../../assets/femaleGarmentFeatures/fullWearFeatures/gown/shape/shift.jpg'
+import femGownWrapShape from '../../../assets/femaleGarmentFeatures/fullWearFeatures/gown/shape/wrap.jpg'
+
+import femGownDropWaist from '../../../assets/femaleGarmentFeatures/fullWearFeatures/gown/waistType/dropWaist.jpg'
+import femGownEmpireWaist from '../../../assets/femaleGarmentFeatures/fullWearFeatures/gown/waistType/empireWaist.jpg'
+import femGownNaturalWaist from '../../../assets/femaleGarmentFeatures/fullWearFeatures/gown/waistType/naturalWaist.jpg'
+import femGownNoWaist from '../../../assets/femaleGarmentFeatures/fullWearFeatures/gown/waistType/noWaist.jpg'
+
+import femJumpsuitCroppedShape from '../../../assets/femaleGarmentFeatures/fullWearFeatures/jumpsuit/shape/cropped.jpg'
+import femJumpsuitFittedShape from '../../../assets/femaleGarmentFeatures/fullWearFeatures/jumpsuit/shape/fitted.jpg'
+import femJumpsuitRelaxedShape from '../../../assets/femaleGarmentFeatures/fullWearFeatures/jumpsuit/shape/relaxed.jpg'
+import femJumpsuitWideLegShape from '../../../assets/femaleGarmentFeatures/fullWearFeatures/jumpsuit/shape/wideLeg.jpg'
+
+import femRomperFittedShape from '../../../assets/femaleGarmentFeatures/fullWearFeatures/romper/shape/fitted.jpg'
+import femRomperRelaxedShape from '../../../assets/femaleGarmentFeatures/fullWearFeatures/romper/shape/relaxed.jpg'
+import femRomperRuffledShape from '../../../assets/femaleGarmentFeatures/fullWearFeatures/romper/shape/ruffled.jpg'
+
 const FEMALE_LOWER_WEAR_IMGS = {
   asymmetricBottom: femAsymmetricBottom,
   ruffledBottom: femRuffledBottom,
@@ -188,6 +216,38 @@ const FEMALE_SLEEVE_TYPE_IMGS = {
   sleeveless: femSleevelessType,
   spaghettiStrap: femSpaghettiStrapSleeve,
   threeQuarter: femThreeQuarterSleeve,
+}
+
+const FEMALE_GOWN_IMGS = {
+  floorLength: femGownFloorLength,
+  kneeLength: femGownKneeLength,
+  maxiLength: femGownMaxiLength,
+  midiLength: femGownMidiLength,
+  miniLength: femGownMiniLength,
+  aLineShape: femGownALineShape,
+  ballGownShape: femGownBallGownShape,
+  bodyConShape: femGownBodyConShape,
+  fitAndFlareShape: femGownFitAndFlareShape,
+  mermaidShape: femGownMermaidShape,
+  shiftShape: femGownShiftShape,
+  wrapShape: femGownWrapShape,
+  dropWaist: femGownDropWaist,
+  empireWaist: femGownEmpireWaist,
+  naturalWaist: femGownNaturalWaist,
+  noWaist: femGownNoWaist,
+}
+
+const FEMALE_JUMPSUIT_IMGS = {
+  croppedShape: femJumpsuitCroppedShape,
+  fittedShape: femJumpsuitFittedShape,
+  relaxedShape: femJumpsuitRelaxedShape,
+  wideLegShape: femJumpsuitWideLegShape,
+}
+
+const FEMALE_ROMPER_IMGS = {
+  fittedShape: femRomperFittedShape,
+  relaxedShape: femRomperRelaxedShape,
+  ruffledShape: femRomperRuffledShape,
 }
 
 export const FEMALE_NECKLINE_SLOT = {
@@ -357,10 +417,82 @@ const FEMALE_LINING_SLOT = {
   ],
 }
 
+const FEMALE_GOWN_SHAPE_SLOT = {
+  id: 'gown_shape',
+  label: 'Gown Shape',
+  options: [
+    { id: 'a_line', label: 'A-Line', img: FEMALE_GOWN_IMGS.aLineShape },
+    { id: 'fit_and_flare', label: 'Fit & Flare', img: FEMALE_GOWN_IMGS.fitAndFlareShape },
+    { id: 'mermaid', label: 'Mermaid', img: FEMALE_GOWN_IMGS.mermaidShape },
+    { id: 'body_con', label: 'Bodycon', img: FEMALE_GOWN_IMGS.bodyConShape },
+    { id: 'ball_gown', label: 'Ball Gown', img: FEMALE_GOWN_IMGS.ballGownShape },
+    { id: 'shift', label: 'Shift', img: FEMALE_GOWN_IMGS.shiftShape },
+    { id: 'wrap', label: 'Wrap', img: FEMALE_GOWN_IMGS.wrapShape },
+  ],
+}
+
+const FEMALE_GOWN_LENGTH_SLOT = {
+  id: 'length',
+  label: 'Length',
+  options: [
+    { id: 'mini', label: 'Mini', img: FEMALE_GOWN_IMGS.miniLength },
+    { id: 'knee', label: 'Knee Length', img: FEMALE_GOWN_IMGS.kneeLength },
+    { id: 'midi', label: 'Midi', img: FEMALE_GOWN_IMGS.midiLength },
+    { id: 'maxi', label: 'Maxi', img: FEMALE_GOWN_IMGS.maxiLength },
+    { id: 'floor', label: 'Floor Length', img: FEMALE_GOWN_IMGS.floorLength },
+  ],
+}
+
+const FEMALE_GOWN_WAIST_SLOT = {
+  id: 'waist_style',
+  label: 'Waist Style',
+  options: [
+    { id: 'natural', label: 'Natural Waist', img: FEMALE_GOWN_IMGS.naturalWaist },
+    { id: 'empire', label: 'Empire Waist', img: FEMALE_GOWN_IMGS.empireWaist },
+    { id: 'drop', label: 'Drop Waist', img: FEMALE_GOWN_IMGS.dropWaist },
+    { id: 'none', label: 'No Waist', img: FEMALE_GOWN_IMGS.noWaist },
+  ],
+}
+
+const FEMALE_JUMPSUIT_SHAPE_SLOT = {
+  id: 'jumpsuit_shape',
+  label: 'Leg Shape',
+  options: [
+    { id: 'fitted', label: 'Fitted', img: FEMALE_JUMPSUIT_IMGS.fittedShape },
+    { id: 'relaxed', label: 'Relaxed', img: FEMALE_JUMPSUIT_IMGS.relaxedShape },
+    { id: 'cropped', label: 'Cropped', img: FEMALE_JUMPSUIT_IMGS.croppedShape },
+    { id: 'wide_leg', label: 'Wide Leg', img: FEMALE_JUMPSUIT_IMGS.wideLegShape },
+  ],
+}
+
+const FEMALE_ROMPER_SHAPE_SLOT = {
+  id: 'romper_shape',
+  label: 'Fit',
+  options: [
+    { id: 'fitted', label: 'Fitted', img: FEMALE_ROMPER_IMGS.fittedShape },
+    { id: 'relaxed', label: 'Relaxed', img: FEMALE_ROMPER_IMGS.relaxedShape },
+    { id: 'ruffled', label: 'Ruffled', img: FEMALE_ROMPER_IMGS.ruffledShape },
+  ],
+}
+
 export const FEMALE_SKIRT_BASE_SLOTS = [
   FEMALE_SKIRT_SHAPE_SLOT,
   FEMALE_SKIRT_LENGTH_SLOT,
   FEMALE_WAIST_STYLE_SLOT,
   FEMALE_BOTTOM_STYLE_SLOT,
   FEMALE_LINING_SLOT,
+]
+
+export const FEMALE_GOWN_BASE_SLOTS = [
+  FEMALE_GOWN_SHAPE_SLOT,
+  FEMALE_GOWN_LENGTH_SLOT,
+  FEMALE_GOWN_WAIST_SLOT,
+]
+
+export const FEMALE_JUMPSUIT_BASE_SLOTS = [
+  FEMALE_JUMPSUIT_SHAPE_SLOT,
+]
+
+export const FEMALE_ROMPER_BASE_SLOTS = [
+  FEMALE_ROMPER_SHAPE_SLOT,
 ]

@@ -1,4 +1,4 @@
-import { useState, useRef }  from 'react'
+import { useState, useRef, useEffect }  from 'react'
 import { MultiImageUploader }  from '../MultiImageUploader/MultiImageUploader'
 import { uploadToCloudinary } from '../../../../../../services/cloudinaryService'
 import { useNetworkStatus }  from '../../../../../../hooks/useNetworkStatus'
@@ -58,7 +58,7 @@ function getSlotSummary(slot, styleSelections) {
   return { label: option.label, img: option.img ?? null }
 }
 
-function buildSavePayload(measurement, unit, imageUrls) {
+function buildSavePayload(measurement, unit, imageUrls, gender) {
   const today = new Date().toLocaleDateString('en-US', {
     month: 'short', day: 'numeric', year: 'numeric',
   })
@@ -70,6 +70,7 @@ function buildSavePayload(measurement, unit, imageUrls) {
     fullWearType:    measurement.fullWearType  || null,
     lowerBodyType:   measurement.lowerBodyType || null,
     styleSelections: measurement.styleSelections,
+    gender:          gender || null,
     imgSrcs:         imageUrls,
     imgSrc:          imageUrls[0] ?? null,
     unit,
@@ -101,8 +102,11 @@ export function AddMeasurementModal({ isOpen, onClose, onSave, gender }) {
   const detailsRef                              = useRef(null)
   const scrollBodyRef                           = useRef(null)
   const slotCardRefs                            = useRef({})
+  const subTabRowRef                            = useRef(null)
 
-  const { GARMENT_CATEGORIES, FULL_WEAR_TYPES, FEMALE_LOWER_BODY_TYPES, getSlotsForCard } = useGarmentFeatures()
+  const { GARMENT_CATEGORIES, FEMALE_FULL_WEAR_TYPES, FEMALE_LOWER_BODY_TYPES, getSlotsForCard } = useGarmentFeatures()
+
+  const fullWearTypes = gender === 'Female' ? FEMALE_FULL_WEAR_TYPES : []
 
 
   function updateMeasurement(key, value) {
@@ -163,15 +167,18 @@ export function AddMeasurementModal({ isOpen, onClose, onSave, gender }) {
         if (!card || !scrollBody) return
         const cardTop    = card.getBoundingClientRect().top
         const bodyTop    = scrollBody.getBoundingClientRect().top
-        scrollBody.scrollBy({ top: cardTop - bodyTop - 16, behavior: 'smooth' })
+        const subTabBar  = subTabRowRef.current
+        const offset     = subTabBar ? subTabBar.getBoundingClientRect().height : 0
+        scrollBody.scrollBy({ top: cardTop - bodyTop - offset - 16, behavior: 'smooth' })
       })
     }
   }
 
   function handleOptionSelect(slotId, optionId, parentSlotId) {
     const currentValue = measurement.styleSelections?.[slotId]
-    updateStyleSelection(slotId, currentValue === optionId ? '' : optionId)
-    if (!parentSlotId) setOpenSlotId(null)
+    const isDeselecting = currentValue === optionId
+    updateStyleSelection(slotId, isDeselecting ? '' : optionId)
+    if (!parentSlotId && !isDeselecting) setOpenSlotId(null)
   }
 
   function addField() {
@@ -218,7 +225,7 @@ export function AddMeasurementModal({ isOpen, onClose, onSave, gender }) {
 
     setIsSaving(true)
     const imageUrls = await uploadMeasurementImages(measurement.slots)
-    onSave(buildSavePayload(measurement, unit, imageUrls))
+    onSave(buildSavePayload(measurement, unit, imageUrls, gender))
     setIsSaving(false)
     resetAndClose()
   }
@@ -227,7 +234,7 @@ export function AddMeasurementModal({ isOpen, onClose, onSave, gender }) {
     setIsSaving(true)
     const imageUrls = await uploadMeasurementImages(measurement.slots)
     onSave({
-      ...buildSavePayload(measurement, unit, imageUrls),
+      ...buildSavePayload(measurement, unit, imageUrls, gender),
       styleSelections: {},
       skippedFeatures: true,
     })
@@ -247,9 +254,32 @@ export function AddMeasurementModal({ isOpen, onClose, onSave, gender }) {
 
 
   const isFemaleLoweBody   = gender === 'Female' && measurement.category === 'lower_body'
-  const needsFullType      = measurement.category === 'full_body' && !measurement.fullWearType
+  const isFemaleFullBody   = gender === 'Female' && measurement.category === 'full_body'
   const slots              = getSlotsForCard(measurement.category, measurement.fullWearType, gender, measurement.lowerBodyType)
   const hasFeatures        = hasStyleSelections(measurement.styleSelections)
+
+  const subTabOptions = isFemaleLoweBody
+    ? FEMALE_LOWER_BODY_TYPES
+    : isFemaleFullBody
+      ? fullWearTypes
+      : []
+
+  const subTabValue = isFemaleLoweBody
+    ? measurement.lowerBodyType
+    : isFemaleFullBody
+      ? measurement.fullWearType
+      : ''
+
+  const subTabSetter = isFemaleLoweBody
+    ? updateLowerBodyType
+    : isFemaleFullBody
+      ? updateFullWearType
+      : () => {}
+
+  useEffect(() => {
+    setOpenSlotId(null)
+    scrollBodyRef.current?.scrollTo({ top: 0, behavior: 'instant' })
+  }, [subTabValue])
 
   const headerAction = (() => {
     if (activeTab === 'measurements') {
@@ -395,7 +425,6 @@ export function AddMeasurementModal({ isOpen, onClose, onSave, gender }) {
 
           {activeTab === 'features' && (
             <div className={styles.tabSection}>
-              <p className={styles.stepHeading}>Garment Features</p>
 
               {!measurement.category && (
                 <div className={styles.featureEmptyState}>
@@ -405,45 +434,36 @@ export function AddMeasurementModal({ isOpen, onClose, onSave, gender }) {
                 </div>
               )}
 
-              {measurement.category === 'full_body' && needsFullType && (
-                <>
-                  <label className={styles.fieldLabel}>Garment Type</label>
-                  <div className={styles.typeChipRow}>
-                    {FULL_WEAR_TYPES.map(type => (
-                      <button
-                        key={type.id}
-                        className={`${styles.typeChip} ${measurement.fullWearType === type.id ? styles.typeChip_active : ''}`}
-                        onClick={() => updateFullWearType(type.id)}
-                      >
-                        {type.label}
-                      </button>
-                    ))}
-                  </div>
-                </>
-              )}
-
-              {isFemaleLoweBody && (
-                <div className={styles.lowerBodyTypePicker}>
-                  {FEMALE_LOWER_BODY_TYPES.map(type => {
-                    const isSelected = measurement.lowerBodyType === type.id
-                    return (
-                      <button
-                        key={type.id}
-                        className={`${styles.lowerBodyTypeOption} ${isSelected ? styles.lowerBodyTypeOption_active : ''}`}
-                        onClick={() => updateLowerBodyType(type.id)}
-                      >
-                        <span className={`mi-outlined ${styles.lowerBodyTypeIcon}`}>
-                          {type.id === 'skirt' ? 'accessibility_new' : 'straighten'}
-                        </span>
-                        <span className={styles.lowerBodyTypeLabel}>{type.label}</span>
-                        {isSelected && (
-                          <span className={`mi ${styles.lowerBodyTypeCheck}`}>check_circle</span>
-                        )}
-                      </button>
-                    )
-                  })}
+              {measurement.category === 'full_body' && fullWearTypes.length === 0 && (
+                <div className={styles.featureEmptyState}>
+                  <span className="mi-outlined" style={{ fontSize: '2rem', color: 'var(--text3)' }}>checkroom</span>
+                  <p>No garment types available</p>
+                  <span>Full body garment types for this profile are not set up yet.</span>
                 </div>
               )}
+
+              {subTabOptions.length > 0 && (
+                <div className={styles.subTabRow} ref={subTabRowRef}>
+                  {subTabOptions.map(option => (
+                    <button
+                      key={option.id}
+                      className={`${styles.subTabChip} ${subTabValue === option.id ? styles.subTabChip_active : ''}`}
+                      onClick={() => subTabSetter(option.id)}
+                    >
+                      {option.label}
+                    </button>
+                  ))}
+                </div>
+              )}
+
+              {subTabOptions.length > 0 && !subTabValue && (
+                <div className={styles.featureEmptyState}>
+                  <span className="mi-outlined" style={{ fontSize: '2rem', color: 'var(--text3)' }}>tune</span>
+                  <p>No type selected</p>
+                  <span>Tap one of the tabs above to see its garment features.</span>
+                </div>
+              )}
+
 
               {slots.length > 0 && (
                 <div className={styles.slotAccordionList}>
