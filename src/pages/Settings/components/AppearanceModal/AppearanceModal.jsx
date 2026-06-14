@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { FullModal } from '../../../../components/FullModal/FullModal'
 import styles from './AppearanceModal.module.css'
 
@@ -14,12 +15,23 @@ const ACCENTS = [
 
 export function AppearanceModal({ currentTheme, currentAccent, onBack, onThemeChange, onAccentChange }) {
 
-  const isDark = currentTheme === 'dark'
-  const selectedAccent = currentAccent || 'default'
+  const [localTheme,  setLocalTheme]  = useState(currentTheme)
+  const [localAccent, setLocalAccent] = useState(currentAccent || 'default')
+
+  const isDark = localTheme === 'dark'
+
+  function save() {
+    if (localTheme  !== currentTheme)              onThemeChange(localTheme)
+    if (localAccent !== (currentAccent || 'default')) {
+      const accent = ACCENTS.find(a => a.id === localAccent)
+      onAccentChange(localAccent, accent?.color ?? null)
+    }
+    onBack()
+  }
 
   return (
 
-    <FullModal title="Appearance" onBack={onBack}>
+    <FullModal title="Appearance" onBack={onBack} onSave={save}>
 
       <div className={styles.scrollArea}>
 
@@ -29,7 +41,7 @@ export function AppearanceModal({ currentTheme, currentAccent, onBack, onThemeCh
 
           <button
             className={`${styles.themeCard} ${!isDark ? styles.themeCardSelected : ''}`}
-            onClick={() => onThemeChange('light')}
+            onClick={() => setLocalTheme('light')}
           >
             <div className={styles.themePreview} data-mode="light">
               <div className={styles.previewTopBar}>
@@ -55,7 +67,7 @@ export function AppearanceModal({ currentTheme, currentAccent, onBack, onThemeCh
 
           <button
             className={`${styles.themeCard} ${isDark ? styles.themeCardSelected : ''}`}
-            onClick={() => onThemeChange('dark')}
+            onClick={() => setLocalTheme('dark')}
           >
             <div className={styles.themePreview} data-mode="dark">
               <div className={styles.previewTopBar} data-dark>
@@ -86,14 +98,14 @@ export function AppearanceModal({ currentTheme, currentAccent, onBack, onThemeCh
 
         <div className={styles.accentList}>
           {ACCENTS.map(a => {
-            const isSelected = selectedAccent === a.id
-            const isDefault = a.id === 'default'
+            const isSelected = localAccent === a.id
+            const isDefault  = a.id === 'default'
 
             return (
               <button
                 key={a.id}
                 className={`${styles.accentRow} ${isSelected ? styles.accentRowSelected : ''}`}
-                onClick={() => onAccentChange(a.id, a.color)}
+                onClick={() => setLocalAccent(a.id)}
               >
                 {isDefault ? (
                   <span className={styles.accentDotDefault} />
