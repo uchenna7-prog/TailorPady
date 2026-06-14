@@ -123,8 +123,8 @@ export function SharePortfolioModal({ isOpen, onClose, brandName }) {
           </div>
 
           <p className={styles.footerNote}>
-            <span className="mi" style={{ fontSize: '0.85rem' }}>info</span>
-            Clients can view your work and book orders without logging in
+           
+            Share your portfolio with anyone. No account or login required. Clients can browse your work and place orders instantly.
           </p>
 
         </div>

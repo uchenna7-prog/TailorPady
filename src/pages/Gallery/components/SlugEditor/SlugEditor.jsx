@@ -106,11 +106,11 @@ export function SlugEditor({ uid, currentSlug, onSlugSaved }) {
             <span className={styles.readLabel}>Your Portfolio Link</span>
             <span className={styles.readUrl}>
               …/portfolio/
-              <strong>{currentSlug || <em className={styles.notSet}>not set</em>}</strong>
+              <strong>{currentSlug || <em className={styles.notSet}>brandName</em>}</strong>
             </span>
           </div>
           <button className={styles.editTriggerBtn} onClick={() => setEditing(true)}>
-            <span className="mi" style={{ fontSize: '0.9rem' }}>edit</span>
+            <span className="mi-outlined" style={{ fontSize: '0.9rem' }}>edit</span>
             {currentSlug ? 'Edit' : 'Set'}
           </button>
         </div>

@@ -246,12 +246,11 @@
   display:       flex;
   align-items:   center;
   gap:           6px;
-  font-size:     0.72rem;
+  font-size:     0.7rem;
   color:         var(--text3);
-  background:    var(--surface);
-  border:        1px solid var(--border);
   border-radius: 10px;
   padding:       10px 12px;
   margin:        0;
   line-height:   1.4;
+  font-style: italic;
 }

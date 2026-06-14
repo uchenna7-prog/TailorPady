@@ -1,15 +1,24 @@
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 import styles from "./ManageGarmentTypesSheet.module.css"
 
-
 export function ManageGarmentTypesSheet({ isOpen, onClose, tabId, types, onSave, photos }) {
-
-  const [items,    setItems]    = useState([...(types || [])])
-  const [newLabel, setNewLabel] = useState('')
+  const [items,     setItems]     = useState([...(types || [])])
+  const [newLabel,  setNewLabel]  = useState('')
+  const [editingId, setEditingId] = useState(null)
+  const [editLabel, setEditLabel] = useState('')
+  const editInputRef = useRef(null)
 
   useEffect(() => {
-    if (isOpen) setItems([...(types || [])])
+    if (isOpen) {
+      setItems([...(types || [])])
+      setEditingId(null)
+      setEditLabel('')
+    }
   }, [isOpen, types])
+
+  useEffect(() => {
+    if (editingId && editInputRef.current) editInputRef.current.focus()
+  }, [editingId])
 
   if (!isOpen) return null
 
@@ -22,10 +31,27 @@ export function ManageGarmentTypesSheet({ isOpen, onClose, tabId, types, onSave,
   }
 
   const removeItem = (id) => setItems(prev => prev.filter(t => t.id !== id))
-  const handleSave = () => { onSave(tabId, items); onClose() }
 
-  const survivingIds = new Set(items.map(t => t.id))
-  const removedTypes = (types || []).filter(t => !survivingIds.has(t.id))
+  const startEdit = (item) => {
+    setEditingId(item.id)
+    setEditLabel(item.label)
+  }
+
+  const confirmEdit = () => {
+    const trimmed = editLabel.trim()
+    if (trimmed) setItems(prev => prev.map(t => t.id === editingId ? { ...t, label: trimmed } : t))
+    setEditingId(null)
+    setEditLabel('')
+  }
+
+  const handleSave = () => {
+    if (editingId) confirmEdit()
+    onSave(tabId, items)
+    onClose()
+  }
+
+  const survivingIds  = new Set(items.map(t => t.id))
+  const removedTypes  = (types || []).filter(t => !survivingIds.has(t.id))
   const affectedCount = removedTypes.reduce((sum, t) => {
     return sum + (photos || []).filter(p => p.category === tabId && p.clothingType === t.id).length
   }, 0)
@@ -45,14 +71,43 @@ export function ManageGarmentTypesSheet({ isOpen, onClose, tabId, types, onSave,
           {items.length === 0 && (
             <p className={styles.sheetEmpty}>No garment types yet. Add one below.</p>
           )}
+
           {items.map(item => (
             <div key={item.id} className={styles.manageRow}>
-              <span className={styles.manageLabel}>{item.label}</span>
-              <button className={styles.manageRemove} onClick={() => removeItem(item.id)}>
-                <span className="mi" style={{ fontSize: '1rem', color: 'var(--danger)' }}>delete_outline</span>
-              </button>
+              {editingId === item.id ? (
+                <input
+                  ref={editInputRef}
+                  className={styles.manageEditInput}
+                  value={editLabel}
+                  onChange={e => setEditLabel(e.target.value)}
+                  onKeyDown={e => { if (e.key === 'Enter') confirmEdit() }}
+                  onBlur={confirmEdit}
+                />
+              ) : (
+                <span className={styles.manageLabel}>{item.label}</span>
+              )}
+
+              <div className={styles.manageActions}>
+                {editingId === item.id ? (
+                  <button
+                    className={styles.manageActionBtn}
+                    onMouseDown={e => e.preventDefault()}
+                    onClick={confirmEdit}
+                  >
+                    <span className="mi" style={{ fontSize: '1rem', color: 'var(--accent)' }}>check</span>
+                  </button>
+                ) : (
+                  <button className={styles.manageActionBtn} onClick={() => startEdit(item)}>
+                    <span className="mi-outlined" style={{ fontSize: '1rem', color: 'var(--text2)' }}>edit</span>
+                  </button>
+                )}
+                <button className={styles.manageActionBtn} onClick={() => removeItem(item.id)}>
+                  <span className="mi-outlined" style={{ fontSize: '1rem', color: 'var(--danger)' }}>delete_outline</span>
+                </button>
+              </div>
             </div>
           ))}
+
           <div className={styles.manageAddRow}>
             <input
               type="text"
@@ -70,7 +125,10 @@ export function ManageGarmentTypesSheet({ isOpen, onClose, tabId, types, onSave,
           {affectedCount > 0 && (
             <div className={styles.deleteWarning}>
               <span className="mi" style={{ fontSize: '1rem', flexShrink: 0 }}>warning</span>
-              <span>{affectedCount} photo{affectedCount > 1 ? 's' : ''} under removed type{removedTypes.length > 1 ? 's' : ''} will also be deleted.</span>
+              <span>
+                {affectedCount} photo{affectedCount > 1 ? 's' : ''} under removed
+                type{removedTypes.length > 1 ? 's' : ''} will also be deleted.
+              </span>
             </div>
           )}
         </div>

@@ -88,17 +88,52 @@
   display:         flex;
   align-items:     center;
   justify-content: space-between;
-  padding:         12px 14px;
+  padding:         10px 14px;
   border:          1px solid var(--border2);
   border-radius:   12px;
   margin-bottom:   8px;
   background:      var(--surface);
+  gap:             8px;
 }
 
 .manageLabel {
   font-size:   0.88rem;
   font-weight: 700;
   color:       var(--text);
+  flex:        1;
+  min-width:   0;
+}
+
+.manageEditInput {
+  flex:               1;
+  min-width:          0;
+  background:         transparent;
+  border:             none;
+  border-bottom:      1px solid var(--text2);
+  border-radius:      0;
+  padding:            2px 0;
+  color:              var(--text);
+  font-family:        inherit;
+  font-size:          0.88rem;
+  font-weight:        700;
+  outline:            none;
+  -webkit-appearance: none;
+}
+
+.manageActions {
+  display:     flex;
+  align-items: center;
+  gap:         2px;
+  flex-shrink: 0;
+}
+
+.manageActionBtn {
+  background:  none;
+  border:      none;
+  cursor:      pointer;
+  display:     flex;
+  align-items: center;
+  padding:     4px 6px;
 }
 
 .manageRemove {
