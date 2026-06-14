@@ -187,7 +187,7 @@ function Lightbox({ photo, photos, onClose }) {
   )
 }
 
-export default function PortfolioTemplate1({ brand, photos, garmentTypes, reviews, heroImageId, footerImageId }) {
+export function PortfolioTemplate1({ brand, photos, garmentTypes, reviews, heroImageId, footerImageId }) {
   const [activeTab,   setActiveTab]   = useState(null)
   const [lightbox,    setLightbox]    = useState(null)
   const [bookingOpen, setBookingOpen] = useState(false)
