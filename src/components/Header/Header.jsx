@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
 import { useNotifications } from '../../contexts/NotificationContext'
+import { useAutonomousAgent } from '../../contexts/AgentContext'
 import styles from './Header.module.css'
 
 const NOTIF_TYPE_BG = {
@@ -76,11 +77,11 @@ function Header({
   type = 'default',
   showBorderBottom = true,
   showNotifications = true,
+  showBotButton: showBotButtonProp = true,
   title,
   customTitle = {},
   customActions = [],
   backIcon = 'arrow_back_ios',
-  agentPendingCount = 0,
   scrolledAvatar = null,
   isScrolled: isScrolledProp = false,
   agentActive = false,
@@ -93,6 +94,9 @@ function Header({
   const location = useLocation()
 
   const { notifications, unreadCount, markRead, markAllRead } = useNotifications()
+  const { drafts } = useAutonomousAgent()
+
+  const agentPendingCount = drafts.length
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 0)
@@ -111,7 +115,7 @@ function Header({
 
   const pageTitle     = title || PAGE_TITLES[location.pathname] || 'TailorPady'
   const isAgentPage   = location.pathname === '/agent'
-  const showBotButton = type === 'default' && location.pathname === '/'
+  const showBotButton = type === 'default' && showBotButtonProp && !isAgentPage
 
   const openNotif  = () => { setNotifTab('all'); setNotifOpen(true) }
   const closeNotif = () => setNotifOpen(false)
@@ -132,6 +136,22 @@ function Header({
   ]
 
   const filteredActions = customActions.filter(a => !a._isScrollAvatar)
+
+  const BotButton = () => (
+    <button
+      className={styles.iconBtn}
+      onClick={handleBotClick}
+      aria-label="Open Agent"
+      title="Stitch — TailorPady Agent"
+    >
+      <BotIcon />
+      {agentPendingCount > 0 && (
+        <span className={styles.agentBadge}>
+          {agentPendingCount > 9 ? '9+' : agentPendingCount}
+        </span>
+      )}
+    </button>
+  )
 
   return (
     <>
@@ -238,21 +258,7 @@ function Header({
               </button>
             )}
 
-            {showBotButton && (
-              <button
-                className={styles.iconBtn}
-                onClick={handleBotClick}
-                aria-label="Open Agent"
-                title="Stitch — TailorPady Agent"
-              >
-                <BotIcon />
-                {agentPendingCount > 0 && (
-                  <span className={styles.agentBadge}>
-                    {agentPendingCount > 9 ? '9+' : agentPendingCount}
-                  </span>
-                )}
-              </button>
-            )}
+            {showBotButton && <BotButton />}
           </div>
         )}
       </header>

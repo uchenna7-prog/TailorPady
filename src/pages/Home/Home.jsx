@@ -10,7 +10,6 @@ import { useAppointments } from '../../contexts/AppointmentContext'
 import { useNotifications } from '../../contexts/NotificationContext'
 import { useGeneralSettings } from '../../contexts/GeneralSettingsContext'
 import { usePayments } from '../../contexts/PaymentContext'
-import { useAutonomousAgent } from '../../contexts/AgentContext'
 import { useProfileSettings } from '../../contexts/ProfileSettingsContext'
 import { useRevenueGoal } from '../../contexts/RevenueGoalContext'
 import { APPOINTMENT_TYPE_ICONS } from '../../datas/appointmentDatas'
@@ -110,7 +109,6 @@ function Home({ onMenuClick, onGoToCustomer }) {
   const { pushEnabled, requestPushPermission }                            = useNotifications()
   const { generalSettings }                                               = useGeneralSettings()
   const { allPayments }                                                   = usePayments()
-  const { drafts }                                                        = useAutonomousAgent()
   const { profileSettings, isLoading: profileLoading }                   = useProfileSettings()
   const { goal, derived, loading: goalLoading, saveGoal, removeGoal }    = useRevenueGoal()
 
@@ -138,8 +136,7 @@ function Home({ onMenuClick, onGoToCustomer }) {
   const paymentsReady     = allPayments.length > 0 || customersReady
   const appointmentsReady = customersReady
 
-  const displayName     = getDisplayName(user)
-  const agentDraftCount = drafts.length
+  const displayName = getDisplayName(user)
 
   const showNotificationBanner = (
     !pushEnabled &&
@@ -362,7 +359,7 @@ function Home({ onMenuClick, onGoToCustomer }) {
 
   return (
     <div className={styles.pageWrapper}>
-      <Header onMenuClick={onMenuClick} agentPendingCount={agentDraftCount} />
+      <Header onMenuClick={onMenuClick} />
 
       <main className={styles.main}>
         <SkeletonTheme baseColor="var(--surface2)" highlightColor="var(--surface)">
