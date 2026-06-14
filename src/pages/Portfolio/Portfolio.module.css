@@ -1,20 +1,3 @@
-/* src/pages/Portfolio/Portfolio.module.css */
-/* ─────────────────────────────────────────────────────────────
- * All brand colour references use CSS variables injected by
- * useBrandTokens(). The available variables are:
- *
- *   --brand-primary        main brand colour
- *   --brand-primary-light  lighter tint
- *   --brand-primary-dark   darker shade
- *   --brand-on-primary     text on brand bg (auto black or white)
- *   --brand-gradient       diagonal gradient (used on badges, CTAs, filled elements)
- *   --brand-gradient-card  subtle card bg gradient (used on card backgrounds)
- *   --brand-surface        faint tint for light mode surfaces
- *   --brand-surface-dark   tinted dark bg for dark mode cards
- *   --brand-muted          low-opacity for borders / dividers
- *   --brand-glow           for box-shadows with brand colour
- * ─────────────────────────────────────────────────────────────*/
-
 @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Sans:wght@300;400;500;600&family=Material+Icons&display=swap');
 @import url('https://fonts.googleapis.com/icon?family=Material+Icons');
 
@@ -101,7 +84,6 @@
   --info-text:    #666;
 }
 
-/* Dark mode: about card and testimonial card use brand-surface-dark */
 .page:not(.lightMode) .aboutCard,
 .page:not(.lightMode) .testimonialCard {
   background: var(--brand-surface-dark);
@@ -154,46 +136,63 @@
   backdrop-filter: blur(18px);
   -webkit-backdrop-filter: blur(18px);
   border-bottom: 1px solid var(--nav-border);
-  transition: background 0.3s ease, border-color 0.3s ease;
+  transition: background 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
 }
 .navScrolled {
   border-bottom-color: var(--border);
-  box-shadow: 0 1px 20px rgba(0,0,0,0.06);
+  box-shadow: 0 1px 24px rgba(0,0,0,0.07);
 }
 .navInner {
-  max-width: 1100px; margin: 0 auto; height: 60px;
-  display: flex; align-items: center; justify-content: space-between;
+  max-width: 1440px;
+  margin: 0 auto;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 }
-/* Brand name — same colour as hamburger/text so it reads cleanly in both modes */
 .navBrand {
   font-family: 'Cormorant Garamond', Georgia, serif;
-  font-size: 1.15rem; font-weight: 600;
-  letter-spacing: 2px; text-transform: uppercase;
+  font-size: 1.15rem;
+  font-weight: 600;
+  letter-spacing: 2px;
+  text-transform: uppercase;
   color: var(--text-primary);
+  white-space: nowrap;
 }
-.navLinks { display: none; align-items: center; gap: 6px; }
+.navLinks { display: none; align-items: center; gap: 4px; }
 .navLinksOpen {
-  display: flex; flex-direction: column;
-  position: fixed; top: 60px; left: 0; right: 0;
+  display: flex;
+  flex-direction: column;
+  position: fixed;
+  top: 60px; left: 0; right: 0;
   background: var(--nav-bg);
   backdrop-filter: blur(18px);
   -webkit-backdrop-filter: blur(18px);
   border-bottom: 1px solid var(--nav-border);
-  padding: 16px 20px 24px; gap: 4px;
-  animation: slideDown 0.25s ease; align-items: center;
+  padding: 16px 20px 24px;
+  gap: 4px;
+  animation: slideDown 0.25s ease;
+  align-items: center;
 }
 @keyframes slideDown {
   from { opacity: 0; transform: translateY(-8px); }
   to   { opacity: 1; transform: translateY(0); }
 }
 .navLink {
-  background: none; border: none; color: var(--text-muted);
-  font-family: 'Manrope', sans-serif; font-size: 0.7rem;
-  font-weight: 500; letter-spacing: 2px; text-transform: uppercase;
-  cursor: pointer; padding: 10px 12px; transition: color 0.2s;
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  font-family: 'Manrope', sans-serif;
+  font-size: 0.7rem;
+  font-weight: 500;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  cursor: pointer;
+  padding: 10px 12px;
+  transition: color 0.2s;
+  position: relative;
 }
 .navLink:hover { color: var(--text-primary); }
-/* Active nav link — brand colour */
 .navLinkActive {
   color: var(--brand-primary) !important;
   border-bottom: 1.5px solid var(--brand-primary);
@@ -211,18 +210,26 @@
 .themeToggleDesktop {
   background: none; border: none; color: var(--text-muted);
   cursor: pointer; display: flex; align-items: center; justify-content: center;
-  width: 38px; height: 38px; border-radius: 50%; transition: background 0.2s, color 0.2s;
+  width: 38px; height: 38px; border-radius: 50%;
+  transition: background 0.2s, color 0.2s;
 }
 .themeToggleDesktop:hover { background: var(--bg-deep); color: var(--text-primary); }
-/* Nav CTA — brand gradient background */
 .navCta {
   background: var(--brand-gradient);
   color: var(--brand-on-primary);
-  border: none; border-radius: 6px;
-  font-family: 'Manrope', sans-serif; font-size: 0.65rem;
-  font-weight: 700; letter-spacing: 2px; text-transform: uppercase;
-  padding: 9px 18px; cursor: pointer; margin-top: 8px; transition: opacity 0.2s;
+  border: none;
+  border-radius: 6px;
+  font-family: 'Manrope', sans-serif;
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  padding: 9px 18px;
+  cursor: pointer;
+  margin-top: 8px;
+  transition: opacity 0.2s;
   box-shadow: 0 2px 12px var(--brand-glow);
+  white-space: nowrap;
 }
 .navCta:active { opacity: 0.8; }
 .navHamburger {
@@ -241,8 +248,11 @@
 
 /* ── HERO ── */
 .hero {
-  position: relative; min-height: 100dvh;
-  display: flex; align-items: flex-end; overflow: hidden;
+  position: relative;
+  min-height: 100dvh;
+  display: flex;
+  align-items: flex-end;
+  overflow: hidden;
 }
 .heroBgWrap { position: absolute; inset: 0; }
 .heroBgImg  { width: 100%; height: 100%; object-fit: cover; object-position: center top; filter: grayscale(100%) contrast(1.1); }
@@ -257,31 +267,42 @@
   background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
 }
 .heroContent {
-  position: relative; z-index: 2;
-  padding: 0 24px calc(80px + env(safe-area-inset-bottom)); width: 100%;
+  position: relative;
+  z-index: 2;
+  padding: 0 24px calc(80px + env(safe-area-inset-bottom));
+  width: 100%;
+  box-sizing: border-box;
 }
-/* Eyebrow removed — replaced by availability badge inline with hero content */
 .heroEyebrow { display: none; }
 .heroName {
   font-family: 'Cormorant Garamond', Georgia, serif;
-  font-size: clamp(2.8rem, 11vw, 5rem); font-weight: 300;
-  line-height: 1; letter-spacing: -0.5px;
-  color: #fff; margin: 0 0 16px;
+  font-size: clamp(2.8rem, 11vw, 5rem);
+  font-weight: 300;
+  line-height: 1;
+  letter-spacing: -0.5px;
+  color: #fff;
+  margin: 0 0 16px;
 }
 .heroTagline {
   font-family: 'Cormorant Garamond', Georgia, serif;
-  font-size: 1.1rem; font-style: italic; font-weight: 400;
-  color: rgba(255,255,255,0.88); margin-bottom: 12px; line-height: 1.6;
+  font-size: 1.1rem;
+  font-style: italic;
+  font-weight: 400;
+  color: rgba(255,255,255,0.88);
+  margin-bottom: 12px;
+  line-height: 1.6;
 }
-/* Style statement — brand primary italic quote */
 .heroStyleStatement {
   font-family: 'Cormorant Garamond', Georgia, serif;
-  font-size: 1.05rem; font-style: italic; font-weight: 400;
-  color: var(--brand-primary); line-height: 1.6;
-  margin-bottom: 28px; max-width: 420px;
+  font-size: 1.05rem;
+  font-style: italic;
+  font-weight: 400;
+  color: var(--brand-primary);
+  line-height: 1.6;
+  margin-bottom: 28px;
+  max-width: 420px;
 }
 .heroCtas { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 20px; }
-/* Primary CTA — brand gradient */
 .heroPrimary {
   background: var(--brand-gradient);
   color: var(--brand-on-primary);
@@ -301,8 +322,6 @@
   transition: color 0.2s, border-color 0.2s, background 0.2s;
 }
 .heroSecondary:active { color: #fff; border-color: rgba(255,255,255,0.5); background: rgba(255,255,255,0.15); }
-
-/* Availability badge — sits below CTAs, green dot + text, no background pill */
 .heroAvailBadge {
   display: inline-flex; align-items: center; gap: 8px;
   font-family: 'Manrope', sans-serif; font-size: 0.78rem;
@@ -317,7 +336,6 @@
   box-shadow: 0 0 6px #22c55e;
 }
 .heroDotBooked { background: #888; box-shadow: none; animation: none; }
-/* Keep old availBadge for any other usage */
 .availBadge {
   display: inline-flex; align-items: center; gap: 8px; margin-top: 4px;
   background: rgba(0,0,0,0.35); backdrop-filter: blur(6px);
@@ -327,12 +345,6 @@
 .availDotBusy { width: 7px; height: 7px; border-radius: 50%; background: #888; flex-shrink: 0; }
 @keyframes pulse { 0%,100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.6; transform: scale(0.85); } }
 .availText { font-family: 'Manrope', sans-serif; font-size: 0.65rem; letter-spacing: 1.5px; text-transform: uppercase; color: rgba(255,255,255,0.6); }
-
-/* Scroll indicator — pure white, not brand coloured */
-.heroScroll {
-  position: absolute; bottom: 32px; left: 50%; transform: translateX(-50%);
-  display: flex; flex-direction: column; align-items: center; gap: 6px; z-index: 2;
-}
 .heroScrollLine {
   display: block; width: 1px; height: 36px;
   background: linear-gradient(to bottom, transparent, rgba(255,255,255,0.45));
@@ -341,37 +353,38 @@
 @keyframes scrollPulse { 0%,100% { opacity: 0.3; transform: scaleY(0.6); } 50% { opacity: 1; transform: scaleY(1); } }
 .heroScrollText { font-size: 0.5rem; letter-spacing: 3px; text-transform: uppercase; color: rgba(255,255,255,0.45); font-family: 'Manrope', sans-serif; }
 
-/* ── STATS BAR — horizontal strip with vertical bar dividers, big-app style ── */
+/* ── STATS BAR ── */
 .statsBar {
   background: var(--brand-surface);
   border-top: 1px solid var(--brand-muted);
   border-bottom: 1px solid var(--brand-muted);
-  display: flex; align-items: stretch; justify-content: center;
+  display: flex;
+  align-items: stretch;
+  justify-content: center;
   padding: 0;
   overflow: hidden;
 }
-.page:not(.lightMode) .statsBar {
-  background: var(--brand-surface-dark);
-}
-/* Keep old statsStrip as alias in case used elsewhere */
+.page:not(.lightMode) .statsBar { background: var(--brand-surface-dark); }
 .statsStrip {
   background: var(--brand-surface);
   border-top: 1px solid var(--brand-muted);
   border-bottom: 1px solid var(--brand-muted);
-  display: flex; align-items: center; justify-content: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   padding: 28px 20px;
 }
-.page:not(.lightMode) .statsStrip {
-  background: var(--brand-surface-dark);
-}
+.page:not(.lightMode) .statsStrip { background: var(--brand-surface-dark); }
 .statItem {
   flex: 1;
-  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
   gap: 4px;
   padding: 22px 12px;
   position: relative;
 }
-/* Vertical bar divider between stat items */
 .statItem + .statItem::before {
   content: '';
   position: absolute; left: 0; top: 20%; bottom: 20%;
@@ -381,15 +394,13 @@
 .statNum   { font-family: 'Cormorant Garamond', Georgia, serif; font-size: 1.65rem; font-weight: 300; line-height: 1; color: var(--brand-primary); }
 .statIcon  { font-size: 1.1rem !important; color: var(--brand-primary); }
 .statLabel { font-size: 0.52rem; letter-spacing: 2px; text-transform: uppercase; color: var(--text-faint); text-align: center; }
-/* Keep old statDivider for any explicit divider elements */
 .statDivider { width: 1px; height: 40px; background: var(--brand-muted); flex-shrink: 0; align-self: center; }
 
-/* ── SECTION EYEBROW — brand primary ── */
+/* ── SECTION EYEBROW ── */
 .sectionEyebrow {
   font-size: 0.6rem; letter-spacing: 3px; text-transform: uppercase;
   color: var(--brand-primary); margin-bottom: 16px;
 }
-/* Light version for dark sections (book, footer) */
 .sectionEyebrowLight {
   font-size: 0.6rem; letter-spacing: 3px; text-transform: uppercase;
   color: var(--brand-primary); margin-bottom: 16px;
@@ -397,18 +408,26 @@
 
 /* ── ABOUT ── */
 .about { padding: 90px 24px; }
-.aboutInner { max-width: 600px; margin: 0 auto; display: flex; flex-direction: column; gap: 48px; }
+.aboutInner {
+  max-width: 580px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 48px;
+}
 .aboutHeading {
   font-family: 'Cormorant Garamond', Georgia, serif;
-  font-size: clamp(2.4rem, 9vw, 4rem); font-weight: 300;
-  line-height: 1.05; color: var(--text-primary); margin: 0 0 12px;
+  font-size: clamp(2.4rem, 9vw, 4rem);
+  font-weight: 300;
+  line-height: 1.05;
+  color: var(--text-primary);
+  margin: 0 0 12px;
 }
 .aboutHeadingTagline {
   font-family: 'Cormorant Garamond', Georgia, serif;
   font-style: italic; font-size: 1rem; font-weight: 300;
   color: var(--text-muted); line-height: 1.5; margin: 0;
 }
-/* About card — gradient card bg + subtle glow, top border brand primary */
 .aboutCard {
   background: var(--brand-gradient-card);
   border: 1px solid var(--brand-muted);
@@ -422,7 +441,6 @@
 }
 .aboutLogo { margin-bottom: 20px; }
 .aboutLogoImg { width: 72px; height: 72px; object-fit: contain; border-radius: 10px; filter: grayscale(100%); }
-/* Initials — brand gradient background, on-primary text */
 .aboutInitials {
   width: 72px; height: 72px; border-radius: 50%;
   background: var(--brand-gradient);
@@ -435,7 +453,6 @@
 }
 .aboutName { font-family: 'Cormorant Garamond', Georgia, serif; font-size: 1.4rem; font-weight: 400; color: var(--text-primary); margin-bottom: 4px; }
 .aboutTagline { font-family: 'Cormorant Garamond', Georgia, serif; font-style: italic; font-size: 0.95rem; color: var(--text-muted); margin-bottom: 12px; line-height: 1.5; }
-/* Style statement — brand colour left border + text */
 .aboutStyleStatement {
   font-family: 'Cormorant Garamond', Georgia, serif;
   font-style: italic; font-size: 1rem; font-weight: 300;
@@ -444,8 +461,6 @@
   border-left: 2px solid var(--brand-primary);
 }
 .aboutBio { font-size: 0.85rem; color: var(--text-body); line-height: 1.75; margin: 0 0 20px; }
-
-/* Info grid — solid brand surface so it's distinct from the card behind it */
 .aboutInfoGrid {
   display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px;
   padding: 16px;
@@ -453,19 +468,15 @@
   border: 1px solid var(--brand-muted);
   border-radius: 10px;
 }
-.page:not(.lightMode) .aboutInfoGrid {
-  background: var(--brand-surface-dark);
-}
+.page:not(.lightMode) .aboutInfoGrid { background: var(--brand-surface-dark); }
 .aboutInfoItem {
   display: flex; align-items: flex-start; gap: 10px;
   font-family: 'Manrope', sans-serif; font-size: 0.78rem; color: var(--info-text); line-height: 1.5;
 }
 .aboutInfoItem .mi { font-size: 0.9rem; color: var(--brand-primary); flex-shrink: 0; margin-top: 1px; }
-
 .aboutSpecialties { margin-bottom: 20px; }
 .aboutSpecialtiesLabel { font-size: 0.58rem; letter-spacing: 2px; text-transform: uppercase; color: var(--text-faint); margin-bottom: 10px; }
 .aboutSpecialtiesList { display: flex; flex-wrap: wrap; gap: 6px; }
-/* Specialty pills — solid brand surface bg so they're always distinct from the page */
 .aboutSpecialtyPill {
   background: var(--brand-surface);
   border: 1px solid var(--brand-primary);
@@ -474,12 +485,8 @@
   text-transform: uppercase; padding: 5px 14px; font-family: 'Manrope', sans-serif;
   box-shadow: 0 1px 5px var(--brand-glow);
 }
-.page:not(.lightMode) .aboutSpecialtyPill {
-  background: var(--brand-surface-dark);
-}
-
+.page:not(.lightMode) .aboutSpecialtyPill { background: var(--brand-surface-dark); }
 .aboutMeta { display: flex; flex-direction: column; gap: 10px; margin-bottom: 24px; }
-/* Meta row icons — brand primary colour */
 .aboutMetaRow {
   display: flex; align-items: center; gap: 10px;
   font-size: 0.8rem; color: var(--text-muted); text-decoration: none;
@@ -487,9 +494,7 @@
 }
 .aboutMetaRow:hover { color: var(--text-primary); }
 .aboutMetaRow .mi { font-size: 0.95rem; color: var(--brand-primary); flex-shrink: 0; }
-
-/* Social icons — solid brand surface bg (not transparent) so they're always visible */
-.aboutSocials { display: flex; gap: 10px; margin-top: 18px; padding-top: 18px; border-top: 1px solid var(--brand-muted); }
+.aboutSocials { display: flex; gap: 10px; margin-top: 18px; padding-top: 18px; border-top: 1px solid var(--brand-muted); flex-wrap: wrap; }
 .socialIcon {
   display: flex; align-items: center; justify-content: center;
   width: 36px; height: 36px; border-radius: 50%;
@@ -500,9 +505,7 @@
   transition: color 0.2s, border-color 0.2s, background 0.2s, box-shadow 0.2s;
   box-shadow: 0 1px 6px var(--brand-glow);
 }
-.page:not(.lightMode) .socialIcon {
-  background: var(--brand-surface-dark);
-}
+.page:not(.lightMode) .socialIcon { background: var(--brand-surface-dark); }
 .socialIcon:hover {
   background: var(--brand-gradient);
   color: var(--brand-on-primary);
@@ -518,9 +521,7 @@
   border-bottom: 1px solid var(--brand-muted);
   padding: 18px 0;
 }
-.page:not(.lightMode) .marqueeWrap {
-  background: var(--brand-surface-dark);
-}
+.page:not(.lightMode) .marqueeWrap { background: var(--brand-surface-dark); }
 .marqueeTrack { display: flex; animation: marquee 24s linear infinite; white-space: nowrap; }
 @keyframes marquee { from { transform: translateX(0); } to { transform: translateX(-50%); } }
 .marqueeItem {
@@ -536,8 +537,6 @@
 .worksHead { padding: 0 24px 40px; }
 .worksTitle { font-family: 'Cormorant Garamond', Georgia, serif; font-size: clamp(2.2rem, 8vw, 3.5rem); font-weight: 300; color: var(--text-primary); margin: 0 0 8px; line-height: 1.1; }
 .worksSub { font-size: 0.8rem; color: var(--text-faint); font-style: italic; font-family: 'Cormorant Garamond', Georgia, serif; }
-
-/* Filter pills — active uses brand gradient */
 .filterBar { padding: 0 24px 28px; }
 .filterScroll { display: flex; gap: 8px; overflow-x: auto; scrollbar-width: none; -webkit-overflow-scrolling: touch; padding-bottom: 4px; }
 .filterScroll::-webkit-scrollbar { display: none; }
@@ -550,7 +549,6 @@
   transition: all 0.22s cubic-bezier(0.4,0,0.2,1);
 }
 .filterPill:hover { color: var(--brand-primary); border-color: var(--brand-primary); }
-/* Active filter pill — brand gradient bg */
 .filterPillActive {
   background: var(--brand-gradient) !important;
   color: var(--brand-on-primary) !important;
@@ -558,8 +556,6 @@
   box-shadow: 0 2px 12px var(--brand-glow);
 }
 .filterPillActive:hover { opacity: 0.9; }
-
-/* Photo grid */
 .photoGrid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px; padding: 0 6px; }
 .photoCard {
   position: relative; aspect-ratio: 3/4; overflow: hidden; cursor: pointer;
@@ -585,7 +581,6 @@
   font-size: 0.9rem; color: #fff; backdrop-filter: blur(4px);
 }
 .photoCaption { font-family: 'Cormorant Garamond', Georgia, serif; font-size: 0.95rem; color: #fff; margin: 0 0 4px; }
-/* Price badge — brand gradient bg */
 .photoPrice {
   position: absolute; top: 10px; right: 10px;
   font-family: 'Manrope', sans-serif; font-size: 0.68rem; font-weight: 600;
@@ -603,7 +598,7 @@
   border-top: 1px solid var(--brand-muted);
   padding: 90px 0;
 }
-.processInner { padding: 0 24px; max-width: 600px; margin: 0 auto; }
+.processInner { padding: 0 24px; max-width: 580px; margin: 0 auto; }
 .processTitle { font-family: 'Cormorant Garamond', Georgia, serif; font-size: clamp(2.2rem, 8vw, 3.5rem); font-weight: 300; color: var(--text-primary); margin: 0 0 48px; line-height: 1.1; }
 .processSteps { display: flex; flex-direction: column; }
 .processStep {
@@ -612,7 +607,6 @@
   display: grid; grid-template-columns: 48px 1px 1fr; gap: 0 16px; align-items: start;
 }
 .processNumWrap { display: flex; flex-direction: column; align-items: center; padding-top: 2px; }
-/* Process number badge — solid brand surface bg so it never blends into the page */
 .processNumBadge {
   width: 40px; height: 40px; border-radius: 50%;
   background: var(--brand-surface);
@@ -623,11 +617,7 @@
   color: var(--brand-primary);
   box-shadow: 0 0 8px var(--brand-glow), inset 0 1px 0 rgba(255,255,255,0.08);
 }
-/* Dark mode: use the dark brand surface so the circle is visibly distinct from the dark page bg */
-.page:not(.lightMode) .processNumBadge {
-  background: var(--brand-surface-dark);
-}
-/* Process line — brand muted tint */
+.page:not(.lightMode) .processNumBadge { background: var(--brand-surface-dark); }
 .processLine { width: 1px; background: var(--brand-muted); align-self: stretch; margin: 2px 0; }
 .processStepContent { padding-top: 8px; }
 .processStepTitle { font-family: 'Cormorant Garamond', Georgia, serif; font-size: 1.1rem; font-weight: 400; color: var(--text-primary); margin: 0 0 6px; letter-spacing: 0.5px; }
@@ -640,10 +630,9 @@
   border-top: 1px solid var(--brand-muted);
   border-bottom: 1px solid var(--brand-muted);
 }
-.testimonialsInner { padding: 0 24px; max-width: 600px; margin: 0 auto; }
+.testimonialsInner { padding: 0 24px; max-width: 580px; margin: 0 auto; }
 .testimonialsTitle { font-family: 'Cormorant Garamond', Georgia, serif; font-size: clamp(2.2rem, 8vw, 3.5rem); font-weight: 300; color: var(--text-primary); margin: 0 0 40px; line-height: 1.1; }
 .testimonialsGrid { display: flex; flex-direction: column; gap: 16px; }
-/* Testimonial card — gradient card bg + subtle glow + top border */
 .testimonialCard {
   background: var(--brand-gradient-card);
   border: 1px solid var(--brand-muted);
@@ -656,12 +645,10 @@
   box-shadow: 0 2px 16px rgba(0,0,0,0.06);
 }
 .testimonialStars { display: flex; gap: 2px; margin-bottom: 14px; }
-/* Stars are always amber/yellow — never brand colour */
 .star        { font-size: 0.9rem !important; color: var(--border); }
 .starFilled  { color: #f59e0b !important; }
 .testimonialText { font-family: 'Cormorant Garamond', Georgia, serif; font-style: italic; font-size: 1.05rem; color: var(--text-body); line-height: 1.75; margin: 0 0 18px; }
 .testimonialAuthor { display: flex; align-items: center; gap: 10px; padding-top: 16px; border-top: 1px solid var(--brand-muted); }
-/* Avatar — brand gradient background + on-primary text + glow */
 .testimonialAvatar {
   width: 36px; height: 36px; border-radius: 50%;
   background: var(--brand-gradient);
@@ -675,29 +662,22 @@
 }
 .testimonialName { font-size: 0.78rem; font-weight: 600; color: var(--text-muted); letter-spacing: 0.5px; }
 
-/* ── BOOK SECTION — always dark ── */
+/* ── BOOK SECTION ── */
 .bookSection { position: relative; min-height: 80vh; display: flex; align-items: center; overflow: hidden; }
 .bookBgWrap { position: absolute; inset: 0; }
 .bookBgImg { width: 100%; height: 100%; object-fit: cover; object-position: center; filter: grayscale(100%) contrast(1.05); }
 .bookBgOverlay { position: absolute; inset: 0; background: rgba(8,8,8,0.88); }
 .bookBgFallback { position: absolute; inset: 0; background: #0e0e0e; }
-.bookContent { position: relative; z-index: 1; padding: 80px 24px; width: 100%; }
-/* Book title — "extraordinary?" in brand primary */
+.bookContent { position: relative; z-index: 1; padding: 80px 24px; width: 100%; box-sizing: border-box; }
 .bookTitle { font-family: 'Cormorant Garamond', Georgia, serif; font-size: clamp(2.4rem, 10vw, 4.5rem); font-weight: 300; line-height: 1.05; color: #fff; margin: 0 0 20px; }
 .bookTitleAccent { color: var(--brand-primary); }
 .bookSub { font-family: 'Cormorant Garamond', Georgia, serif; font-style: italic; font-size: 1rem; color: rgba(255,255,255,0.7); line-height: 1.7; margin-bottom: 20px; }
-/* Turnaround — brand primary, icon inherits colour */
 .bookTurnaround {
   display: flex; align-items: center;
   font-family: 'Manrope', sans-serif; font-size: 0.68rem;
   letter-spacing: 1.5px; text-transform: uppercase;
   color: var(--brand-primary); margin-bottom: 28px;
 }
-/* The schedule icon inside bookTurnaround inherits brand primary from parent */
-.bookTurnaround .mi,
-.bookTurnaround .mi { color: inherit; }
-
-/* Book CTA — brand gradient */
 .bookCta {
   background: var(--brand-gradient); color: var(--brand-on-primary);
   border: none; border-radius: 30px; padding: 16px 36px;
@@ -708,7 +688,6 @@
   box-shadow: 0 4px 20px var(--brand-glow);
 }
 .bookCta:active { opacity: 0.85; transform: scale(0.98); }
-/* WhatsApp ghost CTA */
 .bookWhatsapp {
   display: inline-flex; align-items: center; gap: 8px;
   background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.2);
@@ -725,19 +704,16 @@
   display: flex; align-items: center; gap: 8px;
 }
 .bookContact:hover { color: rgba(255,255,255,0.85); }
-/* Call/mail icons inside book contacts use brand primary so they pop against the dark bg */
-.bookContact .mi,
 .bookContact .mi { color: var(--brand-primary); font-size: 1rem; }
 
-/* ── FOOTER — always dark ── */
+/* ── FOOTER ── */
 .footer { background: var(--footer-bg); border-top: 1px solid var(--brand-muted); padding: 52px 24px 0; }
+.footerInner { max-width: 1440px; margin: 0 auto; }
 .footerTop { display: flex; align-items: flex-start; justify-content: space-between; gap: 24px; margin-bottom: 32px; flex-wrap: wrap; }
 .footerBrandBlock { display: flex; flex-direction: column; gap: 6px; }
-/* Footer brand name — brand primary */
 .footerBrand { font-family: 'Cormorant Garamond', Georgia, serif; font-size: 1.5rem; font-weight: 300; letter-spacing: 3px; text-transform: uppercase; margin: 0; color: var(--brand-primary); }
 .footerTagline { font-family: 'Cormorant Garamond', Georgia, serif; font-style: italic; font-size: 0.85rem; color: var(--footer-tag); margin: 0; }
 .footerFounded { font-family: 'Manrope', sans-serif; font-size: 0.6rem; letter-spacing: 2px; text-transform: uppercase; color: var(--footer-powered-color); margin: 0; }
-/* Footer social icons — solid brand surface bg + brand primary colour; gradient fill on hover */
 .footerSocials { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
 .footerSocialIcon {
   display: flex; align-items: center; justify-content: center;
@@ -755,22 +731,18 @@
   border-color: var(--brand-primary-dark);
   box-shadow: 0 2px 10px var(--brand-glow);
 }
-/* Footer divider — brand muted tint */
 .footerDivider      { height: 1px; background: var(--brand-muted); margin-bottom: 24px; }
 .footerDividerFaint { height: 1px; background: rgba(255,255,255,0.05); margin-bottom: 24px; }
 .footerCols { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; margin-bottom: 32px; }
 .footerCol  { display: flex; flex-direction: column; gap: 10px; }
-/* Footer column labels — brand primary, nowrap so they stay on one line */
 .footerColLabel { font-family: 'Manrope', sans-serif; font-size: 0.58rem; letter-spacing: 3px; text-transform: uppercase; margin: 0 0 4px; color: var(--brand-primary); white-space: nowrap; }
 .footerColRow { display: flex; align-items: flex-start; gap: 8px; font-family: 'Manrope', sans-serif; font-size: 0.75rem; color: var(--footer-link); text-decoration: none; line-height: 1.5; transition: color 0.2s; }
 .footerColRow:hover { color: var(--footer-link-hover); }
-/* Footer contact icons — brand primary colour at full opacity */
 .footerColRow .mi { color: var(--brand-primary); margin-top: 1px; font-size: 0.95rem; }
 .footerColLink { background: none; border: none; font-family: 'Manrope', sans-serif; font-size: 0.75rem; color: var(--footer-link); cursor: pointer; padding: 0; text-align: left; transition: color 0.2s; }
 .footerColLink:hover { color: var(--footer-link-hover); }
 .footerBottom { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; padding-bottom: calc(20px + env(safe-area-inset-bottom)); }
 .footerPowered { font-size: 0.58rem; letter-spacing: 1.5px; text-transform: uppercase; color: var(--footer-powered-color); margin: 0; }
-/* "TailorPady" in brand primary */
 .footerPoweredBrand { color: var(--brand-primary); }
 
 /* ── BOOKING DRAWER ── */
@@ -786,10 +758,8 @@
   box-shadow: 0 -2px 20px var(--brand-glow);
 }
 .bookingDrawerVisible { transform: translateY(0); }
-/* Handle — neutral, not brand coloured */
 .drawerHandle { width: 36px; height: 3px; background: var(--handle-color); border-radius: 2px; margin: 14px auto 0; }
 .drawerHead { display: flex; align-items: flex-start; justify-content: space-between; padding: 20px 24px 16px; border-bottom: 1px solid var(--brand-muted); }
-/* Drawer label — brand primary */
 .drawerLabel { font-size: 0.58rem; letter-spacing: 3px; color: var(--brand-primary); margin-bottom: 4px; }
 .drawerTitle { font-family: 'Cormorant Garamond', Georgia, serif; font-size: 1.3rem; font-weight: 400; color: var(--field-text); letter-spacing: 0.5px; }
 .drawerClose { background: var(--close-bg); border: none; border-radius: 50%; color: var(--text-muted); cursor: pointer; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; margin-top: 4px; transition: background 0.2s; }
@@ -798,7 +768,6 @@
 .fieldGroup { display: flex; flex-direction: column; gap: 6px; }
 .fieldLabel { font-size: 0.58rem; letter-spacing: 2px; text-transform: uppercase; color: var(--text-faint); }
 .fieldHint  { font-size: 0.68rem; color: var(--text-faint); font-style: italic; margin-top: 2px; }
-/* Fields — focus border uses brand primary + glow */
 .fieldInput, .fieldTextarea {
   background: var(--field-bg); border: 1px solid var(--field-border);
   border-radius: 8px; color: var(--field-text); padding: 13px 14px;
@@ -813,7 +782,6 @@
 }
 .fieldTextarea { resize: none; line-height: 1.5; }
 .drawerFooter { padding: 16px 24px 28px; }
-/* Send button — brand gradient */
 .sendBtn {
   width: 100%; background: var(--brand-gradient); color: var(--brand-on-primary);
   border: none; border-radius: 8px; padding: 16px;
@@ -825,7 +793,6 @@
 .sendBtn:disabled { opacity: 0.3; cursor: not-allowed; }
 .sendBtn:not(:disabled):active { opacity: 0.85; }
 .sentState { display: flex; flex-direction: column; align-items: center; padding: 48px 24px 60px; gap: 12px; }
-/* Sent check — brand gradient bg + on-primary icon */
 .sentCheck {
   width: 52px; height: 52px;
   background: var(--brand-gradient);
@@ -851,7 +818,6 @@
 .lbCaption { font-family: 'Cormorant Garamond', Georgia, serif; font-size: 1rem; color: #fff; margin: 0 0 8px; }
 .lbTags { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
 .lbType  { font-size: 0.6rem; letter-spacing: 2px; text-transform: uppercase; color: #aaa; }
-/* Lightbox price — brand gradient bg */
 .lbPrice {
   font-family: 'Manrope', sans-serif; font-size: 0.62rem; font-weight: 700;
   color: var(--brand-on-primary);
@@ -861,54 +827,324 @@
   box-shadow: 0 2px 8px var(--brand-glow);
 }
 
-/* ── GLOBAL BRAND ICON COLOUR RULES ──────────────────────────
- * Any .mi or .mi span that sits inside a brand-
- * coloured parent container picks up the brand primary colour
- * unless a more specific rule overrides it.
- * This catches leftover icons not explicitly targeted above.
- * ─────────────────────────────────────────────────────────── */
-
-/* About card info items — history, schedule, place, auto_fix_high */
-.aboutInfoItem .mi,
+/* ── ICON COLOUR INHERITANCE ── */
 .aboutInfoItem .mi { color: var(--brand-primary); }
-
-/* About meta rows — location_on, call, mail, language */
-.aboutMetaRow .mi { color: var(--brand-primary); }
-
-/* Stats bar verified icon */
-.statItem .mi { color: var(--brand-primary); }
-
-/* Drawer sent-state check icon — uses on-primary since it's on a gradient bg */
-.sentCheck .mi,
-.sentCheck .mi { color: var(--brand-on-primary); }
-
-/* Nav active link icon if any */
-.navLinkActive .mi,
+.aboutMetaRow .mi  { color: var(--brand-primary); }
+.statItem .mi      { color: var(--brand-primary); }
+.sentCheck .mi     { color: var(--brand-on-primary); }
 .navLinkActive .mi { color: var(--brand-primary); }
+.footerColRow .mi  { color: var(--brand-primary); font-size: 0.95rem; margin-top: 1px; }
 
-/* Footer contact col icons — location_on, mail, call */
-.footerColRow .mi { color: var(--brand-primary); font-size: 0.95rem; margin-top: 1px; }
-
-/* ── DESKTOP ── */
+/* ═══════════════════════════════════════════════════════
+   RESPONSIVE — 640px  (tablet portrait / large phone)
+═══════════════════════════════════════════════════════ */
 @media (min-width: 640px) {
+  /* Nav */
   .navLinks { display: flex; }
   .navHamburger { display: none; }
-  .navLinksOpen { display: flex; flex-direction: row; position: static; background: none; border: none; padding: 0; gap: 6px; animation: none; }
+  .navLinksOpen {
+    display: flex; flex-direction: row; position: static;
+    background: none; border: none; padding: 0; gap: 4px; animation: none;
+  }
   .navLinksOpen .themeToggleMobileInline { display: none; }
   .navLinksOpen .navHomeRow { display: contents; }
   .navCta { margin-top: 0; }
-  .aboutInner { flex-direction: row; align-items: flex-start; gap: 60px; }
+
+  /* About — side-by-side, proper max-width */
+  .aboutInner {
+    flex-direction: row;
+    align-items: flex-start;
+    gap: 60px;
+    max-width: 1100px;
+  }
   .aboutLeft, .aboutRight { flex: 1; }
-  .photoGrid { grid-template-columns: repeat(3, 1fr); }
+
+  /* Photo grid */
+  .photoGrid { grid-template-columns: repeat(3, 1fr); gap: 8px; padding: 0 8px; }
   .photoCardFeatured { grid-column: span 2; aspect-ratio: 16/9; }
+
+  /* Process */
+  .processInner { max-width: 900px; }
   .processSteps { display: grid; grid-template-columns: repeat(2, 1fr); }
   .processStep:nth-child(odd)  { border-right: 1px solid var(--brand-muted); padding-right: 32px; }
   .processStep:nth-child(even) { padding-left: 32px; }
+
+  /* Testimonials */
   .testimonialsInner { max-width: 1100px; }
-  .testimonialsGrid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
+  .testimonialsGrid  { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
+
+  /* Book */
   .bookCta { display: inline-block; width: auto; }
   .bookWhatsapp { display: inline-flex; margin-left: 12px; }
+
+  /* Footer */
+  .footerCols { grid-template-columns: repeat(2, 1fr); gap: 40px; }
 }
+
 @media (max-width: 639px) {
   .themeToggleDesktop { display: none; }
+}
+
+/* ═══════════════════════════════════════════════════════
+   RESPONSIVE — 768px  (tablet landscape)
+═══════════════════════════════════════════════════════ */
+@media (min-width: 768px) {
+  /* Nav */
+  .navInner { height: 66px; }
+  .navLink  { padding: 10px 14px; font-size: 0.68rem; }
+  .navCta   { padding: 10px 22px; font-size: 0.66rem; }
+
+  /* Hero */
+  .heroContent { padding: 0 48px calc(100px + env(safe-area-inset-bottom)); }
+  .heroName    { font-size: clamp(3rem, 9vw, 5.5rem); }
+
+  /* Stats */
+  .statNum   { font-size: 1.9rem; }
+  .statLabel { font-size: 0.55rem; }
+  .statItem  { padding: 28px 20px; }
+
+  /* About */
+  .about { padding: 110px 40px; }
+
+  /* Works */
+  .worksHead  { padding: 0 40px 48px; max-width: 1440px; margin: 0 auto; }
+  .filterBar  { padding: 0 40px 32px; max-width: 1440px; margin: 0 auto; }
+  .photoGrid  { padding: 0 12px; gap: 10px; }
+
+  /* Process */
+  .process { padding: 110px 0; }
+  .processInner { padding: 0 40px; }
+
+  /* Testimonials */
+  .testimonials { padding: 110px 0; }
+  .testimonialsInner { padding: 0 40px; }
+
+  /* Book */
+  .bookContent { padding: 100px 48px; }
+
+  /* Footer */
+  .footer { padding: 60px 40px 0; }
+}
+
+/* ═══════════════════════════════════════════════════════
+   RESPONSIVE — 1024px  (laptop / small desktop)
+═══════════════════════════════════════════════════════ */
+@media (min-width: 1024px) {
+  /* Nav */
+  .navInner  { height: 72px; padding: 0 48px; }
+  .navBrand  { font-size: 1.25rem; letter-spacing: 3px; }
+  .navLinks  { gap: 6px; }
+  .navLink   { font-size: 0.65rem; letter-spacing: 2.5px; padding: 10px 16px; }
+  .navCta    { padding: 11px 26px; font-size: 0.65rem; border-radius: 8px; }
+
+  /* Hero — constrain text to left column so it never goes wall-to-wall */
+  .heroContent {
+    padding: 0 80px calc(120px + env(safe-area-inset-bottom));
+    max-width: 1440px;
+    margin: 0 auto;
+  }
+  .heroName            { max-width: 65%; }
+  .heroTagline         { max-width: 55%; font-size: 1.2rem; }
+  .heroStyleStatement  { max-width: 52%; font-size: 1.1rem; }
+  .heroCtas            { max-width: 55%; }
+  .heroAvailBadge      { font-size: 0.82rem; }
+  .heroPrimary         { padding: 16px 36px; font-size: 0.9rem; }
+  .heroSecondary       { padding: 16px 36px; font-size: 0.9rem; }
+
+  /* Stats bar — constrain inner so it isn't too wide */
+  .statsBar { justify-content: stretch; }
+  .statItem { max-width: 280px; padding: 32px 24px; }
+  .statNum  { font-size: 2.1rem; }
+
+  /* About */
+  .about      { padding: 130px 60px; }
+  .aboutInner { max-width: 1200px; gap: 80px; }
+  .aboutLeft  { max-width: 380px; }
+  .aboutCard  { padding: 40px 36px; }
+  .aboutHeading { font-size: clamp(3rem, 5vw, 4.5rem); }
+
+  /* Works */
+  .works     { padding: 120px 0 80px; }
+  .worksHead { padding: 0 60px 56px; }
+  .filterBar { padding: 0 60px 36px; }
+  .photoGrid { grid-template-columns: repeat(4, 1fr); gap: 10px; padding: 0 16px; max-width: 1600px; margin: 0 auto; }
+  .photoCardFeatured { grid-column: span 2; aspect-ratio: 4/3; }
+  .worksTitle { font-size: clamp(2.8rem, 4vw, 4rem); }
+
+  /* Process */
+  .process      { padding: 130px 0; }
+  .processInner { padding: 0 60px; max-width: 1100px; }
+  .processTitle { font-size: clamp(2.8rem, 4vw, 4rem); }
+  .processSteps { grid-template-columns: repeat(2, 1fr); column-gap: 0; row-gap: 0; }
+  .processStep  { padding: 36px 0; }
+  .processStep:nth-child(odd)  { padding-right: 48px; }
+  .processStep:nth-child(even) { padding-left: 48px; }
+  .processNumBadge { width: 46px; height: 46px; font-size: 0.82rem; }
+  .processStepTitle { font-size: 1.2rem; }
+  .processStepDesc  { font-size: 0.82rem; }
+
+  /* Testimonials */
+  .testimonials      { padding: 130px 0; }
+  .testimonialsInner { padding: 0 60px; max-width: 1200px; }
+  .testimonialsTitle { font-size: clamp(2.8rem, 4vw, 4rem); }
+  .testimonialsGrid  { grid-template-columns: repeat(3, 1fr); }
+  .testimonialCard   { padding: 28px 26px; }
+  .testimonialText   { font-size: 1.1rem; }
+
+  /* Book — constrain content width for elegance */
+  .bookSection { min-height: 90vh; }
+  .bookContent { padding: 120px 80px; max-width: 800px; }
+  .bookTitle   { font-size: clamp(3rem, 5vw, 5.5rem); }
+  .bookSub     { font-size: 1.1rem; }
+  .bookCta     { padding: 18px 44px; font-size: 0.9rem; }
+  .bookWhatsapp { padding: 16px 34px; font-size: 0.9rem; }
+
+  /* Footer */
+  .footer      { padding: 80px 60px 0; }
+  .footerCols  { grid-template-columns: repeat(4, 1fr); gap: 40px; }
+  .footerBrand { font-size: 1.8rem; }
+
+  /* Booking drawer — centered on desktop */
+  .bookingOverlay { justify-content: center; align-items: center; }
+  .bookingDrawer  {
+    width: 520px;
+    border-radius: 20px;
+    max-height: 88dvh;
+    border-top: none;
+    border: 1px solid var(--drawer-border);
+    border-top: 2px solid var(--brand-primary);
+  }
+  .drawerHandle { display: none; }
+  .bookingDrawerVisible { transform: none; animation: drawerFadeIn 0.3s ease; }
+  @keyframes drawerFadeIn {
+    from { opacity: 0; transform: scale(0.97) translateY(12px); }
+    to   { opacity: 1; transform: scale(1) translateY(0); }
+  }
+
+  /* Lightbox nav buttons bigger */
+  .lbNav  { width: 52px; height: 52px; font-size: 1.6rem; }
+  .lbLeft  { left: 24px; }
+  .lbRight { right: 24px; }
+}
+
+/* ═══════════════════════════════════════════════════════
+   RESPONSIVE — 1280px  (full desktop)
+═══════════════════════════════════════════════════════ */
+@media (min-width: 1280px) {
+  /* Nav */
+  .navInner { padding: 0 64px; height: 76px; }
+  .navLinks { gap: 8px; }
+  .navLink  { font-size: 0.67rem; letter-spacing: 3px; padding: 10px 18px; }
+  .navBrand { font-size: 1.3rem; }
+  .navCta   { padding: 12px 30px; }
+
+  /* Hero */
+  .heroContent        { padding: 0 100px calc(140px + env(safe-area-inset-bottom)); }
+  .heroName           { font-size: clamp(4rem, 7vw, 7rem); max-width: 60%; }
+  .heroTagline        { font-size: 1.3rem; max-width: 50%; }
+  .heroStyleStatement { font-size: 1.2rem; max-width: 48%; }
+
+  /* Stats */
+  .statNum  { font-size: 2.4rem; }
+  .statItem { padding: 36px 32px; }
+
+  /* About */
+  .about      { padding: 150px 80px; }
+  .aboutInner { gap: 100px; max-width: 1300px; }
+  .aboutCard  { padding: 44px 40px; }
+
+  /* Works */
+  .works      { padding: 140px 0 100px; }
+  .worksHead  { padding: 0 80px 64px; }
+  .filterBar  { padding: 0 80px 40px; }
+  .photoGrid  { grid-template-columns: repeat(4, 1fr); gap: 12px; padding: 0 20px; }
+  .worksTitle { font-size: clamp(3rem, 4vw, 5rem); }
+  .worksSub   { font-size: 0.9rem; }
+
+  /* Process */
+  .process      { padding: 150px 0; }
+  .processInner { padding: 0 80px; max-width: 1300px; }
+  .processTitle { font-size: clamp(3rem, 4vw, 5rem); margin-bottom: 60px; }
+  .processStep  { padding: 44px 0; }
+  .processStep:nth-child(odd)  { padding-right: 64px; }
+  .processStep:nth-child(even) { padding-left: 64px; }
+
+  /* Testimonials */
+  .testimonials      { padding: 150px 0; }
+  .testimonialsInner { padding: 0 80px; max-width: 1400px; }
+  .testimonialsTitle { font-size: clamp(3rem, 4vw, 5rem); }
+  .testimonialsGrid  { grid-template-columns: repeat(3, 1fr); gap: 20px; }
+
+  /* Book */
+  .bookContent { padding: 140px 100px; max-width: 860px; }
+  .bookTitle   { font-size: clamp(3.5rem, 5vw, 6.5rem); }
+
+  /* Footer */
+  .footer      { padding: 100px 80px 0; }
+  .footerBrand { font-size: 2rem; letter-spacing: 4px; }
+  .footerTop   { margin-bottom: 48px; }
+
+  /* Marquee */
+  .marqueeItem { font-size: 1.1rem; }
+}
+
+/* ═══════════════════════════════════════════════════════
+   RESPONSIVE — 1440px  (wide / large desktop)
+═══════════════════════════════════════════════════════ */
+@media (min-width: 1440px) {
+  /* Nav */
+  .navInner { padding: 0 80px; }
+
+  /* Hero */
+  .heroContent { padding: 0 120px calc(160px + env(safe-area-inset-bottom)); }
+
+  /* Stats — don't let it stretch too thin with too much space */
+  .statsBar   { justify-content: center; }
+  .statItem   { flex: 0 1 260px; padding: 36px 40px; }
+
+  /* About */
+  .about      { padding: 160px 100px; }
+  .aboutInner { max-width: 1360px; gap: 120px; }
+
+  /* Works */
+  .works      { padding: 160px 0 120px; }
+  .worksHead  { padding: 0 100px 72px; }
+  .filterBar  { padding: 0 100px 44px; }
+  .photoGrid  { padding: 0 24px; gap: 14px; max-width: 1800px; }
+
+  /* Process */
+  .processInner { padding: 0 100px; max-width: 1440px; }
+
+  /* Testimonials */
+  .testimonialsInner { padding: 0 100px; max-width: 1600px; }
+  .testimonialsGrid  { gap: 24px; }
+
+  /* Book */
+  .bookContent { padding: 160px 120px; }
+
+  /* Footer */
+  .footer      { padding: 120px 100px 0; }
+  .footerCols  { gap: 60px; }
+}
+
+/* ═══════════════════════════════════════════════════════
+   RESPONSIVE — 1920px+  (ultra-wide / 4K)
+═══════════════════════════════════════════════════════ */
+@media (min-width: 1920px) {
+  .navInner { max-width: 1600px; }
+
+  .heroContent { padding: 0 10% calc(180px + env(safe-area-inset-bottom)); max-width: 1600px; }
+
+  .aboutInner { max-width: 1500px; }
+  .about { padding: 180px 10%; }
+
+  .worksHead { padding: 0 10% 80px; }
+  .filterBar { padding: 0 10% 48px; }
+  .photoGrid { max-width: 2000px; }
+
+  .processInner      { padding: 0 10%; max-width: 1600px; }
+  .testimonialsInner { padding: 0 10%; max-width: 1800px; }
+
+  .footer      { padding: 140px 10% 0; }
+  .bookContent { max-width: 960px; padding: 180px 10%; }
 }
