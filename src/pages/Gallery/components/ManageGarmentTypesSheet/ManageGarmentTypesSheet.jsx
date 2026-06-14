@@ -1,4 +1,4 @@
-import { useState,useEffect } from "react"
+import { useState, useEffect } from "react"
 import styles from "./ManageGarmentTypesSheet.module.css"
 
 
@@ -82,4 +82,3 @@ export function ManageGarmentTypesSheet({ isOpen, onClose, tabId, types, onSave,
     </div>
   )
 }
-

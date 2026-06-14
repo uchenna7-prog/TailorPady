@@ -1,7 +1,5 @@
-import { useState, useEffect, useMemo, useRef } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { useAuth } from '../../../../contexts/AuthContext'
-import { savePortfolioSettings, subscribeToPortfolioSettings } from '../../../../services/portfolioSettingsService'
-import { ImageDropdown } from '../ImageDropdown/ImageDropdown.jsx'
 import { SlugEditor } from '../SlugEditor/SlugEditor.jsx'
 import { getCurrentSlug } from '../../../../services/slugService'
 import styles from './SharePortfolioModal.module.css'
@@ -36,26 +34,13 @@ const SHARE_OPTIONS = [
 ]
 
 
-
-export  function SharePortfolioModal({ isOpen, onClose, brandName, completedWorksPhotos = [] }) {
+export function SharePortfolioModal({ isOpen, onClose, brandName }) {
   const { user } = useAuth()
 
   const [copied,          setCopied]          = useState(false)
   const [instagramCopied, setInstagramCopied] = useState(false)
-  const [visible,         setVisible]         = useState(false)
-  const [heroImageId,     setHeroImageId]     = useState(null)
-  const [footerImageId,   setFooterImageId]   = useState(null)
-  const [settingsLoaded,  setSettingsLoaded]  = useState(false)
-  const [saving,          setSaving]          = useState(false)
-  const [saved,           setSaved]           = useState(false)
-  const [saveError,       setSaveError]       = useState(false)
-  const [showErrors,      setShowErrors]      = useState(false)
   const [currentSlug,     setCurrentSlug]     = useState(null)
   const [slugLoading,     setSlugLoading]     = useState(false)
-
-  const hasPhotos   = completedWorksPhotos.length > 0
-  const heroError   = hasPhotos && showErrors && !heroImageId
-  const footerError = hasPhotos && showErrors && !footerImageId
 
   const portfolioLink = useMemo(() => {
     if (!user) return ''
@@ -68,33 +53,7 @@ export  function SharePortfolioModal({ isOpen, onClose, brandName, completedWork
     getCurrentSlug(user.uid).then(s => setCurrentSlug(s)).catch(() => {}).finally(() => setSlugLoading(false))
   }, [isOpen, user])
 
-  useEffect(() => {
-    if (isOpen) requestAnimationFrame(() => setVisible(true))
-    else { setVisible(false); setShowErrors(false) }
-  }, [isOpen])
-
-  useEffect(() => {
-    if (!isOpen || !user) return
-    setSettingsLoaded(false)
-    const unsub = subscribeToPortfolioSettings(user.uid, ({ heroImageId: h, footerImageId: f }) => {
-      setHeroImageId(h); setFooterImageId(f); setSettingsLoaded(true)
-    })
-    return () => unsub()
-  }, [isOpen, user])
-
   if (!isOpen) return null
-
-  const handleSaveImages = async () => {
-    if (hasPhotos && (!heroImageId || !footerImageId)) { setShowErrors(true); return }
-    if (!user) return
-    setSaving(true); setSaveError(false)
-    const timeout = new Promise((_, reject) => setTimeout(() => reject(new Error('timeout')), 8000))
-    try {
-      await Promise.race([savePortfolioSettings(user.uid, { heroImageId, footerImageId }), timeout])
-      setSaved(true); setTimeout(() => setSaved(false), 2500)
-    } catch { setSaveError(true); setTimeout(() => setSaveError(false), 3000) }
-    finally  { setSaving(false) }
-  }
 
   const handleCopy = async () => {
     try { await navigator.clipboard.writeText(portfolioLink) }
@@ -112,98 +71,62 @@ export  function SharePortfolioModal({ isOpen, onClose, brandName, completedWork
     if (url) window.open(url, '_blank', 'noopener,noreferrer')
   }
 
-  const saveBtnClass = [styles.saveImagesBtn, saved ? styles.saveImagesBtnDone : '', saveError ? styles.saveImagesBtnError : ''].filter(Boolean).join(' ')
-
   return (
-    <div className={`${styles.overlay} ${visible ? styles.overlayVisible : ''}`} onClick={e => { if (e.target === e.currentTarget) onClose() }}>
-      <div className={`${styles.sheet} ${visible ? styles.sheetVisible : ''}`}>
+    <div className={styles.overlay} onClick={e => e.target === e.currentTarget && onClose()}>
+      <div className={styles.panel}>
+
         <div className={styles.handle} />
 
-        {/* Header */}
         <div className={styles.header}>
-          <div className={styles.headerLeft}>
-            <span className={styles.headerIcon}><span className="mi">link</span></span>
-            <div>
-              <p className={styles.headerTitle}>Share Portfolio</p>
-              <p className={styles.headerSub}>Send your tailor page to clients</p>
-            </div>
-          </div>
-          <button className={styles.closeBtn} onClick={onClose}><span className="mi">close</span></button>
+          <button className={styles.closeBtn} onClick={onClose}>
+            <span className="mi">close</span>
+          </button>
+          <div className={styles.headerTitle}>Share Portfolio</div>
+          <div className={styles.headerSpacer} />
         </div>
 
-        {/* Link section */}
-        <div className={styles.linkSection}>
-          <p className={styles.linkSectionTitle}>Your Portfolio Link</p>
+        <div className={styles.body}>
 
-          {/* Slug card */}
-          <div className={styles.slugCard}>
-            <div className={styles.slugCardHead}>
-              <span className={styles.slugCardLabel}>Custom URL</span>
-            </div>
-            <div className={styles.slugCardBody}>
-              {slugLoading
-                ? <p className={styles.slugLoading}>Loading…</p>
-                : <SlugEditor uid={user?.uid} currentSlug={currentSlug} onSlugSaved={setCurrentSlug} />
-              }
-            </div>
+          <div className={styles.sectionCard}>
+            <div className={styles.sectionLabel}>Custom URL</div>
+            {slugLoading
+              ? <p className={styles.slugLoading}>Loading…</p>
+              : <SlugEditor uid={user?.uid} currentSlug={currentSlug} onSlugSaved={setCurrentSlug} />
+            }
           </div>
 
-          {/* Copy row */}
-          <div className={styles.linkRow}>
-            <div className={styles.linkBox}>
-              <span className="mi" style={{ fontSize: '0.9rem', color: 'var(--text3)', flexShrink: 0 }}>language</span>
-              <span className={styles.linkText}>{portfolioLink}</span>
-            </div>
-            <button className={`${styles.copyBtn} ${copied ? styles.copyBtnDone : ''}`} onClick={handleCopy}>
-              <span className="mi" style={{ fontSize: '1rem' }}>{copied ? 'check' : 'content_copy'}</span>
-              <span>{copied ? 'Copied!' : 'Copy'}</span>
-            </button>
-          </div>
-        </div>
-
-        {/* Images */}
-        <div className={styles.imageSection}>
-          <div className={styles.imageSectionHead}>
-            <p className={styles.imageLabel}>Portfolio Images</p>
-            {hasPhotos && <p className={styles.imageRequired}>Both required</p>}
-          </div>
-          {!hasPhotos ? (
-            <p className={styles.imageEmptyHint}><span className="mi" style={{ fontSize: '0.9rem' }}>info</span>Add photos to Completed Works to choose hero and footer images.</p>
-          ) : (
-            <>
-              {showErrors && <div className={styles.validationBanner}><span className="mi" style={{ fontSize: '0.9rem' }}>warning</span>Select both a hero and footer image to save.</div>}
-              <ImageDropdown label="Hero Image"   photos={completedWorksPhotos} value={heroImageId}   onChange={id => { setHeroImageId(id);   if (id && footerImageId) setShowErrors(false) }} required hasError={heroError}   />
-              <ImageDropdown label="Footer Image" photos={completedWorksPhotos} value={footerImageId} onChange={id => { setFooterImageId(id); if (heroImageId && id)   setShowErrors(false) }} required hasError={footerError} />
-              <button className={saveBtnClass} onClick={handleSaveImages} disabled={saving}>
-                {saving    ? <><span className="mi" style={{ fontSize: '1rem', animation: 'spin 0.8s linear infinite' }}>refresh</span>Saving…</>
-                : saved    ? <><span className="mi" style={{ fontSize: '1rem' }}>check</span>Saved to portfolio!</>
-                : saveError? <><span className="mi" style={{ fontSize: '1rem' }}>wifi_off</span>Failed — check connection</>
-                :             <><span className="mi" style={{ fontSize: '1rem' }}>save</span>Save images to portfolio</>}
+          <div className={styles.sectionCard}>
+            <div className={styles.sectionLabel}>Your Portfolio Link</div>
+            <div className={styles.linkRow}>
+              <div className={styles.linkBox}>
+                <span className="mi" style={{ fontSize: '0.9rem', color: 'var(--text3)', flexShrink: 0 }}>language</span>
+                <span className={styles.linkText}>{portfolioLink}</span>
+              </div>
+              <button className={`${styles.copyBtn} ${copied ? styles.copyBtnDone : ''}`} onClick={handleCopy}>
+                <span className="mi" style={{ fontSize: '1rem' }}>{copied ? 'check' : 'content_copy'}</span>
+                <span>{copied ? 'Copied!' : 'Copy'}</span>
               </button>
-              {!settingsLoaded && <p className={styles.settingsLoading}>Loading saved selections…</p>}
-            </>
-          )}
-        </div>
-
-        {/* Share via */}
-        <div className={styles.shareSection}>
-          <p className={styles.shareLabel}>Share via</p>
-          <div className={styles.shareGrid}>
-            {SHARE_OPTIONS.map(opt => (
-              <button key={opt.id} className={styles.shareOption} onClick={() => handleShare(opt)}>
-                <div className={styles.shareIconWrap} style={{ background: opt.color + '18', color: opt.color }}>{opt.icon}</div>
-                <span className={styles.shareOptionLabel}>{opt.id === 'instagram' && instagramCopied ? 'Copied!' : opt.label}</span>
-              </button>
-            ))}
+            </div>
           </div>
-          {instagramCopied && <p className={styles.igHint}>Link copied — paste it in your Instagram story or bio!</p>}
-        </div>
 
-        <div className={styles.footer}>
+          <div className={styles.sectionCard}>
+            <div className={styles.sectionLabel}>Share via</div>
+            <div className={styles.shareGrid}>
+              {SHARE_OPTIONS.map(opt => (
+                <button key={opt.id} className={styles.shareOption} onClick={() => handleShare(opt)}>
+                  <div className={styles.shareIconWrap} style={{ background: opt.color + '18', color: opt.color }}>{opt.icon}</div>
+                  <span className={styles.shareOptionLabel}>{opt.id === 'instagram' && instagramCopied ? 'Copied!' : opt.label}</span>
+                </button>
+              ))}
+            </div>
+            {instagramCopied && <p className={styles.igHint}>Link copied — paste it in your Instagram story or bio!</p>}
+          </div>
+
           <p className={styles.footerNote}>
             <span className="mi" style={{ fontSize: '0.85rem' }}>info</span>
             Clients can view your work and book orders without logging in
           </p>
+
         </div>
       </div>
     </div>

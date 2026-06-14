@@ -23,32 +23,51 @@
   gap: 10px;
 }
 
-.previewWrap {
-  display: flex;
-  align-items: center;
-  gap: 16px;
+.progressTrack {
+  width: 100%;
+  height: 4px;
+  background: var(--border);
+  border-radius: 2px;
+  overflow: hidden;
 }
 
-.preview {
-  width: 80px;
-  height: 80px;
-  object-fit: contain;
-  border-radius: 12px;
-  border: 1px solid var(--border);
-  background: #fff;
+.progressFill {
+  height: 100%;
+  background: var(--accent);
+  border-radius: 2px;
+  transition: width 0.2s;
 }
 
-.removeBtn {
-  padding: 8px 12px;
-  border-radius: 8px;
-  background: var(--surface2);
-  border: 1px solid var(--border);
-  cursor: pointer;
-  color: var(--text);
+.progressLabel {
+  font-size: 0.78rem;
+  color: var(--accent);
   font-weight: 700;
+}
+
+.previewActions {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.changeBtn {
+  align-self: flex-start;
   display: flex;
   align-items: center;
   gap: 6px;
+  padding: 8px 14px;
+  border-radius: 8px;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  color: var(--text);
+  font-weight: 700;
+  font-size: 0.82rem;
+  font-family: inherit;
+  cursor: pointer;
+}
+
+.changeBtn:hover {
+  background: var(--border);
 }
 
 .availabilityRow {

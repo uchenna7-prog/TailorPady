@@ -2,6 +2,14 @@ import { useState,useEffect } from "react"
 import styles from "./Lightbox.module.css"
 
 
+
+const CATEGORY_MAP = {
+  completed_works: { label: 'Portfolio',    icon: 'check_circle' },
+  designs:         { label: 'Design',       icon: 'content_cut'  },
+  inspiration:     { label: 'Inspiration',  icon: 'lightbulb'    },
+}
+
+
 function formatDate(ts) {
   if (!ts) return ''
   const d = ts?.toDate ? ts.toDate() : new Date(ts)

@@ -1,22 +1,28 @@
-
-/* ── MANAGE SUB-TABS SHEET ── */
 .sheetOverlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,0.6);
-  z-index: 3000;
-  display: flex;
-  align-items: flex-end;
+  position:        fixed;
+  inset:           0;
+  background:      rgba(0, 0, 0, 0.55);
+  backdrop-filter: blur(4px);
+  z-index:         3000;
+  display:         flex;
+  align-items:     flex-end;
   justify-content: center;
+  animation:       fadeIn 0.18s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
 }
 
 .sheet {
-  width: 100%;
-  max-width: 480px;
-  background: var(--bg);
-  border-radius: 20px 20px 0 0;
-  padding: 0 0 calc(20px + var(--sb));
-  animation: sheetUp 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  width:          100%;
+  max-width:      480px;
+  background:     var(--bg);
+  border-radius:  20px 20px 0 0;
+  border-top:     1px solid var(--border);
+  padding:        0 0 calc(20px + var(--sb, 0px));
+  animation:      sheetUp 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 @keyframes sheetUp {
@@ -24,130 +30,159 @@
   to   { transform: translateY(0); }
 }
 
+@media (min-width: 769px) {
+  .sheetOverlay {
+    left: var(--sidebar-width, 280px);
+  }
+}
+
 .sheetHandle {
-  width: 36px;
-  height: 4px;
-  background: var(--border2);
+  width:         36px;
+  height:        4px;
+  background:    var(--border2);
   border-radius: 2px;
-  margin: 12px auto 0;
+  margin:        12px auto 0;
 }
 
 .sheetHeader {
-  display: flex;
-  align-items: center;
+  display:         flex;
+  align-items:     center;
   justify-content: space-between;
-  padding: 16px 20px 12px;
-  border-bottom: 1px solid var(--border);
+  padding:         16px 20px 12px;
+  border-bottom:   1px solid var(--border);
 }
 
 .sheetTitle {
-  font-size: 0.75rem;
-  font-weight: 800;
+  font-size:      0.75rem;
+  font-weight:    800;
   text-transform: uppercase;
   letter-spacing: 1px;
-  color: var(--text);
+  color:          var(--text);
 }
 
 .sheetClose {
-  background: none;
-  border: none;
-  color: var(--text3);
-  cursor: pointer;
-  display: flex;
+  background:  none;
+  border:      none;
+  color:       var(--text3);
+  cursor:      pointer;
+  display:     flex;
   align-items: center;
-  padding: 4px;
+  padding:     4px;
 }
 
 .sheetBody {
-  padding: 14px 20px;
-  max-height: 50vh;
-  overflow-y: auto;
+  padding:                    14px 20px;
+  max-height:                 50vh;
+  overflow-y:                 auto;
   -webkit-overflow-scrolling: touch;
 }
 
+.sheetEmpty {
+  font-size:  0.82rem;
+  color:      var(--text3);
+  text-align: center;
+  padding:    12px 0 8px;
+}
+
 .manageRow {
-  display: flex;
-  align-items: center;
+  display:         flex;
+  align-items:     center;
   justify-content: space-between;
-  padding: 12px 14px;
-  border: 1px solid var(--border2);
-  border-radius: 12px;
-  margin-bottom: 8px;
-  background: var(--surface);
+  padding:         12px 14px;
+  border:          1px solid var(--border2);
+  border-radius:   12px;
+  margin-bottom:   8px;
+  background:      var(--surface);
 }
 
 .manageLabel {
-  font-size: 0.88rem;
+  font-size:   0.88rem;
   font-weight: 700;
-  color: var(--text);
+  color:       var(--text);
 }
 
 .manageRemove {
-  background: none;
-  border: none;
-  color: var(--danger);
-  cursor: pointer;
-  display: flex;
+  background:  none;
+  border:      none;
+  color:       var(--danger);
+  cursor:      pointer;
+  display:     flex;
   align-items: center;
-  padding: 4px;
+  padding:     4px;
 }
 
 .manageAddRow {
-  display: flex;
-  gap: 8px;
+  display:     flex;
+  gap:         8px;
   align-items: center;
-  margin-top: 4px;
+  margin-top:  4px;
 }
 
 .manageInput {
-  flex: 1;
-  background: var(--surface);
-  border: 1px solid var(--border2);
+  flex:          1;
+  background:    var(--surface);
+  border:        1px solid var(--border2);
   border-radius: 12px;
-  padding: 11px 12px;
-  color: var(--text);
-  font-family: 'Manrope', sans-serif;
-  font-size: 0.88rem;
-  outline: none;
+  padding:       11px 12px;
+  color:         var(--text);
+  font-family:   inherit;
+  font-size:     0.88rem;
+  outline:       none;
   -webkit-appearance: none;
 }
+
 .manageInput::placeholder { color: var(--text3); }
 .manageInput:focus { border-color: var(--text2); }
 
 .manageAddBtn {
-  width: 42px;
-  height: 42px;
-  border-radius: 12px;
-  border: 1px solid var(--border2);
-  background: var(--surface);
-  color: var(--text);
-  display: flex;
-  align-items: center;
+  width:           42px;
+  height:          42px;
+  border-radius:   12px;
+  border:          1px solid var(--border2);
+  background:      var(--surface);
+  color:           var(--text);
+  display:         flex;
+  align-items:     center;
   justify-content: center;
-  cursor: pointer;
-  flex-shrink: 0;
-  transition: background 0.15s;
+  cursor:          pointer;
+  flex-shrink:     0;
+  transition:      background 0.15s;
 }
+
 .manageAddBtn:disabled { opacity: 0.35; cursor: not-allowed; }
 .manageAddBtn:not(:disabled):active { background: var(--surface2); }
 
+.deleteWarning {
+  display:       flex;
+  align-items:   flex-start;
+  gap:           8px;
+  background:    rgba(229, 62, 62, 0.08);
+  border:        1px solid rgba(229, 62, 62, 0.25);
+  border-radius: 10px;
+  padding:       10px 12px;
+  margin-top:    12px;
+  font-size:     0.78rem;
+  color:         var(--danger);
+  line-height:   1.4;
+}
+
 .sheetFooter {
-  padding: 0 20px;
+  padding:    0 20px;
   margin-top: 4px;
 }
 
 .sheetSaveBtn {
-  width: 100%;
-  padding: 14px;
+  width:         100%;
+  padding:       14px;
   border-radius: 14px;
-  border: none;
-  background: var(--accent);
-  color: var(--bg);
-  font-family: 'Manrope', sans-serif;
-  font-size: 0.88rem;
-  font-weight: 800;
-  cursor: pointer;
-  transition: opacity 0.15s;
+  border:        none;
+  background:    var(--accent);
+  color:         var(--bg);
+  font-family:   inherit;
+  font-size:     0.88rem;
+  font-weight:   800;
+  cursor:        pointer;
+  transition:    opacity 0.15s;
 }
-.sheetSaveBtn:active { opacity: 0.85; }
 
+.sheetSaveBtn:active { opacity: 0.85; }

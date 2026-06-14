@@ -8,20 +8,100 @@ import { TextInput } from '../TextInput/TextInput'
 import { Textarea } from '../Textarea/Textarea'
 import { TurnaroundPicker } from './TurnaroundPicker/TurnaroundPicker'
 import { ServiceAreaPicker } from './ServiceAreaPicker/ServiceAreaPicker'
+import { ImageSourceMenu } from './ImageSourceMenu/ImageSourceMenu'
+import { GalleryImagePickerSheet } from './GalleryImagePickerSheet/GalleryImagePickerSheet'
+import { ImagePreview } from './ImagePreview/ImagePreview'
 import { uploadToCloudinary } from '../../../../services/cloudinaryService'
 import { AVAILABILITY_OPTIONS } from './datas'
 
 
-function ImageUploadField({ label, hint, value, onChange, showToast }) {
-  const inputRef                  = useRef(null)
+function BackgroundImageField({ label, hint, value, onChange, showToast }) {
+  const inputRef = useRef(null)
   const [uploading, setUploading] = useState(false)
-  const [progress, setProgress]   = useState(0)
+  const [progress, setProgress] = useState(0)
+  const [sourceMenuOpen, setSourceMenuOpen] = useState(false)
+  const [galleryOpen, setGalleryOpen] = useState(false)
 
   async function handleFileChange(e) {
     const file = e.target.files?.[0]
     if (!file) return
     if (!file.type.startsWith('image/')) { showToast('Please select an image file'); return }
-    if (file.size > 10 * 1024 * 1024)   { showToast('Image must be under 10MB');    return }
+    if (file.size > 10 * 1024 * 1024) { showToast('Image must be under 10MB'); return }
+
+    setUploading(true)
+    setProgress(0)
+
+    try {
+      const url = await uploadToCloudinary(file, 'portfolio', setProgress)
+      onChange(url)
+      showToast('Image uploaded')
+    } catch {
+      showToast('Upload failed — please try again')
+    } finally {
+      setUploading(false)
+      setProgress(0)
+      if (inputRef.current) inputRef.current.value = ''
+    }
+  }
+
+  function handleGallerySelect(url) {
+    onChange(url)
+    showToast('Image selected')
+  }
+
+  return (
+    <Field label={label} hint={hint}>
+      {uploading ? (
+        <div className={styles.uploadBtn} style={{ flexDirection: 'column', gap: 8, opacity: 0.7, pointerEvents: 'none' }}>
+          <div className={styles.progressTrack}>
+            <div className={styles.progressFill} style={{ width: `${progress}%` }} />
+          </div>
+          <span className={styles.progressLabel}>Uploading… {progress}%</span>
+        </div>
+      ) : value ? (
+        <div className={styles.previewActions}>
+          <ImagePreview src={value} alt={label} onRemove={() => onChange(null)} />
+          <button type="button" className={styles.changeBtn} onClick={() => setSourceMenuOpen(true)}>
+            <span className="mi-outlined" style={{ fontSize: 16 }}>swap_horiz</span>
+            Change Image
+          </button>
+        </div>
+      ) : (
+        <button className={styles.uploadBtn} onClick={() => setSourceMenuOpen(true)}>
+          <span className="mi">add_photo_alternate</span>
+          Add image
+        </button>
+      )}
+
+      <input ref={inputRef} type="file" accept="image/*" style={{ display: 'none' }} onChange={handleFileChange} />
+
+      <ImageSourceMenu
+        open={sourceMenuOpen}
+        onClose={() => setSourceMenuOpen(false)}
+        onChooseGallery={() => setGalleryOpen(true)}
+        onChooseUpload={() => inputRef.current?.click()}
+      />
+
+      <GalleryImagePickerSheet
+        open={galleryOpen}
+        onClose={() => setGalleryOpen(false)}
+        onSelect={handleGallerySelect}
+      />
+    </Field>
+  )
+}
+
+
+function ImageUploadField({ label, hint, value, onChange, showToast }) {
+  const inputRef = useRef(null)
+  const [uploading, setUploading] = useState(false)
+  const [progress, setProgress] = useState(0)
+
+  async function handleFileChange(e) {
+    const file = e.target.files?.[0]
+    if (!file) return
+    if (!file.type.startsWith('image/')) { showToast('Please select an image file'); return }
+    if (file.size > 10 * 1024 * 1024) { showToast('Image must be under 10MB'); return }
 
     setUploading(true)
     setProgress(0)
@@ -42,21 +122,14 @@ function ImageUploadField({ label, hint, value, onChange, showToast }) {
   return (
     <Field label={label} hint={hint}>
       {uploading ? (
-        <div className={styles.uploadBtn} style={{ opacity: 0.7, pointerEvents: 'none', flexDirection: 'column', gap: 8 }}>
-          <div style={{ width: '100%', height: 4, background: 'var(--border)', borderRadius: 2, overflow: 'hidden' }}>
-            <div style={{ height: '100%', width: `${progress}%`, background: 'var(--accent)', borderRadius: 2, transition: 'width 0.2s' }} />
+        <div className={styles.uploadBtn} style={{ flexDirection: 'column', gap: 8, opacity: 0.7, pointerEvents: 'none' }}>
+          <div className={styles.progressTrack}>
+            <div className={styles.progressFill} style={{ width: `${progress}%` }} />
           </div>
-          <span style={{ fontSize: '0.78rem', color: 'var(--accent)', fontWeight: 700 }}>
-            Uploading… {progress}%
-          </span>
+          <span className={styles.progressLabel}>Uploading… {progress}%</span>
         </div>
       ) : value ? (
-        <div className={styles.previewWrap}>
-          <img src={value} alt={label} className={styles.preview} />
-          <button className={styles.removeBtn} onClick={() => onChange(null)}>
-            <span className="mi" style={{ fontSize: 15 }}>close</span> Remove
-          </button>
-        </div>
+        <ImagePreview src={value} alt={label} onRemove={() => onChange(null)} />
       ) : (
         <button className={styles.uploadBtn} onClick={() => inputRef.current?.click()}>
           <span className="mi">add_photo_alternate</span>
@@ -178,7 +251,7 @@ export function PortfolioSettingsModal({ onBack, showToast }) {
 
         <div className={styles.sectionLabel}>Hero Section</div>
         <FieldGroup>
-          <ImageUploadField
+          <BackgroundImageField
             label="Background Image"
             hint="Full-width hero banner background. Recommended: 1920×1080px."
             value={local.heroBgImage}
@@ -198,7 +271,7 @@ export function PortfolioSettingsModal({ onBack, showToast }) {
 
         <div className={styles.sectionLabel}>Footer Section</div>
         <FieldGroup>
-          <ImageUploadField
+          <BackgroundImageField
             label="Footer Background Image"
             hint="Optional background behind footer content. Leave empty for a solid color."
             value={local.footerBgImage}
