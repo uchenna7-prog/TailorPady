@@ -35,7 +35,7 @@ export function ManageGarmentTypesSheet({ isOpen, onClose, tabId, types, onSave,
       <div className={styles.sheet} onClick={e => e.stopPropagation()}>
         <div className={styles.sheetHandle} />
         <div className={styles.sheetHeader}>
-          <span className={styles.sheetTitle}>Dress Types</span>
+          <span className={styles.sheetTitle}>Garment Types</span>
           <button className={styles.sheetClose} onClick={onClose}>
             <span className="mi" style={{ fontSize: '1.2rem' }}>close</span>
           </button>
@@ -43,7 +43,7 @@ export function ManageGarmentTypesSheet({ isOpen, onClose, tabId, types, onSave,
 
         <div className={styles.sheetBody}>
           {items.length === 0 && (
-            <p className={styles.sheetEmpty}>No dress types yet. Add one below.</p>
+            <p className={styles.sheetEmpty}>No garment types yet. Add one below.</p>
           )}
           {items.map(item => (
             <div key={item.id} className={styles.manageRow}>
@@ -57,7 +57,7 @@ export function ManageGarmentTypesSheet({ isOpen, onClose, tabId, types, onSave,
             <input
               type="text"
               className={styles.manageInput}
-              placeholder="e.g. Agbada, Senator, Aso-Oke…"
+              placeholder="e.g. Shirts, Trousers, Gowns…"
               value={newLabel}
               onChange={e => setNewLabel(e.target.value)}
               onKeyDown={e => { if (e.key === 'Enter') addItem() }}

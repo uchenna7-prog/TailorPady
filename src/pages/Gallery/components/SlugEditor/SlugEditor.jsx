@@ -116,7 +116,7 @@ export function SlugEditor({ uid, currentSlug, onSlugSaved }) {
         </div>
         {!currentSlug && (
           <p className={styles.readHint}>
-            Set a custom link so clients can find you easily — e.g. <strong>aminaDesigns</strong>
+            Set a custom link so clients can find you easily e.g. <strong>emekaTailors</strong>
           </p>
         )}
       </div>
