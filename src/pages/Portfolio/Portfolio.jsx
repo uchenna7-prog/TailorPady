@@ -5,7 +5,7 @@ import { db } from '../../firebase'
 import { getBrandDataFromFirestore } from '../../services/profileService'
 import { getPortfolioSettings } from '../../services/portfolioSettingsService'
 import { resolveSlug } from '../../services/slugService'
-import { PortfolioTemplate1 } from './portfolioTemplates/portfolioTemplate1/portfolioTemplate1'
+import { PortfolioTemplate1 } from './PortfolioTemplates/PortfolioTemplate1/PortfolioTemplate1'
 import styles from './Portfolio.module.css'
 
 const TEMPLATE_MAP = {
