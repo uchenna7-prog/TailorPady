@@ -632,3 +632,6 @@ export function PortfolioTemplate2({ brand, photos, garmentTypes, reviews }) {
     </div>
   )
 }
+
+
+
