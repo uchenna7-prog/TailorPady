@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { useParams, useSearchParams } from 'react-router-dom'
 import { collection, query, orderBy, onSnapshot, doc, where } from 'firebase/firestore'
 import { db } from '../../firebasePublic'
-import { getBrandDataFromFirestore } from '../../services/profileService'
+import { getPublicBrandDataFromFirestore } from '../../services/profileService'
 import { getPortfolioSettings } from '../../services/portfolioSettingsService'
 import { resolveSlug } from '../../services/slugService'
 import { PortfolioTemplate1 } from './PortfolioTemplates/PortfolioTemplate1/PortfolioTemplate1'
@@ -21,16 +21,15 @@ export default function Portfolio() {
   const [searchParams] = useSearchParams()
   const previewTemplate = searchParams.get('template')
 
-  const [resolvedUid,   setResolvedUid]   = useState(null)
-  const [brand,         setBrand]         = useState(null)
-  const [photos,        setPhotos]        = useState([])
-  const [garmentTypes,  setGarmentTypes]  = useState([])
-  const [reviews,       setReviews]       = useState([])
-  const [heroImageId,   setHeroImageId]   = useState(null)
-  const [footerImageId, setFooterImageId] = useState(null)
-  const [templateKey,   setTemplateKey]   = useState(DEFAULT_TEMPLATE)
-  const [loading,       setLoading]       = useState(true)
-  const [notFound,      setNotFound]      = useState(false)
+  const [resolvedUid,       setResolvedUid]       = useState(null)
+  const [brand,             setBrand]             = useState(null)
+  const [photos,            setPhotos]            = useState([])
+  const [garmentTypes,      setGarmentTypes]      = useState([])
+  const [reviews,           setReviews]           = useState([])
+  const [portfolioSettings, setPortfolioSettings] = useState(null)
+  const [templateKey,       setTemplateKey]       = useState(DEFAULT_TEMPLATE)
+  const [loading,           setLoading]           = useState(true)
+  const [notFound,          setNotFound]          = useState(false)
 
   useEffect(() => {
     if (!handle) {
@@ -53,8 +52,8 @@ export default function Portfolio() {
 
   useEffect(() => {
     if (!resolvedUid) return
-    getBrandDataFromFirestore(db, resolvedUid)
-      .then(data => { if (!data) setNotFound(true); else setBrand(data) })
+    getPublicBrandDataFromFirestore(db, resolvedUid)
+      .then(data => { if (!data || Object.keys(data).length === 0) setNotFound(true); else setBrand(data) })
       .catch(() => setNotFound(true))
       .finally(() => setLoading(false))
   }, [resolvedUid])
@@ -82,10 +81,11 @@ export default function Portfolio() {
   useEffect(() => {
     if (!resolvedUid) return
     getPortfolioSettings(db, resolvedUid)
-      .then(({ heroImageId: h, footerImageId: f, portfolioTemplate: t }) => {
-        setHeroImageId(h)
-        setFooterImageId(f)
-        if (t && TEMPLATE_MAP[t]) setTemplateKey(t)
+      .then(settings => {
+        setPortfolioSettings(settings)
+        if (settings.portfolioTemplate && TEMPLATE_MAP[settings.portfolioTemplate]) {
+          setTemplateKey(settings.portfolioTemplate)
+        }
       })
       .catch(() => {})
   }, [resolvedUid])
@@ -127,14 +127,16 @@ export default function Portfolio() {
 
   const TemplateComponent = TEMPLATE_MAP[activeKey] ?? PortfolioTemplate1
 
+  const mergedBrand = { ...brand, ...portfolioSettings }
+
   return (
     <TemplateComponent
-      brand={brand}
+      brand={mergedBrand}
       photos={photos}
       garmentTypes={garmentTypes}
       reviews={reviews}
-      heroImageId={heroImageId}
-      footerImageId={footerImageId}
+      heroImageId={portfolioSettings?.heroBgImage}
+      footerImageId={portfolioSettings?.footerBgImage}
     />
   )
 }

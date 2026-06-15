@@ -1,10 +1,9 @@
 import { useState, useEffect } from 'react'
 import { useParams } from 'react-router-dom'
 import { collection, addDoc, getDocs, query, where, serverTimestamp } from 'firebase/firestore'
-import { db } from '../../firebase'
+import { db } from '../../firebasePublic'
+import { getPublicBrandDataFromFirestore } from '../../services/profileService'
 import styles from './ReviewPage.module.css'
-
-// ── Star Picker ───────────────────────────────────────────────
 
 function StarPicker({ value, onChange, disabled }) {
   const [hovered, setHovered] = useState(0)
@@ -45,10 +44,7 @@ const RATING_LABELS = {
   5: 'Excellent',
 }
 
-// ── Main Page ─────────────────────────────────────────────────
-
 export default function ReviewPage() {
-  // URL: /review/:uid/:token
   const { uid, token } = useParams()
 
   const [tailorName,      setTailorName]      = useState('')
@@ -58,24 +54,19 @@ export default function ReviewPage() {
   const [submitted,       setSubmitted]       = useState(false)
   const [error,           setError]           = useState('')
 
-  // Form state
   const [customerName, setCustomerName] = useState('')
   const [rating,       setRating]       = useState(0)
   const [reviewText,   setReviewText]   = useState('')
   const [fieldErrors,  setFieldErrors]  = useState({})
 
-  // ── Load tailor brand name + check if token already used ──
   useEffect(() => {
     if (!uid || !token) { setLoading(false); return }
 
     async function init() {
       try {
-        const { getBrandDataFromFirestore } = await import('../../services/profileService')
-        const { db } = await import('../../firebasePublic')
-        const brand = await getBrandDataFromFirestore(db, uid)
+        const brand = await getPublicBrandDataFromFirestore(db, uid)
         setTailorName(brand?.brandName || brand?.name || 'Your tailor')
 
-        // Check if a review with this token already exists
         const q = query(
           collection(db, 'users', uid, 'reviews'),
           where('token', '==', token)
@@ -83,7 +74,6 @@ export default function ReviewPage() {
         const snap = await getDocs(q)
         if (!snap.empty) setAlreadyReviewed(true)
       } catch {
-        // Silently ignore — the tailor name just won't show
         setTailorName('Your tailor')
       } finally {
         setLoading(false)
@@ -93,7 +83,6 @@ export default function ReviewPage() {
     init()
   }, [uid, token])
 
-  // ── Submit ────────────────────────────────────────────────
   const handleSubmit = async () => {
     const errs = {}
     if (!customerName.trim()) errs.customerName = 'Please enter your name'
@@ -119,14 +108,11 @@ export default function ReviewPage() {
       })
       setSubmitted(true)
     } catch (err) {
-      console.error('[ReviewPage] submit error:', err)
       setError('Something went wrong. Please try again.')
     } finally {
       setSubmitting(false)
     }
   }
-
-  // ── States ────────────────────────────────────────────────
 
   if (loading) {
     return (
@@ -199,7 +185,6 @@ export default function ReviewPage() {
     <div className={styles.page}>
       <div className={styles.card}>
 
-        {/* Header */}
         <div className={styles.header}>
           <div className={styles.brandBadge}>
             <span className="mi" style={{ fontSize: '1.4rem', color: 'var(--text)' }}>content_cut</span>
@@ -211,10 +196,8 @@ export default function ReviewPage() {
           </p>
         </div>
 
-        {/* Form */}
         <div className={styles.form}>
 
-          {/* Name */}
           <div className={styles.fieldGroup}>
             <label className={styles.fieldLabel}>Your Name *</label>
             <input
@@ -232,7 +215,6 @@ export default function ReviewPage() {
             )}
           </div>
 
-          {/* Rating */}
           <div className={styles.fieldGroup}>
             <label className={styles.fieldLabel}>Rating *</label>
             <StarPicker value={rating} onChange={v => { setRating(v); setFieldErrors(p => ({ ...p, rating: '' })) }} disabled={submitting} />
@@ -244,7 +226,6 @@ export default function ReviewPage() {
             )}
           </div>
 
-          {/* Review text */}
           <div className={styles.fieldGroup}>
             <label className={styles.fieldLabel}>Your Review *</label>
             <textarea
@@ -263,7 +244,6 @@ export default function ReviewPage() {
             )}
           </div>
 
-          {/* Error */}
           {error && (
             <div className={styles.submitError}>
               <span className="mi" style={{ fontSize: '1rem' }}>error_outline</span>
@@ -271,7 +251,6 @@ export default function ReviewPage() {
             </div>
           )}
 
-          {/* Submit */}
           <button
             className={styles.submitBtn}
             onClick={handleSubmit}

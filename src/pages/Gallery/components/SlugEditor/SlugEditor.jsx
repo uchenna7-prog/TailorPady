@@ -42,7 +42,7 @@ export function SlugEditor({ uid, currentSlug, onSlugSaved }) {
     setChecking(true)
     debounceRef.current = setTimeout(async () => {
       try {
-        const ok = await isSlugAvailable(db,slug, uid)
+        const ok = await isSlugAvailable(db, slug, uid)
         setAvailable(ok)
       } catch {
         setAvailable(null)
@@ -58,7 +58,7 @@ export function SlugEditor({ uid, currentSlug, onSlugSaved }) {
     setSaving(true)
     setSaveError('')
     try {
-      await claimSlug(db,uid, slug, currentSlug)
+      await claimSlug(db, uid, slug, currentSlug)
       onSlugSaved(slug)
       setEditing(false)
       setInputVal('')
@@ -153,8 +153,16 @@ export function SlugEditor({ uid, currentSlug, onSlugSaved }) {
         <p className={styles.previewNote}>Saves as: <strong>{preview}</strong></p>
       )}
 
-      {available === true  && <p className={`${styles.hint} ${styles.hintOk}`}><span className="mi" style={{ fontSize: '0.8rem' }}>check_circle</span> Available!</p>}That name is already taken. Try adding your city or a number, for example emekaTailors_Lagos or emekaTailors2.
-      {available === false && <p className={`${styles.hint} ${styles.hintErr}`}><span className="mi" style={{ fontSize: '0.8rem' }}>error_outline</span> </p>}
+      {available === true && (
+        <p className={`${styles.hint} ${styles.hintOk}`}>
+          <span className="mi" style={{ fontSize: '0.8rem' }}>check_circle</span> Available!
+        </p>
+      )}
+      {available === false && (
+        <p className={`${styles.hint} ${styles.hintErr}`}>
+          <span className="mi" style={{ fontSize: '0.8rem' }}>error_outline</span> That name is already taken. Try adding your city or a number, for example emekaTailors_Lagos or emekaTailors2.
+        </p>
+      )}
       {preview.length > 0 && preview.length < 3 && <p className={styles.hint}>Minimum 3 characters.</p>}
       {saveError && <p className={`${styles.hint} ${styles.hintErr}`}>{saveError}</p>}
 

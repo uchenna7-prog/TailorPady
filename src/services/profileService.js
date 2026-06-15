@@ -8,8 +8,12 @@ function personalDoc(db, uid) {
   return doc(db, 'users', uid, 'tailorProfile', 'personal')
 }
 
+function publicBrandDoc(db, uid) {
+  return doc(db, 'users', uid, 'publicProfile', 'brand')
+}
+
 export async function saveBrandDataToFirestore(db, uid, settings) {
-  await setDoc(brandDoc(db, uid), {
+  const brandData = {
     brandName:          settings.brandName          ?? '',
     brandTagline:       settings.brandTagline       ?? '',
     brandColourId:      settings.brandColourId      ?? 'classic-warm-black',
@@ -27,11 +31,36 @@ export async function saveBrandDataToFirestore(db, uid, settings) {
     accountNumber:      settings.accountNumber      ?? '',
     accountName:        settings.accountName        ?? '',
     updatedAt:          new Date().toISOString(),
+  }
+
+  await setDoc(brandDoc(db, uid), brandData, { merge: true })
+
+  await setDoc(publicBrandDoc(db, uid), {
+    brandName:        brandData.brandName,
+    brandTagline:     brandData.brandTagline,
+    brandColourId:    brandData.brandColourId,
+    brandColour:      brandData.brandColour,
+    brandLogo:        brandData.brandLogo,
+    brandPhone:       brandData.brandPhone,
+    brandEmail:       brandData.brandEmail,
+    brandAddress:     brandData.brandAddress,
+    brandWebsite:     brandData.brandWebsite,
+    brandFoundedYear: brandData.brandFoundedYear,
+    brandSocials:     brandData.brandSocials,
+    brandSignature:   brandData.brandSignature,
+    updatedAt:        brandData.updatedAt,
   }, { merge: true })
 }
 
 export async function getBrandDataFromFirestore(db, uid) {
   const snap = await getDoc(brandDoc(db, uid))
+  if (!snap.exists()) return {}
+  const { updatedAt, ...rest } = snap.data()
+  return rest
+}
+
+export async function getPublicBrandDataFromFirestore(db, uid) {
+  const snap = await getDoc(publicBrandDoc(db, uid))
   if (!snap.exists()) return {}
   const { updatedAt, ...rest } = snap.data()
   return rest

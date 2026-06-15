@@ -40,15 +40,6 @@
   border-bottom: 1px solid var(--border);
 }
 
-.thumbFrame {
-  width: 400%;
-  height: 800px;
-  border: none;
-  transform: scale(0.25);
-  transform-origin: top left;
-  pointer-events: none;
-}
-
 .thumbPlaceholder {
   height: 100%;
   display: flex;

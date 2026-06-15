@@ -52,12 +52,10 @@ export function PortfolioTemplateModal({ currentTemplate, slug, onBack, onSelect
               >
                 <div className={styles.thumbWrap}>
                   {previewUrl ? (
-                    <iframe
-                      className={styles.thumbFrame}
-                      src={previewUrl}
-                      title={`${t.label} preview`}
-                      loading="lazy"
-                    />
+                    <div className={styles.thumbPlaceholder}>
+                      <span className="mi" style={{ fontSize: '1.6rem' }}>visibility</span>
+                      <span>{t.label}</span>
+                    </div>
                   ) : (
                     <div className={styles.thumbPlaceholder}>
                       <span className="mi" style={{ fontSize: '1.6rem' }}>visibility_off</span>

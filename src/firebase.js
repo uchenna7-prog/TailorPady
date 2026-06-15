@@ -21,7 +21,6 @@ setPersistence(auth, browserLocalPersistence)
 
 export { auth }
 export const db        = initializeFirestore(app, { localCache: persistentLocalCache() })
-export const storage   = getStorage(app)
 export const analytics = isSupported().then(yes => yes ? getAnalytics(app) : null)
 
 export default app
