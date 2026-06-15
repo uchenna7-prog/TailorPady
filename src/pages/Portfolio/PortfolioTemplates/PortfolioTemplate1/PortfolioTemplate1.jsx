@@ -187,7 +187,7 @@ function Lightbox({ photo, photos, onClose }) {
   )
 }
 
-export function PortfolioTemplate1({ brand, photos, garmentTypes, reviews, heroImageId, footerImageId }) {
+export function PortfolioTemplate1({ brand, photos, garmentTypes, reviews }) {
   const [activeTab,   setActiveTab]   = useState(null)
   const [lightbox,    setLightbox]    = useState(null)
   const [bookingOpen, setBookingOpen] = useState(false)
@@ -248,8 +248,6 @@ export function PortfolioTemplate1({ brand, photos, garmentTypes, reviews, heroI
   const brandBio        = brand.brandBio     || ''
   const completedPhotos = photos.filter(p => p.category === 'completed_works')
   const filteredPhotos  = activeTab ? completedPhotos.filter(p => p.clothingType === activeTab) : completedPhotos
-  const heroPhoto       = (heroImageId   ? completedPhotos.find(p => p.id === heroImageId)   : null) ?? completedPhotos[0] ?? null
-  const footerPhoto     = (footerImageId ? completedPhotos.find(p => p.id === footerImageId) : null) ?? completedPhotos[1] ?? null
   const foundedYear       = brand.brandFoundedYear       || ''
   const turnaround        = brand.brandTurnaround        || ''
   const serviceArea       = brand.brandServiceArea       || ''
@@ -295,8 +293,8 @@ export function PortfolioTemplate1({ brand, photos, garmentTypes, reviews, heroI
       </nav>
 
       <section className={styles.hero} ref={heroRef}>
-        {heroPhoto
-          ? <div className={styles.heroBgWrap}><img src={heroPhoto.src || heroPhoto.storageUrl} alt="" className={styles.heroBgImg} /><div className={styles.heroBgOverlay} /></div>
+        {brand.heroBgImage
+          ? <div className={styles.heroBgWrap}><img src={brand.heroBgImage} alt="" className={styles.heroBgImg} /><div className={styles.heroBgOverlay} /></div>
           : <div className={styles.heroBgFallback} />
         }
         <div className={styles.heroContent}>
@@ -485,8 +483,8 @@ export function PortfolioTemplate1({ brand, photos, garmentTypes, reviews, heroI
       )}
 
       <section className={styles.bookSection} ref={bookRef}>
-        {footerPhoto
-          ? <div className={styles.bookBgWrap}><img src={footerPhoto.src || footerPhoto.storageUrl} alt="" className={styles.bookBgImg} /><div className={styles.bookBgOverlay} /></div>
+        {brand.footerBgImage
+          ? <div className={styles.bookBgWrap}><img src={brand.footerBgImage} alt="" className={styles.bookBgImg} /><div className={styles.bookBgOverlay} /></div>
           : <div className={styles.bookBgFallback} />
         }
         <div className={styles.bookContent}>

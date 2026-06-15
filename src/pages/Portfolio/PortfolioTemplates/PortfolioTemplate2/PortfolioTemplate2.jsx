@@ -213,7 +213,7 @@ function BookingOverlay({ isOpen, onClose, brandName, brandEmail, brandPhone }) 
 
 // ─── Main component ──────────────────────────────────────────────────────────
 
-export function PortfolioTemplate2({ brand, photos, garmentTypes, reviews, heroImageId, footerImageId }) {
+export function PortfolioTemplate2({ brand, photos, garmentTypes, reviews }) {
   const [activeFilter, setActiveFilter] = useState(null)
   const [lightbox,     setLightbox]     = useState(null)
   const [bookingOpen,  setBookingOpen]  = useState(false)
@@ -276,9 +276,6 @@ export function PortfolioTemplate2({ brand, photos, garmentTypes, reviews, heroI
     ? completedPhotos.filter(p => p.clothingType === activeFilter)
     : completedPhotos
 
-  const heroPhoto   = (heroImageId   ? completedPhotos.find(p => p.id === heroImageId)   : null) ?? completedPhotos[0] ?? null
-  const footerPhoto = (footerImageId ? completedPhotos.find(p => p.id === footerImageId) : null) ?? completedPhotos[2] ?? null
-
   const statGarments = milestone || (completedPhotos.length ? `${completedPhotos.length}+` : '—')
   const yearsActive  = foundedYear ? `${new Date().getFullYear() - parseInt(foundedYear)}` : null
 
@@ -325,8 +322,8 @@ export function PortfolioTemplate2({ brand, photos, garmentTypes, reviews, heroI
       {/* ── Hero ── */}
       <section className={styles.hero} ref={heroRef}>
         <div className={styles.heroMedia}>
-          {heroPhoto
-            ? <img src={heroPhoto.src || heroPhoto.storageUrl} alt="" className={styles.heroImg} />
+          {brand?.heroBgImage
+            ? <img src={brand.heroBgImage} alt="" className={styles.heroImg} />
             : <div className={styles.heroImgFallback} />
           }
           <div className={styles.heroVeil} />
@@ -469,8 +466,8 @@ export function PortfolioTemplate2({ brand, photos, garmentTypes, reviews, heroI
         <div className={styles.aboutGrid}>
           <div className={styles.aboutImageCol}>
             <div className={styles.aboutImgWrap}>
-              {footerPhoto
-                ? <img src={footerPhoto.src || footerPhoto.storageUrl} alt="" className={styles.aboutImg} />
+              {brand?.footerBgImage
+                ? <img src={brand.footerBgImage} alt="" className={styles.aboutImg} />
                 : <div className={styles.aboutImgFallback}>
                     <span className={styles.aboutInitialsLarge}>{initials(brandName)}</span>
                   </div>

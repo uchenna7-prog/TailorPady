@@ -130,13 +130,11 @@ export default function Portfolio() {
   const mergedBrand = { ...brand, ...portfolioSettings }
 
   return (
-    <TemplateComponent
+   <TemplateComponent
       brand={mergedBrand}
       photos={photos}
       garmentTypes={garmentTypes}
       reviews={reviews}
-      heroImageId={portfolioSettings?.heroBgImage}
-      footerImageId={portfolioSettings?.footerBgImage}
     />
   )
 }
