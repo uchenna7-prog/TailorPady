@@ -4,6 +4,7 @@ import {
   savePortfolioSettings,
   subscribeToPortfolioSettings,
 } from '../services/portfolioSettingsService'
+import { db } from '../firebase'
 
 const PortfolioSettingsContext = createContext(null)
 
@@ -30,7 +31,7 @@ export function PortfolioSettingsProvider({ children }) {
 
   useEffect(() => {
     if (!user?.uid) return
-    const unsub = subscribeToPortfolioSettings(
+    const unsub = subscribeToPortfolioSettings(db,
       user.uid,
       data => {
         setPortfolioSettings(data)
@@ -44,7 +45,7 @@ export function PortfolioSettingsProvider({ children }) {
   const updateManyPortfolioSettings = useCallback(async (patch) => {
     if (!user?.uid) return
     setPortfolioSettings(prev => ({ ...prev, ...patch }))
-    await savePortfolioSettings(user.uid, patch)
+    await savePortfolioSettings(db,user.uid, patch)
   }, [user?.uid])
 
   return (

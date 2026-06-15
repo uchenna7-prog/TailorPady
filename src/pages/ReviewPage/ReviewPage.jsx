@@ -70,9 +70,9 @@ export default function ReviewPage() {
 
     async function init() {
       try {
-        // Load brand name from publicProfile
         const { getBrandDataFromFirestore } = await import('../../services/profileService')
-        const brand = await getBrandDataFromFirestore(uid)
+        const { db } = await import('../../firebasePublic')
+        const brand = await getBrandDataFromFirestore(db, uid)
         setTailorName(brand?.brandName || brand?.name || 'Your tailor')
 
         // Check if a review with this token already exists

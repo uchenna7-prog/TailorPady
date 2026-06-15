@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useParams, useSearchParams } from 'react-router-dom'
 import { collection, query, orderBy, onSnapshot, doc, where } from 'firebase/firestore'
-import { db } from '../../firebase'
+import { db } from '../../firebasePublic'
 import { getBrandDataFromFirestore } from '../../services/profileService'
 import { getPortfolioSettings } from '../../services/portfolioSettingsService'
 import { resolveSlug } from '../../services/slugService'
@@ -42,7 +42,7 @@ export default function Portfolio() {
     if (looksLikeUid) {
       setResolvedUid(handle)
     } else {
-      resolveSlug(handle)
+      resolveSlug(db, handle)
         .then(uid => {
           if (!uid) { setNotFound(true); setLoading(false) }
           else setResolvedUid(uid)
@@ -53,7 +53,7 @@ export default function Portfolio() {
 
   useEffect(() => {
     if (!resolvedUid) return
-    getBrandDataFromFirestore(resolvedUid)
+    getBrandDataFromFirestore(db, resolvedUid)
       .then(data => { if (!data) setNotFound(true); else setBrand(data) })
       .catch(() => setNotFound(true))
       .finally(() => setLoading(false))
@@ -81,7 +81,7 @@ export default function Portfolio() {
 
   useEffect(() => {
     if (!resolvedUid) return
-    getPortfolioSettings(resolvedUid)
+    getPortfolioSettings(db, resolvedUid)
       .then(({ heroImageId: h, footerImageId: f, portfolioTemplate: t }) => {
         setHeroImageId(h)
         setFooterImageId(f)
@@ -138,5 +138,3 @@ export default function Portfolio() {
     />
   )
 }
-
-

@@ -2,6 +2,7 @@ import { useState, useEffect, useMemo } from 'react'
 import { useAuth } from '../../../../contexts/AuthContext'
 import { SlugEditor } from '../SlugEditor/SlugEditor.jsx'
 import { getCurrentSlug } from '../../../../services/slugService'
+import { db } from '../../../../firebase'
 import styles from './SharePortfolioModal.module.css'
 
 
@@ -50,7 +51,7 @@ export function SharePortfolioModal({ isOpen, onClose, brandName }) {
   useEffect(() => {
     if (!isOpen || !user) return
     setSlugLoading(true)
-    getCurrentSlug(user.uid).then(s => setCurrentSlug(s)).catch(() => {}).finally(() => setSlugLoading(false))
+    getCurrentSlug(db, user.uid).then(s => setCurrentSlug(s)).catch(() => {}).finally(() => setSlugLoading(false))
   }, [isOpen, user])
 
   if (!isOpen) return null

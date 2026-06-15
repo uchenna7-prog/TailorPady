@@ -6,6 +6,7 @@ import {
   savePersonalInfosToFirestore,
   getPersonalInfosFromFirestore,
 } from '../services/profileService'
+import { db } from '../firebase'
 
 
 const STORAGE_KEY = 'TailorPady_profile_settings'
@@ -84,8 +85,8 @@ export function ProfileSettingsProvider({ children }) {
     async function loadFromFirestore() {
       try {
         const [brandData, personalData] = await Promise.all([
-          getBrandDataFromFirestore(user.uid),
-          getPersonalInfosFromFirestore(user.uid),
+        getBrandDataFromFirestore(db, user.uid),
+        getPersonalInfosFromFirestore(db, user.uid),
         ])
         if (cancelled) return
 
@@ -114,8 +115,8 @@ export function ProfileSettingsProvider({ children }) {
     if (!user?.uid) return
 
     const debounceTimer = setTimeout(() => {
-      saveBrandDataToFirestore(user.uid, settings).catch(() => {})
-      savePersonalInfosToFirestore(user.uid, settings).catch(() => {})
+      saveBrandDataToFirestore(db, user.uid, settings).catch(() => {})
+      savePersonalInfosToFirestore(db, user.uid, settings).catch(() => {})
     }, 1500)
 
     return () => clearTimeout(debounceTimer)

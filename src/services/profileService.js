@@ -1,16 +1,15 @@
 import { doc, setDoc, getDoc } from 'firebase/firestore'
-import { db } from '../firebase'
 
-function brandDoc(uid) {
+function brandDoc(db, uid) {
   return doc(db, 'users', uid, 'tailorProfile', 'brand')
 }
 
-function personalDoc(uid) {
+function personalDoc(db, uid) {
   return doc(db, 'users', uid, 'tailorProfile', 'personal')
 }
 
-export async function saveBrandDataToFirestore(uid, settings) {
-  await setDoc(brandDoc(uid), {
+export async function saveBrandDataToFirestore(db, uid, settings) {
+  await setDoc(brandDoc(db, uid), {
     brandName:          settings.brandName          ?? '',
     brandTagline:       settings.brandTagline       ?? '',
     brandColourId:      settings.brandColourId      ?? 'classic-warm-black',
@@ -31,15 +30,15 @@ export async function saveBrandDataToFirestore(uid, settings) {
   }, { merge: true })
 }
 
-export async function getBrandDataFromFirestore(uid) {
-  const snap = await getDoc(brandDoc(uid))
+export async function getBrandDataFromFirestore(db, uid) {
+  const snap = await getDoc(brandDoc(db, uid))
   if (!snap.exists()) return {}
   const { updatedAt, ...rest } = snap.data()
   return rest
 }
 
-export async function savePersonalInfosToFirestore(uid, settings) {
-  await setDoc(personalDoc(uid), {
+export async function savePersonalInfosToFirestore(db, uid, settings) {
+  await setDoc(personalDoc(db, uid), {
     personalFullName:   settings.personalFullName   ?? '',
     personalEmail:      settings.personalEmail      ?? '',
     personalPhone:      settings.personalPhone      ?? '',
@@ -52,8 +51,8 @@ export async function savePersonalInfosToFirestore(uid, settings) {
   }, { merge: true })
 }
 
-export async function getPersonalInfosFromFirestore(uid) {
-  const snap = await getDoc(personalDoc(uid))
+export async function getPersonalInfosFromFirestore(db, uid) {
+  const snap = await getDoc(personalDoc(db, uid))
   if (!snap.exists()) return {}
   const { updatedAt, ...rest } = snap.data()
   return rest

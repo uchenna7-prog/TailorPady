@@ -26,6 +26,7 @@ import Header from '../../components/Header/Header'
 import Toast from '../../components/Toast/Toast'
 import ConfirmSheet from '../../components/ConfirmSheet/ConfirmSheet'
 import styles from './Profile.module.css'
+import { db } from '../../firebase'
 
 
 export default function Profile({ onMenuClick, isPremium = false, onUpgrade = () => {} }) {
@@ -45,7 +46,7 @@ export default function Profile({ onMenuClick, isPremium = false, onUpgrade = ()
 
   useEffect(() => {
     if (!user?.uid) return
-    getPersonalInfosFromFirestore(user.uid).then(data => {
+    getPersonalInfosFromFirestore(db,user.uid).then(data => {
       if (!data) return
       const merged = {
         fullName:   data.personalFullName   || personalInfo.fullName   || '',

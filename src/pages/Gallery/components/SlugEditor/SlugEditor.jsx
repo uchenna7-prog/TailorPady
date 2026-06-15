@@ -1,6 +1,7 @@
 import { isSlugAvailable, claimSlug } from '../../../../services/slugService'
 import { useState, useRef } from 'react'
 import styles from './SlugEditor.module.css'
+import { db } from '../../../../firebase'
 
 
 function toSlug(raw = '') {
@@ -41,7 +42,7 @@ export function SlugEditor({ uid, currentSlug, onSlugSaved }) {
     setChecking(true)
     debounceRef.current = setTimeout(async () => {
       try {
-        const ok = await isSlugAvailable(slug, uid)
+        const ok = await isSlugAvailable(db,slug, uid)
         setAvailable(ok)
       } catch {
         setAvailable(null)
@@ -57,7 +58,7 @@ export function SlugEditor({ uid, currentSlug, onSlugSaved }) {
     setSaving(true)
     setSaveError('')
     try {
-      await claimSlug(uid, slug, currentSlug)
+      await claimSlug(db,uid, slug, currentSlug)
       onSlugSaved(slug)
       setEditing(false)
       setInputVal('')

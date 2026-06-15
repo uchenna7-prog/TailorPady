@@ -20,6 +20,7 @@ import { PortfolioTemplateModal } from './components/PortfolioTemplateModal/Port
 import { CurrencyModal } from './components/CurrencyModal/CurrencyModal'
 import { AppearanceModal } from './components/AppearanceModal/AppearanceModal'
 import styles from './Settings.module.css'
+import { db } from '../../firebase'
 
 
 function resolveCurrencySymbol(raw) {
@@ -69,7 +70,7 @@ export default function Settings({ onMenuClick }) {
 
   useEffect(() => {
     if (!user?.uid) return
-    getCurrentSlug(user.uid)
+    getCurrentSlug(db,user.uid)
       .then(slug => setPortfolioSlug(slug))
       .catch(() => {})
   }, [user?.uid])
