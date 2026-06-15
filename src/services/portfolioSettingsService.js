@@ -18,6 +18,7 @@ const DEFAULTS = {
   brandTurnaround:     '1 weeks',
   brandServiceArea:    [],
   brandBookingNote:    '',
+  portfolioTemplate:   'template2',
 }
 
 export async function savePortfolioSettings(uid, settings) {

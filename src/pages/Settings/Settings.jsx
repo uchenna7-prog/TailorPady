@@ -1,6 +1,9 @@
-import { useState, useRef } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { useGeneralSettings } from '../../contexts/GeneralSettingsContext'
 import { useProfileSettings } from '../../contexts/ProfileSettingsContext'
+import { usePortfolioSettings } from '../../contexts/PortfolioSettingsContext'
+import { useAuth } from '../../contexts/AuthContext'
+import { getCurrentSlug } from '../../services/slugService'
 import Header from '../../components/Header/Header'
 import Toast from '../../components/Toast/Toast'
 import ConfirmSheet from '../../components/ConfirmSheet/ConfirmSheet'
@@ -43,6 +46,8 @@ export default function Settings({ onMenuClick }) {
 
   const { generalSettings, updateGeneralSetting, updateManyGeneralSettings, resetGeneralSettings } = useGeneralSettings()
   const { profileSettings } = useProfileSettings()
+  const { portfolioSettings, updateManyPortfolioSettings } = usePortfolioSettings()
+  const { user } = useAuth()
 
   const [toastMessage, setToastMessage] = useState('')
   const toastTimerRef = useRef(null)
@@ -58,7 +63,16 @@ export default function Settings({ onMenuClick }) {
   const [isClearDataConfirmOpen,       setIsClearDataConfirmOpen]       = useState(false)
   const [isResetSettingsConfirmOpen,   setIsResetSettingsConfirmOpen]   = useState(false)
 
+  const [portfolioSlug, setPortfolioSlug] = useState(null)
+
   const isDarkMode = generalSettings.theme === 'dark'
+
+  useEffect(() => {
+    if (!user?.uid) return
+    getCurrentSlug(user.uid)
+      .then(slug => setPortfolioSlug(slug))
+      .catch(() => {})
+  }, [user?.uid])
 
   function showToast(message) {
     setToastMessage(message)
@@ -79,10 +93,14 @@ export default function Settings({ onMenuClick }) {
     setIsInvoiceModalOpen(true)
   }
 
-  function handlePortfolioTemplateSelect(templateId) {
-    updateGeneralSetting('portfolioTemplate', templateId)
+  async function handlePortfolioTemplateSelect(templateId) {
     setIsPortfolioTemplateModalOpen(false)
-    showToast('Portfolio template saved')
+    try {
+      await updateManyPortfolioSettings({ portfolioTemplate: templateId })
+      showToast('Portfolio template saved')
+    } catch {
+      showToast('Failed to save template')
+    }
   }
 
   function handleCurrencySave(settings) {
@@ -144,17 +162,16 @@ export default function Settings({ onMenuClick }) {
   }
 
   function getPortfolioTemplateSub() {
-    const map     = { minimal: 'Minimal', editorial: 'Editorial', bold: 'Bold' }
-    const current = generalSettings.portfolioTemplate
-    return current ? (map[current] ?? 'Custom') : 'Choose a layout for your public page'
+    const map = { template1: 'Template One', template2: 'Template Two' }
+    return map[portfolioSettings.portfolioTemplate] ?? 'Choose a layout for your public page'
   }
 
   function getPortfolioSettingsSub() {
     const parts = []
-    if (generalSettings.heroBgImage)     parts.push('Hero bg')
-    if (generalSettings.heroAvatarImage) parts.push('Avatar')
-    if (generalSettings.footerBgImage)   parts.push('Footer bg')
-    if (generalSettings.footerLogoImage) parts.push('Logo')
+    if (portfolioSettings.heroBgImage)     parts.push('Hero bg')
+    if (portfolioSettings.heroAvatarImage) parts.push('Avatar')
+    if (portfolioSettings.footerBgImage)   parts.push('Footer bg')
+    if (portfolioSettings.footerLogoImage) parts.push('Logo')
     return parts.length > 0 ? parts.join(' · ') : 'Hero and footer images'
   }
 
@@ -376,8 +393,8 @@ export default function Settings({ onMenuClick }) {
 
       {isPortfolioTemplateModalOpen && (
         <PortfolioTemplateModal
-          currentTemplate={generalSettings.portfolioTemplate || 'minimal'}
-          slug={profileSettings.slug}
+          currentTemplate={portfolioSettings.portfolioTemplate || 'template2'}
+          slug={portfolioSlug || user?.uid}
           onBack={() => setIsPortfolioTemplateModalOpen(false)}
           onSelect={handlePortfolioTemplateSelect}
         />

@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { useParams } from 'react-router-dom'
+import { useParams, useSearchParams } from 'react-router-dom'
 import { collection, query, orderBy, onSnapshot, doc, where } from 'firebase/firestore'
 import { db } from '../../firebase'
 import { getBrandDataFromFirestore } from '../../services/profileService'
@@ -8,8 +8,6 @@ import { resolveSlug } from '../../services/slugService'
 import { PortfolioTemplate1 } from './PortfolioTemplates/PortfolioTemplate1/PortfolioTemplate1'
 import { PortfolioTemplate2 } from './PortfolioTemplates/PortfolioTemplate2/PortfolioTemplate2'
 import styles from './Portfolio.module.css'
-
-
 
 const TEMPLATE_MAP = {
   template1: PortfolioTemplate1,
@@ -20,6 +18,8 @@ const DEFAULT_TEMPLATE = 'template2'
 
 export default function Portfolio() {
   const { handle } = useParams()
+  const [searchParams] = useSearchParams()
+  const previewTemplate = searchParams.get('template')
 
   const [resolvedUid,   setResolvedUid]   = useState(null)
   const [brand,         setBrand]         = useState(null)
@@ -121,7 +121,11 @@ export default function Portfolio() {
     )
   }
 
-  const TemplateComponent = TEMPLATE_MAP[templateKey] ?? PortfolioTemplate1
+  const activeKey = (previewTemplate && TEMPLATE_MAP[previewTemplate])
+    ? previewTemplate
+    : templateKey
+
+  const TemplateComponent = TEMPLATE_MAP[activeKey] ?? PortfolioTemplate1
 
   return (
     <TemplateComponent

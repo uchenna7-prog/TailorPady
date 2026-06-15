@@ -1,14 +1,9 @@
-
-
 .page {
   flex: 1;
   overflow-y: auto;
   display: flex;
   flex-direction: column;
 }
-
-
-
 
 .hint {
   font-size: 0.78rem;
@@ -36,29 +31,63 @@
   border-color: var(--accent);
 }
 
-.mockup {
+.thumbWrap {
+  position: relative;
   width: 100%;
-  line-height: 0;
+  height: 200px;
+  overflow: hidden;
+  background: var(--bg2);
+  border-bottom: 1px solid var(--border);
 }
 
-.mockup svg {
-  width: 100%;
-  height: auto;
-  display: block;
+.thumbFrame {
+  width: 400%;
+  height: 800px;
+  border: none;
+  transform: scale(0.25);
+  transform-origin: top left;
+  pointer-events: none;
+}
+
+.thumbPlaceholder {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  text-align: center;
+  font-size: 0.78rem;
+  color: var(--text-sub);
+  padding: 0 24px;
+}
+
+.thumbPreviewBtn {
+  position: absolute;
+  bottom: 10px;
+  right: 10px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 6px 10px;
+  font-size: 0.78rem;
+  color: var(--text);
+  cursor: pointer;
+  z-index: 1;
+}
+
+.thumbPreviewBtn span {
+  font-size: 0.9rem;
 }
 
 .cardBody {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  padding: 12px 14px;
-  gap: 8px;
-}
-
-.cardInfo {
-  display: flex;
-  align-items: center;
   gap: 10px;
+  padding: 12px 14px;
 }
 
 .checkIcon {
@@ -77,25 +106,6 @@
   font-size: 0.75rem;
   color: var(--text-sub);
   margin-top: 1px;
-}
-
-.previewBtn {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  background: none;
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  padding: 6px 10px;
-  font-size: 0.78rem;
-  color: var(--text-sub);
-  cursor: pointer;
-  white-space: nowrap;
-  flex-shrink: 0;
-}
-
-.previewBtn span {
-  font-size: 0.9rem;
 }
 
 .previewOverlay {

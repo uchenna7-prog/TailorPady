@@ -20,6 +20,7 @@ const DEFAULTS = {
   brandTurnaround:     '1 weeks',
   brandServiceArea:    [],
   brandBookingNote:    '',
+  portfolioTemplate:   'template2',
 }
 
 export function PortfolioSettingsProvider({ children }) {
