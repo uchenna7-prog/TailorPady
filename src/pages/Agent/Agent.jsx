@@ -1,15 +1,18 @@
 import { useState, useRef, useEffect, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
-import Header    from '../../components/Header/Header'
-import BottomNav from '../../components/BottomNav/BottomNav'
-import InvoiceViewer from '../../components/InvoiceViewer/InvoiceViewer'
-import ReceiptViewer from '../../components/ReceiptViewer/ReceiptViewer'
-import { useAgent }           from '../../contexts/AgentContext'
-import { useAutonomousAgent } from '../../contexts/AgentContext'
+import Header         from '../../components/Header/Header'
+import BottomNav      from '../../components/BottomNav/BottomNav'
+import InvoiceViewer  from '../../components/InvoiceViewer/InvoiceViewer'
+import ReceiptViewer  from '../../components/ReceiptViewer/ReceiptViewer'
+import { useAgent, useAutonomousAgent } from '../../contexts/AgentContext'
 import { useOrders }          from '../../contexts/OrdersContext'
 import { useInvoices }        from '../../contexts/InvoiceContext'
+import { useReceipts }        from '../../contexts/ReceiptContext'
+import { usePayments }        from '../../contexts/PaymentContext'
 import { useCustomers }       from '../../contexts/CustomerContext'
 import { useAuth }            from '../../contexts/AuthContext'
+import { useGeneralSettings } from '../../contexts/GeneralSettingsContext'
+import { useProfileSettings } from '../../contexts/ProfileSettingsContext'
 import styles from './Agent.module.css'
 
 function BotIcon() {
@@ -103,14 +106,168 @@ function TagChip({ label }) {
   )
 }
 
+function fmt(currency, value) {
+  return `${currency}${parseFloat(value || 0).toLocaleString('en-NG', {
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0,
+  })}`
+}
+
+function buildInvoiceMessage(invoice, customer, brand) {
+  const cur       = brand?.currency || '₦'
+  const firstName = customer?.name?.split(' ')[0] || customer?.name || 'there'
+  const items     = Array.isArray(invoice.items) ? invoice.items : []
+  const discount  = parseFloat(invoice.discountAmount) || 0
+  const shipping  = parseFloat(invoice.shippingFee) || 0
+  const tax       = parseFloat(invoice.taxAmount) || 0
+  const total     = parseFloat(invoice.totalAmount) || parseFloat(invoice.price) || 0
+
+  const L = []
+
+  L.push(`Hi ${firstName},`, '')
+  L.push(`Here is your invoice from *${brand?.name || 'us'}*. 🧾`, '')
+  L.push('*📋 Invoice Details*')
+  L.push(`Invoice No: *${invoice.number}*`)
+  L.push(`Date: ${invoice.date}`)
+  if (invoice.due) L.push(`Due Date: *${invoice.due}*`)
+
+  if (items.length > 0) {
+    L.push('', '*🛍 Order Breakdown*')
+    items.forEach(item => {
+      const qty = item.qty && item.qty > 1 ? ` ×${item.qty}` : ''
+      L.push(`• ${item.name}${qty} — ${fmt(cur, item.price)}`)
+    })
+  }
+
+  if (discount > 0 || shipping > 0 || tax > 0) {
+    L.push('')
+    if (discount > 0) L.push(`Discount: -${fmt(cur, discount)}`)
+    if (shipping > 0) L.push(`Shipping: +${fmt(cur, shipping)}`)
+    if (tax > 0)      L.push(`Tax: +${fmt(cur, tax)}`)
+  }
+
+  L.push('', `*Total Due: ${fmt(cur, total)}*`, '')
+
+  if (invoice.due) {
+    L.push(`⏳ Please make payment before *${invoice.due}* to avoid delays.`)
+  } else {
+    L.push('⏳ Kindly make payment at your earliest convenience.')
+  }
+
+  L.push('')
+  if (brand?.phone) L.push(`For any questions, reach us at *${brand.phone}*.`)
+  if (brand?.email) L.push(`Email: ${brand.email}`)
+  L.push('', `Thank you for choosing *${brand?.name || 'us'}*! 🙏`)
+
+  return L.join('\n')
+}
+
+function buildReceiptMessage(receipt, customer, brand) {
+  const cur       = brand?.currency || '₦'
+  const firstName = customer?.name?.split(' ')[0] || customer?.name || 'there'
+  const items     = Array.isArray(receipt.items) ? receipt.items : []
+  const discount  = parseFloat(receipt.discountAmount) || 0
+  const shipping  = parseFloat(receipt.shippingFee) || 0
+  const tax       = parseFloat(receipt.taxAmount) || 0
+  const total     = parseFloat(receipt.totalAmount) || parseFloat(receipt.orderPrice) || 0
+  const cumPaid   = parseFloat(receipt.cumulativePaid) || 0
+  const balance   = receipt.balance !== undefined ? parseFloat(receipt.balance) : Math.max(0, total - cumPaid)
+  const isFullPay = receipt.isFullPayment ?? (balance <= 0)
+
+  const prevInst    = Array.isArray(receipt.previousInstallments) ? receipt.previousInstallments : []
+  const currPay     = Array.isArray(receipt.payments) ? receipt.payments : []
+  const allPayments = [...prevInst, ...currPay]
+
+  const L = []
+
+  L.push(`Hi ${firstName},`, '')
+  L.push(`Here is your payment receipt from *${brand?.name || 'us'}*. ✅`, '')
+  L.push('*📋 Receipt Details*')
+  L.push(`Receipt No: *${receipt.number}*`)
+  L.push(`Date: ${receipt.date}`)
+
+  if (items.length > 0) {
+    L.push('', '*🛍 Order Breakdown*')
+    items.forEach(item => {
+      const qty = item.qty && item.qty > 1 ? ` ×${item.qty}` : ''
+      L.push(`• ${item.name}${qty} — ${fmt(cur, item.price)}`)
+    })
+    if (discount > 0 || shipping > 0 || tax > 0) {
+      if (discount > 0) L.push(`Discount: -${fmt(cur, discount)}`)
+      if (shipping > 0) L.push(`Shipping: +${fmt(cur, shipping)}`)
+      if (tax > 0)      L.push(`Tax: +${fmt(cur, tax)}`)
+    }
+    L.push(`Order Total: *${fmt(cur, total)}*`)
+  }
+
+  if (allPayments.length > 0) {
+    L.push('', `*💳 Payment${allPayments.length > 1 ? ' History' : ' Received'}*`)
+    allPayments.forEach((p, i) => {
+      const num    = allPayments.length > 1 ? `Payment ${i + 1}` : 'Amount Paid'
+      const method = p.method ? ` via ${p.method.charAt(0).toUpperCase() + p.method.slice(1)}` : ''
+      const date   = p.date   ? ` — ${p.date}` : ''
+      L.push(`${num}${method}: *${fmt(cur, p.amount)}*${date}`)
+    })
+    if (allPayments.length > 1) {
+      L.push(`Total Paid: *${fmt(cur, cumPaid)}*`)
+    }
+  }
+
+  L.push('')
+  if (isFullPay) {
+    L.push('✅ *Your order is fully paid. Thank you!*')
+  } else {
+    L.push(`Balance Remaining: *${fmt(cur, balance)}*`)
+    L.push('Kindly settle the outstanding balance at your earliest convenience.')
+  }
+
+  L.push('')
+  if (brand?.phone) L.push(`For any questions, reach us at *${brand.phone}*.`)
+  if (brand?.email) L.push(`Email: ${brand.email}`)
+  L.push('', `Thank you for choosing *${brand?.name || 'us'}*! 🙏`)
+
+  return L.join('\n')
+}
+
+function ConfirmSaveModal({ type, onConfirm, onCancel }) {
+  const isInvoice = type === 'invoice'
+  return (
+    <div className={styles.modalOverlay} onClick={onCancel}>
+      <div className={styles.modalSheet} onClick={e => e.stopPropagation()}>
+        <div className={`${styles.modalIconWrap} ${!isInvoice ? styles.modalIconWrapGreen : ''}`}>
+          <MIcon
+            name={isInvoice ? 'receipt_long' : 'payments'}
+            size="1.3rem"
+            color={isInvoice ? 'var(--accent)' : '#22c55e'}
+          />
+        </div>
+        <p className={styles.modalTitle}>Save this {type}?</p>
+        <p className={styles.modalSub}>
+          This will add the {type} to your {isInvoice ? 'Invoices' : 'Receipts'} list where you can view, edit, and share it anytime.
+        </p>
+        <div className={styles.modalBtns}>
+          <button className={styles.modalCancelBtn} onClick={onCancel}>Not now</button>
+          <button
+            className={`${styles.modalConfirmBtn} ${!isInvoice ? styles.modalConfirmBtnGreen : ''}`}
+            onClick={onConfirm}
+          >
+            <MIcon name="check" size="0.82rem" color="var(--bg)" />
+            Save {type}
+          </button>
+        </div>
+      </div>
+    </div>
+  )
+}
+
 function DoneTab({ items }) {
   const [expanded, setExpanded] = useState(null)
 
   if (!items.length) return (
     <div className={styles.emptyTab}>
       <MIcon name="check_circle" size="2rem" color="var(--border2)" />
-      <p className={styles.emptyTabTitle}>Nothing done yet today</p>
-      <p className={styles.emptyTabSub}>The agent will log its actions here as it works</p>
+      <p className={styles.emptyTabTitle}>No activity yet today</p>
+      <p className={styles.emptyTabSub}>Your assistant will log its actions here as it works</p>
     </div>
   )
 
@@ -135,7 +292,7 @@ function DoneTab({ items }) {
                 onClick={() => setExpanded(isOpen ? null : item.id)}
               >
                 <MIcon name={isOpen ? 'expand_less' : 'expand_more'} size="0.85rem" color="var(--text3)" />
-                <span>{isOpen ? 'Hide reason' : 'Why did the agent do this?'}</span>
+                <span>{isOpen ? 'Hide reason' : 'Why did the assistant do this?'}</span>
               </button>
               {isOpen && (
                 <div className={styles.whyBox}>
@@ -157,7 +314,7 @@ function UpcomingTab({ items, onCancel }) {
     <div className={styles.emptyTab}>
       <MIcon name="schedule" size="2rem" color="var(--border2)" />
       <p className={styles.emptyTabTitle}>Nothing scheduled</p>
-      <p className={styles.emptyTabSub}>Upcoming agent actions will appear here</p>
+      <p className={styles.emptyTabSub}>Upcoming assistant actions will appear here</p>
     </div>
   )
 
@@ -193,9 +350,46 @@ function UpcomingTab({ items, onCancel }) {
   )
 }
 
-function DraftsTab({ items, onDiscard, allOrders, allInvoices, customers, navigate, showToast }) {
+function buildBrandSnapshot(profileSettings, generalSettings, docType = 'invoice') {
+  const footer   = docType === 'invoice' ? generalSettings.invoiceFooter   : generalSettings.receiptFooter
+  const currency = docType === 'invoice' ? generalSettings.invoiceCurrency : generalSettings.receiptCurrency
+  const showTax  = docType === 'invoice' ? generalSettings.invoiceShowTax  : generalSettings.receiptShowTax
+  const taxRate  = docType === 'invoice' ? generalSettings.invoiceTaxRate  : generalSettings.receiptTaxRate
+
+  return {
+    name:     profileSettings.brandName     || '',
+    tagline:  profileSettings.brandTagline  || '',
+    colour:   profileSettings.brandColour   || '',
+    colourId: profileSettings.brandColourId || '',
+    phone:    profileSettings.brandPhone    || '',
+    email:    profileSettings.brandEmail    || '',
+    address:  profileSettings.brandAddress  || '',
+    logo:     profileSettings.brandLogo     || '',
+    website:  profileSettings.brandWebsite  || '',
+    footer:   footer   || 'Thank you for your patronage 🙏',
+    currency: currency || '₦',
+    showTax:  showTax  || false,
+    taxRate:  taxRate  || 0,
+    ...(docType === 'invoice' ? { dueDays: generalSettings.invoiceDueDays || 7 } : {}),
+  }
+}
+
+function DraftsTab({
+  items,
+  onDiscard,
+  allOrders,
+  allInvoices,
+  allReceipts,
+  allPayments,
+  customers,
+  generalSettings,
+  profileSettings,
+  navigate,
+  showToast,
+  onSaveDoc,
+}) {
   const [expanded,      setExpanded]      = useState(null)
-  const [copied,        setCopied]        = useState(null)
+  const [confirmSave,   setConfirmSave]   = useState(null)
   const [viewerInvoice, setViewerInvoice] = useState(null)
   const [viewerReceipt, setViewerReceipt] = useState(null)
 
@@ -208,7 +402,7 @@ function DraftsTab({ items, onDiscard, allOrders, allInvoices, customers, naviga
   }
 
   function getInvoiceForDraft(item) {
-    const orderId  = getOrderIdFromDraftId(item.id)
+    const orderId = getOrderIdFromDraftId(item.id)
     if (!orderId) return null
 
     const existing = allInvoices.find(inv => String(inv.orderId) === String(orderId))
@@ -217,27 +411,42 @@ function DraftsTab({ items, onDiscard, allOrders, allInvoices, customers, naviga
     const order = allOrders.find(o => String(o.id) === String(orderId))
     if (!order) return null
 
+    const prefix        = generalSettings.invoicePrefix   || 'INV'
+    const template      = generalSettings.invoiceTemplate || 'invoiceTemplate1'
+    const dueDays       = generalSettings.invoiceDueDays  || 7
+    const invoiceNumber = `${prefix}-${String(allInvoices.length + 1).padStart(3, '0')}`
+
+    const today = new Date()
+    const dateStr = today.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+
+    const dueDate = new Date(today)
+    dueDate.setDate(dueDate.getDate() + dueDays)
+    const dueDateStr = dueDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+
+    const brandSnapshot = buildBrandSnapshot(profileSettings, generalSettings, 'invoice')
+
     return {
       id:             `preview-${order.id}`,
       orderId:        order.id,
-      number:         'DRAFT',
-      date:           new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
+      number:         invoiceNumber,
+      date:           dateStr,
       status:         'unpaid',
-      template:       'invoiceTemplate1',
+      template,
       orderDesc:      order.desc,
       price:          order.price,
       qty:            order.qty,
       items:          Array.isArray(order.items) ? order.items : [],
-      due:            order.due,
+      due:            dueDateStr,
       notes:          order.notes || '',
-      shippingFee:    order.shippingFee   ?? 0,
-      discountType:   order.discountType  ?? null,
-      discountValue:  order.discountValue ?? 0,
+      shippingFee:    order.shippingFee    ?? 0,
+      discountType:   order.discountType   ?? null,
+      discountValue:  order.discountValue  ?? 0,
       discountAmount: order.discountAmount ?? 0,
-      taxRate:        order.taxRate       ?? 0,
-      taxAmount:      order.taxAmount     ?? 0,
-      totalAmount:    order.totalAmount   ?? order.price ?? 0,
-      brandSnapshot:  null,
+      taxRate:        order.taxRate        ?? 0,
+      taxAmount:      order.taxAmount      ?? 0,
+      totalAmount:    order.totalAmount    ?? order.price ?? 0,
+      brandSnapshot,
+      _isPreview: true,
     }
   }
 
@@ -248,38 +457,93 @@ function DraftsTab({ items, onDiscard, allOrders, allInvoices, customers, naviga
     const invoice = allInvoices.find(inv => String(inv.id) === String(invoiceId))
     if (!invoice) return null
 
+    const payment = allPayments.find(p => String(p.orderId) === String(invoice.orderId))
+
+    const prefix   = generalSettings.receiptPrefix   || 'RCP'
+    const template = generalSettings.receiptTemplate || 'receiptTemplate1'
+
+    const today = new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+
+    const brandSnapshot = buildBrandSnapshot(profileSettings, generalSettings, 'receipt')
+
+    const globalReceiptCount     = allReceipts.length + 1
+    const receiptsForThisPayment = payment
+      ? allReceipts.filter(r => String(r.paymentId) === String(payment.id)).length + 1
+      : 1
+    const receiptNumber = `${prefix}-${String(receiptsForThisPayment).padStart(2, '0')}-${String(globalReceiptCount).padStart(3, '0')}`
+
+    const orderTotal = parseFloat(invoice.totalAmount ?? invoice.price) || 0
+
+    let payments             = []
+    let previousInstallments = []
+    let previousPaid         = 0
+    let cumulativePaid       = orderTotal
+    let balance              = 0
+    let isFullPayment        = true
+
+    if (payment && Array.isArray(payment.installments) && payment.installments.length) {
+      const allInstallments  = payment.installments
+      const lastInstallment  = allInstallments[allInstallments.length - 1]
+      const thisInstallIndex = allInstallments.length - 1
+
+      cumulativePaid = allInstallments.reduce((sum, i) => sum + (parseFloat(i.amount) || 0), 0)
+      balance        = Math.max(0, orderTotal - cumulativePaid)
+      isFullPayment  = balance <= 0
+
+      previousInstallments = allInstallments
+        .slice(0, Math.max(0, thisInstallIndex))
+        .map(inst => ({
+          id:     inst.id,
+          amount: inst.amount,
+          method: inst.method || 'cash',
+          date:   inst.date,
+          time:   inst.time || null,
+        }))
+
+      previousPaid = previousInstallments.reduce((sum, i) => sum + (parseFloat(i.amount) || 0), 0)
+
+      payments = [{
+        id:     lastInstallment.id,
+        amount: lastInstallment.amount,
+        method: lastInstallment.method || 'cash',
+        date:   lastInstallment.date,
+        time:   lastInstallment.time || null,
+      }]
+    }
+
     return {
       id:                   `preview-receipt-${invoice.id}`,
-      paymentId:            null,
+      paymentId:            payment?.id || null,
       orderId:              invoice.orderId,
       orderDesc:            invoice.orderDesc || invoice.desc,
       orderPrice:           invoice.totalAmount || invoice.price,
       items:                invoice.items || [],
-      number:               'DRAFT',
-      date:                 new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
-      template:             'receiptTemplate1',
-      payments:             [],
-      previousInstallments: [],
-      previousPaid:         0,
-      cumulativePaid:       invoice.totalAmount || invoice.price || 0,
-      isFullPayment:        true,
-      balance:              0,
-      notes:                '',
-      shippingFee:          invoice.shippingFee   ?? 0,
-      discountType:         invoice.discountType  ?? null,
-      discountValue:        invoice.discountValue ?? 0,
+      number:               receiptNumber,
+      date:                 today,
+      template,
+      payments,
+      previousInstallments,
+      previousPaid,
+      cumulativePaid,
+      isFullPayment,
+      balance,
+      notes:                payment?.notes || '',
+      shippingFee:          invoice.shippingFee    ?? 0,
+      discountType:         invoice.discountType   ?? null,
+      discountValue:        invoice.discountValue  ?? 0,
       discountAmount:       invoice.discountAmount ?? 0,
       taxRate:              invoice.taxRate        ?? 0,
       taxAmount:            invoice.taxAmount      ?? 0,
       totalAmount:          invoice.totalAmount    ?? invoice.price ?? 0,
-      brandSnapshot:        invoice.brandSnapshot  || null,
+      brandSnapshot,
+      _isPreview: true,
     }
   }
 
   function getCustomerForDraft(item) {
     if (item.type === 'invoice') {
-      const orderId  = getOrderIdFromDraftId(item.id)
-      const order    = allOrders.find(o => String(o.id) === String(orderId))
+      const orderId = getOrderIdFromDraftId(item.id)
+      const order   = allOrders.find(o => String(o.id) === String(orderId))
       if (!order) return null
       return customers.find(c => String(c.id) === String(order.customerId)) || null
     }
@@ -292,11 +556,48 @@ function DraftsTab({ items, onDiscard, allOrders, allInvoices, customers, naviga
     return null
   }
 
-  function handleCopyBreakdown(item) {
-    navigator.clipboard?.writeText(item.preview).catch(() => {})
-    setCopied(item.id)
-    haptic('light')
-    setTimeout(() => setCopied(null), 2000)
+  async function handleShareBreakdown(item) {
+    haptic('medium')
+    const doc      = item.type === 'invoice' ? getInvoiceForDraft(item) : getReceiptForDraft(item)
+    const customer = getCustomerForDraft(item)
+
+    if (!doc || !customer) { showToast?.('Could not build message'); return }
+
+    const brand   = doc.brandSnapshot
+    const message = item.type === 'invoice'
+      ? buildInvoiceMessage(doc, customer, brand)
+      : buildReceiptMessage(doc, customer, brand)
+
+    if (navigator.share) {
+      try {
+        await navigator.share({ text: message })
+      } catch (err) {
+        if (err?.name !== 'AbortError') {
+          navigator.clipboard?.writeText(message).catch(() => {})
+          showToast?.('Copied to clipboard')
+        }
+      }
+    } else {
+      navigator.clipboard?.writeText(message).catch(() => {})
+      showToast?.('Copied to clipboard — paste to send')
+    }
+  }
+
+  async function handleShareMessage(item) {
+    haptic('medium')
+    if (navigator.share) {
+      try {
+        await navigator.share({ text: item.preview })
+      } catch (err) {
+        if (err?.name !== 'AbortError') {
+          navigator.clipboard?.writeText(item.preview).catch(() => {})
+          showToast?.('Copied to clipboard')
+        }
+      }
+    } else {
+      navigator.clipboard?.writeText(item.preview).catch(() => {})
+      showToast?.('Copied to clipboard')
+    }
   }
 
   function handleViewInvoice(item) {
@@ -315,34 +616,61 @@ function DraftsTab({ items, onDiscard, allOrders, allInvoices, customers, naviga
     setViewerReceipt({ receipt, customer })
   }
 
-  function handleSendBreakdown(item) {
-    haptic('medium')
-    navigator.clipboard?.writeText(item.preview).catch(() => {})
-    showToast?.('Breakdown copied — opening customer profile')
-    const customer = getCustomerForDraft(item)
-    navigate(customer ? `/customers/${customer.id}` : '/customers')
+  function handleConfirmSave() {
+    const item = confirmSave
+    setConfirmSave(null)
+
+    if (item.type === 'invoice') {
+      const invoice = getInvoiceForDraft(item)
+      if (!invoice) { showToast?.('Could not save invoice'); return }
+      if (invoice._isPreview) {
+        const { _isPreview, ...data } = invoice
+        onSaveDoc?.('invoice', data, item.id)
+      } else {
+        showToast?.('Invoice already exists')
+        onDiscard(item.id)
+      }
+    } else if (item.type === 'receipt') {
+      const receipt = getReceiptForDraft(item)
+      if (!receipt) { showToast?.('Could not save receipt'); return }
+      if (receipt._isPreview) {
+        const { _isPreview, ...data } = receipt
+        onSaveDoc?.('receipt', data, item.id)
+      } else {
+        showToast?.('Receipt already exists')
+        onDiscard(item.id)
+      }
+    }
   }
 
   if (!items.length) return (
     <div className={styles.emptyTab}>
       <MIcon name="edit_note" size="2rem" color="var(--border2)" />
-      <p className={styles.emptyTabTitle}>No drafts yet</p>
-      <p className={styles.emptyTabSub}>Messages and documents the agent prepares will appear here</p>
+      <p className={styles.emptyTabTitle}>Nothing ready yet</p>
+      <p className={styles.emptyTabSub}>Documents and messages your assistant prepares for you will appear here</p>
     </div>
   )
 
-  const isDocDraft = (item) => item.type === 'invoice' || item.type === 'receipt'
+  const isDocDraft = item => item.type === 'invoice' || item.type === 'receipt'
 
   return (
     <>
+      {confirmSave && (
+        <ConfirmSaveModal
+          type={confirmSave.type}
+          onConfirm={handleConfirmSave}
+          onCancel={() => setConfirmSave(null)}
+        />
+      )}
+
       {viewerInvoice && (
         <InvoiceViewer
           invoice={viewerInvoice.invoice}
           customer={viewerInvoice.customer}
           onClose={() => setViewerInvoice(null)}
-          onDelete={() => {
+          onDelete={viewerInvoice.invoice?._isPreview ? null : () => {
             setViewerInvoice(null)
-            showToast?.('To delete, go to the customer profile')
+            showToast?.('Invoice deleted')
           }}
           showToast={showToast}
         />
@@ -353,9 +681,9 @@ function DraftsTab({ items, onDiscard, allOrders, allInvoices, customers, naviga
           receipt={viewerReceipt.receipt}
           customer={viewerReceipt.customer}
           onClose={() => setViewerReceipt(null)}
-          onDelete={() => {
+          onDelete={viewerReceipt.receipt?._isPreview ? null : () => {
             setViewerReceipt(null)
-            showToast?.('To delete, go to the customer profile')
+            showToast?.('Receipt deleted')
           }}
           showToast={showToast}
         />
@@ -364,7 +692,7 @@ function DraftsTab({ items, onDiscard, allOrders, allInvoices, customers, naviga
       <div className={styles.tabList}>
         <div className={styles.draftsNote}>
           <MIcon name="info" size="0.85rem" color="var(--text3)" />
-          <p>The agent never sends anything. Copy a draft and send it yourself.</p>
+          <p>Your assistant never sends anything. Review a draft and share it yourself.</p>
         </div>
 
         {items.map(item => {
@@ -385,7 +713,7 @@ function DraftsTab({ items, onDiscard, allOrders, allInvoices, customers, naviga
               <div className={styles.cardBody} style={{ width: '100%' }}>
                 <div className={styles.cardTop}>
                   <span className={styles.cardTitle}>{item.title}</span>
-                  <MIcon name="expand_more" size="1rem" color="var(--text3)" />
+                  <MIcon name={isOpen ? 'expand_less' : 'expand_more'} size="1rem" color="var(--text3)" />
                 </div>
 
                 <div style={{ marginTop: 4, marginBottom: isOpen ? 0 : 2 }}>
@@ -400,20 +728,16 @@ function DraftsTab({ items, onDiscard, allOrders, allInvoices, customers, naviga
                     <p className={styles.draftText}>{item.preview}</p>
 
                     {isDocDraft(item) ? (
-                      <>
-                        <div className={styles.draftBtns}>
-                          <button
-                            className={styles.copyBtn}
-                            onClick={() => handleCopyBreakdown(item)}
-                          >
-                            <MIcon
-                              name={copied === item.id ? 'check' : 'content_copy'}
-                              size="0.85rem"
-                              color="var(--bg)"
-                            />
-                            {copied === item.id ? 'Copied!' : 'Copy breakdown'}
-                          </button>
+                      <div className={styles.draftActions}>
+                        <button
+                          className={styles.sendMsgBtn}
+                          onClick={() => handleShareBreakdown(item)}
+                        >
+                          <MIcon name="ios_share" size="0.88rem" color="var(--bg)" />
+                          Send breakdown message
+                        </button>
 
+                        <div className={styles.draftDocRow}>
                           <button
                             className={styles.viewDocBtn}
                             onClick={() =>
@@ -422,46 +746,39 @@ function DraftsTab({ items, onDiscard, allOrders, allInvoices, customers, naviga
                                 : handleViewReceipt(item)
                             }
                           >
-                            <MIcon name="open_in_new" size="0.85rem" color="var(--text1)" />
-                            {item.type === 'invoice' ? 'View invoice' : 'View receipt'}
+                            <MIcon name="open_in_new" size="0.78rem" color="var(--text1)" />
+                            View {item.type}
+                          </button>
+                          <button
+                            className={styles.saveToListBtn}
+                            onClick={() => { haptic('light'); setConfirmSave(item) }}
+                          >
+                            <MIcon name="add_circle" size="0.78rem" color="#22c55e" />
+                            Save {item.type}
                           </button>
                         </div>
 
-                        <div className={styles.draftBtnsSecondary}>
-                          <button
-                            className={styles.sendBreakdownBtn}
-                            onClick={() => handleSendBreakdown(item)}
-                          >
-                            <MIcon name="send" size="0.8rem" color="var(--accent)" />
-                            Send breakdown message
-                          </button>
-
-                          <button
-                            className={styles.discardBtn}
-                            onClick={() => { haptic('light'); onDiscard(item.id) }}
-                          >
-                            Discard
-                          </button>
-                        </div>
-                      </>
-                    ) : (
-                      <div className={styles.draftBtns}>
                         <button
-                          className={styles.copyBtn}
-                          onClick={() => handleCopyBreakdown(item)}
-                        >
-                          <MIcon
-                            name={copied === item.id ? 'check' : 'content_copy'}
-                            size="0.85rem"
-                            color="var(--bg)"
-                          />
-                          {copied === item.id ? 'Copied!' : 'Copy'}
-                        </button>
-                        <button
-                          className={styles.discardBtn}
+                          className={styles.discardInlineBtn}
                           onClick={() => { haptic('light'); onDiscard(item.id) }}
                         >
-                          Discard
+                          Discard draft
+                        </button>
+                      </div>
+                    ) : (
+                      <div className={styles.draftActions}>
+                        <button
+                          className={styles.sendMsgBtn}
+                          onClick={() => handleShareMessage(item)}
+                        >
+                          <MIcon name="ios_share" size="0.88rem" color="var(--bg)" />
+                          Share message
+                        </button>
+                        <button
+                          className={styles.discardInlineBtn}
+                          onClick={() => { haptic('light'); onDiscard(item.id) }}
+                        >
+                          Discard draft
                         </button>
                       </div>
                     )}
@@ -565,7 +882,7 @@ function ChatPanel({ open, onClose, messages, isTyping, isLoading, activeFlow, i
 
         <div className={styles.chatPanelHeader}>
           <div>
-            <p className={styles.chatPanelTitle}>Agent</p>
+            <p className={styles.chatPanelTitle}>Assistant</p>
             <p className={styles.chatPanelSub}>Ask anything about your business</p>
           </div>
           <button className={styles.chatCloseBtn} onClick={onClose}>
@@ -682,10 +999,14 @@ function Agent({ onMenuClick }) {
     discardDraft,
   } = useAutonomousAgent()
 
-  const { allOrders }   = useOrders()
-  const { allInvoices } = useInvoices()
-  const { customers }   = useCustomers()
-  const { user }        = useAuth()
+  const { allOrders }              = useOrders()
+  const { allInvoices, addInvoice } = useInvoices()
+  const { allReceipts, addReceipt } = useReceipts()
+  const { allPayments }            = usePayments()
+  const { customers }              = useCustomers()
+  const { user }                   = useAuth()
+  const { generalSettings }        = useGeneralSettings()
+  const { profileSettings }        = useProfileSettings()
 
   const [tab,        setTab]        = useState('done')
   const [chatOpen,   setChatOpen]   = useState(false)
@@ -709,15 +1030,25 @@ function Agent({ onMenuClick }) {
     sendMessage(v)
   }
 
+  function handleSaveDoc(type, data, draftId) {
+    if (type === 'invoice') {
+      addInvoice?.(data)
+    } else {
+      addReceipt?.(data)
+    }
+    discardDraft(draftId)
+    showToast(`${type === 'invoice' ? 'Invoice' : 'Receipt'} saved!`)
+  }
+
   const handleActionBtn = useCallback((action, payload) => {
     if (action === 'navigate') { navigate(payload.route); return }
     handleAction(action, payload)
   }, [handleAction, navigate])
 
   const TABS = [
-    { key: 'done',     label: 'Done'                         },
-    { key: 'upcoming', label: 'Upcoming'                     },
-    { key: 'drafts',   label: 'Drafts', badge: drafts.length },
+    { key: 'done',     label: 'Activity'       },
+    { key: 'upcoming', label: 'Scheduled'      },
+    { key: 'drafts',   label: 'Ready to Send', badge: drafts.length },
   ]
 
   return (
@@ -725,7 +1056,7 @@ function Agent({ onMenuClick }) {
 
       <Header
         type="back"
-        customTitle={{ iconComponent: BotIcon, title: 'Agent' }}
+        customTitle={{ iconComponent: BotIcon, title: 'TailorPady AI' }}
         onBackClick={() => navigate('/')}
         agentActive={enabled}
         customActions={[
@@ -761,9 +1092,14 @@ function Agent({ onMenuClick }) {
             onDiscard={discardDraft}
             allOrders={allOrders}
             allInvoices={allInvoices}
+            allReceipts={allReceipts}
+            allPayments={allPayments}
             customers={customers}
+            generalSettings={generalSettings}
+            profileSettings={profileSettings}
             navigate={navigate}
             showToast={showToast}
+            onSaveDoc={handleSaveDoc}
           />
         )}
       </div>

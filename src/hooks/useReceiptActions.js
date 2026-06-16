@@ -1,6 +1,6 @@
 import { useCallback } from 'react'
-import { useProfileSettings } from '../../../contexts/ProfileSettingsContext'
-import { useGeneralSettings } from '../../../contexts/GeneralSettingsContext'
+import { useProfileSettings } from '../contexts/ProfileSettingsContext'
+import { useGeneralSettings } from '../contexts/GeneralSettingsContext'
 
 
 function buildBrandSnapshot(localSnap, profileSettings, overrides = {}) {
