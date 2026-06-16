@@ -1,14 +1,18 @@
 import {
   createContext,
+  useCallback,
   useContext,
   useEffect,
   useMemo,
   useState,
 } from 'react'
-import { useAuth }           from './AuthContext'
+import { useAuth }            from './AuthContext'
 import { useProfileSettings } from './ProfileSettingsContext'
 import { useCustomers }       from './CustomerContext'
-import { subscribeToReceipts } from '../services/receiptService'
+import {
+  subscribeToReceipts,
+  addReceipt as addReceiptToDb,
+} from '../services/receiptService'
 
 const ReceiptContext = createContext(null)
 
@@ -29,13 +33,19 @@ export function ReceiptProvider({ children }) {
 
   const enrichedReceipts = useMemo(() => {
     const customerMap = new Map(customers.map(c => [c.id, c]))
-
     return allReceipts.map(receipt => ({
       ...receipt,
       customerName:  customerMap.get(receipt.customerId)?.name  ?? 'Unknown',
       customerPhone: customerMap.get(receipt.customerId)?.phone ?? null,
     }))
   }, [allReceipts, customers])
+
+  const addReceipt = useCallback(async (data) => {
+    if (!user) return
+    const customerId = data.customerId
+    if (!customerId) return
+    await addReceiptToDb(user.uid, customerId, data)
+  }, [user])
 
   const brandInfos = {
     name:    profileSettings.brandName,
@@ -51,7 +61,8 @@ export function ReceiptProvider({ children }) {
   return (
     <ReceiptContext.Provider value={{
       allReceipts: enrichedReceipts,
-      template:    profileSettings.receiptTemplate,
+      addReceipt,
+      template:   profileSettings.receiptTemplate,
       brandInfos,
     }}>
       {children}

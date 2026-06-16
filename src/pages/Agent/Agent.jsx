@@ -428,6 +428,7 @@ function DraftsTab({
     return {
       id:             `preview-${order.id}`,
       orderId:        order.id,
+      customerId:     order.customerId,
       number:         invoiceNumber,
       date:           dateStr,
       status:         'unpaid',
@@ -515,6 +516,7 @@ function DraftsTab({
       id:                   `preview-receipt-${invoice.id}`,
       paymentId:            payment?.id || null,
       orderId:              invoice.orderId,
+      customerId:           invoice.customerId,
       orderDesc:            invoice.orderDesc || invoice.desc,
       orderPrice:           invoice.totalAmount || invoice.price,
       items:                invoice.items || [],
@@ -846,7 +848,21 @@ function ChatMessage({ msg, onAction, onNavigate }) {
   )
 }
 
-function ChatPanel({ open, onClose, messages, isTyping, isLoading, activeFlow, inputValue, setInputValue, onSend, onAction, onNavigate, onCancelFlow, greeting }) {
+function ChatPanel({
+  open,
+  onClose,
+  messages,
+  isTyping,
+  isLoading,
+  activeFlow,
+  inputValue,
+  setInputValue,
+  onSend,
+  onAction,
+  onNavigate,
+  onCancelFlow,
+  greeting,
+}) {
   const messagesEndRef = useRef(null)
   const inputRef       = useRef(null)
 
@@ -999,14 +1015,14 @@ function Agent({ onMenuClick }) {
     discardDraft,
   } = useAutonomousAgent()
 
-  const { allOrders }              = useOrders()
+  const { allOrders }               = useOrders()
   const { allInvoices, addInvoice } = useInvoices()
   const { allReceipts, addReceipt } = useReceipts()
-  const { allPayments }            = usePayments()
-  const { customers }              = useCustomers()
-  const { user }                   = useAuth()
-  const { generalSettings }        = useGeneralSettings()
-  const { profileSettings }        = useProfileSettings()
+  const { allPayments }             = usePayments()
+  const { customers }               = useCustomers()
+  const { user }                    = useAuth()
+  const { generalSettings }         = useGeneralSettings()
+  const { profileSettings }         = useProfileSettings()
 
   const [tab,        setTab]        = useState('done')
   const [chatOpen,   setChatOpen]   = useState(false)
@@ -1030,14 +1046,18 @@ function Agent({ onMenuClick }) {
     sendMessage(v)
   }
 
-  function handleSaveDoc(type, data, draftId) {
-    if (type === 'invoice') {
-      addInvoice?.(data)
-    } else {
-      addReceipt?.(data)
+  async function handleSaveDoc(type, data, draftId) {
+    try {
+      if (type === 'invoice') {
+        await addInvoice(data)
+      } else {
+        await addReceipt(data)
+      }
+      discardDraft(draftId)
+      showToast(`${type === 'invoice' ? 'Invoice' : 'Receipt'} saved!`)
+    } catch (err) {
+      showToast('Failed to save — please try again')
     }
-    discardDraft(draftId)
-    showToast(`${type === 'invoice' ? 'Invoice' : 'Receipt'} saved!`)
   }
 
   const handleActionBtn = useCallback((action, payload) => {
@@ -1046,9 +1066,9 @@ function Agent({ onMenuClick }) {
   }, [handleAction, navigate])
 
   const TABS = [
-    { key: 'done',     label: 'Activity'       },
-    { key: 'upcoming', label: 'Scheduled'      },
-    { key: 'drafts',   label: 'Ready to Send', badge: drafts.length },
+    { key: 'done',     label: 'Activity'                              },
+    { key: 'upcoming', label: 'Scheduled'                             },
+    { key: 'drafts',   label: 'Ready to Send', badge: drafts.length  },
   ]
 
   return (
@@ -1056,7 +1076,7 @@ function Agent({ onMenuClick }) {
 
       <Header
         type="back"
-        customTitle={{ iconComponent: BotIcon, title: 'TailorPady AI' }}
+        customTitle={{ iconComponent: BotIcon, title: 'Pady' }}
         onBackClick={() => navigate('/')}
         agentActive={enabled}
         customActions={[
