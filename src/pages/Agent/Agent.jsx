@@ -4,6 +4,7 @@ import Header, { BotIcon } from '../../components/Header/Header'
 import BottomNav      from '../../components/BottomNav/BottomNav'
 import InvoiceViewer  from '../../components/InvoiceViewer/InvoiceViewer'
 import ReceiptViewer  from '../../components/ReceiptViewer/ReceiptViewer'
+import OrderMosaic    from '../../components/OrderMosaic/OrderMosaic'
 import { useAgent, useAutonomousAgent } from '../../contexts/AgentContext'
 import { useOrders }          from '../../contexts/OrdersContext'
 import { useInvoices }        from '../../contexts/InvoiceContext'
@@ -70,6 +71,20 @@ function formatTitle(title) {
   return (title || '').replace(/\s*[—–]\s*/g, ' · ')
 }
 
+function groupByDate(items, getDate) {
+  const groups = []
+  const seen   = {}
+  items.forEach(item => {
+    const key = getDate(item) || 'Other'
+    if (!seen[key]) {
+      seen[key] = true
+      groups.push({ date: key, items: [] })
+    }
+    groups[groups.length - 1].items.push(item)
+  })
+  return groups
+}
+
 function MIcon({ name, size = '1.1rem', color }) {
   return (
     <span
@@ -111,7 +126,7 @@ function TagChip({ label }) {
 }
 
 function fmt(currency, value) {
-  return `${currency.symbol}${parseFloat(value || 0).toLocaleString('en-NG', {
+  return `${currency.symbol || currency}${parseFloat(value || 0).toLocaleString('en-NG', {
     minimumFractionDigits: 0,
     maximumFractionDigits: 0,
   })}`
@@ -127,7 +142,6 @@ function buildInvoiceMessage(invoice, customer, brand) {
   const total     = parseFloat(invoice.totalAmount) || parseFloat(invoice.price) || 0
 
   const L = []
-
   L.push(`Hi ${firstName},`, '')
   L.push(`Here is your invoice from *${brand?.name || 'us'}*. 🧾`, '')
   L.push('*📋 Invoice Details*')
@@ -151,18 +165,15 @@ function buildInvoiceMessage(invoice, customer, brand) {
   }
 
   L.push('', `*Total Due: ${fmt(cur, total)}*`, '')
-
   if (invoice.due) {
     L.push(`Please make payment before *${invoice.due}* to avoid delays. ⏳`)
   } else {
     L.push('Kindly make payment at your earliest convenience. ⏳')
   }
-
   L.push('')
   if (brand?.phone) L.push(`For any questions, reach us at *${brand.phone}*.`)
   if (brand?.email) L.push(`Email: ${brand.email}`)
   L.push('', `Thank you for choosing *${brand?.name || 'us'}*! 🙏`)
-
   return L.join('\n')
 }
 
@@ -183,7 +194,6 @@ function buildReceiptMessage(receipt, customer, brand) {
   const allPayments = [...prevInst, ...currPay]
 
   const L = []
-
   L.push(`Hi ${firstName},`, '')
   L.push(`Here is your payment receipt from *${brand?.name || 'us'}*. ✅`, '')
   L.push('*📋 Receipt Details*')
@@ -224,136 +234,11 @@ function buildReceiptMessage(receipt, customer, brand) {
     L.push(`Balance Remaining: *${fmt(cur, balance)}*`)
     L.push('Kindly settle the outstanding balance at your earliest convenience.')
   }
-
   L.push('')
   if (brand?.phone) L.push(`For any questions, reach us at *${brand.phone}*.`)
   if (brand?.email) L.push(`Email: ${brand.email}`)
   L.push('', `Thank you for choosing *${brand?.name || 'us'}*! 🙏`)
-
   return L.join('\n')
-}
-
-function ConfirmSaveModal({ type, onConfirm, onCancel }) {
-  const isInvoice = type === 'invoice'
-  return (
-    <div className={styles.modalOverlay} onClick={onCancel}>
-      <div className={styles.modalSheet} onClick={e => e.stopPropagation()}>
-        <div className={`${styles.modalIconWrap} ${!isInvoice ? styles.modalIconWrapGreen : ''}`}>
-          <MIcon
-            name={isInvoice ? 'receipt_long' : 'payments'}
-            size="1.3rem"
-            color={isInvoice ? 'var(--accent)' : '#22c55e'}
-          />
-        </div>
-        <p className={styles.modalTitle}>Save this {type}?</p>
-        <p className={styles.modalSub}>
-          This will add the {type} to your {isInvoice ? 'Invoices' : 'Receipts'} list where you can view, edit, and share it anytime.
-        </p>
-        <div className={styles.modalBtns}>
-          <button className={styles.modalCancelBtn} onClick={onCancel}>Not now</button>
-          <button
-            className={`${styles.modalConfirmBtn} ${!isInvoice ? styles.modalConfirmBtnGreen : ''}`}
-            onClick={onConfirm}
-          >
-            <MIcon name="check" size="0.82rem" color="var(--bg)" />
-            Save {type}
-          </button>
-        </div>
-      </div>
-    </div>
-  )
-}
-
-function DoneTab({ items }) {
-  const [expanded, setExpanded] = useState(null)
-
-  if (!items.length) return (
-    <div className={styles.emptyTab}>
-      <MIcon name="check_circle" size="2rem" color="var(--border2)" />
-      <p className={styles.emptyTabTitle}>No activity yet today</p>
-      <p className={styles.emptyTabSub}>Your assistant will log its actions here as it works</p>
-    </div>
-  )
-
-  return (
-    <div className={styles.tabList}>
-      {items.map(item => {
-        const meta   = ICON_META[item.type] || ICON_META.brief
-        const isOpen = expanded === item.id
-        return (
-          <div key={item.id} className={styles.card}>
-            <div className={styles.cardIconWrap}>
-              <MIcon name={meta.icon} size="1.05rem" color={meta.color} />
-            </div>
-            <div className={styles.cardBody}>
-              <div className={styles.cardTop}>
-                <span className={styles.cardTitle}>{formatTitle(item.title)}</span>
-                <span className={styles.cardTime}>{item.time}</span>
-              </div>
-              <p className={styles.cardDesc}>{item.desc}</p>
-              <button
-                className={styles.whyToggle}
-                onClick={() => setExpanded(isOpen ? null : item.id)}
-              >
-                <MIcon name={isOpen ? 'expand_less' : 'expand_more'} size="0.85rem" color="var(--text3)" />
-                <span className={styles.whyToggleText}>
-                  {isOpen ? 'Hide reason' : 'Why did the assistant do this?'}
-                </span>
-              </button>
-              {isOpen && (
-                <div className={styles.whyBox}>
-                  <MIcon name="info" size="0.8rem" color="var(--text3)" />
-                  <p className={styles.whyText}>{item.reason}</p>
-                </div>
-              )}
-              <TagChip label={item.tag} />
-            </div>
-          </div>
-        )
-      })}
-    </div>
-  )
-}
-
-function UpcomingTab({ items, onCancel }) {
-  if (!items.length) return (
-    <div className={styles.emptyTab}>
-      <MIcon name="schedule" size="2rem" color="var(--border2)" />
-      <p className={styles.emptyTabTitle}>Nothing scheduled</p>
-      <p className={styles.emptyTabSub}>Upcoming assistant actions will appear here</p>
-    </div>
-  )
-
-  return (
-    <div className={styles.tabList}>
-      {items.map(item => {
-        const meta = ICON_META[item.type] || ICON_META.brief
-        return (
-          <div key={item.id} className={`${styles.card} ${styles.cardDashed}`}>
-            <div className={styles.cardIconWrap}>
-              <MIcon name={meta.icon} size="1.05rem" color={meta.color} />
-            </div>
-            <div className={styles.cardBody}>
-              <div className={styles.cardTop}>
-                <span className={styles.cardTitle}>{formatTitle(item.title)}</span>
-                <span className={`${styles.cardTime} ${styles.cardTimeAccent}`}>{item.when}</span>
-              </div>
-              <p className={styles.cardDesc}>{item.desc}</p>
-              <div className={styles.cardFooterRow}>
-                <TagChip label={item.tag} />
-                <button
-                  className={styles.cancelBtn}
-                  onClick={() => { haptic('light'); onCancel(item.id) }}
-                >
-                  Cancel
-                </button>
-              </div>
-            </div>
-          </div>
-        )
-      })}
-    </div>
-  )
 }
 
 function buildBrandSnapshot(profileSettings, generalSettings, docType = 'invoice') {
@@ -380,8 +265,126 @@ function buildBrandSnapshot(profileSettings, generalSettings, docType = 'invoice
   }
 }
 
-function DraftsTab({
-  items,
+function ItemIconBox({ type, orderId, allOrders }) {
+  const meta        = ICON_META[type] || ICON_META.brief
+  const linkedOrder = orderId
+    ? allOrders?.find(o => String(o.id) === String(orderId))
+    : null
+  const items       = linkedOrder?.items ?? []
+
+  if (linkedOrder) {
+    return <OrderMosaic items={items} size="md" />
+  }
+
+  return (
+    <div className={styles.rowIconOuter}>
+      <div className={styles.rowIconInner}>
+        <MIcon name={meta.icon} size="1.3rem" color={meta.color} />
+      </div>
+    </div>
+  )
+}
+
+function DateDivider({ label }) {
+  return <div className={styles.dateDivider}>{label}</div>
+}
+
+function ActivityDetailSheet({ item, onClose }) {
+  if (!item) return null
+  const meta = ICON_META[item.type] || ICON_META.brief
+
+  return (
+    <div className={styles.sheetOverlay} onClick={e => e.target === e.currentTarget && onClose()}>
+      <div className={styles.sheetPanel}>
+        <div className={styles.sheetHandle} />
+
+        <div className={styles.sheetHeader}>
+          <button className={styles.sheetCloseBtn} onClick={onClose}>
+            <MIcon name="close" size="1.35rem" color="var(--text2)" />
+          </button>
+          <div className={styles.sheetHeaderTitle}>Activity</div>
+          <div style={{ width: 32 }} />
+        </div>
+
+        <div className={styles.sheetBody}>
+          <div className={styles.sheetIconRow}>
+            <div className={styles.sheetIconOuter}>
+              <div className={styles.sheetIconInner}>
+                <MIcon name={meta.icon} size="1.5rem" color={meta.color} />
+              </div>
+            </div>
+            <TagChip label={item.tag} />
+          </div>
+
+          <div className={styles.sheetTitle}>{formatTitle(item.title)}</div>
+          <div className={styles.sheetTime}>{item.time}</div>
+
+          <div className={styles.sheetInfoCard}>
+            <div className={styles.sheetInfoLabel}>What happened</div>
+            <p className={styles.sheetInfoText}>{item.desc}</p>
+          </div>
+
+          <div className={styles.sheetInfoCard}>
+            <div className={styles.sheetInfoLabel}>Why the assistant did this</div>
+            <p className={styles.sheetInfoText}>{item.reason}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+function ScheduledDetailSheet({ item, onClose, onCancel }) {
+  if (!item) return null
+  const meta = ICON_META[item.type] || ICON_META.brief
+
+  return (
+    <div className={styles.sheetOverlay} onClick={e => e.target === e.currentTarget && onClose()}>
+      <div className={styles.sheetPanel}>
+        <div className={styles.sheetHandle} />
+
+        <div className={styles.sheetHeader}>
+          <button className={styles.sheetCloseBtn} onClick={onClose}>
+            <MIcon name="close" size="1.35rem" color="var(--text2)" />
+          </button>
+          <div className={styles.sheetHeaderTitle}>Scheduled</div>
+          <div style={{ width: 32 }} />
+        </div>
+
+        <div className={styles.sheetBody}>
+          <div className={styles.sheetIconRow}>
+            <div className={styles.sheetIconOuter}>
+              <div className={styles.sheetIconInner}>
+                <MIcon name={meta.icon} size="1.5rem" color={meta.color} />
+              </div>
+            </div>
+            <TagChip label={item.tag} />
+          </div>
+
+          <div className={styles.sheetTitle}>{formatTitle(item.title)}</div>
+          <div className={`${styles.sheetTime} ${styles.sheetTimeAccent}`}>{item.when}</div>
+
+          <div className={styles.sheetInfoCard}>
+            <div className={styles.sheetInfoLabel}>What will happen</div>
+            <p className={styles.sheetInfoText}>{item.desc}</p>
+          </div>
+
+          <button
+            className={styles.sheetCancelActionBtn}
+            onClick={() => { haptic('medium'); onCancel(item.id); onClose() }}
+          >
+            <MIcon name="cancel" size="1rem" color="#ef4444" />
+            Cancel this action
+          </button>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+function DraftDetailSheet({
+  item,
+  onClose,
   onDiscard,
   allOrders,
   allInvoices,
@@ -390,14 +393,17 @@ function DraftsTab({
   customers,
   generalSettings,
   profileSettings,
-  navigate,
   showToast,
   onSaveDoc,
 }) {
-  const [expanded,      setExpanded]      = useState(null)
-  const [confirmSave,   setConfirmSave]   = useState(null)
   const [viewerInvoice, setViewerInvoice] = useState(null)
   const [viewerReceipt, setViewerReceipt] = useState(null)
+  const [confirmSave,   setConfirmSave]   = useState(false)
+
+  if (!item) return null
+
+  const isDocDraft = item.type === 'invoice' || item.type === 'receipt'
+  const meta       = ICON_META[item.type] || ICON_META.message
 
   function getOrderIdFromDraftId(draftId) {
     return draftId?.replace('draft-invoice-', '') || null
@@ -407,8 +413,8 @@ function DraftsTab({
     return draftId?.replace('draft-receipt-', '') || null
   }
 
-  function getInvoiceForDraft(item) {
-    const orderId = getOrderIdFromDraftId(item.id)
+  function getInvoiceForDraft() {
+    const orderId  = getOrderIdFromDraftId(item.id)
     if (!orderId) return null
 
     const existing = allInvoices.find(inv => String(inv.orderId) === String(orderId))
@@ -422,10 +428,9 @@ function DraftsTab({
     const dueDays       = generalSettings.invoiceDueDays  || 7
     const invoiceNumber = `${prefix}-${String(allInvoices.length + 1).padStart(3, '0')}`
 
-    const today = new Date()
-    const dateStr = today.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
-
-    const dueDate = new Date(today)
+    const today      = new Date()
+    const dateStr    = today.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+    const dueDate    = new Date(today)
     dueDate.setDate(dueDate.getDate() + dueDays)
     const dueDateStr = dueDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
 
@@ -457,7 +462,7 @@ function DraftsTab({
     }
   }
 
-  function getReceiptForDraft(item) {
+  function getReceiptForDraft() {
     const invoiceId = getInvoiceIdFromDraftId(item.id)
     if (!invoiceId) return null
 
@@ -468,11 +473,9 @@ function DraftsTab({
 
     const prefix   = generalSettings.receiptPrefix   || 'RCP'
     const template = generalSettings.receiptTemplate || 'receiptTemplate1'
+    const today    = new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
 
-    const today = new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
-
-    const brandSnapshot = buildBrandSnapshot(profileSettings, generalSettings, 'receipt')
-
+    const brandSnapshot          = buildBrandSnapshot(profileSettings, generalSettings, 'receipt')
     const globalReceiptCount     = allReceipts.length + 1
     const receiptsForThisPayment = payment
       ? allReceipts.filter(r => String(r.paymentId) === String(payment.id)).length + 1
@@ -483,7 +486,6 @@ function DraftsTab({
 
     let payments             = []
     let previousInstallments = []
-    let previousPaid         = 0
     let cumulativePaid       = orderTotal
     let balance              = 0
     let isFullPayment        = true
@@ -507,8 +509,6 @@ function DraftsTab({
           time:   inst.time || null,
         }))
 
-      previousPaid = previousInstallments.reduce((sum, i) => sum + (parseFloat(i.amount) || 0), 0)
-
       payments = [{
         id:     lastInstallment.id,
         amount: lastInstallment.amount,
@@ -531,7 +531,7 @@ function DraftsTab({
       template,
       payments,
       previousInstallments,
-      previousPaid,
+      previousPaid:         previousInstallments.reduce((s, i) => s + (parseFloat(i.amount) || 0), 0),
       cumulativePaid,
       isFullPayment,
       balance,
@@ -548,7 +548,7 @@ function DraftsTab({
     }
   }
 
-  function getCustomerForDraft(item) {
+  function getCustomerForDraft() {
     if (item.type === 'invoice') {
       const orderId = getOrderIdFromDraftId(item.id)
       const order   = allOrders.find(o => String(o.id) === String(orderId))
@@ -564,11 +564,10 @@ function DraftsTab({
     return null
   }
 
-  async function handleShareBreakdown(item) {
+  async function handleShareBreakdown() {
     haptic('medium')
-    const doc      = item.type === 'invoice' ? getInvoiceForDraft(item) : getReceiptForDraft(item)
-    const customer = getCustomerForDraft(item)
-
+    const doc      = item.type === 'invoice' ? getInvoiceForDraft() : getReceiptForDraft()
+    const customer = getCustomerForDraft()
     if (!doc || !customer) { showToast?.('Could not build message'); return }
 
     const brand   = doc.brandSnapshot
@@ -591,7 +590,7 @@ function DraftsTab({
     }
   }
 
-  async function handleShareMessage(item) {
+  async function handleShareMessage() {
     haptic('medium')
     if (navigator.share) {
       try {
@@ -608,28 +607,25 @@ function DraftsTab({
     }
   }
 
-  function handleViewInvoice(item) {
+  function handleViewDoc() {
     haptic('light')
-    const invoice  = getInvoiceForDraft(item)
-    const customer = getCustomerForDraft(item)
-    if (!invoice || !customer) { showToast?.('Could not load invoice data'); return }
-    setViewerInvoice({ invoice, customer })
-  }
-
-  function handleViewReceipt(item) {
-    haptic('light')
-    const receipt  = getReceiptForDraft(item)
-    const customer = getCustomerForDraft(item)
-    if (!receipt || !customer) { showToast?.('Could not load receipt data'); return }
-    setViewerReceipt({ receipt, customer })
-  }
-
-  function handleConfirmSave() {
-    const item = confirmSave
-    setConfirmSave(null)
-
     if (item.type === 'invoice') {
-      const invoice = getInvoiceForDraft(item)
+      const invoice  = getInvoiceForDraft()
+      const customer = getCustomerForDraft()
+      if (!invoice || !customer) { showToast?.('Could not load invoice data'); return }
+      setViewerInvoice({ invoice, customer })
+    } else {
+      const receipt  = getReceiptForDraft()
+      const customer = getCustomerForDraft()
+      if (!receipt || !customer) { showToast?.('Could not load receipt data'); return }
+      setViewerReceipt({ receipt, customer })
+    }
+  }
+
+  async function handleConfirmSave() {
+    setConfirmSave(false)
+    if (item.type === 'invoice') {
+      const invoice = getInvoiceForDraft()
       if (!invoice) { showToast?.('Could not save invoice'); return }
       if (invoice._isPreview) {
         const { _isPreview, ...data } = invoice
@@ -639,7 +635,7 @@ function DraftsTab({
         onDiscard(item.id)
       }
     } else if (item.type === 'receipt') {
-      const receipt = getReceiptForDraft(item)
+      const receipt = getReceiptForDraft()
       if (!receipt) { showToast?.('Could not save receipt'); return }
       if (receipt._isPreview) {
         const { _isPreview, ...data } = receipt
@@ -649,26 +645,106 @@ function DraftsTab({
         onDiscard(item.id)
       }
     }
+    onClose()
   }
-
-  if (!items.length) return (
-    <div className={styles.emptyTab}>
-      <MIcon name="edit_note" size="2rem" color="var(--border2)" />
-      <p className={styles.emptyTabTitle}>Nothing ready yet</p>
-      <p className={styles.emptyTabSub}>Documents and messages your assistant prepares for you will appear here</p>
-    </div>
-  )
-
-  const isDocDraft = item => item.type === 'invoice' || item.type === 'receipt'
 
   return (
     <>
+      <div className={styles.sheetOverlay} onClick={e => e.target === e.currentTarget && !confirmSave && onClose()}>
+        <div className={styles.sheetPanel}>
+          <div className={styles.sheetHandle} />
+
+          <div className={styles.sheetHeader}>
+            <button className={styles.sheetCloseBtn} onClick={onClose}>
+              <MIcon name="close" size="1.35rem" color="var(--text2)" />
+            </button>
+            <div className={styles.sheetHeaderTitle}>
+              {isDocDraft ? (item.type === 'invoice' ? 'Invoice Draft' : 'Receipt Draft') : 'Message Draft'}
+            </div>
+            <div style={{ width: 32 }} />
+          </div>
+
+          <div className={styles.sheetBody}>
+            <div className={styles.sheetIconRow}>
+              <div className={styles.sheetIconOuter}>
+                <div className={styles.sheetIconInner}>
+                  <MIcon name={meta.icon} size="1.5rem" color={meta.color} />
+                </div>
+              </div>
+              <TagChip label={item.tag} />
+            </div>
+
+            <div className={styles.sheetTitle}>{formatTitle(item.title)}</div>
+
+            <div className={styles.sheetPreviewBox}>
+              <p className={styles.sheetPreviewText}>{item.preview}</p>
+            </div>
+
+            {isDocDraft ? (
+              <div className={styles.sheetActions}>
+                <button className={styles.sheetPrimaryBtn} onClick={handleShareBreakdown}>
+                  <MIcon name="ios_share" size="0.9rem" color="var(--bg)" />
+                  Send breakdown message
+                </button>
+
+                <div className={styles.sheetRowBtns}>
+                  <button className={styles.sheetSecondaryBtn} onClick={handleViewDoc}>
+                    <MIcon name="open_in_new" size="0.82rem" color="var(--text1)" />
+                    View {item.type}
+                  </button>
+                  <button className={styles.sheetGreenBtn} onClick={() => { haptic('light'); setConfirmSave(true) }}>
+                    <MIcon name="add_circle" size="0.82rem" color="#22c55e" />
+                    Save {item.type}
+                  </button>
+                </div>
+
+                <button className={styles.sheetDangerBtn} onClick={() => { haptic('light'); onDiscard(item.id); onClose() }}>
+                  <MIcon name="delete_outline" size="0.9rem" color="#ef4444" />
+                  Discard draft
+                </button>
+              </div>
+            ) : (
+              <div className={styles.sheetActions}>
+                <button className={styles.sheetPrimaryBtn} onClick={handleShareMessage}>
+                  <MIcon name="ios_share" size="0.9rem" color="var(--bg)" />
+                  Share message
+                </button>
+                <button className={styles.sheetDangerBtn} onClick={() => { haptic('light'); onDiscard(item.id); onClose() }}>
+                  <MIcon name="delete_outline" size="0.9rem" color="#ef4444" />
+                  Discard draft
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+
       {confirmSave && (
-        <ConfirmSaveModal
-          type={confirmSave.type}
-          onConfirm={handleConfirmSave}
-          onCancel={() => setConfirmSave(null)}
-        />
+        <div className={styles.confirmOverlay} onClick={() => setConfirmSave(false)}>
+          <div className={styles.confirmSheet} onClick={e => e.stopPropagation()}>
+            <div className={`${styles.confirmIconWrap} ${item.type === 'receipt' ? styles.confirmIconWrapGreen : ''}`}>
+              <MIcon
+                name={item.type === 'invoice' ? 'receipt_long' : 'payments'}
+                size="1.3rem"
+                color={item.type === 'invoice' ? 'var(--accent)' : '#22c55e'}
+              />
+            </div>
+            <p className={styles.confirmTitle}>Save this {item.type}?</p>
+            <p className={styles.confirmSub}>
+              This will add the {item.type} to your {item.type === 'invoice' ? 'Invoices' : 'Receipts'} list where you can view, edit, and share it anytime.
+            </p>
+            <div className={styles.confirmBtns}>
+              <button className={styles.confirmCancelBtn} onClick={() => setConfirmSave(false)}>Not now</button>
+              <button
+                className={`${styles.confirmSaveBtn} ${item.type === 'receipt' ? styles.confirmSaveBtnGreen : ''}`}
+                onClick={handleConfirmSave}
+              >
+                <MIcon name="check" size="0.82rem" color="var(--bg)" />
+                Save {item.type}
+              </button>
+            </div>
+          </div>
+        </div>
       )}
 
       {viewerInvoice && (
@@ -696,104 +772,251 @@ function DraftsTab({
           showToast={showToast}
         />
       )}
+    </>
+  )
+}
 
-      <div className={styles.tabList}>
-        {items.map(item => {
-          const meta   = ICON_META[item.type] || ICON_META.message
-          const isOpen = expanded === item.id
+function ActivityRow({ item, isLast, allOrders, onOpen }) {
+  const meta = ICON_META[item.type] || ICON_META.brief
 
-          return (
-            <div
-              key={item.id}
-              className={styles.card}
-              style={{ cursor: 'pointer' }}
-              onClick={() => setExpanded(isOpen ? null : item.id)}
-            >
-              <div className={styles.cardIconWrap}>
-                <MIcon name={meta.icon} size="1.05rem" color={meta.color} />
-              </div>
+  return (
+    <div
+      className={`${styles.row} ${isLast ? styles.rowLast : ''}`}
+      onClick={() => { haptic('light'); onOpen(item) }}
+    >
+      <ItemIconBox type={item.type} orderId={item.orderId} allOrders={allOrders} />
 
-              <div className={styles.cardBody} style={{ width: '100%' }}>
-                <div className={styles.cardTop}>
-                  <span className={styles.cardTitle}>{formatTitle(item.title)}</span>
-                  <MIcon name={isOpen ? 'expand_less' : 'expand_more'} size="1rem" color="var(--text3)" />
-                </div>
-
-                <div style={{ marginTop: 4, marginBottom: isOpen ? 0 : 2 }}>
-                  <TagChip label={item.tag} />
-                </div>
-
-                {isOpen && (
-                  <div
-                    className={styles.draftExpanded}
-                    onClick={e => e.stopPropagation()}
-                  >
-                    <p className={styles.draftText}>{item.preview}</p>
-
-                    {isDocDraft(item) ? (
-                      <div className={styles.draftActions}>
-                        <button
-                          className={styles.sendMsgBtn}
-                          onClick={() => handleShareBreakdown(item)}
-                        >
-                          <MIcon name="ios_share" size="0.88rem" color="var(--bg)" />
-                          Send breakdown message
-                        </button>
-
-                        <div className={styles.draftDocRow}>
-                          <button
-                            className={styles.viewDocBtn}
-                            onClick={() =>
-                              item.type === 'invoice'
-                                ? handleViewInvoice(item)
-                                : handleViewReceipt(item)
-                            }
-                          >
-                            <MIcon name="open_in_new" size="0.78rem" color="var(--text1)" />
-                            View {item.type}
-                          </button>
-                          <button
-                            className={styles.saveToListBtn}
-                            onClick={() => { haptic('light'); setConfirmSave(item) }}
-                          >
-                            <MIcon name="add_circle" size="0.78rem" color="#22c55e" />
-                            Save {item.type}
-                          </button>
-                        </div>
-
-                        <button
-                          className={styles.discardInlineBtn}
-                          onClick={() => { haptic('light'); onDiscard(item.id) }}
-                        >
-                          <MIcon name="delete_outline" size="0.82rem" color="#ef4444" />
-                          Discard draft
-                        </button>
-                      </div>
-                    ) : (
-                      <div className={styles.draftActions}>
-                        <button
-                          className={styles.sendMsgBtn}
-                          onClick={() => handleShareMessage(item)}
-                        >
-                          <MIcon name="ios_share" size="0.88rem" color="var(--bg)" />
-                          Share message
-                        </button>
-                        <button
-                          className={styles.discardInlineBtn}
-                          onClick={() => { haptic('light'); onDiscard(item.id) }}
-                        >
-                          <MIcon name="delete_outline" size="0.82rem" color="#ef4444" />
-                          Discard draft
-                        </button>
-                      </div>
-                    )}
-                  </div>
-                )}
-              </div>
-            </div>
-          )
-        })}
+      <div className={styles.rowInfo}>
+        <div className={styles.rowTitle}>{formatTitle(item.title)}</div>
+        <div className={styles.rowMeta}>
+          <MIcon name="schedule" size="0.75rem" color="var(--text3)" />
+          <span className={styles.rowMetaText}>{item.time}</span>
+        </div>
+        <div className={styles.rowMeta}>
+          <MIcon name={meta.icon} size="0.75rem" color={meta.color} />
+          <span className={styles.rowMetaText}>{item.desc}</span>
+        </div>
       </div>
+
+      <div className={styles.rowRight}>
+        <TagChip label={item.tag} />
+      </div>
+    </div>
+  )
+}
+
+function ScheduledRow({ item, isLast, allOrders, onOpen }) {
+  const meta = ICON_META[item.type] || ICON_META.reminder
+
+  return (
+    <div
+      className={`${styles.row} ${isLast ? styles.rowLast : ''}`}
+      onClick={() => { haptic('light'); onOpen(item) }}
+    >
+      <ItemIconBox type={item.type} orderId={item.orderId} allOrders={allOrders} />
+
+      <div className={styles.rowInfo}>
+        <div className={styles.rowTitle}>{formatTitle(item.title)}</div>
+        <div className={styles.rowMeta}>
+          <MIcon name="schedule" size="0.75rem" color="var(--accent)" />
+          <span className={`${styles.rowMetaText} ${styles.rowMetaAccent}`}>{item.when}</span>
+        </div>
+        <div className={styles.rowMeta}>
+          <MIcon name={meta.icon} size="0.75rem" color="var(--text3)" />
+          <span className={styles.rowMetaText}>{item.desc}</span>
+        </div>
+      </div>
+
+      <div className={styles.rowRight}>
+        <TagChip label={item.tag} />
+      </div>
+    </div>
+  )
+}
+
+function DraftRow({ item, isLast, allOrders, onOpen }) {
+  const isDoc = item.type === 'invoice' || item.type === 'receipt'
+  const meta  = ICON_META[item.type] || ICON_META.message
+
+  return (
+    <div
+      className={`${styles.row} ${isLast ? styles.rowLast : ''}`}
+      onClick={() => { haptic('light'); onOpen(item) }}
+    >
+      <ItemIconBox type={item.type} orderId={item.orderId} allOrders={allOrders} />
+
+      <div className={styles.rowInfo}>
+        <div className={styles.rowTitle}>{formatTitle(item.title)}</div>
+        <div className={styles.rowMeta}>
+          <MIcon name={meta.icon} size="0.75rem" color={meta.color} />
+          <span className={styles.rowMetaText}>
+            {isDoc ? `${item.type === 'invoice' ? 'Invoice' : 'Receipt'} ready to send` : 'Message ready to send'}
+          </span>
+        </div>
+        {item.preview && (
+          <div className={styles.rowPreviewSnippet}>{item.preview}</div>
+        )}
+      </div>
+
+      <div className={styles.rowRight}>
+        <TagChip label={item.tag} />
+        <MIcon name="chevron_right" size="0.9rem" color="var(--text3)" />
+      </div>
+    </div>
+  )
+}
+
+function ActivityTab({ items, allOrders }) {
+  const [selected, setSelected] = useState(null)
+
+  if (!items.length) return (
+    <div className={styles.emptyTab}>
+      <MIcon name="check_circle" size="2rem" color="var(--border2)" />
+      <p className={styles.emptyTabTitle}>No activity yet today</p>
+      <p className={styles.emptyTabSub}>Your assistant will log its actions here as it works</p>
+    </div>
+  )
+
+  const groups = groupByDate(items, i => i.date || i.time?.split(',')[0] || 'Today')
+
+  return (
+    <>
+      <div className={styles.listWrap}>
+        {groups.map(group => (
+          <div key={group.date} className={styles.dateGroup}>
+            <DateDivider label={group.date} />
+            <div className={styles.groupRows}>
+              {group.items.map((item, idx) => (
+                <ActivityRow
+                  key={item.id}
+                  item={item}
+                  isLast={idx === group.items.length - 1}
+                  allOrders={allOrders}
+                  onOpen={setSelected}
+                />
+              ))}
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {selected && (
+        <ActivityDetailSheet
+          item={selected}
+          onClose={() => setSelected(null)}
+        />
+      )}
+    </>
+  )
+}
+
+function ScheduledTab({ items, allOrders, onCancel }) {
+  const [selected, setSelected] = useState(null)
+
+  if (!items.length) return (
+    <div className={styles.emptyTab}>
+      <MIcon name="schedule" size="2rem" color="var(--border2)" />
+      <p className={styles.emptyTabTitle}>Nothing scheduled</p>
+      <p className={styles.emptyTabSub}>Upcoming assistant actions will appear here</p>
+    </div>
+  )
+
+  const groups = groupByDate(items, i => i.whenDate || i.when?.split(' ')[0] || 'Upcoming')
+
+  return (
+    <>
+      <div className={styles.listWrap}>
+        {groups.map(group => (
+          <div key={group.date} className={styles.dateGroup}>
+            <DateDivider label={group.date} />
+            <div className={styles.groupRows}>
+              {group.items.map((item, idx) => (
+                <ScheduledRow
+                  key={item.id}
+                  item={item}
+                  isLast={idx === group.items.length - 1}
+                  allOrders={allOrders}
+                  onOpen={setSelected}
+                />
+              ))}
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {selected && (
+        <ScheduledDetailSheet
+          item={selected}
+          onClose={() => setSelected(null)}
+          onCancel={onCancel}
+        />
+      )}
+    </>
+  )
+}
+
+function DraftsTab({
+  items,
+  onDiscard,
+  allOrders,
+  allInvoices,
+  allReceipts,
+  allPayments,
+  customers,
+  generalSettings,
+  profileSettings,
+  showToast,
+  onSaveDoc,
+}) {
+  const [selected, setSelected] = useState(null)
+
+  if (!items.length) return (
+    <div className={styles.emptyTab}>
+      <MIcon name="edit_note" size="2rem" color="var(--border2)" />
+      <p className={styles.emptyTabTitle}>Nothing ready yet</p>
+      <p className={styles.emptyTabSub}>Documents and messages your assistant prepares for you will appear here</p>
+    </div>
+  )
+
+  const groups = groupByDate(items, i => i.date || 'Today')
+
+  return (
+    <>
+      <div className={styles.listWrap}>
+        {groups.map(group => (
+          <div key={group.date} className={styles.dateGroup}>
+            <DateDivider label={group.date} />
+            <div className={styles.groupRows}>
+              {group.items.map((item, idx) => (
+                <DraftRow
+                  key={item.id}
+                  item={item}
+                  isLast={idx === group.items.length - 1}
+                  allOrders={allOrders}
+                  onOpen={setSelected}
+                />
+              ))}
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {selected && (
+        <DraftDetailSheet
+          item={selected}
+          onClose={() => setSelected(null)}
+          onDiscard={onDiscard}
+          allOrders={allOrders}
+          allInvoices={allInvoices}
+          allReceipts={allReceipts}
+          allPayments={allPayments}
+          customers={customers}
+          generalSettings={generalSettings}
+          profileSettings={profileSettings}
+          showToast={showToast}
+          onSaveDoc={onSaveDoc}
+        />
+      )}
     </>
   )
 }
@@ -898,7 +1121,6 @@ function ChatPanel({
       {open && <div className={styles.chatBackdrop} onClick={onClose} />}
 
       <div className={`${styles.chatPanel} ${open ? styles.chatPanelOpen : ''}`}>
-
         <div className={styles.chatPanelHeader}>
           <div>
             <p className={styles.chatPanelTitle}>Assistant</p>
@@ -990,7 +1212,6 @@ function ChatPanel({
             </button>
           </div>
         </div>
-
       </div>
     </>
   )
@@ -1058,7 +1279,7 @@ function Agent({ onMenuClick }) {
       }
       discardDraft(draftId)
       showToast(`${type === 'invoice' ? 'Invoice' : 'Receipt'} saved!`)
-    } catch (err) {
+    } catch {
       showToast('Failed to save — please try again')
     }
   }
@@ -1069,14 +1290,13 @@ function Agent({ onMenuClick }) {
   }, [handleAction, navigate])
 
   const TABS = [
-    { key: 'done',     label: 'Activity'                           },
-    { key: 'upcoming', label: 'Scheduled'                          },
-    { key: 'drafts',   label: 'Prepared',    badge: drafts.length   },
+    { key: 'done',     label: 'Activity'                         },
+    { key: 'upcoming', label: 'Scheduled'                        },
+    { key: 'drafts',   label: 'Prepared', badge: drafts.length   },
   ]
 
   return (
     <div className={styles.pageWrapper}>
-
       <Header
         type="back"
         customTitle={{ iconComponent: AgentTitleIcon, title: 'Pady' }}
@@ -1107,8 +1327,19 @@ function Agent({ onMenuClick }) {
       </div>
 
       <div className={styles.tabContent}>
-        {tab === 'done'     && <DoneTab     items={doneTasks}     />}
-        {tab === 'upcoming' && <UpcomingTab items={upcomingTasks} onCancel={cancelUpcoming} />}
+        {tab === 'done'     && (
+          <ActivityTab
+            items={doneTasks}
+            allOrders={allOrders}
+          />
+        )}
+        {tab === 'upcoming' && (
+          <ScheduledTab
+            items={upcomingTasks}
+            allOrders={allOrders}
+            onCancel={cancelUpcoming}
+          />
+        )}
         {tab === 'drafts'   && (
           <DraftsTab
             items={drafts}
@@ -1120,7 +1351,6 @@ function Agent({ onMenuClick }) {
             customers={customers}
             generalSettings={generalSettings}
             profileSettings={profileSettings}
-            navigate={navigate}
             showToast={showToast}
             onSaveDoc={handleSaveDoc}
           />
@@ -1128,9 +1358,7 @@ function Agent({ onMenuClick }) {
       </div>
 
       {toast && (
-        <div className={styles.toast}>
-          {toast}
-        </div>
+        <div className={styles.toast}>{toast}</div>
       )}
 
       <BottomNav />
@@ -1150,7 +1378,6 @@ function Agent({ onMenuClick }) {
         onCancelFlow={cancelFlow}
         greeting={greeting}
       />
-
     </div>
   )
 }
