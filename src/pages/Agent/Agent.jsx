@@ -43,12 +43,12 @@ const TAG_COLORS = {
 }
 
 const SUGGESTION_CHIPS = [
-  { label: 'Add order',        prompt: 'Add an order for '         },
-  { label: 'Record payment',   prompt: 'just paid ₦'               },
-  { label: "Who owes me?",     prompt: 'How much does  owe?'       },
-  { label: 'Add task',         prompt: 'Remind me to '             },
-  { label: 'Book appointment', prompt: 'Schedule a fitting for '   },
-  { label: "Today's summary",  prompt: "What's happening today?"   },
+  { label: 'Add order',        prompt: 'Add an order for '       },
+  { label: 'Record payment',   prompt: 'just paid ₦'             },
+  { label: "Who owes me?",     prompt: 'How much does  owe?'     },
+  { label: 'Add task',         prompt: 'Remind me to '           },
+  { label: 'Book appointment', prompt: 'Schedule a fitting for ' },
+  { label: "Today's summary",  prompt: "What's happening today?" },
 ]
 
 function getGreeting(name) {
@@ -64,6 +64,10 @@ function haptic(type = 'light') {
   if (!navigator.vibrate) return
   if (type === 'light')  navigator.vibrate(10)
   if (type === 'medium') navigator.vibrate(20)
+}
+
+function formatTitle(title) {
+  return (title || '').replace(/\s*[—–]\s*/g, ' · ')
 }
 
 function MIcon({ name, size = '1.1rem', color }) {
@@ -107,7 +111,7 @@ function TagChip({ label }) {
 }
 
 function fmt(currency, value) {
-  return `${currency}${parseFloat(value || 0).toLocaleString('en-NG', {
+  return `${currency.symbol}${parseFloat(value || 0).toLocaleString('en-NG', {
     minimumFractionDigits: 0,
     maximumFractionDigits: 0,
   })}`
@@ -135,7 +139,7 @@ function buildInvoiceMessage(invoice, customer, brand) {
     L.push('', '*🛍 Order Breakdown*')
     items.forEach(item => {
       const qty = item.qty && item.qty > 1 ? ` ×${item.qty}` : ''
-      L.push(`• ${item.name}${qty} — ${fmt(cur, item.price)}`)
+      L.push(`• ${item.name}${qty}: ${fmt(cur, item.price)}`)
     })
   }
 
@@ -149,9 +153,9 @@ function buildInvoiceMessage(invoice, customer, brand) {
   L.push('', `*Total Due: ${fmt(cur, total)}*`, '')
 
   if (invoice.due) {
-    L.push(`⏳ Please make payment before *${invoice.due}* to avoid delays.`)
+    L.push(`Please make payment before *${invoice.due}* to avoid delays. ⏳`)
   } else {
-    L.push('⏳ Kindly make payment at your earliest convenience.')
+    L.push('Kindly make payment at your earliest convenience. ⏳')
   }
 
   L.push('')
@@ -190,7 +194,7 @@ function buildReceiptMessage(receipt, customer, brand) {
     L.push('', '*🛍 Order Breakdown*')
     items.forEach(item => {
       const qty = item.qty && item.qty > 1 ? ` ×${item.qty}` : ''
-      L.push(`• ${item.name}${qty} — ${fmt(cur, item.price)}`)
+      L.push(`• ${item.name}${qty}: ${fmt(cur, item.price)}`)
     })
     if (discount > 0 || shipping > 0 || tax > 0) {
       if (discount > 0) L.push(`Discount: -${fmt(cur, discount)}`)
@@ -205,7 +209,7 @@ function buildReceiptMessage(receipt, customer, brand) {
     allPayments.forEach((p, i) => {
       const num    = allPayments.length > 1 ? `Payment ${i + 1}` : 'Amount Paid'
       const method = p.method ? ` via ${p.method.charAt(0).toUpperCase() + p.method.slice(1)}` : ''
-      const date   = p.date   ? ` — ${p.date}` : ''
+      const date   = p.date   ? ` on ${p.date}` : ''
       L.push(`${num}${method}: *${fmt(cur, p.amount)}*${date}`)
     })
     if (allPayments.length > 1) {
@@ -283,7 +287,7 @@ function DoneTab({ items }) {
             </div>
             <div className={styles.cardBody}>
               <div className={styles.cardTop}>
-                <span className={styles.cardTitle}>{item.title}</span>
+                <span className={styles.cardTitle}>{formatTitle(item.title)}</span>
                 <span className={styles.cardTime}>{item.time}</span>
               </div>
               <p className={styles.cardDesc}>{item.desc}</p>
@@ -292,7 +296,9 @@ function DoneTab({ items }) {
                 onClick={() => setExpanded(isOpen ? null : item.id)}
               >
                 <MIcon name={isOpen ? 'expand_less' : 'expand_more'} size="0.85rem" color="var(--text3)" />
-                <span>{isOpen ? 'Hide reason' : 'Why did the assistant do this?'}</span>
+                <span className={styles.whyToggleText}>
+                  {isOpen ? 'Hide reason' : 'Why did the assistant do this?'}
+                </span>
               </button>
               {isOpen && (
                 <div className={styles.whyBox}>
@@ -329,7 +335,7 @@ function UpcomingTab({ items, onCancel }) {
             </div>
             <div className={styles.cardBody}>
               <div className={styles.cardTop}>
-                <span className={styles.cardTitle}>{item.title}</span>
+                <span className={styles.cardTitle}>{formatTitle(item.title)}</span>
                 <span className={`${styles.cardTime} ${styles.cardTimeAccent}`}>{item.when}</span>
               </div>
               <p className={styles.cardDesc}>{item.desc}</p>
@@ -692,11 +698,6 @@ function DraftsTab({
       )}
 
       <div className={styles.tabList}>
-        <div className={styles.draftsNote}>
-          <MIcon name="info" size="0.85rem" color="var(--text3)" />
-          <p>Your assistant never sends anything. Review a draft and share it yourself.</p>
-        </div>
-
         {items.map(item => {
           const meta   = ICON_META[item.type] || ICON_META.message
           const isOpen = expanded === item.id
@@ -714,7 +715,7 @@ function DraftsTab({
 
               <div className={styles.cardBody} style={{ width: '100%' }}>
                 <div className={styles.cardTop}>
-                  <span className={styles.cardTitle}>{item.title}</span>
+                  <span className={styles.cardTitle}>{formatTitle(item.title)}</span>
                   <MIcon name={isOpen ? 'expand_less' : 'expand_more'} size="1rem" color="var(--text3)" />
                 </div>
 
@@ -764,6 +765,7 @@ function DraftsTab({
                           className={styles.discardInlineBtn}
                           onClick={() => { haptic('light'); onDiscard(item.id) }}
                         >
+                          <MIcon name="delete_outline" size="0.82rem" color="#ef4444" />
                           Discard draft
                         </button>
                       </div>
@@ -780,6 +782,7 @@ function DraftsTab({
                           className={styles.discardInlineBtn}
                           onClick={() => { haptic('light'); onDiscard(item.id) }}
                         >
+                          <MIcon name="delete_outline" size="0.82rem" color="#ef4444" />
                           Discard draft
                         </button>
                       </div>
@@ -1066,9 +1069,9 @@ function Agent({ onMenuClick }) {
   }, [handleAction, navigate])
 
   const TABS = [
-    { key: 'done',     label: 'Activity'                              },
-    { key: 'upcoming', label: 'Scheduled'                             },
-    { key: 'drafts',   label: 'Ready to Send', badge: drafts.length  },
+    { key: 'done',     label: 'Activity'                           },
+    { key: 'upcoming', label: 'Scheduled'                          },
+    { key: 'drafts',   label: 'Prepared',    badge: drafts.length   },
   ]
 
   return (
