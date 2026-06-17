@@ -23,7 +23,7 @@
   flex-shrink: 0;
   background: var(--surface);
   border-bottom: 1px solid var(--border);
-  padding: 12px 20px 16px;
+  padding: 12px 20px 0;
   display: flex;
   flex-direction: column;
   gap: 12px;
@@ -92,6 +92,45 @@
   flex-shrink: 0;
 }
 
+.tabs {
+  display: flex;
+  gap: 0;
+}
+
+.tabBtn {
+  flex: 1;
+  padding: 10px 6px;
+  border: none;
+  background: transparent;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--text3);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  border-bottom: 2px solid transparent;
+  transition: color 0.2s, border-color 0.2s;
+}
+
+.tabActive {
+  color: var(--text);
+  border-bottom-color: var(--accent);
+}
+
+.savePill {
+  font-size: 0.58rem;
+  font-weight: 800;
+  background: color-mix(in srgb, var(--accent) 18%, transparent);
+  color: var(--accent);
+  padding: 2px 5px;
+  border-radius: 20px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+}
+
 .scrollBody {
   flex: 1;
   min-height: 0;
@@ -115,6 +154,7 @@
   display: flex;
   flex-direction: column;
   gap: 16px;
+  animation: cardIn 0.22s ease;
   flex-shrink: 0;
 }
 
@@ -136,10 +176,21 @@
   z-index: 0;
 }
 
+@keyframes cardIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 .planHeader {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 6px;
   min-width: 0;
   position: relative;
   z-index: 1;
@@ -198,53 +249,11 @@
   flex-shrink: 0;
 }
 
-.billingToggle {
-  display: flex;
-  background: var(--surface2);
-  border-radius: 10px;
-  padding: 3px;
-  gap: 3px;
-}
-
-.billingBtn {
-  flex: 1;
-  padding: 7px 10px;
-  border: none;
-  border-radius: 8px;
-  background: transparent;
-  font-size: 0.78rem;
-  font-weight: 700;
-  color: var(--text3);
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 5px;
-  transition: background 0.15s, color 0.15s;
-}
-
-.billingBtnActive {
-  background: var(--surface);
-  color: var(--text);
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
-}
-
-.billingPill {
-  font-size: 0.56rem;
-  font-weight: 800;
-  background: color-mix(in srgb, var(--accent) 18%, transparent);
-  color: var(--accent);
-  padding: 2px 5px;
-  border-radius: 20px;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-  white-space: nowrap;
-}
-
 .planPriceRow {
   display: flex;
   align-items: baseline;
-  gap: 5px;
+  gap: 3px;
+  margin-top: 2px;
 }
 
 .planAmount {
@@ -258,14 +267,6 @@
   font-size: 0.72rem;
   color: var(--text3);
   font-weight: 600;
-}
-
-.strikePrice {
-  font-size: 0.95rem;
-  font-weight: 700;
-  color: var(--text3);
-  text-decoration: line-through;
-  margin-left: 2px;
 }
 
 .planBilled {
@@ -284,6 +285,8 @@
   padding: 4px 10px;
   border-radius: 20px;
   width: fit-content;
+  position: relative;
+  z-index: 1;
 }
 
 .divider {
@@ -361,11 +364,6 @@
   z-index: 1;
 }
 
-.ctaBtn:disabled {
-  opacity: 0.6;
-  cursor: default;
-}
-
 .ctaBtnFree {
   background: var(--surface2);
   color: var(--text2);
@@ -394,7 +392,7 @@
 
   .sheet {
     width: 100%;
-    max-width: 640px;
+    max-width: 680px;
     height: auto;
     max-height: 86vh;
     border-radius: 24px;
@@ -406,7 +404,7 @@
   }
 
   .fixedHeader {
-    padding: 20px 24px 16px;
+    padding: 20px 24px 0;
   }
 
   .scrollBody {
