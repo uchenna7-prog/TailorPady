@@ -2,6 +2,7 @@
   @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
 
 
+
 .overlay {
   position: fixed;
   inset: 0;
@@ -77,8 +78,8 @@
 }
 
 .brandIcon {
-  width: 28px;
-  height: 28px;
+  width: 40px;
+  height: 40px;
   object-fit: contain;
   flex-shrink: 0;
 }
