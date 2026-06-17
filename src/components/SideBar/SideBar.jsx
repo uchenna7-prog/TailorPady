@@ -64,9 +64,9 @@ const NAV_SECTIONS = [
     key: 'account',
     label: 'Account',
     items: [
-      { path: '/settings', label: 'Settings', icon: 'settings' },
-      { path: '/profile',  label: 'Account',  icon: 'person'   },
-      { path: '/login',    label: 'Log out',  icon: 'logout',  danger: true },
+      { path: '/settings', label: 'Settings', icon: 'settings'              },
+      { path: '/profile',  label: 'Account',  icon: 'person'                },
+      { path: '/login',    label: 'Log out',  icon: 'logout', danger: true  },
     ],
   },
 ]
@@ -107,7 +107,7 @@ function SideBar({ isOpen, onClose }) {
       try {
         await navigator.share({
           title: 'TailorPady',
-          text:  'The operating system for tailors — check out TailorPady!',
+          text:  'Check out TailorPady!',
           url:   window.location.origin,
         })
       } catch {}
@@ -141,10 +141,7 @@ function SideBar({ isOpen, onClose }) {
               alt="TailorPady"
               className={styles.brandIcon}
             />
-            <div className={styles.brandText}>
-              <span className={styles.brandName}>TailorPady</span>
-              <span className={styles.tagline}>The operating system for tailors</span>
-            </div>
+            <span className={styles.brandName}>TailorPady</span>
           </div>
         </div>
 
