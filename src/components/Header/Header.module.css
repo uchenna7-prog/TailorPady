@@ -84,13 +84,6 @@
   flex-shrink: 0;
 }
 
-.iconWithStatus {
-  position: relative;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-}
-
 .statusDot {
   position: absolute;
   bottom: -2px;
