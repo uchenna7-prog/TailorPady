@@ -56,12 +56,12 @@ function NotifItem({ n, onRead, onNavigate }) {
   )
 }
 
-function BotIcon() {
+export function BotIcon({ size = 18 }) {
   return (
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-      <rect x="4" y="11" width="16" height="10" rx="3" fill="currentColor" />
-      <rect x="7" y="14" width="2.5" height="2.5" rx=".5" fill="var(--bg)" />
-      <rect x="14.5" y="14" width="2.5" height="2.5" rx=".5" fill="var(--bg)" />
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      <rect x="4" y="11" width="16" height="10" rx="4" fill="currentColor" />
+      <rect x="7" y="14.5" width="2.5" height="2.5" rx="0.6" fill="var(--bg)" />
+      <rect x="14.5" y="14.5" width="2.5" height="2.5" rx="0.6" fill="var(--bg)" />
       <path d="M9.5 18.5h5" stroke="var(--bg)" strokeWidth="1.5" strokeLinecap="round" />
       <path d="M12 11V8" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
       <circle cx="12" cy="6.5" r="1.8" fill="currentColor" />
@@ -69,6 +69,10 @@ function BotIcon() {
       <line x1="20" y1="15" x2="22" y2="15" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
     </svg>
   )
+}
+
+function StatusDot({ active }) {
+  return <span className={`${styles.statusDot} ${active ? styles.statusDotActive : ''}`} />
 }
 
 function Header({
@@ -142,9 +146,12 @@ function Header({
       className={styles.iconBtn}
       onClick={handleBotClick}
       aria-label="Open Agent"
-      title="Stitch — TailorPady Agent"
+      title="Pady — Sew Padi Agent"
     >
-      <BotIcon />
+      <span className={styles.iconWithStatus}>
+        <BotIcon />
+        <StatusDot active={agentActive} />
+      </span>
       {agentPendingCount > 0 && (
         <span className={styles.agentBadge}>
           {agentPendingCount > 9 ? '9+' : agentPendingCount}
@@ -191,12 +198,14 @@ function Header({
 
           {customTitle?.title ? (
             <div className={`${styles.customTitleWrap} ${isScrolledProp && scrolledAvatar ? styles.titleShifted : ''}`}>
-              {isAgentPage && (
-                <span className={`${styles.agentDot} ${agentActive ? styles.agentDotActive : ''}`} />
-              )}
               <div className={styles.customTitle}>
-                <div>{customTitle.iconComponent && <customTitle.iconComponent />}</div>
-                <div>{customTitle.title}</div>
+                {customTitle.iconComponent && (
+                  <span className={styles.titleIcon}>
+                    <customTitle.iconComponent />
+                    <StatusDot active={agentActive} />
+                  </span>
+                )}
+                <span>{customTitle.title}</span>
               </div>
             </div>
           ) : (
