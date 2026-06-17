@@ -135,6 +135,8 @@
   flex: 1;
   min-height: 0;
   overflow-y: auto;
+  overflow-x: hidden;
+  touch-action: pan-y;
   -webkit-overflow-scrolling: touch;
   scroll-behavior: smooth;
   padding: 20px 16px 48px;
@@ -199,18 +201,27 @@
   align-items: center;
   justify-content: space-between;
   gap: 8px;
+  min-width: 0;
 }
 
 .planName {
   font-size: 1rem;
   font-weight: 900;
   color: var(--text2);
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .planNamePro {
   font-size: 1rem;
   font-weight: 900;
   color: var(--accent);
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .planCurrentBadge {
@@ -219,6 +230,7 @@
   color: var(--text3);
   text-transform: uppercase;
   letter-spacing: 0.05em;
+  flex-shrink: 0;
 }
 
 .planPopularBadge {
@@ -234,6 +246,7 @@
   text-transform: uppercase;
   letter-spacing: 0.04em;
   white-space: nowrap;
+  flex-shrink: 0;
 }
 
 .planPriceRow {
@@ -367,4 +380,34 @@
   flex-shrink: 0;
   position: relative;
   z-index: 1;
+}
+
+@media (min-width: 769px) {
+  .overlay {
+    left: var(--sidebar-width);
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+  }
+
+  .sheet {
+    width: 100%;
+    max-width: 680px;
+    height: auto;
+    max-height: 86vh;
+    border-radius: 24px;
+    box-shadow: 0 24px 64px rgba(0, 0, 0, 0.24);
+  }
+
+  .handle {
+    display: none;
+  }
+
+  .fixedHeader {
+    padding: 20px 24px 0;
+  }
+
+  .scrollBody {
+    padding: 24px 24px 32px;
+  }
 }
