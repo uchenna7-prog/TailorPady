@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
-import Header         from '../../components/Header/Header'
+import Header, { BotIcon } from '../../components/Header/Header'
 import BottomNav      from '../../components/BottomNav/BottomNav'
 import InvoiceViewer  from '../../components/InvoiceViewer/InvoiceViewer'
 import ReceiptViewer  from '../../components/ReceiptViewer/ReceiptViewer'
@@ -15,8 +15,8 @@ import { useGeneralSettings } from '../../contexts/GeneralSettingsContext'
 import { useProfileSettings } from '../../contexts/ProfileSettingsContext'
 import styles from './Agent.module.css'
 
-function BotIcon() {
-  return <span className="mi">smart_toy</span>
+function AgentTitleIcon() {
+  return <BotIcon size={28} />
 }
 
 const ICON_META = {
@@ -1079,7 +1079,7 @@ function Agent({ onMenuClick }) {
 
       <Header
         type="back"
-        customTitle={{ iconComponent: BotIcon, title: 'Pady' }}
+        customTitle={{ iconComponent: AgentTitleIcon, title: 'Pady' }}
         onBackClick={() => navigate('/')}
         agentActive={enabled}
         customActions={[
