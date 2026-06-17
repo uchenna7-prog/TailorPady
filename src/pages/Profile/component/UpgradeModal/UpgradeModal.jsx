@@ -42,25 +42,21 @@ const TABS = [
 const TAB_KEYS = TABS.map(t => t.key)
 
 export default function UpgradeModal({ onClose, onUpgrade }) {
-  const [active, setActive] = useState('annual')
+  const [active, setActive] = useState('free')
   const scrollRef = useRef(null)
   const touchStartX = useRef(null)
   const touchStartY = useRef(null)
-  const touchStartScrollTop = useRef(0)
-  const swiping = useRef(false)
 
   const handleTab = (key) => {
     setActive(key)
     if (scrollRef.current) {
-      scrollRef.current.scrollTo({ top: 0, behavior: 'smooth' })
+      scrollRef.current.scrollTo({ top: 0, left: 0, behavior: 'smooth' })
     }
   }
 
   const handleTouchStart = (e) => {
     touchStartX.current = e.touches[0].clientX
     touchStartY.current = e.touches[0].clientY
-    touchStartScrollTop.current = scrollRef.current?.scrollTop ?? 0
-    swiping.current = false
   }
 
   const handleTouchEnd = (e) => {
@@ -85,8 +81,6 @@ export default function UpgradeModal({ onClose, onUpgrade }) {
     touchStartX.current = null
     touchStartY.current = null
   }
-
-  const activeIndex = TAB_KEYS.indexOf(active)
 
   return (
     <div className={styles.overlay} onClick={onClose}>
