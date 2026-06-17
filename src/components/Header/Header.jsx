@@ -148,10 +148,7 @@ function Header({
       aria-label="Open Agent"
       title="Pady — Sew Padi Agent"
     >
-      <span className={styles.iconWithStatus}>
-        <BotIcon />
-        <StatusDot active={agentActive} />
-      </span>
+      <BotIcon />
       {agentPendingCount > 0 && (
         <span className={styles.agentBadge}>
           {agentPendingCount > 9 ? '9+' : agentPendingCount}
