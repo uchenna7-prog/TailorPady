@@ -268,16 +268,48 @@ function buildBrandSnapshot(profileSettings, generalSettings, docType = 'invoice
 function ItemIconBox({ type, itemId, orderId, allOrders, allInvoices }) {
   const meta = ICON_META[type] || ICON_META.brief
 
-  let resolvedOrderId = orderId
+  let resolvedOrderId = orderId || null
 
-  if (!resolvedOrderId && type === 'invoice' && itemId) {
-    resolvedOrderId = itemId.replace('draft-invoice-', '')
+  if (!resolvedOrderId && itemId) {
+    if (itemId.startsWith('draft-invoice-')) {
+      resolvedOrderId = itemId.replace('draft-invoice-', '')
+    } else if (itemId.startsWith('invoice-')) {
+      resolvedOrderId = itemId.replace('invoice-', '')
+    } else if (itemId.startsWith('upcoming-invoice-')) {
+      resolvedOrderId = itemId.replace('upcoming-invoice-', '')
+    }
   }
 
-  if (!resolvedOrderId && type === 'receipt' && itemId && allInvoices) {
-    const invoiceId = itemId.replace('draft-receipt-', '')
-    const invoice   = allInvoices.find(inv => String(inv.id) === String(invoiceId))
-    resolvedOrderId = invoice?.orderId ?? null
+  if (!resolvedOrderId && itemId && allInvoices) {
+    let invoiceId = null
+    if (itemId.startsWith('draft-receipt-')) {
+      invoiceId = itemId.replace('draft-receipt-', '')
+    } else if (itemId.startsWith('upcoming-reminder-')) {
+      invoiceId = itemId.replace('upcoming-reminder-', '')
+    } else if (itemId.startsWith('draft-reminder-')) {
+      invoiceId = itemId.replace('draft-reminder-', '')
+    } else if (itemId.startsWith('reminder-')) {
+      invoiceId = itemId.replace('reminder-', '')
+    }
+    if (invoiceId) {
+      const invoice = allInvoices.find(inv => String(inv.id) === String(invoiceId))
+      resolvedOrderId = invoice?.orderId ?? null
+    }
+  }
+
+  if (!resolvedOrderId && itemId && allOrders) {
+    let customerId = null
+    if (itemId.startsWith('receipt-')) {
+      customerId = itemId.replace('receipt-', '')
+    } else if (itemId.startsWith('followup-') || itemId.startsWith('draft-followup-')) {
+      customerId = itemId.replace('draft-followup-', '').replace('followup-', '')
+    }
+    if (customerId) {
+      const customerOrders = allOrders
+        .filter(o => String(o.customerId) === String(customerId) && (o.items?.length > 0))
+        .sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0))
+      resolvedOrderId = customerOrders[0]?.id ?? null
+    }
   }
 
   const linkedOrder = resolvedOrderId
