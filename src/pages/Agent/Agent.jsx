@@ -265,15 +265,27 @@ function buildBrandSnapshot(profileSettings, generalSettings, docType = 'invoice
   }
 }
 
-function ItemIconBox({ type, orderId, allOrders }) {
-  const meta        = ICON_META[type] || ICON_META.brief
-  const linkedOrder = orderId
-    ? allOrders?.find(o => String(o.id) === String(orderId))
+function ItemIconBox({ type, itemId, orderId, allOrders, allInvoices }) {
+  const meta = ICON_META[type] || ICON_META.brief
+
+  let resolvedOrderId = orderId
+
+  if (!resolvedOrderId && type === 'invoice' && itemId) {
+    resolvedOrderId = itemId.replace('draft-invoice-', '')
+  }
+
+  if (!resolvedOrderId && type === 'receipt' && itemId && allInvoices) {
+    const invoiceId = itemId.replace('draft-receipt-', '')
+    const invoice   = allInvoices.find(inv => String(inv.id) === String(invoiceId))
+    resolvedOrderId = invoice?.orderId ?? null
+  }
+
+  const linkedOrder = resolvedOrderId
+    ? allOrders?.find(o => String(o.id) === String(resolvedOrderId))
     : null
-  const items       = linkedOrder?.items ?? []
 
   if (linkedOrder) {
-    return <OrderMosaic items={items} size="md" />
+    return <OrderMosaic items={linkedOrder.items ?? []} size="md" />
   }
 
   return (
@@ -776,7 +788,7 @@ function DraftDetailSheet({
   )
 }
 
-function ActivityRow({ item, isLast, allOrders, onOpen }) {
+function ActivityRow({ item, isLast, allOrders, allInvoices, onOpen }) {
   const meta = ICON_META[item.type] || ICON_META.brief
 
   return (
@@ -784,7 +796,7 @@ function ActivityRow({ item, isLast, allOrders, onOpen }) {
       className={`${styles.row} ${isLast ? styles.rowLast : ''}`}
       onClick={() => { haptic('light'); onOpen(item) }}
     >
-      <ItemIconBox type={item.type} orderId={item.orderId} allOrders={allOrders} />
+      <ItemIconBox type={item.type} itemId={item.id} orderId={item.orderId} allOrders={allOrders} allInvoices={allInvoices} />
 
       <div className={styles.rowInfo}>
         <div className={styles.rowTitle}>{formatTitle(item.title)}</div>
@@ -805,7 +817,7 @@ function ActivityRow({ item, isLast, allOrders, onOpen }) {
   )
 }
 
-function ScheduledRow({ item, isLast, allOrders, onOpen }) {
+function ScheduledRow({ item, isLast, allOrders, allInvoices, onOpen }) {
   const meta = ICON_META[item.type] || ICON_META.reminder
 
   return (
@@ -813,7 +825,7 @@ function ScheduledRow({ item, isLast, allOrders, onOpen }) {
       className={`${styles.row} ${isLast ? styles.rowLast : ''}`}
       onClick={() => { haptic('light'); onOpen(item) }}
     >
-      <ItemIconBox type={item.type} orderId={item.orderId} allOrders={allOrders} />
+      <ItemIconBox type={item.type} itemId={item.id} orderId={item.orderId} allOrders={allOrders} allInvoices={allInvoices} />
 
       <div className={styles.rowInfo}>
         <div className={styles.rowTitle}>{formatTitle(item.title)}</div>
@@ -834,7 +846,7 @@ function ScheduledRow({ item, isLast, allOrders, onOpen }) {
   )
 }
 
-function DraftRow({ item, isLast, allOrders, onOpen }) {
+function DraftRow({ item, isLast, allOrders, allInvoices, onOpen }) {
   const isDoc = item.type === 'invoice' || item.type === 'receipt'
   const meta  = ICON_META[item.type] || ICON_META.message
 
@@ -843,7 +855,7 @@ function DraftRow({ item, isLast, allOrders, onOpen }) {
       className={`${styles.row} ${isLast ? styles.rowLast : ''}`}
       onClick={() => { haptic('light'); onOpen(item) }}
     >
-      <ItemIconBox type={item.type} orderId={item.orderId} allOrders={allOrders} />
+      <ItemIconBox type={item.type} itemId={item.id} orderId={item.orderId} allOrders={allOrders} allInvoices={allInvoices} />
 
       <div className={styles.rowInfo}>
         <div className={styles.rowTitle}>{formatTitle(item.title)}</div>
@@ -866,7 +878,7 @@ function DraftRow({ item, isLast, allOrders, onOpen }) {
   )
 }
 
-function ActivityTab({ items, allOrders }) {
+function ActivityTab({ items, allOrders, allInvoices }) {
   const [selected, setSelected] = useState(null)
 
   if (!items.length) return (
@@ -892,6 +904,7 @@ function ActivityTab({ items, allOrders }) {
                   item={item}
                   isLast={idx === group.items.length - 1}
                   allOrders={allOrders}
+                  allInvoices={allInvoices}
                   onOpen={setSelected}
                 />
               ))}
@@ -910,7 +923,7 @@ function ActivityTab({ items, allOrders }) {
   )
 }
 
-function ScheduledTab({ items, allOrders, onCancel }) {
+function ScheduledTab({ items, allOrders, allInvoices, onCancel }) {
   const [selected, setSelected] = useState(null)
 
   if (!items.length) return (
@@ -936,6 +949,7 @@ function ScheduledTab({ items, allOrders, onCancel }) {
                   item={item}
                   isLast={idx === group.items.length - 1}
                   allOrders={allOrders}
+                  allInvoices={allInvoices}
                   onOpen={setSelected}
                 />
               ))}
@@ -993,6 +1007,7 @@ function DraftsTab({
                   item={item}
                   isLast={idx === group.items.length - 1}
                   allOrders={allOrders}
+                  allInvoices={allInvoices}
                   onOpen={setSelected}
                 />
               ))}
@@ -1331,12 +1346,14 @@ function Agent({ onMenuClick }) {
           <ActivityTab
             items={doneTasks}
             allOrders={allOrders}
+            allInvoices={allInvoices}
           />
         )}
         {tab === 'upcoming' && (
           <ScheduledTab
             items={upcomingTasks}
             allOrders={allOrders}
+            allInvoices={allInvoices}
             onCancel={cancelUpcoming}
           />
         )}
