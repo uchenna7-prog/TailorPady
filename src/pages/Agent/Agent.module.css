@@ -268,7 +268,7 @@
   margin-bottom: 4px;
 }
 
-.whyToggle span {
+.whyToggleText {
   text-decoration: underline;
   text-underline-offset: 2px;
 }
@@ -318,23 +318,6 @@
 .cancelBtn:active {
   border-color: var(--text3);
   color: var(--text2);
-}
-
-.draftsNote {
-  display: flex;
-  align-items: center;
-  gap: 7px;
-  background: var(--surface2);
-  border-radius: 9px;
-  padding: 9px 12px;
-  margin-bottom: 4px;
-}
-
-.draftsNote p {
-  font-size: 0.72rem;
-  color: var(--text3);
-  margin: 0;
-  line-height: 1.5;
 }
 
 .draftExpanded {
@@ -436,21 +419,26 @@
 }
 
 .discardInlineBtn {
-  background: none;
-  border: none;
-  font-family: inherit;
-  font-size: 0.7rem;
-  font-weight: 600;
-  color: var(--text3);
-  cursor: pointer;
-  text-align: center;
-  padding: 2px 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
   width: 100%;
-  transition: color 0.12s;
+  background: transparent;
+  border: 1px solid rgba(239, 68, 68, 0.22);
+  border-radius: 10px;
+  padding: 10px 16px;
+  font-family: inherit;
+  font-size: 0.76rem;
+  font-weight: 600;
+  color: #ef4444;
+  cursor: pointer;
+  transition: background 0.12s, border-color 0.12s;
 }
 
 .discardInlineBtn:active {
-  color: var(--text2);
+  background: rgba(239, 68, 68, 0.07);
+  border-color: rgba(239, 68, 68, 0.42);
 }
 
 .modalOverlay {
