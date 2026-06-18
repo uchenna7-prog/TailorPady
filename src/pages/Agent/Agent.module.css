@@ -117,8 +117,8 @@
 }
 
 .rowIconOuter {
-  width: 80px;
-  height: 80px;
+  width: 76px;
+  height: 76px;
   border-radius: 12px;
   background: var(--surface);
   border: 1px solid var(--border);
@@ -129,21 +129,20 @@
 }
 
 .rowIconInner {
-  width: 58px;
-  height: 58px;
+  width: 56px;
+  height: 56px;
   border-radius: 10px;
-  background: var(--surface2);
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
-.rowInfo {
+.rowBody {
   flex: 1;
   min-width: 0;
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 3px;
 }
 
 .rowTitle {
@@ -176,7 +175,7 @@
   font-weight: 600;
 }
 
-.rowPreviewSnippet {
+.rowPreview {
   font-size: 0.72rem;
   color: var(--text3);
   white-space: nowrap;
@@ -195,7 +194,7 @@
 
 /* ── Tag pill ──────────────────────────────────────────────── */
 
-.tag {
+.pill {
   display: inline-block;
   width: max-content;
   font-size: 0.6rem;
@@ -204,6 +203,7 @@
   border-radius: 6px;
   letter-spacing: 0.04em;
   text-transform: uppercase;
+  flex-shrink: 0;
 }
 
 /* ── Empty state ───────────────────────────────────────────── */
@@ -276,6 +276,8 @@
   flex-shrink: 0;
 }
 
+/* ── Sheet header ──────────────────────────────────────────── */
+
 .sheetHeader {
   display: flex;
   align-items: center;
@@ -319,24 +321,24 @@
   display: flex;
   align-items: flex-start;
   gap: 14px;
-  padding: 18px 18px 16px;
+  padding: 16px 18px;
   background: var(--surface);
   border-bottom: 1px solid var(--border);
   flex-shrink: 0;
 }
 
-.sheetHeroIconWrap {
-  width: 52px;
-  height: 52px;
-  border-radius: 15px;
+.sheetHeroIcon {
+  width: 48px;
+  height: 48px;
+  border-radius: 14px;
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  margin-top: 3px;
+  margin-top: 2px;
 }
 
-.sheetHeroContent {
+.sheetHeroBody {
   flex: 1;
   min-width: 0;
   display: flex;
@@ -344,40 +346,25 @@
   gap: 4px;
 }
 
-.sheetHeroName {
+.sheetHeroTitle {
   font-size: 1rem;
   font-weight: 800;
   color: var(--text);
   letter-spacing: -0.2px;
   line-height: 1.3;
-  margin-top: 3px;
+  margin: 2px 0 0;
 }
 
-.sheetHeroCustomer {
+.sheetHeroMeta {
   display: flex;
   align-items: center;
   gap: 5px;
-}
-
-.sheetHeroCustomerName {
   font-size: 0.78rem;
   color: var(--text2);
   font-weight: 500;
 }
 
-.sheetHeroTime {
-  font-size: 0.75rem;
-  color: var(--text3);
-  font-weight: 500;
-}
-
-.sheetHeroTimeAccent {
-  color: var(--accent);
-  font-weight: 700;
-  font-size: 0.75rem;
-}
-
-/* ── Sheet body & sections ─────────────────────────────────── */
+/* ── Sheet body ────────────────────────────────────────────── */
 
 .sheetBody {
   flex: 1;
@@ -386,17 +373,52 @@
   -webkit-overflow-scrolling: touch;
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 10px;
 }
 
-.sheetSection {
+/* ── Sheet meta row (time, date) ───────────────────────────── */
+
+.sheetMeta {
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: 14px;
   overflow: hidden;
 }
 
-.sheetSectionHeader {
+.sheetMetaRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 14px;
+}
+
+.sheetMetaLabel {
+  font-size: 0.78rem;
+  color: var(--text3);
+  font-weight: 500;
+  flex: 1;
+}
+
+.sheetMetaValue {
+  font-size: 0.78rem;
+  color: var(--text2);
+  font-weight: 600;
+}
+
+.sheetMetaAccent {
+  color: var(--accent);
+}
+
+/* ── Section cards ─────────────────────────────────────────── */
+
+.section {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  overflow: hidden;
+}
+
+.sectionHeader {
   display: flex;
   align-items: center;
   gap: 6px;
@@ -404,7 +426,7 @@
   border-bottom: 1px solid var(--border);
 }
 
-.sheetSectionLabel {
+.sectionLabel {
   font-size: 0.58rem;
   font-weight: 800;
   color: var(--text3);
@@ -412,7 +434,11 @@
   letter-spacing: 0.5px;
 }
 
-.sheetSectionText {
+.sectionBody {
+  padding: 0;
+}
+
+.sectionText {
   font-size: 0.85rem;
   color: var(--text2);
   line-height: 1.7;
@@ -421,7 +447,7 @@
   white-space: pre-wrap;
 }
 
-.sheetSectionItalic {
+.sectionTextItalic {
   font-style: italic;
 }
 
@@ -430,10 +456,10 @@
 .sheetActions {
   display: flex;
   flex-direction: column;
-  gap: 9px;
+  gap: 8px;
 }
 
-.sheetPrimaryBtn {
+.btnPrimary {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -447,22 +473,21 @@
   font-size: 0.85rem;
   font-weight: 700;
   font-family: inherit;
-  letter-spacing: 0.01em;
   cursor: pointer;
   transition: opacity 0.14s, transform 0.12s;
 }
 
-.sheetPrimaryBtn:active {
+.btnPrimary:active {
   opacity: 0.85;
   transform: scale(0.98);
 }
 
-.sheetRowBtns {
+.btnRow {
   display: flex;
   gap: 8px;
 }
 
-.sheetSecondaryBtn {
+.btnSecondary {
   flex: 1;
   display: inline-flex;
   align-items: center;
@@ -481,12 +506,12 @@
   transition: background 0.12s, border-color 0.12s;
 }
 
-.sheetSecondaryBtn:active {
+.btnSecondary:active {
   background: var(--surface2);
   border-color: var(--text2);
 }
 
-.sheetGreenBtn {
+.btnGreen {
   flex: 1;
   display: inline-flex;
   align-items: center;
@@ -505,12 +530,12 @@
   transition: background 0.12s, border-color 0.12s;
 }
 
-.sheetGreenBtn:active {
+.btnGreen:active {
   background: rgba(34, 197, 94, 0.16);
   border-color: rgba(34, 197, 94, 0.5);
 }
 
-.sheetDangerBtn {
+.btnGhost {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -528,12 +553,12 @@
   transition: background 0.12s, border-color 0.12s;
 }
 
-.sheetDangerBtn:active {
+.btnGhost:active {
   background: rgba(239, 68, 68, 0.07);
   border-color: rgba(239, 68, 68, 0.42);
 }
 
-.sheetCancelActionBtn {
+.btnDanger {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -551,7 +576,7 @@
   transition: background 0.12s, border-color 0.12s;
 }
 
-.sheetCancelActionBtn:active {
+.btnDanger:active {
   background: rgba(239, 68, 68, 0.12);
   border-color: rgba(239, 68, 68, 0.42);
 }
@@ -583,7 +608,7 @@
   animation: sheetUp 0.24s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.confirmIconWrap {
+.confirmIcon {
   width: 54px;
   height: 54px;
   border-radius: 15px;
@@ -594,7 +619,7 @@
   margin-bottom: 2px;
 }
 
-.confirmIconWrapGreen {
+.confirmIconGreen {
   background: rgba(34, 197, 94, 0.1);
 }
 
@@ -622,7 +647,7 @@
   margin-top: 10px;
 }
 
-.confirmCancelBtn {
+.confirmBtnCancel {
   flex: 1;
   background: var(--surface2);
   border: 1px solid var(--border);
@@ -636,11 +661,11 @@
   transition: background 0.12s;
 }
 
-.confirmCancelBtn:active {
+.confirmBtnCancel:active {
   background: var(--border);
 }
 
-.confirmSaveBtn {
+.confirmBtnSave {
   flex: 1;
   display: flex;
   align-items: center;
@@ -659,11 +684,11 @@
   transition: opacity 0.14s, transform 0.12s;
 }
 
-.confirmSaveBtnGreen {
+.confirmBtnSaveGreen {
   background: #22c55e;
 }
 
-.confirmSaveBtn:active {
+.confirmBtnSave:active {
   opacity: 0.85;
   transform: scale(0.98);
 }
