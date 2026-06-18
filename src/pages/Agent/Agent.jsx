@@ -197,7 +197,7 @@ function resolveOrderName(item, allOrders, allInvoices) {
 
   if (!orderId) return null
   const order = allOrders.find(o => String(o.id) === String(orderId))
-  return order?.name || null
+  return order?.desc || order?.name || null
 }
 
 function fmt(currency, value) {
@@ -330,9 +330,6 @@ function buildBrandSnapshot(profileSettings, generalSettings, docType = 'invoice
   }
 }
 
-
-// ── Primitive components ────────────────────────────────────────
-
 function MIcon({ name, size = '1.1rem', color }) {
   return (
     <span
@@ -372,9 +369,6 @@ function TagPill({ label }) {
     </span>
   )
 }
-
-
-// ── Item icon / mosaic ──────────────────────────────────────────
 
 function ItemIconBox({ type, itemId, orderId, allOrders, allInvoices }) {
   const meta = ICON_META[type] || ICON_META.brief
@@ -447,9 +441,6 @@ function ItemIconBox({ type, itemId, orderId, allOrders, allInvoices }) {
 function DateDivider({ label }) {
   return <div className={styles.dateDivider}>{label}</div>
 }
-
-
-// ── Row cards ───────────────────────────────────────────────────
 
 function ActivityRow({ item, isLast, allOrders, allInvoices, customers, onOpen }) {
   const customerName = resolveCustomerName(item, allOrders, allInvoices, customers)
@@ -582,9 +573,6 @@ function DraftRow({ item, isLast, allOrders, allInvoices, customers, onOpen }) {
     </div>
   )
 }
-
-
-// ── Detail modals ───────────────────────────────────────────────
 
 function SheetBase({ onClose, children }) {
   return (
@@ -1102,9 +1090,6 @@ function DraftDetailSheet({
   )
 }
 
-
-// ── Tab containers ──────────────────────────────────────────────
-
 function ActivityTab({ items, allOrders, allInvoices, customers }) {
   const [selected, setSelected] = useState(null)
 
@@ -1271,9 +1256,6 @@ function DraftsTab({
     </>
   )
 }
-
-
-// ── Chat components ─────────────────────────────────────────────
 
 function TypingIndicator() {
   return (
@@ -1470,9 +1452,6 @@ function ChatPanel({
     </>
   )
 }
-
-
-// ── Main page ───────────────────────────────────────────────────
 
 function Agent({ onMenuClick }) {
   const navigate = useNavigate()
