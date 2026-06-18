@@ -80,6 +80,13 @@ function formatTitle(title) {
   return (title || '').replace(/\s*[—–]\s*/g, ' · ')
 }
 
+function extractTime(timeStr) {
+  if (!timeStr) return ''
+  const commaIdx = timeStr.indexOf(', ')
+  if (commaIdx !== -1) return timeStr.slice(commaIdx + 2)
+  return timeStr
+}
+
 function groupByDate(items, getDate) {
   const groups = []
   const seen   = {}
@@ -149,6 +156,48 @@ function resolveCustomerName(item, allOrders, allInvoices, customers) {
 
   if (!customerId) return null
   return customers.find(c => String(c.id) === String(customerId))?.name ?? null
+}
+
+function resolveOrderName(item, allOrders, allInvoices) {
+  if (!allOrders?.length) return null
+
+  let orderId = item.orderId || null
+  const id    = item.id || ''
+
+  if (!orderId) {
+    for (const prefix of ['draft-invoice-', 'invoice-', 'upcoming-invoice-']) {
+      if (id.startsWith(prefix)) {
+        orderId = id.slice(prefix.length)
+        break
+      }
+    }
+  }
+
+  if (!orderId && allInvoices?.length) {
+    let invoiceId = null
+    for (const prefix of ['draft-receipt-', 'receipt-']) {
+      if (id.startsWith(prefix)) {
+        invoiceId = id.slice(prefix.length).split('::')[0]
+        break
+      }
+    }
+    if (!invoiceId) {
+      for (const prefix of ['upcoming-reminder-', 'draft-reminder-', 'reminder-']) {
+        if (id.startsWith(prefix)) {
+          invoiceId = id.slice(prefix.length)
+          break
+        }
+      }
+    }
+    if (invoiceId) {
+      const invoice = allInvoices.find(inv => String(inv.id) === String(invoiceId))
+      orderId = invoice?.orderId ?? null
+    }
+  }
+
+  if (!orderId) return null
+  const order = allOrders.find(o => String(o.id) === String(orderId))
+  return order?.name || null
 }
 
 function fmt(currency, value) {
@@ -404,6 +453,9 @@ function DateDivider({ label }) {
 
 function ActivityRow({ item, isLast, allOrders, allInvoices, customers, onOpen }) {
   const customerName = resolveCustomerName(item, allOrders, allInvoices, customers)
+  const orderName    = resolveOrderName(item, allOrders, allInvoices)
+  const displayTitle = orderName || formatTitle(item.title)
+  const displayTime  = extractTime(item.time)
 
   return (
     <div
@@ -419,7 +471,7 @@ function ActivityRow({ item, isLast, allOrders, allInvoices, customers, onOpen }
       />
 
       <div className={styles.rowBody}>
-        <div className={styles.rowTitle}>{formatTitle(item.title)}</div>
+        <div className={styles.rowTitle}>{displayTitle}</div>
 
         {customerName && (
           <div className={styles.rowMeta}>
@@ -430,7 +482,7 @@ function ActivityRow({ item, isLast, allOrders, allInvoices, customers, onOpen }
 
         <div className={styles.rowMeta}>
           <MIcon name="schedule" size="0.72rem" color="var(--text3)" />
-          <span className={styles.rowMetaText}>{item.time}</span>
+          <span className={styles.rowMetaText}>{displayTime}</span>
         </div>
       </div>
 
@@ -441,6 +493,8 @@ function ActivityRow({ item, isLast, allOrders, allInvoices, customers, onOpen }
 
 function ScheduledRow({ item, isLast, allOrders, allInvoices, customers, onOpen }) {
   const customerName = resolveCustomerName(item, allOrders, allInvoices, customers)
+  const orderName    = resolveOrderName(item, allOrders, allInvoices)
+  const displayTitle = orderName || formatTitle(item.title)
 
   return (
     <div
@@ -456,7 +510,7 @@ function ScheduledRow({ item, isLast, allOrders, allInvoices, customers, onOpen 
       />
 
       <div className={styles.rowBody}>
-        <div className={styles.rowTitle}>{formatTitle(item.title)}</div>
+        <div className={styles.rowTitle}>{displayTitle}</div>
 
         {customerName && (
           <div className={styles.rowMeta}>
@@ -478,6 +532,8 @@ function ScheduledRow({ item, isLast, allOrders, allInvoices, customers, onOpen 
 
 function DraftRow({ item, isLast, allOrders, allInvoices, customers, onOpen }) {
   const customerName = resolveCustomerName(item, allOrders, allInvoices, customers)
+  const orderName    = resolveOrderName(item, allOrders, allInvoices)
+  const displayTitle = orderName || formatTitle(item.title)
   const isDoc        = item.type === 'invoice' || item.type === 'receipt'
 
   return (
@@ -494,7 +550,7 @@ function DraftRow({ item, isLast, allOrders, allInvoices, customers, onOpen }) {
       />
 
       <div className={styles.rowBody}>
-        <div className={styles.rowTitle}>{formatTitle(item.title)}</div>
+        <div className={styles.rowTitle}>{displayTitle}</div>
 
         {customerName && (
           <div className={styles.rowMeta}>
@@ -503,7 +559,7 @@ function DraftRow({ item, isLast, allOrders, allInvoices, customers, onOpen }) {
           </div>
         )}
 
-        {item.preview ? (
+        {!isDoc && item.preview ? (
           <div className={styles.rowPreview}>{item.preview}</div>
         ) : (
           <div className={styles.rowMeta}>
