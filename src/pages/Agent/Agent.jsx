@@ -281,6 +281,7 @@ function buildBrandSnapshot(profileSettings, generalSettings, docType = 'invoice
   }
 }
 
+
 // ── Primitive components ────────────────────────────────────────
 
 function MIcon({ name, size = '1.1rem', color }) {
@@ -314,14 +315,15 @@ function RichText({ text }) {
   )
 }
 
-function TagChip({ label }) {
+function TagPill({ label }) {
   const c = TAG_COLORS[label] || TAG_COLORS.Message
   return (
-    <span className={styles.tag} style={{ background: c.bg, color: c.color }}>
+    <span className={styles.pill} style={{ background: c.bg, color: c.color }}>
       {label}
     </span>
   )
 }
+
 
 // ── Item icon / mosaic ──────────────────────────────────────────
 
@@ -386,7 +388,7 @@ function ItemIconBox({ type, itemId, orderId, allOrders, allInvoices }) {
 
   return (
     <div className={styles.rowIconOuter}>
-      <div className={styles.rowIconInner}>
+      <div className={styles.rowIconInner} style={{ background: ICON_BG[type] || 'var(--surface2)' }}>
         <MIcon name={meta.icon} size="1.3rem" color={meta.color} />
       </div>
     </div>
@@ -397,7 +399,8 @@ function DateDivider({ label }) {
   return <div className={styles.dateDivider}>{label}</div>
 }
 
-// ── Row components ──────────────────────────────────────────────
+
+// ── Row cards ───────────────────────────────────────────────────
 
 function ActivityRow({ item, isLast, allOrders, allInvoices, customers, onOpen }) {
   const customerName = resolveCustomerName(item, allOrders, allInvoices, customers)
@@ -415,7 +418,7 @@ function ActivityRow({ item, isLast, allOrders, allInvoices, customers, onOpen }
         allInvoices={allInvoices}
       />
 
-      <div className={styles.rowInfo}>
+      <div className={styles.rowBody}>
         <div className={styles.rowTitle}>{formatTitle(item.title)}</div>
 
         {customerName && (
@@ -431,9 +434,7 @@ function ActivityRow({ item, isLast, allOrders, allInvoices, customers, onOpen }
         </div>
       </div>
 
-      <div className={styles.rowRight}>
-        <TagChip label={item.tag} />
-      </div>
+      <TagPill label={item.tag} />
     </div>
   )
 }
@@ -454,7 +455,7 @@ function ScheduledRow({ item, isLast, allOrders, allInvoices, customers, onOpen 
         allInvoices={allInvoices}
       />
 
-      <div className={styles.rowInfo}>
+      <div className={styles.rowBody}>
         <div className={styles.rowTitle}>{formatTitle(item.title)}</div>
 
         {customerName && (
@@ -470,9 +471,7 @@ function ScheduledRow({ item, isLast, allOrders, allInvoices, customers, onOpen 
         </div>
       </div>
 
-      <div className={styles.rowRight}>
-        <TagChip label={item.tag} />
-      </div>
+      <TagPill label={item.tag} />
     </div>
   )
 }
@@ -494,7 +493,7 @@ function DraftRow({ item, isLast, allOrders, allInvoices, customers, onOpen }) {
         allInvoices={allInvoices}
       />
 
-      <div className={styles.rowInfo}>
+      <div className={styles.rowBody}>
         <div className={styles.rowTitle}>{formatTitle(item.title)}</div>
 
         {customerName && (
@@ -504,11 +503,9 @@ function DraftRow({ item, isLast, allOrders, allInvoices, customers, onOpen }) {
           </div>
         )}
 
-        {item.preview && (
-          <div className={styles.rowPreviewSnippet}>{item.preview}</div>
-        )}
-
-        {!item.preview && (
+        {item.preview ? (
+          <div className={styles.rowPreview}>{item.preview}</div>
+        ) : (
           <div className={styles.rowMeta}>
             <MIcon
               name={isDoc ? 'check_circle' : 'chat_bubble'}
@@ -523,132 +520,137 @@ function DraftRow({ item, isLast, allOrders, allInvoices, customers, onOpen }) {
       </div>
 
       <div className={styles.rowRight}>
-        <TagChip label={item.tag} />
+        <TagPill label={item.tag} />
         <MIcon name="chevron_right" size="0.9rem" color="var(--text3)" />
       </div>
     </div>
   )
 }
 
+
 // ── Detail modals ───────────────────────────────────────────────
 
-function ActivityDetailSheet({ item, onClose, allOrders, allInvoices, customers }) {
-  if (!item) return null
-
-  const meta         = ICON_META[item.type] || ICON_META.brief
-  const iconBg       = ICON_BG[item.type] || 'var(--surface2)'
-  const customerName = resolveCustomerName(item, allOrders, allInvoices, customers)
-
+function SheetBase({ onClose, children }) {
   return (
     <div className={styles.sheetOverlay} onClick={e => e.target === e.currentTarget && onClose()}>
       <div className={styles.sheetPanel}>
         <div className={styles.sheetHandle} />
-
-        <div className={styles.sheetHeader}>
-          <button className={styles.sheetCloseBtn} onClick={onClose}>
-            <MIcon name="close" size="1.2rem" color="var(--text2)" />
-          </button>
-          <div className={styles.sheetHeaderTitle}>Activity</div>
-          <div style={{ width: 30 }} />
-        </div>
-
-        <div className={styles.sheetHero}>
-          <div className={styles.sheetHeroIconWrap} style={{ background: iconBg }}>
-            <MIcon name={meta.icon} size="1.45rem" color={meta.color} />
-          </div>
-          <div className={styles.sheetHeroContent}>
-            <TagChip label={item.tag} />
-            <div className={styles.sheetHeroName}>{formatTitle(item.title)}</div>
-            {customerName && (
-              <div className={styles.sheetHeroCustomer}>
-                <MIcon name="person" size="0.72rem" color="var(--text3)" />
-                <span className={styles.sheetHeroCustomerName}>{customerName}</span>
-              </div>
-            )}
-            <div className={styles.sheetHeroTime}>{item.time}</div>
-          </div>
-        </div>
-
-        <div className={styles.sheetBody}>
-          <div className={styles.sheetSection}>
-            <div className={styles.sheetSectionHeader}>
-              <MIcon name="info" size="0.75rem" color="var(--text3)" />
-              <span className={styles.sheetSectionLabel}>What happened</span>
-            </div>
-            <p className={styles.sheetSectionText}>{item.desc}</p>
-          </div>
-
-          {item.reason && (
-            <div className={styles.sheetSection}>
-              <div className={styles.sheetSectionHeader}>
-                <MIcon name="psychology" size="0.75rem" color="var(--text3)" />
-                <span className={styles.sheetSectionLabel}>Why the assistant did this</span>
-              </div>
-              <p className={styles.sheetSectionText}>{item.reason}</p>
-            </div>
-          )}
-        </div>
+        {children}
       </div>
     </div>
   )
 }
 
-function ScheduledDetailSheet({ item, onClose, onCancel, allOrders, allInvoices, customers }) {
-  if (!item) return null
+function SheetHeader({ title, onClose }) {
+  return (
+    <div className={styles.sheetHeader}>
+      <button className={styles.sheetCloseBtn} onClick={onClose}>
+        <MIcon name="close" size="1.1rem" color="var(--text2)" />
+      </button>
+      <span className={styles.sheetHeaderTitle}>{title}</span>
+      <div style={{ width: 30 }} />
+    </div>
+  )
+}
 
-  const meta         = ICON_META[item.type] || ICON_META.reminder
-  const iconBg       = ICON_BG[item.type] || 'var(--surface2)'
+function SheetHero({ item, customerName }) {
+  const meta   = ICON_META[item.type] || ICON_META.brief
+  const iconBg = ICON_BG[item.type]   || 'var(--surface2)'
+
+  return (
+    <div className={styles.sheetHero}>
+      <div className={styles.sheetHeroIcon} style={{ background: iconBg }}>
+        <MIcon name={meta.icon} size="1.4rem" color={meta.color} />
+      </div>
+      <div className={styles.sheetHeroBody}>
+        <TagPill label={item.tag} />
+        <p className={styles.sheetHeroTitle}>{formatTitle(item.title)}</p>
+        {customerName && (
+          <div className={styles.sheetHeroMeta}>
+            <MIcon name="person" size="0.7rem" color="var(--text3)" />
+            <span>{customerName}</span>
+          </div>
+        )}
+      </div>
+    </div>
+  )
+}
+
+function SheetSection({ icon, label, children }) {
+  return (
+    <div className={styles.section}>
+      <div className={styles.sectionHeader}>
+        <MIcon name={icon} size="0.72rem" color="var(--text3)" />
+        <span className={styles.sectionLabel}>{label}</span>
+      </div>
+      <div className={styles.sectionBody}>{children}</div>
+    </div>
+  )
+}
+
+function ActivityDetailSheet({ item, onClose, allOrders, allInvoices, customers }) {
+  if (!item) return null
   const customerName = resolveCustomerName(item, allOrders, allInvoices, customers)
 
   return (
-    <div className={styles.sheetOverlay} onClick={e => e.target === e.currentTarget && onClose()}>
-      <div className={styles.sheetPanel}>
-        <div className={styles.sheetHandle} />
+    <SheetBase onClose={onClose}>
+      <SheetHeader title="Activity" onClose={onClose} />
+      <SheetHero item={item} customerName={customerName} />
 
-        <div className={styles.sheetHeader}>
-          <button className={styles.sheetCloseBtn} onClick={onClose}>
-            <MIcon name="close" size="1.2rem" color="var(--text2)" />
-          </button>
-          <div className={styles.sheetHeaderTitle}>Scheduled</div>
-          <div style={{ width: 30 }} />
-        </div>
+      <div className={styles.sheetBody}>
+        <SheetSection icon="info" label="What happened">
+          <p className={styles.sectionText}>{item.desc}</p>
+        </SheetSection>
 
-        <div className={styles.sheetHero}>
-          <div className={styles.sheetHeroIconWrap} style={{ background: iconBg }}>
-            <MIcon name={meta.icon} size="1.45rem" color={meta.color} />
-          </div>
-          <div className={styles.sheetHeroContent}>
-            <TagChip label={item.tag} />
-            <div className={styles.sheetHeroName}>{formatTitle(item.title)}</div>
-            {customerName && (
-              <div className={styles.sheetHeroCustomer}>
-                <MIcon name="person" size="0.72rem" color="var(--text3)" />
-                <span className={styles.sheetHeroCustomerName}>{customerName}</span>
-              </div>
-            )}
-            <div className={styles.sheetHeroTimeAccent}>{item.when}</div>
+        <div className={styles.sheetMeta}>
+          <div className={styles.sheetMetaRow}>
+            <MIcon name="schedule" size="0.78rem" color="var(--text3)" />
+            <span className={styles.sheetMetaLabel}>Time</span>
+            <span className={styles.sheetMetaValue}>{item.time}</span>
           </div>
         </div>
 
-        <div className={styles.sheetBody}>
-          <div className={styles.sheetSection}>
-            <div className={styles.sheetSectionHeader}>
-              <MIcon name="event_note" size="0.75rem" color="var(--text3)" />
-              <span className={styles.sheetSectionLabel}>What will happen</span>
-            </div>
-            <p className={styles.sheetSectionText}>{item.desc}</p>
-          </div>
-
-          <button
-            className={styles.sheetCancelActionBtn}
-            onClick={() => { haptic('medium'); onCancel(item.id); onClose() }}
-          >
-            <MIcon name="cancel" size="1rem" color="#ef4444" />
-            Cancel this action
-          </button>
-        </div>
+        {item.reason && (
+          <SheetSection icon="psychology" label="Why the assistant did this">
+            <p className={styles.sectionText}>{item.reason}</p>
+          </SheetSection>
+        )}
       </div>
-    </div>
+    </SheetBase>
+  )
+}
+
+function ScheduledDetailSheet({ item, onClose, onCancel, allOrders, allInvoices, customers }) {
+  if (!item) return null
+  const customerName = resolveCustomerName(item, allOrders, allInvoices, customers)
+
+  return (
+    <SheetBase onClose={onClose}>
+      <SheetHeader title="Scheduled" onClose={onClose} />
+      <SheetHero item={item} customerName={customerName} />
+
+      <div className={styles.sheetBody}>
+        <SheetSection icon="event_note" label="What will happen">
+          <p className={styles.sectionText}>{item.desc}</p>
+        </SheetSection>
+
+        <div className={styles.sheetMeta}>
+          <div className={styles.sheetMetaRow}>
+            <MIcon name="schedule" size="0.78rem" color="var(--accent)" />
+            <span className={styles.sheetMetaLabel}>Scheduled for</span>
+            <span className={`${styles.sheetMetaValue} ${styles.sheetMetaAccent}`}>{item.when}</span>
+          </div>
+        </div>
+
+        <button
+          className={styles.btnDanger}
+          onClick={() => { haptic('medium'); onCancel(item.id); onClose() }}
+        >
+          <MIcon name="cancel" size="0.9rem" color="#ef4444" />
+          Cancel this action
+        </button>
+      </div>
+    </SheetBase>
   )
 }
 
@@ -672,9 +674,7 @@ function DraftDetailSheet({
 
   if (!item) return null
 
-  const isDocDraft   = item.type === 'invoice' || item.type === 'receipt'
-  const meta         = ICON_META[item.type] || ICON_META.message
-  const iconBg       = ICON_BG[item.type] || 'var(--surface2)'
+  const isDoc        = item.type === 'invoice' || item.type === 'receipt'
   const customerName = resolveCustomerName(item, allOrders, allInvoices, customers)
 
   function getOrderIdFromDraftId(draftId) {
@@ -919,73 +919,48 @@ function DraftDetailSheet({
     onClose()
   }
 
-  const headerLabel = isDocDraft
+  const sheetTitle = isDoc
     ? (item.type === 'invoice' ? 'Invoice Draft' : 'Receipt Draft')
     : 'Message Draft'
+
+  const isReceipt = item.type === 'receipt'
 
   return (
     <>
       <div className={styles.sheetOverlay} onClick={e => e.target === e.currentTarget && !confirmSave && onClose()}>
         <div className={styles.sheetPanel}>
           <div className={styles.sheetHandle} />
-
-          <div className={styles.sheetHeader}>
-            <button className={styles.sheetCloseBtn} onClick={onClose}>
-              <MIcon name="close" size="1.2rem" color="var(--text2)" />
-            </button>
-            <div className={styles.sheetHeaderTitle}>{headerLabel}</div>
-            <div style={{ width: 30 }} />
-          </div>
-
-          <div className={styles.sheetHero}>
-            <div className={styles.sheetHeroIconWrap} style={{ background: iconBg }}>
-              <MIcon name={meta.icon} size="1.45rem" color={meta.color} />
-            </div>
-            <div className={styles.sheetHeroContent}>
-              <TagChip label={item.tag} />
-              <div className={styles.sheetHeroName}>{formatTitle(item.title)}</div>
-              {customerName && (
-                <div className={styles.sheetHeroCustomer}>
-                  <MIcon name="person" size="0.72rem" color="var(--text3)" />
-                  <span className={styles.sheetHeroCustomerName}>{customerName}</span>
-                </div>
-              )}
-            </div>
-          </div>
+          <SheetHeader title={sheetTitle} onClose={onClose} />
+          <SheetHero item={item} customerName={customerName} />
 
           <div className={styles.sheetBody}>
-            <div className={styles.sheetSection}>
-              <div className={styles.sheetSectionHeader}>
-                <MIcon name="preview" size="0.75rem" color="var(--text3)" />
-                <span className={styles.sheetSectionLabel}>
-                  {isDocDraft ? 'Breakdown preview' : 'Message'}
-                </span>
-              </div>
-              <p className={`${styles.sheetSectionText} ${styles.sheetSectionItalic}`}>
-                {item.preview}
-              </p>
-            </div>
+            <SheetSection icon="preview" label={isDoc ? 'Breakdown preview' : 'Message'}>
+              <p className={`${styles.sectionText} ${styles.sectionTextItalic}`}>{item.preview}</p>
+            </SheetSection>
 
-            {isDocDraft ? (
+            {isDoc ? (
               <div className={styles.sheetActions}>
-                <button className={styles.sheetPrimaryBtn} onClick={handleShareBreakdown}>
+                <button className={styles.btnPrimary} onClick={handleShareBreakdown}>
                   <MIcon name="ios_share" size="0.9rem" color="var(--bg)" />
                   Send breakdown to client
                 </button>
 
-                <div className={styles.sheetRowBtns}>
-                  <button className={styles.sheetSecondaryBtn} onClick={handleViewDoc}>
+                <div className={styles.btnRow}>
+                  <button className={styles.btnSecondary} onClick={handleViewDoc}>
                     <MIcon name="open_in_new" size="0.82rem" />
                     View {item.type}
                   </button>
-                  <button className={styles.sheetGreenBtn} onClick={() => { haptic('light'); setConfirmSave(true) }}>
+                  <button
+                    className={`${styles.btnGreen}`}
+                    onClick={() => { haptic('light'); setConfirmSave(true) }}
+                  >
                     <MIcon name="add_circle" size="0.82rem" color="#22c55e" />
                     Save {item.type}
                   </button>
                 </div>
 
                 <button
-                  className={styles.sheetDangerBtn}
+                  className={styles.btnGhost}
                   onClick={() => { haptic('light'); onDiscard(item.id); onClose() }}
                 >
                   <MIcon name="delete_outline" size="0.9rem" color="#ef4444" />
@@ -994,12 +969,12 @@ function DraftDetailSheet({
               </div>
             ) : (
               <div className={styles.sheetActions}>
-                <button className={styles.sheetPrimaryBtn} onClick={handleShareMessage}>
+                <button className={styles.btnPrimary} onClick={handleShareMessage}>
                   <MIcon name="ios_share" size="0.9rem" color="var(--bg)" />
                   Share message
                 </button>
                 <button
-                  className={styles.sheetDangerBtn}
+                  className={styles.btnGhost}
                   onClick={() => { haptic('light'); onDiscard(item.id); onClose() }}
                 >
                   <MIcon name="delete_outline" size="0.9rem" color="#ef4444" />
@@ -1014,24 +989,24 @@ function DraftDetailSheet({
       {confirmSave && (
         <div className={styles.confirmOverlay} onClick={() => setConfirmSave(false)}>
           <div className={styles.confirmSheet} onClick={e => e.stopPropagation()}>
-            <div className={`${styles.confirmIconWrap} ${item.type === 'receipt' ? styles.confirmIconWrapGreen : ''}`}>
+            <div className={`${styles.confirmIcon} ${isReceipt ? styles.confirmIconGreen : ''}`}>
               <MIcon
-                name={item.type === 'invoice' ? 'receipt_long' : 'payments'}
+                name={isReceipt ? 'payments' : 'receipt_long'}
                 size="1.3rem"
-                color={item.type === 'invoice' ? 'var(--accent)' : '#22c55e'}
+                color={isReceipt ? '#22c55e' : 'var(--accent)'}
               />
             </div>
             <p className={styles.confirmTitle}>Save this {item.type}?</p>
             <p className={styles.confirmSub}>
-              This will add the {item.type} to your {item.type === 'invoice' ? 'Invoices' : 'Receipts'} list
+              This will add the {item.type} to your {isReceipt ? 'Receipts' : 'Invoices'} list
               where you can view, edit, and share it anytime.
             </p>
             <div className={styles.confirmBtns}>
-              <button className={styles.confirmCancelBtn} onClick={() => setConfirmSave(false)}>
+              <button className={styles.confirmBtnCancel} onClick={() => setConfirmSave(false)}>
                 Not now
               </button>
               <button
-                className={`${styles.confirmSaveBtn} ${item.type === 'receipt' ? styles.confirmSaveBtnGreen : ''}`}
+                className={`${styles.confirmBtnSave} ${isReceipt ? styles.confirmBtnSaveGreen : ''}`}
                 onClick={handleConfirmSave}
               >
                 <MIcon name="check" size="0.82rem" color="var(--bg)" />
@@ -1070,6 +1045,7 @@ function DraftDetailSheet({
     </>
   )
 }
+
 
 // ── Tab containers ──────────────────────────────────────────────
 
@@ -1239,6 +1215,7 @@ function DraftsTab({
     </>
   )
 }
+
 
 // ── Chat components ─────────────────────────────────────────────
 
@@ -1437,6 +1414,7 @@ function ChatPanel({
     </>
   )
 }
+
 
 // ── Main page ───────────────────────────────────────────────────
 
