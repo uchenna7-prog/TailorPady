@@ -724,8 +724,9 @@ export function useAutonomousAgent() {
 
   const doneTasks = useMemo(() => {
     if (!enabled) return []
-    const items = []
-    const now   = Date.now()
+    const items     = []
+    const nowMs     = Date.now()
+    const timeLabel = `Today, ${now()}`
 
     if (generalSettings.agentAutoInvoice) {
       const thresholdMs      = toMs(generalSettings.agentAutoInvoiceTimeframe)
@@ -736,7 +737,7 @@ export function useAutonomousAgent() {
           if (invoicedOrderIds.has(o.id)) return false
           if (['cancelled'].includes(o.status)) return false
           const createdAt = o.createdAt?.toDate?.()?.getTime() || o.createdAt || 0
-          return (now - createdAt) > thresholdMs
+          return (nowMs - createdAt) > thresholdMs
         })
         .slice(0, 3)
         .forEach(order => {
@@ -746,7 +747,7 @@ export function useAutonomousAgent() {
             title:  'Invoice drafted',
             desc:   `Order for ${order.customerName || 'unknown customer'} — ${order.desc || 'no description'}.`,
             reason: `This order had no invoice after ${durationLabel(generalSettings.agentAutoInvoiceTimeframe)}, which is the timeframe you set.`,
-            time:   'Today',
+            time:   timeLabel,
             tag:    'Invoice',
           })
         })
@@ -762,7 +763,7 @@ export function useAutonomousAgent() {
             title:  'Receipt drafted',
             desc:   `Payment of ${formatMoney(installment.amount, generalSettings.invoiceCurrency)} recorded for ${invoice.customerName || 'a customer'}. Receipt is ready in Drafts.`,
             reason: `A payment was recorded for ${invoice.customerName || 'this customer'} and no receipt had been generated for it yet.`,
-            time:   'Today',
+            time:   timeLabel,
             tag:    'Receipt',
           })
         })
@@ -785,7 +786,7 @@ export function useAutonomousAgent() {
             title:  'Birthday message drafted',
             desc:   diffDays === 0 ? `Today is ${customer.name}'s birthday.` : `${customer.name}'s birthday is in ${diffDays} day${diffDays !== 1 ? 's' : ''}.`,
             reason: `Your follow-up window is ${durationLabel(generalSettings.agentBirthdayNotice)} before the date.`,
-            time:   'Today',
+            time:   timeLabel,
             tag:    'Birthday',
           })
         }
@@ -799,7 +800,7 @@ export function useAutonomousAgent() {
         .filter(i => {
           if (i.status === 'paid' || !i.due) return false
           const dueTime      = new Date(i.due + 'T23:59:59').getTime()
-          const timeUntilDue = dueTime - now
+          const timeUntilDue = dueTime - nowMs
           return timeUntilDue > 0 && timeUntilDue <= reminderMs
         })
         .slice(0, 3)
@@ -810,7 +811,7 @@ export function useAutonomousAgent() {
             title:  'Payment reminder drafted',
             desc:   `Invoice for ${invoice.customerName || 'a customer'} is due on ${invoice.due}.`,
             reason: `The invoice due date is within ${durationLabel(generalSettings.agentPaymentReminderBefore)}, your reminder window.`,
-            time:   'Today',
+            time:   timeLabel,
             tag:    'Reminder',
           })
         })
@@ -825,14 +826,14 @@ export function useAutonomousAgent() {
 
         const lastOrder    = customerOrders.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0))[0]
         const lastActivity = lastOrder.createdAt?.toDate?.()?.getTime() || lastOrder.createdAt || 0
-        if (now - lastActivity >= inactivityMs) {
+        if (nowMs - lastActivity >= inactivityMs) {
           items.push({
             id:     `followup-${customer.id}`,
             type:   'followup',
             title:  'Follow-up drafted',
             desc:   `${customer.name} hasn't placed an order in over ${durationLabel(generalSettings.agentFollowUpInactivity)}.`,
             reason: `Your follow-up window is ${durationLabel(generalSettings.agentFollowUpInactivity)} of inactivity.`,
-            time:   'Today',
+            time:   timeLabel,
             tag:    'Follow-up',
           })
         }
@@ -845,7 +846,7 @@ export function useAutonomousAgent() {
   const upcomingTasks = useMemo(() => {
     if (!enabled) return []
     const items = []
-    const now   = Date.now()
+    const nowMs = Date.now()
 
     if (generalSettings.agentAutoInvoice) {
       const thresholdMs      = toMs(generalSettings.agentAutoInvoiceTimeframe)
@@ -856,13 +857,13 @@ export function useAutonomousAgent() {
           if (invoicedOrderIds.has(o.id)) return false
           if (['cancelled'].includes(o.status)) return false
           const createdAt = o.createdAt?.toDate?.()?.getTime() || o.createdAt || 0
-          const age = now - createdAt
+          const age = nowMs - createdAt
           return age > 0 && age <= thresholdMs
         })
         .slice(0, 3)
         .forEach(order => {
           const createdAt = order.createdAt?.toDate?.()?.getTime() || order.createdAt || 0
-          const remaining = thresholdMs - (now - createdAt)
+          const remaining = thresholdMs - (nowMs - createdAt)
           const hours     = Math.ceil(remaining / UNIT_MS.hours)
           const whenLabel = hours < 1 ? 'Soon' : hours < 24 ? `In ${hours}h` : `In ${Math.ceil(hours / 24)}d`
 
@@ -886,7 +887,7 @@ export function useAutonomousAgent() {
         .filter(i => {
           if (i.status === 'paid' || !i.due) return false
           const dueTime      = new Date(i.due + 'T23:59:59').getTime()
-          const timeUntilDue = dueTime - now
+          const timeUntilDue = dueTime - nowMs
           return timeUntilDue > reminderMs && timeUntilDue <= reminderMs * 3
         })
         .slice(0, 2)
@@ -941,7 +942,7 @@ export function useAutonomousAgent() {
     if (!enabled) return []
     const items    = []
     const currency = generalSettings.invoiceCurrency || '₦'
-    const now      = Date.now()
+    const nowMs    = Date.now()
 
     if (generalSettings.agentAutoInvoice) {
       const thresholdMs      = toMs(generalSettings.agentAutoInvoiceTimeframe)
@@ -952,7 +953,7 @@ export function useAutonomousAgent() {
           if (invoicedOrderIds.has(o.id)) return false
           if (['cancelled'].includes(o.status)) return false
           const createdAt = o.createdAt?.toDate?.()?.getTime() || o.createdAt || 0
-          return (now - createdAt) > thresholdMs
+          return (nowMs - createdAt) > thresholdMs
         })
         .slice(0, 3)
         .forEach(order => {
@@ -1022,7 +1023,7 @@ export function useAutonomousAgent() {
         const lastOrder    = customerOrders.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0))[0]
         const lastActivity = lastOrder.createdAt?.toDate?.()?.getTime() || lastOrder.createdAt || 0
 
-        if (now - lastActivity >= inactivityMs) {
+        if (nowMs - lastActivity >= inactivityMs) {
           const id = `draft-followup-${customer.id}`
           if (!discardedIds.includes(id)) {
             items.push({
@@ -1044,7 +1045,7 @@ export function useAutonomousAgent() {
         .filter(i => {
           if (i.status === 'paid' || !i.due) return false
           const dueTime      = new Date(i.due + 'T23:59:59').getTime()
-          const timeUntilDue = dueTime - now
+          const timeUntilDue = dueTime - nowMs
           return timeUntilDue > 0 && timeUntilDue <= reminderMs
         })
         .slice(0, 3)
