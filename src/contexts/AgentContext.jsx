@@ -12,6 +12,7 @@ import { useCustomers }       from './CustomerContext'
 import { useOrders }          from './OrdersContext'
 import { useInvoices }        from './InvoiceContext'
 import { usePayments }        from './PaymentContext'
+import { useReceipts }        from './ReceiptContext'
 import { useTasks }           from './TaskContext'
 import { useAppointments }    from './AppointmentContext'
 import { useProfileSettings } from './ProfileSettingsContext'
@@ -117,6 +118,29 @@ function findCustomer(customers, nameHint) {
     customers.find(c => c.name?.toLowerCase().includes(lower)) ||
     customers.find(c => lower.includes(c.name?.toLowerCase() || ''))
   )
+}
+
+function getPendingReceiptItems(allInvoices, allPayments, allReceipts) {
+  const items = []
+
+  allInvoices.forEach(invoice => {
+    const payment = allPayments.find(p => String(p.orderId) === String(invoice.orderId))
+    if (!payment || !Array.isArray(payment.installments) || !payment.installments.length) return
+
+    const receiptedIds = new Set(
+      allReceipts
+        .filter(r => String(r.paymentId) === String(payment.id))
+        .flatMap(r => r.installmentIds || [])
+        .map(String)
+    )
+
+    payment.installments.forEach(installment => {
+      if (receiptedIds.has(String(installment.id))) return
+      items.push({ invoice, payment, installment })
+    })
+  })
+
+  return items
 }
 
 const INTENTS = [
@@ -690,6 +714,8 @@ export function useAutonomousAgent() {
   const { customers }       = useCustomers()
   const { allOrders }       = useOrders()
   const { allInvoices }     = useInvoices()
+  const { allPayments }     = usePayments()
+  const { allReceipts }     = useReceipts()
 
   const [cancelledIds, setCancelledIds] = useState([])
   const [discardedIds, setDiscardedIds] = useState([])
@@ -727,20 +753,19 @@ export function useAutonomousAgent() {
     }
 
     if (generalSettings.agentAutoReceipt) {
-      const invoicedCustomerIds = new Set(allInvoices.filter(i => i.status === 'paid').map(i => i.customerId))
-      invoicedCustomerIds.forEach(customerId => {
-        const customer = customers.find(c => c.id === customerId)
-        if (!customer) return
-        items.push({
-          id:     `receipt-${customerId}`,
-          type:   'receipt',
-          title:  'Receipt drafted',
-          desc:   `Payment recorded for ${customer.name}. Receipt is ready in Drafts.`,
-          reason: `A payment was recorded for ${customer.name} and no receipt had been generated.`,
-          time:   'Today',
-          tag:    'Receipt',
+      getPendingReceiptItems(allInvoices, allPayments, allReceipts)
+        .slice(0, 5)
+        .forEach(({ invoice, installment }) => {
+          items.push({
+            id:     `receipt-${invoice.id}::${installment.id}`,
+            type:   'receipt',
+            title:  'Receipt drafted',
+            desc:   `Payment of ${formatMoney(installment.amount, generalSettings.invoiceCurrency)} recorded for ${invoice.customerName || 'a customer'}. Receipt is ready in Drafts.`,
+            reason: `A payment was recorded for ${invoice.customerName || 'this customer'} and no receipt had been generated for it yet.`,
+            time:   'Today',
+            tag:    'Receipt',
+          })
         })
-      })
     }
 
     if (generalSettings.agentBirthdayMessages) {
@@ -815,7 +840,7 @@ export function useAutonomousAgent() {
     }
 
     return items
-  }, [enabled, generalSettings, allOrders, allInvoices, customers])
+  }, [enabled, generalSettings, allOrders, allInvoices, allPayments, allReceipts, customers])
 
   const upcomingTasks = useMemo(() => {
     if (!enabled) return []
@@ -945,17 +970,16 @@ export function useAutonomousAgent() {
     }
 
     if (generalSettings.agentAutoReceipt) {
-      allInvoices
-        .filter(i => i.status === 'paid')
-        .slice(0, 2)
-        .forEach(invoice => {
-          const id = `draft-receipt-${invoice.id}`
+      getPendingReceiptItems(allInvoices, allPayments, allReceipts)
+        .slice(0, 5)
+        .forEach(({ invoice, installment }) => {
+          const id = `draft-receipt-${invoice.id}::${installment.id}`
           if (!discardedIds.includes(id)) {
             items.push({
               id,
               type:    'receipt',
               title:   `Receipt — ${invoice.customerName || 'Customer'}`,
-              preview: `Payment receipt for ${formatMoney(invoice.totalAmount || invoice.price, currency)} received from ${invoice.customerName || 'customer'}.`,
+              preview: `Payment receipt for ${formatMoney(installment.amount, currency)} received from ${invoice.customerName || 'customer'}.`,
               tag:     'Receipt',
             })
           }
@@ -1039,7 +1063,7 @@ export function useAutonomousAgent() {
     }
 
     return items
-  }, [enabled, generalSettings, allOrders, allInvoices, customers, discardedIds])
+  }, [enabled, generalSettings, allOrders, allInvoices, allPayments, allReceipts, customers, discardedIds])
 
   function cancelUpcoming(id) { setCancelledIds(prev => [...prev, id]) }
   function discardDraft(id)   { setDiscardedIds(prev => [...prev, id]) }
