@@ -283,7 +283,9 @@ function ItemIconBox({ type, itemId, orderId, allOrders, allInvoices }) {
   if (!resolvedOrderId && itemId && allInvoices) {
     let invoiceId = null
     if (itemId.startsWith('draft-receipt-')) {
-      invoiceId = itemId.replace('draft-receipt-', '')
+      invoiceId = itemId.replace('draft-receipt-', '').split('::')[0]
+    } else if (itemId.startsWith('receipt-')) {
+      invoiceId = itemId.replace('receipt-', '').split('::')[0]
     } else if (itemId.startsWith('upcoming-reminder-')) {
       invoiceId = itemId.replace('upcoming-reminder-', '')
     } else if (itemId.startsWith('draft-reminder-')) {
@@ -299,9 +301,7 @@ function ItemIconBox({ type, itemId, orderId, allOrders, allInvoices }) {
 
   if (!resolvedOrderId && itemId && allOrders) {
     let customerId = null
-    if (itemId.startsWith('receipt-')) {
-      customerId = itemId.replace('receipt-', '')
-    } else if (itemId.startsWith('followup-') || itemId.startsWith('draft-followup-')) {
+    if (itemId.startsWith('followup-') || itemId.startsWith('draft-followup-')) {
       customerId = itemId.replace('draft-followup-', '').replace('followup-', '')
     }
     if (customerId) {
@@ -454,7 +454,14 @@ function DraftDetailSheet({
   }
 
   function getInvoiceIdFromDraftId(draftId) {
-    return draftId?.replace('draft-receipt-', '') || null
+    if (!draftId?.startsWith('draft-receipt-')) return null
+    return draftId.replace('draft-receipt-', '').split('::')[0] || null
+  }
+
+  function getInstallmentIdFromDraftId(draftId) {
+    if (!draftId?.startsWith('draft-receipt-')) return null
+    const parts = draftId.replace('draft-receipt-', '').split('::')
+    return parts[1] || null
   }
 
   function getInvoiceForDraft() {
@@ -507,13 +514,42 @@ function DraftDetailSheet({
   }
 
   function getReceiptForDraft() {
-    const invoiceId = getInvoiceIdFromDraftId(item.id)
-    if (!invoiceId) return null
+    const invoiceId     = getInvoiceIdFromDraftId(item.id)
+    const installmentId = getInstallmentIdFromDraftId(item.id)
+    if (!invoiceId || !installmentId) return null
 
     const invoice = allInvoices.find(inv => String(inv.id) === String(invoiceId))
     if (!invoice) return null
 
     const payment = allPayments.find(p => String(p.orderId) === String(invoice.orderId))
+    if (!payment || !Array.isArray(payment.installments)) return null
+
+    const existing = allReceipts.find(r =>
+      String(r.paymentId) === String(payment.id) &&
+      (r.installmentIds || []).map(String).includes(String(installmentId))
+    )
+    if (existing) return { ...existing, _isPreview: false }
+
+    const allInstallments = payment.installments
+    const thisIndex        = allInstallments.findIndex(inst => String(inst.id) === String(installmentId))
+    if (thisIndex === -1) return null
+
+    const thisInstallment = allInstallments[thisIndex]
+
+    const previousInstallments = allInstallments.slice(0, thisIndex).map(inst => ({
+      id:     inst.id,
+      amount: inst.amount,
+      method: inst.method || 'cash',
+      date:   inst.date,
+      time:   inst.time || null,
+    }))
+
+    const orderTotal     = parseFloat(invoice.totalAmount ?? invoice.price) || 0
+    const cumulativePaid = allInstallments
+      .slice(0, thisIndex + 1)
+      .reduce((sum, inst) => sum + (parseFloat(inst.amount) || 0), 0)
+    const balance       = Math.max(0, orderTotal - cumulativePaid)
+    const isFullPayment = balance <= 0
 
     const prefix   = generalSettings.receiptPrefix   || 'RCP'
     const template = generalSettings.receiptTemplate || 'receiptTemplate1'
@@ -521,50 +557,12 @@ function DraftDetailSheet({
 
     const brandSnapshot          = buildBrandSnapshot(profileSettings, generalSettings, 'receipt')
     const globalReceiptCount     = allReceipts.length + 1
-    const receiptsForThisPayment = payment
-      ? allReceipts.filter(r => String(r.paymentId) === String(payment.id)).length + 1
-      : 1
+    const receiptsForThisPayment = allReceipts.filter(r => String(r.paymentId) === String(payment.id)).length + 1
     const receiptNumber = `${prefix}-${String(receiptsForThisPayment).padStart(2, '0')}-${String(globalReceiptCount).padStart(3, '0')}`
 
-    const orderTotal = parseFloat(invoice.totalAmount ?? invoice.price) || 0
-
-    let payments             = []
-    let previousInstallments = []
-    let cumulativePaid       = orderTotal
-    let balance              = 0
-    let isFullPayment        = true
-
-    if (payment && Array.isArray(payment.installments) && payment.installments.length) {
-      const allInstallments  = payment.installments
-      const lastInstallment  = allInstallments[allInstallments.length - 1]
-      const thisInstallIndex = allInstallments.length - 1
-
-      cumulativePaid = allInstallments.reduce((sum, i) => sum + (parseFloat(i.amount) || 0), 0)
-      balance        = Math.max(0, orderTotal - cumulativePaid)
-      isFullPayment  = balance <= 0
-
-      previousInstallments = allInstallments
-        .slice(0, Math.max(0, thisInstallIndex))
-        .map(inst => ({
-          id:     inst.id,
-          amount: inst.amount,
-          method: inst.method || 'cash',
-          date:   inst.date,
-          time:   inst.time || null,
-        }))
-
-      payments = [{
-        id:     lastInstallment.id,
-        amount: lastInstallment.amount,
-        method: lastInstallment.method || 'cash',
-        date:   lastInstallment.date,
-        time:   lastInstallment.time || null,
-      }]
-    }
-
     return {
-      id:                   `preview-receipt-${invoice.id}`,
-      paymentId:            payment?.id || null,
+      id:                   `preview-receipt-${invoice.id}-${thisInstallment.id}`,
+      paymentId:            payment.id,
       orderId:              invoice.orderId,
       customerId:           invoice.customerId,
       orderDesc:            invoice.orderDesc || invoice.desc,
@@ -573,13 +571,20 @@ function DraftDetailSheet({
       number:               receiptNumber,
       date:                 today,
       template,
-      payments,
+      payments: [{
+        id:     thisInstallment.id,
+        amount: thisInstallment.amount,
+        method: thisInstallment.method || 'cash',
+        date:   thisInstallment.date,
+        time:   thisInstallment.time || null,
+      }],
       previousInstallments,
       previousPaid:         previousInstallments.reduce((s, i) => s + (parseFloat(i.amount) || 0), 0),
       cumulativePaid,
       isFullPayment,
       balance,
-      notes:                payment?.notes || '',
+      installmentIds:       [String(thisInstallment.id)],
+      notes:                payment.notes || '',
       shippingFee:          invoice.shippingFee    ?? 0,
       discountType:         invoice.discountType   ?? null,
       discountValue:        invoice.discountValue  ?? 0,
