@@ -32,6 +32,18 @@ const ICON_META = {
   followup: { icon: 'person_search',          color: '#3b82f6'        },
 }
 
+const ICON_BG = {
+  invoice:  'rgba(255,149,0,0.12)',
+  receipt:  'rgba(34,197,94,0.12)',
+  message:  'rgba(59,130,246,0.12)',
+  reminder: 'rgba(255,149,0,0.12)',
+  brief:    'rgba(120,120,128,0.14)',
+  flag:     'rgba(255,149,0,0.12)',
+  pickup:   'rgba(168,85,247,0.12)',
+  birthday: 'rgba(236,72,153,0.12)',
+  followup: 'rgba(59,130,246,0.12)',
+}
+
 const TAG_COLORS = {
   Invoice:     { bg: 'rgba(255,149,0,0.12)',   color: 'var(--accent)'  },
   Receipt:     { bg: 'rgba(34,197,94,0.12)',   color: '#22c55e'        },
@@ -54,10 +66,7 @@ const SUGGESTION_CHIPS = [
 
 function getGreeting(name) {
   const h = new Date().getHours()
-  const salutation =
-    h < 12 ? 'Good morning' :
-    h < 17 ? 'Good afternoon' :
-              'Good evening'
+  const salutation = h < 12 ? 'Good morning' : h < 17 ? 'Good afternoon' : 'Good evening'
   return `${salutation}${name ? `, ${name}` : ''}! 👋`
 }
 
@@ -84,6 +93,195 @@ function groupByDate(items, getDate) {
   })
   return groups
 }
+
+function resolveCustomerName(item, allOrders, allInvoices, customers) {
+  if (!customers?.length) return null
+
+  let customerId = null
+  const id = item.id || ''
+
+  if (item.orderId) {
+    const order = allOrders?.find(o => String(o.id) === String(item.orderId))
+    customerId = order?.customerId ?? null
+  }
+
+  if (!customerId) {
+    for (const prefix of ['draft-invoice-', 'invoice-', 'upcoming-invoice-']) {
+      if (id.startsWith(prefix)) {
+        const orderId = id.slice(prefix.length)
+        const order   = allOrders?.find(o => String(o.id) === String(orderId))
+        customerId    = order?.customerId ?? null
+        break
+      }
+    }
+  }
+
+  if (!customerId) {
+    for (const prefix of ['draft-receipt-', 'receipt-']) {
+      if (id.startsWith(prefix)) {
+        const invoiceId = id.slice(prefix.length).split('::')[0]
+        const invoice   = allInvoices?.find(inv => String(inv.id) === String(invoiceId))
+        customerId      = invoice?.customerId ?? null
+        break
+      }
+    }
+  }
+
+  if (!customerId) {
+    for (const prefix of ['upcoming-reminder-', 'draft-reminder-', 'reminder-']) {
+      if (id.startsWith(prefix)) {
+        const invoiceId = id.slice(prefix.length)
+        const invoice   = allInvoices?.find(inv => String(inv.id) === String(invoiceId))
+        customerId      = invoice?.customerId ?? null
+        break
+      }
+    }
+  }
+
+  if (!customerId) {
+    for (const prefix of ['draft-followup-', 'followup-']) {
+      if (id.startsWith(prefix)) {
+        customerId = id.slice(prefix.length)
+        break
+      }
+    }
+  }
+
+  if (!customerId) return null
+  return customers.find(c => String(c.id) === String(customerId))?.name ?? null
+}
+
+function fmt(currency, value) {
+  return `${currency.symbol || currency}${parseFloat(value || 0).toLocaleString('en-NG', {
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0,
+  })}`
+}
+
+function buildInvoiceMessage(invoice, customer, brand) {
+  const cur       = brand?.currency || '₦'
+  const firstName = customer?.name?.split(' ')[0] || customer?.name || 'there'
+  const items     = Array.isArray(invoice.items) ? invoice.items : []
+  const discount  = parseFloat(invoice.discountAmount) || 0
+  const shipping  = parseFloat(invoice.shippingFee) || 0
+  const tax       = parseFloat(invoice.taxAmount) || 0
+  const total     = parseFloat(invoice.totalAmount) || parseFloat(invoice.price) || 0
+  const L = []
+  L.push(`Hi ${firstName},`, '')
+  L.push(`Here is your invoice from *${brand?.name || 'us'}*. 🧾`, '')
+  L.push('*📋 Invoice Details*')
+  L.push(`Invoice No: *${invoice.number}*`)
+  L.push(`Date: ${invoice.date}`)
+  if (invoice.due) L.push(`Due Date: *${invoice.due}*`)
+  if (items.length > 0) {
+    L.push('', '*🛍 Order Breakdown*')
+    items.forEach(item => {
+      const qty = item.qty && item.qty > 1 ? ` ×${item.qty}` : ''
+      L.push(`• ${item.name}${qty}: ${fmt(cur, item.price)}`)
+    })
+  }
+  if (discount > 0 || shipping > 0 || tax > 0) {
+    L.push('')
+    if (discount > 0) L.push(`Discount: -${fmt(cur, discount)}`)
+    if (shipping > 0) L.push(`Shipping: +${fmt(cur, shipping)}`)
+    if (tax > 0)      L.push(`Tax: +${fmt(cur, tax)}`)
+  }
+  L.push('', `*Total Due: ${fmt(cur, total)}*`, '')
+  if (invoice.due) {
+    L.push(`Please make payment before *${invoice.due}* to avoid delays. ⏳`)
+  } else {
+    L.push('Kindly make payment at your earliest convenience. ⏳')
+  }
+  L.push('')
+  if (brand?.phone) L.push(`For any questions, reach us at *${brand.phone}*.`)
+  if (brand?.email) L.push(`Email: ${brand.email}`)
+  L.push('', `Thank you for choosing *${brand?.name || 'us'}*! 🙏`)
+  return L.join('\n')
+}
+
+function buildReceiptMessage(receipt, customer, brand) {
+  const cur           = brand?.currency || '₦'
+  const firstName     = customer?.name?.split(' ')[0] || customer?.name || 'there'
+  const items         = Array.isArray(receipt.items) ? receipt.items : []
+  const discount      = parseFloat(receipt.discountAmount) || 0
+  const shipping      = parseFloat(receipt.shippingFee) || 0
+  const tax           = parseFloat(receipt.taxAmount) || 0
+  const total         = parseFloat(receipt.totalAmount) || parseFloat(receipt.orderPrice) || 0
+  const cumPaid       = parseFloat(receipt.cumulativePaid) || 0
+  const balance       = receipt.balance !== undefined ? parseFloat(receipt.balance) : Math.max(0, total - cumPaid)
+  const isFullPay     = receipt.isFullPayment ?? (balance <= 0)
+  const prevInst      = Array.isArray(receipt.previousInstallments) ? receipt.previousInstallments : []
+  const currPay       = Array.isArray(receipt.payments) ? receipt.payments : []
+  const allPayments   = [...prevInst, ...currPay]
+  const L = []
+  L.push(`Hi ${firstName},`, '')
+  L.push(`Here is your payment receipt from *${brand?.name || 'us'}*. ✅`, '')
+  L.push('*📋 Receipt Details*')
+  L.push(`Receipt No: *${receipt.number}*`)
+  L.push(`Date: ${receipt.date}`)
+  if (items.length > 0) {
+    L.push('', '*🛍 Order Breakdown*')
+    items.forEach(item => {
+      const qty = item.qty && item.qty > 1 ? ` ×${item.qty}` : ''
+      L.push(`• ${item.name}${qty}: ${fmt(cur, item.price)}`)
+    })
+    if (discount > 0 || shipping > 0 || tax > 0) {
+      if (discount > 0) L.push(`Discount: -${fmt(cur, discount)}`)
+      if (shipping > 0) L.push(`Shipping: +${fmt(cur, shipping)}`)
+      if (tax > 0)      L.push(`Tax: +${fmt(cur, tax)}`)
+    }
+    L.push(`Order Total: *${fmt(cur, total)}*`)
+  }
+  if (allPayments.length > 0) {
+    L.push('', `*💳 Payment${allPayments.length > 1 ? ' History' : ' Received'}*`)
+    allPayments.forEach((p, i) => {
+      const num    = allPayments.length > 1 ? `Payment ${i + 1}` : 'Amount Paid'
+      const method = p.method ? ` via ${p.method.charAt(0).toUpperCase() + p.method.slice(1)}` : ''
+      const date   = p.date   ? ` on ${p.date}` : ''
+      L.push(`${num}${method}: *${fmt(cur, p.amount)}*${date}`)
+    })
+    if (allPayments.length > 1) {
+      L.push(`Total Paid: *${fmt(cur, cumPaid)}*`)
+    }
+  }
+  L.push('')
+  if (isFullPay) {
+    L.push('✅ *Your order is fully paid. Thank you!*')
+  } else {
+    L.push(`Balance Remaining: *${fmt(cur, balance)}*`)
+    L.push('Kindly settle the outstanding balance at your earliest convenience.')
+  }
+  L.push('')
+  if (brand?.phone) L.push(`For any questions, reach us at *${brand.phone}*.`)
+  if (brand?.email) L.push(`Email: ${brand.email}`)
+  L.push('', `Thank you for choosing *${brand?.name || 'us'}*! 🙏`)
+  return L.join('\n')
+}
+
+function buildBrandSnapshot(profileSettings, generalSettings, docType = 'invoice') {
+  const footer   = docType === 'invoice' ? generalSettings.invoiceFooter   : generalSettings.receiptFooter
+  const currency = docType === 'invoice' ? generalSettings.invoiceCurrency : generalSettings.receiptCurrency
+  const showTax  = docType === 'invoice' ? generalSettings.invoiceShowTax  : generalSettings.receiptShowTax
+  const taxRate  = docType === 'invoice' ? generalSettings.invoiceTaxRate  : generalSettings.receiptTaxRate
+  return {
+    name:     profileSettings.brandName     || '',
+    tagline:  profileSettings.brandTagline  || '',
+    colour:   profileSettings.brandColour   || '',
+    colourId: profileSettings.brandColourId || '',
+    phone:    profileSettings.brandPhone    || '',
+    email:    profileSettings.brandEmail    || '',
+    address:  profileSettings.brandAddress  || '',
+    logo:     profileSettings.brandLogo     || '',
+    website:  profileSettings.brandWebsite  || '',
+    footer:   footer   || 'Thank you for your patronage 🙏',
+    currency: currency || '₦',
+    showTax:  showTax  || false,
+    taxRate:  taxRate  || 0,
+    ...(docType === 'invoice' ? { dueDays: generalSettings.invoiceDueDays || 7 } : {}),
+  }
+}
+
+// ── Primitive components ────────────────────────────────────────
 
 function MIcon({ name, size = '1.1rem', color }) {
   return (
@@ -125,173 +323,36 @@ function TagChip({ label }) {
   )
 }
 
-function fmt(currency, value) {
-  return `${currency.symbol || currency}${parseFloat(value || 0).toLocaleString('en-NG', {
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0,
-  })}`
-}
-
-function buildInvoiceMessage(invoice, customer, brand) {
-  const cur       = brand?.currency || '₦'
-  const firstName = customer?.name?.split(' ')[0] || customer?.name || 'there'
-  const items     = Array.isArray(invoice.items) ? invoice.items : []
-  const discount  = parseFloat(invoice.discountAmount) || 0
-  const shipping  = parseFloat(invoice.shippingFee) || 0
-  const tax       = parseFloat(invoice.taxAmount) || 0
-  const total     = parseFloat(invoice.totalAmount) || parseFloat(invoice.price) || 0
-
-  const L = []
-  L.push(`Hi ${firstName},`, '')
-  L.push(`Here is your invoice from *${brand?.name || 'us'}*. 🧾`, '')
-  L.push('*📋 Invoice Details*')
-  L.push(`Invoice No: *${invoice.number}*`)
-  L.push(`Date: ${invoice.date}`)
-  if (invoice.due) L.push(`Due Date: *${invoice.due}*`)
-
-  if (items.length > 0) {
-    L.push('', '*🛍 Order Breakdown*')
-    items.forEach(item => {
-      const qty = item.qty && item.qty > 1 ? ` ×${item.qty}` : ''
-      L.push(`• ${item.name}${qty}: ${fmt(cur, item.price)}`)
-    })
-  }
-
-  if (discount > 0 || shipping > 0 || tax > 0) {
-    L.push('')
-    if (discount > 0) L.push(`Discount: -${fmt(cur, discount)}`)
-    if (shipping > 0) L.push(`Shipping: +${fmt(cur, shipping)}`)
-    if (tax > 0)      L.push(`Tax: +${fmt(cur, tax)}`)
-  }
-
-  L.push('', `*Total Due: ${fmt(cur, total)}*`, '')
-  if (invoice.due) {
-    L.push(`Please make payment before *${invoice.due}* to avoid delays. ⏳`)
-  } else {
-    L.push('Kindly make payment at your earliest convenience. ⏳')
-  }
-  L.push('')
-  if (brand?.phone) L.push(`For any questions, reach us at *${brand.phone}*.`)
-  if (brand?.email) L.push(`Email: ${brand.email}`)
-  L.push('', `Thank you for choosing *${brand?.name || 'us'}*! 🙏`)
-  return L.join('\n')
-}
-
-function buildReceiptMessage(receipt, customer, brand) {
-  const cur       = brand?.currency || '₦'
-  const firstName = customer?.name?.split(' ')[0] || customer?.name || 'there'
-  const items     = Array.isArray(receipt.items) ? receipt.items : []
-  const discount  = parseFloat(receipt.discountAmount) || 0
-  const shipping  = parseFloat(receipt.shippingFee) || 0
-  const tax       = parseFloat(receipt.taxAmount) || 0
-  const total     = parseFloat(receipt.totalAmount) || parseFloat(receipt.orderPrice) || 0
-  const cumPaid   = parseFloat(receipt.cumulativePaid) || 0
-  const balance   = receipt.balance !== undefined ? parseFloat(receipt.balance) : Math.max(0, total - cumPaid)
-  const isFullPay = receipt.isFullPayment ?? (balance <= 0)
-
-  const prevInst    = Array.isArray(receipt.previousInstallments) ? receipt.previousInstallments : []
-  const currPay     = Array.isArray(receipt.payments) ? receipt.payments : []
-  const allPayments = [...prevInst, ...currPay]
-
-  const L = []
-  L.push(`Hi ${firstName},`, '')
-  L.push(`Here is your payment receipt from *${brand?.name || 'us'}*. ✅`, '')
-  L.push('*📋 Receipt Details*')
-  L.push(`Receipt No: *${receipt.number}*`)
-  L.push(`Date: ${receipt.date}`)
-
-  if (items.length > 0) {
-    L.push('', '*🛍 Order Breakdown*')
-    items.forEach(item => {
-      const qty = item.qty && item.qty > 1 ? ` ×${item.qty}` : ''
-      L.push(`• ${item.name}${qty}: ${fmt(cur, item.price)}`)
-    })
-    if (discount > 0 || shipping > 0 || tax > 0) {
-      if (discount > 0) L.push(`Discount: -${fmt(cur, discount)}`)
-      if (shipping > 0) L.push(`Shipping: +${fmt(cur, shipping)}`)
-      if (tax > 0)      L.push(`Tax: +${fmt(cur, tax)}`)
-    }
-    L.push(`Order Total: *${fmt(cur, total)}*`)
-  }
-
-  if (allPayments.length > 0) {
-    L.push('', `*💳 Payment${allPayments.length > 1 ? ' History' : ' Received'}*`)
-    allPayments.forEach((p, i) => {
-      const num    = allPayments.length > 1 ? `Payment ${i + 1}` : 'Amount Paid'
-      const method = p.method ? ` via ${p.method.charAt(0).toUpperCase() + p.method.slice(1)}` : ''
-      const date   = p.date   ? ` on ${p.date}` : ''
-      L.push(`${num}${method}: *${fmt(cur, p.amount)}*${date}`)
-    })
-    if (allPayments.length > 1) {
-      L.push(`Total Paid: *${fmt(cur, cumPaid)}*`)
-    }
-  }
-
-  L.push('')
-  if (isFullPay) {
-    L.push('✅ *Your order is fully paid. Thank you!*')
-  } else {
-    L.push(`Balance Remaining: *${fmt(cur, balance)}*`)
-    L.push('Kindly settle the outstanding balance at your earliest convenience.')
-  }
-  L.push('')
-  if (brand?.phone) L.push(`For any questions, reach us at *${brand.phone}*.`)
-  if (brand?.email) L.push(`Email: ${brand.email}`)
-  L.push('', `Thank you for choosing *${brand?.name || 'us'}*! 🙏`)
-  return L.join('\n')
-}
-
-function buildBrandSnapshot(profileSettings, generalSettings, docType = 'invoice') {
-  const footer   = docType === 'invoice' ? generalSettings.invoiceFooter   : generalSettings.receiptFooter
-  const currency = docType === 'invoice' ? generalSettings.invoiceCurrency : generalSettings.receiptCurrency
-  const showTax  = docType === 'invoice' ? generalSettings.invoiceShowTax  : generalSettings.receiptShowTax
-  const taxRate  = docType === 'invoice' ? generalSettings.invoiceTaxRate  : generalSettings.receiptTaxRate
-
-  return {
-    name:     profileSettings.brandName     || '',
-    tagline:  profileSettings.brandTagline  || '',
-    colour:   profileSettings.brandColour   || '',
-    colourId: profileSettings.brandColourId || '',
-    phone:    profileSettings.brandPhone    || '',
-    email:    profileSettings.brandEmail    || '',
-    address:  profileSettings.brandAddress  || '',
-    logo:     profileSettings.brandLogo     || '',
-    website:  profileSettings.brandWebsite  || '',
-    footer:   footer   || 'Thank you for your patronage 🙏',
-    currency: currency || '₦',
-    showTax:  showTax  || false,
-    taxRate:  taxRate  || 0,
-    ...(docType === 'invoice' ? { dueDays: generalSettings.invoiceDueDays || 7 } : {}),
-  }
-}
+// ── Item icon / mosaic ──────────────────────────────────────────
 
 function ItemIconBox({ type, itemId, orderId, allOrders, allInvoices }) {
   const meta = ICON_META[type] || ICON_META.brief
-
   let resolvedOrderId = orderId || null
 
   if (!resolvedOrderId && itemId) {
-    if (itemId.startsWith('draft-invoice-')) {
-      resolvedOrderId = itemId.replace('draft-invoice-', '')
-    } else if (itemId.startsWith('invoice-')) {
-      resolvedOrderId = itemId.replace('invoice-', '')
-    } else if (itemId.startsWith('upcoming-invoice-')) {
-      resolvedOrderId = itemId.replace('upcoming-invoice-', '')
+    for (const prefix of ['draft-invoice-', 'invoice-', 'upcoming-invoice-']) {
+      if (itemId.startsWith(prefix)) {
+        resolvedOrderId = itemId.slice(prefix.length)
+        break
+      }
     }
   }
 
   if (!resolvedOrderId && itemId && allInvoices) {
     let invoiceId = null
-    if (itemId.startsWith('draft-receipt-')) {
-      invoiceId = itemId.replace('draft-receipt-', '').split('::')[0]
-    } else if (itemId.startsWith('receipt-')) {
-      invoiceId = itemId.replace('receipt-', '').split('::')[0]
-    } else if (itemId.startsWith('upcoming-reminder-')) {
-      invoiceId = itemId.replace('upcoming-reminder-', '')
-    } else if (itemId.startsWith('draft-reminder-')) {
-      invoiceId = itemId.replace('draft-reminder-', '')
-    } else if (itemId.startsWith('reminder-')) {
-      invoiceId = itemId.replace('reminder-', '')
+    for (const prefix of ['draft-receipt-', 'receipt-']) {
+      if (itemId.startsWith(prefix)) {
+        invoiceId = itemId.slice(prefix.length).split('::')[0]
+        break
+      }
+    }
+    if (!invoiceId) {
+      for (const prefix of ['upcoming-reminder-', 'draft-reminder-', 'reminder-']) {
+        if (itemId.startsWith(prefix)) {
+          invoiceId = itemId.slice(prefix.length)
+          break
+        }
+      }
     }
     if (invoiceId) {
       const invoice = allInvoices.find(inv => String(inv.id) === String(invoiceId))
@@ -301,12 +362,15 @@ function ItemIconBox({ type, itemId, orderId, allOrders, allInvoices }) {
 
   if (!resolvedOrderId && itemId && allOrders) {
     let customerId = null
-    if (itemId.startsWith('followup-') || itemId.startsWith('draft-followup-')) {
-      customerId = itemId.replace('draft-followup-', '').replace('followup-', '')
+    for (const prefix of ['draft-followup-', 'followup-']) {
+      if (itemId.startsWith(prefix)) {
+        customerId = itemId.slice(prefix.length)
+        break
+      }
     }
     if (customerId) {
       const customerOrders = allOrders
-        .filter(o => String(o.customerId) === String(customerId) && (o.items?.length > 0))
+        .filter(o => String(o.customerId) === String(customerId) && o.items?.length > 0)
         .sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0))
       resolvedOrderId = customerOrders[0]?.id ?? null
     }
@@ -333,9 +397,147 @@ function DateDivider({ label }) {
   return <div className={styles.dateDivider}>{label}</div>
 }
 
-function ActivityDetailSheet({ item, onClose }) {
+// ── Row components ──────────────────────────────────────────────
+
+function ActivityRow({ item, isLast, allOrders, allInvoices, customers, onOpen }) {
+  const customerName = resolveCustomerName(item, allOrders, allInvoices, customers)
+
+  return (
+    <div
+      className={`${styles.row} ${isLast ? styles.rowLast : ''}`}
+      onClick={() => { haptic('light'); onOpen(item) }}
+    >
+      <ItemIconBox
+        type={item.type}
+        itemId={item.id}
+        orderId={item.orderId}
+        allOrders={allOrders}
+        allInvoices={allInvoices}
+      />
+
+      <div className={styles.rowInfo}>
+        <div className={styles.rowTitle}>{formatTitle(item.title)}</div>
+
+        {customerName && (
+          <div className={styles.rowMeta}>
+            <MIcon name="person" size="0.72rem" color="var(--text3)" />
+            <span className={styles.rowMetaText}>{customerName}</span>
+          </div>
+        )}
+
+        <div className={styles.rowMeta}>
+          <MIcon name="schedule" size="0.72rem" color="var(--text3)" />
+          <span className={styles.rowMetaText}>{item.time}</span>
+        </div>
+      </div>
+
+      <div className={styles.rowRight}>
+        <TagChip label={item.tag} />
+      </div>
+    </div>
+  )
+}
+
+function ScheduledRow({ item, isLast, allOrders, allInvoices, customers, onOpen }) {
+  const customerName = resolveCustomerName(item, allOrders, allInvoices, customers)
+
+  return (
+    <div
+      className={`${styles.row} ${isLast ? styles.rowLast : ''}`}
+      onClick={() => { haptic('light'); onOpen(item) }}
+    >
+      <ItemIconBox
+        type={item.type}
+        itemId={item.id}
+        orderId={item.orderId}
+        allOrders={allOrders}
+        allInvoices={allInvoices}
+      />
+
+      <div className={styles.rowInfo}>
+        <div className={styles.rowTitle}>{formatTitle(item.title)}</div>
+
+        {customerName && (
+          <div className={styles.rowMeta}>
+            <MIcon name="person" size="0.72rem" color="var(--text3)" />
+            <span className={styles.rowMetaText}>{customerName}</span>
+          </div>
+        )}
+
+        <div className={styles.rowMeta}>
+          <MIcon name="schedule" size="0.72rem" color="var(--accent)" />
+          <span className={`${styles.rowMetaText} ${styles.rowMetaAccent}`}>{item.when}</span>
+        </div>
+      </div>
+
+      <div className={styles.rowRight}>
+        <TagChip label={item.tag} />
+      </div>
+    </div>
+  )
+}
+
+function DraftRow({ item, isLast, allOrders, allInvoices, customers, onOpen }) {
+  const customerName = resolveCustomerName(item, allOrders, allInvoices, customers)
+  const isDoc        = item.type === 'invoice' || item.type === 'receipt'
+
+  return (
+    <div
+      className={`${styles.row} ${isLast ? styles.rowLast : ''}`}
+      onClick={() => { haptic('light'); onOpen(item) }}
+    >
+      <ItemIconBox
+        type={item.type}
+        itemId={item.id}
+        orderId={item.orderId}
+        allOrders={allOrders}
+        allInvoices={allInvoices}
+      />
+
+      <div className={styles.rowInfo}>
+        <div className={styles.rowTitle}>{formatTitle(item.title)}</div>
+
+        {customerName && (
+          <div className={styles.rowMeta}>
+            <MIcon name="person" size="0.72rem" color="var(--text3)" />
+            <span className={styles.rowMetaText}>{customerName}</span>
+          </div>
+        )}
+
+        {item.preview && (
+          <div className={styles.rowPreviewSnippet}>{item.preview}</div>
+        )}
+
+        {!item.preview && (
+          <div className={styles.rowMeta}>
+            <MIcon
+              name={isDoc ? 'check_circle' : 'chat_bubble'}
+              size="0.72rem"
+              color="var(--text3)"
+            />
+            <span className={styles.rowMetaText}>
+              {isDoc ? 'Ready to send' : 'Message ready'}
+            </span>
+          </div>
+        )}
+      </div>
+
+      <div className={styles.rowRight}>
+        <TagChip label={item.tag} />
+        <MIcon name="chevron_right" size="0.9rem" color="var(--text3)" />
+      </div>
+    </div>
+  )
+}
+
+// ── Detail modals ───────────────────────────────────────────────
+
+function ActivityDetailSheet({ item, onClose, allOrders, allInvoices, customers }) {
   if (!item) return null
-  const meta = ICON_META[item.type] || ICON_META.brief
+
+  const meta         = ICON_META[item.type] || ICON_META.brief
+  const iconBg       = ICON_BG[item.type] || 'var(--surface2)'
+  const customerName = resolveCustomerName(item, allOrders, allInvoices, customers)
 
   return (
     <div className={styles.sheetOverlay} onClick={e => e.target === e.currentTarget && onClose()}>
@@ -344,43 +546,59 @@ function ActivityDetailSheet({ item, onClose }) {
 
         <div className={styles.sheetHeader}>
           <button className={styles.sheetCloseBtn} onClick={onClose}>
-            <MIcon name="close" size="1.35rem" color="var(--text2)" />
+            <MIcon name="close" size="1.2rem" color="var(--text2)" />
           </button>
           <div className={styles.sheetHeaderTitle}>Activity</div>
-          <div style={{ width: 32 }} />
+          <div style={{ width: 30 }} />
+        </div>
+
+        <div className={styles.sheetHero}>
+          <div className={styles.sheetHeroIconWrap} style={{ background: iconBg }}>
+            <MIcon name={meta.icon} size="1.45rem" color={meta.color} />
+          </div>
+          <div className={styles.sheetHeroContent}>
+            <TagChip label={item.tag} />
+            <div className={styles.sheetHeroName}>{formatTitle(item.title)}</div>
+            {customerName && (
+              <div className={styles.sheetHeroCustomer}>
+                <MIcon name="person" size="0.72rem" color="var(--text3)" />
+                <span className={styles.sheetHeroCustomerName}>{customerName}</span>
+              </div>
+            )}
+            <div className={styles.sheetHeroTime}>{item.time}</div>
+          </div>
         </div>
 
         <div className={styles.sheetBody}>
-          <div className={styles.sheetIconRow}>
-            <div className={styles.sheetIconOuter}>
-              <div className={styles.sheetIconInner}>
-                <MIcon name={meta.icon} size="1.5rem" color={meta.color} />
-              </div>
+          <div className={styles.sheetSection}>
+            <div className={styles.sheetSectionHeader}>
+              <MIcon name="info" size="0.75rem" color="var(--text3)" />
+              <span className={styles.sheetSectionLabel}>What happened</span>
             </div>
-            <TagChip label={item.tag} />
+            <p className={styles.sheetSectionText}>{item.desc}</p>
           </div>
 
-          <div className={styles.sheetTitle}>{formatTitle(item.title)}</div>
-          <div className={styles.sheetTime}>{item.time}</div>
-
-          <div className={styles.sheetInfoCard}>
-            <div className={styles.sheetInfoLabel}>What happened</div>
-            <p className={styles.sheetInfoText}>{item.desc}</p>
-          </div>
-
-          <div className={styles.sheetInfoCard}>
-            <div className={styles.sheetInfoLabel}>Why the assistant did this</div>
-            <p className={styles.sheetInfoText}>{item.reason}</p>
-          </div>
+          {item.reason && (
+            <div className={styles.sheetSection}>
+              <div className={styles.sheetSectionHeader}>
+                <MIcon name="psychology" size="0.75rem" color="var(--text3)" />
+                <span className={styles.sheetSectionLabel}>Why the assistant did this</span>
+              </div>
+              <p className={styles.sheetSectionText}>{item.reason}</p>
+            </div>
+          )}
         </div>
       </div>
     </div>
   )
 }
 
-function ScheduledDetailSheet({ item, onClose, onCancel }) {
+function ScheduledDetailSheet({ item, onClose, onCancel, allOrders, allInvoices, customers }) {
   if (!item) return null
-  const meta = ICON_META[item.type] || ICON_META.brief
+
+  const meta         = ICON_META[item.type] || ICON_META.reminder
+  const iconBg       = ICON_BG[item.type] || 'var(--surface2)'
+  const customerName = resolveCustomerName(item, allOrders, allInvoices, customers)
 
   return (
     <div className={styles.sheetOverlay} onClick={e => e.target === e.currentTarget && onClose()}>
@@ -389,28 +607,36 @@ function ScheduledDetailSheet({ item, onClose, onCancel }) {
 
         <div className={styles.sheetHeader}>
           <button className={styles.sheetCloseBtn} onClick={onClose}>
-            <MIcon name="close" size="1.35rem" color="var(--text2)" />
+            <MIcon name="close" size="1.2rem" color="var(--text2)" />
           </button>
           <div className={styles.sheetHeaderTitle}>Scheduled</div>
-          <div style={{ width: 32 }} />
+          <div style={{ width: 30 }} />
+        </div>
+
+        <div className={styles.sheetHero}>
+          <div className={styles.sheetHeroIconWrap} style={{ background: iconBg }}>
+            <MIcon name={meta.icon} size="1.45rem" color={meta.color} />
+          </div>
+          <div className={styles.sheetHeroContent}>
+            <TagChip label={item.tag} />
+            <div className={styles.sheetHeroName}>{formatTitle(item.title)}</div>
+            {customerName && (
+              <div className={styles.sheetHeroCustomer}>
+                <MIcon name="person" size="0.72rem" color="var(--text3)" />
+                <span className={styles.sheetHeroCustomerName}>{customerName}</span>
+              </div>
+            )}
+            <div className={styles.sheetHeroTimeAccent}>{item.when}</div>
+          </div>
         </div>
 
         <div className={styles.sheetBody}>
-          <div className={styles.sheetIconRow}>
-            <div className={styles.sheetIconOuter}>
-              <div className={styles.sheetIconInner}>
-                <MIcon name={meta.icon} size="1.5rem" color={meta.color} />
-              </div>
+          <div className={styles.sheetSection}>
+            <div className={styles.sheetSectionHeader}>
+              <MIcon name="event_note" size="0.75rem" color="var(--text3)" />
+              <span className={styles.sheetSectionLabel}>What will happen</span>
             </div>
-            <TagChip label={item.tag} />
-          </div>
-
-          <div className={styles.sheetTitle}>{formatTitle(item.title)}</div>
-          <div className={`${styles.sheetTime} ${styles.sheetTimeAccent}`}>{item.when}</div>
-
-          <div className={styles.sheetInfoCard}>
-            <div className={styles.sheetInfoLabel}>What will happen</div>
-            <p className={styles.sheetInfoText}>{item.desc}</p>
+            <p className={styles.sheetSectionText}>{item.desc}</p>
           </div>
 
           <button
@@ -446,8 +672,10 @@ function DraftDetailSheet({
 
   if (!item) return null
 
-  const isDocDraft = item.type === 'invoice' || item.type === 'receipt'
-  const meta       = ICON_META[item.type] || ICON_META.message
+  const isDocDraft   = item.type === 'invoice' || item.type === 'receipt'
+  const meta         = ICON_META[item.type] || ICON_META.message
+  const iconBg       = ICON_BG[item.type] || 'var(--surface2)'
+  const customerName = resolveCustomerName(item, allOrders, allInvoices, customers)
 
   function getOrderIdFromDraftId(draftId) {
     return draftId?.replace('draft-invoice-', '') || null
@@ -478,13 +706,11 @@ function DraftDetailSheet({
     const template      = generalSettings.invoiceTemplate || 'invoiceTemplate1'
     const dueDays       = generalSettings.invoiceDueDays  || 7
     const invoiceNumber = `${prefix}-${String(allInvoices.length + 1).padStart(3, '0')}`
-
-    const today      = new Date()
-    const dateStr    = today.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
-    const dueDate    = new Date(today)
+    const today         = new Date()
+    const dateStr       = today.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+    const dueDate       = new Date(today)
     dueDate.setDate(dueDate.getDate() + dueDays)
-    const dueDateStr = dueDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
-
+    const dueDateStr    = dueDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
     const brandSnapshot = buildBrandSnapshot(profileSettings, generalSettings, 'invoice')
 
     return {
@@ -531,11 +757,10 @@ function DraftDetailSheet({
     if (existing) return { ...existing, _isPreview: false }
 
     const allInstallments = payment.installments
-    const thisIndex        = allInstallments.findIndex(inst => String(inst.id) === String(installmentId))
+    const thisIndex       = allInstallments.findIndex(inst => String(inst.id) === String(installmentId))
     if (thisIndex === -1) return null
 
-    const thisInstallment = allInstallments[thisIndex]
-
+    const thisInstallment      = allInstallments[thisIndex]
     const previousInstallments = allInstallments.slice(0, thisIndex).map(inst => ({
       id:     inst.id,
       amount: inst.amount,
@@ -551,10 +776,9 @@ function DraftDetailSheet({
     const balance       = Math.max(0, orderTotal - cumulativePaid)
     const isFullPayment = balance <= 0
 
-    const prefix   = generalSettings.receiptPrefix   || 'RCP'
-    const template = generalSettings.receiptTemplate || 'receiptTemplate1'
-    const today    = new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
-
+    const prefix                 = generalSettings.receiptPrefix   || 'RCP'
+    const template               = generalSettings.receiptTemplate || 'receiptTemplate1'
+    const today                  = new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
     const brandSnapshot          = buildBrandSnapshot(profileSettings, generalSettings, 'receipt')
     const globalReceiptCount     = allReceipts.length + 1
     const receiptsForThisPayment = allReceipts.filter(r => String(r.paymentId) === String(payment.id)).length + 1
@@ -618,12 +842,10 @@ function DraftDetailSheet({
     const doc      = item.type === 'invoice' ? getInvoiceForDraft() : getReceiptForDraft()
     const customer = getCustomerForDraft()
     if (!doc || !customer) { showToast?.('Could not build message'); return }
-
     const brand   = doc.brandSnapshot
     const message = item.type === 'invoice'
       ? buildInvoiceMessage(doc, customer, brand)
       : buildReceiptMessage(doc, customer, brand)
-
     if (navigator.share) {
       try {
         await navigator.share({ text: message })
@@ -697,6 +919,10 @@ function DraftDetailSheet({
     onClose()
   }
 
+  const headerLabel = isDocDraft
+    ? (item.type === 'invoice' ? 'Invoice Draft' : 'Receipt Draft')
+    : 'Message Draft'
+
   return (
     <>
       <div className={styles.sheetOverlay} onClick={e => e.target === e.currentTarget && !confirmSave && onClose()}>
@@ -705,40 +931,51 @@ function DraftDetailSheet({
 
           <div className={styles.sheetHeader}>
             <button className={styles.sheetCloseBtn} onClick={onClose}>
-              <MIcon name="close" size="1.35rem" color="var(--text2)" />
+              <MIcon name="close" size="1.2rem" color="var(--text2)" />
             </button>
-            <div className={styles.sheetHeaderTitle}>
-              {isDocDraft ? (item.type === 'invoice' ? 'Invoice Draft' : 'Receipt Draft') : 'Message Draft'}
+            <div className={styles.sheetHeaderTitle}>{headerLabel}</div>
+            <div style={{ width: 30 }} />
+          </div>
+
+          <div className={styles.sheetHero}>
+            <div className={styles.sheetHeroIconWrap} style={{ background: iconBg }}>
+              <MIcon name={meta.icon} size="1.45rem" color={meta.color} />
             </div>
-            <div style={{ width: 32 }} />
+            <div className={styles.sheetHeroContent}>
+              <TagChip label={item.tag} />
+              <div className={styles.sheetHeroName}>{formatTitle(item.title)}</div>
+              {customerName && (
+                <div className={styles.sheetHeroCustomer}>
+                  <MIcon name="person" size="0.72rem" color="var(--text3)" />
+                  <span className={styles.sheetHeroCustomerName}>{customerName}</span>
+                </div>
+              )}
+            </div>
           </div>
 
           <div className={styles.sheetBody}>
-            <div className={styles.sheetIconRow}>
-              <div className={styles.sheetIconOuter}>
-                <div className={styles.sheetIconInner}>
-                  <MIcon name={meta.icon} size="1.5rem" color={meta.color} />
-                </div>
+            <div className={styles.sheetSection}>
+              <div className={styles.sheetSectionHeader}>
+                <MIcon name="preview" size="0.75rem" color="var(--text3)" />
+                <span className={styles.sheetSectionLabel}>
+                  {isDocDraft ? 'Breakdown preview' : 'Message'}
+                </span>
               </div>
-              <TagChip label={item.tag} />
-            </div>
-
-            <div className={styles.sheetTitle}>{formatTitle(item.title)}</div>
-
-            <div className={styles.sheetPreviewBox}>
-              <p className={styles.sheetPreviewText}>{item.preview}</p>
+              <p className={`${styles.sheetSectionText} ${styles.sheetSectionItalic}`}>
+                {item.preview}
+              </p>
             </div>
 
             {isDocDraft ? (
               <div className={styles.sheetActions}>
                 <button className={styles.sheetPrimaryBtn} onClick={handleShareBreakdown}>
                   <MIcon name="ios_share" size="0.9rem" color="var(--bg)" />
-                  Send breakdown message
+                  Send breakdown to client
                 </button>
 
                 <div className={styles.sheetRowBtns}>
                   <button className={styles.sheetSecondaryBtn} onClick={handleViewDoc}>
-                    <MIcon name="open_in_new" size="0.82rem" color="var(--text1)" />
+                    <MIcon name="open_in_new" size="0.82rem" />
                     View {item.type}
                   </button>
                   <button className={styles.sheetGreenBtn} onClick={() => { haptic('light'); setConfirmSave(true) }}>
@@ -747,7 +984,10 @@ function DraftDetailSheet({
                   </button>
                 </div>
 
-                <button className={styles.sheetDangerBtn} onClick={() => { haptic('light'); onDiscard(item.id); onClose() }}>
+                <button
+                  className={styles.sheetDangerBtn}
+                  onClick={() => { haptic('light'); onDiscard(item.id); onClose() }}
+                >
                   <MIcon name="delete_outline" size="0.9rem" color="#ef4444" />
                   Discard draft
                 </button>
@@ -758,7 +998,10 @@ function DraftDetailSheet({
                   <MIcon name="ios_share" size="0.9rem" color="var(--bg)" />
                   Share message
                 </button>
-                <button className={styles.sheetDangerBtn} onClick={() => { haptic('light'); onDiscard(item.id); onClose() }}>
+                <button
+                  className={styles.sheetDangerBtn}
+                  onClick={() => { haptic('light'); onDiscard(item.id); onClose() }}
+                >
                   <MIcon name="delete_outline" size="0.9rem" color="#ef4444" />
                   Discard draft
                 </button>
@@ -780,10 +1023,13 @@ function DraftDetailSheet({
             </div>
             <p className={styles.confirmTitle}>Save this {item.type}?</p>
             <p className={styles.confirmSub}>
-              This will add the {item.type} to your {item.type === 'invoice' ? 'Invoices' : 'Receipts'} list where you can view, edit, and share it anytime.
+              This will add the {item.type} to your {item.type === 'invoice' ? 'Invoices' : 'Receipts'} list
+              where you can view, edit, and share it anytime.
             </p>
             <div className={styles.confirmBtns}>
-              <button className={styles.confirmCancelBtn} onClick={() => setConfirmSave(false)}>Not now</button>
+              <button className={styles.confirmCancelBtn} onClick={() => setConfirmSave(false)}>
+                Not now
+              </button>
               <button
                 className={`${styles.confirmSaveBtn} ${item.type === 'receipt' ? styles.confirmSaveBtnGreen : ''}`}
                 onClick={handleConfirmSave}
@@ -825,97 +1071,9 @@ function DraftDetailSheet({
   )
 }
 
-function ActivityRow({ item, isLast, allOrders, allInvoices, onOpen }) {
-  const meta = ICON_META[item.type] || ICON_META.brief
+// ── Tab containers ──────────────────────────────────────────────
 
-  return (
-    <div
-      className={`${styles.row} ${isLast ? styles.rowLast : ''}`}
-      onClick={() => { haptic('light'); onOpen(item) }}
-    >
-      <ItemIconBox type={item.type} itemId={item.id} orderId={item.orderId} allOrders={allOrders} allInvoices={allInvoices} />
-
-      <div className={styles.rowInfo}>
-        <div className={styles.rowTitle}>{formatTitle(item.title)}</div>
-        <div className={styles.rowMeta}>
-          <MIcon name="schedule" size="0.75rem" color="var(--text3)" />
-          <span className={styles.rowMetaText}>{item.time}</span>
-        </div>
-        <div className={styles.rowMeta}>
-          <MIcon name={meta.icon} size="0.75rem" color={meta.color} />
-          <span className={styles.rowMetaText}>{item.desc}</span>
-        </div>
-      </div>
-
-      <div className={styles.rowRight}>
-        <TagChip label={item.tag} />
-      </div>
-    </div>
-  )
-}
-
-function ScheduledRow({ item, isLast, allOrders, allInvoices, onOpen }) {
-  const meta = ICON_META[item.type] || ICON_META.reminder
-
-  return (
-    <div
-      className={`${styles.row} ${isLast ? styles.rowLast : ''}`}
-      onClick={() => { haptic('light'); onOpen(item) }}
-    >
-      <ItemIconBox type={item.type} itemId={item.id} orderId={item.orderId} allOrders={allOrders} allInvoices={allInvoices} />
-
-      <div className={styles.rowInfo}>
-        <div className={styles.rowTitle}>{formatTitle(item.title)}</div>
-        <div className={styles.rowMeta}>
-          <MIcon name="schedule" size="0.75rem" color="var(--accent)" />
-          <span className={`${styles.rowMetaText} ${styles.rowMetaAccent}`}>{item.when}</span>
-        </div>
-        <div className={styles.rowMeta}>
-          <MIcon name={meta.icon} size="0.75rem" color="var(--text3)" />
-          <span className={styles.rowMetaText}>{item.desc}</span>
-        </div>
-      </div>
-
-      <div className={styles.rowRight}>
-        <TagChip label={item.tag} />
-      </div>
-    </div>
-  )
-}
-
-function DraftRow({ item, isLast, allOrders, allInvoices, onOpen }) {
-  const isDoc = item.type === 'invoice' || item.type === 'receipt'
-  const meta  = ICON_META[item.type] || ICON_META.message
-
-  return (
-    <div
-      className={`${styles.row} ${isLast ? styles.rowLast : ''}`}
-      onClick={() => { haptic('light'); onOpen(item) }}
-    >
-      <ItemIconBox type={item.type} itemId={item.id} orderId={item.orderId} allOrders={allOrders} allInvoices={allInvoices} />
-
-      <div className={styles.rowInfo}>
-        <div className={styles.rowTitle}>{formatTitle(item.title)}</div>
-        <div className={styles.rowMeta}>
-          <MIcon name={meta.icon} size="0.75rem" color={meta.color} />
-          <span className={styles.rowMetaText}>
-            {isDoc ? `${item.type === 'invoice' ? 'Invoice' : 'Receipt'} ready to send` : 'Message ready to send'}
-          </span>
-        </div>
-        {item.preview && (
-          <div className={styles.rowPreviewSnippet}>{item.preview}</div>
-        )}
-      </div>
-
-      <div className={styles.rowRight}>
-        <TagChip label={item.tag} />
-        <MIcon name="chevron_right" size="0.9rem" color="var(--text3)" />
-      </div>
-    </div>
-  )
-}
-
-function ActivityTab({ items, allOrders, allInvoices }) {
+function ActivityTab({ items, allOrders, allInvoices, customers }) {
   const [selected, setSelected] = useState(null)
 
   if (!items.length) return (
@@ -942,6 +1100,7 @@ function ActivityTab({ items, allOrders, allInvoices }) {
                   isLast={idx === group.items.length - 1}
                   allOrders={allOrders}
                   allInvoices={allInvoices}
+                  customers={customers}
                   onOpen={setSelected}
                 />
               ))}
@@ -954,13 +1113,16 @@ function ActivityTab({ items, allOrders, allInvoices }) {
         <ActivityDetailSheet
           item={selected}
           onClose={() => setSelected(null)}
+          allOrders={allOrders}
+          allInvoices={allInvoices}
+          customers={customers}
         />
       )}
     </>
   )
 }
 
-function ScheduledTab({ items, allOrders, allInvoices, onCancel }) {
+function ScheduledTab({ items, allOrders, allInvoices, customers, onCancel }) {
   const [selected, setSelected] = useState(null)
 
   if (!items.length) return (
@@ -987,6 +1149,7 @@ function ScheduledTab({ items, allOrders, allInvoices, onCancel }) {
                   isLast={idx === group.items.length - 1}
                   allOrders={allOrders}
                   allInvoices={allInvoices}
+                  customers={customers}
                   onOpen={setSelected}
                 />
               ))}
@@ -1000,6 +1163,9 @@ function ScheduledTab({ items, allOrders, allInvoices, onCancel }) {
           item={selected}
           onClose={() => setSelected(null)}
           onCancel={onCancel}
+          allOrders={allOrders}
+          allInvoices={allInvoices}
+          customers={customers}
         />
       )}
     </>
@@ -1025,7 +1191,7 @@ function DraftsTab({
     <div className={styles.emptyTab}>
       <MIcon name="edit_note" size="2rem" color="var(--border2)" />
       <p className={styles.emptyTabTitle}>Nothing ready yet</p>
-      <p className={styles.emptyTabSub}>Documents and messages your assistant prepares for you will appear here</p>
+      <p className={styles.emptyTabSub}>Documents and messages your assistant prepares will appear here</p>
     </div>
   )
 
@@ -1045,6 +1211,7 @@ function DraftsTab({
                   isLast={idx === group.items.length - 1}
                   allOrders={allOrders}
                   allInvoices={allInvoices}
+                  customers={customers}
                   onOpen={setSelected}
                 />
               ))}
@@ -1072,6 +1239,8 @@ function DraftsTab({
     </>
   )
 }
+
+// ── Chat components ─────────────────────────────────────────────
 
 function TypingIndicator() {
   return (
@@ -1269,6 +1438,8 @@ function ChatPanel({
   )
 }
 
+// ── Main page ───────────────────────────────────────────────────
+
 function Agent({ onMenuClick }) {
   const navigate = useNavigate()
 
@@ -1342,9 +1513,9 @@ function Agent({ onMenuClick }) {
   }, [handleAction, navigate])
 
   const TABS = [
-    { key: 'done',     label: 'Activity'                         },
-    { key: 'upcoming', label: 'Scheduled'                        },
-    { key: 'drafts',   label: 'Prepared', badge: drafts.length   },
+    { key: 'done',     label: 'Activity'                        },
+    { key: 'upcoming', label: 'Scheduled'                       },
+    { key: 'drafts',   label: 'Prepared', badge: drafts.length  },
   ]
 
   return (
@@ -1379,11 +1550,12 @@ function Agent({ onMenuClick }) {
       </div>
 
       <div className={styles.tabContent}>
-        {tab === 'done'     && (
+        {tab === 'done' && (
           <ActivityTab
             items={doneTasks}
             allOrders={allOrders}
             allInvoices={allInvoices}
+            customers={customers}
           />
         )}
         {tab === 'upcoming' && (
@@ -1391,10 +1563,11 @@ function Agent({ onMenuClick }) {
             items={upcomingTasks}
             allOrders={allOrders}
             allInvoices={allInvoices}
+            customers={customers}
             onCancel={cancelUpcoming}
           />
         )}
-        {tab === 'drafts'   && (
+        {tab === 'drafts' && (
           <DraftsTab
             items={drafts}
             onDiscard={discardDraft}
