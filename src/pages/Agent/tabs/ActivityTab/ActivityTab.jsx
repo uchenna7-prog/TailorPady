@@ -6,9 +6,7 @@ import { ActivityRow } from "./components/ActivityRow/ActivityRow"
 import { groupByDate } from "../../utils"
 import styles from "./ActivityTab.module.css"
 
-
-export function ActivityTab({ items, allOrders, allInvoices, customers }) {
-
+export function ActivityTab({ items, allOrders, allInvoices, allPayments, customers }) {
   const [selected, setSelected] = useState(null)
 
   if (!items.length) return (
@@ -35,6 +33,7 @@ export function ActivityTab({ items, allOrders, allInvoices, customers }) {
                   isLast={idx === group.items.length - 1}
                   allOrders={allOrders}
                   allInvoices={allInvoices}
+                  allPayments={allPayments}
                   customers={customers}
                   onOpen={setSelected}
                 />
@@ -50,6 +49,7 @@ export function ActivityTab({ items, allOrders, allInvoices, customers }) {
           onClose={() => setSelected(null)}
           allOrders={allOrders}
           allInvoices={allInvoices}
+          allPayments={allPayments}
           customers={customers}
         />
       )}

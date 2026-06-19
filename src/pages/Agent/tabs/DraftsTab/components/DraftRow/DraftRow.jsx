@@ -1,18 +1,14 @@
-import { resolveCustomerName,resolveOrderName,formatTitle,extractTime } from "../../../../utils"
+import { resolveCustomerName, resolveOrderName, formatTitle, extractTime, haptic } from "../../../../utils"
 import { ItemIconBox } from "../../../../components/ItemIconBox/ItemIconBox"
 import { TagPill } from "../../../../components/TagPill/TagPill"
 import { MIcon } from "../../../../components/MIcon/MIcon"
-import { haptic } from "../../../../utils"
 import styles from "./DraftRow.module.css"
 
-
-export function DraftRow({ item, isLast, allOrders, allInvoices, customers, onOpen }) {
-
-  const customerName = resolveCustomerName(item, allOrders, allInvoices, customers)
-  const orderName    = resolveOrderName(item, allOrders, allInvoices)
+export function DraftRow({ item, isLast, allOrders, allInvoices, allPayments, customers, onOpen }) {
+  const customerName = resolveCustomerName(item, allOrders, allInvoices, allPayments, customers)
+  const orderName = resolveOrderName(item, allOrders, allInvoices, allPayments)
   const displayTitle = formatTitle(item.title)
-  const displayTime  = extractTime(item.time)
-  const isDoc = item.type === 'invoice' || item.type === 'receipt'
+  const displayTime = extractTime(item.time)
 
   return (
     <div
@@ -25,6 +21,7 @@ export function DraftRow({ item, isLast, allOrders, allInvoices, customers, onOp
         orderId={item.orderId}
         allOrders={allOrders}
         allInvoices={allInvoices}
+        allPayments={allPayments}
       />
 
       <div className={styles.rowBody}>
@@ -38,23 +35,18 @@ export function DraftRow({ item, isLast, allOrders, allInvoices, customers, onOp
         )}
 
         {orderName && (
-            <div className={styles.rowMeta}>
+          <div className={styles.rowMeta}>
             <MIcon name="shopping_cart" size="0.72rem" color="var(--text3)" />
             <span className={styles.rowMetaText}>{orderName}</span>
-            </div>
+          </div>
         )}
-
-
       </div>
 
       <div className={styles.rowRight}>
-
         <TagPill label={item.tag} />
         <div className={styles.rowMeta}>
-            
-            <span className={styles.rowMetaText}>{displayTime}</span>
+          <span className={styles.rowMetaText}>{displayTime}</span>
         </div>
-       
       </div>
     </div>
   )

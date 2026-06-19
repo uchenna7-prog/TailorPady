@@ -1,16 +1,14 @@
 import { ItemIconBox } from "../../../../components/ItemIconBox/ItemIconBox"
 import { TagPill } from "../../../../components/TagPill/TagPill"
 import { MIcon } from "../../../../components/MIcon/MIcon"
-import { resolveCustomerName,resolveOrderName,extractTime,haptic,formatTitle } from "../../../../utils"
+import { resolveCustomerName, resolveOrderName, extractTime, haptic, formatTitle } from "../../../../utils"
 import styles from "./ActivityRow.module.css"
 
-
-export function ActivityRow({ item, isLast, allOrders, allInvoices, customers, onOpen }) {
-
-  const customerName = resolveCustomerName(item, allOrders, allInvoices, customers)
-  const orderName    = resolveOrderName(item, allOrders, allInvoices)
+export function ActivityRow({ item, isLast, allOrders, allInvoices, allPayments, customers, onOpen }) {
+  const customerName = resolveCustomerName(item, allOrders, allInvoices, allPayments, customers)
+  const orderName = resolveOrderName(item, allOrders, allInvoices, allPayments)
   const displayTitle = formatTitle(item.title)
-  const displayTime  = extractTime(item.time)
+  const displayTime = extractTime(item.time)
 
   return (
     <div
@@ -23,6 +21,7 @@ export function ActivityRow({ item, isLast, allOrders, allInvoices, customers, o
         orderId={item.orderId}
         allOrders={allOrders}
         allInvoices={allInvoices}
+        allPayments={allPayments}
       />
 
       <div className={styles.rowBody}>
@@ -41,22 +40,14 @@ export function ActivityRow({ item, isLast, allOrders, allInvoices, customers, o
             <span className={styles.rowMetaText}>{orderName}</span>
           </div>
         )}
-
-
       </div>
 
       <div className={styles.rowRight}>
-
         <TagPill label={item.tag} />
-         
         <div className={styles.rowMeta}>
-          
           <span className={styles.rowMetaText}>{displayTime}</span>
         </div>
-
-       
       </div>
-       
     </div>
   )
 }

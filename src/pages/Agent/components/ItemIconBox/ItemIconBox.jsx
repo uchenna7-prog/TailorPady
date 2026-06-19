@@ -1,60 +1,51 @@
-import { ICON_META,ICON_BG } from "../../datas"
+import { ICON_META, ICON_BG } from "../../datas"
 import { MIcon } from "../MIcon/MIcon"
 import OrderMosaic from "../../../../components/OrderMosaic/OrderMosaic"
 import styles from "./ItemIconBox.module.css"
 
+function resolveOrderId(itemId, orderId, allInvoices, allPayments, allOrders) {
+  if (orderId) return orderId
+  if (!itemId) return null
 
-export function ItemIconBox({ type, itemId, orderId, allOrders, allInvoices }) {
-  const meta = ICON_META[type] || ICON_META.brief
-  let resolvedOrderId = orderId || null
+  for (const prefix of ['invoice-', 'upcoming-invoice-']) {
+    if (itemId.startsWith(prefix)) return itemId.slice(prefix.length)
+  }
 
-  if (!resolvedOrderId && itemId) {
-    for (const prefix of ['invoice-', 'upcoming-invoice-']) {
+  if (itemId.startsWith('receipt-') && allPayments) {
+    const paymentId = itemId.slice('receipt-'.length).split('::')[0]
+    const payment = allPayments.find(p => String(p.id) === String(paymentId))
+    if (payment?.orderId) return payment.orderId
+  }
+
+  if (allInvoices) {
+    for (const prefix of ['upcoming-reminder-', 'reminder-']) {
       if (itemId.startsWith(prefix)) {
-        resolvedOrderId = itemId.slice(prefix.length)
-        break
+        const invoiceId = itemId.slice(prefix.length)
+        const invoice = allInvoices.find(inv => String(inv.id) === String(invoiceId))
+        if (invoice?.orderId) return invoice.orderId
       }
     }
   }
 
-  if (!resolvedOrderId && itemId && allInvoices) {
-    let invoiceId = null
-    if (itemId.startsWith('receipt-')) {
-      invoiceId = itemId.slice('receipt-'.length).split('::')[0]
-    }
-    if (!invoiceId) {
-      for (const prefix of ['upcoming-reminder-', 'reminder-']) {
-        if (itemId.startsWith(prefix)) {
-          invoiceId = itemId.slice(prefix.length)
-          break
-        }
-      }
-    }
-    if (invoiceId) {
-      const invoice = allInvoices.find(inv => String(inv.id) === String(invoiceId))
-      resolvedOrderId = invoice?.orderId ?? null
-    }
-  }
-
-  if (!resolvedOrderId && itemId && allOrders) {
-    let customerId = null
+  if (allOrders) {
     for (const prefix of ['upcoming-followup-', 'followup-']) {
       if (itemId.startsWith(prefix)) {
-        customerId = itemId.slice(prefix.length)
-        break
+        const customerId = itemId.slice(prefix.length)
+        const customerOrders = allOrders
+          .filter(o => String(o.customerId) === String(customerId) && o.items?.length > 0)
+          .sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0))
+        return customerOrders[0]?.id ?? null
       }
-    }
-    if (customerId) {
-      const customerOrders = allOrders
-        .filter(o => String(o.customerId) === String(customerId) && o.items?.length > 0)
-        .sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0))
-      resolvedOrderId = customerOrders[0]?.id ?? null
     }
   }
 
-  const linkedOrder = resolvedOrderId
-    ? allOrders?.find(o => String(o.id) === String(resolvedOrderId))
-    : null
+  return null
+}
+
+export function ItemIconBox({ type, itemId, orderId, allOrders, allInvoices, allPayments }) {
+  const meta = ICON_META[type] || ICON_META.brief
+  const resolvedOrderId = resolveOrderId(itemId, orderId, allInvoices, allPayments, allOrders)
+  const linkedOrder = resolvedOrderId ? allOrders?.find(o => String(o.id) === String(resolvedOrderId)) : null
 
   if (linkedOrder) {
     return <OrderMosaic items={linkedOrder.items ?? []} size="md" />

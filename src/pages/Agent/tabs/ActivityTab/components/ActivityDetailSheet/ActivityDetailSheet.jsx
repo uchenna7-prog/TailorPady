@@ -6,10 +6,9 @@ import { resolveCustomerName } from "../../../../utils"
 import { MIcon } from "../../../../components/MIcon/MIcon"
 import styles from "./ActivityDetailSheet.module.css"
 
-
-export function ActivityDetailSheet({ item, onClose, allOrders, allInvoices, customers }) {
+export function ActivityDetailSheet({ item, onClose, allOrders, allInvoices, allPayments, customers }) {
   if (!item) return null
-  const customerName = resolveCustomerName(item, allOrders, allInvoices, customers)
+  const customerName = resolveCustomerName(item, allOrders, allInvoices, allPayments, customers)
 
   return (
     <SheetBase onClose={onClose}>

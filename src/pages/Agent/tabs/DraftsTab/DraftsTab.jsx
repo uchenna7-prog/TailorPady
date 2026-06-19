@@ -6,7 +6,6 @@ import { MIcon } from "../../components/MIcon/MIcon"
 import { groupByDate } from "../../utils"
 import styles from "./DraftsTab.module.css"
 
-
 export function DraftsTab({
   items,
   onDiscard,
@@ -46,6 +45,7 @@ export function DraftsTab({
                   isLast={idx === group.items.length - 1}
                   allOrders={allOrders}
                   allInvoices={allInvoices}
+                  allPayments={allPayments}
                   customers={customers}
                   onOpen={setSelected}
                 />

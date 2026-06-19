@@ -174,6 +174,7 @@ function Agent() {
         <Header
           type="back"
           customTitle={{ iconComponent: AgentTitleIcon, title: 'Pady' }}
+          showBorderBottom={false}
           onBackClick={() => navigate('/')}
           agentActive={enabled}
           customActions={[
@@ -195,7 +196,9 @@ function Agent() {
             >
               {t.label}
               {t.badge > 0 && (
-                <span className={styles.tabBadge}>{t.badge}</span>
+                <span className={`${styles.tabBadge} ${tab === t.key ? styles.tabBadgeActive : ''}`}>
+                  {t.badge}
+                </span>
               )}
             </button>
           ))}
@@ -218,6 +221,7 @@ function Agent() {
             items={doneTasks}
             allOrders={allOrders}
             allInvoices={allInvoices}
+            allPayments={allPayments}
             customers={customers}
           />
         )}
@@ -226,6 +230,7 @@ function Agent() {
             items={upcomingTasks}
             allOrders={allOrders}
             allInvoices={allInvoices}
+            allPayments={allPayments}
             customers={customers}
             onCancel={cancelUpcoming}
           />

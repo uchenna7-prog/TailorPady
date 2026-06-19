@@ -792,7 +792,7 @@ function buildCandidateItems({ generalSettings, customers, allOrders, allInvoice
     getPendingReceiptItems(allPayments, allReceipts).forEach(({ payment, installment }) => {
       const customer = customers.find(c => c.id === payment.customerId)
       candidates.push({
-        draftId:    `receipt-${payment.id}-${installment.id}`,
+        draftId:   `receipt-${payment.id}::${installment.id}`,
         type:       'receipt',
         title:      'Receipt drafted',
         preview:    `Receipt for ${formatMoney(installment.amount, generalSettings.receiptCurrency?.symbol)} paid by ${customer?.name || payment.customerName || 'a customer'} via ${installment.method || 'cash'}.`,

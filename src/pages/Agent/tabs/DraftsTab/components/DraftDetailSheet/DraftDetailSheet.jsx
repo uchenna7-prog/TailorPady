@@ -4,11 +4,25 @@ import { MIcon } from "../../../../components/MIcon/MIcon"
 import { SheetHeader } from "../../../../components/SheetHeader/SheetHeader"
 import { SheetHero } from "../../../../components/SheetHero/SheetHero"
 import { SheetSection } from "../../../../components/SheetSection/SheetSection"
-import { haptic } from "../../../../utils"
+import { haptic, buildBrandSnapshot, buildInvoiceMessage, buildReceiptMessage } from "../../../../utils"
 import InvoiceViewer from "../../../../../../components/InvoiceViewer/InvoiceViewer"
 import ReceiptViewer from "../../../../../../components/ReceiptViewer/ReceiptViewer"
 import styles from "./DraftDetailSheet.module.css"
 
+function getOrderIdFromInvoiceDraftId(draftId) {
+  return draftId?.replace('invoice-', '') || null
+}
+
+function getPaymentIdFromReceiptDraftId(draftId) {
+  if (!draftId?.startsWith('receipt-')) return null
+  return draftId.replace('receipt-', '').split('::')[0] || null
+}
+
+function getInstallmentIdFromReceiptDraftId(draftId) {
+  if (!draftId?.startsWith('receipt-')) return null
+  const parts = draftId.replace('receipt-', '').split('::')
+  return parts[1] || null
+}
 
 export function DraftDetailSheet({
   item,
@@ -26,30 +40,16 @@ export function DraftDetailSheet({
 }) {
   const [viewerInvoice, setViewerInvoice] = useState(null)
   const [viewerReceipt, setViewerReceipt] = useState(null)
-  const [confirmSave,   setConfirmSave]   = useState(false)
+  const [confirmSave, setConfirmSave] = useState(false)
 
   if (!item) return null
 
-  const isDoc        = item.type === 'invoice' || item.type === 'receipt'
-  const customerName = resolveCustomerName(item, allOrders, allInvoices, customers)
-
-  function getOrderIdFromDraftId(draftId) {
-    return draftId?.replace('invoice-', '') || null
-  }
-
-  function getInvoiceIdFromDraftId(draftId) {
-    if (!draftId?.startsWith('receipt-')) return null
-    return draftId.replace('receipt-', '').split('::')[0] || null
-  }
-
-  function getInstallmentIdFromDraftId(draftId) {
-    if (!draftId?.startsWith('receipt-')) return null
-    const parts = draftId.replace('receipt-', '').split('::')
-    return parts[1] || null
-  }
+  const isDoc = item.type === 'invoice' || item.type === 'receipt'
+  const isReceipt = item.type === 'receipt'
+  const customerName = resolveCustomerName(item, allOrders, allInvoices, allPayments, customers)
 
   function getInvoiceForDraft() {
-    const orderId  = getOrderIdFromDraftId(item.id)
+    const orderId = getOrderIdFromInvoiceDraftId(item.id)
     if (!orderId) return null
 
     const existing = allInvoices.find(inv => String(inv.orderId) === String(orderId))
@@ -58,52 +58,49 @@ export function DraftDetailSheet({
     const order = allOrders.find(o => String(o.id) === String(orderId))
     if (!order) return null
 
-    const prefix        = generalSettings.invoicePrefix   || 'INV'
-    const template      = generalSettings.invoiceTemplate || 'invoiceTemplate1'
-    const dueDays       = generalSettings.invoiceDueDays  || 7
+    const prefix = generalSettings.invoicePrefix || 'INV'
+    const template = generalSettings.invoiceTemplate || 'invoiceTemplate1'
+    const dueDays = generalSettings.invoiceDueDays || 7
     const invoiceNumber = `${prefix}-${String(allInvoices.length + 1).padStart(3, '0')}`
-    const today         = new Date()
-    const dateStr       = today.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
-    const dueDate       = new Date(today)
+    const today = new Date()
+    const dateStr = today.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+    const dueDate = new Date(today)
     dueDate.setDate(dueDate.getDate() + dueDays)
-    const dueDateStr    = dueDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+    const dueDateStr = dueDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
     const brandSnapshot = buildBrandSnapshot(profileSettings, generalSettings, 'invoice')
 
     return {
-      id:             `preview-${order.id}`,
-      orderId:        order.id,
-      customerId:     order.customerId,
-      number:         invoiceNumber,
-      date:           dateStr,
-      status:         'unpaid',
+      id: `preview-${order.id}`,
+      orderId: order.id,
+      customerId: order.customerId,
+      number: invoiceNumber,
+      date: dateStr,
+      status: 'unpaid',
       template,
-      orderDesc:      order.desc,
-      price:          order.price,
-      qty:            order.qty,
-      items:          Array.isArray(order.items) ? order.items : [],
-      due:            dueDateStr,
-      notes:          order.notes || '',
-      shippingFee:    order.shippingFee    ?? 0,
-      discountType:   order.discountType   ?? null,
-      discountValue:  order.discountValue  ?? 0,
+      orderDesc: order.desc,
+      price: order.price,
+      qty: order.qty,
+      items: Array.isArray(order.items) ? order.items : [],
+      due: dueDateStr,
+      notes: order.notes || '',
+      shippingFee: order.shippingFee ?? 0,
+      discountType: order.discountType ?? null,
+      discountValue: order.discountValue ?? 0,
       discountAmount: order.discountAmount ?? 0,
-      taxRate:        order.taxRate        ?? 0,
-      taxAmount:      order.taxAmount      ?? 0,
-      totalAmount:    order.totalAmount    ?? order.price ?? 0,
+      taxRate: order.taxRate ?? 0,
+      taxAmount: order.taxAmount ?? 0,
+      totalAmount: order.totalAmount ?? order.price ?? 0,
       brandSnapshot,
       _isPreview: true,
     }
   }
 
   function getReceiptForDraft() {
-    const invoiceId     = getInvoiceIdFromDraftId(item.id)
-    const installmentId = getInstallmentIdFromDraftId(item.id)
-    if (!invoiceId || !installmentId) return null
+    const paymentId = getPaymentIdFromReceiptDraftId(item.id)
+    const installmentId = getInstallmentIdFromReceiptDraftId(item.id)
+    if (!paymentId || !installmentId) return null
 
-    const invoice = allInvoices.find(inv => String(inv.id) === String(invoiceId))
-    if (!invoice) return null
-
-    const payment = allPayments.find(p => String(p.orderId) === String(invoice.orderId))
+    const payment = allPayments.find(p => String(p.id) === String(paymentId))
     if (!payment || !Array.isArray(payment.installments)) return null
 
     const existing = allReceipts.find(r =>
@@ -113,65 +110,66 @@ export function DraftDetailSheet({
     if (existing) return { ...existing, _isPreview: false }
 
     const allInstallments = payment.installments
-    const thisIndex       = allInstallments.findIndex(inst => String(inst.id) === String(installmentId))
+    const thisIndex = allInstallments.findIndex(inst => String(inst.id) === String(installmentId))
     if (thisIndex === -1) return null
 
-    const thisInstallment      = allInstallments[thisIndex]
+    const thisInstallment = allInstallments[thisIndex]
     const previousInstallments = allInstallments.slice(0, thisIndex).map(inst => ({
-      id:     inst.id,
+      id: inst.id,
       amount: inst.amount,
       method: inst.method || 'cash',
-      date:   inst.date,
-      time:   inst.time || null,
+      date: inst.date,
+      time: inst.time || null,
     }))
 
-    const orderTotal     = parseFloat(invoice.totalAmount ?? invoice.price) || 0
+    const order = allOrders.find(o => String(o.id) === String(payment.orderId))
+    const orderTotal = parseFloat(order?.totalAmount ?? order?.price) || 0
     const cumulativePaid = allInstallments
       .slice(0, thisIndex + 1)
       .reduce((sum, inst) => sum + (parseFloat(inst.amount) || 0), 0)
-    const balance       = Math.max(0, orderTotal - cumulativePaid)
+    const balance = Math.max(0, orderTotal - cumulativePaid)
     const isFullPayment = balance <= 0
 
-    const prefix                 = generalSettings.receiptPrefix   || 'RCP'
-    const template               = generalSettings.receiptTemplate || 'receiptTemplate1'
-    const today                  = new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
-    const brandSnapshot          = buildBrandSnapshot(profileSettings, generalSettings, 'receipt')
-    const globalReceiptCount     = allReceipts.length + 1
+    const prefix = generalSettings.receiptPrefix || 'RCP'
+    const template = generalSettings.receiptTemplate || 'receiptTemplate1'
+    const today = new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+    const brandSnapshot = buildBrandSnapshot(profileSettings, generalSettings, 'receipt')
+    const globalReceiptCount = allReceipts.length + 1
     const receiptsForThisPayment = allReceipts.filter(r => String(r.paymentId) === String(payment.id)).length + 1
     const receiptNumber = `${prefix}-${String(receiptsForThisPayment).padStart(2, '0')}-${String(globalReceiptCount).padStart(3, '0')}`
 
     return {
-      id:                   `preview-receipt-${invoice.id}-${thisInstallment.id}`,
-      paymentId:            payment.id,
-      orderId:              invoice.orderId,
-      customerId:           invoice.customerId,
-      orderDesc:            invoice.orderDesc || invoice.desc,
-      orderPrice:           invoice.totalAmount || invoice.price,
-      items:                invoice.items || [],
-      number:               receiptNumber,
-      date:                 today,
+      id: `preview-receipt-${payment.id}-${thisInstallment.id}`,
+      paymentId: payment.id,
+      orderId: payment.orderId,
+      customerId: payment.customerId,
+      orderDesc: order?.desc,
+      orderPrice: order?.totalAmount ?? order?.price,
+      items: order?.items || [],
+      number: receiptNumber,
+      date: today,
       template,
       payments: [{
-        id:     thisInstallment.id,
+        id: thisInstallment.id,
         amount: thisInstallment.amount,
         method: thisInstallment.method || 'cash',
-        date:   thisInstallment.date,
-        time:   thisInstallment.time || null,
+        date: thisInstallment.date,
+        time: thisInstallment.time || null,
       }],
       previousInstallments,
-      previousPaid:         previousInstallments.reduce((s, i) => s + (parseFloat(i.amount) || 0), 0),
+      previousPaid: previousInstallments.reduce((sum, inst) => sum + (parseFloat(inst.amount) || 0), 0),
       cumulativePaid,
       isFullPayment,
       balance,
-      installmentIds:       [String(thisInstallment.id)],
-      notes:                payment.notes || '',
-      shippingFee:          invoice.shippingFee    ?? 0,
-      discountType:         invoice.discountType   ?? null,
-      discountValue:        invoice.discountValue  ?? 0,
-      discountAmount:       invoice.discountAmount ?? 0,
-      taxRate:              invoice.taxRate        ?? 0,
-      taxAmount:            invoice.taxAmount      ?? 0,
-      totalAmount:          invoice.totalAmount    ?? invoice.price ?? 0,
+      installmentIds: [String(thisInstallment.id)],
+      notes: payment.notes || '',
+      shippingFee: order?.shippingFee ?? 0,
+      discountType: order?.discountType ?? null,
+      discountValue: order?.discountValue ?? 0,
+      discountAmount: order?.discountAmount ?? 0,
+      taxRate: order?.taxRate ?? 0,
+      taxAmount: order?.taxAmount ?? 0,
+      totalAmount: order?.totalAmount ?? order?.price ?? 0,
       brandSnapshot,
       _isPreview: true,
     }
@@ -179,70 +177,61 @@ export function DraftDetailSheet({
 
   function getCustomerForDraft() {
     if (item.type === 'invoice') {
-      const orderId = getOrderIdFromDraftId(item.id)
-      const order   = allOrders.find(o => String(o.id) === String(orderId))
+      const orderId = getOrderIdFromInvoiceDraftId(item.id)
+      const order = allOrders.find(o => String(o.id) === String(orderId))
       if (!order) return null
       return customers.find(c => String(c.id) === String(order.customerId)) || null
     }
     if (item.type === 'receipt') {
-      const invoiceId = getInvoiceIdFromDraftId(item.id)
-      const invoice   = allInvoices.find(inv => String(inv.id) === String(invoiceId))
-      if (!invoice) return null
-      return customers.find(c => String(c.id) === String(invoice.customerId)) || null
+      const paymentId = getPaymentIdFromReceiptDraftId(item.id)
+      const payment = allPayments.find(p => String(p.id) === String(paymentId))
+      if (!payment) return null
+      return customers.find(c => String(c.id) === String(payment.customerId)) || null
     }
     return null
   }
 
+  async function shareText(text, fallbackMessage) {
+    if (navigator.share) {
+      try {
+        await navigator.share({ text })
+        return
+      } catch (err) {
+        if (err?.name === 'AbortError') return
+      }
+    }
+    navigator.clipboard?.writeText(text).catch(() => {})
+    showToast?.(fallbackMessage)
+  }
+
   async function handleShareBreakdown() {
     haptic('medium')
-    const doc      = item.type === 'invoice' ? getInvoiceForDraft() : getReceiptForDraft()
+    const doc = item.type === 'invoice' ? getInvoiceForDraft() : getReceiptForDraft()
     const customer = getCustomerForDraft()
     if (!doc || !customer) { showToast?.('Could not build message'); return }
-    const brand   = doc.brandSnapshot
+
+    const brand = doc.brandSnapshot
     const message = item.type === 'invoice'
       ? buildInvoiceMessage(doc, customer, brand)
       : buildReceiptMessage(doc, customer, brand)
-    if (navigator.share) {
-      try {
-        await navigator.share({ text: message })
-      } catch (err) {
-        if (err?.name !== 'AbortError') {
-          navigator.clipboard?.writeText(message).catch(() => {})
-          showToast?.('Copied to clipboard')
-        }
-      }
-    } else {
-      navigator.clipboard?.writeText(message).catch(() => {})
-      showToast?.('Copied to clipboard — paste to send')
-    }
+
+    await shareText(message, 'Copied to clipboard')
   }
 
   async function handleShareMessage() {
     haptic('medium')
-    if (navigator.share) {
-      try {
-        await navigator.share({ text: item.preview })
-      } catch (err) {
-        if (err?.name !== 'AbortError') {
-          navigator.clipboard?.writeText(item.preview).catch(() => {})
-          showToast?.('Copied to clipboard')
-        }
-      }
-    } else {
-      navigator.clipboard?.writeText(item.preview).catch(() => {})
-      showToast?.('Copied to clipboard')
-    }
+    await shareText(item.preview, 'Copied to clipboard')
   }
 
   function handleViewDoc() {
     haptic('light')
     if (item.type === 'invoice') {
-      const invoice  = getInvoiceForDraft()
+      const invoice = getInvoiceForDraft()
       const customer = getCustomerForDraft()
       if (!invoice || !customer) { showToast?.('Could not load invoice data'); return }
       setViewerInvoice({ invoice, customer })
     } else {
-      const receipt  = getReceiptForDraft()
+      const receipt = getReceiptForDraft()
       const customer = getCustomerForDraft()
       if (!receipt || !customer) { showToast?.('Could not load receipt data'); return }
       setViewerReceipt({ receipt, customer })
@@ -251,6 +240,7 @@ export function DraftDetailSheet({
 
   async function handleConfirmSave() {
     setConfirmSave(false)
+
     if (item.type === 'invoice') {
       const invoice = getInvoiceForDraft()
       if (!invoice) { showToast?.('Could not save invoice'); return }
@@ -272,14 +262,13 @@ export function DraftDetailSheet({
         onDiscard(item.id)
       }
     }
+
     onClose()
   }
 
   const sheetTitle = isDoc
     ? (item.type === 'invoice' ? 'Invoice Draft' : 'Receipt Draft')
     : 'Message Draft'
-
-  const isReceipt = item.type === 'receipt'
 
   return (
     <>
@@ -296,16 +285,12 @@ export function DraftDetailSheet({
 
             {isDoc ? (
               <div className={styles.sheetActions}>
-
                 <div className={styles.btnRow}>
                   <button className={styles.btnSecondary} onClick={handleViewDoc}>
                     <MIcon name="open_in_new" size="0.82rem" />
                     View {item.type}
                   </button>
-                  <button
-                    className={`${styles.btnGreen}`}
-                    onClick={() => { haptic('light'); setConfirmSave(true) }}
-                  >
+                  <button className={styles.btnGreen} onClick={() => { haptic('light'); setConfirmSave(true) }}>
                     <MIcon name="add_circle" size="0.82rem" color="#22c55e" />
                     Save {item.type}
                   </button>
@@ -323,7 +308,6 @@ export function DraftDetailSheet({
                   <MIcon name="ios_share" size="0.9rem" color="var(--bg)" />
                   Send breakdown to client
                 </button>
-
               </div>
             ) : (
               <div className={styles.sheetActions}>

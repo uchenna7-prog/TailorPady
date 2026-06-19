@@ -48,13 +48,19 @@
 }
 
 .tabBadge {
-  background: var(--accent);
-  color: var(--bg);
+  background: var(--bg);
+  border: 1.3px solid var(--border);
+  color: var(--text2);
   font-size: 0.6rem;
   font-weight: 800;
   padding: 1px 5px;
   border-radius: 10px;
   line-height: 1.4;
+}
+
+.tabBadgeActive {
+  background: var(--accent);
+  color: var(--bg);
 }
 
 .tabUnderlineTrack {

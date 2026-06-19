@@ -354,6 +354,7 @@ export function MeasurementDetailsModal({ measurement, onClose, onDelete, onUpda
       <div className={`${styles.detailPanel} ${styles.detailPanel_open}`}>
         <Header
           type="back"
+          showBorderBottom={false}
           title={measurement.name}
           onBackClick={onClose}
           customActions={[

@@ -6,11 +6,9 @@ import { resolveCustomerName, haptic } from "../../../../utils"
 import { MIcon } from "../../../../components/MIcon/MIcon"
 import styles from "./ScheduledDetailSheet.module.css"
 
-
-export function ScheduledDetailSheet({ item, onClose, onCancel, allOrders, allInvoices, customers }) {
-
+export function ScheduledDetailSheet({ item, onClose, onCancel, allOrders, allInvoices, allPayments, customers }) {
   if (!item) return null
-  const customerName = resolveCustomerName(item, allOrders, allInvoices, customers)
+  const customerName = resolveCustomerName(item, allOrders, allInvoices, allPayments, customers)
 
   return (
     <SheetBase onClose={onClose}>

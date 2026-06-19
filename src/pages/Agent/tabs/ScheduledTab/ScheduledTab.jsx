@@ -6,8 +6,7 @@ import { MIcon } from "../../components/MIcon/MIcon"
 import { groupByDate } from "../../utils"
 import styles from "./ScheduledTab.module.css"
 
-
-export function ScheduledTab({ items, allOrders, allInvoices, customers, onCancel }) {
+export function ScheduledTab({ items, allOrders, allInvoices, allPayments, customers, onCancel }) {
   const [selected, setSelected] = useState(null)
 
   if (!items.length) return (
@@ -34,6 +33,7 @@ export function ScheduledTab({ items, allOrders, allInvoices, customers, onCance
                   isLast={idx === group.items.length - 1}
                   allOrders={allOrders}
                   allInvoices={allInvoices}
+                  allPayments={allPayments}
                   customers={customers}
                   onOpen={setSelected}
                 />
@@ -50,6 +50,7 @@ export function ScheduledTab({ items, allOrders, allInvoices, customers, onCance
           onCancel={onCancel}
           allOrders={allOrders}
           allInvoices={allInvoices}
+          allPayments={allPayments}
           customers={customers}
         />
       )}
