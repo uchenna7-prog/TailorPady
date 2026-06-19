@@ -1,4 +1,4 @@
-import { resolveCustomerName,resolveOrderName,formatTitle } from "../../../../utils"
+import { resolveCustomerName,resolveOrderName,formatTitle,extractTime } from "../../../../utils"
 import { ItemIconBox } from "../../../../components/ItemIconBox/ItemIconBox"
 import { TagPill } from "../../../../components/TagPill/TagPill"
 import { MIcon } from "../../../../components/MIcon/MIcon"
@@ -10,8 +10,9 @@ export function DraftRow({ item, isLast, allOrders, allInvoices, customers, onOp
 
   const customerName = resolveCustomerName(item, allOrders, allInvoices, customers)
   const orderName    = resolveOrderName(item, allOrders, allInvoices)
-  const displayTitle = orderName || formatTitle(item.title)
-  const isDoc        = item.type === 'invoice' || item.type === 'receipt'
+  const displayTitle = formatTitle(item.title)
+  const displayTime  = extractTime(item.time)
+  const isDoc = item.type === 'invoice' || item.type === 'receipt'
 
   return (
     <div
@@ -36,24 +37,23 @@ export function DraftRow({ item, isLast, allOrders, allInvoices, customers, onOp
           </div>
         )}
 
-        {!isDoc && item.preview ? (
-          <div className={styles.rowPreview}>{item.preview}</div>
-        ) : (
-          <div className={styles.rowMeta}>
-            <MIcon
-              name={isDoc ? 'check_circle' : 'chat_bubble'}
-              size="0.72rem"
-              color="var(--text3)"
-            />
-            <span className={styles.rowMetaText}>
-              {isDoc ? 'Ready to send' : 'Message ready'}
-            </span>
-          </div>
+        {orderName && (
+            <div className={styles.rowMeta}>
+            <MIcon name="shopping_cart" size="0.72rem" color="var(--text3)" />
+            <span className={styles.rowMetaText}>{orderName}</span>
+            </div>
         )}
+
+
       </div>
 
       <div className={styles.rowRight}>
+
         <TagPill label={item.tag} />
+        <div className={styles.rowMeta}>
+            
+            <span className={styles.rowMetaText}>{displayTime}</span>
+        </div>
        
       </div>
     </div>

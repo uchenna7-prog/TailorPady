@@ -939,6 +939,8 @@ export function useAutonomousAgent() {
   }, [enabled, generalSettings, allOrders, allInvoices, customers, cancelledIds])
 
   const drafts = useMemo(() => {
+
+    const timeLabel = `Today, ${now()}`
     if (!enabled) return []
     const items    = []
     const invoiceCurrency = generalSettings.invoiceCurrency.symbol|| '₦'
@@ -963,9 +965,10 @@ export function useAutonomousAgent() {
             items.push({
               id,
               type:    'invoice',
-              title:   `Invoice — ${order.customerName || 'Customer'}`,
+              title:   `Invoice`,
               preview: `Invoice for ${order.desc || 'order'} · Total: ${formatMoney(order.totalAmount || order.price, invoiceCurrency)} · Due: ${order.due || 'not set'}.`,
               tag:     'Invoice',
+              time:   timeLabel,
             })
           }
         })
@@ -980,9 +983,10 @@ export function useAutonomousAgent() {
             items.push({
               id,
               type:    'receipt',
-              title:   `Receipt — ${invoice.customerName || 'Customer'}`,
+              title:   `Receipt`,
               preview: `Payment receipt for ${formatMoney(installment.amount, receiptCurrency)} received from ${invoice.customerName || 'customer'}.`,
               tag:     'Receipt',
+              time:   timeLabel,
             })
           }
         })
@@ -1006,7 +1010,7 @@ export function useAutonomousAgent() {
             items.push({
               id,
               type:    'birthday',
-              title:   `Birthday message — ${customer.name}`,
+              title:   `Birthday message`,
               preview: `Hi ${customer.name.split(' ')[0]}! Wishing you a wonderful birthday. It's always a pleasure working with you. Hope to see you soon!`,
               tag:     'Birthday',
             })
@@ -1030,7 +1034,7 @@ export function useAutonomousAgent() {
             items.push({
               id,
               type:    'followup',
-              title:   `Follow-up — ${customer.name}`,
+              title:   `Follow-up message`,
               preview: `Hi ${customer.name.split(' ')[0]}! It's been a while since your last visit. We'd love to create something special for you again. Feel free to reach out anytime!`,
               tag:     'Follow-up',
             })
