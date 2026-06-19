@@ -9,7 +9,7 @@ export function ItemIconBox({ type, itemId, orderId, allOrders, allInvoices }) {
   let resolvedOrderId = orderId || null
 
   if (!resolvedOrderId && itemId) {
-    for (const prefix of ['draft-invoice-', 'invoice-', 'upcoming-invoice-']) {
+    for (const prefix of ['invoice-', 'upcoming-invoice-']) {
       if (itemId.startsWith(prefix)) {
         resolvedOrderId = itemId.slice(prefix.length)
         break
@@ -19,14 +19,11 @@ export function ItemIconBox({ type, itemId, orderId, allOrders, allInvoices }) {
 
   if (!resolvedOrderId && itemId && allInvoices) {
     let invoiceId = null
-    for (const prefix of ['draft-receipt-', 'receipt-']) {
-      if (itemId.startsWith(prefix)) {
-        invoiceId = itemId.slice(prefix.length).split('::')[0]
-        break
-      }
+    if (itemId.startsWith('receipt-')) {
+      invoiceId = itemId.slice('receipt-'.length).split('::')[0]
     }
     if (!invoiceId) {
-      for (const prefix of ['upcoming-reminder-', 'draft-reminder-', 'reminder-']) {
+      for (const prefix of ['upcoming-reminder-', 'reminder-']) {
         if (itemId.startsWith(prefix)) {
           invoiceId = itemId.slice(prefix.length)
           break
@@ -41,7 +38,7 @@ export function ItemIconBox({ type, itemId, orderId, allOrders, allInvoices }) {
 
   if (!resolvedOrderId && itemId && allOrders) {
     let customerId = null
-    for (const prefix of ['draft-followup-', 'followup-']) {
+    for (const prefix of ['upcoming-followup-', 'followup-']) {
       if (itemId.startsWith(prefix)) {
         customerId = itemId.slice(prefix.length)
         break

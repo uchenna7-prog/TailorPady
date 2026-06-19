@@ -1,5 +1,5 @@
-import { RichText } from "../RichText/RichText"
-import { MIcon } from "../MIcon/MIcon"
+import { RichText } from "../../../Agent/components/RichText/RichText"
+import { MIcon } from "../../../Agent/components/MIcon/MIcon"
 import styles from "./ChatMessage.module.css"
 
 

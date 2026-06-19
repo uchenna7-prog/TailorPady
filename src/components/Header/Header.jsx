@@ -134,7 +134,7 @@ function Header({
       className={styles.iconBtn}
       onClick={handleBotClick}
       aria-label="Open Agent"
-      title="Pady — Sew Padi Agent"
+      title="Pady — tailorpady Agent"
     >
       <BotIcon />
       {agentPendingCount > 0 && (

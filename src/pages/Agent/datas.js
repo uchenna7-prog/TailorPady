@@ -34,11 +34,3 @@ export const TAG_COLORS = {
   Birthday:    { bg: 'rgba(236,72,153,0.12)',  color: '#ec4899'        },
 }
 
-export const SUGGESTION_CHIPS = [
-  { label: 'Add order',        prompt: 'Add an order for '       },
-  { label: 'Record payment',   prompt: 'just paid ₦'             },
-  { label: "Who owes me?",     prompt: 'How much does  owe?'     },
-  { label: 'Add task',         prompt: 'Remind me to '           },
-  { label: 'Book appointment', prompt: 'Schedule a fitting for ' },
-  { label: "Today's summary",  prompt: "What's happening today?" },
-]

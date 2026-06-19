@@ -2,7 +2,7 @@ import { SheetBase } from "../../../../components/SheetBase/SheetBase"
 import { SheetHeader } from "../../../../components/SheetHeader/SheetHeader"
 import { SheetHero } from "../../../../components/SheetHero/SheetHero"
 import { SheetSection } from "../../../../components/SheetSection/SheetSection"
-import { resolveCustomerName } from "../../../../utils"
+import { resolveCustomerName, haptic } from "../../../../utils"
 import { MIcon } from "../../../../components/MIcon/MIcon"
 import styles from "./ScheduledDetailSheet.module.css"
 

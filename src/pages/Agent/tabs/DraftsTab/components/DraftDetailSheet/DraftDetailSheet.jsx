@@ -34,17 +34,17 @@ export function DraftDetailSheet({
   const customerName = resolveCustomerName(item, allOrders, allInvoices, customers)
 
   function getOrderIdFromDraftId(draftId) {
-    return draftId?.replace('draft-invoice-', '') || null
+    return draftId?.replace('invoice-', '') || null
   }
 
   function getInvoiceIdFromDraftId(draftId) {
-    if (!draftId?.startsWith('draft-receipt-')) return null
-    return draftId.replace('draft-receipt-', '').split('::')[0] || null
+    if (!draftId?.startsWith('receipt-')) return null
+    return draftId.replace('receipt-', '').split('::')[0] || null
   }
 
   function getInstallmentIdFromDraftId(draftId) {
-    if (!draftId?.startsWith('draft-receipt-')) return null
-    const parts = draftId.replace('draft-receipt-', '').split('::')
+    if (!draftId?.startsWith('receipt-')) return null
+    const parts = draftId.replace('receipt-', '').split('::')
     return parts[1] || null
   }
 
@@ -297,7 +297,6 @@ export function DraftDetailSheet({
             {isDoc ? (
               <div className={styles.sheetActions}>
 
-
                 <div className={styles.btnRow}>
                   <button className={styles.btnSecondary} onClick={handleViewDoc}>
                     <MIcon name="open_in_new" size="0.82rem" />
@@ -404,6 +403,3 @@ export function DraftDetailSheet({
     </>
   )
 }
-
-
-

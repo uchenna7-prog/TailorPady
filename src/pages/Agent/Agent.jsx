@@ -2,35 +2,23 @@ import { useState, useRef, useLayoutEffect, useEffect, useCallback } from 'react
 import { useNavigate } from 'react-router-dom'
 import Header from '../../components/Header/Header'
 import BottomNav from '../../components/BottomNav/BottomNav'
-import { useAgent, useAutonomousAgent } from '../../contexts/AgentContext'
+import { useAutonomousAgent } from '../../contexts/AgentContext'
 import { useOrders } from '../../contexts/OrdersContext'
 import { useInvoices } from '../../contexts/InvoiceContext'
 import { useReceipts } from '../../contexts/ReceiptContext'
 import { usePayments } from '../../contexts/PaymentContext'
 import { useCustomers } from '../../contexts/CustomerContext'
-import { useAuth } from '../../contexts/AuthContext'
 import { useGeneralSettings } from '../../contexts/GeneralSettingsContext'
 import { useProfileSettings } from '../../contexts/ProfileSettingsContext'
 import { ActivityTab } from './tabs/ActivityTab/ActivityTab'
 import { ScheduledTab } from './tabs/ScheduledTab/ScheduledTab'
 import { DraftsTab } from './tabs/DraftsTab/DraftsTab'
-import { ChatPanel } from './components/ChatPanel/ChatPanel'
-import { getGreeting, haptic } from './utils'
 import { AgentTitleIcon } from './components/AgentTitleIcon/AgentTitleIcon'
+import { haptic } from './utils'
 import styles from './Agent.module.css'
 
-function Agent({ onMenuClick }) {
+function Agent() {
   const navigate = useNavigate()
-
-  const {
-    messages,
-    isTyping,
-    isLoading,
-    activeFlow,
-    sendMessage,
-    handleAction,
-    cancelFlow,
-  } = useAgent()
 
   const {
     enabled,
@@ -46,20 +34,13 @@ function Agent({ onMenuClick }) {
   const { allReceipts, addReceipt } = useReceipts()
   const { allPayments } = usePayments()
   const { customers } = useCustomers()
-  const { user } = useAuth()
   const { generalSettings } = useGeneralSettings()
   const { profileSettings } = useProfileSettings()
 
   const [tab, setTab] = useState('done')
-  const [chatOpen, setChatOpen] = useState(false)
-  const [inputValue, setInputValue] = useState('')
   const [toast, setToast] = useState(null)
   const [swipeProgress, setSwipeProgress] = useState(0)
   const [tabMeasurements, setTabMeasurements] = useState([])
-  const [greeting] = useState(() => {
-    const firstName = user?.displayName?.split(' ')[0] || ''
-    return getGreeting(firstName)
-  })
 
   const tabsRef = useRef(null)
   const tabItemRefs = useRef([])
@@ -78,7 +59,6 @@ function Agent({ onMenuClick }) {
   const measureTabs = useCallback(() => {
     if (!tabsRef.current) return
     const containerRect = tabsRef.current.getBoundingClientRect()
-
     const measurements = tabItemRefs.current.map(el => {
       if (!el) return { left: 0, width: 0 }
       const rect = el.getBoundingClientRect()
@@ -87,7 +67,6 @@ function Agent({ onMenuClick }) {
         width: rect.width,
       }
     })
-
     setTabMeasurements(measurements)
   }, [])
 
@@ -105,14 +84,6 @@ function Agent({ onMenuClick }) {
     setTimeout(() => setToast(null), 2500)
   }
 
-  function handleSend() {
-    const v = inputValue.trim()
-    if (!v) return
-    haptic('light')
-    setInputValue('')
-    sendMessage(v)
-  }
-
   async function handleSaveDoc(type, data, draftId) {
     try {
       if (type === 'invoice') {
@@ -126,11 +97,6 @@ function Agent({ onMenuClick }) {
       showToast('Failed to save — please try again')
     }
   }
-
-  const handleActionBtn = useCallback((action, payload) => {
-    if (action === 'navigate') { navigate(payload.route); return }
-    handleAction(action, payload)
-  }, [handleAction, navigate])
 
   const handleTouchStart = useCallback((e) => {
     touchStartX.current = e.touches[0].clientX
@@ -175,7 +141,6 @@ function Agent({ onMenuClick }) {
         setTab(TABS[activeTabIdx - 1].key)
       }
     }
-
     touchStartX.current = null
     touchStartY.current = null
     swipeAxisLocked.current = null
@@ -192,9 +157,7 @@ function Agent({ onMenuClick }) {
 
     const neighbourIdx = swipeProgress < 0 ? activeTabIdx + 1 : activeTabIdx - 1
     const neighbour = tabMeasurements[neighbourIdx]
-    if (!neighbour) {
-      return { left: current.left, width: current.width }
-    }
+    if (!neighbour) return { left: current.left, width: current.width }
 
     const t = Math.abs(swipeProgress)
     const left = current.left + (neighbour.left - current.left) * t
@@ -216,7 +179,7 @@ function Agent({ onMenuClick }) {
           customActions={[
             {
               icon: 'chat',
-              onClick: () => { haptic('light'); setChatOpen(true) },
+              onClick: () => { haptic('light'); navigate('/agent/chat') },
               color: 'var(--text)',
             },
           ]}
@@ -239,10 +202,7 @@ function Agent({ onMenuClick }) {
 
           <div
             className={styles.tabUnderlineTrack}
-            style={{
-              left: underlineStyle.left,
-              width: underlineStyle.width,
-            }}
+            style={{ left: underlineStyle.left, width: underlineStyle.width }}
           />
         </div>
       </div>
@@ -292,22 +252,6 @@ function Agent({ onMenuClick }) {
       )}
 
       <BottomNav />
-
-      <ChatPanel
-        open={chatOpen}
-        onClose={() => setChatOpen(false)}
-        messages={messages}
-        isTyping={isTyping}
-        isLoading={isLoading}
-        activeFlow={activeFlow}
-        inputValue={inputValue}
-        setInputValue={setInputValue}
-        onSend={handleSend}
-        onAction={handleActionBtn}
-        onNavigate={navigate}
-        onCancelFlow={cancelFlow}
-        greeting={greeting}
-      />
     </div>
   )
 }
