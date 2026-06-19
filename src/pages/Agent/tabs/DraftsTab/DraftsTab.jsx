@@ -1,8 +1,8 @@
-
 import { useState } from "react"
 import { DateDivider } from "../../components/DateDivider/DateDivider"
 import { DraftDetailSheet } from "./components/DraftDetailSheet/DraftDetailSheet"
 import { DraftRow } from "./components/DraftRow/DraftRow"
+import { MIcon } from "../../components/MIcon/MIcon"
 import { groupByDate } from "../../utils"
 import styles from "./DraftsTab.module.css"
 
@@ -30,7 +30,7 @@ export function DraftsTab({
     </div>
   )
 
-  const groups = groupByDate(items, i => i.date || 'Today')
+  const groups = groupByDate(items, i => i.date)
 
   return (
     <>

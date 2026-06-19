@@ -1,7 +1,6 @@
-
 import { useState } from 'react'
-import { resolvePaymentStatus,getTodayLabel,getTimeLabel,capitalise } from "../../utils"
-import { formatMoney,getCurrency } from "../../../../../../utils/moneyUtils"
+import { resolvePaymentStatus, getTodayLabel, getTimeLabel, capitalise } from "../../utils"
+import { formatMoney, getCurrency } from "../../../../../../utils/moneyUtils"
 import styles from "./InlinePaymentForm.module.css"
 
 
@@ -32,8 +31,15 @@ export function InlinePaymentForm({ order, onSave, saving }) {
       orderItems:   order.items ?? [],
       status:       finalStatus,
       notes:        notes.trim(),
-      installments: [{ amount: parseFloat(amount), method, date: getTodayLabel(), time: getTimeLabel(), id: Date.now() }],
-      date:         getTodayLabel(),
+      installments: [{
+        amount:      parseFloat(amount),
+        method,
+        date:        getTodayLabel(),
+        time:        getTimeLabel(),
+        createdAtMs: Date.now(),
+        id:          Date.now(),
+      }],
+      date: getTodayLabel(),
     })
   }
 
@@ -112,7 +118,7 @@ export function InlinePaymentForm({ order, onSave, saving }) {
       >
         {saving
           ? <><div className={styles.inlineSpinner} />Saving…</>
-          : <><span className="mi" style={{ fontSize: '1.1rem',textTransform: "lowercase" }}>payments</span>Record Payment</>
+          : <><span className="mi" style={{ fontSize: '1.1rem', textTransform: "lowercase" }}>payments</span>Record Payment</>
         }
       </button>
     </div>

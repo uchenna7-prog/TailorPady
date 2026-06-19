@@ -4,6 +4,7 @@ import { MIcon } from "../../../../components/MIcon/MIcon"
 import { SheetHeader } from "../../../../components/SheetHeader/SheetHeader"
 import { SheetHero } from "../../../../components/SheetHero/SheetHero"
 import { SheetSection } from "../../../../components/SheetSection/SheetSection"
+import { haptic } from "../../../../utils"
 import InvoiceViewer from "../../../../../../components/InvoiceViewer/InvoiceViewer"
 import ReceiptViewer from "../../../../../../components/ReceiptViewer/ReceiptViewer"
 import styles from "./DraftDetailSheet.module.css"
@@ -323,7 +324,7 @@ export function DraftDetailSheet({
                   <MIcon name="ios_share" size="0.9rem" color="var(--bg)" />
                   Send breakdown to client
                 </button>
-                
+
               </div>
             ) : (
               <div className={styles.sheetActions}>
