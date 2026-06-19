@@ -1,0 +1,47 @@
+.dateDivider {
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: var(--text3);
+  padding: 14px 16px 6px;
+  letter-spacing: 0.01em;
+}
+
+
+@media (min-width: 769px) {
+  .tabRow {
+    padding: 0 24px;
+    gap: 4px;
+  }
+
+  .tabBtn {
+    flex: 0 0 auto;
+    padding: 12px 16px;
+    font-size: 0.85rem;
+  }
+
+  .dateDivider {
+    padding: 16px 24px 6px;
+  }
+
+}
+
+@media (min-width: 1024px) {
+
+
+  .dateDivider {
+    padding: 18px 40px 6px;
+  }
+
+
+}
+
+
+
+@media (min-width: 1440px) {
+
+  .dateDivider {
+    padding: 18px max(40px, calc(50% - 680px)) 6px;
+  }
+
+
+}

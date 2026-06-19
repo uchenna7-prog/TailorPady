@@ -941,7 +941,8 @@ export function useAutonomousAgent() {
   const drafts = useMemo(() => {
     if (!enabled) return []
     const items    = []
-    const currency = generalSettings.invoiceCurrency || '₦'
+    const invoiceCurrency = generalSettings.invoiceCurrency.symbol|| '₦'
+    const receiptCurrency = generalSettings.receiptCurrency.symbol|| '₦'
     const nowMs    = Date.now()
 
     if (generalSettings.agentAutoInvoice) {
@@ -963,7 +964,7 @@ export function useAutonomousAgent() {
               id,
               type:    'invoice',
               title:   `Invoice — ${order.customerName || 'Customer'}`,
-              preview: `Invoice for ${order.desc || 'order'} · Total: ${formatMoney(order.totalAmount || order.price, currency)} · Due: ${order.due || 'not set'}.`,
+              preview: `Invoice for ${order.desc || 'order'} · Total: ${formatMoney(order.totalAmount || order.price, invoiceCurrency)} · Due: ${order.due || 'not set'}.`,
               tag:     'Invoice',
             })
           }
@@ -980,7 +981,7 @@ export function useAutonomousAgent() {
               id,
               type:    'receipt',
               title:   `Receipt — ${invoice.customerName || 'Customer'}`,
-              preview: `Payment receipt for ${formatMoney(installment.amount, currency)} received from ${invoice.customerName || 'customer'}.`,
+              preview: `Payment receipt for ${formatMoney(installment.amount, receiptCurrency)} received from ${invoice.customerName || 'customer'}.`,
               tag:     'Receipt',
             })
           }

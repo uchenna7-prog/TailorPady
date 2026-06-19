@@ -1,0 +1,107 @@
+
+.msgRow {
+  display: flex;
+  gap: 8px;
+  align-items: flex-end;
+  animation: msgIn 0.2s ease;
+}
+
+@keyframes msgIn {
+  from { opacity: 0; transform: translateY(5px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.msgRowAgent {
+  align-self: flex-start;
+  max-width: 90%;
+}
+
+.msgRowUser {
+  align-self: flex-end;
+  flex-direction: row-reverse;
+  max-width: 80%;
+}
+
+.agentAvatarSm {
+  width: 22px;
+  height: 22px;
+  border-radius: 6px;
+  background: var(--accent);
+  color: var(--bg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  margin-bottom: 16px;
+}
+
+.msgContent {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.bubble {
+  padding: 9px 12px;
+  border-radius: 14px;
+  font-size: 0.8rem;
+  line-height: 1.6;
+  word-break: break-word;
+}
+
+.bubbleAgent {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  color: var(--text);
+  border-bottom-left-radius: 4px;
+}
+
+.bubbleUser {
+  background: var(--accent);
+  color: var(--bg);
+  border-bottom-right-radius: 4px;
+}
+
+.msgTime {
+  font-size: 0.55rem;
+  font-weight: 500;
+  color: var(--text3);
+  padding: 0 2px;
+}
+
+.msgTimeUser {
+  text-align: right;
+}
+
+.msgActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 3px;
+}
+
+.msgActionBtn {
+  padding: 6px 12px;
+  border-radius: 20px;
+  background: var(--accent);
+  color: var(--bg);
+  border: none;
+  font-family: inherit;
+  font-size: 0.7rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: opacity 0.14s, transform 0.12s;
+}
+
+.msgActionBtn:active {
+  opacity: 0.85;
+  transform: scale(0.96);
+}
+
+.msgActionBtnGhost {
+  background: var(--surface2);
+  color: var(--text3);
+  border: 1px solid var(--border);
+}
+

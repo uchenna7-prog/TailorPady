@@ -1,0 +1,43 @@
+
+.listWrap {
+  display: flex;
+  flex-direction: column;
+}
+
+.dateGroup {
+  display: flex;
+  flex-direction: column;
+}
+
+
+
+.groupRows {
+  background: var(--bg);
+  padding: 0 16px;
+}
+
+
+.emptyTab {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 72px 24px;
+  text-align: center;
+  gap: 8px;
+}
+
+.emptyTabTitle {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--text2);
+  margin: 4px 0 0;
+}
+
+.emptyTabSub {
+  font-size: 0.75rem;
+  color: var(--text3);
+  margin: 0;
+  line-height: 1.5;
+}
+
