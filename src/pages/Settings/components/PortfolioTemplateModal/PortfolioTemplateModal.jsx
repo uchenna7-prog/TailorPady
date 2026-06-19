@@ -13,6 +13,11 @@ const TEMPLATES = [
     label: 'Template Two',
     description: 'Modern layout with featured work showcase',
   },
+  {
+    id: 'template4',
+    label: 'Template Four',
+    description: 'Modern layout with featured work showcase',
+  },
 ]
 
 export function PortfolioTemplateModal({ currentTemplate, slug, onBack, onSelect }) {

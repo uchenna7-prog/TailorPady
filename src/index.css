@@ -27,8 +27,8 @@
 
   --bg: #f7f7f8;
   --surface: #ffffff;
-  --surface2: #f1f1f2;
-  --surface3: #e5e7eb;
+  --surface2: #ececef;
+  --surface3: #e0e1e5;
 
   --border: #e4e4e7;
   --border2: #d4d4d8;
@@ -79,8 +79,9 @@
   color-scheme: dark;
 
   --bg: #000000;
-  --surface: #0a0a0a;
-  --surface2: #121212;
+  --surface: #0d0d0d;
+  --surface2: #161616;
+  --surface3: #202020;
   --border: #1f1f1f;
   --border2: #2a2a2a;
   --accent: #ffffff;

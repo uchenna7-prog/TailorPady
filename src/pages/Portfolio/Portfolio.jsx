@@ -7,14 +7,16 @@ import { getPortfolioSettings } from '../../services/portfolioSettingsService'
 import { resolveSlug } from '../../services/slugService'
 import { PortfolioTemplate1 } from './PortfolioTemplates/PortfolioTemplate1/PortfolioTemplate1'
 import { PortfolioTemplate2 } from './PortfolioTemplates/PortfolioTemplate2/PortfolioTemplate2'
+import { PortfolioTemplate4 } from './PortfolioTemplates/PortfolioTemplate4/PortfolioTemplate4'
 import styles from './Portfolio.module.css'
 
 const TEMPLATE_MAP = {
   template1: PortfolioTemplate1,
   template2: PortfolioTemplate2,
+  template4: PortfolioTemplate4,
 }
 
-const DEFAULT_TEMPLATE = 'template2'
+const DEFAULT_TEMPLATE = 'template1'
 
 export default function Portfolio() {
   const { handle } = useParams()

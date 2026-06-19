@@ -23,7 +23,6 @@
   align-items: center;
 }
 
-/* ── MAIN TABS (underline) ── */
 .tabs {
   display: flex;
   flex: 1;
@@ -149,7 +148,7 @@
   text-align: center;
 }
 
-/* ── SUB TABS (rounded pills) ── */
+
 .subTabsBar {
   display: flex;
   align-items: center;
@@ -175,8 +174,8 @@
   align-items: center;
   padding: 6px 14px;
   border-radius: 10px;
-  border: 1.5px solid var(--border2);
-  background: var(--surface);
+  border: none;
+  background: var(--surface2);
   color: var(--text3);
   font-family: 'Manrope', sans-serif;
   font-size: 0.72rem;
@@ -203,8 +202,8 @@
   justify-content: center;
   padding: 6px 10px;
   border-radius: 10px;
-  border: 1.5px solid var(--border2);
-  background: var(--surface);
+  border: none;
+  background: var(--surface2);
   color: var(--text3);
   cursor: pointer;
   flex-shrink: 0;
@@ -212,7 +211,6 @@
 }
 .subTabEditBtn:active { background: var(--surface2); color: var(--text); }
 
-/* ── SHARE PORTFOLIO BANNER ── */
 .portfolioBanner {
   padding: 10px 14px 8px;
   display: flex;
