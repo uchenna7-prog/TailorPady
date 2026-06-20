@@ -4,6 +4,7 @@ import { FullModal } from '../../../../components/FullModal/FullModal'
 import { FieldGroup } from '../FieldGroup/FieldGroup'
 import { Field } from '../Field/Field'
 import { Toggle } from '../../components/Toggle/Toggle'
+import { BotIcon } from '../../../../components/BotIcon/BotIcon'
 import styles from './AgentSettingsModal.module.css'
 
 const DURATION_PRESETS = [
@@ -126,8 +127,21 @@ function DurationPicker({ value, onChange }) {
   )
 }
 
-function SectionLabel({ children }) {
-  return <p className={styles.sectionLabel}>{children}</p>
+function SectionLabel({ children, premium = false }) {
+  return (
+    <div className={styles.sectionLabelRow}>
+      <p className={styles.sectionLabel}>{children}</p>
+      {premium && (
+        <span className={styles.premiumBadge}>
+          <span className="mi" style={{ fontSize: '0.7rem' }}>workspace_premium</span>PRO
+        </span>
+      )}
+    </div>
+  )
+}
+
+function StatusDot({ active }) {
+  return <span className={`${styles.statusDot} ${active ? styles.statusDotActive : ''}`} />
 }
 
 function FeatureRow({ icon, title, sub, value, onChange, children }) {
@@ -175,6 +189,7 @@ export function AgentSettingsModal({ onBack, showToast }) {
     agentAutoInvoice:           generalSettings.agentAutoInvoice,
     agentAutoInvoiceTimeframe:  normaliseDuration(generalSettings.agentAutoInvoiceTimeframe),
     agentAutoReceipt:           generalSettings.agentAutoReceipt,
+    agentAutoReceiptTimeframe:  normaliseDuration(generalSettings.agentAutoReceiptTimeframe),
     agentBirthdayMessages:      generalSettings.agentBirthdayMessages,
     agentBirthdayNotice:        normaliseDuration(generalSettings.agentBirthdayNotice),
     agentFollowUp:              generalSettings.agentFollowUp,
@@ -201,23 +216,22 @@ export function AgentSettingsModal({ onBack, showToast }) {
   const masterOff = !local.agentEnabled
 
   return (
-    <FullModal title="Agent" onBack={onBack} onSave={handleSave}>
+    <FullModal title="AI Assistant" onBack={onBack} onSave={handleSave}>
 
       <div className={styles.content}>
 
-        {/* Master toggle */}
         <div className={styles.masterCard}>
           <div className={styles.masterLeft}>
             <div className={`${styles.masterIcon} ${local.agentEnabled ? styles.masterIconActive : ''}`}>
-              <span className="mi" style={{ fontSize: 22 }}>smart_toy</span>
-              {local.agentEnabled && <span className={styles.masterPulse} />}
+              <BotIcon size={22} color="currentColor" backgroundColor={local.agentEnabled ? 'var(--accent)' : 'var(--surface2)'} />
+              <StatusDot active={local.agentEnabled} />
             </div>
             <div>
-              <p className={styles.masterTitle}>TailorPady Agent</p>
+              <p className={styles.masterTitle}>TailorPady AI</p>
               <p className={styles.masterSub}>
                 {local.agentEnabled
-                  ? 'Active — running in the background'
-                  : 'Off — no automated actions'}
+                  ? 'Active and running in the background'
+                  : 'Off, no automated actions'}
               </p>
             </div>
           </div>
@@ -227,30 +241,29 @@ export function AgentSettingsModal({ onBack, showToast }) {
         {masterOff ? (
           <div className={styles.offNotice}>
             <span className="mi" style={{ fontSize: 15 }}>info</span>
-            <p>Turn the agent on to configure what it can do.</p>
+            <p>Turn the AI assistant on to configure what it can do.</p>
           </div>
         ) : (
           <div className={styles.activeNotice}>
             <span className="mi" style={{ fontSize: 15 }}>lock</span>
-            <p>The agent only drafts — it never sends or deletes anything without your approval.</p>
+            <p>The assistant only prepares drafts. Nothing is sent or deleted without your approval.</p>
           </div>
         )}
 
-        {/* Automation features */}
         <div className={`${styles.featuresSection} ${masterOff ? styles.featuresSectionDimmed : ''}`}>
 
-          <SectionLabel>Automation</SectionLabel>
+          <SectionLabel>Billing automation</SectionLabel>
 
           <FieldGroup>
 
             <FeatureRow
               icon="receipt_long"
               title="Auto-generate invoices"
-              sub="Drafts invoices for orders that have none"
+              sub="Drafts an invoice when an order has gone without one"
               value={local.agentAutoInvoice}
               onChange={v => set('agentAutoInvoice', v)}
             >
-              <Field label="Act after order goes uninvoiced for">
+              <Field label="Draft after order has no invoice for">
                 <DurationPicker
                   value={local.agentAutoInvoiceTimeframe}
                   onChange={v => set('agentAutoInvoiceTimeframe', v)}
@@ -261,19 +274,26 @@ export function AgentSettingsModal({ onBack, showToast }) {
             <FeatureRow
               icon="payments"
               title="Auto-generate receipts"
-              sub="Drafts a receipt whenever a payment is recorded"
+              sub="Drafts a receipt as soon as a payment is recorded"
               value={local.agentAutoReceipt}
               onChange={v => set('agentAutoReceipt', v)}
-            />
+            >
+              <Field label="Draft after payment is recorded for">
+                <DurationPicker
+                  value={local.agentAutoReceiptTimeframe}
+                  onChange={v => set('agentAutoReceiptTimeframe', v)}
+                />
+              </Field>
+            </FeatureRow>
 
             <FeatureRow
               icon="notification_important"
               title="Payment reminders"
-              sub="Drafts a reminder when an invoice is close to its due date"
+              sub="Drafts a reminder as an invoice approaches its due date"
               value={local.agentPaymentReminder}
               onChange={v => set('agentPaymentReminder', v)}
             >
-              <Field label="Draft reminder this long before due date">
+              <Field label="Draft reminder this far before the due date">
                 <DurationPicker
                   value={local.agentPaymentReminderBefore}
                   onChange={v => set('agentPaymentReminderBefore', v)}
@@ -284,11 +304,11 @@ export function AgentSettingsModal({ onBack, showToast }) {
             <FeatureRow
               icon="warning_amber"
               title="Overdue alerts"
-              sub="Flags invoices that have passed their due date without payment"
+              sub="Flags invoices that have passed their due date unpaid"
               value={local.agentOverdueAlert}
               onChange={v => set('agentOverdueAlert', v)}
             >
-              <Field label="Alert after invoice is overdue by">
+              <Field label="Alert once overdue by">
                 <DurationPicker
                   value={local.agentOverdueGracePeriod}
                   onChange={v => set('agentOverdueGracePeriod', v)}
@@ -299,11 +319,11 @@ export function AgentSettingsModal({ onBack, showToast }) {
             <FeatureRow
               icon="inventory_2"
               title="Ready order reminders"
-              sub="Nudges you when a completed order hasn't been picked up"
+              sub="Nudges you when a finished order hasn't been picked up"
               value={local.agentOrderReadyReminder}
               onChange={v => set('agentOrderReadyReminder', v)}
             >
-              <Field label="Remind after order sits ready for">
+              <Field label="Remind once an order has been ready for">
                 <DurationPicker
                   value={local.agentOrderReadyWindow}
                   onChange={v => set('agentOrderReadyWindow', v)}
@@ -313,15 +333,14 @@ export function AgentSettingsModal({ onBack, showToast }) {
 
           </FieldGroup>
 
-          {/* Customer engagement */}
-          <SectionLabel>Customer Engagement</SectionLabel>
+          <SectionLabel>Customer engagement</SectionLabel>
 
           <FieldGroup>
 
             <FeatureRow
               icon="cake"
               title="Birthday messages"
-              sub="Drafts a message for customers with upcoming birthdays"
+              sub="Drafts a message ahead of a customer's birthday"
               value={local.agentBirthdayMessages}
               onChange={v => set('agentBirthdayMessages', v)}
             >
@@ -336,11 +355,11 @@ export function AgentSettingsModal({ onBack, showToast }) {
             <FeatureRow
               icon="person_search"
               title="Win-back messages"
-              sub="Drafts a message for customers who haven't ordered in a while"
+              sub="Drafts a message for customers who have gone quiet"
               value={local.agentFollowUp}
               onChange={v => set('agentFollowUp', v)}
             >
-              <Field label="Draft message after customer is inactive for">
+              <Field label="Draft after customer is inactive for">
                 <DurationPicker
                   value={local.agentFollowUpInactivity}
                   onChange={v => set('agentFollowUpInactivity', v)}
@@ -350,42 +369,40 @@ export function AgentSettingsModal({ onBack, showToast }) {
 
           </FieldGroup>
 
-          {/* Daily brief */}
           <SectionLabel>Reporting</SectionLabel>
 
           <FieldGroup>
             <FeatureRow
               icon="summarize"
               title="Daily brief"
-              sub="Summarises agent activity when you open the app each day"
+              sub="A short summary of assistant activity each time you open the app"
               value={local.agentDailyBrief}
               onChange={v => set('agentDailyBrief', v)}
             />
           </FieldGroup>
 
-          {/* Autonomous messaging */}
-          <SectionLabel>Send Messages Autonomously</SectionLabel>
+          <SectionLabel premium>Autonomous sending</SectionLabel>
 
           <FieldGroup>
             <div className={styles.messagingIntro}>
-              <span className="mi" style={{ fontSize: 15, flexShrink: 0, color: 'var(--text3)' }}>info</span>
-              <p>Connect a channel and the agent can send approved drafts directly — no copy-pasting. Currently in development.</p>
+              <span className="mi" style={{ fontSize: 15 }}>auto_awesome</span>
+              <p>Connect a channel and approved drafts go out on their own, no copying or pasting required.</p>
             </div>
 
             <MessagingChannelRow
               icon="chat"
               label="WhatsApp"
-              description="Send messages via your WhatsApp Business account"
+              description="Send through your WhatsApp Business account"
             />
             <MessagingChannelRow
               icon="email"
               label="Email"
-              description="Send via Gmail, Outlook, or a custom SMTP address"
+              description="Send via Gmail, Outlook, or a custom address"
             />
             <MessagingChannelRow
               icon="send"
               label="Telegram"
-              description="Send messages through a connected Telegram bot"
+              description="Send through a connected Telegram bot"
             />
           </FieldGroup>
 

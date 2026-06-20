@@ -12,6 +12,9 @@ export function SettingRow({
   locked=false, 
   danger=false 
 }) {
+  const isComponent = typeof icon === 'function'
+  const iconColor = danger ? '#ef4444' : 'var(--text2)'
+
   return (
 
     <div
@@ -25,7 +28,10 @@ export function SettingRow({
     >
       <div className={styles.rowIcon}>
 
-        <span className="mi" style={{ fontSize:'1.15rem', color: danger ? '#ef4444' : undefined }}>{icon}</span>
+        {isComponent
+          ? icon({ size: 18, color: iconColor })
+          : <span className="mi" style={{ fontSize: '1.15rem', color: danger ? '#ef4444' : undefined }}>{icon}</span>
+        }
 
       </div>
 

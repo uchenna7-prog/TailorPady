@@ -19,6 +19,7 @@ import { AgentSettingsModal } from './components/AgentSettingsModal/AgentSetting
 import { PortfolioTemplateModal } from './components/PortfolioTemplateModal/PortfolioTemplateModal'
 import { CurrencyModal } from './components/CurrencyModal/CurrencyModal'
 import { AppearanceModal } from './components/AppearanceModal/AppearanceModal'
+import { BotIcon } from '../../components/BotIcon/BotIcon'
 import styles from './Settings.module.css'
 import { db } from '../../firebase'
 
@@ -283,11 +284,11 @@ export default function Settings({ onMenuClick }) {
           chevron
         />
 
-        <SectionHeader icon="smart_toy" label="Agent" />
+        <SectionHeader icon={BotIcon} label="AI Assitant" />
 
         <SettingRow
-          icon="smart_toy"
-          label="Agent Settings"
+          icon={BotIcon}
+          label="AI Settings"
           sub={getAgentSub()}
           onClick={() => setIsAgentModalOpen(true)}
           chevron
