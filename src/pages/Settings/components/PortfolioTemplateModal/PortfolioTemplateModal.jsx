@@ -1,5 +1,6 @@
 import { useState } from 'react'
-import { FullModal } from '../../../../components/FullModal/FullModal'
+import Header from '../../../../components/Header/Header'
+import { PortfolioTemplatePreview } from './PortfolioTemplatePreview/PortfolioTemplatePreview'
 import styles from './PortfolioTemplateModal.module.css'
 
 const TEMPLATES = [
@@ -25,111 +26,112 @@ const TEMPLATES = [
   },
 ]
 
-export function PortfolioTemplateModal({ currentTemplate, slug, onBack, onSelect }) {
+export function PortfolioTemplateModal({ currentTemplate, slug, onClose, onSelect }) {
   const [selected, setSelected] = useState(currentTemplate)
   const [previewTemplate, setPreviewTemplate] = useState(null)
 
-  const buildPreviewUrl = (templateId) =>
-    slug ? `/portfolio/${slug}?template=${templateId}` : null
+  const hasChanges = selected !== currentTemplate
 
-  const handlePreview = (e, templateId) => {
+  const handlePreviewOpen = (e, template) => {
     e.stopPropagation()
-    setPreviewTemplate(templateId)
+    setPreviewTemplate(template)
   }
 
-  const handleClosePreview = () => setPreviewTemplate(null)
+  const handlePreviewClose = () => setPreviewTemplate(null)
 
-  const handleSelectFromPreview = () => {
-    setSelected(previewTemplate)
-    handleClosePreview()
+  const handlePreviewSelect = (templateId) => {
+    setSelected(templateId)
+    setPreviewTemplate(null)
   }
 
-  const onSave = () => onSelect(selected)
-
-  const previewUrl = previewTemplate ? buildPreviewUrl(previewTemplate) : null
-  const previewLabel = TEMPLATES.find(t => t.id === previewTemplate)?.label
+  const handleSavePress = () => {
+    onSelect(selected)
+    onClose()
+  }
 
   return (
-    <>
-      <FullModal title='Portfolio Template' onBack={onBack} onSave={onSave}>
-        <div className={styles.page}>
+    <div className={styles.templateModalContainer}>
 
-          <p className={styles.hint}>
-            Tap a card to select it. Tap "Preview" to see it live before saving.
-          </p>
+      <Header
+        type="back"
+        title="Portfolio Template"
+        onBackClick={onClose}
+        showBorderBottom={false}
+        customActions={[{
+          label: 'Save',
+          onClick: handleSavePress,
+          disabled: !hasChanges,
+        }]}
+      />
 
-          <div className={styles.cards}>
-            {TEMPLATES.map(t => {
-              const url = buildPreviewUrl(t.id)
-              return (
-                <div
-                  key={t.id}
-                  className={`${styles.card} ${selected === t.id ? styles.cardSelected : ''}`}
-                  onClick={() => setSelected(t.id)}
-                >
-                  <div className={styles.thumbWrap}>
-                    {url ? (
+      <div className={styles.templateList}>
+        <p className={styles.hint}>
+          Tap a card to select it. Tap the preview icon to see it live before saving.
+        </p>
+
+        <div className={styles.templateGrid}>
+          {TEMPLATES.map((template, index) => {
+            const isSelected = selected === template.id
+            const canPreview = Boolean(slug)
+            return (
+              <div
+                key={template.id}
+                className={styles.templateItem}
+                onClick={() => setSelected(template.id)}
+              >
+                <div className={`${styles.templateCard} ${isSelected ? styles.templateCardSelected : ''}`}>
+                  <div className={styles.previewShell}>
+                    {canPreview ? (
                       <div className={styles.thumbPlaceholder}>
-                        <span className='mi' style={{ fontSize: '1.6rem' }}>visibility</span>
-                        <span>{t.label}</span>
+                        <span className="mi" style={{ fontSize: '1.6rem' }}>visibility</span>
+                        <span>{template.label}</span>
                       </div>
                     ) : (
                       <div className={styles.thumbPlaceholder}>
-                        <span className='mi' style={{ fontSize: '1.6rem' }}>visibility_off</span>
+                        <span className="mi" style={{ fontSize: '1.6rem' }}>visibility_off</span>
                         <span>Set up your portfolio link to preview</span>
                       </div>
                     )}
 
-                    {url && (
+                    {canPreview && (
                       <button
-                        className={styles.thumbPreviewBtn}
-                        onClick={e => handlePreview(e, t.id)}
+                        className={styles.zoomTrigger}
+                        onClick={e => handlePreviewOpen(e, template)}
+                        aria-label="Preview template"
                       >
-                        <span className='mi'>open_in_new</span>
-                        Preview
+                        <span className="mi" style={{ fontSize: '0.9rem' }}>open_in_full</span>
                       </button>
                     )}
-                  </div>
 
-                  <div className={styles.cardBody}>
-                    {selected === t.id && (
-                      <span className={`mi ${styles.checkIcon}`}>check_circle</span>
+                    {isSelected && (
+                      <div className={styles.selectedBadge}>
+                        <span className="mi" style={{ fontSize: '0.75rem' }}>check</span>
+                      </div>
                     )}
-                    <div>
-                      <div className={styles.cardLabel}>{t.label}</div>
-                      <div className={styles.cardDesc}>{t.description}</div>
-                    </div>
                   </div>
                 </div>
-              )
-            })}
-          </div>
 
+                <div className={styles.templateMeta}>
+                  <p className={`${styles.templateName} ${isSelected ? styles.templateNameSelected : ''}`}>
+                    {`${index + 1}. ${template.label}`}
+                  </p>
+                  <p className={styles.templateDesc}>{template.description}</p>
+                </div>
+              </div>
+            )
+          })}
         </div>
-      </FullModal>
+      </div>
 
       {previewTemplate && (
-        <FullModal
-          title={`${previewLabel} Preview`}
-          onBack={handleClosePreview}
-          onSave={handleSelectFromPreview}
-          saveLabel='Select'
-        >
-          <div className={styles.previewContent}>
-            {previewUrl ? (
-              <iframe
-                className={styles.previewFrame}
-                src={previewUrl}
-                title='Portfolio preview'
-              />
-            ) : (
-              <div className={styles.previewNoSlug}>
-                Set up your portfolio slug in Profile to enable live preview.
-              </div>
-            )}
-          </div>
-        </FullModal>
+        <PortfolioTemplatePreview
+          template={previewTemplate}
+          slug={slug}
+          onClose={handlePreviewClose}
+          onSelect={handlePreviewSelect}
+        />
       )}
-    </>
+
+    </div>
   )
 }
