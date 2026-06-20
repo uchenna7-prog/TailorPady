@@ -7,12 +7,14 @@ import { getPortfolioSettings } from '../../services/portfolioSettingsService'
 import { resolveSlug } from '../../services/slugService'
 import { PortfolioTemplate1 } from './PortfolioTemplates/PortfolioTemplate1/PortfolioTemplate1'
 import { PortfolioTemplate2 } from './PortfolioTemplates/PortfolioTemplate2/PortfolioTemplate2'
+import { PortfolioTemplate3 } from './PortfolioTemplates/PortfolioTemplate3/PortfolioTemplate3'
 import { PortfolioTemplate4 } from './PortfolioTemplates/PortfolioTemplate4/PortfolioTemplate4'
 import styles from './Portfolio.module.css'
 
 const TEMPLATE_MAP = {
   template1: PortfolioTemplate1,
   template2: PortfolioTemplate2,
+  template3: PortfolioTemplate3,
   template4: PortfolioTemplate4,
 }
 
@@ -116,7 +118,7 @@ export default function Portfolio() {
   if (notFound) {
     return (
       <div className={styles.notFoundScreen}>
-        <span className="mi" style={{ fontSize: '3rem', color: '#bbb' }}>content_cut</span>
+        <span className='mi' style={{ fontSize: '3rem', color: '#bbb' }}>content_cut</span>
         <p className={styles.notFoundTitle}>Portfolio not found</p>
         <p className={styles.notFoundSub}>This tailor hasn't set up their portfolio yet.</p>
       </div>
@@ -132,7 +134,7 @@ export default function Portfolio() {
   const mergedBrand = { ...brand, ...portfolioSettings }
 
   return (
-   <TemplateComponent
+    <TemplateComponent
       brand={mergedBrand}
       photos={photos}
       garmentTypes={garmentTypes}

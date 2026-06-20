@@ -14,6 +14,11 @@ const TEMPLATES = [
     description: 'Modern layout with featured work showcase',
   },
   {
+    id: 'template3',
+    label: 'Template Three',
+    description: 'Editorial black and white studio portfolio',
+  },
+  {
     id: 'template4',
     label: 'Template Four',
     description: 'Modern layout with featured work showcase',
@@ -34,87 +39,88 @@ export function PortfolioTemplateModal({ currentTemplate, slug, onBack, onSelect
 
   const handleClosePreview = () => setPreviewTemplate(null)
 
+  const handleSelectFromPreview = () => {
+    setSelected(previewTemplate)
+    handleClosePreview()
+  }
+
   const onSave = () => onSelect(selected)
 
-  const overlayUrl = previewTemplate ? buildPreviewUrl(previewTemplate) : null
+  const previewUrl = previewTemplate ? buildPreviewUrl(previewTemplate) : null
+  const previewLabel = TEMPLATES.find(t => t.id === previewTemplate)?.label
 
   return (
-    <FullModal title="Portfolio Template" onBack={onBack} onSave={onSave}>
-      <div className={styles.page}>
+    <>
+      <FullModal title='Portfolio Template' onBack={onBack} onSave={onSave}>
+        <div className={styles.page}>
 
-        <p className={styles.hint}>
-          Tap a card to select it. Tap "Preview" to see it live before saving.
-        </p>
+          <p className={styles.hint}>
+            Tap a card to select it. Tap "Preview" to see it live before saving.
+          </p>
 
-        <div className={styles.cards}>
-          {TEMPLATES.map(t => {
-            const previewUrl = buildPreviewUrl(t.id)
-            return (
-              <div
-                key={t.id}
-                className={`${styles.card} ${selected === t.id ? styles.cardSelected : ''}`}
-                onClick={() => setSelected(t.id)}
-              >
-                <div className={styles.thumbWrap}>
-                  {previewUrl ? (
-                    <div className={styles.thumbPlaceholder}>
-                      <span className="mi" style={{ fontSize: '1.6rem' }}>visibility</span>
-                      <span>{t.label}</span>
+          <div className={styles.cards}>
+            {TEMPLATES.map(t => {
+              const url = buildPreviewUrl(t.id)
+              return (
+                <div
+                  key={t.id}
+                  className={`${styles.card} ${selected === t.id ? styles.cardSelected : ''}`}
+                  onClick={() => setSelected(t.id)}
+                >
+                  <div className={styles.thumbWrap}>
+                    {url ? (
+                      <div className={styles.thumbPlaceholder}>
+                        <span className='mi' style={{ fontSize: '1.6rem' }}>visibility</span>
+                        <span>{t.label}</span>
+                      </div>
+                    ) : (
+                      <div className={styles.thumbPlaceholder}>
+                        <span className='mi' style={{ fontSize: '1.6rem' }}>visibility_off</span>
+                        <span>Set up your portfolio link to preview</span>
+                      </div>
+                    )}
+
+                    {url && (
+                      <button
+                        className={styles.thumbPreviewBtn}
+                        onClick={e => handlePreview(e, t.id)}
+                      >
+                        <span className='mi'>open_in_new</span>
+                        Preview
+                      </button>
+                    )}
+                  </div>
+
+                  <div className={styles.cardBody}>
+                    {selected === t.id && (
+                      <span className={`mi ${styles.checkIcon}`}>check_circle</span>
+                    )}
+                    <div>
+                      <div className={styles.cardLabel}>{t.label}</div>
+                      <div className={styles.cardDesc}>{t.description}</div>
                     </div>
-                  ) : (
-                    <div className={styles.thumbPlaceholder}>
-                      <span className="mi" style={{ fontSize: '1.6rem' }}>visibility_off</span>
-                      <span>Set up your portfolio link to preview</span>
-                    </div>
-                  )}
-
-                  {previewUrl && (
-                    <button
-                      className={styles.thumbPreviewBtn}
-                      onClick={e => handlePreview(e, t.id)}
-                    >
-                      <span className="mi">open_in_new</span>
-                      Preview
-                    </button>
-                  )}
-                </div>
-
-                <div className={styles.cardBody}>
-                  {selected === t.id && (
-                    <span className={`mi ${styles.checkIcon}`}>check_circle</span>
-                  )}
-                  <div>
-                    <div className={styles.cardLabel}>{t.label}</div>
-                    <div className={styles.cardDesc}>{t.description}</div>
                   </div>
                 </div>
-              </div>
-            )
-          })}
+              )
+            })}
+          </div>
+
         </div>
+      </FullModal>
 
-        {previewTemplate && (
-          <div className={styles.previewOverlay}>
-            <div className={styles.previewBar}>
-              <button className={styles.previewClose} onClick={handleClosePreview}>
-                <span className="mi">close</span>
-              </button>
-              <span className={styles.previewLabel}>
-                {TEMPLATES.find(t => t.id === previewTemplate)?.label} Preview
-              </span>
-              <button
-                className={styles.previewSelect}
-                onClick={() => { setSelected(previewTemplate); handleClosePreview() }}
-              >
-                Select
-              </button>
-            </div>
-
-            {overlayUrl ? (
+      {previewTemplate && (
+        <FullModal
+          title={`${previewLabel} Preview`}
+          onBack={handleClosePreview}
+          onSave={handleSelectFromPreview}
+          saveLabel='Select'
+        >
+          <div className={styles.previewContent}>
+            {previewUrl ? (
               <iframe
                 className={styles.previewFrame}
-                src={overlayUrl}
-                title="Portfolio preview"
+                src={previewUrl}
+                title='Portfolio preview'
               />
             ) : (
               <div className={styles.previewNoSlug}>
@@ -122,9 +128,8 @@ export function PortfolioTemplateModal({ currentTemplate, slug, onBack, onSelect
               </div>
             )}
           </div>
-        )}
-
-      </div>
-    </FullModal>
+        </FullModal>
+      )}
+    </>
   )
 }

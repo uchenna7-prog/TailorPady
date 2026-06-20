@@ -99,57 +99,19 @@
   margin-top: 1px;
 }
 
-.previewOverlay {
-  position: fixed;
-  inset: 0;
-  z-index: 300;
-  background: var(--bg);
+.previewContent {
+  flex: 1;
   display: flex;
   flex-direction: column;
-}
-
-.previewBar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 12px 16px;
-  border-bottom: 1px solid var(--border);
-  background: var(--bg);
-  flex-shrink: 0;
-}
-
-.previewClose {
-  background: none;
-  border: none;
-  cursor: pointer;
-  color: var(--text);
-  display: flex;
-  align-items: center;
-  padding: 4px;
-  border-radius: 8px;
-}
-
-.previewLabel {
-  font-size: 0.9rem;
-  font-weight: 600;
-  color: var(--text);
-}
-
-.previewSelect {
-  background: none;
-  border: none;
-  cursor: pointer;
-  color: var(--accent);
-  font-size: 0.95rem;
-  font-weight: 600;
-  padding: 4px 8px;
-  border-radius: 8px;
+  min-height: 0;
+  overflow: hidden;
 }
 
 .previewFrame {
   flex: 1;
   width: 100%;
   border: none;
+  min-height: 0;
 }
 
 .previewNoSlug {

@@ -777,13 +777,23 @@ function buildCandidateItems({ generalSettings, customers, allOrders, allInvoice
         return createdAtMs > 0 && (nowMs - createdAtMs) > thresholdMs
       })
       .forEach(order => {
+        const orderName = order.desc || 'order'
+        const amount    = formatMoney(order.totalAmount || order.price, generalSettings.invoiceCurrency?.symbol)
+        const due       = order.due || null
+
         candidates.push({
-          draftId:   `invoice-${order.id}`,
-          type:      'invoice',
-          title:     'Invoice drafted',
-          preview:   `Invoice for ${order.desc || 'order'} · Total: ${formatMoney(order.totalAmount || order.price, generalSettings.invoiceCurrency?.symbol)} · Due: ${order.due || 'not set'}.`,
-          reason:    `This order had no invoice after ${timeframeLabel(generalSettings.agentAutoInvoiceTimeframe)}, your auto-invoice timeframe.`,
-          tag:       'Invoice',
+          draftId: `invoice-${order.id}`,
+          type: 'invoice',
+          title: 'Invoice drafted',
+          preview: `Drafted invoice for ${orderName} — ${amount}${due ? `, due ${due}` : ''}`,
+          summary: {
+            icon: 'shopping_cart',
+            name: orderName,
+            amount,
+            due,
+          },
+          reason: `This order had no invoice ${timeframeLabel(generalSettings.agentAutoInvoiceTimeframe)} after it was created. That matches your auto-invoice rule, so Pady drafted one for you to review.`,
+          tag: 'Invoice',
         })
       })
   }
@@ -915,16 +925,17 @@ export function useAutonomousAgent() {
       setKnownDraftIds(prev => new Set(prev).add(candidate.draftId))
 
       createAgentDraftIfMissing(user.uid, candidate.draftId, {
-        type:    candidate.type,
-        title:   candidate.title,
+        type: candidate.type,
+        title: candidate.title,
         preview: candidate.preview,
-        reason:  candidate.reason,
-        tag:     candidate.tag,
-        status:  'pending',
+        summary: candidate.summary || null,
+        reason: candidate.reason,
+        tag: candidate.tag,
+        status: 'pending',
       }).then(created => {
         if (!created) return
         setPersistedDrafts(prev => [
-          { id: candidate.draftId, type: candidate.type, title: candidate.title, preview: candidate.preview, reason: candidate.reason, tag: candidate.tag, status: 'pending', createdAt: Date.now() },
+          { id: candidate.draftId, type: candidate.type, title: candidate.title, preview: candidate.preview, summary: candidate.summary || null, reason: candidate.reason, tag: candidate.tag, status: 'pending', createdAt: Date.now() },
           ...prev,
         ])
       }).catch(console.error)
@@ -938,32 +949,34 @@ export function useAutonomousAgent() {
 
   const doneTasks = useMemo(() => activeDrafts.map(draft => {
     const createdAtMs = timestampToMs(draft.createdAt)
-    const dateLabel    = formatDateLabel(createdAtMs)
-    const clockLabel   = formatClockLabel(createdAtMs)
+    const dateLabel = formatDateLabel(createdAtMs)
+    const clockLabel = formatClockLabel(createdAtMs)
     return {
-      id:     draft.id,
-      type:   draft.type,
-      title:  draft.title,
-      desc:   draft.preview,
+      id: draft.id,
+      type: draft.type,
+      title: draft.title,
+      desc: draft.preview,
+      summary: draft.summary || null,
       reason: draft.reason,
-      tag:    draft.tag,
-      date:   dateLabel,
-      time:   clockLabel ? `${dateLabel}, ${clockLabel}` : dateLabel,
+      tag: draft.tag,
+      date: dateLabel,
+      time: clockLabel ? `${dateLabel}, ${clockLabel}` : dateLabel,
     }
   }), [activeDrafts])
 
   const drafts = useMemo(() => activeDrafts.map(draft => {
     const createdAtMs = timestampToMs(draft.createdAt)
-    const dateLabel    = formatDateLabel(createdAtMs)
-    const clockLabel   = formatClockLabel(createdAtMs)
+    const dateLabel = formatDateLabel(createdAtMs)
+    const clockLabel = formatClockLabel(createdAtMs)
     return {
-      id:      draft.id,
-      type:    draft.type,
-      title:   draft.title,
+      id: draft.id,
+      type: draft.type,
+      title: draft.title,
       preview: draft.preview,
-      tag:     draft.tag,
-      date:    dateLabel,
-      time:    clockLabel ? `${dateLabel}, ${clockLabel}` : dateLabel,
+      summary: draft.summary || null,
+      tag: draft.tag,
+      date: dateLabel,
+      time: clockLabel ? `${dateLabel}, ${clockLabel}` : dateLabel,
     }
   }), [activeDrafts])
 

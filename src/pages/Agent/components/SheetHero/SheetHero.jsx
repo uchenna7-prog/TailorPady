@@ -1,27 +1,40 @@
-import { ICON_BG,ICON_META } from "../../datas"
 import { formatTitle } from "../../utils"
 import { MIcon } from "../MIcon/MIcon"
 import { TagPill } from "../TagPill/TagPill"
+import { ItemIconBox } from "../ItemIconBox/ItemIconBox"
 import styles from "./SheetHero.module.css"
 
 
-export function SheetHero({ item, customerName }) {
-    
-  const meta   = ICON_META[item.type] || ICON_META.brief
-  const iconBg = ICON_BG[item.type]   || 'var(--surface2)'
+export function SheetHero({ item, customerName, allOrders, allInvoices, allPayments }) {
 
   return (
     <div className={styles.sheetHero}>
-      <div className={styles.sheetHeroIcon} style={{ background: iconBg }}>
-        <MIcon name={meta.icon} size="1.4rem" color={meta.color} />
-      </div>
+      <ItemIconBox
+        type={item.type}
+        itemId={item.id}
+        orderId={item.orderId}
+        allOrders={allOrders}
+        allInvoices={allInvoices}
+        allPayments={allPayments}
+      />
       <div className={styles.sheetHeroBody}>
         <TagPill label={item.tag} />
         <p className={styles.sheetHeroTitle}>{formatTitle(item.title)}</p>
-        {customerName && (
+        {(customerName || item.time) && (
           <div className={styles.sheetHeroMeta}>
-            <MIcon name="person" size="0.7rem" color="var(--text3)" />
-            <span>{customerName}</span>
+            {customerName && (
+              <>
+                <MIcon name="person" size="0.7rem" color="var(--text3)" />
+                <span>{customerName}</span>
+              </>
+            )}
+            {customerName && item.time && <span>·</span>}
+            {item.time && (
+              <>
+                <MIcon name="schedule" size="0.7rem" color="var(--text3)" />
+                <span>{item.time}</span>
+              </>
+            )}
           </div>
         )}
       </div>
