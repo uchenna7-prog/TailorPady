@@ -77,16 +77,11 @@
   gap: 8px;
 }
 
-.brandIcon {
-  width: 40px;
-  height: 40px;
-  object-fit: contain;
-  flex-shrink: 0;
-}
+
 
 .brandName {
   font-family: 'Plus Jakarta Sans', sans-serif;
-  font-size: 1.2rem;
+  font-size: 1.5rem;
   font-weight: 800;
   letter-spacing: -0.5px;
   color: var(--text);

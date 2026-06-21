@@ -3,8 +3,6 @@ import { useLocation, useNavigate } from 'react-router-dom'
 import { useGeneralSettings } from '../../contexts/GeneralSettingsContext'
 import { useInstall }         from '../../contexts/InstallContext'
 import { useBadges }          from '../../contexts/BadgeContext'
-import logoLightMode          from '../../assets/logoLightMode.png'
-import logoDarkMode           from '../../assets/logoDarkMode.png'
 import styles                 from './SideBar.module.css'
 
 const NAV_SECTIONS = [
@@ -136,11 +134,7 @@ function SideBar({ isOpen, onClose }) {
 
         <div className={`${styles.top} ${scrolled ? styles.topScrolled : ''}`}>
           <div className={styles.brand}>
-            <img
-              src={generalSettings.theme === 'light' ? logoLightMode : logoDarkMode}
-              alt="TailorPady"
-              className={styles.brandIcon}
-            />
+
             <span className={styles.brandName}>TailorPady</span>
           </div>
         </div>
