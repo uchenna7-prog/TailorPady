@@ -1,5 +1,5 @@
 import { useEffect, useRef, useCallback } from 'react'
-import Header from '../../../../../components/Header/Header'
+import Header from '../../Header/Header'
 import styles from './ZoomOverlay.module.css'
 
 export function ZoomOverlay({

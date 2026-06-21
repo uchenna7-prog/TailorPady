@@ -29,6 +29,13 @@ export async function addReceipt(uid, customerId, data) {
   return ref.id
 }
 
+export async function updateReceipt(uid, receiptId, data) {
+  await updateDoc(receiptDocument(uid, receiptId), {
+    ...data,
+    updatedAt: new Date().toISOString(),
+  })
+}
+
 export async function updateReceiptStatus(uid, receiptId, status) {
   await updateDoc(receiptDocument(uid, receiptId), {
     status,
@@ -59,7 +66,6 @@ export function subscribeToCustomerReceipts(uid, customerId, callback, onError) 
   return onSnapshot(q,
     snap => callback(snap.docs.map(d => ({ id: d.id, ...d.data() }))),
     (err) => {
-  
       onError?.(err)
     }
   )

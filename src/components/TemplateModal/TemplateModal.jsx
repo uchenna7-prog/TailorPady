@@ -1,18 +1,18 @@
 import { useState, useRef, useMemo, useCallback, useEffect, useLayoutEffect } from 'react'
-import { useBrandTokens } from '../../../../hooks/useBrandTokens'
-import { useProfileSettings } from '../../../../contexts/ProfileSettingsContext'
-import Header from '../../../../components/Header/Header'
+import { useBrandTokens } from '../../hooks/useBrandTokens'
+import { useProfileSettings } from '../../contexts/ProfileSettingsContext'
+import Header from '../Header/Header'
 import { ZoomOverlay } from './ZoomOverlay/ZoomOverlay'
 import { MissingFieldsSheet } from './MissingFieldsSheet/MissingFieldsSheet'
-import { INVOICE_TEMPLATE_GROUPS } from '../../datas/invoiceTemplateGroups'
-import { RECEIPT_TEMPLATE_GROUPS } from '../../datas/receiptTemplateGroups'
+import { INVOICE_TEMPLATE_GROUPS } from './datas/invoiceTemplateGroups'
+import { RECEIPT_TEMPLATE_GROUPS } from './datas/receiptTemplateGroups'
 import {
   CUSTOMER_SAMPLE_DATA,
   getInvoiceSampleData,
   getReceiptSampleData,
-} from '../../datas/sampleDatas'
-import { useReceiptBrandSettings } from '../../../../hooks/useReceiptBrandSettings'
-import { useInvoiceBrandSettings } from '../../../../hooks/useInvoiceBrandSettings'
+} from './datas/sampleDatas'
+import { useReceiptBrandSettings } from '../../hooks/useReceiptBrandSettings'
+import { useInvoiceBrandSettings } from '../../hooks/useInvoiceBrandSettings'
 import styles from './TemplateModal.module.css'
 
 const STYLE_FILTERS = [
@@ -67,6 +67,7 @@ export function TemplateModal({
   currentInvoiceTemplate,
   currentReceiptTemplate,
   colourId,
+  lockToTab,
   onClose,
   onSelect,
   onOpenInvoiceSettings,
@@ -93,8 +94,8 @@ export function TemplateModal({
   const [appliedReceiptTemplate, setAppliedReceiptTemplate] = useState(
     currentReceiptTemplate || 'receiptTemplate1'
   )
-  const [activeTab,      setActiveTab]      = useState('invoice')
-  const [inActiveTab,    setInActiveTab]    = useState('receipt')
+  const [activeTab,      setActiveTab]      = useState(lockToTab || 'invoice')
+  const [inActiveTab,    setInActiveTab]    = useState(lockToTab === 'receipt' ? 'invoice' : 'receipt')
   const [activeFilter,   setActiveFilter]   = useState('all')
   const [gridAnimKey,    setGridAnimKey]    = useState(0)
   const [zoomedTemplate, setZoomedTemplate] = useState(null)
@@ -195,6 +196,7 @@ export function TemplateModal({
   }, [activeTab])
 
   const handleTabSwitch = useCallback((tabKey) => {
+    if (lockToTab) return
     if (tabKey === activeTab) return
     if (tabKey === 'invoice') {
       setActiveTab('invoice')
@@ -204,7 +206,7 @@ export function TemplateModal({
       setInActiveTab('invoice')
     }
     scrollRef.current?.scrollTo({ top: 0, behavior: 'smooth' })
-  }, [activeTab])
+  }, [activeTab, lockToTab])
 
   const handleFilterChange = useCallback((filterId) => {
     setActiveFilter(filterId)
@@ -297,6 +299,7 @@ export function TemplateModal({
     : ''
 
   const sampleProps = activeTabObject.getSampleProps()
+  const showTabBar  = !lockToTab
 
   return (
     <div className={styles.templateModalContainer} ref={modalRef}>
@@ -313,22 +316,24 @@ export function TemplateModal({
         }]}
       />
 
-      <div className={styles.tabBar}>
-        {Object.entries(tabs).map(([tabKey, tab]) => (
-          <button
-            key={tabKey}
-            className={`${styles.tabButton} ${activeTab === tabKey ? styles.tabButtonActive : ''}`}
-            onClick={() => handleTabSwitch(tabKey)}
-          >
-            <span className="mi" style={{ fontSize: '1rem' }}>{tab.icon}</span>
-            {tab.label}
-          </button>
-        ))}
-        <span
-          className={styles.tabIndicator}
-          style={{ transform: `translateX(${activeTab === 'invoice' ? '0%' : '100%'})` }}
-        />
-      </div>
+      {showTabBar && (
+        <div className={styles.tabBar}>
+          {Object.entries(tabs).map(([tabKey, tab]) => (
+            <button
+              key={tabKey}
+              className={`${styles.tabButton} ${activeTab === tabKey ? styles.tabButtonActive : ''}`}
+              onClick={() => handleTabSwitch(tabKey)}
+            >
+              <span className="mi" style={{ fontSize: '1rem' }}>{tab.icon}</span>
+              {tab.label}
+            </button>
+          ))}
+          <span
+            className={styles.tabIndicator}
+            style={{ transform: `translateX(${activeTab === 'invoice' ? '0%' : '100%'})` }}
+          />
+        </div>
+      )}
 
       <div className={styles.filterBar} ref={filterBarRef}>
         {STYLE_FILTERS.map(filter => {

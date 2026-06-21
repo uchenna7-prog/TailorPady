@@ -18,6 +18,7 @@ import {
 import {
   subscribeToCustomerInvoices,
   addInvoice          as addInvoiceToDb,
+  updateInvoice        as updateInvoiceInDb,
   updateInvoiceStatus as updateInvoiceStatusInDb,
   deleteInvoice       as deleteInvoiceFromDb,
 } from '../services/invoiceService'
@@ -32,6 +33,7 @@ import {
 import {
   subscribeToCustomerReceipts,
   addReceipt    as fsAddReceipt,
+  updateReceipt as fsUpdateReceipt,
   deleteReceipt as fsDeleteReceipt,
 } from '../services/receiptService'
 
@@ -160,6 +162,11 @@ export function useCustomerData(customerId) {
     await updateInvoiceStatusInDb(user.uid, String(id), status)
   }, [user])
 
+  const updateInvoiceTemplate = useCallback(async (id, templateId) => {
+    if (!user) return
+    await updateInvoiceInDb(user.uid, String(id), { template: templateId })
+  }, [user])
+
   const deleteInvoice = useCallback(async (id) => {
     if (!user) return
     await deleteInvoiceFromDb(user.uid, String(id))
@@ -191,6 +198,11 @@ export function useCustomerData(customerId) {
     return fsAddReceipt(user.uid, customerId, data)
   }, [user, customerId])
 
+  const updateReceiptTemplate = useCallback(async (id, templateId) => {
+    if (!user) return
+    await fsUpdateReceipt(user.uid, String(id), { template: templateId })
+  }, [user])
+
   const deleteReceipt = useCallback(async (receiptId) => {
     if (!user || !customerId) return
     await fsDeleteReceipt(user.uid, receiptId)
@@ -215,6 +227,7 @@ export function useCustomerData(customerId) {
     addInvoiceOptimistic,
     saveInvoice,
     updateInvoiceStatus,
+    updateInvoiceTemplate,
     deleteInvoice,
 
     savePayment,
@@ -223,6 +236,7 @@ export function useCustomerData(customerId) {
 
     addReceiptOptimistic,
     saveReceipt,
+    updateReceiptTemplate,
     deleteReceipt,
   }
 }

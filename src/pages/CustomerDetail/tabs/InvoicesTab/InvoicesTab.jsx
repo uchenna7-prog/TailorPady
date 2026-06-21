@@ -1,6 +1,7 @@
-import { useState, useEffect} from 'react'
+import { useState, useEffect } from 'react'
 import { getCurrency } from '../../../../utils/moneyUtils'
-import { buildOrderItemsMap,groupInvoicesByDate } from './utils'
+import { useProfileSettings } from '../../../../contexts/ProfileSettingsContext'
+import { buildOrderItemsMap, groupInvoicesByDate } from './utils'
 import { EmptyState } from './components/EmptyState/EmptyState'
 import { InvoiceRow } from './components/InvoiceRow/InvoiceRow'
 import { InvoiceRowSkeleton } from './components/InvoiceRowSkeleton/InvoiceRowSkeleton'
@@ -15,11 +16,14 @@ export default function InvoiceTab({
   loading  = false,
   orders   = [],
   customer,
+  customerData,
   onStatusChange,
   onDelete,
   onGenerateInvoice,
   showToast,
 }) {
+  const { profileSettings } = useProfileSettings()
+
   const [viewingInvoice, setViewingInvoice] = useState(null)
   const [deleteTarget,   setDeleteTarget]   = useState(null)
   const [addInvoiceModalOpen,  setaddInvoiceModalOpen]     = useState(false)
@@ -45,7 +49,7 @@ export default function InvoiceTab({
     for (const order of selectedOrders) {
       try {
         await onGenerateInvoice(order.id)
-      } 
+      }
       catch {
         anyFailed = true
         showToast(`Failed to generate invoice for "${order.desc || 'order'}".`)
@@ -155,16 +159,16 @@ export default function InvoiceTab({
       />
 
       {viewingInvoice && (
-        
-          <InvoiceViewer
-            invoice={viewingInvoice}
-            customer={customer}
-            onClose={() => setViewingInvoice(null)}
-            onStatusChange={handleStatusChange}
-            onDelete={(id) => setDeleteTarget(id)}
-            showToast={showToast}
-          />
-      
+        <InvoiceViewer
+          invoice={viewingInvoice}
+          customer={customer}
+          customerData={customerData}
+          colourId={profileSettings.brandColourId}
+          onClose={() => setViewingInvoice(null)}
+          onStatusChange={handleStatusChange}
+          onDelete={(id) => setDeleteTarget(id)}
+          showToast={showToast}
+        />
       )}
 
       <ConfirmSheet

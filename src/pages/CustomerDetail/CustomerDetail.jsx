@@ -1,4 +1,3 @@
-
 import { useState, useRef, useCallback, useEffect } from 'react'
 import { useParams, useNavigate }                   from 'react-router-dom'
 import { useCustomers }                             from '../../contexts/CustomerContext'
@@ -487,6 +486,7 @@ export default function CustomerDetail({ onMenuClick }) {
             orders={orders}
             measurements={customerData.measurements}
             customer={customer}
+            customerData={customerData}
             onSave={customerData.saveInvoice}
             onDelete={handleDeleteInvoice}
             onStatusChange={customerData.updateInvoiceStatus}
@@ -509,6 +509,7 @@ export default function CustomerDetail({ onMenuClick }) {
           <ReceiptsTab
             receipts={customerData.receipts}
             customer={customer}
+            customerData={customerData}
             orders={orders}
             payments={customerData.payments}
             onDelete={handleDeleteReceipt}
@@ -550,4 +551,3 @@ export default function CustomerDetail({ onMenuClick }) {
     </div>
   )
 }
-

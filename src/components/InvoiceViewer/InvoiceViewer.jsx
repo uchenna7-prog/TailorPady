@@ -6,6 +6,8 @@ import { buildInvoiceWhatsAppMessage, } from './utils'
 import { sharePDF, downloadPDF } from '../../utils/pdfUtils'
 import { getBrandCSSVars } from '../../utils/cssVariablesUtils'
 import { useInvoiceBrandSettings } from '../../hooks/useInvoiceBrandSettings'
+import { TemplateModal } from '../TemplateModal/TemplateModal'
+import { TemplateScopeSheet } from '../TemplateScopeSheet/TemplateScopeSheet'
 import Header from '../Header/Header'
 import styles from './InvoiceViewer.module.css'
 
@@ -46,9 +48,12 @@ export default function InvoiceViewer({
   onClose,
   onDelete,
   showToast,
+  customerData,
+  colourId,
+  onApplyDefaultTemplates,
 }) {
 
-  const { generalSettings } = useGeneralSettings()
+  const { generalSettings, updateManyGeneralSettings } = useGeneralSettings()
   const { profileSettings } = useProfileSettings()
 
   const INVOICE_BRAND_SETTINGS = useInvoiceBrandSettings()
@@ -57,6 +62,8 @@ export default function InvoiceViewer({
   const [invoice, setInvoice] = useState(snapShotedInvoice)
   const [pdfLoading, setPdfLoading]   = useState(false)
   const [shareLoading, setShareLoading] = useState(false)
+  const [showTemplateModal, setShowTemplateModal] = useState(false)
+  const [pendingTemplate, setPendingTemplate]      = useState(null)
 
   const templateKey = invoice.template || generalSettings.invoiceTemplate || 'invoiceTemplate1'
   const Template = TEMPLATE_MAPPINGS[templateKey] || TEMPLATE_MAPPINGS.invoiceTemplate1
@@ -102,6 +109,38 @@ export default function InvoiceViewer({
     }
   }
 
+  const handleTemplateModalSelect = ({ invoiceTemplate, receiptTemplate }) => {
+    setPendingTemplate({ invoiceTemplate, receiptTemplate })
+  }
+
+  const handleApplyToThisInvoice = async () => {
+    if (!pendingTemplate) return
+    try {
+      await customerData.updateInvoiceTemplate(invoice.id, pendingTemplate.invoiceTemplate)
+      setInvoice(prev => ({ ...prev, template: pendingTemplate.invoiceTemplate }))
+      showToast?.('Template updated for this invoice ✓')
+    } catch {
+      showToast?.('Could not update template.')
+    } finally {
+      setPendingTemplate(null)
+    }
+  }
+
+  const handleApplyAsDefault = () => {
+    if (!pendingTemplate) return
+    updateManyGeneralSettings({
+      invoiceTemplate: pendingTemplate.invoiceTemplate,
+      receiptTemplate: pendingTemplate.receiptTemplate,
+    })
+    onApplyDefaultTemplates?.(pendingTemplate)
+    showToast?.('Default template updated ✓')
+    setPendingTemplate(null)
+  }
+
+  const handleCancelScope = () => {
+    setPendingTemplate(null)
+  }
+
   return (
     <div className={styles.overlay}>
       <Header
@@ -109,6 +148,10 @@ export default function InvoiceViewer({
         title={invoice.number}
         onBackClick={onClose}
         customActions={[
+          {
+            icon:     'palette',
+            onClick:  () => setShowTemplateModal(true),
+          },
           {
             icon:     pdfLoading ? 'hourglass_top' : 'download',
             onClick:  handleDownload,
@@ -143,6 +186,28 @@ export default function InvoiceViewer({
         </div>
 
       </div>
+
+      {showTemplateModal && (
+        <TemplateModal
+          isOpen={showTemplateModal}
+          currentInvoiceTemplate={templateKey}
+          currentReceiptTemplate={generalSettings.receiptTemplate}
+          colourId={colourId}
+          lockToTab="invoice"
+          onClose={() => setShowTemplateModal(false)}
+          onSelect={handleTemplateModalSelect}
+        />
+      )}
+
+      {pendingTemplate && (
+        <TemplateScopeSheet
+          documentLabel="invoice"
+          onApplyToThis={handleApplyToThisInvoice}
+          onApplyToDefault={handleApplyAsDefault}
+          onCancel={handleCancelScope}
+        />
+      )}
+
     </div>
   )
 }

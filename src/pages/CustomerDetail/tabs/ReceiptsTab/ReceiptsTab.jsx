@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { getCurrency } from '../../../../utils/moneyUtils'
+import { useProfileSettings } from '../../../../contexts/ProfileSettingsContext'
 import { buildOrderItemsMap, groupReceiptsByDate } from './utils'
 import { EmptyState } from './components/EmptyState/EmptyState'
 import { AddReceiptModal } from './components/AddReceiptModal/AddReceiptModal'
@@ -14,10 +15,13 @@ export default function ReceiptTab({
   orders   = [],
   payments = [],
   customer,
+  customerData,
   onDelete,
   onGenerateReceipt,
   showToast,
 }) {
+  const { profileSettings } = useProfileSettings()
+
   const [viewingReceipt,     setViewingReceipt]     = useState(null)
   const [deleteTarget,       setDeleteTarget]       = useState(null)
   const [addReceiptModalOpen, setAddReceiptModalOpen] = useState(false)
@@ -81,6 +85,8 @@ export default function ReceiptTab({
         <ReceiptViewer
           receipt={viewingReceipt}
           customer={customer}
+          customerData={customerData}
+          colourId={profileSettings.brandColourId}
           onClose={() => setViewingReceipt(null)}
           onDelete={(id) => setDeleteTarget(id)}
           showToast={showToast}
