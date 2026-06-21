@@ -151,7 +151,7 @@ export function ReceiptTemplate19({ receipt, customer, receiptBrandSettings }) {
 
       <div className={styles.footer}>
 
-        {receiptBrandSettings.accountBank ? (
+        {receiptBrandSettings.name ? (
           <div className={styles.footerItem}>
             <div className={styles.footerLabel}>Payment Details</div>
             {receiptBrandSettings.name && (

@@ -220,7 +220,7 @@ export function ReceiptTemplate18({ receipt, customer, receiptBrandSettings }) {
       <div className={styles.divider} />
       <div className={styles.bottom}>
         <div style={{ flex : 1 }}>
-          {receiptBrandSettings.accountBank && (
+          {receiptBrandSettings.name && (
             <>
               <div className={styles.paymentLabel}>Payment Details</div>
               <div className={styles.paymentInfo}>

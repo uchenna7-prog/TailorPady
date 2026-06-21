@@ -153,7 +153,7 @@ export function ReceiptTemplate14({ receipt, customer, receiptBrandSettings }) {
           {customer.address && <div className={styles.boxAddr}>{customer.address}</div>}
         </div>
 
-        {receiptBrandSettings.accountBank && (
+        {receiptBrandSettings.name && (
           <div className={styles.paymentInfo}>
             <div className={styles.paymentLabel}>Payment Details</div>
             {receiptBrandSettings.name && <div>Received By: {receiptBrandSettings.name}</div>}

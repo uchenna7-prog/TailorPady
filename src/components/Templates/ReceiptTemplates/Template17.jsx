@@ -261,7 +261,7 @@ export function ReceiptTemplate17({ receipt, customer, receiptBrandSettings }) {
 
         <div className={styles.bottomArea}>
           <div className={styles.paymentBlock}>
-            {receiptBrandSettings.accountBank && (
+            {receiptBrandSettings.name && (
               <>
                 <div className={styles.paymentHeading} style={{ color: accentColor }}>Payment Details</div>
                 <div className={styles.paymentDetails}>

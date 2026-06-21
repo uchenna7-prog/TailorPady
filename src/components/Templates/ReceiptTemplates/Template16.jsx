@@ -233,7 +233,7 @@ export function ReceiptTemplate16({ receipt, customer, receiptBrandSettings }) {
 
         <div className={styles.bottomArea}>
           <div className={styles.paymentBlock}>
-            {receiptBrandSettings.accountBank && (
+            {receiptBrandSettings.name && (
               <>
                 <div className={styles.paymentHeading}>Payment Details</div>
                 <div className={styles.paymentDetails}>

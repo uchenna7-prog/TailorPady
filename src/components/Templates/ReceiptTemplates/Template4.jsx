@@ -57,7 +57,7 @@ export function ReceiptTemplate4({ receipt, customer, receiptBrandSettings }) {
 
   const isFullyPaid = receipt.isFullPayment ?? (balanceRemaining <= 0)
 
-  const hasPaymentInfo = receiptBrandSettings.accountBank
+  const hasPaymentInfo = receiptBrandSettings.name
   const hasContact     = receiptBrandSettings.phone || receiptBrandSettings.email || receiptBrandSettings.website || receiptBrandSettings.address
   const hasFooter      = hasPaymentInfo || hasContact
 

@@ -143,7 +143,7 @@ export function ReceiptTemplate20({ receipt, customer, receiptBrandSettings }) {
         <ReceiptPaymentSummary receipt={receipt} receiptBrandSettings={receiptBrandSettings} isDark />
 
         <div className={styles.bottomSection}>
-          {(receiptBrandSettings.accountBank || receiptBrandSettings.name || receiptBrandSettings.ownerName) && (
+          {( receiptBrandSettings.name || receiptBrandSettings.ownerName) && (
             <div>
               <div className={styles.payableLabel}>Received By</div>
               <div className={styles.payableName}>{receiptBrandSettings.name || receiptBrandSettings.ownerName}</div>

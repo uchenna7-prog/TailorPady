@@ -175,7 +175,7 @@ export function ReceiptTemplate11({ receipt, customer, receiptBrandSettings }) {
       <div style={{ marginTop: 'auto' }}>
         <div className={styles.footer}>
           <div>
-            {receiptBrandSettings.accountBank && (
+            {receiptBrandSettings.name && (
               <>
                 <div className={styles.thankYou}>Payment Details</div>
                 {receiptBrandSettings.name && <div>Received By : {receiptBrandSettings.name}</div>}

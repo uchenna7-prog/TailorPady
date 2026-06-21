@@ -173,7 +173,7 @@ export function ReceiptTemplate12({ receipt, customer, receiptBrandSettings }) {
 
       <div className={styles.footer}>
 
-        {receiptBrandSettings.accountBank && (
+        {receiptBrandSettings.name && (
           <div className={styles.footerLeft}>
             <div>
               <h3 className={styles.footerLabel}>Payment Details</h3>

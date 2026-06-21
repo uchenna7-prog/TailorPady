@@ -263,11 +263,11 @@ export function ReceiptTemplate3({ receipt, customer, receiptBrandSettings }) {
 
         <div className={styles.footer}>
 
-          {receiptBrandSettings.accountBank && (
+          {receiptBrandSettings.name && (
             <div className={styles.footerLeft}>
               <div className={styles.footerPayLabel}>Payment Details</div>
-              {receiptBrandSettings.accountName && (
-                <span>Received By: {receiptBrandSettings.accountName}<br /></span>
+              {receiptBrandSettings.name && (
+                <span>Received By: {receiptBrandSettings.name}<br /></span>
               )}
             </div>
           )}

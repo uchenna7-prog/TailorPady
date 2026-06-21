@@ -288,12 +288,12 @@ export function ReceiptTemplate6({ receipt, customer, receiptBrandSettings }) {
           <div className={styles.payeeName}>{brandName}</div>
         )}
 
-        {receiptBrandSettings.accountBank && (
+        {receiptBrandSettings.name && (
           <>
-            {receiptBrandSettings.accountName && (
+            {receiptBrandSettings.name && (
               <div className={styles.bankRow}>
                 <span className={styles.bankKey}>Received By:</span>
-                <span className={styles.bankVal}>{receiptBrandSettings.accountName}</span>
+                <span className={styles.bankVal}>{receiptBrandSettings.name}</span>
               </div>
             )}
           </>

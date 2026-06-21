@@ -177,11 +177,11 @@ export function ReceiptTemplate13({ receipt, customer, receiptBrandSettings }) {
 
       </div>
 
-      {(receiptBrandSettings.accountBank || receiptBrandSettings.phone) && (
+      {(receiptBrandSettings.name || receiptBrandSettings.phone) && (
         <>
           <div className={styles.paymentTitle}>Payment Details</div>
           <div className={styles.paymentBoxRow}>
-            {receiptBrandSettings.accountBank && (
+            {receiptBrandSettings.name && (
               <div className={styles.paymentBox} style={{ background: "var(--brand-muted)" }}>
                 <div className={styles.paymentBoxTitle}>
                   <span className={styles.paymentBoxIcon}><BankIcon /></span>

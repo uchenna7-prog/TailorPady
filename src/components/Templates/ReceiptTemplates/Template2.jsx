@@ -83,7 +83,7 @@ export function ReceiptTemplate2({ receipt, customer, receiptBrandSettings }) {
         <ItemsTable receipt={receipt} receiptBrandSettings={receiptBrandSettings} />
         <ReceiptPaymentSummary receipt={receipt} receiptBrandSettings={receiptBrandSettings} />
 
-        {receiptBrandSettings.accountBank && (
+        {receiptBrandSettings.name && (
           <div className={styles.paymentInfo}>
             <strong style={{ fontWeight: 900, color: "var(--brand-primary-dark)" }}>Payment Details</strong>
             <div className={styles.paymentBody}>

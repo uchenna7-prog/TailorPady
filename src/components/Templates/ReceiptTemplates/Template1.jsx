@@ -66,11 +66,11 @@ export function ReceiptTemplate1({ receipt, customer, receiptBrandSettings }) {
         <ReceiptPaymentSummary receipt={receipt} receiptBrandSettings={receiptBrandSettings} />
       </div>
 
-      {(receiptBrandSettings.accountBank || receiptBrandSettings.phone || receiptBrandSettings.email || receiptBrandSettings.footer) && (
+      {(receiptBrandSettings.name || receiptBrandSettings.phone || receiptBrandSettings.email || receiptBrandSettings.footer) && (
 
         <div className={styles.footer}>
 
-          {receiptBrandSettings.accountBank && (
+          {receiptBrandSettings.name && (
             <div className={styles.footerLeft}>
               <strong style={{ fontWeight: 900, color: "var(--brand-primary-dark)" }}>Payment Details</strong>
               <div className={styles.footerBody}>

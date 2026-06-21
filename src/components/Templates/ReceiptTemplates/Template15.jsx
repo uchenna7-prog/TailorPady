@@ -58,7 +58,7 @@ export function ReceiptTemplate15({ receipt, customer, receiptBrandSettings }) {
   const isFullyPaid = receipt.isFullPayment ?? (balanceRemaining <= 0)
 
   const hasContact     = receiptBrandSettings.email || receiptBrandSettings.address
-  const hasPaymentInfo = receiptBrandSettings.accountBank || receiptBrandSettings.accountName
+  const hasPaymentInfo = receiptBrandSettings.accountBank || receiptBrandSettings.name
 
   return (
     <div className={styles.template}>
@@ -261,9 +261,8 @@ export function ReceiptTemplate15({ receipt, customer, receiptBrandSettings }) {
             <div className={styles.footerBlockHeading}>Payment Details</div>
             {hasPaymentInfo ? (
               <>
-                {receiptBrandSettings.accountName   && <div className={styles.footerBlockLine}>Received By: {receiptBrandSettings.accountName}</div>}
-                {receiptBrandSettings.accountBank   && <div className={styles.footerBlockLine}>Bank: {receiptBrandSettings.accountBank}</div>}
-                {receiptBrandSettings.accountNumber && <div className={styles.footerBlockLine}>Acc No: {receiptBrandSettings.accountNumber}</div>}
+                {receiptBrandSettings.name   && <div className={styles.footerBlockLine}>Received By: {receiptBrandSettings.name}</div>}
+               
               </>
             ) : (
               <div className={styles.footerBlockLine}>—</div>

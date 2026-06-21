@@ -77,24 +77,7 @@ export function ReceiptTemplate9({ receipt, customer, receiptBrandSettings }) {
       </div>
 
       <div className={styles.infoRow}>
-        {receiptBrandSettings.accountBank && (
-          <div>
-            <div className={styles.infoLabel}>PAYMENT</div>
-            <strong>{receiptBrandSettings.accountBank}</strong><br />
-            {receiptBrandSettings.accountName && (
-              <div className={styles.iconRow}>
-                <span className={styles.icon}><UserIcon /></span>
-                <span>{receiptBrandSettings.accountName}</span>
-              </div>
-            )}
-            {receiptBrandSettings.accountNumber && (
-              <div className={styles.iconRow}>
-                <span className={styles.icon}><HashIcon /></span>
-                <span className={styles.noWrap}>{receiptBrandSettings.accountNumber}</span>
-              </div>
-            )}
-          </div>
-        )}
+
         <div>
           <div className={styles.infoLabel}>RECEIVED BY</div>
           <strong>{receiptBrandSettings.name || receiptBrandSettings.ownerName}</strong><br />
