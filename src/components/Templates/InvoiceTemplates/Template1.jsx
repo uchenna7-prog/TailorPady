@@ -93,7 +93,7 @@ export function InvoiceTemplate1({ invoice, customer, invoiceBrandSettings }) {
 
           {(invoiceBrandSettings.phone || invoiceBrandSettings.email || invoiceBrandSettings.footer) && (
             <div className={styles.footRight}>
-              <strong style={{ fontWeight: 900, color: "var(--brand-primary-dark)" }}>Notes</strong>
+              <strong style={{ fontWeight: 900, color: "var(--brand-primary-dark)" }}>Contact</strong>
               <div className={styles.footerBody}>
                 {invoiceBrandSettings.phone && (
                   <div className={styles.iconRow}>

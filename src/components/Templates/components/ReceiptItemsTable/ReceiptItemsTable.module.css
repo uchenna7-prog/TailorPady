@@ -141,10 +141,7 @@ th.colAmount, td.colAmount {
   font-feature-settings: "tnum";
 }
 
-/* Discount row — green */
-.breakdownKeyDiscount {
-  color: #15803d;
-}
+
 
 .breakdownValDiscount {
   color: #15803d;
@@ -152,7 +149,6 @@ th.colAmount, td.colAmount {
 }
 
 
-/* ── Grand total bar — full width, premium feel ── */
 .orderTotalWrap {
   display: flex;
   justify-content: space-between;

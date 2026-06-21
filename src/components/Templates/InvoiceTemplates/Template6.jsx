@@ -7,6 +7,7 @@ import { PhoneIcon, EmailIcon, LocationIcon, WebsiteIcon } from "../components/i
 
 
 export function InvoiceTemplate6({ invoice, customer, invoiceBrandSettings }) {
+  
   const dueDate    = getDueDate(invoice, invoiceBrandSettings.dueDays)
   const { currency, showTax, invoiceTaxRate: invoiceBrandSettingsTaxRate } = invoiceBrandSettings
 
@@ -126,8 +127,8 @@ export function InvoiceTemplate6({ invoice, customer, invoiceBrandSettings }) {
               <th className={styles.colNo}>No.</th>
               <th className={styles.colDesc}>Item Description</th>
               <th className={styles.colQty}>Qty</th>
-              <th className={styles.colPrice}>Price ({currency || "$"})</th>
-              <th className={styles.colTotal}>Total ({currency || "$"})</th>
+              <th className={styles.colPrice}>Price ({currency })</th>
+              <th className={styles.colTotal}>Total ({currency })</th>
             </tr>
           </thead>
           <tbody>

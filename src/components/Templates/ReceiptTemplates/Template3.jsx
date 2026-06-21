@@ -88,11 +88,11 @@ export function ReceiptTemplate3({ receipt, customer, receiptBrandSettings }) {
 
             <div className={styles.metaBlock}>
               <div className={styles.invoiceMetaLine}>
-                <span className={styles.metaKey}>Receipt #:</span>
+                <span className={styles.metaKey}>Receipt #</span>
                 <span className={styles.metaVal}>{receipt.number}</span>
               </div>
               <div className={styles.invoiceMetaLine}>
-                <span className={styles.metaKey}>Date:</span>
+                <span className={styles.metaKey}>Date</span>
                 <span className={styles.metaVal}>{receipt.date}</span>
               </div>
             </div>
@@ -191,7 +191,8 @@ export function ReceiptTemplate3({ receipt, customer, receiptBrandSettings }) {
             </>
           )}
 
-          <div className={styles.grandTotalRow}>
+
+        <div className={`${styles.grandTotalRow} ${ hasExtras ? styles.showGrandTotalBorderTop : ""}`}>
             <span className={styles.grandTotalKey}>Total</span>
             <span className={styles.grandTotalVal}>{formatMoney(currency, grandTotal)}</span>
           </div>
@@ -217,7 +218,7 @@ export function ReceiptTemplate3({ receipt, customer, receiptBrandSettings }) {
                       {payment.date}{payment.time ? ` · ${payment.time}` : ""}
                     </div>
                   </div>
-                  <span className={`${styles.historyAmount} ${isCurrent ? styles.historyAmountCurrent : ""}`}>
+                  <span className={`${styles.historyAmount}`}>
                     {formatMoney(currency, payment.amount)}
                   </span>
                 </div>
@@ -237,7 +238,7 @@ export function ReceiptTemplate3({ receipt, customer, receiptBrandSettings }) {
             {thisPaymentTotal > 0 && (
               <div>
                 <span className={styles.totalsKey}>This Payment</span>
-                <span className={styles.totalsVal}>+{formatMoney(currency, thisPaymentTotal)}</span>
+                <span className={`${styles.totalsVal} ${styles.thisPaymentVal}`}>+{formatMoney(currency, thisPaymentTotal)}</span>
               </div>
             )}
             {(previouslyPaid > 0 || thisPaymentTotal > 0) && (

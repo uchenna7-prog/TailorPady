@@ -147,7 +147,7 @@ export function ReceiptTemplate19({ receipt, customer, receiptBrandSettings }) {
 
       </div>
 
-      <ReceiptPaymentSummary receipt={receipt} receiptBrandSettings={receiptBrandSettings} isTemplate5={true} />
+      <ReceiptPaymentSummary receipt={receipt} receiptBrandSettings={receiptBrandSettings} isTemplate19={true} />
 
       <div className={styles.footer}>
 

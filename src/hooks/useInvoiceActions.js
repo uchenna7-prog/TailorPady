@@ -60,6 +60,8 @@ export function useInvoiceActions({ customerData, orders, showToast, setActiveTa
     const invoicePrefix   = generalSettings.invoicePrefix   || localSnap.invoicePrefix   || 'INV'
     const invoiceTemplate = generalSettings.invoiceTemplate || localSnap.invoiceTemplate || 'invoiceTemplate1'
     const invoiceNumber   = `${invoicePrefix}-${String(customerData.invoices.length + 1).padStart(3, '0')}`
+    const invoiceCurrency = localSnap.invoiceCurrency?.symbol || generalSettings.invoiceCurrency?.symbol || '₦'
+    const invoiceDueDays  = generalSettings.invoiceDueDays || localSnap.invoiceDueDays || 7
 
     const today = new Date().toLocaleDateString('en-US', {
       month: 'short',
@@ -78,24 +80,21 @@ export function useInvoiceActions({ customerData, orders, showToast, setActiveTa
       .filter(Boolean)
 
     const brandSnapshot = buildBrandSnapshot(localSnap, profileSettings, {
-      footer:   localSnap.invoiceFooter   || 'Thank you for your patronage 🙏',
-      currency: localSnap.invoiceCurrency || '₦',
-      showTax:  localSnap.invoiceShowTax  || false,
-      taxRate:  localSnap.invoiceTaxRate  || 0,
-      dueDays:  localSnap.invoiceDueDays  || 7,
+      footer:   localSnap.invoiceFooter || 'Thank you for your patronage 🙏',
+      currency: invoiceCurrency,
+      showTax:  localSnap.invoiceShowTax || false,
+      taxRate:  localSnap.invoiceTaxRate || 0,
+      dueDays:  invoiceDueDays,
     })
 
-    const getDueDate =  (dueDays)=>{
-
-    try {
-      const date = new Date(invoice.date)
-      date.setDate(date.getDate() + (dueDays || 7))
-      return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
-    } 
-    catch { 
-      return '' 
-    }
-
+    const getDueDate = (dateString, dueDays) => {
+      try {
+        const date = new Date(dateString)
+        date.setDate(date.getDate() + (dueDays || 7))
+        return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+      } catch {
+        return ''
+      }
     }
 
     const newInvoice = {
@@ -110,7 +109,7 @@ export function useInvoiceActions({ customerData, orders, showToast, setActiveTa
       qty:            order.qty,
       items:          Array.isArray(order.items) ? order.items : [],
       linkedNames:    linkedMeasurementNames,
-      due:            getDueDate(generalSettings.invoiceDueDays || localSnap.invoiceDueDays || 7),
+      due:            getDueDate(today, invoiceDueDays),
       shippingFee:    order.shippingFee    ?? 0,
       discountType:   order.discountType   ?? null,
       discountValue:  order.discountValue  ?? 0,
@@ -151,15 +150,14 @@ export function useInvoiceActions({ customerData, orders, showToast, setActiveTa
 
 
   const handleDeleteInvoice = useCallback(async (invoiceId) => {
-  try {
-    await customerData.deleteInvoice(invoiceId)
-    showToast('Invoice deleted')
-  } catch {
-    showToast('Failed to delete invoice.')
-  }
-}, [customerData, showToast])
+    try {
+      await customerData.deleteInvoice(invoiceId)
+      showToast('Invoice deleted')
+    } catch {
+      showToast('Failed to delete invoice.')
+    }
+  }, [customerData, showToast])
 
   return { handleGenerateInvoice, handleInvoicePaid, handleDeleteInvoice }
 
- 
 }

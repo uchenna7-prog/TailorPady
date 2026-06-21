@@ -17,6 +17,29 @@ const STATUS_LABELS = {
   overdue: 'Overdue',
 }
 
+function normalizeCurrency(currency) {
+  if (typeof currency === 'object' && currency !== null) {
+    return currency.symbol || '₦'
+  }
+  return currency || '₦'
+}
+
+function buildSnapshotedBrandSettings(invoiceBrandSettings, brandSnapshot) {
+  const merged = brandSnapshot
+    ? {
+        ...invoiceBrandSettings,
+        ...Object.fromEntries(
+          Object.entries(brandSnapshot).filter(([, v]) => v !== '' && v !== null && v !== undefined)
+        ),
+      }
+    : invoiceBrandSettings
+
+  return {
+    ...merged,
+    currency: normalizeCurrency(merged.currency),
+  }
+}
+
 export default function InvoiceViewer({
   invoice: snapShotedInvoice,
   customer,
@@ -30,7 +53,6 @@ export default function InvoiceViewer({
 
   const INVOICE_BRAND_SETTINGS = useInvoiceBrandSettings()
 
-
   const paperRef = useRef(null)
   const [invoice, setInvoice] = useState(snapShotedInvoice)
   const [pdfLoading, setPdfLoading]   = useState(false)
@@ -38,14 +60,12 @@ export default function InvoiceViewer({
 
   const templateKey = invoice.template || generalSettings.invoiceTemplate || 'invoiceTemplate1'
   const Template = TEMPLATE_MAPPINGS[templateKey] || TEMPLATE_MAPPINGS.invoiceTemplate1
-  const snapShotedInvoiceBrandSettings = invoice.brandSnapshot
-  ? {
-      ...INVOICE_BRAND_SETTINGS,
-      ...Object.fromEntries(
-        Object.entries(invoice.brandSnapshot).filter(([, v]) => v !== '' && v !== null && v !== undefined)
-      ),
-    }
-  : INVOICE_BRAND_SETTINGS
+
+  const snapShotedInvoiceBrandSettings = buildSnapshotedBrandSettings(
+    INVOICE_BRAND_SETTINGS,
+    invoice.brandSnapshot
+  )
+
   const brandCSSVars = getBrandCSSVars(snapShotedInvoiceBrandSettings.colour)
   const filename = `Invoice-${invoice.number}-${customer.name.replace(/\s+/g, '_')}.pdf`
 
@@ -57,34 +77,30 @@ export default function InvoiceViewer({
       const exactHeight = Math.ceil(paperRef.current.getBoundingClientRect().height)
       await downloadPDF(paperRef.current, filename, brandCSSVars, exactHeight)
       showToast?.('PDF downloaded ✓')
-    } 
-    catch (err) {
-
+    } catch {
       showToast?.('PDF failed — please try again.')
-    } 
-    finally {
+    } finally {
       setPdfLoading(false)
     }
   }
 
   const handleShare = async () => {
-  if (!paperRef.current || shareLoading) return
-  setShareLoading(true)
-  showToast?.('Preparing…')
-  try {
-    const exactHeight = Math.ceil(paperRef.current.getBoundingClientRect().height)
-    const message = buildInvoiceWhatsAppMessage(invoice, customer, snapShotedInvoiceBrandSettings)
-    await sharePDF(paperRef.current, filename, message, brandCSSVars, exactHeight)
-    showToast?.('Shared ✓')
-  } catch (err) {
-    console.error('Share error:', err)
-    if (err?.name !== 'AbortError') {
-      showToast?.('Share failed — please try again.')
+    if (!paperRef.current || shareLoading) return
+    setShareLoading(true)
+    showToast?.('Preparing…')
+    try {
+      const exactHeight = Math.ceil(paperRef.current.getBoundingClientRect().height)
+      const message = buildInvoiceWhatsAppMessage(invoice, customer, snapShotedInvoiceBrandSettings)
+      await sharePDF(paperRef.current, filename, message, brandCSSVars, exactHeight)
+      showToast?.('Shared ✓')
+    } catch (err) {
+      if (err?.name !== 'AbortError') {
+        showToast?.('Share failed — please try again.')
+      }
+    } finally {
+      setShareLoading(false)
     }
-  } finally {
-    setShareLoading(false)
   }
-}
 
   return (
     <div className={styles.overlay}>
@@ -106,7 +122,7 @@ export default function InvoiceViewer({
           {
             icon:    'delete',
             onClick: () => onDelete(invoice.id),
-            outlined: true ,
+            outlined: true,
             color: 'var(--danger)',
           },
         ]}
@@ -122,11 +138,9 @@ export default function InvoiceViewer({
 
         <div className={styles.paperWrap}>
           <div ref={paperRef} className={styles.paperInner} style={brandCSSVars}>
-            <Template invoice={invoice} customer={customer} invoiceBrandSettings={ snapShotedInvoiceBrandSettings} />
+            <Template invoice={invoice} customer={customer} invoiceBrandSettings={snapShotedInvoiceBrandSettings} />
           </div>
         </div>
-
-
 
       </div>
     </div>

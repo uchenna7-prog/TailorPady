@@ -19,9 +19,9 @@ function capitalize(str) {
 }
 
 
-export function ReceiptPaymentSummary({ receipt, receiptBrandSettings, isTemplate5 = false, isDark = false }) {
+export function ReceiptPaymentSummary({ receipt, receiptBrandSettings, isTemplate19 = false, isDark = false }) {
 
-  const dark = isTemplate5 || isDark
+  const dark = isTemplate19 || isDark
 
   const { currency, showTax, taxRate: brandTaxRate } = receiptBrandSettings
 

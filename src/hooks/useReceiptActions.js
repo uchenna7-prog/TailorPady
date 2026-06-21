@@ -44,9 +44,10 @@ export function useReceiptActions({ customerData, orders, showToast, setActiveTa
       return
     }
 
-    const localSnap       = readLocalStorageSettings()
-    const receiptPrefix   = generalSettings.receiptPrefix   || localSnap.receiptPrefix   || 'RCP'
-    const receiptTemplate = generalSettings.receiptTemplate || localSnap.receiptTemplate || 'receiptTemplate1'
+    const localSnap        = readLocalStorageSettings()
+    const receiptPrefix    = generalSettings.receiptPrefix   || localSnap.receiptPrefix   || 'RCP'
+    const receiptTemplate  = generalSettings.receiptTemplate || localSnap.receiptTemplate || 'receiptTemplate1'
+    const receiptCurrency  = localSnap.receiptCurrency?.symbol || generalSettings.receiptCurrency?.symbol || '₦'
 
     const today = new Date().toLocaleDateString('en-US', {
       month: 'short', day: 'numeric', year: 'numeric',
@@ -88,10 +89,10 @@ export function useReceiptActions({ customerData, orders, showToast, setActiveTa
     const receiptNumber = `${receiptPrefix}-${String(receiptsForThisPayment).padStart(2, '0')}-${String(globalReceiptCount).padStart(3, '0')}`
 
     const brandSnapshot = buildBrandSnapshot(localSnap, profileSettings, {
-      footer:   localSnap.receiptFooter   || 'Thank you for your patronage 🙏',
-      currency: localSnap.receiptCurrency || '₦',
-      showTax:  localSnap.receiptShowTax  || false,
-      taxRate:  localSnap.receiptTaxRate  || 0,
+      footer:   localSnap.receiptFooter || 'Thank you for your patronage 🙏',
+      currency: receiptCurrency,
+      showTax:  localSnap.receiptShowTax || false,
+      taxRate:  localSnap.receiptTaxRate || 0,
     })
 
     const newReceipt = {

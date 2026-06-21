@@ -2,23 +2,46 @@ import { useRef, useState } from 'react'
 import { useGeneralSettings } from '../../contexts/GeneralSettingsContext'
 import { useProfileSettings } from '../../contexts/ProfileSettingsContext'
 import { TEMPLATE_MAPPINGS } from '../Templates/datas/receiptTemplateMappings'
-import {   
-  resolveCumulativePaid, 
-  buildReceiptWhatsAppMessage 
+import {
+  resolveCumulativePaid,
+  buildReceiptWhatsAppMessage
 } from './utils'
 import { useReceiptBrandSettings } from '../../hooks/useReceiptBrandSettings'
 import { getBrandCSSVars } from '../../utils/cssVariablesUtils'
-import { sharePDF,downloadPDF } from '../../utils/pdfUtils'
+import { sharePDF, downloadPDF } from '../../utils/pdfUtils'
 import Header from '../Header/Header'
 import styles from './ReceiptViewer.module.css'
 
 
-export default function ReceiptViewer({ 
-  receipt: snapshotedReceipt, 
-  customer, 
-  onClose, 
-  onDelete, 
-  showToast 
+function normalizeCurrency(currency) {
+  if (typeof currency === 'object' && currency !== null) {
+    return currency.symbol || '₦'
+  }
+  return currency || '₦'
+}
+
+function buildSnapshotedBrandSettings(receiptBrandSettings, brandSnapshot) {
+  const merged = brandSnapshot
+    ? {
+        ...receiptBrandSettings,
+        ...Object.fromEntries(
+          Object.entries(brandSnapshot).filter(([, v]) => v !== '' && v !== null && v !== undefined)
+        ),
+      }
+    : receiptBrandSettings
+
+  return {
+    ...merged,
+    currency: normalizeCurrency(merged.currency),
+  }
+}
+
+export default function ReceiptViewer({
+  receipt: snapshotedReceipt,
+  customer,
+  onClose,
+  onDelete,
+  showToast
 }) {
 
   const { generalSettings } = useGeneralSettings()
@@ -33,21 +56,18 @@ export default function ReceiptViewer({
 
   const templateKey = receipt.template || generalSettings.receiptTemplate || 'receiptTemplate1'
   const Template = TEMPLATE_MAPPINGS[templateKey] || TEMPLATE_MAPPINGS.receiptTemplate1
-  const snapShotedReceiptBrandSettings = receipt.brandSnapshot
-  ? {
-      ...RECEIPT_BRAND_SETTINGS,
-      ...Object.fromEntries(
-        Object.entries(receipt.brandSnapshot).filter(([, v]) => v !== '' && v !== null && v !== undefined)
-      ),
-    }
-  : RECEIPT_BRAND_SETTINGS
+
+  const snapShotedReceiptBrandSettings = buildSnapshotedBrandSettings(
+    RECEIPT_BRAND_SETTINGS,
+    receipt.brandSnapshot
+  )
+
   const brandCSSVars = getBrandCSSVars(snapShotedReceiptBrandSettings.colour)
   const filename = `Receipt-${receipt.number}-${customer.name.replace(/\s+/g, '_')}.pdf`
 
   const cumulativePaid = resolveCumulativePaid(receipt)
-  const orderTotal  = receipt.orderPrice ? parseFloat(receipt.orderPrice) : cumulativePaid
+  const orderTotal = receipt.orderPrice ? parseFloat(receipt.orderPrice) : cumulativePaid
   const isFullPay  = cumulativePaid >= orderTotal && orderTotal > 0
-
 
   const handleDownload = async () => {
     if (!paperRef.current || pdfLoading) return
@@ -57,12 +77,9 @@ export default function ReceiptViewer({
       const exactHeight = Math.ceil(paperRef.current.getBoundingClientRect().height)
       await downloadPDF(paperRef.current, filename, brandCSSVars, exactHeight)
       showToast?.('PDF downloaded ✓')
-    } 
-    catch (err) {
-
+    } catch {
       showToast?.('PDF failed — please try again.')
-    } 
-    finally {
+    } finally {
       setPdfLoading(false)
     }
   }
@@ -76,13 +93,11 @@ export default function ReceiptViewer({
       const message = buildReceiptWhatsAppMessage(receipt, customer, snapShotedReceiptBrandSettings)
       await sharePDF(paperRef.current, filename, message, brandCSSVars, exactHeight)
       showToast?.('Shared ✓')
-    } 
-    catch (err) {
+    } catch (err) {
       if (err?.name !== 'AbortError') {
         showToast?.('Share failed — please try again.')
       }
-    } 
-    finally {
+    } finally {
       setShareLoading(false)
     }
   }
@@ -101,7 +116,7 @@ export default function ReceiptViewer({
           },
           {
             icon: shareLoading ? 'hourglass_top' : 'share',
-            onClick:  handleShare,
+            onClick: handleShare,
             disabled: shareLoading,
           },
           {
@@ -120,13 +135,13 @@ export default function ReceiptViewer({
             {isFullPay ? 'Paid in Full' : 'Part Payment'}
           </div>
         </div>
-        
+
         <div className={styles.paperWrap}>
           <div className={styles.paperInner} ref={paperRef} style={brandCSSVars}>
             <Template receipt={receipt} customer={customer} receiptBrandSettings={snapShotedReceiptBrandSettings} />
           </div>
         </div>
-       
+
       </div>
     </div>
   )

@@ -150,15 +150,7 @@ td.colTotal {
   font-feature-settings: "tnum";
 }
 
-.summaryKeyDiscount {
-  color: green;
-  font-weight: 900;
-}
 
-.summaryValDiscount {
-  color: green;
-  font-weight: 900;
-}
 
 .summaryDivider {
   height: 1.5px;
@@ -269,11 +261,9 @@ td.colTotal {
 
 .breakdownKeyDiscount {
   font-weight: 900;
-  color: #15803d;
 }
 
 .breakdownValDiscount {
-  color: #15803d;
   font-weight: 900;
 }
 

@@ -80,31 +80,26 @@ export function ReceiptTemplate7({ receipt, customer, receiptBrandSettings }) {
           <div className={styles.infoBoxName}>{customer.name}</div>
           <div className={styles.infoBoxDetail}>
 
-            {customer.phone && 
-            <div>
-              <span className={styles.infoBoxIcon}><PhoneIcon /></span>
-              {customer.phone} 
-            </div>
-            }
+            {customer.phone && (
+              <div>
+                <span className={styles.infoBoxIcon}><PhoneIcon /></span>
+                {customer.phone}
+              </div>
+            )}
 
+            {customer.email && (
+              <div>
+                <span className={styles.infoBoxIcon}><EmailIcon /></span>
+                {customer.email}
+              </div>
+            )}
 
-            {customer.email  && 
-            <div>
-              <span className={styles.infoBoxIcon}><EmailIcon /></span>
-              {customer.email } 
-            </div>
-            }
-   
-
-            {customer.address && 
-            <div>
-              <span className={styles.infoBoxIcon}><LocationIcon /></span>
-              {customer.address} 
-            </div>
-            }
-
-
-
+            {customer.address && (
+              <div>
+                <span className={styles.infoBoxIcon}><LocationIcon /></span>
+                {customer.address}
+              </div>
+            )}
 
           </div>
         </div>
@@ -121,32 +116,31 @@ export function ReceiptTemplate7({ receipt, customer, receiptBrandSettings }) {
       <div className={styles.tableBox}>
 
         <table>
-          
+
           <thead className={styles.tableHeader}>
             <tr>
-
               <th className={styles.thDesc}>Description</th>
               <th className={styles.thPrice}>Unit Price</th>
               <th className={styles.thQty}>Qty</th>
               <th className={styles.thSub}>Subtotal</th>
-
             </tr>
-
           </thead>
 
-          {receipt.items?.map((item, i) => {
-            const qty        = item.qty ?? 1
-            const unitPrice  = parseFloat(item.price) || 0
-            const lineAmount = qty * unitPrice
-            return (
-              <tr key={i} className={styles.tableRow}>
-                <td className={styles.tdDesc}>{item.name}</td>
-                <td className={styles.tdPrice}>{formatMoney(currency, unitPrice)}</td>
-                <td className={styles.tdQty}>{qty}</td>
-                <td className={styles.tdSub}>{formatMoney(currency, lineAmount)}</td>
-              </tr>
-            )
-          })}
+          <tbody>
+            {receipt.items?.map((item, i) => {
+              const qty        = item.qty ?? 1
+              const unitPrice  = parseFloat(item.price) || 0
+              const lineAmount = qty * unitPrice
+              return (
+                <tr key={i} className={styles.tableRow}>
+                  <td className={styles.tdDesc}>{item.name}</td>
+                  <td className={styles.tdPrice}>{formatMoney(currency, unitPrice)}</td>
+                  <td className={styles.tdQty}>{qty}</td>
+                  <td className={styles.tdSub}>{formatMoney(currency, lineAmount)}</td>
+                </tr>
+              )
+            })}
+          </tbody>
 
         </table>
 
@@ -248,8 +242,7 @@ export function ReceiptTemplate7({ receipt, customer, receiptBrandSettings }) {
         <div className={styles.footerLeft}>
           <div className={styles.footerPayLabel}>Payment Details</div>
           <div className={styles.footerDetail}>
-            {receiptBrandSettings.name   && <span>Received by: {receiptBrandSettings.name}</span>}<br />
-  
+            {receiptBrandSettings.name && <span>Received by: {receiptBrandSettings.name}</span>}<br />
           </div>
         </div>
 
@@ -257,7 +250,6 @@ export function ReceiptTemplate7({ receipt, customer, receiptBrandSettings }) {
 
           {receiptBrandSettings.name && (
             <div className={styles.brandName}>{receiptBrandSettings.name || receiptBrandSettings.ownerName}</div>
-
           )}
 
           {receiptBrandSettings.phone && (
@@ -279,7 +271,6 @@ export function ReceiptTemplate7({ receipt, customer, receiptBrandSettings }) {
             </div>
           )}
 
-
           {receiptBrandSettings.address && (
             <div className={styles.footerContactRow}>
               <span className={styles.footerIcon}><LocationIcon /></span>
@@ -291,9 +282,8 @@ export function ReceiptTemplate7({ receipt, customer, receiptBrandSettings }) {
       </div>
 
       {receiptBrandSettings.footer && (
-        <div className={styles.thankYou}>{receiptBrandSettings.footer || "Thank You"}  </div>
+        <div className={styles.thankYou}>{receiptBrandSettings.footer || "Thank You"}</div>
       )}
     </div>
   )
 }
-

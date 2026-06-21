@@ -77,19 +77,14 @@ export function ReceiptTemplate1({ receipt, customer, receiptBrandSettings }) {
                 {receiptBrandSettings.name && (
                   <div>Received By: {receiptBrandSettings.name}</div>
                 )}
-                {receiptBrandSettings.accountBank && (
-                  <div>Bank Name: {receiptBrandSettings.accountBank}</div>
-                )}
-                {receiptBrandSettings.accountNumber && (
-                  <div>Account Number: {receiptBrandSettings.accountNumber}</div>
-                )}
+
               </div>
             </div>
           )}
 
           {(receiptBrandSettings.phone || receiptBrandSettings.email || receiptBrandSettings.footer) && (
             <div className={styles.footRight}>
-              <strong style={{ fontWeight: 900, color: "var(--brand-primary-dark)" }}>Notes</strong>
+              <strong style={{ fontWeight: 900, color: "var(--brand-primary-dark)" }}>Contact</strong>
               <div className={styles.footerBody}>
                 {receiptBrandSettings.phone && (
                   <div className={styles.iconRow}>

@@ -89,7 +89,7 @@ export function ItemsTable({ invoice, invoiceBrandSettings}) {
 
         {discountAmount > 0 && (
           <div className={styles.summaryRow}>
-            <span className={`${styles.summaryKey} ${styles.summaryKeyDiscount}`}>{discountLabel}</span>
+            <span className={`${styles.summaryKey}`}>{discountLabel}</span>
             <span className={`${styles.summaryVal} ${styles.summaryValDiscount}`}>−{ formatMoney(currency, discountAmount)}</span>
           </div>
         )}

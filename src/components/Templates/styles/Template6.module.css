@@ -409,7 +409,7 @@
 .bankRow {
   display: flex;
   align-items: baseline;
-  gap: 5px;
+  gap: 3px;
   width: 55%;
 }
 
@@ -419,6 +419,7 @@
   color: var(--brand-primary-dark);
   text-transform: uppercase;
   letter-spacing: 0.06em;
+  text-wrap: nowrap;
 }
 
 .bankVal {

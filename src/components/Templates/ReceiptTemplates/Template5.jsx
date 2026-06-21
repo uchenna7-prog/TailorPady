@@ -166,7 +166,7 @@ export function ReceiptTemplate5({ receipt, customer, receiptBrandSettings }) {
 
                     {discountAmount > 0 && (
                       <div className={styles.breakdownRow}>
-                        <span className={`${styles.breakdownKey} ${styles.breakdownKeyDiscount}`}>{discountLabel}</span>
+                        <span className={`${styles.breakdownKey}`}>{discountLabel}</span>
                         <span className={`${styles.breakdownVal} ${styles.breakdownValDiscount}`}>−{formatMoney(currency, discountAmount)}</span>
                       </div>
                     )}

@@ -56,11 +56,11 @@ export function InvoiceTemplate3({ invoice, customer, invoiceBrandSettings }) {
 
             <div className={styles.metaBlock}>
               <div className={styles.invoiceMetaLine}>
-                <span className={styles.metaKey}>Invoice #:</span>
+                <span className={styles.metaKey}>Invoice #</span>
                 <span className={styles.metaVal}>{invoice.number}</span>
               </div>
               <div className={styles.invoiceMetaLine}>
-                <span className={styles.metaKey}>Date:</span>
+                <span className={styles.metaKey}>Date</span>
                 <span className={styles.metaVal}>{invoice.date}</span>
               </div>
             </div>

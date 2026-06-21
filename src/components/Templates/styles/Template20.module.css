@@ -299,15 +299,7 @@ td.colTotal {
   font-feature-settings: "tnum";
 }
 
-.totalsKeyDiscount {
-  opacity: 1;
-  color: green;
-}
 
-.totalsValDiscount {
-  color: green;
-  font-weight: 700;
-}
 
 .bottomSection {
   margin-top: 12px;
