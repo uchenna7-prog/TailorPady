@@ -215,16 +215,16 @@ export function TemplateModal({
   }, [])
 
   const handleTemplateSelect = useCallback((template) => {
+    activeTabObject.onSelectTemplate(template.id)
+    if (lockToTab) return
     if (activeTabObject.label === 'Invoice') {
       const num = template.id.replace('invoiceTemplate', '')
-      activeTabObject.onSelectTemplate(template.id)
       inActiveTabObject.onSelectTemplate('receiptTemplate' + num)
     } else {
       const num = template.id.replace('receiptTemplate', '')
-      activeTabObject.onSelectTemplate(template.id)
       inActiveTabObject.onSelectTemplate('invoiceTemplate' + num)
     }
-  }, [activeTabObject, inActiveTabObject])
+  }, [activeTabObject, inActiveTabObject, lockToTab])
 
   const handleZoomOpen = useCallback((template) => {
     const idx = filteredTemplates.findIndex(t => t.id === template.id)

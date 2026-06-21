@@ -9,8 +9,11 @@ import {
 import { useReceiptBrandSettings } from '../../hooks/useReceiptBrandSettings'
 import { getBrandCSSVars } from '../../utils/cssVariablesUtils'
 import { sharePDF, downloadPDF } from '../../utils/pdfUtils'
+import { getPaletteById } from '../../config/brandPalette'
 import { TemplateModal } from '../TemplateModal/TemplateModal'
-import { TemplateScopeSheet } from '../TemplateScopeSheet/TemplateScopeSheet'
+import { DesignOptionsSheet } from '../DesignOptionsSheet/DesignOptionsSheet'
+import { BrandColourSheet } from '../BrandColourSheet/BrandColourSheet'
+import { ApplyScopeSheet } from '../ApplyScopeSheet/ApplyScopeSheet'
 import Header from '../Header/Header'
 import styles from './ReceiptViewer.module.css'
 
@@ -50,19 +53,23 @@ export default function ReceiptViewer({
 }) {
 
   const { generalSettings, updateManyGeneralSettings } = useGeneralSettings()
-  const { profileSettings } = useProfileSettings()
+  const { updateManyProfileSettings } = useProfileSettings()
 
   const RECEIPT_BRAND_SETTINGS = useReceiptBrandSettings()
 
   const paperRef = useRef(null)
   const [receipt, setReceipt] = useState(snapshotedReceipt)
-  const [pdfLoading, setPdfLoading]   = useState(false)
+  const [pdfLoading, setPdfLoading]     = useState(false)
   const [shareLoading, setShareLoading] = useState(false)
+  const [showDesignSheet, setShowDesignSheet]     = useState(false)
   const [showTemplateModal, setShowTemplateModal] = useState(false)
-  const [pendingTemplate, setPendingTemplate]      = useState(null)
+  const [showColourSheet, setShowColourSheet]     = useState(false)
+  const [pendingChange, setPendingChange]         = useState(null)
 
   const templateKey = receipt.template || generalSettings.receiptTemplate || 'receiptTemplate1'
   const Template = TEMPLATE_MAPPINGS[templateKey] || TEMPLATE_MAPPINGS.receiptTemplate1
+
+  const effectiveColourId = receipt.brandSnapshot?.colourId || colourId
 
   const snapShotedReceiptBrandSettings = buildSnapshotedBrandSettings(
     RECEIPT_BRAND_SETTINGS,
@@ -109,36 +116,53 @@ export default function ReceiptViewer({
     }
   }
 
-  const handleTemplateModalSelect = ({ invoiceTemplate, receiptTemplate }) => {
-    setPendingTemplate({ invoiceTemplate, receiptTemplate })
+  const handleTemplateSelect = ({ receiptTemplate }) => {
+    setPendingChange({ type: 'template', receiptTemplate })
   }
 
-  const handleApplyToThisReceipt = async () => {
-    if (!pendingTemplate) return
+  const handleColourSelect = (selectedColourId) => {
+    setShowColourSheet(false)
+    const hex = getPaletteById(selectedColourId)?.tokens.primary
+    setPendingChange({ type: 'colour', colourId: selectedColourId, colour: hex })
+  }
+
+  const handleApplyToThis = async () => {
+    if (!pendingChange) return
     try {
-      await customerData.updateReceiptTemplate(receipt.id, pendingTemplate.receiptTemplate)
-      setReceipt(prev => ({ ...prev, template: pendingTemplate.receiptTemplate }))
-      showToast?.('Template updated for this receipt ✓')
+      if (pendingChange.type === 'template') {
+        await customerData.updateReceiptTemplate(receipt.id, pendingChange.receiptTemplate)
+        setReceipt(prev => ({ ...prev, template: pendingChange.receiptTemplate }))
+        showToast?.('Template updated for this receipt ✓')
+      } else {
+        await customerData.updateReceiptColour(receipt.id, pendingChange.colourId, pendingChange.colour)
+        setReceipt(prev => ({
+          ...prev,
+          brandSnapshot: { ...prev.brandSnapshot, colourId: pendingChange.colourId, colour: pendingChange.colour },
+        }))
+        showToast?.('Colour updated for this receipt ✓')
+      }
     } catch {
-      showToast?.('Could not update template.')
+      showToast?.(pendingChange.type === 'template' ? 'Could not update template.' : 'Could not update colour.')
     } finally {
-      setPendingTemplate(null)
+      setPendingChange(null)
     }
   }
 
   const handleApplyAsDefault = () => {
-    if (!pendingTemplate) return
-    updateManyGeneralSettings({
-      invoiceTemplate: pendingTemplate.invoiceTemplate,
-      receiptTemplate: pendingTemplate.receiptTemplate,
-    })
-    onApplyDefaultTemplates?.(pendingTemplate)
-    showToast?.('Default template updated ✓')
-    setPendingTemplate(null)
+    if (!pendingChange) return
+    if (pendingChange.type === 'template') {
+      updateManyGeneralSettings({ receiptTemplate: pendingChange.receiptTemplate })
+      onApplyDefaultTemplates?.({ receiptTemplate: pendingChange.receiptTemplate })
+      showToast?.('Default template updated ✓')
+    } else {
+      updateManyProfileSettings({ brandColourId: pendingChange.colourId, brandColour: pendingChange.colour })
+      showToast?.('Default colour updated ✓')
+    }
+    setPendingChange(null)
   }
 
   const handleCancelScope = () => {
-    setPendingTemplate(null)
+    setPendingChange(null)
   }
 
   return (
@@ -150,7 +174,7 @@ export default function ReceiptViewer({
         customActions={[
           {
             icon: 'palette',
-            onClick: () => setShowTemplateModal(true),
+            onClick: () => setShowDesignSheet(true),
           },
           {
             icon: pdfLoading ? 'hourglass_top' : 'download',
@@ -187,22 +211,41 @@ export default function ReceiptViewer({
 
       </div>
 
+      {showDesignSheet && (
+        <DesignOptionsSheet
+          onClose={() => setShowDesignSheet(false)}
+          onSelectTemplate={() => { setShowDesignSheet(false); setShowTemplateModal(true) }}
+          onSelectColour={() => { setShowDesignSheet(false); setShowColourSheet(true) }}
+        />
+      )}
+
       {showTemplateModal && (
         <TemplateModal
           isOpen={showTemplateModal}
           currentInvoiceTemplate={generalSettings.invoiceTemplate}
           currentReceiptTemplate={templateKey}
-          colourId={colourId}
+          colourId={effectiveColourId}
           lockToTab="receipt"
           onClose={() => setShowTemplateModal(false)}
-          onSelect={handleTemplateModalSelect}
+          onSelect={handleTemplateSelect}
         />
       )}
 
-      {pendingTemplate && (
-        <TemplateScopeSheet
-          documentLabel="receipt"
-          onApplyToThis={handleApplyToThisReceipt}
+      {showColourSheet && (
+        <BrandColourSheet
+          currentColourId={effectiveColourId}
+          onClose={() => setShowColourSheet(false)}
+          onSelect={handleColourSelect}
+        />
+      )}
+
+      {pendingChange && (
+        <ApplyScopeSheet
+          icon={pendingChange.type === 'colour' ? 'palette' : 'style'}
+          title={pendingChange.type === 'colour' ? 'Apply new colour' : 'Apply new template'}
+          description={`Use this ${pendingChange.type} for just this receipt, or set it as the default for all future receipts?`}
+          thisLabel="Just this receipt"
+          onApplyToThis={handleApplyToThis}
           onApplyToDefault={handleApplyAsDefault}
           onCancel={handleCancelScope}
         />

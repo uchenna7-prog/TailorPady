@@ -36,6 +36,12 @@ export default function ReceiptTab({
     return () => document.removeEventListener('openAddReceiptModal', openAddReceiptModal)
   }, [])
 
+  useEffect(() => {
+    if (!viewingReceipt) return
+    const updated = receipts.find(r => r.id === viewingReceipt.id)
+    if (updated) setViewingReceipt(updated)
+  }, [receipts])
+
   function handleSelectPayment(payment, installment) {
     onGenerateReceipt(payment, installment)
     setAddReceiptModalOpen(false)

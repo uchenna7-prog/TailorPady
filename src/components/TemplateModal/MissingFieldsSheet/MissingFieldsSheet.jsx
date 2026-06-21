@@ -1,4 +1,4 @@
-import { useCallback, useMemo } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import styles from './MissingFieldsSheet.module.css'
 
@@ -102,6 +102,8 @@ export function MissingFieldsSheet({
   pendingTemplate,
 }) {
   const navigate = useNavigate()
+  const scrollRef = useRef(null)
+  const [scrolled, setScrolled] = useState(false)
 
   const groups = useMemo(() => buildGroups(missingFields), [missingFields])
 
@@ -112,31 +114,41 @@ export function MissingFieldsSheet({
     navigate(route, { state: { autoOpenModal: modal, pendingTemplate } })
   }, [onClose, navigate, pendingTemplate])
 
+  useEffect(() => {
+    const el = scrollRef.current
+    if (!el) return
+    const handleScroll = () => setScrolled(el.scrollTop > 4)
+    handleScroll()
+    el.addEventListener('scroll', handleScroll, { passive: true })
+    return () => el.removeEventListener('scroll', handleScroll)
+  }, [])
+
   const sectionWord = groups.length === 1 ? 'section' : 'sections'
 
   return (
     <div className={styles.backdrop} onClick={onClose}>
       <div className={styles.sheet} onClick={stopPropagation}>
 
-        <div className={styles.sheetTop}>
+        <div className={`${styles.sheetTop} ${scrolled ? styles.sheetTopScrolled : ''}`}>
           <div className={styles.handle} />
           <button className={styles.closeBtn} onClick={onClose} aria-label="Close">
             <span className="mi">close</span>
           </button>
+
+          <div className={styles.progressRow}>
+            <div className={styles.progressDots}>
+              {groups.map(group => (
+                <span key={group.key} className={styles.progressDot} />
+              ))}
+            </div>
+            <span className={styles.progressLabel}>
+              {groups.length} {sectionWord} to complete
+            </span>
+          </div>
         </div>
 
-        <div className={styles.scrollBody}>
+        <div className={styles.scrollBody} ref={scrollRef}>
           <div className={styles.titleBlock}>
-            <div className={styles.progressRow}>
-              <div className={styles.progressDots}>
-                {groups.map(group => (
-                  <span key={group.key} className={styles.progressDot} />
-                ))}
-              </div>
-              <span className={styles.progressLabel}>
-                {groups.length} {sectionWord} to complete
-              </span>
-            </div>
             <p className={styles.sheetTitle}>A few things are missing</p>
             <p className={styles.sheetSubtitle}>
               This template looks best with your business details filled in.

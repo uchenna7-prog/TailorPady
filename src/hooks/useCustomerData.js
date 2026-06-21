@@ -167,6 +167,14 @@ export function useCustomerData(customerId) {
     await updateInvoiceInDb(user.uid, String(id), { template: templateId })
   }, [user])
 
+  const updateInvoiceColour = useCallback(async (id, colourId, colour) => {
+    if (!user) return
+    await updateInvoiceInDb(user.uid, String(id), {
+      'brandSnapshot.colourId': colourId,
+      'brandSnapshot.colour':   colour,
+    })
+  }, [user])
+
   const deleteInvoice = useCallback(async (id) => {
     if (!user) return
     await deleteInvoiceFromDb(user.uid, String(id))
@@ -203,6 +211,14 @@ export function useCustomerData(customerId) {
     await fsUpdateReceipt(user.uid, String(id), { template: templateId })
   }, [user])
 
+  const updateReceiptColour = useCallback(async (id, colourId, colour) => {
+    if (!user) return
+    await fsUpdateReceipt(user.uid, String(id), {
+      'brandSnapshot.colourId': colourId,
+      'brandSnapshot.colour':   colour,
+    })
+  }, [user])
+
   const deleteReceipt = useCallback(async (receiptId) => {
     if (!user || !customerId) return
     await fsDeleteReceipt(user.uid, receiptId)
@@ -228,6 +244,7 @@ export function useCustomerData(customerId) {
     saveInvoice,
     updateInvoiceStatus,
     updateInvoiceTemplate,
+    updateInvoiceColour,
     deleteInvoice,
 
     savePayment,
@@ -237,6 +254,7 @@ export function useCustomerData(customerId) {
     addReceiptOptimistic,
     saveReceipt,
     updateReceiptTemplate,
+    updateReceiptColour,
     deleteReceipt,
   }
 }

@@ -89,9 +89,7 @@ export default function InvoiceTab({
   useEffect(() => {
     if (!viewingInvoice) return
     const updated = invoices.find(inv => inv.id === viewingInvoice.id)
-    if (updated && updated.status !== viewingInvoice.status) {
-      setViewingInvoice(updated)
-    }
+    if (updated) setViewingInvoice(updated)
   }, [invoices])
 
 

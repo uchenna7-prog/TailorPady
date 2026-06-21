@@ -33,10 +33,18 @@
 }
 
 .sheetTop {
-  flex-shrink: 0;
-  position:    relative;
-  padding:     10px 20px 4px;
+  flex-shrink:   0;
+  position:      relative;
+  z-index:       1;
+  padding:       10px 20px 12px;
+  border-bottom: 1px solid transparent;
+  box-shadow:    0 0 0 rgba(0, 0, 0, 0);
+  transition:    border-color 0.25s ease, box-shadow 0.25s ease;
+}
 
+.sheetTopScrolled {
+  border-bottom: 1px solid var(--border);
+  box-shadow:    0 4px 12px rgba(0, 0, 0, 0.04);
 }
 
 .handle {
@@ -44,7 +52,35 @@
   height:        4px;
   border-radius: 2px;
   background:    var(--border2);
-  margin:        0 auto 4px;
+  margin:        0 auto 14px;
+}
+
+.progressRow {
+  display:       flex;
+  align-items:   center;
+  gap:           8px;
+  padding-right: 40px;
+}
+
+.progressDots {
+  display:     flex;
+  gap:         4px;
+  flex-shrink: 0;
+}
+
+.progressDot {
+  width:         5px;
+  height:        5px;
+  border-radius: 50%;
+  background:    var(--accent);
+}
+
+.progressLabel {
+  font-size:      0.7rem;
+  font-weight:    700;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  color:          var(--text3);
 }
 
 .closeBtn {
@@ -74,34 +110,7 @@
 }
 
 .titleBlock {
-  padding: 8px 36px 20px 0;
-}
-
-.progressRow {
-  display:     flex;
-  align-items: center;
-  gap:         8px;
-  margin:      0 0 14px;
-}
-
-.progressDots {
-  display: flex;
-  gap:     4px;
-}
-
-.progressDot {
-  width:         5px;
-  height:        5px;
-  border-radius: 50%;
-  background:    var(--accent);
-}
-
-.progressLabel {
-  font-size:      0.7rem;
-  font-weight:    700;
-  letter-spacing: 0.03em;
-  text-transform: uppercase;
-  color:          var(--text3);
+  padding: 20px 24px 20px 0;
 }
 
 .sheetTitle {
@@ -301,7 +310,7 @@
   }
 
   .sheetTop {
-    padding: 0;
+    padding: 20px 24px 16px;
   }
 
   .closeBtn {
@@ -309,8 +318,12 @@
     right: 18px;
   }
 
+  .progressRow {
+    padding-right: 36px;
+  }
+
   .titleBlock {
-    padding: 28px 36px 22px 0;
+    padding: 24px 36px 22px 0;
   }
 
   .scrollBody {
