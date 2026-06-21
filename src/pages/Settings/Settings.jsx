@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from 'react'
+import { useLocation, useNavigate } from 'react-router-dom'
 import { useGeneralSettings } from '../../contexts/GeneralSettingsContext'
 import { useProfileSettings } from '../../contexts/ProfileSettingsContext'
 import { usePortfolioSettings } from '../../contexts/PortfolioSettingsContext'
@@ -50,6 +51,8 @@ export default function Settings({ onMenuClick }) {
   const { profileSettings } = useProfileSettings()
   const { portfolioSettings, updateManyPortfolioSettings } = usePortfolioSettings()
   const { user } = useAuth()
+  const location = useLocation()
+  const navigate  = useNavigate()
 
   const [toastMessage, setToastMessage] = useState('')
   const toastTimerRef = useRef(null)
@@ -66,6 +69,7 @@ export default function Settings({ onMenuClick }) {
   const [isResetSettingsConfirmOpen,   setIsResetSettingsConfirmOpen]   = useState(false)
 
   const [portfolioSlug, setPortfolioSlug] = useState(null)
+  const [pendingTemplate, setPendingTemplate] = useState(null)
 
   const isDarkMode = generalSettings.theme === 'dark'
 
@@ -76,10 +80,38 @@ export default function Settings({ onMenuClick }) {
       .catch(() => {})
   }, [user?.uid])
 
+  useEffect(() => {
+    const navState = location.state
+    if (!navState?.autoOpenModal) return
+
+    if (navState.autoOpenModal === 'invoiceSettings') {
+      setIsInvoiceModalOpen(true)
+    }
+
+    if (navState.pendingTemplate) {
+      setPendingTemplate(navState.pendingTemplate)
+    }
+
+    navigate(location.pathname, { replace: true, state: null })
+  }, [location.state])
+
   function showToast(message) {
     setToastMessage(message)
     clearTimeout(toastTimerRef.current)
     toastTimerRef.current = setTimeout(() => setToastMessage(''), 2400)
+  }
+
+  function applyPendingTemplateIfAny(extraMessage) {
+    if (!pendingTemplate) {
+      if (extraMessage) showToast(extraMessage)
+      return
+    }
+    updateManyGeneralSettings({
+      invoiceTemplate: pendingTemplate.invoiceTemplate,
+      receiptTemplate: pendingTemplate.receiptTemplate,
+    })
+    setPendingTemplate(null)
+    showToast(extraMessage ? `${extraMessage} · Template applied ✓` : 'Template applied ✓')
   }
 
   function handleTemplateSelect(selectedTemplates) {
@@ -88,11 +120,6 @@ export default function Settings({ onMenuClick }) {
       receiptTemplate: selectedTemplates.receiptTemplate,
     })
     showToast('Template selected')
-  }
-
-  function handleOpenInvoiceSettingsFromTemplate() {
-    setIsTemplateModalOpen(false)
-    setIsInvoiceModalOpen(true)
   }
 
   async function handlePortfolioTemplateSelect(templateId) {
@@ -362,12 +389,14 @@ export default function Settings({ onMenuClick }) {
         colourId={profileSettings.brandColourId}
         onClose={() => setIsTemplateModalOpen(false)}
         onSelect={handleTemplateSelect}
-        onOpenInvoiceSettings={handleOpenInvoiceSettingsFromTemplate}
       />
 
       {isInvoiceModalOpen && (
         <InvoiceSettingsModal
-          onBack={() => setIsInvoiceModalOpen(false)}
+          onBack={() => {
+            setIsInvoiceModalOpen(false)
+            applyPendingTemplateIfAny('Invoice settings saved')
+          }}
           showToast={showToast}
         />
       )}

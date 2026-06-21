@@ -1,4 +1,5 @@
-import { useCallback } from 'react'
+import { useCallback, useMemo } from 'react'
+import { useNavigate } from 'react-router-dom'
 import styles from './MissingFieldsSheet.module.css'
 
 const FIELD_META = {
@@ -16,24 +17,47 @@ const FIELD_META = {
   paymentTerms:  { label: 'Payment terms',    icon: 'gavel'           },
 }
 
-const INVOICE_SETTINGS_FIELDS = new Set([
-  'accountBank',
-  'accountNumber',
-  'accountName',
-  'paymentTerms',
-])
+const DESTINATIONS = {
+  brand: {
+    icon: 'storefront',
+    title: 'Brand Identity',
+    actionLabel: 'Add brand details',
+    fieldKeys: ['logo', 'name', 'tagline', 'signature'],
+    route: '/profile',
+    modal: 'brand',
+  },
+  contact: {
+    icon: 'contact_phone',
+    title: 'Business Contact',
+    actionLabel: 'Add contact details',
+    fieldKeys: ['phone', 'email', 'address', 'website'],
+    route: '/profile',
+    modal: 'businessContact',
+  },
+  invoice: {
+    icon: 'receipt_long',
+    title: 'Invoice Settings',
+    actionLabel: 'Add invoice details',
+    fieldKeys: ['accountBank', 'accountNumber', 'accountName', 'paymentTerms'],
+    route: '/settings',
+    modal: 'invoiceSettings',
+  },
+}
 
-function partitionMissingFields(missingFields) {
-  const profileFields         = []
-  const invoiceSettingsFields = []
+function buildGroups(missingFields) {
+  const missingSet = new Set(missingFields)
+  const groups = []
+
   for (const key of missingFields) {
-    if (INVOICE_SETTINGS_FIELDS.has(key)) {
-      invoiceSettingsFields.push(key)
-    } else {
-      profileFields.push(key)
+    for (const [groupKey, destination] of Object.entries(DESTINATIONS)) {
+      if (!destination.fieldKeys.includes(key)) continue
+      if (groups.some(g => g.key === groupKey)) continue
+      const fields = destination.fieldKeys.filter(f => missingSet.has(f))
+      groups.push({ key: groupKey, fields, ...destination })
     }
   }
-  return { profileFields, invoiceSettingsFields }
+
+  return groups
 }
 
 function FieldPill({ fieldKey }) {
@@ -46,26 +70,26 @@ function FieldPill({ fieldKey }) {
   )
 }
 
-function DestinationGroup({ icon, title, subtitle, fields, actionLabel, onAction }) {
+function GroupCard({ icon, title, fields, actionLabel, onAction }) {
   return (
     <div className={styles.group}>
       <div className={styles.groupHeader}>
         <div className={styles.groupIconWrap}>
           <span className="mi">{icon}</span>
         </div>
-        <div className={styles.groupMeta}>
-          <p className={styles.groupTitle}>{title}</p>
-          <p className={styles.groupSubtitle}>{subtitle}</p>
-        </div>
+        <p className={styles.groupTitle}>{title}</p>
+        <span className={styles.groupCount}>{fields.length}</span>
       </div>
+
       <div className={styles.pillList}>
         {fields.map(key => (
           <FieldPill key={key} fieldKey={key} />
         ))}
       </div>
+
       <button className={styles.groupAction} onClick={onAction}>
-        {actionLabel}
-        <span className="mi" style={{ fontSize: '0.9rem' }}>arrow_forward</span>
+        <span>{actionLabel}</span>
+        <span className={`mi ${styles.groupActionIcon}`}>arrow_forward</span>
       </button>
     </div>
   )
@@ -74,13 +98,21 @@ function DestinationGroup({ icon, title, subtitle, fields, actionLabel, onAction
 export function MissingFieldsSheet({
   missingFields,
   onClose,
-  onGoToProfile,
-  onGoToInvoiceSettings,
   onSkipAndSave,
+  pendingTemplate,
 }) {
-  const { profileFields, invoiceSettingsFields } = partitionMissingFields(missingFields)
+  const navigate = useNavigate()
+
+  const groups = useMemo(() => buildGroups(missingFields), [missingFields])
 
   const stopPropagation = useCallback(e => e.stopPropagation(), [])
+
+  const goToDestination = useCallback((route, modal) => {
+    onClose()
+    navigate(route, { state: { autoOpenModal: modal, pendingTemplate } })
+  }, [onClose, navigate, pendingTemplate])
+
+  const sectionWord = groups.length === 1 ? 'section' : 'sections'
 
   return (
     <div className={styles.backdrop} onClick={onClose}>
@@ -88,49 +120,47 @@ export function MissingFieldsSheet({
 
         <div className={styles.sheetTop}>
           <div className={styles.handle} />
-          <div className={styles.sheetHeader}>
-            <div className={styles.warningIconWrap}>
-              <span className="mi">checklist</span>
-            </div>
-            <div>
-              <p className={styles.sheetTitle}>Complete your profile</p>
-              <p className={styles.sheetSubtitle}>
-                This template needs a few details to look its best. Fill them in or save and come back later.
-              </p>
-            </div>
-          </div>
+          <button className={styles.closeBtn} onClick={onClose} aria-label="Close">
+            <span className="mi">close</span>
+          </button>
         </div>
 
         <div className={styles.scrollBody}>
-          <div className={styles.groupList}>
-            {profileFields.length > 0 && (
-              <DestinationGroup
-                icon="manage_accounts"
-                title="Profile"
-                subtitle="Your business identity and contact info"
-                fields={profileFields}
-                actionLabel="Go to Profile"
-                onAction={onGoToProfile}
-              />
-            )}
-
-            {invoiceSettingsFields.length > 0 && (
-              <>
-                {profileFields.length > 0 && <div className={styles.divider} />}
-                <DestinationGroup
-                  icon="receipt_long"
-                  title="Invoice Settings"
-                  subtitle="Payment and bank account details"
-                  fields={invoiceSettingsFields}
-                  actionLabel="Go to Invoice Settings"
-                  onAction={onGoToInvoiceSettings}
-                />
-              </>
-            )}
+          <div className={styles.titleBlock}>
+            <div className={styles.progressRow}>
+              <div className={styles.progressDots}>
+                {groups.map(group => (
+                  <span key={group.key} className={styles.progressDot} />
+                ))}
+              </div>
+              <span className={styles.progressLabel}>
+                {groups.length} {sectionWord} to complete
+              </span>
+            </div>
+            <p className={styles.sheetTitle}>A few things are missing</p>
+            <p className={styles.sheetSubtitle}>
+              This template looks best with your business details filled in.
+              Add them now, or save the invoice and finish later.
+            </p>
           </div>
 
-          <button className={styles.skipButton} onClick={onSkipAndSave}>
-            Save anyway
+          <div className={styles.groupList}>
+            {groups.map(group => (
+              <GroupCard
+                key={group.key}
+                icon={group.icon}
+                title={group.title}
+                fields={group.fields}
+                actionLabel={group.actionLabel}
+                onAction={() => goToDestination(group.route, group.modal)}
+              />
+            ))}
+          </div>
+        </div>
+
+        <div className={styles.sheetFooter}>
+          <button className={styles.skipBtn} onClick={onSkipAndSave}>
+            Save invoice without these details
           </button>
         </div>
 

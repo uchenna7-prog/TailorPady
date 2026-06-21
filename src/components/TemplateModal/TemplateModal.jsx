@@ -70,7 +70,6 @@ export function TemplateModal({
   lockToTab,
   onClose,
   onSelect,
-  onOpenInvoiceSettings,
 }) {
   const { profileSettings }    = useProfileSettings()
   const RECEIPT_BRAND_SETTINGS = useReceiptBrandSettings()
@@ -252,6 +251,16 @@ export function TemplateModal({
     })
   }, [filteredTemplates])
 
+  const commitSelection = useCallback(() => {
+    onSelect({
+      invoiceTemplate: selectedInvoiceTemplate,
+      receiptTemplate: selectedReceiptTemplate,
+    })
+    setAppliedInvoiceTemplate(selectedInvoiceTemplate)
+    setAppliedReceiptTemplate(selectedReceiptTemplate)
+    onClose()
+  }, [selectedInvoiceTemplate, selectedReceiptTemplate, onSelect, onClose])
+
   const handleSavePress = useCallback(() => {
     const unionRequires = getUnionRequires(selectedInvoiceTemplate, selectedReceiptTemplate)
     const missing       = getMissingFields(unionRequires, profileSettings)
@@ -259,36 +268,13 @@ export function TemplateModal({
       setMissingFields(missing)
       return
     }
-    onSelect({
-      invoiceTemplate: selectedInvoiceTemplate,
-      receiptTemplate: selectedReceiptTemplate,
-    })
-    setAppliedInvoiceTemplate(selectedInvoiceTemplate)
-    setAppliedReceiptTemplate(selectedReceiptTemplate)
-    onClose()
-  }, [selectedInvoiceTemplate, selectedReceiptTemplate, profileSettings, onSelect, onClose])
+    commitSelection()
+  }, [selectedInvoiceTemplate, selectedReceiptTemplate, profileSettings, commitSelection])
 
   const handleSkipAndSave = useCallback(() => {
     setMissingFields(null)
-    onSelect({
-      invoiceTemplate: selectedInvoiceTemplate,
-      receiptTemplate: selectedReceiptTemplate,
-    })
-    setAppliedInvoiceTemplate(selectedInvoiceTemplate)
-    setAppliedReceiptTemplate(selectedReceiptTemplate)
-    onClose()
-  }, [onSelect, onClose, selectedInvoiceTemplate, selectedReceiptTemplate])
-
-  const handleGoToProfile = useCallback(() => {
-    setMissingFields(null)
-    onClose()
-  }, [onClose])
-
-  const handleGoToInvoiceSettings = useCallback(() => {
-    setMissingFields(null)
-    onClose()
-    onOpenInvoiceSettings()
-  }, [onClose, onOpenInvoiceSettings])
+    commitSelection()
+  }, [commitSelection])
 
   if (!isOpen) return null
 
@@ -431,9 +417,11 @@ export function TemplateModal({
         <MissingFieldsSheet
           missingFields={missingFields}
           onClose={() => setMissingFields(null)}
-          onGoToProfile={handleGoToProfile}
-          onGoToInvoiceSettings={handleGoToInvoiceSettings}
           onSkipAndSave={handleSkipAndSave}
+          pendingTemplate={{
+            invoiceTemplate: selectedInvoiceTemplate,
+            receiptTemplate: selectedReceiptTemplate,
+          }}
         />
       )}
 

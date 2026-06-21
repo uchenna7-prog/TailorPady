@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect, useCallback } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useLocation } from 'react-router-dom'
 import { useProfileSettings } from '../../contexts/ProfileSettingsContext'
+import { useGeneralSettings } from '../../contexts/GeneralSettingsContext'
 import { useAuth } from '../../contexts/AuthContext'
 import { getPersonalInfosFromFirestore } from '../../services/profileService'
 import { getPaletteById, DEFAULT_COLOUR_ID } from '../../config/brandPalette'
@@ -32,14 +33,17 @@ import { db } from '../../firebase'
 export default function Profile({ onMenuClick, isPremium = false, onUpgrade = () => {} }) {
 
   const { profileSettings } = useProfileSettings()
+  const { updateManyGeneralSettings } = useGeneralSettings()
   const { user, logout } = useAuth()
   const navigate = useNavigate()
+  const location = useLocation()
 
   const [personalInfo,  setPersonalInfo]  = useState(() => loadPersonalInfo(user))
   const [activeModal,   setActiveModal]   = useState(null)
   const [logoutConfirm, setLogoutConfirm] = useState(false)
   const [deleteConfirm, setDeleteConfirm] = useState(false)
   const [toastMsg,      setToastMsg]      = useState('')
+  const [pendingTemplate, setPendingTemplate] = useState(null)
   const toastTimer = useRef(null)
 
   const joinDate = getOrSetJoinDate()
@@ -63,11 +67,39 @@ export default function Profile({ onMenuClick, isPremium = false, onUpgrade = ()
     }).catch()
   }, [user?.uid])
 
+  useEffect(() => {
+    const navState = location.state
+    if (!navState?.autoOpenModal) return
+
+    if (navState.autoOpenModal === 'brand' || navState.autoOpenModal === 'businessContact') {
+      setActiveModal(navState.autoOpenModal)
+    }
+
+    if (navState.pendingTemplate) {
+      setPendingTemplate(navState.pendingTemplate)
+    }
+
+    navigate(location.pathname, { replace: true, state: null })
+  }, [location.state])
+
   const showToast = useCallback(msg => {
     setToastMsg(msg)
     clearTimeout(toastTimer.current)
     toastTimer.current = setTimeout(() => setToastMsg(''), 2400)
   }, [])
+
+  const applyPendingTemplateIfAny = useCallback((extraMessage) => {
+    if (!pendingTemplate) {
+      if (extraMessage) showToast(extraMessage)
+      return
+    }
+    updateManyGeneralSettings({
+      invoiceTemplate: pendingTemplate.invoiceTemplate,
+      receiptTemplate: pendingTemplate.receiptTemplate,
+    })
+    setPendingTemplate(null)
+    showToast(extraMessage ? `${extraMessage} · Template applied ✓` : 'Template applied ✓')
+  }, [pendingTemplate, updateManyGeneralSettings, showToast])
 
   const handleLogout = async () => {
     setLogoutConfirm(false)
@@ -220,7 +252,7 @@ export default function Profile({ onMenuClick, isPremium = false, onUpgrade = ()
           divider={false}
         />
 
-       
+
         {profileSettings.brandSignature && (
           <div className={styles.row}>
             <div className={styles.rowIcon}>
@@ -355,11 +387,23 @@ export default function Profile({ onMenuClick, isPremium = false, onUpgrade = ()
       )}
 
       {activeModal === 'brand' && (
-        <BrandModal onBack={() => setActiveModal(null)} showToast={showToast} />
+        <BrandModal
+          onBack={() => {
+            setActiveModal(null)
+            applyPendingTemplateIfAny('Brand info saved')
+          }}
+          showToast={showToast}
+        />
       )}
 
       {activeModal === 'businessContact' && (
-        <BusinessContactModal onBack={() => setActiveModal(null)} showToast={showToast} />
+        <BusinessContactModal
+          onBack={() => {
+            setActiveModal(null)
+            applyPendingTemplateIfAny('Business contact saved')
+          }}
+          showToast={showToast}
+        />
       )}
 
 
