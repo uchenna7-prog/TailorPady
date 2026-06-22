@@ -26,11 +26,15 @@ const TEMPLATES = [
   },
 ]
 
+const DEV_SLUG = 'urchstitches'
+
 export function PortfolioTemplateModal({ currentTemplate, slug, onClose, onSelect }) {
   const [selected, setSelected] = useState(currentTemplate)
   const [previewTemplate, setPreviewTemplate] = useState(null)
 
   const hasChanges = selected !== currentTemplate
+  const resolvedSlug = slug || (import.meta.env.DEV ? DEV_SLUG : null)
+  const canPreview = Boolean(resolvedSlug)
 
   const handlePreviewOpen = (e, template) => {
     e.stopPropagation()
@@ -51,7 +55,6 @@ export function PortfolioTemplateModal({ currentTemplate, slug, onClose, onSelec
 
   return (
     <div className={styles.templateModalContainer}>
-
       <Header
         type="back"
         title="Portfolio Template"
@@ -72,7 +75,6 @@ export function PortfolioTemplateModal({ currentTemplate, slug, onClose, onSelec
         <div className={styles.templateGrid}>
           {TEMPLATES.map((template, index) => {
             const isSelected = selected === template.id
-            const canPreview = Boolean(slug)
             return (
               <div
                 key={template.id}
@@ -126,12 +128,11 @@ export function PortfolioTemplateModal({ currentTemplate, slug, onClose, onSelec
       {previewTemplate && (
         <PortfolioTemplatePreview
           template={previewTemplate}
-          slug={slug}
+          slug={resolvedSlug}
           onClose={handlePreviewClose}
           onSelect={handlePreviewSelect}
         />
       )}
-
     </div>
   )
 }
