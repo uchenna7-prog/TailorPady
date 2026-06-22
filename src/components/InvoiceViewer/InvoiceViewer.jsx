@@ -7,8 +7,12 @@ import { sharePDF, downloadPDF } from '../../utils/pdfUtils'
 import { getBrandCSSVars } from '../../utils/cssVariablesUtils'
 import { useInvoiceBrandSettings } from '../../hooks/useInvoiceBrandSettings'
 import { getPaletteById } from '../../config/brandPalette'
+import { getMissingFields, getRequiresForDoc } from '../TemplateModal/templateRequiresUtils'
 import { TemplateModal } from '../TemplateModal/TemplateModal'
+import { MissingFieldsSheet } from '../TemplateModal/MissingFieldsSheet/MissingFieldsSheet'
 import { DesignOptionsSheet } from '../DesignOptionsSheet/DesignOptionsSheet'
+import { ShareOptionsSheet } from '../ShareOptionsSheet/ShareOptionsSheet'
+import { MoreOptionsSheet } from '../MoreOptionsSheet/MoreOptionsSheet'
 import { BrandColourSheet } from '../BrandColourSheet/BrandColourSheet'
 import { ApplyScopeSheet } from '../ApplyScopeSheet/ApplyScopeSheet'
 import Header from '../Header/Header'
@@ -57,18 +61,23 @@ export default function InvoiceViewer({
 }) {
 
   const { generalSettings, updateManyGeneralSettings } = useGeneralSettings()
-  const { updateManyProfileSettings } = useProfileSettings()
+  const { profileSettings, updateManyProfileSettings } = useProfileSettings()
 
   const INVOICE_BRAND_SETTINGS = useInvoiceBrandSettings()
 
   const paperRef = useRef(null)
   const [invoice, setInvoice] = useState(snapShotedInvoice)
-  const [pdfLoading, setPdfLoading]     = useState(false)
-  const [shareLoading, setShareLoading] = useState(false)
+  const [pdfLoading, setPdfLoading]         = useState(false)
+  const [shareLoading, setShareLoading]     = useState(false)
   const [showDesignSheet, setShowDesignSheet]     = useState(false)
+  const [showShareSheet, setShowShareSheet]       = useState(false)
+  const [showMoreSheet, setShowMoreSheet]         = useState(false)
   const [showTemplateModal, setShowTemplateModal] = useState(false)
   const [showColourSheet, setShowColourSheet]     = useState(false)
   const [pendingChange, setPendingChange]         = useState(null)
+  const [missingFields, setMissingFields]         = useState(null)
+  const [pendingActionLabel, setPendingActionLabel] = useState(null)
+  const [pendingActionFn, setPendingActionFn]       = useState(null)
 
   const templateKey = invoice.template || generalSettings.invoiceTemplate || 'invoiceTemplate1'
   const Template = TEMPLATE_MAPPINGS[templateKey] || TEMPLATE_MAPPINGS.invoiceTemplate1
@@ -83,7 +92,19 @@ export default function InvoiceViewer({
   const brandCSSVars = getBrandCSSVars(snapShotedInvoiceBrandSettings.colour)
   const filename = `Invoice-${invoice.number}-${customer.name.replace(/\s+/g, '_')}.pdf`
 
-  const handleDownload = async () => {
+  const checkMissingThen = (label, action) => {
+    const requires = getRequiresForDoc('invoice', templateKey, null)
+    const missing  = getMissingFields(requires, profileSettings)
+    if (missing.length > 0) {
+      setPendingActionLabel(label)
+      setPendingActionFn(() => action)
+      setMissingFields(missing)
+      return
+    }
+    action()
+  }
+
+  const executeDownload = async () => {
     if (!paperRef.current || pdfLoading) return
     setPdfLoading(true)
     showToast?.('Generating PDF…')
@@ -98,7 +119,7 @@ export default function InvoiceViewer({
     }
   }
 
-  const handleShare = async () => {
+  const executeShare = async () => {
     if (!paperRef.current || shareLoading) return
     setShareLoading(true)
     showToast?.('Preparing…')
@@ -115,6 +136,9 @@ export default function InvoiceViewer({
       setShareLoading(false)
     }
   }
+
+  const handleDownload = () => checkMissingThen('download', executeDownload)
+  const handleShare    = () => checkMissingThen('share', executeShare)
 
   const handleTemplateSelect = ({ invoiceTemplate }) => {
     setPendingChange({ type: 'template', invoiceTemplate })
@@ -148,17 +172,29 @@ export default function InvoiceViewer({
     }
   }
 
-  const handleApplyAsDefault = () => {
+  const handleApplyAsDefault = async () => {
     if (!pendingChange) return
-    if (pendingChange.type === 'template') {
-      updateManyGeneralSettings({ invoiceTemplate: pendingChange.invoiceTemplate })
-      onApplyDefaultTemplates?.({ invoiceTemplate: pendingChange.invoiceTemplate })
-      showToast?.('Default template updated ✓')
-    } else {
-      updateManyProfileSettings({ brandColourId: pendingChange.colourId, brandColour: pendingChange.colour })
-      showToast?.('Default colour updated ✓')
+    try {
+      if (pendingChange.type === 'template') {
+        await customerData.updateInvoiceTemplate(invoice.id, pendingChange.invoiceTemplate)
+        setInvoice(prev => ({ ...prev, template: pendingChange.invoiceTemplate }))
+        updateManyGeneralSettings({ invoiceTemplate: pendingChange.invoiceTemplate })
+        onApplyDefaultTemplates?.({ invoiceTemplate: pendingChange.invoiceTemplate })
+        showToast?.('Template updated here and set as default ✓')
+      } else {
+        await customerData.updateInvoiceColour(invoice.id, pendingChange.colourId, pendingChange.colour)
+        setInvoice(prev => ({
+          ...prev,
+          brandSnapshot: { ...prev.brandSnapshot, colourId: pendingChange.colourId, colour: pendingChange.colour },
+        }))
+        updateManyProfileSettings({ brandColourId: pendingChange.colourId, brandColour: pendingChange.colour })
+        showToast?.('Colour updated here and set as default ✓')
+      }
+    } catch {
+      showToast?.(pendingChange.type === 'template' ? 'Could not update template.' : 'Could not update colour.')
+    } finally {
+      setPendingChange(null)
     }
-    setPendingChange(null)
   }
 
   const handleCancelScope = () => {
@@ -173,24 +209,16 @@ export default function InvoiceViewer({
         onBackClick={onClose}
         customActions={[
           {
-            icon:     'palette',
-            onClick:  () => setShowDesignSheet(true),
+            icon:    'palette',
+            onClick: () => setShowDesignSheet(true),
           },
           {
-            icon:     pdfLoading ? 'hourglass_top' : 'download',
-            onClick:  handleDownload,
-            disabled: pdfLoading,
+            icon:    'share',
+            onClick: () => setShowShareSheet(true),
           },
           {
-            icon:     shareLoading ? 'hourglass_top' : 'share',
-            onClick:  handleShare,
-            disabled: shareLoading,
-          },
-          {
-            icon:    'delete',
-            onClick: () => onDelete(invoice.id),
-            outlined: true,
-            color: 'var(--danger)',
+            icon:    'more_vert',
+            onClick: () => setShowMoreSheet(true),
           },
         ]}
       />
@@ -219,6 +247,23 @@ export default function InvoiceViewer({
         />
       )}
 
+      {showShareSheet && (
+        <ShareOptionsSheet
+          docType="invoice"
+          onClose={() => setShowShareSheet(false)}
+          onShare={handleShare}
+          onDownload={handleDownload}
+        />
+      )}
+
+      {showMoreSheet && (
+        <MoreOptionsSheet
+          docType="invoice"
+          onClose={() => setShowMoreSheet(false)}
+          onDelete={() => onDelete(invoice.id)}
+        />
+      )}
+
       {showTemplateModal && (
         <TemplateModal
           isOpen={showTemplateModal}
@@ -243,11 +288,32 @@ export default function InvoiceViewer({
         <ApplyScopeSheet
           icon={pendingChange.type === 'colour' ? 'palette' : 'style'}
           title={pendingChange.type === 'colour' ? 'Apply new colour' : 'Apply new template'}
-          description={`Use this ${pendingChange.type} for just this invoice, or set it as the default for all future invoices?`}
-          thisLabel="Just this invoice"
+          description={
+            pendingChange.type === 'colour'
+              ? 'Apply to this invoice only, or apply here and make it your default going forward?'
+              : 'Apply to this invoice only, or apply here and make it your default going forward?'
+          }
+          thisLabel="This invoice only"
+          defaultLabel="This invoice + set as default"
           onApplyToThis={handleApplyToThis}
           onApplyToDefault={handleApplyAsDefault}
           onCancel={handleCancelScope}
+        />
+      )}
+
+      {missingFields !== null && (
+        <MissingFieldsSheet
+          missingFields={missingFields}
+          docType="invoice"
+          pendingAction={pendingActionLabel}
+          onClose={() => { setMissingFields(null); setPendingActionLabel(null); setPendingActionFn(null) }}
+          onSkipAndSave={() => {
+            setMissingFields(null)
+            const fn = pendingActionFn
+            setPendingActionLabel(null)
+            setPendingActionFn(null)
+            fn?.()
+          }}
         />
       )}
 

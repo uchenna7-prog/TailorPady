@@ -57,10 +57,26 @@ function NotifItem({ n, onRead, onNavigate }) {
   )
 }
 
-
-
 function StatusDot({ active }) {
   return <span className={`${styles.statusDot} ${active ? styles.statusDotActive : ''}`} />
+}
+
+function BotButton({ pendingCount, onClick }) {
+  return (
+    <button
+      className={styles.iconBtn}
+      onClick={onClick}
+      aria-label="Open Agent"
+      title="Pady — tailorpady Agent"
+    >
+      <BotIcon />
+      {pendingCount > 0 && (
+        <span className={styles.agentBadge}>
+          {pendingCount > 9 ? '9+' : pendingCount}
+        </span>
+      )}
+    </button>
+  )
 }
 
 function Header({
@@ -128,22 +144,6 @@ function Header({
   ]
 
   const filteredActions = customActions.filter(a => !a._isScrollAvatar)
-
-  const BotButton = () => (
-    <button
-      className={styles.iconBtn}
-      onClick={handleBotClick}
-      aria-label="Open Agent"
-      title="Pady — tailorpady Agent"
-    >
-      <BotIcon />
-      {agentPendingCount > 0 && (
-        <span className={styles.agentBadge}>
-          {agentPendingCount > 9 ? '9+' : agentPendingCount}
-        </span>
-      )}
-    </button>
-  )
 
   return (
     <>
@@ -252,7 +252,12 @@ function Header({
               </button>
             )}
 
-            {showBotButton && <BotButton />}
+            {showBotButton && (
+              <BotButton
+                pendingCount={agentPendingCount}
+                onClick={handleBotClick}
+              />
+            )}
           </div>
         )}
       </header>

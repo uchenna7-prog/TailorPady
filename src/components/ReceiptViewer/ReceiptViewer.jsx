@@ -10,8 +10,12 @@ import { useReceiptBrandSettings } from '../../hooks/useReceiptBrandSettings'
 import { getBrandCSSVars } from '../../utils/cssVariablesUtils'
 import { sharePDF, downloadPDF } from '../../utils/pdfUtils'
 import { getPaletteById } from '../../config/brandPalette'
+import { getMissingFields, getRequiresForDoc } from '../TemplateModal/templateRequiresUtils'
 import { TemplateModal } from '../TemplateModal/TemplateModal'
+import { MissingFieldsSheet } from '../TemplateModal/MissingFieldsSheet/MissingFieldsSheet'
 import { DesignOptionsSheet } from '../DesignOptionsSheet/DesignOptionsSheet'
+import { ShareOptionsSheet } from '../ShareOptionsSheet/ShareOptionsSheet'
+import { MoreOptionsSheet } from '../MoreOptionsSheet/MoreOptionsSheet'
 import { BrandColourSheet } from '../BrandColourSheet/BrandColourSheet'
 import { ApplyScopeSheet } from '../ApplyScopeSheet/ApplyScopeSheet'
 import Header from '../Header/Header'
@@ -53,18 +57,23 @@ export default function ReceiptViewer({
 }) {
 
   const { generalSettings, updateManyGeneralSettings } = useGeneralSettings()
-  const { updateManyProfileSettings } = useProfileSettings()
+  const { profileSettings, updateManyProfileSettings } = useProfileSettings()
 
   const RECEIPT_BRAND_SETTINGS = useReceiptBrandSettings()
 
   const paperRef = useRef(null)
   const [receipt, setReceipt] = useState(snapshotedReceipt)
-  const [pdfLoading, setPdfLoading]     = useState(false)
-  const [shareLoading, setShareLoading] = useState(false)
+  const [pdfLoading, setPdfLoading]         = useState(false)
+  const [shareLoading, setShareLoading]     = useState(false)
   const [showDesignSheet, setShowDesignSheet]     = useState(false)
+  const [showShareSheet, setShowShareSheet]       = useState(false)
+  const [showMoreSheet, setShowMoreSheet]         = useState(false)
   const [showTemplateModal, setShowTemplateModal] = useState(false)
   const [showColourSheet, setShowColourSheet]     = useState(false)
   const [pendingChange, setPendingChange]         = useState(null)
+  const [missingFields, setMissingFields]           = useState(null)
+  const [pendingActionLabel, setPendingActionLabel] = useState(null)
+  const [pendingActionFn, setPendingActionFn]       = useState(null)
 
   const templateKey = receipt.template || generalSettings.receiptTemplate || 'receiptTemplate1'
   const Template = TEMPLATE_MAPPINGS[templateKey] || TEMPLATE_MAPPINGS.receiptTemplate1
@@ -83,7 +92,19 @@ export default function ReceiptViewer({
   const orderTotal = receipt.orderPrice ? parseFloat(receipt.orderPrice) : cumulativePaid
   const isFullPay  = cumulativePaid >= orderTotal && orderTotal > 0
 
-  const handleDownload = async () => {
+  const checkMissingThen = (label, action) => {
+    const requires = getRequiresForDoc('receipt', null, templateKey)
+    const missing  = getMissingFields(requires, profileSettings)
+    if (missing.length > 0) {
+      setPendingActionLabel(label)
+      setPendingActionFn(() => action)
+      setMissingFields(missing)
+      return
+    }
+    action()
+  }
+
+  const executeDownload = async () => {
     if (!paperRef.current || pdfLoading) return
     setPdfLoading(true)
     showToast?.('Generating PDF…')
@@ -98,7 +119,7 @@ export default function ReceiptViewer({
     }
   }
 
-  const handleShare = async () => {
+  const executeShare = async () => {
     if (!paperRef.current || shareLoading) return
     setShareLoading(true)
     showToast?.('Preparing…')
@@ -115,6 +136,9 @@ export default function ReceiptViewer({
       setShareLoading(false)
     }
   }
+
+  const handleDownload = () => checkMissingThen('download', executeDownload)
+  const handleShare    = () => checkMissingThen('share', executeShare)
 
   const handleTemplateSelect = ({ receiptTemplate }) => {
     setPendingChange({ type: 'template', receiptTemplate })
@@ -148,17 +172,29 @@ export default function ReceiptViewer({
     }
   }
 
-  const handleApplyAsDefault = () => {
+  const handleApplyAsDefault = async () => {
     if (!pendingChange) return
-    if (pendingChange.type === 'template') {
-      updateManyGeneralSettings({ receiptTemplate: pendingChange.receiptTemplate })
-      onApplyDefaultTemplates?.({ receiptTemplate: pendingChange.receiptTemplate })
-      showToast?.('Default template updated ✓')
-    } else {
-      updateManyProfileSettings({ brandColourId: pendingChange.colourId, brandColour: pendingChange.colour })
-      showToast?.('Default colour updated ✓')
+    try {
+      if (pendingChange.type === 'template') {
+        await customerData.updateReceiptTemplate(receipt.id, pendingChange.receiptTemplate)
+        setReceipt(prev => ({ ...prev, template: pendingChange.receiptTemplate }))
+        updateManyGeneralSettings({ receiptTemplate: pendingChange.receiptTemplate })
+        onApplyDefaultTemplates?.({ receiptTemplate: pendingChange.receiptTemplate })
+        showToast?.('Template updated here and set as default ✓')
+      } else {
+        await customerData.updateReceiptColour(receipt.id, pendingChange.colourId, pendingChange.colour)
+        setReceipt(prev => ({
+          ...prev,
+          brandSnapshot: { ...prev.brandSnapshot, colourId: pendingChange.colourId, colour: pendingChange.colour },
+        }))
+        updateManyProfileSettings({ brandColourId: pendingChange.colourId, brandColour: pendingChange.colour })
+        showToast?.('Colour updated here and set as default ✓')
+      }
+    } catch {
+      showToast?.(pendingChange.type === 'template' ? 'Could not update template.' : 'Could not update colour.')
+    } finally {
+      setPendingChange(null)
     }
-    setPendingChange(null)
   }
 
   const handleCancelScope = () => {
@@ -173,24 +209,16 @@ export default function ReceiptViewer({
         onBackClick={onClose}
         customActions={[
           {
-            icon: 'palette',
+            icon:    'palette',
             onClick: () => setShowDesignSheet(true),
           },
           {
-            icon: pdfLoading ? 'hourglass_top' : 'download',
-            onClick: handleDownload,
-            disabled: pdfLoading,
+            icon:    'share',
+            onClick: () => setShowShareSheet(true),
           },
           {
-            icon: shareLoading ? 'hourglass_top' : 'share',
-            onClick: handleShare,
-            disabled: shareLoading,
-          },
-          {
-            icon: 'delete',
-            onClick: () => onDelete(receipt.id),
-            outlined: true,
-            color: 'var(--danger)',
+            icon:    'more_vert',
+            onClick: () => setShowMoreSheet(true),
           },
         ]}
       />
@@ -219,6 +247,23 @@ export default function ReceiptViewer({
         />
       )}
 
+      {showShareSheet && (
+        <ShareOptionsSheet
+          docType="receipt"
+          onClose={() => setShowShareSheet(false)}
+          onShare={handleShare}
+          onDownload={handleDownload}
+        />
+      )}
+
+      {showMoreSheet && (
+        <MoreOptionsSheet
+          docType="receipt"
+          onClose={() => setShowMoreSheet(false)}
+          onDelete={() => onDelete(receipt.id)}
+        />
+      )}
+
       {showTemplateModal && (
         <TemplateModal
           isOpen={showTemplateModal}
@@ -243,11 +288,32 @@ export default function ReceiptViewer({
         <ApplyScopeSheet
           icon={pendingChange.type === 'colour' ? 'palette' : 'style'}
           title={pendingChange.type === 'colour' ? 'Apply new colour' : 'Apply new template'}
-          description={`Use this ${pendingChange.type} for just this receipt, or set it as the default for all future receipts?`}
-          thisLabel="Just this receipt"
+          description={
+            pendingChange.type === 'colour'
+              ? 'Apply to this receipt only, or apply here and make it your default going forward?'
+              : 'Apply to this receipt only, or apply here and make it your default going forward?'
+          }
+          thisLabel="This receipt only"
+          defaultLabel="This receipt + set as default"
           onApplyToThis={handleApplyToThis}
           onApplyToDefault={handleApplyAsDefault}
           onCancel={handleCancelScope}
+        />
+      )}
+
+      {missingFields !== null && (
+        <MissingFieldsSheet
+          missingFields={missingFields}
+          docType="receipt"
+          pendingAction={pendingActionLabel}
+          onClose={() => { setMissingFields(null); setPendingActionLabel(null); setPendingActionFn(null) }}
+          onSkipAndSave={() => {
+            setMissingFields(null)
+            const fn = pendingActionFn
+            setPendingActionLabel(null)
+            setPendingActionFn(null)
+            fn?.()
+          }}
         />
       )}
 

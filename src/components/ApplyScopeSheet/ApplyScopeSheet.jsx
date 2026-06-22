@@ -1,13 +1,15 @@
-import { createPortal } from 'react-dom'
 import styles from './ApplyScopeSheet.module.css'
 
-export function ApplyScopeSheet({ icon, title, description, thisLabel, onApplyToThis, onApplyToDefault, onCancel }) {
-  return createPortal(
-    <div className={styles.overlay} onClick={onCancel}>
-      <div className={styles.sheet} onClick={e => e.stopPropagation()}>
+export function ApplyScopeSheet({ icon, title, description, thisLabel, defaultLabel, onApplyToThis, onApplyToDefault, onCancel }) {
+  return (
+    <div className={styles.overlay} onClick={e => e.target === e.currentTarget && onCancel()}>
+      <div className={styles.sheet}>
+        <div className={styles.handle} />
 
         <div className={styles.header}>
-          <span className="mi" style={{ fontSize: '1.5rem' }}>{icon}</span>
+          <div className={styles.iconWrap}>
+            <span className="mi" style={{ fontSize: '1.4rem' }}>{icon}</span>
+          </div>
           <h3 className={styles.title}>{title}</h3>
           <p className={styles.subtitle}>{description}</p>
         </div>
@@ -17,15 +19,13 @@ export function ApplyScopeSheet({ icon, title, description, thisLabel, onApplyTo
             {thisLabel}
           </button>
           <button className={styles.secondaryButton} onClick={onApplyToDefault}>
-            Set as default
+            {defaultLabel || 'Set as default'}
           </button>
-          <button className={styles.cancelButton} onClick={onCancel}>
+          <button className={styles.cancel} onClick={onCancel}>
             Cancel
           </button>
         </div>
-
       </div>
-    </div>,
-    document.body
+    </div>
   )
 }

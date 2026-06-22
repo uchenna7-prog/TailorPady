@@ -22,7 +22,7 @@
   padding: 12px 20px calc(env(safe-area-inset-bottom) + 24px);
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 8px;
   overflow-y: auto;
   animation: slideUp 0.32s cubic-bezier(0.32, 0.72, 0, 1);
 }
@@ -32,93 +32,85 @@
   height: 4px;
   border-radius: 2px;
   background: var(--border2);
-  margin: 0 auto;
+  margin: 0 auto 8px;
   flex-shrink: 0;
 }
 
-.header {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
-  gap: 10px;
-  padding: 4px 8px 0;
-}
-
-.iconWrap {
-  width: 48px;
-  height: 48px;
-  border-radius: 14px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: var(--surface2);
-  color: var(--accent);
-}
-
 .title {
-  font-size: 1.05rem;
-  font-weight: 700;
-  color: var(--text);
-  margin: 0;
-  font-family: "Manrope", sans-serif;
-}
-
-.subtitle {
-  font-size: 0.85rem;
+  font-size: 0.7rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
   color: var(--text2);
-  margin: 0;
-  line-height: 1.45;
-  max-width: 320px;
+  margin: 0 0 4px;
+  padding: 0 4px;
 }
 
-.actions {
+.options {
   display: flex;
   flex-direction: column;
   gap: 8px;
 }
 
-.primaryButton {
-  padding: 14px;
-  border: none;
-  border-radius: 16px;
-  background: var(--accent);
-  color: var(--bg);
-  font-size: 0.92rem;
-  font-weight: 700;
-  cursor: pointer;
-  font-family: "Manrope", sans-serif;
-  transition: transform 0.12s ease, filter 0.15s ease;
-}
-
-.primaryButton:hover {
-  filter: brightness(1.06);
-}
-
-.primaryButton:active {
-  transform: scale(0.98);
-}
-
-.secondaryButton {
-  padding: 14px;
+.option {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 16px;
+  background: var(--surface);
   border: 1px solid var(--border);
   border-radius: 16px;
-  background: var(--surface);
-  color: var(--text);
-  font-size: 0.92rem;
-  font-weight: 700;
   cursor: pointer;
+  text-align: left;
+  width: 100%;
+  transition: background 0.15s ease, transform 0.12s ease, border-color 0.15s ease;
   font-family: "Manrope", sans-serif;
-  transition: background 0.15s ease, border-color 0.15s ease, transform 0.12s ease;
 }
 
-.secondaryButton:hover {
+.option:hover {
   background: var(--surface2);
   border-color: var(--border2);
 }
 
-.secondaryButton:active {
+.option:active {
   transform: scale(0.98);
+}
+
+.optionIcon {
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+  background: var(--surface2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--accent);
+  flex-shrink: 0;
+  transition: transform 0.15s ease;
+}
+
+.option:active .optionIcon {
+  transform: scale(0.92);
+}
+
+.optionText {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  flex: 1;
+  min-width: 0;
+}
+
+.optionLabel {
+  font-size: 0.92rem;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.optionDesc {
+  font-size: 0.75rem;
+  color: var(--text2);
+  line-height: 1.4;
 }
 
 .cancel {
@@ -170,7 +162,7 @@
     box-shadow:
       0 24px 48px rgba(0, 0, 0, 0.22),
       0 8px 16px rgba(0, 0, 0, 0.12);
-    padding: 24px;
+    padding: 20px 24px 24px;
     animation: sheetFadeScale 0.24s cubic-bezier(0.34, 1.56, 0.64, 1);
   }
 

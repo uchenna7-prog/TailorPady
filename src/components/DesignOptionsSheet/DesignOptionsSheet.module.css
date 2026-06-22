@@ -1,158 +1,183 @@
 .overlay {
-  position:        fixed;
-  inset:           0;
-  z-index:         4000;
-  background:      rgba(0, 0, 0, 0.6);
+  position: fixed;
+  inset: 0;
+  z-index: 500;
+  background: rgba(0, 0, 0, 0.55);
   backdrop-filter: blur(6px);
-  display:         flex;
-  align-items:     flex-end;
+  display: flex;
+  align-items: flex-end;
   justify-content: center;
-  animation:       overlayIn 0.22s ease;
+  animation: fadeIn 0.2s ease;
 }
 
-@keyframes overlayIn {
+.sheet {
+  width: 100%;
+  max-height: 88vh;
+  background: var(--bg);
+  border-radius: 24px 24px 0 0;
+  border-top: 1px solid var(--border);
+  box-shadow:
+    0 -8px 30px rgba(0, 0, 0, 0.18),
+    0 -2px 8px rgba(0, 0, 0, 0.10);
+  padding: 12px 20px calc(env(safe-area-inset-bottom) + 24px);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  overflow-y: auto;
+  animation: slideUp 0.32s cubic-bezier(0.32, 0.72, 0, 1);
+}
+
+.handle {
+  width: 36px;
+  height: 4px;
+  border-radius: 2px;
+  background: var(--border2);
+  margin: 0 auto 8px;
+  flex-shrink: 0;
+}
+
+.title {
+  font-size: 0.7rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  color: var(--text2);
+  margin: 0 0 4px;
+  padding: 0 4px;
+}
+
+.options {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.option {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 16px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  cursor: pointer;
+  text-align: left;
+  width: 100%;
+  transition: background 0.15s ease, transform 0.12s ease, border-color 0.15s ease;
+  font-family: "Manrope", sans-serif;
+}
+
+.option:hover {
+  background: var(--surface2);
+  border-color: var(--border2);
+}
+
+.option:active {
+  transform: scale(0.98);
+}
+
+.optionIcon {
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+  background: var(--surface2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--accent);
+  flex-shrink: 0;
+  transition: transform 0.15s ease;
+}
+
+.option:active .optionIcon {
+  transform: scale(0.92);
+}
+
+.optionText {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  flex: 1;
+  min-width: 0;
+}
+
+.optionLabel {
+  font-size: 0.92rem;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.optionDesc {
+  font-size: 0.75rem;
+  color: var(--text2);
+  line-height: 1.4;
+}
+
+.optionChevron {
+  color: var(--text3);
+  font-size: 1.2rem;
+  flex-shrink: 0;
+}
+
+.cancel {
+  margin-top: 4px;
+  width: 100%;
+  padding: 14px;
+  background: var(--surface2);
+  border: 1px solid color-mix(in srgb, var(--danger) 35%, var(--border));
+  border-radius: 16px;
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--text2);
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease, transform 0.12s ease;
+  font-family: "Manrope", sans-serif;
+}
+
+.cancel:hover {
+  background: color-mix(in srgb, var(--danger) 8%, var(--surface2));
+  border-color: var(--danger);
+  color: var(--danger);
+}
+
+.cancel:active {
+  transform: scale(0.98);
+}
+
+@keyframes fadeIn {
   from { opacity: 0; }
   to   { opacity: 1; }
 }
 
-.sheet {
-  width:          100%;
-  max-height:     90vh;
-  background:     var(--surface);
-  border-radius:  20px 20px 0 0;
-  border-top:     1px solid var(--border);
-  padding:        12px 20px calc(env(safe-area-inset-bottom) + 24px);
-  display:        flex;
-  flex-direction: column;
-  gap:            16px;
-  overflow-y:     auto;
-  animation:      sheetUp 0.3s cubic-bezier(0.32, 0.72, 0, 1);
-}
-
-@keyframes sheetUp {
+@keyframes slideUp {
   from { transform: translateY(100%); }
-  to   { transform: translateY(0);    }
-}
-
-.handle {
-  width:         36px;
-  height:        4px;
-  border-radius: 2px;
-  background:    var(--border);
-  margin:        0 auto;
-}
-
-.title {
-  font-size:   1.1rem;
-  font-weight: 600;
-  color:       var(--text);
-  margin:      0;
-}
-
-.optionList {
-  display:        flex;
-  flex-direction: column;
-  gap:            8px;
-}
-
-.option {
-  display:       flex;
-  align-items:   center;
-  gap:           14px;
-  width:         100%;
-  padding:       14px;
-  border:        none;
-  border-radius: 14px;
-  background:    var(--surface2);
-  cursor:        pointer;
-  text-align:    left;
-  transition:    opacity 0.15s;
-}
-
-.option:active {
-  opacity: 0.75;
-}
-
-.optionIcon {
-  width:           40px;
-  height:          40px;
-  border-radius:   12px;
-  display:         flex;
-  align-items:     center;
-  justify-content: center;
-  background:      var(--accent);
-  color:           #ffffff;
-  flex-shrink:     0;
-}
-
-.optionText {
-  display:        flex;
-  flex-direction: column;
-  gap:            2px;
-  flex:           1;
-  min-width:      0;
-}
-
-.optionLabel {
-  font-size:   0.95rem;
-  font-weight: 600;
-  color:       var(--text);
-}
-
-.optionSub {
-  font-size: 0.8rem;
-  color:     var(--text3);
-}
-
-.optionChevron {
-  color:       var(--text3);
-  font-size:   1.2rem;
-  flex-shrink: 0;
-}
-
-.cancelButton {
-  width:         100%;
-  padding:       14px;
-  border:        none;
-  border-radius: 14px;
-  background:    transparent;
-  color:         var(--text2);
-  font-size:     0.95rem;
-  font-weight:   500;
-  cursor:        pointer;
-  transition:    background 0.15s;
-}
-
-.cancelButton:active {
-  background: var(--surface2);
+  to   { transform: translateY(0); }
 }
 
 @media (min-width: 769px) {
   .overlay {
-    align-items:     center;
-    justify-content: center;
+    align-items: center;
   }
 
   .sheet {
-    width:         420px;
-    max-width:     calc(100vw - 48px);
-    max-height:    82vh;
+    width: 420px;
+    max-width: calc(100vw - 48px);
+    max-height: 82vh;
     border-radius: 20px;
-    border:        1px solid var(--border);
-    padding:       20px 24px 24px;
-    animation:     sheetFadeScale 0.24s cubic-bezier(0.34, 1.56, 0.64, 1);
-  }
-
-  @keyframes sheetFadeScale {
-    from { opacity: 0; transform: scale(0.95); }
-    to   { opacity: 1; transform: scale(1);    }
+    border: 1px solid var(--border);
+    box-shadow:
+      0 24px 48px rgba(0, 0, 0, 0.22),
+      0 8px 16px rgba(0, 0, 0, 0.12);
+    padding: 20px 24px 24px;
+    animation: sheetFadeScale 0.24s cubic-bezier(0.34, 1.56, 0.64, 1);
   }
 
   .handle {
     display: none;
   }
 
-  .title {
-    font-size: 1.2rem;
+  @keyframes sheetFadeScale {
+    from { opacity: 0; transform: translateY(8px) scale(0.96); }
+    to   { opacity: 1; transform: translateY(0)   scale(1);    }
   }
 }

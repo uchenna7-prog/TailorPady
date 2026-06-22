@@ -41,15 +41,17 @@ const DESTINATIONS = {
     fieldKeys: ['accountBank', 'accountNumber', 'accountName', 'paymentTerms'],
     route: '/settings',
     modal: 'invoiceSettings',
+    invoiceOnly: true,
   },
 }
 
-function buildGroups(missingFields) {
+function buildGroups(missingFields, docType) {
   const missingSet = new Set(missingFields)
   const groups = []
 
   for (const key of missingFields) {
     for (const [groupKey, destination] of Object.entries(DESTINATIONS)) {
+      if (destination.invoiceOnly && docType === 'receipt') continue
       if (!destination.fieldKeys.includes(key)) continue
       if (groups.some(g => g.key === groupKey)) continue
       const fields = destination.fieldKeys.filter(f => missingSet.has(f))
@@ -97,15 +99,25 @@ function GroupCard({ icon, title, fields, actionLabel, onAction }) {
 
 export function MissingFieldsSheet({
   missingFields,
+  docType,
+  pendingAction,
   onClose,
   onSkipAndSave,
   pendingTemplate,
 }) {
-  const navigate = useNavigate()
+  const navigate  = useNavigate()
   const scrollRef = useRef(null)
   const [scrolled, setScrolled] = useState(false)
 
-  const groups = useMemo(() => buildGroups(missingFields), [missingFields])
+  const docLabel = docType === 'receipt' ? 'receipt' : 'invoice'
+
+  const skipLabel = pendingAction === 'download'
+    ? `Download ${docLabel} without these details`
+    : pendingAction === 'share'
+    ? `Share ${docLabel} without these details`
+    : `Save ${docLabel} without these details`
+
+  const groups = useMemo(() => buildGroups(missingFields, docType), [missingFields, docType])
 
   const stopPropagation = useCallback(e => e.stopPropagation(), [])
 
@@ -152,7 +164,7 @@ export function MissingFieldsSheet({
             <p className={styles.sheetTitle}>A few things are missing</p>
             <p className={styles.sheetSubtitle}>
               This template looks best with your business details filled in.
-              Add them now, or save the invoice and finish later.
+              Add them now, or save the {docLabel} and finish later.
             </p>
           </div>
 
@@ -172,7 +184,7 @@ export function MissingFieldsSheet({
 
         <div className={styles.sheetFooter}>
           <button className={styles.skipBtn} onClick={onSkipAndSave}>
-            Save invoice without these details
+            {skipLabel}
           </button>
         </div>
 

@@ -1,6 +1,7 @@
 import { useState, useRef, useMemo, useCallback, useEffect, useLayoutEffect } from 'react'
 import { useBrandTokens } from '../../hooks/useBrandTokens'
 import { useProfileSettings } from '../../contexts/ProfileSettingsContext'
+import { getPaletteById } from '../../config/brandPalette'
 import Header from '../Header/Header'
 import { ZoomOverlay } from './ZoomOverlay/ZoomOverlay'
 import { MissingFieldsSheet } from './MissingFieldsSheet/MissingFieldsSheet'
@@ -50,7 +51,19 @@ function getMissingFields(requires, profileSettings) {
   return requires.filter(key => isMissing(key, profileSettings))
 }
 
-function getUnionRequires(invoiceTemplateId, receiptTemplateId) {
+function getRequiresForDoc(docType, invoiceTemplateId, receiptTemplateId) {
+  if (docType === 'invoice') {
+    const allInvoice      = INVOICE_TEMPLATE_GROUPS.flatMap(g => g.templates)
+    const invoiceTemplate = allInvoice.find(t => t.id === invoiceTemplateId)
+    return invoiceTemplate?.requires ?? []
+  }
+
+  if (docType === 'receipt') {
+    const allReceipt      = RECEIPT_TEMPLATE_GROUPS.flatMap(g => g.templates)
+    const receiptTemplate = allReceipt.find(t => t.id === receiptTemplateId)
+    return receiptTemplate?.requires ?? []
+  }
+
   const allInvoice      = INVOICE_TEMPLATE_GROUPS.flatMap(g => g.templates)
   const allReceipt      = RECEIPT_TEMPLATE_GROUPS.flatMap(g => g.templates)
   const invoiceTemplate = allInvoice.find(t => t.id === invoiceTemplateId)
@@ -103,7 +116,26 @@ export function TemplateModal({
   const [slideKey,       setSlideKey]       = useState(0)
   const [missingFields,  setMissingFields]  = useState(null)
 
+  const docType = lockToTab ?? 'both'
+
   useBrandTokens(colourId, modalRef)
+
+  const previewColour = useMemo(() => {
+    const entry = getPaletteById(colourId)
+    return entry?.tokens?.primary ?? null
+  }, [colourId])
+
+  const previewedInvoiceBrandSettings = useMemo(() => (
+    previewColour
+      ? { ...INVOICE_BRAND_SETTINGS, colourId, colour: previewColour }
+      : INVOICE_BRAND_SETTINGS
+  ), [INVOICE_BRAND_SETTINGS, colourId, previewColour])
+
+  const previewedReceiptBrandSettings = useMemo(() => (
+    previewColour
+      ? { ...RECEIPT_BRAND_SETTINGS, colourId, colour: previewColour }
+      : RECEIPT_BRAND_SETTINGS
+  ), [RECEIPT_BRAND_SETTINGS, colourId, previewColour])
 
   const tabs = useMemo(() => ({
     invoice: {
@@ -114,9 +146,9 @@ export function TemplateModal({
       appliedId: appliedInvoiceTemplate,
       onSelectTemplate: setSelectedInvoiceTemplate,
       getSampleProps: () => ({
-        invoice: getInvoiceSampleData(INVOICE_BRAND_SETTINGS),
+        invoice: getInvoiceSampleData(previewedInvoiceBrandSettings),
         customer: CUSTOMER_SAMPLE_DATA,
-        invoiceBrandSettings: INVOICE_BRAND_SETTINGS,
+        invoiceBrandSettings: previewedInvoiceBrandSettings,
       }),
     },
     receipt: {
@@ -127,9 +159,9 @@ export function TemplateModal({
       appliedId: appliedReceiptTemplate,
       onSelectTemplate: setSelectedReceiptTemplate,
       getSampleProps: () => ({
-        receipt: getReceiptSampleData(RECEIPT_BRAND_SETTINGS),
+        receipt: getReceiptSampleData(previewedReceiptBrandSettings),
         customer: CUSTOMER_SAMPLE_DATA,
-        receiptBrandSettings: RECEIPT_BRAND_SETTINGS,
+        receiptBrandSettings: previewedReceiptBrandSettings,
       }),
     },
   }), [
@@ -137,8 +169,8 @@ export function TemplateModal({
     selectedReceiptTemplate,
     appliedInvoiceTemplate,
     appliedReceiptTemplate,
-    INVOICE_BRAND_SETTINGS,
-    RECEIPT_BRAND_SETTINGS,
+    previewedInvoiceBrandSettings,
+    previewedReceiptBrandSettings,
   ])
 
   const activeTabObject   = tabs[activeTab]
@@ -262,14 +294,14 @@ export function TemplateModal({
   }, [selectedInvoiceTemplate, selectedReceiptTemplate, onSelect, onClose])
 
   const handleSavePress = useCallback(() => {
-    const unionRequires = getUnionRequires(selectedInvoiceTemplate, selectedReceiptTemplate)
-    const missing       = getMissingFields(unionRequires, profileSettings)
+    const requires = getRequiresForDoc(docType, selectedInvoiceTemplate, selectedReceiptTemplate)
+    const missing  = getMissingFields(requires, profileSettings)
     if (missing.length > 0) {
       setMissingFields(missing)
       return
     }
     commitSelection()
-  }, [selectedInvoiceTemplate, selectedReceiptTemplate, profileSettings, commitSelection])
+  }, [docType, selectedInvoiceTemplate, selectedReceiptTemplate, profileSettings, commitSelection])
 
   const handleSkipAndSave = useCallback(() => {
     setMissingFields(null)
@@ -416,6 +448,7 @@ export function TemplateModal({
       {missingFields !== null && (
         <MissingFieldsSheet
           missingFields={missingFields}
+          docType={docType}
           onClose={() => setMissingFields(null)}
           onSkipAndSave={handleSkipAndSave}
           pendingTemplate={{
