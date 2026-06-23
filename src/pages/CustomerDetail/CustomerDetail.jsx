@@ -1,5 +1,5 @@
 import { useState, useRef, useCallback, useEffect } from 'react'
-import { useParams, useNavigate }                   from 'react-router-dom'
+import { useParams, useNavigate, useLocation }      from 'react-router-dom'
 import { useCustomers }                             from '../../contexts/CustomerContext'
 import { useOrders }                                from '../../contexts/OrdersContext'
 import { usePremium }                               from '../../contexts/PremiumContext'
@@ -28,6 +28,7 @@ export default function CustomerDetail({ onMenuClick }) {
 
   const { id }       = useParams()
   const navigate     = useNavigate()
+  const location     = useLocation()
 
   const { getCustomer, updateCustomer, deleteCustomerAndAllData } = useCustomers()
   const { allOrders }  = useOrders()
@@ -44,6 +45,7 @@ export default function CustomerDetail({ onMenuClick }) {
   const [deleteModalOpen, setDeleteModalOpen] = useState(false)
   const [photoModalOpen,  setPhotoModalOpen]  = useState(false)
   const [notesExpanded,   setNotesExpanded]   = useState(false)
+  const [reopenInvoiceId, setReopenInvoiceId] = useState(null)
 
   const toastTimerRef  = useRef(null)
   const tabsRef        = useRef(null)
@@ -119,6 +121,16 @@ export default function CustomerDetail({ onMenuClick }) {
       document.removeEventListener('generateInvoice', onGenerateInv)
     }
   }, [handleGenerateInvoice])
+
+  useEffect(() => {
+    const navState = location.state
+    if (!navState?.reopenInvoiceId) return
+
+    setActiveTab('invoices')
+    setReopenInvoiceId(navState.reopenInvoiceId)
+
+    navigate(location.pathname, { replace: true, state: null })
+  }, [location.state])
 
   const scrollTabIntoView = useCallback((tabId) => {
     tabRefs.current[tabId]?.scrollIntoView({
@@ -492,6 +504,8 @@ export default function CustomerDetail({ onMenuClick }) {
             onStatusChange={customerData.updateInvoiceStatus}
             onGenerateInvoice={handleGenerateInvoice}
             showToast={showToast}
+            reopenInvoiceId={reopenInvoiceId}
+            onReopenInvoiceHandled={() => setReopenInvoiceId(null)}
           />
         )}
         {activeTab === 'payments' && (
