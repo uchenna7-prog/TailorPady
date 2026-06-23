@@ -21,6 +21,8 @@ export default function InvoiceTab({
   onDelete,
   onGenerateInvoice,
   showToast,
+  reopenInvoiceId,
+  onReopenInvoiceHandled,
 }) {
   const { profileSettings } = useProfileSettings()
 
@@ -38,6 +40,13 @@ export default function InvoiceTab({
     document.addEventListener('openAddInvoiceModal', openAddInvoiceModal)
     return () => document.removeEventListener('openAddInvoiceModal', openAddInvoiceModal)
   }, [])
+
+  useEffect(() => {
+    if (!reopenInvoiceId) return
+    const match = invoices.find(inv => inv.id === reopenInvoiceId)
+    if (match) setViewingInvoice(match)
+    onReopenInvoiceHandled?.()
+  }, [reopenInvoiceId, invoices])
 
   async function handleGenerateSelected(selectedOrders) {
 
