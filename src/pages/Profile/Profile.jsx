@@ -44,6 +44,7 @@ export default function Profile({ onMenuClick, isPremium = false, onUpgrade = ()
   const [deleteConfirm, setDeleteConfirm] = useState(false)
   const [toastMsg,      setToastMsg]      = useState('')
   const [pendingTemplate, setPendingTemplate] = useState(null)
+  const [returnTo, setReturnTo] = useState(null)
   const toastTimer = useRef(null)
 
   const joinDate = getOrSetJoinDate()
@@ -79,6 +80,10 @@ export default function Profile({ onMenuClick, isPremium = false, onUpgrade = ()
       setPendingTemplate(navState.pendingTemplate)
     }
 
+    if (navState.returnTo) {
+      setReturnTo(navState.returnTo)
+    }
+
     navigate(location.pathname, { replace: true, state: null })
   }, [location.state])
 
@@ -100,6 +105,26 @@ export default function Profile({ onMenuClick, isPremium = false, onUpgrade = ()
     setPendingTemplate(null)
     showToast(extraMessage ? `${extraMessage} · Template applied ✓` : 'Template applied ✓')
   }, [pendingTemplate, updateManyGeneralSettings, showToast])
+
+  const returnToOriginIfAny = useCallback(() => {
+    if (!returnTo) return
+    navigate(`/customers/${returnTo.customerId}`, {
+      state: { reopenInvoiceId: returnTo.invoiceId },
+    })
+    setReturnTo(null)
+  }, [returnTo, navigate])
+
+  const handleBrandModalBack = useCallback(() => {
+    setActiveModal(null)
+    applyPendingTemplateIfAny('Brand info saved')
+    returnToOriginIfAny()
+  }, [applyPendingTemplateIfAny, returnToOriginIfAny])
+
+  const handleBusinessContactModalBack = useCallback(() => {
+    setActiveModal(null)
+    applyPendingTemplateIfAny('Business contact saved')
+    returnToOriginIfAny()
+  }, [applyPendingTemplateIfAny, returnToOriginIfAny])
 
   const handleLogout = async () => {
     setLogoutConfirm(false)
@@ -388,20 +413,14 @@ export default function Profile({ onMenuClick, isPremium = false, onUpgrade = ()
 
       {activeModal === 'brand' && (
         <BrandModal
-          onBack={() => {
-            setActiveModal(null)
-            applyPendingTemplateIfAny('Brand info saved')
-          }}
+          onBack={handleBrandModalBack}
           showToast={showToast}
         />
       )}
 
       {activeModal === 'businessContact' && (
         <BusinessContactModal
-          onBack={() => {
-            setActiveModal(null)
-            applyPendingTemplateIfAny('Business contact saved')
-          }}
+          onBack={handleBusinessContactModalBack}
           showToast={showToast}
         />
       )}
