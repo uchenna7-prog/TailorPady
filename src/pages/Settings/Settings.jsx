@@ -70,6 +70,7 @@ export default function Settings({ onMenuClick }) {
 
   const [portfolioSlug, setPortfolioSlug] = useState(null)
   const [pendingTemplate, setPendingTemplate] = useState(null)
+  const [returnTo, setReturnTo] = useState(null)
 
   const isDarkMode = generalSettings.theme === 'dark'
 
@@ -92,6 +93,10 @@ export default function Settings({ onMenuClick }) {
       setPendingTemplate(navState.pendingTemplate)
     }
 
+    if (navState.returnTo) {
+      setReturnTo(navState.returnTo)
+    }
+
     navigate(location.pathname, { replace: true, state: null })
   }, [location.state])
 
@@ -112,6 +117,20 @@ export default function Settings({ onMenuClick }) {
     })
     setPendingTemplate(null)
     showToast(extraMessage ? `${extraMessage} · Template applied ✓` : 'Template applied ✓')
+  }
+
+  function returnToOriginIfAny() {
+    if (!returnTo) return
+    navigate(`/customers/${returnTo.customerId}`, {
+      state: { reopenInvoiceId: returnTo.invoiceId },
+    })
+    setReturnTo(null)
+  }
+
+  function handleInvoiceModalBack() {
+    setIsInvoiceModalOpen(false)
+    applyPendingTemplateIfAny('Invoice settings saved')
+    returnToOriginIfAny()
   }
 
   function handleTemplateSelect(selectedTemplates) {
@@ -393,10 +412,7 @@ export default function Settings({ onMenuClick }) {
 
       {isInvoiceModalOpen && (
         <InvoiceSettingsModal
-          onBack={() => {
-            setIsInvoiceModalOpen(false)
-            applyPendingTemplateIfAny('Invoice settings saved')
-          }}
+          onBack={handleInvoiceModalBack}
           showToast={showToast}
         />
       )}
