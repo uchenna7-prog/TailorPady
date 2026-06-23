@@ -46,6 +46,8 @@ export default function CustomerDetail({ onMenuClick }) {
   const [photoModalOpen,  setPhotoModalOpen]  = useState(false)
   const [notesExpanded,   setNotesExpanded]   = useState(false)
   const [reopenInvoiceId, setReopenInvoiceId] = useState(null)
+  const [reopenMissingFields, setReopenMissingFields] = useState(false)
+  const [completedModal, setCompletedModal]   = useState(null)
 
   const toastTimerRef  = useRef(null)
   const tabsRef        = useRef(null)
@@ -128,6 +130,8 @@ export default function CustomerDetail({ onMenuClick }) {
 
     setActiveTab('invoices')
     setReopenInvoiceId(navState.reopenInvoiceId)
+    setReopenMissingFields(navState.reopenMissingFields ?? false)
+    setCompletedModal(navState.completedModal ?? null)
 
     navigate(location.pathname, { replace: true, state: null })
   }, [location.state])
@@ -505,7 +509,13 @@ export default function CustomerDetail({ onMenuClick }) {
             onGenerateInvoice={handleGenerateInvoice}
             showToast={showToast}
             reopenInvoiceId={reopenInvoiceId}
-            onReopenInvoiceHandled={() => setReopenInvoiceId(null)}
+            reopenMissingFields={reopenMissingFields}
+            completedModal={completedModal}
+            onReopenInvoiceHandled={() => {
+              setReopenInvoiceId(null)
+              setReopenMissingFields(false)
+              setCompletedModal(null)
+            }}
           />
         )}
         {activeTab === 'payments' && (
