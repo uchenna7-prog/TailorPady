@@ -1,22 +1,36 @@
 .toast {
   position: fixed;
-  bottom: calc(32px + var(--sb));
+  bottom: calc(80px + var(--sb)); /* Positioned above the tab bar/FAB area */
   left: 50%;
   transform: translateX(-50%) translateY(20px);
+  
+  /* Sizing to fit content but restricted for mobile screens */
+  width: fit-content;
+  max-width: 90vw;
+  min-width: 280px; 
+  
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 12px 20px;
+  padding: 14px 20px;
+  
+  /* Styling to match modern app aesthetics */
   background: var(--surface);
   border: 1px solid var(--border);
-  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08), 0 2px 4px rgba(0, 0, 0, 0.04);
   border-radius: 16px;
-  font-size: 0.9rem;
+  font-size: 0.95rem;
   font-weight: 600;
   z-index: 9999;
+  
+  /* Animation */
   opacity: 0;
-  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
   pointer-events: none;
+  
+  /* Text handling */
+  text-align: left;
+  line-height: 1.4;
 }
 
 .show {
@@ -25,23 +39,24 @@
 }
 
 .icon {
-  font-size: 20px;
+  font-size: 22px;
+  flex-shrink: 0; /* Prevents the icon from squishing on long text */
 }
 
 .success {
   background: var(--success-soft);
   color: var(--success);
-  border-color: var(--success);
+  border-color: rgba(21, 128, 61, 0.2);
 }
 
 .error {
   background: var(--danger-soft);
   color: var(--danger);
-  border-color: var(--danger);
+  border-color: rgba(220, 38, 38, 0.2);
 }
 
 .warning {
   background: var(--warning-soft);
   color: var(--warning);
-  border-color: var(--warning);
+  border-color: rgba(217, 119, 6, 0.2);
 }
