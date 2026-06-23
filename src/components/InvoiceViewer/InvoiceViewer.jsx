@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react'
+import { useRef, useState, useEffect } from 'react'
 import { useGeneralSettings } from '../../contexts/GeneralSettingsContext'
 import { useProfileSettings } from '../../contexts/ProfileSettingsContext'
 import { TEMPLATE_MAPPINGS } from '../Templates/datas/invoiceTemplateMappings'
@@ -58,6 +58,9 @@ export default function InvoiceViewer({
   customerData,
   colourId,
   onApplyDefaultTemplates,
+  reopenMissingFields = false,
+  completedModal = null,
+  onReopenMissingFieldsHandled,
 }) {
 
   const { generalSettings, updateManyGeneralSettings } = useGeneralSettings()
@@ -78,6 +81,7 @@ export default function InvoiceViewer({
   const [missingFields, setMissingFields]         = useState(null)
   const [pendingActionLabel, setPendingActionLabel] = useState(null)
   const [pendingActionFn, setPendingActionFn]       = useState(null)
+  const [activeCompletedModal, setActiveCompletedModal] = useState(null)
 
   const templateKey = invoice.template || generalSettings.invoiceTemplate || 'invoiceTemplate1'
   const Template = TEMPLATE_MAPPINGS[templateKey] || TEMPLATE_MAPPINGS.invoiceTemplate1
@@ -97,12 +101,22 @@ export default function InvoiceViewer({
     invoiceId: invoice.id,
   }
 
+  useEffect(() => {
+    if (!reopenMissingFields) return
+    const requires = getRequiresForDoc('invoice', templateKey, null)
+    const missing  = getMissingFields(requires, profileSettings)
+    setActiveCompletedModal(completedModal)
+    setMissingFields(missing)
+    onReopenMissingFieldsHandled?.()
+  }, [reopenMissingFields])
+
   const checkMissingThen = (label, action) => {
     const requires = getRequiresForDoc('invoice', templateKey, null)
     const missing  = getMissingFields(requires, profileSettings)
     if (missing.length > 0) {
       setPendingActionLabel(label)
       setPendingActionFn(() => action)
+      setActiveCompletedModal(null)
       setMissingFields(missing)
       return
     }
@@ -312,12 +326,19 @@ export default function InvoiceViewer({
           docType="invoice"
           pendingAction={pendingActionLabel}
           returnTo={returnTo}
-          onClose={() => { setMissingFields(null); setPendingActionLabel(null); setPendingActionFn(null) }}
+          completedModal={activeCompletedModal}
+          onClose={() => {
+            setMissingFields(null)
+            setPendingActionLabel(null)
+            setPendingActionFn(null)
+            setActiveCompletedModal(null)
+          }}
           onSkipAndSave={() => {
             setMissingFields(null)
             const fn = pendingActionFn
             setPendingActionLabel(null)
             setPendingActionFn(null)
+            setActiveCompletedModal(null)
             fn?.()
           }}
         />
