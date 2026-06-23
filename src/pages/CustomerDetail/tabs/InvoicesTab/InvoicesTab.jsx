@@ -22,6 +22,8 @@ export default function InvoiceTab({
   onGenerateInvoice,
   showToast,
   reopenInvoiceId,
+  reopenMissingFields = false,
+  completedModal = null,
   onReopenInvoiceHandled,
 }) {
   const { profileSettings } = useProfileSettings()
@@ -30,6 +32,7 @@ export default function InvoiceTab({
   const [deleteTarget,   setDeleteTarget]   = useState(null)
   const [addInvoiceModalOpen,  setaddInvoiceModalOpen]     = useState(false)
   const [generatingIds,  setGeneratingIds]  = useState(new Set())
+  const [pendingReopen,  setPendingReopen]  = useState(false)
 
   const currency      = getCurrency()
   const orderItemsMap = buildOrderItemsMap(orders)
@@ -44,7 +47,10 @@ export default function InvoiceTab({
   useEffect(() => {
     if (!reopenInvoiceId) return
     const match = invoices.find(inv => inv.id === reopenInvoiceId)
-    if (match) setViewingInvoice(match)
+    if (match) {
+      setViewingInvoice(match)
+      setPendingReopen(true)
+    }
     onReopenInvoiceHandled?.()
   }, [reopenInvoiceId, invoices])
 
@@ -175,6 +181,9 @@ export default function InvoiceTab({
           onStatusChange={handleStatusChange}
           onDelete={(id) => setDeleteTarget(id)}
           showToast={showToast}
+          reopenMissingFields={pendingReopen && reopenMissingFields}
+          completedModal={completedModal}
+          onReopenMissingFieldsHandled={() => setPendingReopen(false)}
         />
       )}
 
