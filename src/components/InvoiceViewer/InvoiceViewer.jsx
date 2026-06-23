@@ -92,6 +92,11 @@ export default function InvoiceViewer({
   const brandCSSVars = getBrandCSSVars(snapShotedInvoiceBrandSettings.colour)
   const filename = `Invoice-${invoice.number}-${customer.name.replace(/\s+/g, '_')}.pdf`
 
+  const returnTo = {
+    customerId: customer.id,
+    invoiceId: invoice.id,
+  }
+
   const checkMissingThen = (label, action) => {
     const requires = getRequiresForDoc('invoice', templateKey, null)
     const missing  = getMissingFields(requires, profileSettings)
@@ -306,6 +311,7 @@ export default function InvoiceViewer({
           missingFields={missingFields}
           docType="invoice"
           pendingAction={pendingActionLabel}
+          returnTo={returnTo}
           onClose={() => { setMissingFields(null); setPendingActionLabel(null); setPendingActionFn(null) }}
           onSkipAndSave={() => {
             setMissingFields(null)
