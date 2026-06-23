@@ -122,7 +122,11 @@ export default function Settings({ onMenuClick }) {
   function returnToOriginIfAny() {
     if (!returnTo) return
     navigate(`/customers/${returnTo.customerId}`, {
-      state: { reopenInvoiceId: returnTo.invoiceId },
+      state: {
+        reopenInvoiceId: returnTo.invoiceId,
+        reopenMissingFields: returnTo.reopenMissingFields ?? false,
+        completedModal: returnTo.completedModal ?? null,
+      },
     })
     setReturnTo(null)
   }
