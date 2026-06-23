@@ -22,6 +22,7 @@ const DESTINATIONS = {
     icon: 'storefront',
     title: 'Brand Identity',
     actionLabel: 'Add brand details',
+    completedLabel: 'Brand details added',
     fieldKeys: ['logo', 'name', 'tagline', 'signature'],
     route: '/profile',
     modal: 'brand',
@@ -30,6 +31,7 @@ const DESTINATIONS = {
     icon: 'contact_phone',
     title: 'Business Contact',
     actionLabel: 'Add contact details',
+    completedLabel: 'Business contact added',
     fieldKeys: ['phone', 'email', 'address', 'website'],
     route: '/profile',
     modal: 'businessContact',
@@ -38,6 +40,7 @@ const DESTINATIONS = {
     icon: 'receipt_long',
     title: 'Invoice Settings',
     actionLabel: 'Add invoice details',
+    completedLabel: 'Invoice details added',
     fieldKeys: ['accountBank', 'accountNumber', 'accountName', 'paymentTerms'],
     route: '/settings',
     modal: 'invoiceSettings',
@@ -60,6 +63,11 @@ function buildGroups(missingFields, docType) {
   }
 
   return groups
+}
+
+function getCompletedLabel(completedModal) {
+  const entry = Object.values(DESTINATIONS).find(d => d.modal === completedModal)
+  return entry?.completedLabel ?? null
 }
 
 function FieldPill({ fieldKey }) {
@@ -97,6 +105,15 @@ function GroupCard({ icon, title, fields, actionLabel, onAction }) {
   )
 }
 
+function CompletedBanner({ label }) {
+  return (
+    <div className={styles.completedBanner}>
+      <span className={`mi ${styles.completedBannerIcon}`}>check_circle</span>
+      <span className={styles.completedBannerLabel}>{label} ✓</span>
+    </div>
+  )
+}
+
 export function MissingFieldsSheet({
   missingFields,
   docType,
@@ -105,10 +122,21 @@ export function MissingFieldsSheet({
   onSkipAndSave,
   pendingTemplate,
   returnTo,
+  completedModal,
 }) {
   const navigate  = useNavigate()
   const scrollRef = useRef(null)
   const [scrolled, setScrolled] = useState(false)
+
+  const completedLabel = useMemo(() => getCompletedLabel(completedModal), [completedModal])
+  const [showCompletedBanner, setShowCompletedBanner] = useState(!!completedLabel)
+
+  useEffect(() => {
+    if (!completedLabel) return
+    setShowCompletedBanner(true)
+    const timer = setTimeout(() => setShowCompletedBanner(false), 2400)
+    return () => clearTimeout(timer)
+  }, [completedLabel])
 
   const docLabel = docType === 'receipt' ? 'receipt' : 'invoice'
 
@@ -124,7 +152,13 @@ export function MissingFieldsSheet({
 
   const goToDestination = useCallback((route, modal) => {
     onClose()
-    navigate(route, { state: { autoOpenModal: modal, pendingTemplate, returnTo } })
+    navigate(route, {
+      state: {
+        autoOpenModal: modal,
+        pendingTemplate,
+        returnTo: { ...returnTo, reopenMissingFields: true, completedModal: modal },
+      },
+    })
   }, [onClose, navigate, pendingTemplate, returnTo])
 
   useEffect(() => {
@@ -161,6 +195,11 @@ export function MissingFieldsSheet({
         </div>
 
         <div className={styles.scrollBody} ref={scrollRef}>
+
+          {showCompletedBanner && completedLabel && (
+            <CompletedBanner label={completedLabel} />
+          )}
+
           <div className={styles.titleBlock}>
             <p className={styles.sheetTitle}>A few things are missing</p>
             <p className={styles.sheetSubtitle}>
