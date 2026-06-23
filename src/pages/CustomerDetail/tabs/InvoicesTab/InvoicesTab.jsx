@@ -47,10 +47,9 @@ export default function InvoiceTab({
   useEffect(() => {
     if (!reopenInvoiceId) return
     const match = invoices.find(inv => inv.id === reopenInvoiceId)
-    if (match) {
-      setViewingInvoice(match)
-      setPendingReopen(true)
-    }
+    if (!match) return
+    setViewingInvoice(match)
+    setPendingReopen(true)
     onReopenInvoiceHandled?.()
   }, [reopenInvoiceId, invoices])
 
