@@ -1,18 +1,19 @@
-import styles from './Toast.module.css'
+import styles from './Toast.module.css';
 
-export default function Toast({ message, success = true }) {
-  const isSuccess = success === true
-  const isError = success === false
-
-  const stateClass = isSuccess ? styles.success : isError ? styles.error : styles.warning
-  const icon = isSuccess ? 'check_circle' : isError ? 'cancel' : 'warning'
+export default function Toast({ message, type = 'success' }) {
+  const getIcon = () => {
+    switch (type) {
+      case 'success': return 'check_circle';
+      case 'error': return 'error';
+      case 'warning': return 'warning';
+      default: return 'info';
+    }
+  };
 
   return (
-    <div className={`${styles.toast} ${message ? styles.show : ''} ${stateClass}`}>
-      <div className={styles.iconWrap}>
-        <span className={`mi ${styles.icon}`}>{icon}</span>
-      </div>
-      <p className={styles.message}>{message}</p>
+    <div className={`${styles.toast} ${message ? styles.show : ''} ${styles[type]}`}>
+      <span className={`mi-outlined ${styles.icon}`}>{getIcon()}</span>
+      <span>{message}</span>
     </div>
-  )
+  );
 }
