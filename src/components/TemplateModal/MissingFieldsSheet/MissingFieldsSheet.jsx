@@ -104,6 +104,7 @@ export function MissingFieldsSheet({
   onClose,
   onSkipAndSave,
   pendingTemplate,
+  returnTo,
 }) {
   const navigate  = useNavigate()
   const scrollRef = useRef(null)
@@ -123,8 +124,8 @@ export function MissingFieldsSheet({
 
   const goToDestination = useCallback((route, modal) => {
     onClose()
-    navigate(route, { state: { autoOpenModal: modal, pendingTemplate } })
-  }, [onClose, navigate, pendingTemplate])
+    navigate(route, { state: { autoOpenModal: modal, pendingTemplate, returnTo } })
+  }, [onClose, navigate, pendingTemplate, returnTo])
 
   useEffect(() => {
     const el = scrollRef.current
