@@ -110,9 +110,11 @@ export default function Profile({ onMenuClick, isPremium = false, onUpgrade = ()
     if (!returnTo) return
     navigate(`/customers/${returnTo.customerId}`, {
       state: {
-        reopenInvoiceId: returnTo.invoiceId,
+        reopenInvoiceId: returnTo.invoiceId ?? null,
+        reopenReceiptId: returnTo.receiptId ?? null,
         reopenMissingFields: returnTo.reopenMissingFields ?? false,
         completedModal: returnTo.completedModal ?? null,
+        completedFields: returnTo.completedFields ?? [],
       },
     })
     setReturnTo(null)

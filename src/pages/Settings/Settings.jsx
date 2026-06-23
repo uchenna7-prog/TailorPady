@@ -126,6 +126,7 @@ export default function Settings({ onMenuClick }) {
         reopenInvoiceId: returnTo.invoiceId,
         reopenMissingFields: returnTo.reopenMissingFields ?? false,
         completedModal: returnTo.completedModal ?? null,
+        completedFields: returnTo.completedFields ?? [],
       },
     })
     setReturnTo(null)

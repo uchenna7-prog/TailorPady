@@ -24,6 +24,7 @@ export default function InvoiceTab({
   reopenInvoiceId,
   reopenMissingFields = false,
   completedModal = null,
+  completedFields = [],
   onReopenInvoiceHandled,
 }) {
   const { profileSettings } = useProfileSettings()
@@ -33,6 +34,8 @@ export default function InvoiceTab({
   const [addInvoiceModalOpen,  setaddInvoiceModalOpen]     = useState(false)
   const [generatingIds,  setGeneratingIds]  = useState(new Set())
   const [pendingReopen,  setPendingReopen]  = useState(false)
+  const [pendingCompletedModal, setPendingCompletedModal] = useState(null)
+  const [pendingCompletedFields, setPendingCompletedFields] = useState([])
 
   const currency      = getCurrency()
   const orderItemsMap = buildOrderItemsMap(orders)
@@ -49,7 +52,11 @@ export default function InvoiceTab({
     const match = invoices.find(inv => inv.id === reopenInvoiceId)
     if (!match) return
     setViewingInvoice(match)
-    setPendingReopen(true)
+    if (reopenMissingFields) {
+      setPendingReopen(true)
+      setPendingCompletedModal(completedModal)
+      setPendingCompletedFields(completedFields)
+    }
     onReopenInvoiceHandled?.()
   }, [reopenInvoiceId, invoices])
 
@@ -180,9 +187,14 @@ export default function InvoiceTab({
           onStatusChange={handleStatusChange}
           onDelete={(id) => setDeleteTarget(id)}
           showToast={showToast}
-          reopenMissingFields={pendingReopen && reopenMissingFields}
-          completedModal={completedModal}
-          onReopenMissingFieldsHandled={() => setPendingReopen(false)}
+          reopenMissingFields={pendingReopen}
+          completedModal={pendingCompletedModal}
+          completedFields={pendingCompletedFields}
+          onReopenMissingFieldsHandled={() => {
+            setPendingReopen(false)
+            setPendingCompletedModal(null)
+            setPendingCompletedFields([])
+          }}
         />
       )}
 

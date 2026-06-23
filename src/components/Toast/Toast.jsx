@@ -1,23 +1,34 @@
-import styles from './Toast.module.css';
+import styles from './Toast.module.css'
 
-export default function Toast({ message, type = 'success' }) {
-  if (!message) return null;
+const ICONS = {
+  success: 'check_circle',
+  error:   'error',
+  warning: 'warning',
+  info:    'info',
+}
 
-  const getIcon = () => {
-    switch (type) {
-      case 'success': return 'check_circle';
-      case 'error': return 'error';
-      case 'warning': return 'warning';
-      default: return 'info';
-    }
-  };
+export default function Toast({ message, type = 'success', onDismiss }) {
+  if (!message) return null
 
   return (
     <div className={`${styles.toast} ${styles.show} ${styles[type]}`}>
-      <span className={`mi-outlined ${styles.icon}`}>
-        {getIcon()}
-      </span>
-      <span style={{ wordWrap: 'break-word' }}>{message}</span>
+
+      <div className={styles.iconWrap}>
+        <span className={`mi-outlined ${styles.icon}`}>
+          {ICONS[type] ?? ICONS.info}
+        </span>
+      </div>
+
+      <span className={styles.message}>{message}</span>
+
+      <button
+        className={styles.dismiss}
+        onClick={() => onDismiss?.()}
+        aria-label="Dismiss"
+      >
+        <span className="mi" style={{ fontSize: '16px' }}>close</span>
+      </button>
+
     </div>
-  );
+  )
 }

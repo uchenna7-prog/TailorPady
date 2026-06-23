@@ -26,6 +26,16 @@ const STATUS_LABELS = {
   overdue: 'Overdue',
 }
 
+const COMPLETED_TOAST_LABELS = {
+  brand: 'Brand details added ✓',
+  businessContact: 'Business contact added ✓',
+  invoiceSettings: 'Invoice details added ✓',
+}
+
+function getCompletedToastLabel(completedModal) {
+  return COMPLETED_TOAST_LABELS[completedModal] ?? null
+}
+
 function normalizeCurrency(currency) {
   if (typeof currency === 'object' && currency !== null) {
     return currency.symbol || '₦'
@@ -60,6 +70,7 @@ export default function InvoiceViewer({
   onApplyDefaultTemplates,
   reopenMissingFields = false,
   completedModal = null,
+  completedFields = [],
   onReopenMissingFieldsHandled,
 }) {
 
@@ -105,8 +116,22 @@ export default function InvoiceViewer({
     if (!reopenMissingFields) return
     const requires = getRequiresForDoc('invoice', templateKey, null)
     const missing  = getMissingFields(requires, profileSettings)
-    setActiveCompletedModal(completedModal)
-    setMissingFields(missing)
+    const missingSet = new Set(missing)
+    const madeProgress = completedFields.some(field => !missingSet.has(field))
+
+    if (madeProgress) {
+      const label = getCompletedToastLabel(completedModal)
+      if (missing.length === 0 && label) {
+        showToast?.(label)
+      } else if (missing.length > 0) {
+        setActiveCompletedModal(completedModal)
+      }
+    }
+
+    if (missing.length > 0) {
+      setMissingFields(missing)
+    }
+
     onReopenMissingFieldsHandled?.()
   }, [reopenMissingFields])
 
@@ -320,7 +345,7 @@ export default function InvoiceViewer({
         />
       )}
 
-      {missingFields !== null && (
+      {missingFields !== null && missingFields.length > 0 && (
         <MissingFieldsSheet
           missingFields={missingFields}
           docType="invoice"

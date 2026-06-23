@@ -1,49 +1,82 @@
 .toast {
   position: fixed;
-  bottom: calc(80px + var(--sb));
+  bottom: calc(60px + var(--sb));
   left: 50%;
   transform: translateX(-50%) translateY(20px);
   width: fit-content;
-  max-width: 90vw;
-  min-width: 280px;
+  max-width: min(440px, 92vw);
+  min-width: 300px;
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 14px 20px;
-  
-  /* Use the main surface color but with a slight elevation shadow */
+  padding: 12px 14px;
+  border-radius: 14px;
   background: var(--surface);
   border: 1px solid var(--border);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
-  border-radius: 16px;
-  font-size: 0.95rem;
-  font-weight: 600;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08), 0 2px 8px rgba(0, 0, 0, 0.04);
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--text);
   z-index: 9999;
   opacity: 0;
-  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
   pointer-events: none;
-  text-align: left;
-  line-height: 1.4;
-  
-  /* Neutral text color */
-  color: var(--text);
+  line-height: 1.5;
+  transition: opacity 0.4s cubic-bezier(0.16, 1, 0.3, 1),
+              transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .show {
   opacity: 1;
   transform: translateX(-50%) translateY(0);
+  pointer-events: all;
 }
 
-.icon {
-  font-size: 22px;
+
+.iconWrap {
+  width: 34px;
+  height: 34px;
+  border-radius: 9px;
+  background: var(--surface2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
   flex-shrink: 0;
 }
 
-/* Subtler status indicators */
-.success { border-left: 4px solid var(--success); }
-.error { border-left: 4px solid var(--danger); }
-.warning { border-left: 4px solid var(--warning); }
+.icon {
+  font-size: 19px;
+}
 
 .success .icon { color: var(--success); }
-.error .icon { color: var(--danger); }
+.error   .icon { color: var(--danger);  }
 .warning .icon { color: var(--warning); }
+.info    .icon { color: var(--info);    }
+
+
+.message {
+  flex: 1;
+  word-break: break-word;
+}
+
+
+.dismiss {
+  flex-shrink: 0;
+  width: 26px;
+  height: 26px;
+  border-radius: 7px;
+  border: none;
+  background: transparent;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: var(--text3);
+  padding: 0;
+  margin-left: 2px;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.dismiss:hover {
+  background: var(--surface2);
+  color: var(--text);
+}

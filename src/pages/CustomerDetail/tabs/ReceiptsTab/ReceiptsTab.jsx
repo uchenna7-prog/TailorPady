@@ -19,12 +19,20 @@ export default function ReceiptTab({
   onDelete,
   onGenerateReceipt,
   showToast,
+  reopenReceiptId,
+  reopenMissingFields = false,
+  completedModal = null,
+  completedFields = [],
+  onReopenReceiptHandled,
 }) {
   const { profileSettings } = useProfileSettings()
 
   const [viewingReceipt,     setViewingReceipt]     = useState(null)
   const [deleteTarget,       setDeleteTarget]       = useState(null)
   const [addReceiptModalOpen, setAddReceiptModalOpen] = useState(false)
+  const [pendingReopen, setPendingReopen] = useState(false)
+  const [pendingCompletedModal, setPendingCompletedModal] = useState(null)
+  const [pendingCompletedFields, setPendingCompletedFields] = useState([])
 
   const currency      = getCurrency()
   const orderItemsMap = buildOrderItemsMap(orders)
@@ -41,6 +49,19 @@ export default function ReceiptTab({
     const updated = receipts.find(r => r.id === viewingReceipt.id)
     if (updated) setViewingReceipt(updated)
   }, [receipts])
+
+  useEffect(() => {
+    if (!reopenReceiptId) return
+    const match = receipts.find(r => r.id === reopenReceiptId)
+    if (!match) return
+    setViewingReceipt(match)
+    if (reopenMissingFields) {
+      setPendingReopen(true)
+      setPendingCompletedModal(completedModal)
+      setPendingCompletedFields(completedFields)
+    }
+    onReopenReceiptHandled?.()
+  }, [reopenReceiptId, receipts])
 
   function handleSelectPayment(payment, installment) {
     onGenerateReceipt(payment, installment)
@@ -96,6 +117,14 @@ export default function ReceiptTab({
           onClose={() => setViewingReceipt(null)}
           onDelete={(id) => setDeleteTarget(id)}
           showToast={showToast}
+          reopenMissingFields={pendingReopen}
+          completedModal={pendingCompletedModal}
+          completedFields={pendingCompletedFields}
+          onReopenMissingFieldsHandled={() => {
+            setPendingReopen(false)
+            setPendingCompletedModal(null)
+            setPendingCompletedFields([])
+          }}
         />
       )}
 

@@ -127,6 +127,7 @@ export function MissingFieldsSheet({
   const navigate  = useNavigate()
   const scrollRef = useRef(null)
   const [scrolled, setScrolled] = useState(false)
+  const [canScrollMore, setCanScrollMore] = useState(false)
 
   const completedLabel = useMemo(() => getCompletedLabel(completedModal), [completedModal])
   const [showCompletedBanner, setShowCompletedBanner] = useState(!!completedLabel)
@@ -150,13 +151,13 @@ export function MissingFieldsSheet({
 
   const stopPropagation = useCallback(e => e.stopPropagation(), [])
 
-  const goToDestination = useCallback((route, modal) => {
+  const goToDestination = useCallback((route, modal, pendingFields) => {
     onClose()
     navigate(route, {
       state: {
         autoOpenModal: modal,
         pendingTemplate,
-        returnTo: { ...returnTo, reopenMissingFields: true, completedModal: modal },
+        returnTo: { ...returnTo, reopenMissingFields: true, completedModal: modal, completedFields: pendingFields },
       },
     })
   }, [onClose, navigate, pendingTemplate, returnTo])
@@ -164,10 +165,29 @@ export function MissingFieldsSheet({
   useEffect(() => {
     const el = scrollRef.current
     if (!el) return
-    const handleScroll = () => setScrolled(el.scrollTop > 4)
+
+    const handleScroll = () => {
+      setScrolled(el.scrollTop > 4)
+      const remaining = el.scrollHeight - el.scrollTop - el.clientHeight
+      setCanScrollMore(remaining > 8)
+    }
+
     handleScroll()
     el.addEventListener('scroll', handleScroll, { passive: true })
-    return () => el.removeEventListener('scroll', handleScroll)
+
+    const resizeObserver = new ResizeObserver(handleScroll)
+    resizeObserver.observe(el)
+
+    return () => {
+      el.removeEventListener('scroll', handleScroll)
+      resizeObserver.disconnect()
+    }
+  }, [groups.length, showCompletedBanner])
+
+  const scrollToBottom = useCallback(() => {
+    const el = scrollRef.current
+    if (!el) return
+    el.scrollTo({ top: el.scrollHeight, behavior: 'smooth' })
   }, [])
 
   const sectionWord = groups.length === 1 ? 'section' : 'sections'
@@ -216,11 +236,21 @@ export function MissingFieldsSheet({
                 title={group.title}
                 fields={group.fields}
                 actionLabel={group.actionLabel}
-                onAction={() => goToDestination(group.route, group.modal)}
+                onAction={() => goToDestination(group.route, group.modal, group.fields)}
               />
             ))}
           </div>
         </div>
+
+        {canScrollMore && (
+          <button
+            className={styles.scrollMoreBtn}
+            onClick={scrollToBottom}
+            aria-label="Scroll down for more"
+          >
+            <span className="mi">keyboard_arrow_down</span>
+          </button>
+        )}
 
         <div className={styles.sheetFooter}>
           <button className={styles.skipBtn} onClick={onSkipAndSave}>

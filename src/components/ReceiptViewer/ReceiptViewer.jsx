@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react'
+import { useRef, useState, useEffect } from 'react'
 import { useGeneralSettings } from '../../contexts/GeneralSettingsContext'
 import { useProfileSettings } from '../../contexts/ProfileSettingsContext'
 import { TEMPLATE_MAPPINGS } from '../Templates/datas/receiptTemplateMappings'
@@ -21,6 +21,16 @@ import { ApplyScopeSheet } from '../ApplyScopeSheet/ApplyScopeSheet'
 import Header from '../Header/Header'
 import styles from './ReceiptViewer.module.css'
 
+
+const COMPLETED_TOAST_LABELS = {
+  brand: 'Brand details added ✓',
+  businessContact: 'Business contact added ✓',
+  invoiceSettings: 'Invoice details added ✓',
+}
+
+function getCompletedToastLabel(completedModal) {
+  return COMPLETED_TOAST_LABELS[completedModal] ?? null
+}
 
 function normalizeCurrency(currency) {
   if (typeof currency === 'object' && currency !== null) {
@@ -54,6 +64,10 @@ export default function ReceiptViewer({
   customerData,
   colourId,
   onApplyDefaultTemplates,
+  reopenMissingFields = false,
+  completedModal = null,
+  completedFields = [],
+  onReopenMissingFieldsHandled,
 }) {
 
   const { generalSettings, updateManyGeneralSettings } = useGeneralSettings()
@@ -74,6 +88,7 @@ export default function ReceiptViewer({
   const [missingFields, setMissingFields]           = useState(null)
   const [pendingActionLabel, setPendingActionLabel] = useState(null)
   const [pendingActionFn, setPendingActionFn]       = useState(null)
+  const [activeCompletedModal, setActiveCompletedModal] = useState(null)
 
   const templateKey = receipt.template || generalSettings.receiptTemplate || 'receiptTemplate1'
   const Template = TEMPLATE_MAPPINGS[templateKey] || TEMPLATE_MAPPINGS.receiptTemplate1
@@ -92,12 +107,41 @@ export default function ReceiptViewer({
   const orderTotal = receipt.orderPrice ? parseFloat(receipt.orderPrice) : cumulativePaid
   const isFullPay  = cumulativePaid >= orderTotal && orderTotal > 0
 
+  const returnTo = {
+    customerId: customer.id,
+    receiptId: receipt.id,
+  }
+
+  useEffect(() => {
+    if (!reopenMissingFields) return
+    const requires = getRequiresForDoc('receipt', null, templateKey)
+    const missing  = getMissingFields(requires, profileSettings)
+    const missingSet = new Set(missing)
+    const madeProgress = completedFields.some(field => !missingSet.has(field))
+
+    if (madeProgress) {
+      const label = getCompletedToastLabel(completedModal)
+      if (missing.length === 0 && label) {
+        showToast?.(label)
+      } else if (missing.length > 0) {
+        setActiveCompletedModal(completedModal)
+      }
+    }
+
+    if (missing.length > 0) {
+      setMissingFields(missing)
+    }
+
+    onReopenMissingFieldsHandled?.()
+  }, [reopenMissingFields])
+
   const checkMissingThen = (label, action) => {
     const requires = getRequiresForDoc('receipt', null, templateKey)
     const missing  = getMissingFields(requires, profileSettings)
     if (missing.length > 0) {
       setPendingActionLabel(label)
       setPendingActionFn(() => action)
+      setActiveCompletedModal(null)
       setMissingFields(missing)
       return
     }
@@ -301,17 +345,25 @@ export default function ReceiptViewer({
         />
       )}
 
-      {missingFields !== null && (
+      {missingFields !== null && missingFields.length > 0 && (
         <MissingFieldsSheet
           missingFields={missingFields}
           docType="receipt"
           pendingAction={pendingActionLabel}
-          onClose={() => { setMissingFields(null); setPendingActionLabel(null); setPendingActionFn(null) }}
+          returnTo={returnTo}
+          completedModal={activeCompletedModal}
+          onClose={() => {
+            setMissingFields(null)
+            setPendingActionLabel(null)
+            setPendingActionFn(null)
+            setActiveCompletedModal(null)
+          }}
           onSkipAndSave={() => {
             setMissingFields(null)
             const fn = pendingActionFn
             setPendingActionLabel(null)
             setPendingActionFn(null)
+            setActiveCompletedModal(null)
             fn?.()
           }}
         />

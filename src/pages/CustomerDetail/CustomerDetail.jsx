@@ -46,8 +46,10 @@ export default function CustomerDetail({ onMenuClick }) {
   const [photoModalOpen,  setPhotoModalOpen]  = useState(false)
   const [notesExpanded,   setNotesExpanded]   = useState(false)
   const [reopenInvoiceId, setReopenInvoiceId] = useState(null)
+  const [reopenReceiptId, setReopenReceiptId] = useState(null)
   const [reopenMissingFields, setReopenMissingFields] = useState(false)
   const [completedModal, setCompletedModal]   = useState(null)
+  const [completedFields, setCompletedFields] = useState([])
 
   const toastTimerRef  = useRef(null)
   const tabsRef        = useRef(null)
@@ -56,6 +58,8 @@ export default function CustomerDetail({ onMenuClick }) {
   const touchStartX    = useRef(null)
   const touchStartY    = useRef(null)
   const tabRefs        = useRef({})
+  const tabStripDragX  = useRef(null)
+  const tabStripDragged = useRef(false)
 
   const showToast = useCallback((msg) => {
     setToastMsg(msg)
@@ -126,12 +130,21 @@ export default function CustomerDetail({ onMenuClick }) {
 
   useEffect(() => {
     const navState = location.state
-    if (!navState?.reopenInvoiceId) return
+    if (!navState?.reopenInvoiceId && !navState?.reopenReceiptId) return
 
-    setActiveTab('invoices')
-    setReopenInvoiceId(navState.reopenInvoiceId)
+    if (navState.reopenInvoiceId) {
+      setActiveTab('invoices')
+      setReopenInvoiceId(navState.reopenInvoiceId)
+    }
+
+    if (navState.reopenReceiptId) {
+      setActiveTab('receipts')
+      setReopenReceiptId(navState.reopenReceiptId)
+    }
+
     setReopenMissingFields(navState.reopenMissingFields ?? false)
     setCompletedModal(navState.completedModal ?? null)
+    setCompletedFields(navState.completedFields ?? [])
 
     navigate(location.pathname, { replace: true, state: null })
   }, [location.state])
@@ -143,9 +156,25 @@ export default function CustomerDetail({ onMenuClick }) {
   }, [])
 
   const handleTabClick = useCallback((tabId) => {
+    if (tabStripDragged.current) return
     setActiveTab(tabId)
     scrollTabIntoView(tabId)
   }, [scrollTabIntoView])
+
+  const handleTabStripTouchStart = useCallback((e) => {
+    tabStripDragX.current = e.touches[0].clientX
+    tabStripDragged.current = false
+  }, [])
+
+  const handleTabStripTouchMove = useCallback((e) => {
+    if (tabStripDragX.current === null) return
+    const dx = e.touches[0].clientX - tabStripDragX.current
+    if (Math.abs(dx) > 6) tabStripDragged.current = true
+  }, [])
+
+  const handleTabStripTouchEnd = useCallback(() => {
+    tabStripDragX.current = null
+  }, [])
 
   const handleTouchStart = useCallback((e) => {
     touchStartX.current = e.touches[0].clientX
@@ -454,7 +483,13 @@ export default function CustomerDetail({ onMenuClick }) {
       </div>
 
       <div className={styles.stickyTabsWrapper}>
-        <div className={styles.tabs} ref={tabsRef}>
+        <div
+          className={styles.tabs}
+          ref={tabsRef}
+          onTouchStart={handleTabStripTouchStart}
+          onTouchMove={handleTabStripTouchMove}
+          onTouchEnd={handleTabStripTouchEnd}
+        >
           {TABS.map(tab => (
             <div
               key={tab.id}
@@ -511,10 +546,12 @@ export default function CustomerDetail({ onMenuClick }) {
             reopenInvoiceId={reopenInvoiceId}
             reopenMissingFields={reopenMissingFields}
             completedModal={completedModal}
+            completedFields={completedFields}
             onReopenInvoiceHandled={() => {
               setReopenInvoiceId(null)
               setReopenMissingFields(false)
               setCompletedModal(null)
+              setCompletedFields([])
             }}
           />
         )}
@@ -539,6 +576,16 @@ export default function CustomerDetail({ onMenuClick }) {
             onDelete={handleDeleteReceipt}
             onGenerateReceipt={handleGenerateReceipt}
             showToast={showToast}
+            reopenReceiptId={reopenReceiptId}
+            reopenMissingFields={reopenMissingFields}
+            completedModal={completedModal}
+            completedFields={completedFields}
+            onReopenReceiptHandled={() => {
+              setReopenReceiptId(null)
+              setReopenMissingFields(false)
+              setCompletedModal(null)
+              setCompletedFields([])
+            }}
           />
         )}
       </div>

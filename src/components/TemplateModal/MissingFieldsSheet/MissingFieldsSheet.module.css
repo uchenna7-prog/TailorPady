@@ -356,3 +356,46 @@
   font-weight: 600;
   color: #16a34a;
 }
+.sheet {
+  position: relative;
+}
+
+.scrollMoreBtn {
+  position:        absolute;
+  left:            50%;
+  bottom:          calc(env(safe-area-inset-bottom) + 86px);
+  transform:       translateX(-50%);
+  width:           34px;
+  height:          34px;
+  border-radius:   50%;
+  background:      var(--surface);
+  border:          1px solid var(--border2);
+  box-shadow:      0 4px 12px rgba(0, 0, 0, 0.12);
+  display:         flex;
+  align-items:     center;
+  justify-content: center;
+  cursor:          pointer;
+  color:           var(--text2);
+  z-index:         2;
+  animation:       scrollHintIn 0.2s ease;
+  transition:      opacity 0.15s, transform 0.15s;
+}
+
+.scrollMoreBtn:active {
+  transform: translateX(-50%) scale(0.92);
+}
+
+.scrollMoreBtn .mi {
+  font-size: 1.3rem;
+}
+
+@keyframes scrollHintIn {
+  from { opacity: 0; transform: translateX(-50%) translateY(4px); }
+  to   { opacity: 1; transform: translateX(-50%) translateY(0);   }
+}
+
+@media (min-width: 769px) {
+  .scrollMoreBtn {
+    bottom: 90px;
+  }
+}
