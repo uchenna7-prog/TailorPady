@@ -1,349 +1,234 @@
-import { useRef, useState, useEffect } from 'react'
-import { useGeneralSettings } from '../../contexts/GeneralSettingsContext'
-import { useProfileSettings } from '../../contexts/ProfileSettingsContext'
-import { TEMPLATE_MAPPINGS } from '../Templates/datas/invoiceTemplateMappings'
-import { buildInvoiceWhatsAppMessage } from './utils'
-import { sharePDF, downloadPDF } from '../../utils/pdfUtils'
-import { getBrandCSSVars } from '../../utils/cssVariablesUtils'
-import { useInvoiceBrandSettings } from '../../hooks/useInvoiceBrandSettings'
-import { getPaletteById } from '../../config/brandPalette'
-import { getMissingFields, getRequiresForDoc } from '../TemplateModal/templateRequiresUtils'
-import { TemplateModal } from '../TemplateModal/TemplateModal'
-import { MissingFieldsSheet } from '../TemplateModal/MissingFieldsSheet/MissingFieldsSheet'
-import { DesignOptionsSheet } from '../DesignOptionsSheet/DesignOptionsSheet'
-import { ShareOptionsSheet } from '../ShareOptionsSheet/ShareOptionsSheet'
-import { MoreOptionsSheet } from '../MoreOptionsSheet/MoreOptionsSheet'
-import { BrandColourSheet } from '../BrandColourSheet/BrandColourSheet'
-import { ApplyScopeSheet } from '../ApplyScopeSheet/ApplyScopeSheet'
-import Header from '../Header/Header'
-import styles from './InvoiceViewer.module.css'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
+import styles from './MissingFieldsSheet.module.css'
 
-
-const STATUS_LABELS = {
-  unpaid: 'Unpaid',
-  part_paid: 'Part Payment',
-  paid: 'Full Payment',
-  overdue: 'Overdue',
+const FIELD_META = {
+  logo:          { label: 'Business logo',    icon: 'image'           },
+  name:          { label: 'Business name',    icon: 'badge'           },
+  tagline:       { label: 'Tagline',          icon: 'format_quote'    },
+  address:       { label: 'Business address', icon: 'location_on'     },
+  phone:         { label: 'Phone number',     icon: 'phone'           },
+  email:         { label: 'Email address',    icon: 'mail'            },
+  website:       { label: 'Website',          icon: 'language'        },
+  signature:     { label: 'Signature',        icon: 'draw'            },
+  accountBank:   { label: 'Bank name',        icon: 'account_balance' },
+  accountNumber: { label: 'Account number',   icon: 'pin'             },
+  accountName:   { label: 'Account name',     icon: 'person'          },
+  paymentTerms:  { label: 'Payment terms',    icon: 'gavel'           },
 }
 
-function normalizeCurrency(currency) {
-  if (typeof currency === 'object' && currency !== null) {
-    return currency.symbol || '₦'
+const DESTINATIONS = {
+  brand: {
+    icon: 'storefront',
+    title: 'Brand Identity',
+    actionLabel: 'Add brand details',
+    completedLabel: 'Brand details added',
+    fieldKeys: ['logo', 'name', 'tagline', 'signature'],
+    route: '/profile',
+    modal: 'brand',
+  },
+  contact: {
+    icon: 'contact_phone',
+    title: 'Business Contact',
+    actionLabel: 'Add contact details',
+    completedLabel: 'Business contact added',
+    fieldKeys: ['phone', 'email', 'address', 'website'],
+    route: '/profile',
+    modal: 'businessContact',
+  },
+  invoice: {
+    icon: 'receipt_long',
+    title: 'Invoice Settings',
+    actionLabel: 'Add invoice details',
+    completedLabel: 'Invoice details added',
+    fieldKeys: ['accountBank', 'accountNumber', 'accountName', 'paymentTerms'],
+    route: '/settings',
+    modal: 'invoiceSettings',
+    invoiceOnly: true,
+  },
+}
+
+function buildGroups(missingFields, docType) {
+  const missingSet = new Set(missingFields)
+  const groups = []
+
+  for (const key of missingFields) {
+    for (const [groupKey, destination] of Object.entries(DESTINATIONS)) {
+      if (destination.invoiceOnly && docType === 'receipt') continue
+      if (!destination.fieldKeys.includes(key)) continue
+      if (groups.some(g => g.key === groupKey)) continue
+      const fields = destination.fieldKeys.filter(f => missingSet.has(f))
+      groups.push({ key: groupKey, fields, ...destination })
+    }
   }
-  return currency || '₦'
+
+  return groups
 }
 
-function buildSnapshotedBrandSettings(invoiceBrandSettings, brandSnapshot) {
-  const merged = brandSnapshot
-    ? {
-        ...invoiceBrandSettings,
-        ...Object.fromEntries(
-          Object.entries(brandSnapshot).filter(([, v]) => v !== '' && v !== null && v !== undefined)
-        ),
-      }
-    : invoiceBrandSettings
-
-  return {
-    ...merged,
-    currency: normalizeCurrency(merged.currency),
-  }
+function getCompletedLabel(completedModal) {
+  const entry = Object.values(DESTINATIONS).find(d => d.modal === completedModal)
+  return entry?.completedLabel ?? null
 }
 
-export default function InvoiceViewer({
-  invoice: snapShotedInvoice,
-  customer,
-  onClose,
-  onDelete,
-  showToast,
-  customerData,
-  colourId,
-  onApplyDefaultTemplates,
-  reopenMissingFields = false,
-  completedModal = null,
-  onReopenMissingFieldsHandled,
-}) {
-
-  const { generalSettings, updateManyGeneralSettings } = useGeneralSettings()
-  const { profileSettings, updateManyProfileSettings } = useProfileSettings()
-
-  const INVOICE_BRAND_SETTINGS = useInvoiceBrandSettings()
-
-  const paperRef = useRef(null)
-  const [invoice, setInvoice] = useState(snapShotedInvoice)
-  const [pdfLoading, setPdfLoading]         = useState(false)
-  const [shareLoading, setShareLoading]     = useState(false)
-  const [showDesignSheet, setShowDesignSheet]     = useState(false)
-  const [showShareSheet, setShowShareSheet]       = useState(false)
-  const [showMoreSheet, setShowMoreSheet]         = useState(false)
-  const [showTemplateModal, setShowTemplateModal] = useState(false)
-  const [showColourSheet, setShowColourSheet]     = useState(false)
-  const [pendingChange, setPendingChange]         = useState(null)
-  const [missingFields, setMissingFields]         = useState(null)
-  const [pendingActionLabel, setPendingActionLabel] = useState(null)
-  const [pendingActionFn, setPendingActionFn]       = useState(null)
-  const [activeCompletedModal, setActiveCompletedModal] = useState(null)
-
-  const templateKey = invoice.template || generalSettings.invoiceTemplate || 'invoiceTemplate1'
-  const Template = TEMPLATE_MAPPINGS[templateKey] || TEMPLATE_MAPPINGS.invoiceTemplate1
-
-  const effectiveColourId = invoice.brandSnapshot?.colourId || colourId
-
-  const snapShotedInvoiceBrandSettings = buildSnapshotedBrandSettings(
-    INVOICE_BRAND_SETTINGS,
-    invoice.brandSnapshot
+function FieldPill({ fieldKey }) {
+  const meta = FIELD_META[fieldKey]
+  return (
+    <div className={styles.pill}>
+      <span className={`mi ${styles.pillIcon}`}>{meta?.icon ?? 'circle'}</span>
+      <span className={styles.pillLabel}>{meta?.label ?? fieldKey}</span>
+    </div>
   )
+}
 
-  const brandCSSVars = getBrandCSSVars(snapShotedInvoiceBrandSettings.colour)
-  const filename = `Invoice-${invoice.number}-${customer.name.replace(/\s+/g, '_')}.pdf`
+function GroupCard({ icon, title, fields, actionLabel, onAction }) {
+  return (
+    <div className={styles.group}>
+      <div className={styles.groupHeader}>
+        <div className={styles.groupIconWrap}>
+          <span className="mi">{icon}</span>
+        </div>
+        <p className={styles.groupTitle}>{title}</p>
+        <span className={styles.groupCount}>{fields.length}</span>
+      </div>
 
-  const returnTo = {
-    customerId: customer.id,
-    invoiceId: invoice.id,
-  }
+      <div className={styles.pillList}>
+        {fields.map(key => (
+          <FieldPill key={key} fieldKey={key} />
+        ))}
+      </div>
+
+      <button className={styles.groupAction} onClick={onAction}>
+        <span>{actionLabel}</span>
+        <span className={`mi ${styles.groupActionIcon}`}>arrow_forward</span>
+      </button>
+    </div>
+  )
+}
+
+function CompletedBanner({ label }) {
+  return (
+    <div className={styles.completedBanner}>
+      <span className={`mi ${styles.completedBannerIcon}`}>check_circle</span>
+      <span className={styles.completedBannerLabel}>{label} ✓</span>
+    </div>
+  )
+}
+
+export function MissingFieldsSheet({
+  missingFields,
+  docType,
+  pendingAction,
+  onClose,
+  onSkipAndSave,
+  pendingTemplate,
+  returnTo,
+  completedModal,
+}) {
+  const navigate  = useNavigate()
+  const scrollRef = useRef(null)
+  const [scrolled, setScrolled] = useState(false)
+
+  const completedLabel = useMemo(() => getCompletedLabel(completedModal), [completedModal])
+  const [showCompletedBanner, setShowCompletedBanner] = useState(!!completedLabel)
 
   useEffect(() => {
-    if (!reopenMissingFields) return
-    const requires = getRequiresForDoc('invoice', templateKey, null)
-    const missing  = getMissingFields(requires, profileSettings)
-    setActiveCompletedModal(completedModal)
-    setMissingFields(missing)
-    onReopenMissingFieldsHandled?.()
-  }, [reopenMissingFields])
+    if (!completedLabel) return
+    setShowCompletedBanner(true)
+    const timer = setTimeout(() => setShowCompletedBanner(false), 2400)
+    return () => clearTimeout(timer)
+  }, [completedLabel])
 
-  const checkMissingThen = (label, action) => {
-    const requires = getRequiresForDoc('invoice', templateKey, null)
-    const missing  = getMissingFields(requires, profileSettings)
-    if (missing.length > 0) {
-      setPendingActionLabel(label)
-      setPendingActionFn(() => action)
-      setActiveCompletedModal(null)
-      setMissingFields(missing)
-      return
-    }
-    action()
-  }
+  const docLabel = docType === 'receipt' ? 'receipt' : 'invoice'
 
-  const executeDownload = async () => {
-    if (!paperRef.current || pdfLoading) return
-    setPdfLoading(true)
-    showToast?.('Generating PDF…')
-    try {
-      const exactHeight = Math.ceil(paperRef.current.getBoundingClientRect().height)
-      await downloadPDF(paperRef.current, filename, brandCSSVars, exactHeight)
-      showToast?.('PDF downloaded ✓')
-    } catch {
-      showToast?.('PDF failed — please try again.')
-    } finally {
-      setPdfLoading(false)
-    }
-  }
+  const skipLabel = pendingAction === 'download'
+    ? `Download ${docLabel} without these details`
+    : pendingAction === 'share'
+    ? `Share ${docLabel} without these details`
+    : `Save ${docLabel} without these details`
 
-  const executeShare = async () => {
-    if (!paperRef.current || shareLoading) return
-    setShareLoading(true)
-    showToast?.('Preparing…')
-    try {
-      const exactHeight = Math.ceil(paperRef.current.getBoundingClientRect().height)
-      const message = buildInvoiceWhatsAppMessage(invoice, customer, snapShotedInvoiceBrandSettings)
-      await sharePDF(paperRef.current, filename, message, brandCSSVars, exactHeight)
-      showToast?.('Shared ✓')
-    } catch (err) {
-      if (err?.name !== 'AbortError') {
-        showToast?.('Share failed — please try again.')
-      }
-    } finally {
-      setShareLoading(false)
-    }
-  }
+  const groups = useMemo(() => buildGroups(missingFields, docType), [missingFields, docType])
 
-  const handleDownload = () => checkMissingThen('download', executeDownload)
-  const handleShare    = () => checkMissingThen('share', executeShare)
+  const stopPropagation = useCallback(e => e.stopPropagation(), [])
 
-  const handleTemplateSelect = ({ invoiceTemplate }) => {
-    setPendingChange({ type: 'template', invoiceTemplate })
-  }
+  const goToDestination = useCallback((route, modal) => {
+    onClose()
+    navigate(route, {
+      state: {
+        autoOpenModal: modal,
+        pendingTemplate,
+        returnTo: { ...returnTo, reopenMissingFields: true, completedModal: modal },
+      },
+    })
+  }, [onClose, navigate, pendingTemplate, returnTo])
 
-  const handleColourSelect = (selectedColourId) => {
-    setShowColourSheet(false)
-    const hex = getPaletteById(selectedColourId)?.tokens.primary
-    setPendingChange({ type: 'colour', colourId: selectedColourId, colour: hex })
-  }
+  useEffect(() => {
+    const el = scrollRef.current
+    if (!el) return
+    const handleScroll = () => setScrolled(el.scrollTop > 4)
+    handleScroll()
+    el.addEventListener('scroll', handleScroll, { passive: true })
+    return () => el.removeEventListener('scroll', handleScroll)
+  }, [])
 
-  const handleApplyToThis = async () => {
-    if (!pendingChange) return
-    try {
-      if (pendingChange.type === 'template') {
-        await customerData.updateInvoiceTemplate(invoice.id, pendingChange.invoiceTemplate)
-        setInvoice(prev => ({ ...prev, template: pendingChange.invoiceTemplate }))
-        showToast?.('Template updated for this invoice ✓')
-      } else {
-        await customerData.updateInvoiceColour(invoice.id, pendingChange.colourId, pendingChange.colour)
-        setInvoice(prev => ({
-          ...prev,
-          brandSnapshot: { ...prev.brandSnapshot, colourId: pendingChange.colourId, colour: pendingChange.colour },
-        }))
-        showToast?.('Colour updated for this invoice ✓')
-      }
-    } catch {
-      showToast?.(pendingChange.type === 'template' ? 'Could not update template.' : 'Could not update colour.')
-    } finally {
-      setPendingChange(null)
-    }
-  }
-
-  const handleApplyAsDefault = async () => {
-    if (!pendingChange) return
-    try {
-      if (pendingChange.type === 'template') {
-        await customerData.updateInvoiceTemplate(invoice.id, pendingChange.invoiceTemplate)
-        setInvoice(prev => ({ ...prev, template: pendingChange.invoiceTemplate }))
-        updateManyGeneralSettings({ invoiceTemplate: pendingChange.invoiceTemplate })
-        onApplyDefaultTemplates?.({ invoiceTemplate: pendingChange.invoiceTemplate })
-        showToast?.('Template updated here and set as default ✓')
-      } else {
-        await customerData.updateInvoiceColour(invoice.id, pendingChange.colourId, pendingChange.colour)
-        setInvoice(prev => ({
-          ...prev,
-          brandSnapshot: { ...prev.brandSnapshot, colourId: pendingChange.colourId, colour: pendingChange.colour },
-        }))
-        updateManyProfileSettings({ brandColourId: pendingChange.colourId, brandColour: pendingChange.colour })
-        showToast?.('Colour updated here and set as default ✓')
-      }
-    } catch {
-      showToast?.(pendingChange.type === 'template' ? 'Could not update template.' : 'Could not update colour.')
-    } finally {
-      setPendingChange(null)
-    }
-  }
-
-  const handleCancelScope = () => {
-    setPendingChange(null)
-  }
+  const sectionWord = groups.length === 1 ? 'section' : 'sections'
 
   return (
-    <div className={styles.overlay}>
-      <Header
-        type="back"
-        title={invoice.number}
-        onBackClick={onClose}
-        customActions={[
-          {
-            icon:    'palette',
-            onClick: () => setShowDesignSheet(true),
-          },
-          {
-            icon:    'share',
-            onClick: () => setShowShareSheet(true),
-          },
-          {
-            icon:    'more_vert',
-            onClick: () => setShowMoreSheet(true),
-          },
-        ]}
-      />
+    <div className={styles.backdrop} onClick={onClose}>
+      <div className={styles.sheet} onClick={stopPropagation}>
 
-      <div className={styles.scrollArea}>
+        <div className={`${styles.sheetTop} ${scrolled ? styles.sheetTopScrolled : ''}`}>
+          <div className={styles.handle} />
+          <button className={styles.closeBtn} onClick={onClose} aria-label="Close">
+            <span className="mi">close</span>
+          </button>
 
-        <div className={styles.statusRow}>
-          <div className={`${styles.statusBadge} ${styles[`status_${invoice.status}`]}`}>
-            {STATUS_LABELS[invoice.status] || invoice.status}
+          <div className={styles.progressRow}>
+            <div className={styles.progressDots}>
+              {groups.map(group => (
+                <span key={group.key} className={styles.progressDot} />
+              ))}
+            </div>
+            <span className={styles.progressLabel}>
+              {groups.length} {sectionWord} to complete
+            </span>
           </div>
         </div>
 
-        <div className={styles.paperWrap}>
-          <div ref={paperRef} className={styles.paperInner} style={brandCSSVars}>
-            <Template invoice={invoice} customer={customer} invoiceBrandSettings={snapShotedInvoiceBrandSettings} />
+        <div className={styles.scrollBody} ref={scrollRef}>
+
+          {showCompletedBanner && completedLabel && (
+            <CompletedBanner label={completedLabel} />
+          )}
+
+          <div className={styles.titleBlock}>
+            <p className={styles.sheetTitle}>A few things are missing</p>
+            <p className={styles.sheetSubtitle}>
+              This template looks best with your business details filled in.
+              Add them now, or save the {docLabel} and finish later.
+            </p>
           </div>
+
+          <div className={styles.groupList}>
+            {groups.map(group => (
+              <GroupCard
+                key={group.key}
+                icon={group.icon}
+                title={group.title}
+                fields={group.fields}
+                actionLabel={group.actionLabel}
+                onAction={() => goToDestination(group.route, group.modal)}
+              />
+            ))}
+          </div>
+        </div>
+
+        <div className={styles.sheetFooter}>
+          <button className={styles.skipBtn} onClick={onSkipAndSave}>
+            {skipLabel}
+          </button>
         </div>
 
       </div>
-
-      {showDesignSheet && (
-        <DesignOptionsSheet
-          onClose={() => setShowDesignSheet(false)}
-          onSelectTemplate={() => { setShowDesignSheet(false); setShowTemplateModal(true) }}
-          onSelectColour={() => { setShowDesignSheet(false); setShowColourSheet(true) }}
-        />
-      )}
-
-      {showShareSheet && (
-        <ShareOptionsSheet
-          docType="invoice"
-          onClose={() => setShowShareSheet(false)}
-          onShare={handleShare}
-          onDownload={handleDownload}
-        />
-      )}
-
-      {showMoreSheet && (
-        <MoreOptionsSheet
-          docType="invoice"
-          onClose={() => setShowMoreSheet(false)}
-          onDelete={() => onDelete(invoice.id)}
-        />
-      )}
-
-      {showTemplateModal && (
-        <TemplateModal
-          isOpen={showTemplateModal}
-          currentInvoiceTemplate={templateKey}
-          currentReceiptTemplate={generalSettings.receiptTemplate}
-          colourId={effectiveColourId}
-          lockToTab="invoice"
-          onClose={() => setShowTemplateModal(false)}
-          onSelect={handleTemplateSelect}
-        />
-      )}
-
-      {showColourSheet && (
-        <BrandColourSheet
-          currentColourId={effectiveColourId}
-          onClose={() => setShowColourSheet(false)}
-          onSelect={handleColourSelect}
-        />
-      )}
-
-      {pendingChange && (
-        <ApplyScopeSheet
-          icon={pendingChange.type === 'colour' ? 'palette' : 'style'}
-          title={pendingChange.type === 'colour' ? 'Apply new colour' : 'Apply new template'}
-          description={
-            pendingChange.type === 'colour'
-              ? 'Apply to this invoice only, or apply here and make it your default going forward?'
-              : 'Apply to this invoice only, or apply here and make it your default going forward?'
-          }
-          thisLabel="This invoice only"
-          defaultLabel="This invoice + set as default"
-          onApplyToThis={handleApplyToThis}
-          onApplyToDefault={handleApplyAsDefault}
-          onCancel={handleCancelScope}
-        />
-      )}
-
-      {missingFields !== null && (
-        <MissingFieldsSheet
-          missingFields={missingFields}
-          docType="invoice"
-          pendingAction={pendingActionLabel}
-          returnTo={returnTo}
-          completedModal={activeCompletedModal}
-          onClose={() => {
-            setMissingFields(null)
-            setPendingActionLabel(null)
-            setPendingActionFn(null)
-            setActiveCompletedModal(null)
-          }}
-          onSkipAndSave={() => {
-            setMissingFields(null)
-            const fn = pendingActionFn
-            setPendingActionLabel(null)
-            setPendingActionFn(null)
-            setActiveCompletedModal(null)
-            fn?.()
-          }}
-        />
-      )}
-
     </div>
   )
 }
