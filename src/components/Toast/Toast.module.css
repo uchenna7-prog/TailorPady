@@ -1,36 +1,32 @@
 .toast {
   position: fixed;
-  bottom: calc(80px + var(--sb)); /* Positioned above the tab bar/FAB area */
+  bottom: calc(80px + var(--sb));
   left: 50%;
   transform: translateX(-50%) translateY(20px);
-  
-  /* Sizing to fit content but restricted for mobile screens */
   width: fit-content;
   max-width: 90vw;
-  min-width: 280px; 
-  
+  min-width: 280px;
   display: flex;
   align-items: center;
   gap: 12px;
   padding: 14px 20px;
   
-  /* Styling to match modern app aesthetics */
+  /* Use the main surface color but with a slight elevation shadow */
   background: var(--surface);
   border: 1px solid var(--border);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08), 0 2px 4px rgba(0, 0, 0, 0.04);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
   border-radius: 16px;
   font-size: 0.95rem;
   font-weight: 600;
   z-index: 9999;
-  
-  /* Animation */
   opacity: 0;
   transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
   pointer-events: none;
-  
-  /* Text handling */
   text-align: left;
   line-height: 1.4;
+  
+  /* Neutral text color */
+  color: var(--text);
 }
 
 .show {
@@ -40,23 +36,14 @@
 
 .icon {
   font-size: 22px;
-  flex-shrink: 0; /* Prevents the icon from squishing on long text */
+  flex-shrink: 0;
 }
 
-.success {
-  background: var(--success-soft);
-  color: var(--success);
-  border-color: rgba(21, 128, 61, 0.2);
-}
+/* Subtler status indicators */
+.success { border-left: 4px solid var(--success); }
+.error { border-left: 4px solid var(--danger); }
+.warning { border-left: 4px solid var(--warning); }
 
-.error {
-  background: var(--danger-soft);
-  color: var(--danger);
-  border-color: rgba(220, 38, 38, 0.2);
-}
-
-.warning {
-  background: var(--warning-soft);
-  color: var(--warning);
-  border-color: rgba(217, 119, 6, 0.2);
-}
+.success .icon { color: var(--success); }
+.error .icon { color: var(--danger); }
+.warning .icon { color: var(--warning); }
