@@ -1,20 +1,70 @@
-.toast { 
-    position: fixed; 
-    bottom: calc(100px + var(--sb)); 
-    left: 50%; 
-    transform: translateX(-50%) translateY(20px); 
-    background: var(--surface); 
-    border: 1px solid var(--border2); 
-    color: var(--text); padding: 11px 20px; 
-    border-radius: 12px; font-size: 0.8rem; 
-    font-weight: 700; z-index: 9999; 
-    opacity: 0; 
-    transition: opacity 0.3s, transform 0.3s; 
-    white-space: nowrap; 
-    pointer-events: none; 
+.toast {
+  position: fixed;
+  left: 50%;
+  bottom: calc(100px + var(--sb));
+  transform: translateX(-50%) translateY(16px);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 52px;
+  max-width: min(92vw, 460px);
+  padding: 0 16px;
+  border-radius: 16px;
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  box-shadow:
+    0 12px 32px rgba(0, 0, 0, 0.18),
+    0 2px 8px rgba(0, 0, 0, 0.08);
+  font-size: 0.875rem;
+  font-weight: 600;
+  z-index: 9999;
+  animation: toastIn 0.25s ease forwards;
+  pointer-events: none;
 }
 
-.show { 
-    opacity: 1; 
-    transform: translateX(-50%) translateY(0); 
+.toast :global(.material-icons) {
+  font-size: 20px;
+  flex-shrink: 0;
+}
+
+.success {
+  color: #166534;
+  background: rgba(240, 253, 244, 0.96);
+  border: 1px solid rgba(34, 197, 94, 0.18);
+}
+
+.success :global(.material-icons) {
+  color: #22c55e;
+}
+
+.error {
+  color: #991b1b;
+  background: rgba(254, 242, 242, 0.96);
+  border: 1px solid rgba(239, 68, 68, 0.18);
+}
+
+.error :global(.material-icons) {
+  color: #ef4444;
+}
+
+.warning {
+  color: #92400e;
+  background: rgba(255, 251, 235, 0.96);
+  border: 1px solid rgba(245, 158, 11, 0.18);
+}
+
+.warning :global(.material-icons) {
+  color: #f59e0b;
+}
+
+@keyframes toastIn {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(16px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
 }
