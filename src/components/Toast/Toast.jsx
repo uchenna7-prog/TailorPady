@@ -1,26 +1,18 @@
 import styles from './Toast.module.css'
 
 export default function Toast({ message, success = true }) {
-  if (!message) return null
+  const isSuccess = success === true
+  const isError = success === false
 
-  const variant =
-    success === true
-      ? styles.success
-      : success === false
-        ? styles.error
-        : styles.warning
-
-  const icon =
-    success === true
-      ? 'check_circle'
-      : success === false
-        ? 'error'
-        : 'warning'
+  const stateClass = isSuccess ? styles.success : isError ? styles.error : styles.warning
+  const icon = isSuccess ? 'check_circle' : isError ? 'cancel' : 'warning'
 
   return (
-    <div className={`${styles.toast} ${variant}`}>
-      <span className="material-icons">{icon}</span>
-      <span>{message}</span>
+    <div className={`${styles.toast} ${message ? styles.show : ''} ${stateClass}`}>
+      <div className={styles.iconWrap}>
+        <span className={`mi ${styles.icon}`}>{icon}</span>
+      </div>
+      <p className={styles.message}>{message}</p>
     </div>
   )
 }
