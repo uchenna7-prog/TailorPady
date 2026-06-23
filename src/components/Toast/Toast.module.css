@@ -1,70 +1,74 @@
 .toast {
   position: fixed;
+  bottom: calc(28px + var(--sb));
   left: 50%;
-  bottom: calc(100px + var(--sb));
   transform: translateX(-50%) translateY(16px);
-  display: flex;
+  display: inline-flex;
   align-items: center;
   gap: 12px;
-  min-height: 52px;
-  max-width: min(92vw, 460px);
-  padding: 0 16px;
-  border-radius: 16px;
-  backdrop-filter: blur(18px);
-  -webkit-backdrop-filter: blur(18px);
+  padding: 10px 18px 10px 10px;
+  background: var(--surface);
+  border: 1px solid var(--border2);
+  border-radius: 14px;
+  max-width: min(400px, calc(100vw - 32px));
   box-shadow:
-    0 12px 32px rgba(0, 0, 0, 0.18),
-    0 2px 8px rgba(0, 0, 0, 0.08);
-  font-size: 0.875rem;
-  font-weight: 600;
-  z-index: 9999;
-  animation: toastIn 0.25s ease forwards;
+    0 0 0 1px rgba(0, 0, 0, 0.04),
+    0 4px 8px rgba(0, 0, 0, 0.06),
+    0 16px 40px rgba(0, 0, 0, 0.10);
+  opacity: 0;
   pointer-events: none;
+  transition:
+    opacity 0.25s cubic-bezier(0.16, 1, 0.3, 1),
+    transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  z-index: 9999;
 }
 
-.toast :global(.material-icons) {
-  font-size: 20px;
+.show {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+  pointer-events: auto;
+}
+
+.iconWrap {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   flex-shrink: 0;
 }
 
-.success {
-  color: #166534;
-  background: rgba(240, 253, 244, 0.96);
-  border: 1px solid rgba(34, 197, 94, 0.18);
+.icon {
+  font-size: 18px;
+  font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
 }
 
-.success :global(.material-icons) {
-  color: #22c55e;
+.message {
+  font-size: 0.82rem;
+  font-weight: 650;
+  color: var(--text);
+  letter-spacing: -0.01em;
+  line-height: 1.4;
 }
 
-.error {
-  color: #991b1b;
-  background: rgba(254, 242, 242, 0.96);
-  border: 1px solid rgba(239, 68, 68, 0.18);
+.success .iconWrap {
+  background: rgba(21, 128, 61, 0.12);
+}
+.success .icon {
+  color: var(--success);
 }
 
-.error :global(.material-icons) {
-  color: #ef4444;
+.error .iconWrap {
+  background: rgba(220, 38, 38, 0.12);
+}
+.error .icon {
+  color: var(--danger);
 }
 
-.warning {
-  color: #92400e;
-  background: rgba(255, 251, 235, 0.96);
-  border: 1px solid rgba(245, 158, 11, 0.18);
+.warning .iconWrap {
+  background: rgba(217, 119, 6, 0.12);
 }
-
-.warning :global(.material-icons) {
-  color: #f59e0b;
-}
-
-@keyframes toastIn {
-  from {
-    opacity: 0;
-    transform: translateX(-50%) translateY(16px);
-  }
-
-  to {
-    opacity: 1;
-    transform: translateX(-50%) translateY(0);
-  }
+.warning .icon {
+  color: var(--warning);
 }
