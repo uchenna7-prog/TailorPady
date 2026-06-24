@@ -85,7 +85,7 @@ function Header({
   type = 'default',
   showBorderBottom = true,
   showNotifications = true,
-  showBotButton: showBotButtonProp = true,
+  showAgentButton = true,
   title,
   customTitle = {},
   customActions = [],
@@ -104,7 +104,9 @@ function Header({
   const { notifications, unreadCount, markRead, markAllRead } = useNotifications()
   const { drafts } = useAutonomousAgent()
 
-  const agentPendingCount = drafts.length
+  const agentPendingCount  = drafts.length
+  const isAgentPage        = location.pathname === '/agent'
+  const agentButtonVisible = type === 'default' && showAgentButton && !isAgentPage
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 0)
@@ -121,9 +123,7 @@ function Header({
     '/agent':     'Agent',
   }
 
-  const pageTitle     = title || PAGE_TITLES[location.pathname] || 'TailorPady'
-  const isAgentPage   = location.pathname === '/agent'
-  const showBotButton = type === 'default' && showBotButtonProp && !isAgentPage
+  const pageTitle = title || PAGE_TITLES[location.pathname] || 'TailorPady'
 
   const openNotif  = () => { setNotifTab('all'); setNotifOpen(true) }
   const closeNotif = () => setNotifOpen(false)
@@ -239,7 +239,7 @@ function Header({
           </div>
         )}
 
-        {type === 'default' && (showNotifications || showBotButton) && (
+        {type === 'default' && (showNotifications || agentButtonVisible) && (
           <div className={styles.right}>
             {showNotifications && (
               <button className={styles.iconBtn} onClick={openNotif} aria-label="Notifications">
@@ -252,7 +252,7 @@ function Header({
               </button>
             )}
 
-            {showBotButton && (
+            {agentButtonVisible && (
               <BotButton
                 pendingCount={agentPendingCount}
                 onClick={handleBotClick}
