@@ -2,7 +2,7 @@ import { useState, useRef, useLayoutEffect, useEffect, useCallback } from 'react
 import { useNavigate } from 'react-router-dom'
 import Header from '../../components/Header/Header'
 import BottomNav from '../../components/BottomNav/BottomNav'
-import { useAutonomousAgent } from '../../contexts/AgentContext'
+import { useAutonomousAgent } from '../../contexts/AutonomousAgentContext'
 import { useOrders } from '../../contexts/OrdersContext'
 import { useInvoices } from '../../contexts/InvoiceContext'
 import { useReceipts } from '../../contexts/ReceiptContext'
@@ -29,29 +29,29 @@ function Agent() {
     discardDraft,
   } = useAutonomousAgent()
 
-  const { allOrders } = useOrders()
-  const { allInvoices, addInvoice } = useInvoices()
-  const { allReceipts, addReceipt } = useReceipts()
-  const { allPayments } = usePayments()
-  const { customers } = useCustomers()
-  const { generalSettings } = useGeneralSettings()
-  const { profileSettings } = useProfileSettings()
+  const { allOrders }                   = useOrders()
+  const { allInvoices, addInvoice }     = useInvoices()
+  const { allReceipts, addReceipt }     = useReceipts()
+  const { allPayments }                 = usePayments()
+  const { customers }                   = useCustomers()
+  const { generalSettings }             = useGeneralSettings()
+  const { profileSettings }             = useProfileSettings()
 
-  const [tab, setTab] = useState('done')
-  const [toast, setToast] = useState(null)
-  const [swipeProgress, setSwipeProgress] = useState(0)
+  const [tab,             setTab]             = useState('done')
+  const [toast,           setToast]           = useState(null)
+  const [swipeProgress,   setSwipeProgress]   = useState(0)
   const [tabMeasurements, setTabMeasurements] = useState([])
 
-  const tabsRef = useRef(null)
-  const tabItemRefs = useRef([])
-  const touchStartX = useRef(null)
-  const touchStartY = useRef(null)
+  const tabsRef        = useRef(null)
+  const tabItemRefs    = useRef([])
+  const touchStartX    = useRef(null)
+  const touchStartY    = useRef(null)
   const swipeAxisLocked = useRef(null)
 
   const TABS = [
-    { key: 'done', label: 'Activity', badge: doneTasks.length },
+    { key: 'done',     label: 'Activity',  badge: doneTasks.length },
     { key: 'upcoming', label: 'Scheduled', badge: upcomingTasks.length },
-    { key: 'drafts', label: 'Drafts', badge: drafts.length },
+    { key: 'drafts',   label: 'Drafts',    badge: drafts.length },
   ]
 
   const activeTabIdx = TABS.findIndex(t => t.key === tab)
@@ -59,11 +59,11 @@ function Agent() {
   const measureTabs = useCallback(() => {
     if (!tabsRef.current) return
     const containerRect = tabsRef.current.getBoundingClientRect()
-    const measurements = tabItemRefs.current.map(el => {
+    const measurements  = tabItemRefs.current.map(el => {
       if (!el) return { left: 0, width: 0 }
       const rect = el.getBoundingClientRect()
       return {
-        left: rect.left - containerRect.left,
+        left:  rect.left - containerRect.left,
         width: rect.width,
       }
     })
@@ -99,8 +99,8 @@ function Agent() {
   }
 
   const handleTouchStart = useCallback((e) => {
-    touchStartX.current = e.touches[0].clientX
-    touchStartY.current = e.touches[0].clientY
+    touchStartX.current    = e.touches[0].clientX
+    touchStartY.current    = e.touches[0].clientY
     swipeAxisLocked.current = null
   }, [])
 
@@ -120,15 +120,15 @@ function Agent() {
 
     if (swipeAxisLocked.current !== 'horizontal') return
 
-    const screenW = window.innerWidth || 375
+    const screenW    = window.innerWidth || 375
     const rawProgress = dx / screenW
 
     const atStart = activeTabIdx === 0
-    const atEnd = activeTabIdx === TABS.length - 1
+    const atEnd   = activeTabIdx === TABS.length - 1
 
     let clamped = rawProgress
     if (atStart && rawProgress > 0) clamped = rawProgress * 0.15
-    if (atEnd && rawProgress < 0) clamped = rawProgress * 0.15
+    if (atEnd   && rawProgress < 0) clamped = rawProgress * 0.15
 
     setSwipeProgress(Math.max(-1, Math.min(1, clamped)))
   }, [activeTabIdx])
@@ -141,8 +141,8 @@ function Agent() {
         setTab(TABS[activeTabIdx - 1].key)
       }
     }
-    touchStartX.current = null
-    touchStartY.current = null
+    touchStartX.current     = null
+    touchStartY.current     = null
     swipeAxisLocked.current = null
     setSwipeProgress(0)
   }, [swipeProgress, activeTabIdx])
@@ -156,11 +156,11 @@ function Agent() {
     }
 
     const neighbourIdx = swipeProgress < 0 ? activeTabIdx + 1 : activeTabIdx - 1
-    const neighbour = tabMeasurements[neighbourIdx]
+    const neighbour    = tabMeasurements[neighbourIdx]
     if (!neighbour) return { left: current.left, width: current.width }
 
-    const t = Math.abs(swipeProgress)
-    const left = current.left + (neighbour.left - current.left) * t
+    const t     = Math.abs(swipeProgress)
+    const left  = current.left  + (neighbour.left  - current.left)  * t
     const width = current.width + (neighbour.width - current.width) * t
 
     return { left, width }
@@ -179,9 +179,9 @@ function Agent() {
           agentActive={enabled}
           customActions={[
             {
-              icon: 'chat',
+              icon:    'chat',
               onClick: () => { haptic('light'); navigate('/agent/chat') },
-              color: 'var(--text)',
+              color:   'var(--text)',
             },
           ]}
         />
