@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef, useCallback } from "react"
 import { ImageCarousel } from "../ImageCarousel/ImageCarousel"
 import { ImageLightbox } from "../ImageLightbox/ImageLightbox"
 import { UNIT_FULL, UNIT_SHORT } from "../../../../../../datas/measurementDatas"
@@ -179,6 +179,9 @@ export function MeasurementDetailsModal({ measurement, onClose, onDelete, onUpda
   const [validationErrors, setValidationErrors] = useState({})
   const [activeTab, setActiveTab] = useState('details')
 
+  const touchStartX = useRef(null)
+  const touchStartY = useRef(null)
+
   useEffect(() => {
     if (measurement) {
       setDraftName(measurement.name)
@@ -195,6 +198,9 @@ export function MeasurementDetailsModal({ measurement, onClose, onDelete, onUpda
     : measurement.imgSrc
       ? [measurement.imgSrc]
       : []
+
+  const hasStyleTab = measurement.styleSelections &&
+    Object.values(measurement.styleSelections).some(v => v && v !== '')
 
   function enterEditMode() {
     setDraftName(measurement.name)
@@ -259,9 +265,34 @@ export function MeasurementDetailsModal({ measurement, onClose, onDelete, onUpda
     onUpdate(measurement.id, updatedData)
   }
 
+  const handleTouchStart = useCallback((e) => {
+    touchStartX.current = e.touches[0].clientX
+    touchStartY.current = e.touches[0].clientY
+  }, [])
+
+  const handleTouchEnd = useCallback((e) => {
+    if (!hasStyleTab || touchStartX.current === null) return
+
+    const dx = e.changedTouches[0].clientX - touchStartX.current
+    const dy = e.changedTouches[0].clientY - touchStartY.current
+    const isHorizontalSwipe = Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 50
+
+    if (isHorizontalSwipe) {
+      if (dx < 0 && activeTab === 'details') setActiveTab('style')
+      if (dx > 0 && activeTab === 'style')    setActiveTab('details')
+    }
+
+    touchStartX.current = null
+    touchStartY.current = null
+  }, [hasStyleTab, activeTab])
+
   if (isEditing) {
     return (
-      <div className={`${styles.detailPanel} ${styles.detailPanel_open}`}>
+      <div
+        className={`${styles.detailPanel} ${styles.detailPanel_open}`}
+        onTouchStart={e => e.stopPropagation()}
+        onTouchEnd={e => e.stopPropagation()}
+      >
         <Header
           type="back"
           title="Edit Measurement"
@@ -346,12 +377,13 @@ export function MeasurementDetailsModal({ measurement, onClose, onDelete, onUpda
     )
   }
 
-  const hasStyleTab = measurement.styleSelections &&
-    Object.values(measurement.styleSelections).some(v => v && v !== '')
-
   return (
     <>
-      <div className={`${styles.detailPanel} ${styles.detailPanel_open}`}>
+      <div
+        className={`${styles.detailPanel} ${styles.detailPanel_open}`}
+        onTouchStart={e => { e.stopPropagation(); handleTouchStart(e) }}
+        onTouchEnd={e => { e.stopPropagation(); handleTouchEnd(e) }}
+      >
         <Header
           type="back"
           showBorderBottom={false}
