@@ -8,6 +8,7 @@ import { getPaletteById } from "../../../../config/brandPalette"
 import { uploadToCloudinary } from "../../../../services/cloudinaryService"
 import { useProfileSettings } from "../../../../contexts/ProfileSettingsContext"
 import BrandColourPicker from "../../../../components/BrandColourPicker/BrandColourPicker"
+import { LogoCropModal } from "../../../../components/LogoCropModal/LogoCropModal"
 import styles from "./BrandModal.module.css"
 
 const DEFAULT_COLOUR_ID = 'midnight'
@@ -22,6 +23,8 @@ export function BrandModal({ onBack, showToast }) {
   const [sigUploading, setSigUploading]   = useState(false)
   const [sigProgress, setSigProgress]     = useState(0)
 
+  const [cropSrc, setCropSrc] = useState(null)
+
   const [local, setLocal] = useState({
     brandName:      profileSettings.brandName      || '',
     brandTagline:   profileSettings.brandTagline   || '',
@@ -34,17 +37,25 @@ export function BrandModal({ onBack, showToast }) {
 
   const set = key => val => setLocal(p => ({ ...p, [key]: val }))
 
-  const handleLogoChange = async e => {
+  const handleLogoChange = e => {
     const file = e.target.files?.[0]
     if (!file) return
     if (!file.type.startsWith('image/')) { showToast('Please select an image file'); return }
     if (file.size > 10 * 1024 * 1024)   { showToast('Image must be under 10MB');    return }
 
+    const objectUrl = URL.createObjectURL(file)
+    setCropSrc(objectUrl)
+
+    if (logoInputRef.current) logoInputRef.current.value = ''
+  }
+
+  const handleCropConfirm = async croppedFile => {
+    setCropSrc(null)
     setLogoUploading(true)
     setLogoProgress(0)
 
     try {
-      const url = await uploadToCloudinary(file, 'invoices', setLogoProgress)
+      const url = await uploadToCloudinary(croppedFile, 'invoices', setLogoProgress)
       setLocal(p => ({ ...p, brandLogo: url }))
       showToast('Logo uploaded')
     } catch {
@@ -52,8 +63,12 @@ export function BrandModal({ onBack, showToast }) {
     } finally {
       setLogoUploading(false)
       setLogoProgress(0)
-      if (logoInputRef.current) logoInputRef.current.value = ''
     }
+  }
+
+  const handleCropCancel = () => {
+    setCropSrc(null)
+    if (logoInputRef.current) logoInputRef.current.value = ''
   }
 
   const handleLogoRemove = () => setLocal(p => ({ ...p, brandLogo: null }))
@@ -93,68 +108,78 @@ export function BrandModal({ onBack, showToast }) {
   const isSaving = logoUploading || sigUploading
 
   return (
-    <FullModal title="Brand Identity" onBack={onBack} onSave={isSaving ? undefined : save}>
+    <>
+      <FullModal title="Brand Identity" onBack={onBack} onSave={isSaving ? undefined : save}>
 
-      <FieldGroup>
-        <Field label="Brand Logo" hint="PNG or JPG. Appears on invoice headers and portfolio. Ideally square.">
-          {logoUploading ? (
-            <div className={styles.logoUploadBtn} style={{ opacity: 0.7, pointerEvents: 'none', flexDirection: 'column', gap: 8 }}>
-              <div style={{ width: '100%', height: 4, background: 'var(--border)', borderRadius: 2, overflow: 'hidden' }}>
-                <div style={{ height: '100%', width: `${logoProgress}%`, background: 'var(--accent)', borderRadius: 2, transition: 'width 0.2s' }} />
+        <FieldGroup>
+          <Field label="Brand Logo" hint="PNG or JPG. Appears on invoice headers and portfolio. Ideally square.">
+            {logoUploading ? (
+              <div className={styles.logoUploadBtn} style={{ opacity: 0.7, pointerEvents: 'none', flexDirection: 'column', gap: 8 }}>
+                <div style={{ width: '100%', height: 4, background: 'var(--border)', borderRadius: 2, overflow: 'hidden' }}>
+                  <div style={{ height: '100%', width: `${logoProgress}%`, background: 'var(--accent)', borderRadius: 2, transition: 'width 0.2s' }} />
+                </div>
+                <span style={{ fontSize: '0.78rem', color: 'var(--accent)', fontWeight: 700 }}>
+                  Uploading… {logoProgress}%
+                </span>
               </div>
-              <span style={{ fontSize: '0.78rem', color: 'var(--accent)', fontWeight: 700 }}>
-                Uploading… {logoProgress}%
-              </span>
-            </div>
-          ) : local.brandLogo ? (
-            <div className={styles.logoPreviewWrap}>
-              <img src={local.brandLogo} alt="Brand logo" className={styles.logoPreview} />
-              <button className={styles.logoRemove} onClick={handleLogoRemove}>
-                <span className="mi" style={{ fontSize: 15 }}>close</span> Remove
+            ) : local.brandLogo ? (
+              <div className={styles.logoPreviewWrap}>
+                <img src={local.brandLogo} alt="Brand logo" className={styles.logoPreview} />
+                <button className={styles.logoRemove} onClick={handleLogoRemove}>
+                  <span className="mi" style={{ fontSize: 15 }}>close</span> Remove
+                </button>
+              </div>
+            ) : (
+              <button className={styles.logoUploadBtn} onClick={() => logoInputRef.current?.click()}>
+                <span className="mi">add_photo_alternate</span>
+                Upload Logo
               </button>
-            </div>
-          ) : (
-            <button className={styles.logoUploadBtn} onClick={() => logoInputRef.current?.click()}>
-              <span className="mi">add_photo_alternate</span>
-              Upload Logo
-            </button>
-          )}
-          <input ref={logoInputRef} type="file" accept="image/*" style={{ display: 'none' }} onChange={handleLogoChange} />
-        </Field>
-      </FieldGroup>
+            )}
+            <input ref={logoInputRef} type="file" accept="image/*" style={{ display: 'none' }} onChange={handleLogoChange} />
+          </Field>
+        </FieldGroup>
 
-      <FieldGroup>
-        <Field label="Shop / Brand Name">
-          <TextInput value={local.brandName} onChange={set('brandName')} placeholder="e.g. Emeka Tailors" />
-        </Field>
-        <Field label="Tagline" hint="Short line shown under your name on coloured invoice templates.">
-          <TextInput value={local.brandTagline} onChange={set('brandTagline')} placeholder="e.g. Crafted with love, fitted for you" />
-        </Field>
-      </FieldGroup>
+        <FieldGroup>
+          <Field label="Shop / Brand Name">
+            <TextInput value={local.brandName} onChange={set('brandName')} placeholder="e.g. Emeka Tailors" />
+          </Field>
+          <Field label="Tagline" hint="Short line shown under your name on coloured invoice templates.">
+            <TextInput value={local.brandTagline} onChange={set('brandTagline')} placeholder="e.g. Crafted with love, fitted for you" />
+          </Field>
+        </FieldGroup>
 
-      <FieldGroup>
-        <Field label="Brand Colour" hint="Choose your brand colour. We've curated shades that look great on your portfolio and invoices.">
-          <BrandColourPicker value={local.brandColourId} onChange={set('brandColourId')} />
-        </Field>
-      </FieldGroup>
+        <FieldGroup>
+          <Field label="Brand Colour" hint="Choose your brand colour. We've curated shades that look great on your portfolio and invoices.">
+            <BrandColourPicker value={local.brandColourId} onChange={set('brandColourId')} />
+          </Field>
+        </FieldGroup>
 
-      <FieldGroup>
-        <Field label="Signature" hint="Draw your signature. It will appear on your invoices.">
-          {sigUploading ? (
-            <div style={{ padding: '16px 0' }}>
-              <div style={{ height: 4, background: 'var(--border)', borderRadius: 2, overflow: 'hidden', marginBottom: 8 }}>
-                <div style={{ height: '100%', width: `${sigProgress}%`, background: 'var(--accent)', borderRadius: 2, transition: 'width 0.2s' }} />
+        <FieldGroup>
+          <Field label="Signature" hint="Draw your signature. It will appear on your invoices.">
+            {sigUploading ? (
+              <div style={{ padding: '16px 0' }}>
+                <div style={{ height: 4, background: 'var(--border)', borderRadius: 2, overflow: 'hidden', marginBottom: 8 }}>
+                  <div style={{ height: '100%', width: `${sigProgress}%`, background: 'var(--accent)', borderRadius: 2, transition: 'width 0.2s' }} />
+                </div>
+                <span style={{ fontSize: '0.78rem', color: 'var(--accent)', fontWeight: 700 }}>
+                  Saving signature… {sigProgress}%
+                </span>
               </div>
-              <span style={{ fontSize: '0.78rem', color: 'var(--accent)', fontWeight: 700 }}>
-                Saving signature… {sigProgress}%
-              </span>
-            </div>
-          ) : (
-            <SignatureSection value={local.brandSignature} onChange={set('brandSignature')} />
-          )}
-        </Field>
-      </FieldGroup>
+            ) : (
+              <SignatureSection value={local.brandSignature} onChange={set('brandSignature')} />
+            )}
+          </Field>
+        </FieldGroup>
 
-    </FullModal>
+      </FullModal>
+
+      {cropSrc && (
+        <LogoCropModal
+          imageSrc={cropSrc}
+          onConfirm={handleCropConfirm}
+          onCancel={handleCropCancel}
+        />
+      )}
+    </>
   )
 }
