@@ -14,25 +14,21 @@ import {
 } from '../services/appointmentService'
 
 
-function parseApptDate(appt) {
+export function parseApptDate(appt) {
   if (!appt.date) return null
   const str = appt.time ? `${appt.date}T${appt.time}` : `${appt.date}T00:00`
   return new Date(str)
 }
 
-function isMissed(appt) {
-  if (appt.status === 'done' || appt.status === 'cancelled') return false
+export function getEffectiveStatus(appt) {
+  if (appt.status === 'done' || appt.status === 'cancelled') return appt.status
   const date = parseApptDate(appt)
-  if (!date) return false
-  return date < new Date()
+  if (date && date < new Date()) return 'missed'
+  return 'upcoming'
 }
 
-function isUpcoming(appt) {
-  if (appt.status === 'done' || appt.status === 'cancelled') return false
-  const date = parseApptDate(appt)
-  if (!date) return false
-  return date >= new Date()
-}
+function isMissed(appt)   { return getEffectiveStatus(appt) === 'missed'   }
+function isUpcoming(appt) { return getEffectiveStatus(appt) === 'upcoming' }
 
 function isTodayAppt(appt) {
   const date = parseApptDate(appt)
@@ -57,15 +53,15 @@ function isThisWeek(appt) {
 
 
 const AppointmentContext = createContext({
-  allAppointments:  [],
-  upcoming:         [],
-  todayAppointments:[],
-  missed:           [],
-  recent:           [],
-  missedCount:      0,
-  upcomingThisWeek: 0,
-  loading:          true,
-  error:            null,
+  allAppointments:   [],
+  upcoming:          [],
+  todayAppointments: [],
+  missed:            [],
+  recent:            [],
+  missedCount:       0,
+  upcomingThisWeek:  0,
+  loading:           true,
+  error:             null,
 })
 
 export function AppointmentProvider({ children }) {
@@ -124,7 +120,6 @@ export function AppointmentProvider({ children }) {
     return allAppointments.find(a => String(a.id) === String(id)) ?? null
   }, [allAppointments])
 
-
   const upcoming = allAppointments
     .filter(isUpcoming)
     .sort((a, b) => (parseApptDate(a) ?? new Date(0)) - (parseApptDate(b) ?? new Date(0)))
@@ -133,8 +128,8 @@ export function AppointmentProvider({ children }) {
     .filter(isTodayAppt)
     .sort((a, b) => (parseApptDate(a) ?? new Date(0)) - (parseApptDate(b) ?? new Date(0)))
 
-  const missed          = allAppointments.filter(isMissed)
-  const missedCount     = missed.length
+  const missed           = allAppointments.filter(isMissed)
+  const missedCount      = missed.length
   const upcomingThisWeek = allAppointments.filter(a => isUpcoming(a) && isThisWeek(a)).length
 
   const recent = allAppointments
