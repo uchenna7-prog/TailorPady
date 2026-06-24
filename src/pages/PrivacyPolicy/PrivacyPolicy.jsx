@@ -117,7 +117,7 @@ export default function PrivacyPolicy({ onMenuClick }) {
 
   return (
     <div className={styles.page}>
-      <Header onMenuClick={onMenuClick} title="Privacy Policy" showNotifications = {false} />
+      <Header onMenuClick={onMenuClick} title="Privacy Policy" showNotifications = {false} showAgentButton = {false} />
 
       <div className={styles.scrollArea}>
         <div className={styles.hero}>
