@@ -1,6 +1,5 @@
 import { useRef } from 'react'
 import Header from '../../components/Header/Header'
-import BottomNav from '../../components/BottomNav/BottomNav'
 import styles from './RefundPolicy.module.css'
 
 const LAST_UPDATED = 'June 2026'
@@ -145,8 +144,6 @@ export default function RefundPolicy({ onMenuClick }) {
 
         <div style={{ height: 32 }} />
       </div>
-
-      <BottomNav />
     </div>
   )
 }

@@ -1,5 +1,3 @@
-/* src/pages/Reviews/Reviews.module.css */
-
 .page {
   display: flex;
   flex-direction: column;
@@ -7,7 +5,6 @@
   background: var(--bg);
 }
 
-/* ── SEARCH ROW ── */
 .searchRow {
   display: flex;
   align-items: center;
@@ -38,7 +35,9 @@
   min-width: 0;
 }
 
-.searchInput::placeholder { color: var(--text3); }
+.searchInput::placeholder {
+  color: var(--text3);
+}
 
 .searchClear {
   background: none;
@@ -66,9 +65,10 @@
   transition: background 0.15s;
 }
 
-.filterBtn:active { background: var(--surface2); }
+.filterBtn:active {
+  background: var(--surface2);
+}
 
-/* ── TABS ── */
 .tabs {
   display: flex;
   border-bottom: 1px solid var(--border);
@@ -85,7 +85,9 @@
   margin-top: 14px;
 }
 
-.tabs::-webkit-scrollbar { display: none; }
+.tabs::-webkit-scrollbar {
+  display: none;
+}
 
 .tab {
   flex: 1;
@@ -140,7 +142,6 @@
   border-color: rgba(245, 158, 11, 0.35);
 }
 
-/* ── LIST AREA ── */
 .listArea {
   flex: 1;
   overflow-y: auto;
@@ -148,7 +149,6 @@
   -webkit-overflow-scrolling: touch;
 }
 
-/* ── EMPTY STATE ── */
 .emptyState {
   display: flex;
   flex-direction: column;
@@ -158,7 +158,10 @@
   text-align: center;
 }
 
-.emptyState p { font-size: 0.85rem; color: var(--text3); }
+.emptyState p {
+  font-size: 0.85rem;
+  color: var(--text3);
+}
 
 .emptyHint {
   font-size: 0.72rem;
@@ -169,22 +172,20 @@
   line-height: 1.6;
 }
 
-/* ── REVIEW LIST ── */
 .reviewList {
   display: flex;
   flex-direction: column;
 }
 
-/* ── REVIEW CARD ── */
 .reviewCard {
   display: flex;
-  align-items: flex-start;
-  gap: 12px;
+  align-items: center;
+  gap: 14px;
   padding: 14px 0;
   cursor: pointer;
-  position: relative;
-  background: var(--bg);
   transition: background 0.15s;
+  background: var(--bg);
+  position: relative;
 }
 
 .reviewCard::after {
@@ -192,27 +193,43 @@
   position: absolute;
   bottom: 0;
   left: 0;
-  right: 0;
+  right: -20px;
   height: 1px;
   background: var(--border);
 }
 
-.reviewCardLast::after { display: none; }
-.reviewCard:active { background: var(--surface); }
+.reviewCardLast::after {
+  display: none;
+}
 
-.cardAvatar {
-  width: 44px;
-  height: 44px;
-  border-radius: 50%;
-  background: var(--surface2);
+.reviewCard:active {
+  background: var(--surface);
+}
+
+.cardAvatarOuter {
+  width: 80px;
+  height: 80px;
+  border-radius: 12px;
+  background: var(--surface);
   border: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.cardAvatarInner {
+  width: 58px;
+  height: 58px;
+  border-radius: 10px;
+  background: var(--surface2);
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 1.1rem;
   font-weight: 800;
   color: var(--accent);
-  flex-shrink: 0;
+  letter-spacing: 0.5px;
 }
 
 .cardInfo {
@@ -222,7 +239,7 @@
 
 .cardName {
   font-size: 0.95rem;
-  font-weight: 700;
+  font-weight: 600;
   color: var(--text);
   margin-bottom: 3px;
   white-space: nowrap;
@@ -238,19 +255,24 @@
 }
 
 .cardReviewSnippet {
-  font-size: 0.8rem;
+  font-size: 0.78rem;
+  font-weight: 400;
   color: var(--text2);
   line-height: 1.45;
-  margin: 0 0 4px;
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
-.cardDate {
-  font-size: 0.68rem;
-  color: var(--text3);
-  font-weight: 500;
+.cardRight {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 6px;
+  flex-shrink: 0;
 }
 
-/* ── STATUS PILL ── */
 .statusPill {
   display: inline-flex;
   align-items: center;
@@ -260,10 +282,16 @@
   text-transform: uppercase;
   letter-spacing: 0.4px;
   padding: 4px 8px;
-  border-radius: 20px;
+  border-radius: 5px;
   border: 1px solid;
   white-space: nowrap;
-  flex-shrink: 0;
+}
+
+.cardDate {
+  font-size: 0.68rem;
+  color: var(--text3);
+  font-weight: 500;
+  white-space: nowrap;
 }
 
 .fab {
@@ -280,7 +308,7 @@
   align-items: center;
   justify-content: center;
   font-size: 1.6rem;
-  box-shadow: 0 4px 16px rgba(0,0,0,0.25);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
   cursor: pointer;
   z-index: 100;
   transition: transform 0.15s, box-shadow 0.15s;
@@ -288,10 +316,9 @@
 
 .fab:active {
   transform: scale(0.94);
-  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
 }
 
-/* ── BOTTOM SHEET ── */
 .sheetOverlay {
   position: fixed;
   inset: 0;
@@ -382,9 +409,10 @@
   transition: opacity 0.15s;
 }
 
-.sheetSaveBtn:active { opacity: 0.85; }
+.sheetSaveBtn:active {
+  opacity: 0.85;
+}
 
-/* ── FORM FIELDS ── */
 .fieldLabel {
   display: block;
   font-size: 0.62rem;
@@ -395,7 +423,9 @@
   margin-bottom: 8px;
 }
 
-.req { color: var(--danger, #ef4444); }
+.req {
+  color: var(--danger, #ef4444);
+}
 
 .optional {
   color: var(--text3);
@@ -420,8 +450,13 @@
   transition: border-color 0.2s;
 }
 
-.input:focus { border-color: var(--accent); }
-.input::placeholder { color: var(--text3); }
+.input:focus {
+  border-color: var(--accent);
+}
+
+.input::placeholder {
+  color: var(--text3);
+}
 
 .textarea {
   width: 100%;
@@ -440,10 +475,17 @@
   transition: border-color 0.2s;
 }
 
-.textarea:focus { border-color: var(--accent); }
-.textarea::placeholder { color: var(--text3); }
+.textarea:focus {
+  border-color: var(--accent);
+}
 
-.inputError { border-color: var(--danger, #ef4444) !important; }
+.textarea::placeholder {
+  color: var(--text3);
+}
+
+.inputError {
+  border-color: var(--danger, #ef4444) !important;
+}
 
 .errorMsg {
   display: block;
@@ -453,7 +495,6 @@
   margin-top: 4px;
 }
 
-/* ── STAR PICKER ── */
 .starPicker {
   display: flex;
   gap: 4px;
@@ -470,7 +511,6 @@
   -webkit-tap-highlight-color: transparent;
 }
 
-/* ── REVIEW DETAIL SHEET ── */
 .detailCustomerRow {
   display: flex;
   align-items: center;
@@ -540,7 +580,6 @@
   font-style: italic;
 }
 
-/* ── ACTION BUTTONS ── */
 .detailActions {
   display: flex;
   gap: 10px;
@@ -567,7 +606,9 @@
   transition: opacity 0.15s;
 }
 
-.approveBtn:active { opacity: 0.75; }
+.approveBtn:active {
+  opacity: 0.75;
+}
 
 .rejectBtn {
   flex: 1;
@@ -589,7 +630,9 @@
   transition: opacity 0.15s;
 }
 
-.rejectBtn:active { opacity: 0.75; }
+.rejectBtn:active {
+  opacity: 0.75;
+}
 
 .deleteBtn {
   width: 100%;
@@ -612,4 +655,6 @@
   transition: opacity 0.15s;
 }
 
-.deleteBtn:active { opacity: 0.75; }
+.deleteBtn:active {
+  opacity: 0.75;
+}

@@ -1,5 +1,4 @@
 import Header from '../../components/Header/Header'
-import BottomNav from '../../components/BottomNav/BottomNav'
 import styles from './PrivacyPolicy.module.css'
 
 
@@ -165,7 +164,6 @@ export default function PrivacyPolicy({ onMenuClick }) {
         <div style={{ height: 32 }} />
       </div>
 
-      <BottomNav />
     </div>
   )
 }

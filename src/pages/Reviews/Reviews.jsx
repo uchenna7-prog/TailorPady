@@ -1,14 +1,11 @@
-// src/pages/Reviews/Reviews.jsx
-
 import { useState, useCallback, useRef } from 'react'
-import Header    from '../../components/Header/Header'
-import Toast     from '../../components/Toast/Toast'
+import { getInitials } from '../../utils/nameUtils'
+import Header from '../../components/Header/Header'
+import Toast from '../../components/Toast/Toast'
 import ConfirmSheet from '../../components/ConfirmSheet/ConfirmSheet'
 import { useReviews } from '../../contexts/ReviewContext'
-import styles    from './Reviews.module.css'
+import styles from './Reviews.module.css'
 import BottomNav from '../../components/BottomNav/BottomNav'
-
-// ── Helpers ───────────────────────────────────────────────────
 
 function formatDate(ts) {
   if (!ts) return ''
@@ -64,12 +61,10 @@ function StarPicker({ value, onChange }) {
   )
 }
 
-// ── Status config ─────────────────────────────────────────────
-
 const STATUS_CONFIG = {
-  pending:  { label: 'Pending',  color: '#f59e0b', bg: 'rgba(245,158,11,0.12)',  border: 'rgba(245,158,11,0.35)',  icon: 'schedule'      },
-  approved: { label: 'Approved', color: '#22c55e', bg: 'rgba(34,197,94,0.12)',   border: 'rgba(34,197,94,0.35)',   icon: 'check_circle'  },
-  rejected: { label: 'Rejected', color: '#94a3b8', bg: 'rgba(148,163,184,0.12)', border: 'rgba(148,163,184,0.35)', icon: 'cancel'        },
+  pending:  { label: 'Pending',  color: '#f59e0b', bg: 'rgba(245,158,11,0.12)',  border: 'rgba(245,158,11,0.35)',  icon: 'schedule'     },
+  approved: { label: 'Approved', color: '#22c55e', bg: 'rgba(34,197,94,0.12)',   border: 'rgba(34,197,94,0.35)',   icon: 'check_circle' },
+  rejected: { label: 'Rejected', color: '#94a3b8', bg: 'rgba(148,163,184,0.12)', border: 'rgba(148,163,184,0.35)', icon: 'cancel'       },
 }
 
 const TABS = [
@@ -79,8 +74,6 @@ const TABS = [
   { id: 'rejected', label: 'Rejected' },
 ]
 
-// ── Add Review Sheet ──────────────────────────────────────────
-
 function AddReviewSheet({ isOpen, onClose, onSave }) {
   const [customerName,  setCustomerName]  = useState('')
   const [customerPhone, setCustomerPhone] = useState('')
@@ -89,8 +82,11 @@ function AddReviewSheet({ isOpen, onClose, onSave }) {
   const [errors,        setErrors]        = useState({})
 
   const reset = () => {
-    setCustomerName(''); setCustomerPhone('')
-    setReviewText(''); setRating(0); setErrors({})
+    setCustomerName('')
+    setCustomerPhone('')
+    setReviewText('')
+    setRating(0)
+    setErrors({})
   }
 
   const handleClose = () => { reset(); onClose() }
@@ -128,8 +124,9 @@ function AddReviewSheet({ isOpen, onClose, onSave }) {
         </div>
 
         <div className={styles.sheetBody}>
-          {/* Customer name */}
-          <label className={styles.fieldLabel}>Customer Name <span className={styles.req}>*</span></label>
+          <label className={styles.fieldLabel}>
+            Customer Name <span className={styles.req}>*</span>
+          </label>
           <input
             className={`${styles.input} ${errors.customerName ? styles.inputError : ''}`}
             placeholder="e.g. Emeka Okafor"
@@ -138,8 +135,9 @@ function AddReviewSheet({ isOpen, onClose, onSave }) {
           />
           {errors.customerName && <span className={styles.errorMsg}>{errors.customerName}</span>}
 
-          {/* Phone (optional) */}
-          <label className={styles.fieldLabel} style={{ marginTop: 16 }}>WhatsApp Number <span className={styles.optional}>(optional)</span></label>
+          <label className={styles.fieldLabel} style={{ marginTop: 16 }}>
+            WhatsApp Number <span className={styles.optional}>(optional)</span>
+          </label>
           <input
             className={styles.input}
             placeholder="e.g. 08012345678"
@@ -148,14 +146,12 @@ function AddReviewSheet({ isOpen, onClose, onSave }) {
             onChange={e => setCustomerPhone(e.target.value)}
           />
 
-          {/* Rating */}
           <label className={styles.fieldLabel} style={{ marginTop: 16 }}>
             Rating <span className={styles.req}>*</span>
           </label>
-          <StarPicker value={rating} onChange={(v) => { setRating(v); setErrors(p => ({ ...p, rating: '' })) }} />
+          <StarPicker value={rating} onChange={v => { setRating(v); setErrors(p => ({ ...p, rating: '' })) }} />
           {errors.rating && <span className={styles.errorMsg}>{errors.rating}</span>}
 
-          {/* Review text */}
           <label className={styles.fieldLabel} style={{ marginTop: 16 }}>
             Review <span className={styles.req}>*</span>
           </label>
@@ -177,8 +173,6 @@ function AddReviewSheet({ isOpen, onClose, onSave }) {
   )
 }
 
-// ── Review Detail Sheet ───────────────────────────────────────
-
 function ReviewDetailSheet({ review, onClose, onApprove, onReject, onDelete }) {
   if (!review) return null
   const sc = STATUS_CONFIG[review.status] ?? STATUS_CONFIG.pending
@@ -195,10 +189,9 @@ function ReviewDetailSheet({ review, onClose, onApprove, onReject, onDelete }) {
         </div>
 
         <div className={styles.sheetBody}>
-          {/* Customer info */}
           <div className={styles.detailCustomerRow}>
             <div className={styles.detailAvatar}>
-              {review.customerName?.charAt(0)?.toUpperCase() ?? '?'}
+              {getInitials(review.customerName) || '?'}
             </div>
             <div>
               <div className={styles.detailCustomerName}>{review.customerName}</div>
@@ -209,61 +202,54 @@ function ReviewDetailSheet({ review, onClose, onApprove, onReject, onDelete }) {
                 </div>
               )}
             </div>
-            {/* Status pill */}
             <span
               className={styles.statusPill}
-              style={{ color: sc.color, background: sc.bg, borderColor: sc.border, marginLeft: 'auto' }}
+              style={{ color: sc.color, background: sc.bg, borderColor: sc.border, marginLeft: 'auto', textTransform: 'lowercase' }}
             >
               <span className="mi" style={{ fontSize: '0.75rem' }}>{sc.icon}</span>
               {sc.label}
             </span>
           </div>
 
-          {/* Rating + date */}
           <div className={styles.detailMeta}>
             <StarDisplay rating={review.rating} size="1.1rem" />
             <span className={styles.detailDate}>{formatDate(review.createdAt)}</span>
           </div>
 
-          {/* Review text */}
           <div className={styles.detailReviewBox}>
             <span className="mi" style={{ fontSize: '1.2rem', color: 'var(--text3)', flexShrink: 0 }}>format_quote</span>
             <p className={styles.detailReviewText}>{review.review}</p>
           </div>
 
-          {/* Approval actions — only show for pending */}
           {review.status === 'pending' && (
             <div className={styles.detailActions}>
               <button className={styles.approveBtn} onClick={() => onApprove(review.id)}>
-                <span className="mi" style={{ fontSize: '1.1rem' }}>check_circle</span>
+                <span className="mi" style={{ fontSize: '1.1rem', textTransform: 'lowercase' }}>check_circle</span>
                 Approve
               </button>
               <button className={styles.rejectBtn} onClick={() => onReject(review.id)}>
-                <span className="mi" style={{ fontSize: '1.1rem' }}>cancel</span>
+                <span className="mi" style={{ fontSize: '1.1rem', textTransform: 'lowercase' }}>cancel</span>
                 Reject
               </button>
             </div>
           )}
 
-          {/* Re-approve if rejected */}
           {review.status === 'rejected' && (
             <button className={styles.approveBtn} style={{ width: '100%', marginTop: 8 }} onClick={() => onApprove(review.id)}>
-              <span className="mi" style={{ fontSize: '1.1rem' }}>check_circle</span>
+              <span className="mi" style={{ fontSize: '1.1rem', textTransform: 'lowercase' }}>check_circle</span>
               Approve Anyway
             </button>
           )}
 
-          {/* Reject if approved */}
           {review.status === 'approved' && (
             <button className={styles.rejectBtn} style={{ width: '100%', marginTop: 8 }} onClick={() => onReject(review.id)}>
-              <span className="mi" style={{ fontSize: '1.1rem' }}>cancel</span>
+              <span className="mi" style={{ fontSize: '1.1rem', textTransform: 'lowercase' }}>cancel</span>
               Remove from Portfolio
             </button>
           )}
 
-          {/* Delete */}
           <button className={styles.deleteBtn} onClick={() => onDelete(review)}>
-            <span className="mi" style={{ fontSize: '1rem' }}>delete_outline</span>
+            <span className="mi" style={{ fontSize: '1rem', textTransform: 'lowercase' }}>delete_outline</span>
             Delete Review
           </button>
         </div>
@@ -272,65 +258,59 @@ function ReviewDetailSheet({ review, onClose, onApprove, onReject, onDelete }) {
   )
 }
 
-// ── Review Card ───────────────────────────────────────────────
-
 function ReviewCard({ review, onTap, isLast }) {
   const sc = STATUS_CONFIG[review.status] ?? STATUS_CONFIG.pending
+
   return (
     <div
       className={`${styles.reviewCard} ${isLast ? styles.reviewCardLast : ''}`}
       onClick={onTap}
     >
-      {/* Left — avatar */}
-      <div className={styles.cardAvatar}>
-        {review.customerName?.charAt(0)?.toUpperCase() ?? '?'}
+      <div className={styles.cardAvatarOuter}>
+        <div className={styles.cardAvatarInner}>
+          {getInitials(review.customerName) || '?'}
+        </div>
       </div>
 
-      {/* Middle — info */}
       <div className={styles.cardInfo}>
         <div className={styles.cardName}>{review.customerName}</div>
         <StarDisplay rating={review.rating} size="0.85rem" />
         <p className={styles.cardReviewSnippet}>
-          {review.review?.length > 80
-            ? review.review.slice(0, 80) + '…'
-            : review.review}
+          {review.review?.length > 72 ? review.review.slice(0, 72) + '…' : review.review}
         </p>
-        <span className={styles.cardDate}>{formatDate(review.createdAt)}</span>
       </div>
 
-      {/* Right — status */}
-      <span
-        className={styles.statusPill}
-        style={{ color: sc.color, background: sc.bg, borderColor: sc.border }}
-      >
-        <span className="mi" style={{ fontSize: '0.7rem' }}>{sc.icon}</span>
-        {sc.label}
-      </span>
+      <div className={styles.cardRight}>
+        <span
+          className={styles.statusPill}
+          style={{ color: sc.color, background: sc.bg, borderColor: sc.border }}
+        >
+          <span className="mi" style={{ fontSize: '0.7rem', textTransform: 'lowercase' }}>{sc.icon}</span>
+          {sc.label}
+        </span>
+        <span className={styles.cardDate}>{formatDate(review.createdAt)}</span>
+      </div>
     </div>
   )
 }
 
-// ── Main Page ─────────────────────────────────────────────────
-
 export default function Reviews({ onMenuClick }) {
   const { reviews, loading, addReview, approveReview, rejectReview, deleteReview } = useReviews()
 
-  const [activeTab,     setActiveTab]     = useState('all')
-  const [searchQuery,   setSearchQuery]   = useState('')
-  const [addSheetOpen,  setAddSheetOpen]  = useState(false)
-  const [detailReview,  setDetailReview]  = useState(null)
-  const [confirmDel,    setConfirmDel]    = useState(null)
-  const [toastMsg,      setToastMsg]      = useState('')
+  const [activeTab,    setActiveTab]    = useState('all')
+  const [searchQuery,  setSearchQuery]  = useState('')
+  const [addSheetOpen, setAddSheetOpen] = useState(false)
+  const [detailReview, setDetailReview] = useState(null)
+  const [confirmDel,   setConfirmDel]   = useState(null)
+  const [toastMsg,     setToastMsg]     = useState('')
   const toastTimer = useRef(null)
   const tabRefs    = useRef({})
 
-  const showToast = useCallback((msg) => {
+  const showToast = useCallback(msg => {
     setToastMsg(msg)
     clearTimeout(toastTimer.current)
     toastTimer.current = setTimeout(() => setToastMsg(''), 2400)
   }, [])
-
-  // ── Filtering ──────────────────────────────────────────────
 
   const tabFiltered = activeTab === 'all'
     ? reviews
@@ -350,9 +330,7 @@ export default function Reviews({ onMenuClick }) {
     rejected: reviews.filter(r => r.status === 'rejected').length,
   }
 
-  // ── Handlers ──────────────────────────────────────────────
-
-  const handleAddReview = async (data) => {
+  const handleAddReview = async data => {
     try {
       await addReview(data)
       showToast('Review added ✓')
@@ -361,7 +339,7 @@ export default function Reviews({ onMenuClick }) {
     }
   }
 
-  const handleApprove = async (id) => {
+  const handleApprove = async id => {
     try {
       await approveReview(id)
       setDetailReview(prev => prev?.id === id ? { ...prev, status: 'approved' } : prev)
@@ -371,7 +349,7 @@ export default function Reviews({ onMenuClick }) {
     }
   }
 
-  const handleReject = async (id) => {
+  const handleReject = async id => {
     try {
       await rejectReview(id)
       setDetailReview(prev => prev?.id === id ? { ...prev, status: 'rejected' } : prev)
@@ -397,7 +375,6 @@ export default function Reviews({ onMenuClick }) {
     <div className={styles.page}>
       <Header title="Reviews" onMenuClick={onMenuClick} />
 
-      {/* Search + Filter bar */}
       <div className={styles.searchRow}>
         <div className={styles.searchWrap}>
           <span className="mi" style={{ fontSize: '1.1rem', color: 'var(--text3)' }}>search</span>
@@ -418,7 +395,6 @@ export default function Reviews({ onMenuClick }) {
         </button>
       </div>
 
-      {/* Tabs */}
       <div className={styles.tabs}>
         {TABS.map(tab => (
           <div
@@ -440,7 +416,6 @@ export default function Reviews({ onMenuClick }) {
         ))}
       </div>
 
-      {/* List */}
       <div className={styles.listArea}>
         {loading ? (
           <div className={styles.emptyState}>
@@ -477,30 +452,26 @@ export default function Reviews({ onMenuClick }) {
         )}
       </div>
 
-      {/* FAB — add review manually */}
       <button className={styles.fab} onClick={() => setAddSheetOpen(true)}>
         <span className="mi">add</span>
       </button>
 
-      {/* Add Review Sheet */}
       <AddReviewSheet
         isOpen={addSheetOpen}
         onClose={() => setAddSheetOpen(false)}
         onSave={handleAddReview}
       />
 
-      {/* Detail Sheet */}
       {detailReview && (
         <ReviewDetailSheet
           review={detailReview}
           onClose={() => setDetailReview(null)}
-          onApprove={(id) => { handleApprove(id) }}
-          onReject={(id)  => { handleReject(id) }}
-          onDelete={(r)   => { setDetailReview(null); setConfirmDel(r) }}
+          onApprove={id => handleApprove(id)}
+          onReject={id => handleReject(id)}
+          onDelete={r => { setDetailReview(null); setConfirmDel(r) }}
         />
       )}
 
-      {/* Confirm delete */}
       <ConfirmSheet
         open={!!confirmDel}
         title="Delete Review?"
@@ -510,7 +481,7 @@ export default function Reviews({ onMenuClick }) {
       />
 
       <Toast message={toastMsg} />
-      <BottomNav></BottomNav>
+      <BottomNav />
     </div>
   )
 }

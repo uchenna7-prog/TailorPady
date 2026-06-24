@@ -1,6 +1,5 @@
 import { useRef } from 'react'
 import Header from '../../components/Header/Header'
-import BottomNav from '../../components/BottomNav/BottomNav'
 import styles from './TermsAndConditions.module.css'
 
 const LAST_UPDATED = 'June 2026'
@@ -169,7 +168,6 @@ export default function TermsAndConditions({ onMenuClick }) {
         <div style={{ height: 32 }} />
       </div>
 
-      <BottomNav />
     </div>
   )
 }
