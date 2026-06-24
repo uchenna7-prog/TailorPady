@@ -20,7 +20,11 @@ export function PaymentDetailsModal({ payment, onClose, onDelete, onStatusChange
   const currency = getCurrency()
 
   return (
-    <div className={styles.fullScreenModal}>
+    <div
+      className={styles.fullScreenModal}
+      onTouchStart={e => e.stopPropagation()}
+      onTouchEnd={e => e.stopPropagation()}
+    >
       <Header
         type="back"
         title="Payment Details"
