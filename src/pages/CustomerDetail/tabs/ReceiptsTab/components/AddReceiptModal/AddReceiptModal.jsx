@@ -52,7 +52,11 @@ export function AddReceiptModal({ isOpen, onClose, orders, payments, receipts, o
   const showNoSearchMatch        = ordersNeedingReceipt.length > 0 && filteredOrders.length === 0
 
   return (
-    <div className={`${styles.pickerOverlay} ${isOpen ? styles.pickerOverlay_open : ''}`}>
+    <div
+      className={`${styles.pickerOverlay} ${isOpen ? styles.pickerOverlay_open : ''}`}
+      onTouchStart={e => e.stopPropagation()}
+      onTouchEnd={e => e.stopPropagation()}
+    >
 
       <Header
         type="back"
