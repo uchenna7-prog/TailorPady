@@ -62,6 +62,7 @@ export default function CustomerDetail({ onMenuClick }) {
   const tabStripScrollAtDown = useRef(null)
   const tabStripPointerStartX = useRef(null)
   const tabStripCooldownRef  = useRef(null)
+  const [underlineStyle, setUnderlineStyle] = useState({ left: 0, width: 0 })
 
   const showToast = useCallback((msg) => {
     setToastMsg(msg)
@@ -156,6 +157,27 @@ export default function CustomerDetail({ onMenuClick }) {
       behavior: 'smooth', block: 'nearest', inline: 'center',
     })
   }, [])
+
+  const updateUnderline = useCallback(() => {
+    const activeEl = tabRefs.current[activeTab]
+    const stripEl  = tabsRef.current
+    if (!activeEl || !stripEl) return
+    const tabRect   = activeEl.getBoundingClientRect()
+    const stripRect = stripEl.getBoundingClientRect()
+    setUnderlineStyle({
+      left:  tabRect.left - stripRect.left + stripEl.scrollLeft,
+      width: tabRect.width,
+    })
+  }, [activeTab])
+
+  useEffect(() => {
+    updateUnderline()
+  }, [activeTab, updateUnderline])
+
+  useEffect(() => {
+    window.addEventListener('resize', updateUnderline)
+    return () => window.removeEventListener('resize', updateUnderline)
+  }, [updateUnderline])
 
   const handleTabStripTouchStart = useCallback((e) => {
     e.stopPropagation()
@@ -523,6 +545,10 @@ export default function CustomerDetail({ onMenuClick }) {
               )}
             </div>
           ))}
+          <span
+            className={styles.tabUnderline}
+            style={{ transform: `translateX(${underlineStyle.left}px)`, width: `${underlineStyle.width}px` }}
+          />
         </div>
       </div>
 
