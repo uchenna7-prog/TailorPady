@@ -157,39 +157,40 @@ export default function CustomerDetail({ onMenuClick }) {
     })
   }, [])
 
-  const handleTabClick = useCallback((tabId) => {
-    if (tabStripDragged.current) return
-    setActiveTab(tabId)
-    scrollTabIntoView(tabId)
-  }, [scrollTabIntoView])
-
-  const handleTabStripPointerDown = useCallback((e) => {
+  const handleTabPointerDown = useCallback((e) => {
     clearTimeout(tabStripCooldownRef.current)
     tabStripDragged.current = false
     tabStripScrollAtDown.current = tabsRef.current?.scrollLeft ?? 0
     tabStripPointerStartX.current = e.clientX
   }, [])
 
-  const handleTabStripPointerMove = useCallback((e) => {
+  const handleTabPointerMove = useCallback((e) => {
     if (tabStripPointerStartX.current === null) return
     const dx = e.clientX - tabStripPointerStartX.current
     if (Math.abs(dx) > 8) tabStripDragged.current = true
   }, [])
 
-  const handleTabStripPointerUp = useCallback(() => {
+  const handleTabPointerUp = useCallback((tabId) => {
     const startScroll = tabStripScrollAtDown.current
-    const endScroll   = tabsRef.current?.scrollLeft ?? 0
-    const scrollMoved  = startScroll !== null && Math.abs(endScroll - startScroll) > 2
     tabStripPointerStartX.current = null
 
-    if (scrollMoved || tabStripDragged.current) {
-      tabStripDragged.current = true
-      clearTimeout(tabStripCooldownRef.current)
-      tabStripCooldownRef.current = setTimeout(() => {
-        tabStripDragged.current = false
-      }, 200)
-    }
-  }, [])
+    setTimeout(() => {
+      const endScroll  = tabsRef.current?.scrollLeft ?? 0
+      const scrollMoved = startScroll !== null && Math.abs(endScroll - startScroll) > 2
+
+      if (scrollMoved || tabStripDragged.current) {
+        tabStripDragged.current = true
+        clearTimeout(tabStripCooldownRef.current)
+        tabStripCooldownRef.current = setTimeout(() => {
+          tabStripDragged.current = false
+        }, 250)
+        return
+      }
+
+      setActiveTab(tabId)
+      scrollTabIntoView(tabId)
+    }, 60)
+  }, [scrollTabIntoView])
 
   const handleTouchStart = useCallback((e) => {
     touchStartX.current = e.touches[0].clientX
@@ -501,17 +502,16 @@ export default function CustomerDetail({ onMenuClick }) {
         <div
           className={styles.tabs}
           ref={tabsRef}
-          onPointerDown={handleTabStripPointerDown}
-          onPointerMove={handleTabStripPointerMove}
-          onPointerUp={handleTabStripPointerUp}
-          onPointerCancel={handleTabStripPointerUp}
+          onPointerDown={handleTabPointerDown}
+          onPointerMove={handleTabPointerMove}
         >
           {TABS.map(tab => (
             <div
               key={tab.id}
               ref={el => { tabRefs.current[tab.id] = el }}
               className={`${styles.tab} ${activeTab === tab.id ? styles.active : ''}`}
-              onClick={() => handleTabClick(tab.id)}
+              onPointerUp={() => handleTabPointerUp(tab.id)}
+              onPointerCancel={() => { tabStripPointerStartX.current = null }}
             >
               <span>{tab.label}</span>
               {tabItemCounts[tab.id] > 0 && (
