@@ -1,270 +1,184 @@
-.detailOverlay {
-  position: fixed;
-  inset: 0;
-  z-index: 3000;
-  background: rgba(0,0,0,0.55);
-  backdrop-filter: blur(4px);
-  display: flex;
-  align-items: flex-end;
-  animation: fadeIn 0.18s ease;
+import { getEffectiveStatus } from '../../contexts/AppointmentContext'
+import styles from './AppointmentDetail.module.css'
+
+
+const APPT_TYPES = [
+  { id: 'fitting',      label: 'Fitting',      icon: 'checkroom'      },
+  { id: 'consultation', label: 'Consultation', icon: 'forum'          },
+  { id: 'pickup',       label: 'Pick-up',      icon: 'inventory_2'    },
+  { id: 'measurement',  label: 'Measurement',  icon: 'straighten'     },
+  { id: 'delivery',     label: 'Delivery',     icon: 'local_shipping' },
+  { id: 'other',        label: 'Other',        icon: 'calendar_today' },
+]
+
+const STATUS_CONFIG = {
+  upcoming:  { label: 'Upcoming',  color: '#818cf8', bg: 'rgba(99,102,241,0.12)',  border: 'rgba(99,102,241,0.4)'  },
+  done:      { label: 'Done',      color: '#22c55e', bg: 'rgba(34,197,94,0.12)',   border: 'rgba(34,197,94,0.4)'   },
+  missed:    { label: 'Missed',    color: '#ef4444', bg: 'rgba(239,68,68,0.12)',   border: 'rgba(239,68,68,0.4)'   },
+  cancelled: { label: 'Cancelled', color: '#94a3b8', bg: 'rgba(148,163,184,0.12)', border: 'rgba(148,163,184,0.4)' },
 }
 
-@keyframes fadeIn {
-  from { opacity: 0; }
-  to   { opacity: 1; }
+function formatDate(dateStr) {
+  if (!dateStr) return ''
+  return new Date(dateStr + 'T00:00:00').toLocaleDateString('en-US', {
+    month: 'short', day: 'numeric', year: 'numeric',
+  })
 }
 
-.detailPanel {
-  width: 100%;
-  max-height: 88dvh;
-  background: var(--bg);
-  border-radius: 22px 22px 0 0;
-  border-top: 1px solid var(--border);
-  display: flex;
-  flex-direction: column;
-  animation: sheetUp 0.3s cubic-bezier(0.32, 0.72, 0, 1);
+function formatTime(timeStr) {
+  if (!timeStr) return ''
+  const [h, m]  = timeStr.split(':')
+  const hour    = parseInt(h, 10)
+  const ampm    = hour >= 12 ? 'PM' : 'AM'
+  const display = hour % 12 === 0 ? 12 : hour % 12
+  return `${display}:${m} ${ampm}`
 }
 
-@keyframes sheetUp {
-  from { transform: translateY(100%); }
-  to   { transform: translateY(0); }
+function isChipLocked(key, effectiveStatus) {
+  if (key === 'missed')   return true
+  if (key === 'upcoming') return effectiveStatus === 'missed'
+  return false
 }
 
-@media (min-width: 769px) {
-  .detailOverlay {
-    left: var(--sidebar-width, 280px);
-    align-items: stretch;
-    justify-content: flex-end;
-  }
 
-  .detailPanel {
-    width: min(480px, 100%);
-    max-height: 100dvh;
-    border-radius: 0;
-    border-top: none;
-    border-left: 1px solid var(--border);
-    animation: slideRight 0.3s cubic-bezier(0.32, 0.72, 0, 1);
-  }
+export function AppointmentDetail({ appt, onClose, onStatusChange, onDelete }) {
+  if (!appt) return null
 
-  @keyframes slideRight {
-    from { transform: translateX(100%); }
-    to   { transform: translateX(0); }
-  }
+  const effectiveStatus = getEffectiveStatus(appt)
+  const isMissed        = effectiveStatus === 'missed'
 
-  .detailHandle { display: none; }
-}
+  return (
+    <div
+      className={styles.detailOverlay}
+      onClick={e => e.target === e.currentTarget && onClose()}
+    >
+      <div className={styles.detailPanel}>
+        <div className={styles.detailHandle} />
 
-.detailHandle {
-  width: 36px;
-  height: 4px;
-  border-radius: 2px;
-  background: var(--border2);
-  margin: 10px auto 0;
-  flex-shrink: 0;
-}
+        <div className={styles.detailHeader}>
+          <button className={styles.detailCloseBtn} onClick={onClose}>
+            <span className="mi" style={{ fontSize: '1.35rem' }}>close</span>
+          </button>
+          <div className={styles.detailHeaderTitle}>Appointment</div>
+          <button className={styles.detailHeaderDelete} onClick={() => onDelete(appt)}>
+            <span className="mi" style={{ fontSize: '1.1rem' }}>delete_outline</span>
+          </button>
+        </div>
 
-.detailHeader {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 12px 16px;
-  border-bottom: 1px solid var(--border);
-  flex-shrink: 0;
-}
+        <div className={styles.detailBody}>
 
-.detailCloseBtn {
-  background: none;
-  border: none;
-  color: var(--text2);
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  padding: 4px;
-  flex-shrink: 0;
-}
+          <div className={styles.detailStatusRow}>
+            {Object.entries(STATUS_CONFIG).map(([key, cfg]) => {
+              const isActive  = effectiveStatus === key
+              const locked    = isChipLocked(key, effectiveStatus)
 
-.detailHeaderTitle {
-  flex: 1;
-  font-size: 0.72rem;
-  font-weight: 800;
-  text-transform: uppercase;
-  letter-spacing: 1.1px;
-  color: var(--text2);
-}
+              return (
+                <button
+                  key={key}
+                  disabled={locked}
+                  className={[
+                    styles.detailStatusBtn,
+                    isActive ? styles.detailStatusBtn_active : '',
+                    locked   ? styles.detailStatusBtn_locked : '',
+                  ].join(' ')}
+                  style={isActive ? {
+                    background:  cfg.bg,
+                    borderColor: cfg.border,
+                    color:       cfg.color,
+                  } : {}}
+                  onClick={locked ? undefined : () => onStatusChange(appt.id, key)}
+                >
+                  {cfg.label}
+                </button>
+              )
+            })}
+          </div>
 
-.detailHeaderDelete {
-  display: flex;
-  align-items: center;
-  padding: 5px 8px;
-  border-radius: 8px;
-  border: 1px solid rgba(239,68,68,0.3);
-  background: rgba(239,68,68,0.08);
-  color: #ef4444;
-  cursor: pointer;
-}
+          {isMissed && (
+            <button
+              className={styles.markDoneBtn}
+              onClick={() => onStatusChange(appt.id, 'done')}
+            >
+              <span className="mi" style={{ fontSize: '1rem' }}>check_circle</span>
+              Mark as Done
+            </button>
+          )}
 
-.detailBody {
-  flex: 1;
-  overflow-y: auto;
-  padding: 18px 18px calc(28px + var(--sb, 0px));
-  -webkit-overflow-scrolling: touch;
-}
+          <div className={styles.detailTitle}>{appt.title}</div>
 
-.detailStatusRow {
-  display: flex;
-  gap: 6px;
-  margin-bottom: 18px;
-  flex-wrap: wrap;
-}
+          <div className={styles.detailGrid}>
+            <div className={styles.detailCell}>
+              <div className={styles.detailCellLabel}>Type</div>
+              <div className={styles.detailCellVal} style={{ textTransform: 'capitalize' }}>
+                {APPT_TYPES.find(t => t.id === appt.type)?.label || appt.type}
+              </div>
+            </div>
+            <div className={styles.detailCell}>
+              <div className={styles.detailCellLabel}>Date</div>
+              <div className={`${styles.detailCellVal} ${isMissed ? styles.overdueText : ''}`}>
+                {formatDate(appt.date)}
+              </div>
+            </div>
+            {appt.time && (
+              <div className={styles.detailCell}>
+                <div className={styles.detailCellLabel}>Time</div>
+                <div className={styles.detailCellVal}>{formatTime(appt.time)}</div>
+              </div>
+            )}
+            {appt.location && (
+              <div className={styles.detailCell}>
+                <div className={styles.detailCellLabel}>Location</div>
+                <div className={styles.detailCellVal}>{appt.location}</div>
+              </div>
+            )}
+          </div>
 
-.detailStatusBtn {
-  flex: 1;
-  min-width: 70px;
-  padding: 9px 6px;
-  border-radius: 10px;
-  border: 1px solid var(--border2);
-  background: var(--surface2);
-  color: var(--text3);
-  font-size: 0.7rem;
-  font-weight: 800;
-  cursor: pointer;
-  text-align: center;
-  font-family: 'Manrope', sans-serif;
-  transition: all 0.15s;
-}
+          {(appt.customerName || appt.orderDesc) && (
+            <div className={styles.detailSectionCard}>
+              <div className={styles.detailSectionLabel}>Linked To</div>
+              {appt.customerName && (
+                <div className={styles.detailLinkedRow}>
+                  <span className="mi" style={{ fontSize: '1rem', color: 'var(--text3)' }}>person</span>
+                  <div style={{ flex: 1 }}>
+                    <div style={{ fontWeight: 700, fontSize: '0.88rem', color: 'var(--text)' }}>{appt.customerName}</div>
+                    {appt.customerPhone && (
+                      <div style={{ fontSize: '0.75rem', color: 'var(--text3)' }}>{appt.customerPhone}</div>
+                    )}
+                  </div>
+                  {appt.customerPhone && (
+                    <a
+                      href={`tel:${appt.customerPhone}`}
+                      className={styles.callBtn}
+                      onClick={e => e.stopPropagation()}
+                    >
+                      <span className="mi" style={{ fontSize: '1rem' }}>call</span>
+                    </a>
+                  )}
+                </div>
+              )}
+              {appt.orderDesc && (
+                <div className={styles.detailLinkedRow}>
+                  <span className="mi" style={{ fontSize: '1rem', color: 'var(--text3)' }}>content_cut</span>
+                  <span style={{ fontWeight: 600, fontSize: '0.88rem', color: 'var(--text)' }}>{appt.orderDesc}</span>
+                </div>
+              )}
+            </div>
+          )}
 
-.detailStatusBtn_active {
-  border-width: 1.5px;
-}
+          {appt.notes && (
+            <div className={styles.detailSectionCard}>
+              <div className={styles.detailSectionLabel}>Notes</div>
+              <p className={styles.detailNoteText}>{appt.notes}</p>
+            </div>
+          )}
 
-.detailStatusBtn_locked {
-  cursor: default;
-  pointer-events: none;
-}
+          <button className={styles.detailDeleteBtn} onClick={() => onDelete(appt)}>
+            <span className="mi" style={{ fontSize: '1rem' }}>delete_outline</span>
+            Delete Appointment
+          </button>
 
-.detailStatusBtn_locked:not(.detailStatusBtn_active) {
-  opacity: 0.4;
-}
-
-.markDoneBtn {
-  width: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
-  padding: 13px;
-  border-radius: 12px;
-  border: 1px solid rgba(34,197,94,0.3);
-  background: rgba(34,197,94,0.1);
-  color: #22c55e;
-  font-size: 0.88rem;
-  font-weight: 700;
-  margin-bottom: 18px;
-  cursor: pointer;
-  font-family: 'Manrope', sans-serif;
-  transition: all 0.15s;
-}
-
-.detailTitle {
-  font-size: 1.05rem;
-  font-weight: 800;
-  color: var(--text);
-  line-height: 1.35;
-  margin-bottom: 16px;
-}
-
-.detailGrid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 10px;
-  margin-bottom: 14px;
-}
-
-.detailCell {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  padding: 12px 14px;
-}
-
-.detailCellLabel {
-  font-size: 0.58rem;
-  font-weight: 800;
-  color: var(--text3);
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  margin-bottom: 4px;
-}
-
-.detailCellVal {
-  font-size: 0.88rem;
-  font-weight: 700;
-  color: var(--text);
-}
-
-.overdueText { color: #ef4444; }
-
-.detailSectionCard {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 14px;
-  padding: 14px;
-  margin-bottom: 12px;
-}
-
-.detailSectionLabel {
-  display: block;
-  font-size: 0.58rem;
-  font-weight: 800;
-  color: var(--text3);
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  margin-bottom: 10px;
-}
-
-.detailLinkedRow {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin-bottom: 6px;
-}
-
-.callBtn {
-  margin-left: auto;
-  width: 34px;
-  height: 34px;
-  border-radius: 8px;
-  background: rgba(34,197,94,0.1);
-  border: 1px solid rgba(34,197,94,0.25);
-  color: #22c55e;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  text-decoration: none;
-  flex-shrink: 0;
-}
-
-.detailNoteText {
-  font-size: 0.85rem;
-  color: var(--text2);
-  line-height: 1.55;
-  margin: 0;
-}
-
-.detailDeleteBtn {
-  width: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
-  padding: 14px;
-  border-radius: 12px;
-  border: 1px solid rgba(255,77,77,0.3);
-  background: rgba(255,77,77,0.08);
-  color: var(--danger);
-  font-size: 0.85rem;
-  font-weight: 700;
-  margin-top: 8px;
-  cursor: pointer;
-  font-family: 'Manrope', sans-serif;
+        </div>
+      </div>
+    </div>
+  )
 }
