@@ -119,7 +119,7 @@ export default function TermsAndConditions({ onMenuClick }) {
 
   return (
     <div className={styles.page}>
-      <Header onMenuClick={onMenuClick} title="Terms And Conditions" showNotifications = {false}  />
+      <Header onMenuClick={onMenuClick} title="Terms And Conditions" showNotifications = {false} showAgentButton = {false} />
 
       <div className={styles.scrollArea} ref={scrollRef}>
         <div className={styles.hero}>
