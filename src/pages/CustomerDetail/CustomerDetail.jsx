@@ -157,28 +157,29 @@ export default function CustomerDetail({ onMenuClick }) {
     })
   }, [])
 
-  const handleTabPointerDown = useCallback((e) => {
+  const handleTabStripTouchStart = useCallback((e) => {
+    e.stopPropagation()
     clearTimeout(tabStripCooldownRef.current)
     tabStripDragged.current = false
     tabStripScrollAtDown.current = tabsRef.current?.scrollLeft ?? 0
-    tabStripPointerStartX.current = e.clientX
+    tabStripPointerStartX.current = e.touches[0].clientX
   }, [])
 
-  const handleTabPointerMove = useCallback((e) => {
+  const handleTabStripTouchMove = useCallback((e) => {
+    e.stopPropagation()
     if (tabStripPointerStartX.current === null) return
-    const dx = e.clientX - tabStripPointerStartX.current
+    const dx = e.touches[0].clientX - tabStripPointerStartX.current
     if (Math.abs(dx) > 8) tabStripDragged.current = true
   }, [])
 
-  const handleTabPointerUp = useCallback((tabId) => {
+  const handleTabTouchEnd = useCallback((e, tabId) => {
+    e.stopPropagation()
     const startScroll = tabStripScrollAtDown.current
     tabStripPointerStartX.current = null
 
     setTimeout(() => {
       const endScroll  = tabsRef.current?.scrollLeft ?? 0
       const scrollMoved = startScroll !== null && Math.abs(endScroll - startScroll) > 2
-
-      showToast(`start:${startScroll} end:${endScroll} moved:${scrollMoved ? 'Y' : 'N'} dragged:${tabStripDragged.current ? 'Y' : 'N'}`)
 
       if (scrollMoved || tabStripDragged.current) {
         tabStripDragged.current = true
@@ -192,7 +193,7 @@ export default function CustomerDetail({ onMenuClick }) {
       setActiveTab(tabId)
       scrollTabIntoView(tabId)
     }, 60)
-  }, [scrollTabIntoView, showToast])
+  }, [scrollTabIntoView])
 
   const handleTouchStart = useCallback((e) => {
     touchStartX.current = e.touches[0].clientX
@@ -504,16 +505,15 @@ export default function CustomerDetail({ onMenuClick }) {
         <div
           className={styles.tabs}
           ref={tabsRef}
-          onPointerDown={handleTabPointerDown}
-          onPointerMove={handleTabPointerMove}
+          onTouchStart={handleTabStripTouchStart}
+          onTouchMove={handleTabStripTouchMove}
         >
           {TABS.map(tab => (
             <div
               key={tab.id}
               ref={el => { tabRefs.current[tab.id] = el }}
               className={`${styles.tab} ${activeTab === tab.id ? styles.active : ''}`}
-              onPointerUp={() => handleTabPointerUp(tab.id)}
-              onPointerCancel={() => { tabStripPointerStartX.current = null }}
+              onTouchEnd={e => handleTabTouchEnd(e, tab.id)}
             >
               <span>{tab.label}</span>
               {tabItemCounts[tab.id] > 0 && (
