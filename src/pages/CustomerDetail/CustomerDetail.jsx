@@ -161,19 +161,23 @@ export default function CustomerDetail({ onMenuClick }) {
     scrollTabIntoView(tabId)
   }, [scrollTabIntoView])
 
-  const handleTabStripTouchStart = useCallback((e) => {
-    tabStripDragX.current = e.touches[0].clientX
+  const handleTabStripPointerDown = useCallback((e) => {
+    tabStripDragX.current = e.clientX
     tabStripDragged.current = false
   }, [])
 
-  const handleTabStripTouchMove = useCallback((e) => {
+  const handleTabStripPointerMove = useCallback((e) => {
     if (tabStripDragX.current === null) return
-    const dx = e.touches[0].clientX - tabStripDragX.current
-    if (Math.abs(dx) > 6) tabStripDragged.current = true
+    const dx = e.clientX - tabStripDragX.current
+    if (Math.abs(dx) > 10) tabStripDragged.current = true
   }, [])
 
-  const handleTabStripTouchEnd = useCallback(() => {
+  const handleTabStripPointerUp = useCallback(() => {
     tabStripDragX.current = null
+  }, [])
+
+  const handleTabStripScroll = useCallback(() => {
+    tabStripDragged.current = true
   }, [])
 
   const handleTouchStart = useCallback((e) => {
@@ -486,9 +490,11 @@ export default function CustomerDetail({ onMenuClick }) {
         <div
           className={styles.tabs}
           ref={tabsRef}
-          onTouchStart={handleTabStripTouchStart}
-          onTouchMove={handleTabStripTouchMove}
-          onTouchEnd={handleTabStripTouchEnd}
+          onPointerDown={handleTabStripPointerDown}
+          onPointerMove={handleTabStripPointerMove}
+          onPointerUp={handleTabStripPointerUp}
+          onPointerCancel={handleTabStripPointerUp}
+          onScroll={handleTabStripScroll}
         >
           {TABS.map(tab => (
             <div
