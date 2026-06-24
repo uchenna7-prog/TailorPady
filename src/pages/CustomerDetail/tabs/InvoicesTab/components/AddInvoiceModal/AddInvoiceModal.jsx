@@ -72,7 +72,11 @@ export function AddInvoiceModal({
 
 
   return (
-    <div className={`${styles.pickerOverlay} ${isOpen ? styles.pickerOverlay_open : ''}`}>
+    <div
+      className={`${styles.pickerOverlay} ${isOpen ? styles.pickerOverlay_open : ''}`}
+      onTouchStart={e => e.stopPropagation()}
+      onTouchEnd={e => e.stopPropagation()}
+    >
       <Header
         type="back"
         title="New Invoice"
