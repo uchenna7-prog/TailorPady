@@ -1,3 +1,4 @@
+import { getEffectiveStatus } from '../../contexts/AppointmentContext'
 import OrderMosaic from '../OrderMosaic/OrderMosaic'
 import styles from './AppointmentRow.module.css'
 
@@ -18,14 +19,6 @@ export const STATUS_CONFIG = {
   cancelled: { label: 'Cancelled', color: '#94a3b8', bg: 'rgba(148,163,184,0.12)', border: 'rgba(148,163,184,0.4)' },
 }
 
-export function isApptOverdue(appt) {
-  if (!appt.date || appt.status === 'done' || appt.status === 'cancelled') return false
-  const apptDateTime = appt.time
-    ? new Date(`${appt.date}T${appt.time}`)
-    : new Date(appt.date + 'T23:59:59')
-  return apptDateTime < new Date()
-}
-
 function formatShortDate(dateStr) {
   if (!dateStr) return ''
   return new Date(dateStr + 'T00:00:00').toLocaleDateString('en-US', {
@@ -35,9 +28,9 @@ function formatShortDate(dateStr) {
 
 function formatTime(timeStr) {
   if (!timeStr) return ''
-  const [h, m] = timeStr.split(':')
-  const hour   = parseInt(h, 10)
-  const ampm   = hour >= 12 ? 'PM' : 'AM'
+  const [h, m]  = timeStr.split(':')
+  const hour    = parseInt(h, 10)
+  const ampm    = hour >= 12 ? 'PM' : 'AM'
   const display = hour % 12 === 0 ? 12 : hour % 12
   return `${display}:${m} ${ampm}`
 }
@@ -63,11 +56,11 @@ function timeUntil(dateStr, timeStr) {
 
 
 export function AppointmentRow({ appt, isLast, allOrders, onOpen }) {
-  const overdue      = isApptOverdue(appt) && appt.status === 'upcoming'
-  const icon         = TYPE_ICONS[appt.type] || 'calendar_today'
-  const until        = timeUntil(appt.date, appt.time)
-  const effectiveSc  = STATUS_CONFIG[overdue ? 'missed' : appt.status] ?? STATUS_CONFIG.upcoming
-  const dateIsOverdue = overdue || appt.status === 'missed'
+  const effectiveStatus = getEffectiveStatus(appt)
+  const isMissed        = effectiveStatus === 'missed'
+  const icon            = TYPE_ICONS[appt.type] || 'calendar_today'
+  const until           = timeUntil(appt.date, appt.time)
+  const sc              = STATUS_CONFIG[effectiveStatus] ?? STATUS_CONFIG.upcoming
 
   const linkedOrder      = appt.orderId ? allOrders.find(o => String(o.id) === String(appt.orderId)) : null
   const linkedOrderItems = linkedOrder?.items ?? []
@@ -78,11 +71,11 @@ export function AppointmentRow({ appt, isLast, allOrders, onOpen }) {
       onClick={onOpen}
     >
       {linkedOrder ? (
-        <OrderMosaic items={linkedOrderItems} size="md" overdue={overdue} />
+        <OrderMosaic items={linkedOrderItems} size="md" overdue={isMissed} />
       ) : (
         <div className={styles.apptRowIcon}>
           <div className={styles.apptRowIconInner}>
-            <span className="mi" style={{ fontSize: '1.3rem', color: effectiveSc.color }}>{icon}</span>
+            <span className="mi" style={{ fontSize: '1.3rem', color: sc.color }}>{icon}</span>
           </div>
         </div>
       )}
@@ -96,8 +89,8 @@ export function AppointmentRow({ appt, isLast, allOrders, onOpen }) {
           </div>
         )}
         <div className={styles.apptRowMeta}>
-          <span className="mi" style={{ fontSize: '0.75rem', color: dateIsOverdue ? '#ef4444' : 'var(--text3)' }}>schedule</span>
-          <span className={`${styles.apptRowMetaText} ${dateIsOverdue ? styles.apptRowMetaOverdue : ''}`}>
+          <span className="mi" style={{ fontSize: '0.75rem', color: isMissed ? '#ef4444' : 'var(--text3)' }}>schedule</span>
+          <span className={`${styles.apptRowMetaText} ${isMissed ? styles.apptRowMetaOverdue : ''}`}>
             {formatShortDate(appt.date)}{appt.time ? ` · ${formatTime(appt.time)}` : ''}
           </span>
         </div>
@@ -106,12 +99,11 @@ export function AppointmentRow({ appt, isLast, allOrders, onOpen }) {
       <div className={styles.apptRowRight}>
         <span
           className={styles.apptRowStatus}
-          style={{ background: effectiveSc.bg, color: effectiveSc.color, borderColor: effectiveSc.border }}
+          style={{ background: sc.bg, color: sc.color, borderColor: sc.border }}
         >
-          {overdue ? 'Missed' : effectiveSc.label}
+          {sc.label}
         </span>
-      
-        {until && appt.status === 'upcoming' && (
+        {until && effectiveStatus === 'upcoming' && (
           <div className={styles.apptRowUntil}>{until}</div>
         )}
       </div>
