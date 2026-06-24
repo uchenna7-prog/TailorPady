@@ -1,4 +1,4 @@
-import { getEffectiveStatus } from '../../contexts/AppointmentContext'
+import { getEffectiveStatus, parseApptDate } from '../../contexts/AppointmentContext'
 import styles from './AppointmentDetail.module.css'
 
 
@@ -34,9 +34,14 @@ function formatTime(timeStr) {
   return `${display}:${m} ${ampm}`
 }
 
-function isChipLocked(key, effectiveStatus) {
+function isDateInPast(appt) {
+  const date = parseApptDate(appt)
+  return date ? date < new Date() : false
+}
+
+function isChipLocked(key, appt) {
   if (key === 'missed')   return true
-  if (key === 'upcoming') return effectiveStatus === 'missed'
+  if (key === 'upcoming') return isDateInPast(appt)
   return false
 }
 
@@ -69,8 +74,8 @@ export function AppointmentDetail({ appt, onClose, onStatusChange, onDelete }) {
 
           <div className={styles.detailStatusRow}>
             {Object.entries(STATUS_CONFIG).map(([key, cfg]) => {
-              const isActive  = effectiveStatus === key
-              const locked    = isChipLocked(key, effectiveStatus)
+              const isActive = effectiveStatus === key
+              const locked   = isChipLocked(key, appt)
 
               return (
                 <button
@@ -93,16 +98,6 @@ export function AppointmentDetail({ appt, onClose, onStatusChange, onDelete }) {
               )
             })}
           </div>
-
-          {isMissed && (
-            <button
-              className={styles.markDoneBtn}
-              onClick={() => onStatusChange(appt.id, 'done')}
-            >
-              <span className="mi" style={{ fontSize: '1rem' }}>check_circle</span>
-              Mark as Done
-            </button>
-          )}
 
           <div className={styles.detailTitle}>{appt.title}</div>
 
