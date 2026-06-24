@@ -117,7 +117,11 @@ export function OrderDetailsModal({
   }
 
   return (
-    <div className={`${styles.detailPanel} ${styles.detailPanel_open}`}>
+    <div
+      className={`${styles.detailPanel} ${styles.detailPanel_open}`}
+      onTouchStart={e => e.stopPropagation()}
+      onTouchEnd={e => e.stopPropagation()}
+    >
       <Header
         type="back"
         title={order.desc}
