@@ -4,33 +4,25 @@
 .loadingScreen {
   min-height: 100dvh;
   display: flex;
-  flex-direction: column;
   align-items: center;
   justify-content: center;
-  background: #f8f6f1;
-  gap: 20px;
+  background: var(--bg);
 }
 
-.loadingLine {
-  width: 1px;
-  height: 60px;
-  background: linear-gradient(to bottom, transparent, #999);
-  animation: loadGrow 1.2s ease infinite;
+.spinner {
+  width: 32px;
+  height: 32px;
+  border: 3px solid var(--border);
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
 }
 
-@keyframes loadGrow {
-  0%, 100% { opacity: 0.2; transform: scaleY(0.3); }
-  50%       { opacity: 1;   transform: scaleY(1); }
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
 }
-
-.loadingText {
-  color: #888;
-  font-size: 0.65rem;
-  letter-spacing: 3px;
-  text-transform: uppercase;
-  font-family: Georgia, serif;
-}
-
 .notFoundScreen {
   min-height: 100dvh;
   display: flex;

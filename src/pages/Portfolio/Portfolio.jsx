@@ -108,10 +108,9 @@ export default function Portfolio() {
 
   if (loading) {
     return (
-      <div className={styles.loadingScreen}>
-        <div className={styles.loadingLine} />
-        <p className={styles.loadingText}>Loading</p>
-      </div>
+    <div className={styles.loadingScreen}>
+      <div className={styles.spinner} />
+    </div>
     )
   }
 
