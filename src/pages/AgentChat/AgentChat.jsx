@@ -1,23 +1,23 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import Header from '../../components/Header/Header'
-import { useAgent, useAutonomousAgent } from '../../contexts/AgentContext'
+import { useAgent } from '../../contexts/AgentContext'
+import { useAutonomousAgent } from '../../contexts/AutonomousAgentContext'
 import { useAuth } from '../../contexts/AuthContext'
 import { ChatPanel } from './components/ChatPanel/ChatPanel'
-import { getGreeting,haptic } from './utils'
+import { getGreeting, haptic } from './utils'
 import { AgentTitleIcon } from './components/AgentTitleIcon/AgentTitleIcon'
 import styles from './AgentChat.module.css'
-
 
 function AgentChat() {
   const navigate = useNavigate()
 
   const { messages, isTyping, isLoading, activeFlow, sendMessage, handleAction, cancelFlow } = useAgent()
   const { enabled } = useAutonomousAgent()
-  const { user } = useAuth()
+  const { user }    = useAuth()
 
   const [inputValue, setInputValue] = useState('')
-  const [greeting] = useState(() => {
+  const [greeting]                  = useState(() => {
     const firstName = user?.displayName?.split(' ')[0] || ''
     return getGreeting(firstName)
   })
