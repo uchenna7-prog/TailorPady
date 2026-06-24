@@ -200,7 +200,7 @@ export default function CustomerDetail({ onMenuClick }) {
     tabStripPointerStartX.current = null
 
     setTimeout(() => {
-      const endScroll  = tabsRef.current?.scrollLeft ?? 0
+      const endScroll   = tabsRef.current?.scrollLeft ?? 0
       const scrollMoved = startScroll !== null && Math.abs(endScroll - startScroll) > 2
 
       if (scrollMoved || tabStripDragged.current) {
@@ -535,6 +535,7 @@ export default function CustomerDetail({ onMenuClick }) {
               key={tab.id}
               ref={el => { tabRefs.current[tab.id] = el }}
               className={`${styles.tab} ${activeTab === tab.id ? styles.active : ''}`}
+              onClick={() => { setActiveTab(tab.id); scrollTabIntoView(tab.id) }}
               onTouchEnd={e => handleTabTouchEnd(e, tab.id)}
             >
               <span>{tab.label}</span>
