@@ -246,7 +246,7 @@ export default function ReceiptViewer({
   }
 
   return (
-    <div className={styles.overlay}>
+    <div className={styles.overlay} onTouchStart={e => e.stopPropagation()} onTouchEnd={e => e.stopPropagation()}>
       <Header
         type="back"
         title={receipt.number}
