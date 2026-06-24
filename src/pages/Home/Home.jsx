@@ -163,6 +163,7 @@ function Home({ onMenuClick, onGoToCustomer }) {
   }
 
   function handleApptStatusChange(id, newStatus) {
+    if (newStatus === 'missed') return
     updateAppointment(id, { status: newStatus })
       .then(() => showToast(`Marked as ${STATUS_LABELS[newStatus] ?? newStatus}`))
       .catch(() => showToast('Failed to update status.'))
@@ -452,11 +453,11 @@ function Home({ onMenuClick, onGoToCustomer }) {
 
           {appointmentsReady && pastAppointments.length > 0 && (
             <PastAppointmentsSection
-            appointments={pastAppointments}
-            allOrders={allOrders}
-            onSeeAll={() => navigate('/appointments')}
-            onSelectAppointment={setDetailAppt}
-          />
+              appointments={pastAppointments}
+              allOrders={allOrders}
+              onSeeAll={() => navigate('/appointments')}
+              onSelectAppointment={setDetailAppt}
+            />
           )}
 
           <QuickActionsSection onNavigate={navigate} />
@@ -475,12 +476,12 @@ function Home({ onMenuClick, onGoToCustomer }) {
 
           {tasksReady ? (
             recentTasks.length > 0 && (
-            <RecentTasksSection
-              tasks={recentTasks}
-              allOrders={allOrders}
-              onSeeAll={() => navigate('/tasks')}
-              onSelectTask={setDetailTask}
-            />
+              <RecentTasksSection
+                tasks={recentTasks}
+                allOrders={allOrders}
+                onSeeAll={() => navigate('/tasks')}
+                onSelectTask={setDetailTask}
+              />
             )
           ) : (
             <SectionSkeleton />
