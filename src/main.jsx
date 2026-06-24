@@ -19,6 +19,7 @@ import { GalleryProvider }                from './contexts/GalleryContext'
 import { ReviewProvider }                 from './contexts/ReviewContext'
 import { BodyMeasurementImagesProvider }  from './contexts/BodyMeasurementImagesContext'
 import { AgentProvider }                  from './contexts/AgentContext'
+import { AutonomousAgentProvider }        from './contexts/AutonomousAgentContext'
 import { InstallProvider }                from './contexts/InstallContext'
 import { BadgeProvider }                  from './contexts/BadgeContext'
 import App from './App'
@@ -47,11 +48,13 @@ ReactDOM.createRoot(document.getElementById('root')).render(
                                     <RevenueGoalProvider>
                                       <AppointmentProvider>
                                         <BadgeProvider>
-                                          <AgentProvider>
-                                            <NotificationProvider>
-                                              <App />
-                                            </NotificationProvider>
-                                          </AgentProvider>
+                                          <AutonomousAgentProvider>
+                                            <AgentProvider>
+                                              <NotificationProvider>
+                                                <App />
+                                              </NotificationProvider>
+                                            </AgentProvider>
+                                          </AutonomousAgentProvider>
                                         </BadgeProvider>
                                       </AppointmentProvider>
                                     </RevenueGoalProvider>
