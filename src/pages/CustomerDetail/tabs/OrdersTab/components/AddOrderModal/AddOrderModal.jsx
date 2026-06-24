@@ -195,7 +195,11 @@ export function AddOrderModal({ isOpen, onClose, measurements, onSave, taxRate, 
   }
 
   return (
-    <div className={`${styles.formOverlay} ${isOpen ? styles.formOverlay_open : ''}`}>
+    <div
+      className={`${styles.formOverlay} ${isOpen ? styles.formOverlay_open : ''}`}
+      onTouchStart={e => e.stopPropagation()}
+      onTouchEnd={e => e.stopPropagation()}
+    >
 
       <Header
         type="back"
