@@ -178,6 +178,8 @@ export default function CustomerDetail({ onMenuClick }) {
       const endScroll  = tabsRef.current?.scrollLeft ?? 0
       const scrollMoved = startScroll !== null && Math.abs(endScroll - startScroll) > 2
 
+      showToast(`start:${startScroll} end:${endScroll} moved:${scrollMoved ? 'Y' : 'N'} dragged:${tabStripDragged.current ? 'Y' : 'N'}`)
+
       if (scrollMoved || tabStripDragged.current) {
         tabStripDragged.current = true
         clearTimeout(tabStripCooldownRef.current)
@@ -190,7 +192,7 @@ export default function CustomerDetail({ onMenuClick }) {
       setActiveTab(tabId)
       scrollTabIntoView(tabId)
     }, 60)
-  }, [scrollTabIntoView])
+  }, [scrollTabIntoView, showToast])
 
   const handleTouchStart = useCallback((e) => {
     touchStartX.current = e.touches[0].clientX
