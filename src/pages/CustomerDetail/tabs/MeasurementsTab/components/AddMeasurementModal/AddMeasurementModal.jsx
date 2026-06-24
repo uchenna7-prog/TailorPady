@@ -295,6 +295,8 @@ export function AddMeasurementModal({ isOpen, onClose, onSave, gender }) {
     <div
       className={`${styles.formOverlay} ${isOpen ? styles.formOverlay_open : ''}`}
       onClick={resetAndClose}
+      onTouchStart={e => e.stopPropagation()}
+      onTouchEnd={e => e.stopPropagation()}
     >
       <div className={styles.formPanel} onClick={e => e.stopPropagation()}>
         <Header
