@@ -1,9 +1,9 @@
 import { useState, useRef, useCallback, useEffect } from 'react'
 import { useCustomers } from '../../contexts/CustomerContext'
 import { useOrders } from '../../contexts/OrdersContext'
-import { useAppointments } from '../../contexts/AppointmentContext'
+import { useAppointments, getEffectiveStatus } from '../../contexts/AppointmentContext'
 import { AppointmentDetail } from '../../components/AppointmentDetail/AppointmentDetail'
-import { AppointmentRow, STATUS_CONFIG, isApptOverdue } from '../../components/AppointmentRow/AppointmentRow'
+import { AppointmentRow, STATUS_CONFIG } from '../../components/AppointmentRow/AppointmentRow'
 import Header from '../../components/Header/Header'
 import ConfirmSheet from '../../components/ConfirmSheet/ConfirmSheet'
 import Toast from '../../components/Toast/Toast'
@@ -357,6 +357,7 @@ export default function Appointments({ onMenuClick }) {
   }
 
   const handleStatusChange = async (id, newStatus) => {
+    if (newStatus === 'missed') return
     try {
       await updateAppointment(id, { status: newStatus })
       showToast(`Marked as ${STATUS_CONFIG[newStatus]?.label ?? newStatus}`)
@@ -385,12 +386,11 @@ export default function Appointments({ onMenuClick }) {
   const handleListTouchEnd = (e) => {
     if (!touchStart.current) return
     const touch = e.changedTouches[0]
-    const dx = touch.clientX - touchStart.current.x
-    const dy = touch.clientY - touchStart.current.y
+    const dx    = touch.clientX - touchStart.current.x
+    const dy    = touch.clientY - touchStart.current.y
     touchStart.current = null
 
     const isHorizontalSwipe = Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy) * 1.5
-
     if (!isHorizontalSwipe) return
 
     const tabIds   = TABS.map(t => t.id)
@@ -405,17 +405,17 @@ export default function Appointments({ onMenuClick }) {
 
   const tabFiltered = allAppointments.filter(a => {
     if (activeTab === 'all')      return true
-    if (activeTab === 'upcoming') return a.status === 'upcoming' && !isApptOverdue(a)
+    if (activeTab === 'upcoming') return getEffectiveStatus(a) === 'upcoming'
     if (activeTab === 'done')     return a.status === 'done'
-    if (activeTab === 'missed')   return a.status === 'missed' || (isApptOverdue(a) && a.status === 'upcoming')
+    if (activeTab === 'missed')   return getEffectiveStatus(a) === 'missed'
     return true
   })
 
   const counts = {
     all:      allAppointments.length,
-    upcoming: allAppointments.filter(a => a.status === 'upcoming' && !isApptOverdue(a)).length,
+    upcoming: allAppointments.filter(a => getEffectiveStatus(a) === 'upcoming').length,
     done:     allAppointments.filter(a => a.status === 'done').length,
-    missed:   allAppointments.filter(a => a.status === 'missed' || (isApptOverdue(a) && a.status === 'upcoming')).length,
+    missed:   allAppointments.filter(a => getEffectiveStatus(a) === 'missed').length,
   }
 
   const searchFiltered = search.trim()
