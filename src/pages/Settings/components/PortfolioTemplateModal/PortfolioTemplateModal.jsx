@@ -6,22 +6,22 @@ import styles from './PortfolioTemplateModal.module.css'
 const TEMPLATES = [
   {
     id: 'template1',
-    label: 'Template One',
+    label: 'Template 1',
     description: 'Classic layout with hero banner and gallery grid',
   },
   {
     id: 'template2',
-    label: 'Template Two',
+    label: 'Template 2',
     description: 'Modern layout with featured work showcase',
   },
   {
     id: 'template3',
-    label: 'Template Three',
+    label: 'Template 3',
     description: 'Editorial black and white studio portfolio',
   },
   {
     id: 'template4',
-    label: 'Template Four',
+    label: 'Template 4',
     description: 'Modern layout with featured work showcase',
   },
 ]

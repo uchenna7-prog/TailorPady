@@ -215,8 +215,7 @@ export default function Settings({ onMenuClick }) {
   }
 
   function getPortfolioTemplateSub() {
-    const map = { template1: 'Template One', template2: 'Template Two' }
-    return map[portfolioSettings.portfolioTemplate] ?? 'Choose a layout for your public page'
+    return portfolioSettings.portfolioTemplate ?? 'Choose a layout for your public page'
   }
 
   function getPortfolioSettingsSub() {

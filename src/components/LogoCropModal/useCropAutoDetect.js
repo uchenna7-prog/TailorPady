@@ -58,21 +58,24 @@ export function detectTightBounds(imageElement, tolerance = 15) {
 export function getCroppedBlob(imageElement, pixelCrop) {
   return new Promise((resolve, reject) => {
     const canvas = document.createElement('canvas')
-    const ctx    = canvas.getContext('2d')
+    const ctx = canvas.getContext('2d')
 
-    canvas.width  = pixelCrop.width
-    canvas.height = pixelCrop.height
+    const scaleX = imageElement.naturalWidth / imageElement.width
+    const scaleY = imageElement.naturalHeight / imageElement.height
+
+    canvas.width = pixelCrop.width * scaleX
+    canvas.height = pixelCrop.height * scaleY
 
     ctx.drawImage(
       imageElement,
-      pixelCrop.x,
-      pixelCrop.y,
-      pixelCrop.width,
-      pixelCrop.height,
+      pixelCrop.x * scaleX,
+      pixelCrop.y * scaleY,
+      pixelCrop.width * scaleX,
+      pixelCrop.height * scaleY,
       0,
       0,
-      pixelCrop.width,
-      pixelCrop.height,
+      canvas.width,
+      canvas.height,
     )
 
     canvas.toBlob(blob => {

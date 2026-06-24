@@ -5,32 +5,61 @@ import { detectTightBounds, getCroppedBlob } from './useCropAutoDetect'
 import styles from './LogoCropModal.module.css'
 
 export function LogoCropModal({ imageSrc, onConfirm, onCancel }) {
-  const imgRef                    = useRef(null)
-  const [crop, setCrop]           = useState(undefined)
-  const [completedCrop, setCompletedCrop] = useState(null)
-  const [confirming, setConfirming] = useState(false)
+  const imgRef                              = useRef(null)
+  const [crop, setCrop]                     = useState(undefined)
+  const [completedCrop, setCompletedCrop]   = useState(null)
+  const [confirming, setConfirming]         = useState(false)
+  const [freeForm, setFreeForm]             = useState(false)
 
   const onImageLoad = useCallback(e => {
     const img    = e.currentTarget
     const bounds = detectTightBounds(img)
 
-    const pctCrop = {
-      unit: '%',
-      x:      (bounds.x      / img.naturalWidth)  * 100,
-      y:      (bounds.y      / img.naturalHeight) * 100,
-      width:  (bounds.width  / img.naturalWidth)  * 100,
-      height: (bounds.height / img.naturalHeight) * 100,
+    const size = Math.min(bounds.width, bounds.height)
+    const cx   = bounds.x + (bounds.width  - size) / 2
+    const cy   = bounds.y + (bounds.height - size) / 2
+
+    const squarePct = {
+      unit:   '%',
+      x:      (cx   / img.naturalWidth)  * 100,
+      y:      (cy   / img.naturalHeight) * 100,
+      width:  (size / img.naturalWidth)  * 100,
+      height: (size / img.naturalHeight) * 100,
     }
 
-    setCrop(pctCrop)
+    setCrop(squarePct)
     setCompletedCrop({
-      x:      bounds.x,
-      y:      bounds.y,
-      width:  bounds.width,
-      height: bounds.height,
+      x:      cx,
+      y:      cy,
+      width:  size,
+      height: size,
       unit:   'px',
     })
   }, [])
+
+  const handleFreeFormToggle = () => {
+    setFreeForm(prev => {
+      const next = !prev
+      if (!next && imgRef.current && completedCrop) {
+        const img  = imgRef.current
+        const size = Math.min(completedCrop.width, completedCrop.height)
+        const cx   = completedCrop.x + (completedCrop.width  - size) / 2
+        const cy   = completedCrop.y + (completedCrop.height - size) / 2
+
+        const squarePct = {
+          unit:   '%',
+          x:      (cx   / img.naturalWidth)  * 100,
+          y:      (cy   / img.naturalHeight) * 100,
+          width:  (size / img.naturalWidth)  * 100,
+          height: (size / img.naturalHeight) * 100,
+        }
+
+        setCrop(squarePct)
+        setCompletedCrop({ x: cx, y: cy, width: size, height: size, unit: 'px' })
+      }
+      return next
+    })
+  }
 
   const handleConfirm = async () => {
     if (!imgRef.current || !completedCrop) return
@@ -58,8 +87,9 @@ export function LogoCropModal({ imageSrc, onConfirm, onCancel }) {
         <div className={styles.cropArea}>
           <ReactCrop
             crop={crop}
-            onChange={(_, pct)    => setCrop(pct)}
-            onComplete={(px)      => setCompletedCrop(px)}
+            onChange={(_, pct) => setCrop(pct)}
+            onComplete={px     => setCompletedCrop(px)}
+            aspect={freeForm ? undefined : 1}
             minWidth={20}
             minHeight={20}
             keepSelection
@@ -72,6 +102,18 @@ export function LogoCropModal({ imageSrc, onConfirm, onCancel }) {
               onLoad={onImageLoad}
             />
           </ReactCrop>
+        </div>
+
+        <div className={styles.toggle}>
+          <button
+            className={`${styles.toggleBtn} ${freeForm ? styles.toggleBtnActive : ''}`}
+            onClick={handleFreeFormToggle}
+          >
+            <span className="mi" style={{ fontSize: '1rem' }}>
+              {freeForm ? 'crop_square' : 'crop_free'}
+            </span>
+            {freeForm ? 'Switch to square' : 'Switch to free-form'}
+          </button>
         </div>
 
         <div className={styles.actions}>
