@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
 import { useNotifications } from '../../contexts/NotificationContext'
-import { useAutonomousAgent } from '../../contexts/AgentContext'
+import { useAutonomousAgent } from '../../contexts/AutonomousAgentContext'
 import { BotIcon } from '../BotIcon/BotIcon'
 import styles from './Header.module.css'
 
