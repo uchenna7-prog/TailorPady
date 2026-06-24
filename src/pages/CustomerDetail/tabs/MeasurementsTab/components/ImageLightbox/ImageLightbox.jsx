@@ -1,4 +1,4 @@
-import { useState,useEffect,useRef } from "react"
+import { useState, useEffect, useRef } from "react"
 import styles from "./ImageLightbox.module.css"
 
 
@@ -17,8 +17,12 @@ export function ImageLightbox({ images, startIndex = 0, onClose }) {
   function goPrev() { setCurrentIndex(i => (i === 0 ? images.length - 1 : i - 1)) }
   function goNext() { setCurrentIndex(i => (i === images.length - 1 ? 0 : i + 1)) }
 
-  function handleTouchStart(e) { touchStartX.current = e.touches[0].clientX }
+  function handleTouchStart(e) {
+    e.stopPropagation()
+    touchStartX.current = e.touches[0].clientX
+  }
   function handleTouchEnd(e) {
+    e.stopPropagation()
     if (touchStartX.current === null) return
     const swipeDistance = touchStartX.current - e.changedTouches[0].clientX
     if (Math.abs(swipeDistance) > 40) swipeDistance > 0 ? goNext() : goPrev()
