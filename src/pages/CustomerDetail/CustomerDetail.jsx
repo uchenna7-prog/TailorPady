@@ -63,6 +63,9 @@ export default function CustomerDetail({ onMenuClick }) {
   const tabStripPointerStartX = useRef(null)
   const tabStripCooldownRef  = useRef(null)
   const [underlineStyle, setUnderlineStyle] = useState({ left: 0, width: 0 })
+  const [dragOffset, setDragOffset] = useState(0)
+  const [slideDirection, setSlideDirection] = useState(null)
+  const isDraggingRef = useRef(false)
 
   const showToast = useCallback((msg) => {
     setToastMsg(msg)
@@ -200,7 +203,7 @@ export default function CustomerDetail({ onMenuClick }) {
     tabStripPointerStartX.current = null
 
     setTimeout(() => {
-      const endScroll   = tabsRef.current?.scrollLeft ?? 0
+      const endScroll  = tabsRef.current?.scrollLeft ?? 0
       const scrollMoved = startScroll !== null && Math.abs(endScroll - startScroll) > 2
 
       if (scrollMoved || tabStripDragged.current) {
@@ -220,10 +223,35 @@ export default function CustomerDetail({ onMenuClick }) {
   const handleTouchStart = useCallback((e) => {
     touchStartX.current = e.touches[0].clientX
     touchStartY.current = e.touches[0].clientY
+    isDraggingRef.current = false
   }, [])
 
-  const handleTouchEnd = useCallback((e) => {
+  const handleTouchMove = useCallback((e) => {
     if (window.innerWidth > 600 || touchStartX.current === null) return
+
+    const dx = e.touches[0].clientX - touchStartX.current
+    const dy = e.touches[0].clientY - touchStartY.current
+
+    if (!isDraggingRef.current) {
+      if (Math.abs(dx) <= Math.abs(dy) || Math.abs(dx) < 10) return
+      isDraggingRef.current = true
+    }
+
+    const currentIdx  = TAB_IDS.indexOf(activeTab)
+    const canGoLeft   = dx < 0 && currentIdx < TAB_IDS.length - 1
+    const canGoRight  = dx > 0 && currentIdx > 0
+    if (!canGoLeft && !canGoRight) return
+
+    const resisted = dx * 0.35
+    setDragOffset(Math.max(-48, Math.min(48, resisted)))
+  }, [activeTab])
+
+  const handleTouchEnd = useCallback((e) => {
+    if (window.innerWidth > 600 || touchStartX.current === null) {
+      setDragOffset(0)
+      isDraggingRef.current = false
+      return
+    }
 
     const dx = e.changedTouches[0].clientX - touchStartX.current
     const dy = e.changedTouches[0].clientY - touchStartY.current
@@ -241,11 +269,14 @@ export default function CustomerDetail({ onMenuClick }) {
           : null
 
       if (nextTabId) {
+        setSlideDirection(isSwipeLeft ? 'left' : 'right')
         setActiveTab(nextTabId)
         scrollTabIntoView(nextTabId)
       }
     }
 
+    setDragOffset(0)
+    isDraggingRef.current = false
     touchStartX.current = null
     touchStartY.current = null
   }, [activeTab, scrollTabIntoView])
@@ -345,6 +376,7 @@ export default function CustomerDetail({ onMenuClick }) {
     <div
       className={styles.page}
       onTouchStart={handleTouchStart}
+      onTouchMove={handleTouchMove}
       onTouchEnd={handleTouchEnd}
     >
       <div ref={topSentinelRef} className={styles.sentinel} />
@@ -535,7 +567,6 @@ export default function CustomerDetail({ onMenuClick }) {
               key={tab.id}
               ref={el => { tabRefs.current[tab.id] = el }}
               className={`${styles.tab} ${activeTab === tab.id ? styles.active : ''}`}
-              onClick={() => { setActiveTab(tab.id); scrollTabIntoView(tab.id) }}
               onTouchEnd={e => handleTabTouchEnd(e, tab.id)}
             >
               <span>{tab.label}</span>
@@ -553,7 +584,13 @@ export default function CustomerDetail({ onMenuClick }) {
         </div>
       </div>
 
-      <div className={styles.tabContent} data-empty={activeTabIsEmpty ? 'true' : 'false'}>
+      <div
+        className={styles.tabContent}
+        data-empty={activeTabIsEmpty ? 'true' : 'false'}
+        key={activeTab}
+        data-slide={slideDirection ?? undefined}
+        style={dragOffset !== 0 ? { transform: `translateX(${dragOffset}px)` } : undefined}
+      >
         {activeTab === 'measurements' && (
           <MeasurementsTab
             measurements={customerData.measurements}
