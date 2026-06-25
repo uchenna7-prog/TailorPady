@@ -242,6 +242,7 @@
   -webkit-overflow-scrolling: touch;
   scrollbar-width: none;
   align-items: stretch;
+  position: relative;
 }
 
 .tabs::-webkit-scrollbar {
@@ -274,15 +275,15 @@
   font-weight: 800;
 }
 
-.tab.active::after {
-  content: '';
+.tabUnderline {
   position: absolute;
   bottom: 0;
   left: 0;
-  right: 0;
   height: 2px;
   border-radius: 1px 1px 0 0;
   background: var(--accent);
+  transition: transform 0.32s cubic-bezier(0.22, 1, 0.36, 1), width 0.32s cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: transform, width;
 }
 
 .tabBadge {
@@ -312,6 +313,7 @@
   padding: 12px 20px 120px;
   flex: 1;
   min-height: calc(100dvh - 75px - 44px);
+  transition: transform 0.18s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .tabContent[data-empty='true'] {
@@ -320,6 +322,24 @@
 
 .tabContent[data-empty='false'] {
   min-height: calc(100dvh - 75px - 44px);
+}
+
+.tabContent[data-slide='left'] {
+  animation: tabSlideFromRight 0.22s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.tabContent[data-slide='right'] {
+  animation: tabSlideFromLeft 0.22s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@keyframes tabSlideFromRight {
+  from { opacity: 0; transform: translateX(18px); }
+  to   { opacity: 1; transform: translateX(0);     }
+}
+
+@keyframes tabSlideFromLeft {
+  from { opacity: 0; transform: translateX(-18px); }
+  to   { opacity: 1; transform: translateX(0);      }
 }
 
 .fab {
@@ -462,59 +482,3 @@
     touch-action: auto;
   }
 }
-
-.tabs {
-  position: relative;
-}
-
-.tabUnderline {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  height: 2px;
-  border-radius: 1px 1px 0 0;
-  background: var(--accent);
-  transition: transform 0.28s cubic-bezier(0.34, 1.4, 0.64, 1), width 0.28s cubic-bezier(0.34, 1.4, 0.64, 1);
-  will-change: transform, width;
-}
-
-
-.tabs {
-  position: relative;
-}
-
-.tabUnderline {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  height: 2px;
-  border-radius: 1px 1px 0 0;
-  background: var(--accent);
-  transition: transform 0.32s cubic-bezier(0.22, 1, 0.36, 1), width 0.32s cubic-bezier(0.22, 1, 0.36, 1);
-  will-change: transform, width;
-}
-
-.tabContent {
-  transition: transform 0.18s cubic-bezier(0.22, 1, 0.36, 1);
-}
-
-.tabContent[data-slide='left'] {
-  animation: tabSlideFromRight 0.22s cubic-bezier(0.22, 1, 0.36, 1);
-}
-
-.tabContent[data-slide='right'] {
-  animation: tabSlideFromLeft 0.22s cubic-bezier(0.22, 1, 0.36, 1);
-}
-
-@keyframes tabSlideFromRight {
-  from { opacity: 0; transform: translateX(18px); }
-  to   { opacity: 1; transform: translateX(0);     }
-}
-
-@keyframes tabSlideFromLeft {
-  from { opacity: 0; transform: translateX(-18px); }
-  to   { opacity: 1; transform: translateX(0);      }
-}
-
-
-

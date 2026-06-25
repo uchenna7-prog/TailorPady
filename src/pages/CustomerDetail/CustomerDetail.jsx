@@ -24,6 +24,14 @@ import ReceiptsTab                                  from './tabs/ReceiptsTab/Rec
 import styles                                       from './CustomerDetail.module.css'
 
 
+function prevTabIdToDirection(currentTabId, nextTabId) {
+  const currentIdx = TAB_IDS.indexOf(currentTabId)
+  const nextIdx    = TAB_IDS.indexOf(nextTabId)
+  if (nextIdx === currentIdx) return null
+  return nextIdx > currentIdx ? 'left' : 'right'
+}
+
+
 export default function CustomerDetail({ onMenuClick }) {
 
   const { id }       = useParams()
@@ -215,10 +223,20 @@ export default function CustomerDetail({ onMenuClick }) {
         return
       }
 
+      setSlideDirection(prevTabIdToDirection(activeTab, tabId))
       setActiveTab(tabId)
       scrollTabIntoView(tabId)
+      setTimeout(() => setSlideDirection(null), 260)
     }, 60)
-  }, [scrollTabIntoView])
+  }, [scrollTabIntoView, activeTab])
+
+  const handleTabClick = useCallback((tabId) => {
+    if (tabStripDragged.current) return
+    setSlideDirection(prevTabIdToDirection(activeTab, tabId))
+    setActiveTab(tabId)
+    scrollTabIntoView(tabId)
+    setTimeout(() => setSlideDirection(null), 260)
+  }, [scrollTabIntoView, activeTab])
 
   const handleTouchStart = useCallback((e) => {
     touchStartX.current = e.touches[0].clientX
@@ -272,6 +290,7 @@ export default function CustomerDetail({ onMenuClick }) {
         setSlideDirection(isSwipeLeft ? 'left' : 'right')
         setActiveTab(nextTabId)
         scrollTabIntoView(nextTabId)
+        setTimeout(() => setSlideDirection(null), 260)
       }
     }
 
@@ -567,6 +586,7 @@ export default function CustomerDetail({ onMenuClick }) {
               key={tab.id}
               ref={el => { tabRefs.current[tab.id] = el }}
               className={`${styles.tab} ${activeTab === tab.id ? styles.active : ''}`}
+              onClick={() => handleTabClick(tab.id)}
               onTouchEnd={e => handleTabTouchEnd(e, tab.id)}
             >
               <span>{tab.label}</span>

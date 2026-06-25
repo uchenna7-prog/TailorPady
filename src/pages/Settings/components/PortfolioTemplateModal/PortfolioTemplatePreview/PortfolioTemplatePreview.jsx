@@ -43,7 +43,7 @@ export function PortfolioTemplatePreview({ template, slug, onClose, onSelect }) 
     <div className={styles.previewContainer}>
       <Header
         type="back"
-        title={`${template.label} Preview`}
+        title={`${template.label}`}
         onBackClick={onClose}
         showBorderBottom={false}
         customActions={[{

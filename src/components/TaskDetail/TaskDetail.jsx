@@ -1,6 +1,7 @@
 import styles from './TaskDetail.module.css'
 
 const PRIORITY_LABELS = { low: 'Low', normal: 'Normal', high: 'High', urgent: 'Urgent' }
+
 const PRIORITY_COLORS = {
   low:    { bg: 'rgba(148,163,184,0.12)', border: 'rgba(148,163,184,0.4)', text: '#94a3b8' },
   normal: { bg: 'rgba(99,102,241,0.12)',  border: 'rgba(99,102,241,0.4)',  text: '#818cf8' },
@@ -8,9 +9,30 @@ const PRIORITY_COLORS = {
   urgent: { bg: 'rgba(239,68,68,0.12)',   border: 'rgba(239,68,68,0.4)',   text: '#ef4444' },
 }
 
-function isOverdue(task) {
-  if (!task.dueDate || task.done) return false
-  return new Date(task.dueDate + 'T23:59:59') < new Date()
+const STATUS_CONFIG = {
+  pending:   { label: 'Pending',   color: '#a16207', bg: 'rgba(234,179,8,0.1)',  border: 'rgba(234,179,8,0.5)'  },
+  overdue:   { label: 'Overdue',   color: '#ef4444', bg: 'rgba(239,68,68,0.12)', border: 'rgba(239,68,68,0.4)'  },
+  completed: { label: 'Completed', color: '#15803d', bg: 'rgba(34,197,94,0.1)',  border: 'rgba(34,197,94,0.5)'  },
+}
+
+function isTaskDateInPast(task) {
+  if (!task.dueDate) return false
+  const dt = task.dueTime
+    ? new Date(`${task.dueDate}T${task.dueTime}`)
+    : new Date(task.dueDate + 'T23:59:59')
+  return dt < new Date()
+}
+
+function getEffectiveStatus(task) {
+  if (task.done) return 'completed'
+  if (isTaskDateInPast(task)) return 'overdue'
+  return 'pending'
+}
+
+function isChipLocked(key, task) {
+  if (key === 'overdue')  return true
+  if (key === 'pending')  return isTaskDateInPast(task)
+  return false
 }
 
 function formatDate(dateStr) {
@@ -20,10 +42,18 @@ function formatDate(dateStr) {
   })
 }
 
+
 export default function TaskDetail({ task, onClose, onToggle, onDelete }) {
   if (!task) return null
-  const overdue = isOverdue(task)
-  const pc      = PRIORITY_COLORS[task.priority] ?? PRIORITY_COLORS.normal
+
+  const effectiveStatus = getEffectiveStatus(task)
+  const isOverdue       = effectiveStatus === 'overdue'
+  const pc              = PRIORITY_COLORS[task.priority] ?? PRIORITY_COLORS.normal
+
+  function handleChipClick(key) {
+    if (key === 'completed' && !task.done)  onToggle(task.id, false)
+    if (key === 'pending'   && task.done)   onToggle(task.id, true)
+  }
 
   return (
     <div
@@ -46,18 +76,30 @@ export default function TaskDetail({ task, onClose, onToggle, onDelete }) {
         <div className={styles.detailBody}>
 
           <div className={styles.detailStatusRow}>
-            <button
-              className={`${styles.detailStatusBtn} ${!task.done ? styles.detailStatusBtn_pending : ''}`}
-              onClick={() => onToggle(task.id, true)}
-            >
-              Pending
-            </button>
-            <button
-              className={`${styles.detailStatusBtn} ${task.done ? styles.detailStatusBtn_done : ''}`}
-              onClick={() => onToggle(task.id, false)}
-            >
-              Completed
-            </button>
+            {Object.entries(STATUS_CONFIG).map(([key, cfg]) => {
+              const isActive = effectiveStatus === key
+              const locked   = isChipLocked(key, task)
+
+              return (
+                <button
+                  key={key}
+                  disabled={locked}
+                  className={[
+                    styles.detailStatusBtn,
+                    isActive ? styles.detailStatusBtn_active : '',
+                    locked   ? styles.detailStatusBtn_locked : '',
+                  ].join(' ')}
+                  style={isActive ? {
+                    background:  cfg.bg,
+                    borderColor: cfg.border,
+                    color:       cfg.color,
+                  } : {}}
+                  onClick={() => handleChipClick(key)}
+                >
+                  {cfg.label}
+                </button>
+              )
+            })}
           </div>
 
           <div className={styles.detailTitle}>{task.desc}</div>
@@ -78,7 +120,7 @@ export default function TaskDetail({ task, onClose, onToggle, onDelete }) {
             {task.dueDate && (
               <div className={styles.detailCell}>
                 <div className={styles.detailCellLabel}>Due Date</div>
-                <div className={`${styles.detailCellVal} ${overdue ? styles.overdueText : ''}`}>
+                <div className={`${styles.detailCellVal} ${isOverdue ? styles.overdueText : ''}`}>
                   {formatDate(task.dueDate)}{task.dueTime ? ` · ${task.dueTime}` : ''}
                 </div>
               </div>
@@ -87,9 +129,14 @@ export default function TaskDetail({ task, onClose, onToggle, onDelete }) {
               <div className={styles.detailCellLabel}>Status</div>
               <div
                 className={styles.detailCellVal}
-                style={{ color: overdue ? '#ef4444' : task.done ? '#22c55e' : '#a16207', textTransform: 'capitalize' }}
+                style={{
+                  color: effectiveStatus === 'overdue'   ? '#ef4444'
+                       : effectiveStatus === 'completed' ? '#22c55e'
+                       : '#a16207',
+                  textTransform: 'capitalize',
+                }}
               >
-                {overdue ? 'Overdue' : task.done ? 'Completed' : 'Pending'}
+                {STATUS_CONFIG[effectiveStatus].label}
               </div>
             </div>
           </div>

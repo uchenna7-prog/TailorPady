@@ -8,10 +8,10 @@ const PRIORITY_COLORS = {
   urgent: { bg: 'rgba(239,68,68,0.12)',   border: 'rgba(239,68,68,0.4)',   text: '#ef4444' },
 }
 
-const TASK_STATUS_STYLES = {
-  completed: { bg: 'rgba(34,197,94,0.12)',  color: '#22c55e', border: 'rgba(34,197,94,0.3)'  },
-  overdue:   { bg: 'rgba(239,68,68,0.12)',  color: '#ef4444', border: 'rgba(239,68,68,0.3)'  },
-  pending:   { bg: 'rgba(234,179,8,0.12)',  color: '#a16207', border: 'rgba(234,179,8,0.3)'  },
+const STATUS_STYLES = {
+  completed: { bg: 'rgba(34,197,94,0.12)',  color: '#22c55e', border: 'rgba(34,197,94,0.3)',  label: 'Completed' },
+  overdue:   { bg: 'rgba(239,68,68,0.12)',  color: '#ef4444', border: 'rgba(239,68,68,0.3)',  label: 'Overdue'   },
+  pending:   { bg: 'rgba(234,179,8,0.12)',  color: '#a16207', border: 'rgba(234,179,8,0.3)',  label: 'Pending'   },
 }
 
 const CATEGORY_ICONS = {
@@ -25,7 +25,16 @@ const CATEGORY_ICONS = {
 
 export function isTaskOverdue(task) {
   if (!task.dueDate || task.done) return false
-  return new Date(task.dueDate + 'T23:59:59') < new Date()
+  const dt = task.dueTime
+    ? new Date(`${task.dueDate}T${task.dueTime}`)
+    : new Date(task.dueDate + 'T23:59:59')
+  return dt < new Date()
+}
+
+function getEffectiveStatus(task) {
+  if (task.done)          return 'completed'
+  if (isTaskOverdue(task)) return 'overdue'
+  return 'pending'
 }
 
 function formatShortDate(dateStr) {
@@ -63,14 +72,14 @@ function timeUntil(dateStr, timeStr) {
   return `In ${days}d`
 }
 
+
 export function TaskRow({ task, isLast, allOrders, onOpen }) {
-  const overdue   = isTaskOverdue(task)
-  const statusKey = overdue ? 'overdue' : task.done ? 'completed' : 'pending'
-  const statusSty = TASK_STATUS_STYLES[statusKey]
-  const catIcon   = CATEGORY_ICONS[task.category] || 'assignment'
-  const pc        = PRIORITY_COLORS[task.priority] ?? PRIORITY_COLORS.normal
-  const until     = timeUntil(task.dueDate, task.dueTime)
-  const dateIsOverdue = overdue
+  const effectiveStatus = getEffectiveStatus(task)
+  const isOverdue       = effectiveStatus === 'overdue'
+  const sty             = STATUS_STYLES[effectiveStatus]
+  const catIcon         = CATEGORY_ICONS[task.category] || 'assignment'
+  const pc              = PRIORITY_COLORS[task.priority] ?? PRIORITY_COLORS.normal
+  const until           = timeUntil(task.dueDate, task.dueTime)
 
   const linkedOrder      = task.orderId ? allOrders.find(o => String(o.id) === String(task.orderId)) : null
   const linkedOrderItems = linkedOrder?.items ?? []
@@ -81,7 +90,7 @@ export function TaskRow({ task, isLast, allOrders, onOpen }) {
       onClick={onOpen}
     >
       {linkedOrder ? (
-        <OrderMosaic items={linkedOrderItems} size="md" overdue={overdue} />
+        <OrderMosaic items={linkedOrderItems} size="md" overdue={isOverdue} />
       ) : (
         <div className={styles.taskRowIcon}>
           <div className={styles.taskRowIconInner}>
@@ -89,7 +98,7 @@ export function TaskRow({ task, isLast, allOrders, onOpen }) {
               className="mi"
               style={{
                 fontSize: '1.3rem',
-                color: overdue ? '#ef4444' : task.done ? '#22c55e' : pc.text,
+                color: isOverdue ? '#ef4444' : task.done ? '#22c55e' : pc.text,
               }}
             >
               {catIcon}
@@ -115,8 +124,8 @@ export function TaskRow({ task, isLast, allOrders, onOpen }) {
           </div>
         )}
         <div className={styles.taskRowMeta}>
-          <span className="mi" style={{ fontSize: '0.75rem', color: dateIsOverdue ? '#ef4444' : 'var(--text3)' }}>schedule</span>
-          <span className={`${styles.taskRowMetaText} ${dateIsOverdue ? styles.taskRowMetaOverdue : ''}`}>
+          <span className="mi" style={{ fontSize: '0.75rem', color: isOverdue ? '#ef4444' : 'var(--text3)' }}>schedule</span>
+          <span className={`${styles.taskRowMetaText} ${isOverdue ? styles.taskRowMetaOverdue : ''}`}>
             {formatShortDate(task.dueDate)}{task.dueTime ? ` · ${formatTime(task.dueTime)}` : ''}
           </span>
         </div>
@@ -125,9 +134,9 @@ export function TaskRow({ task, isLast, allOrders, onOpen }) {
       <div className={styles.taskRowRight}>
         <span
           className={styles.taskRowStatus}
-          style={{ background: statusSty.bg, color: statusSty.color, borderColor: statusSty.border }}
+          style={{ background: sty.bg, color: sty.color, border: `1px solid ${sty.border}` }}
         >
-          {statusKey.charAt(0).toUpperCase() + statusKey.slice(1)}
+          {sty.label}
         </span>
         {task.category && (
           <div className={styles.taskRowCategory}>
