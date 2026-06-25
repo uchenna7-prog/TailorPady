@@ -14,16 +14,6 @@ export function MoreOptionsSheet({ onClose, onDelete, docType = 'invoice' }) {
         <div className={styles.handle} />
         <p className={styles.title}>More Options</p>
         <div className={styles.options}>
-          <button className={`${styles.option} ${styles.optionMuted}`} disabled>
-            <div className={`${styles.optionIcon} ${styles.optionIconMuted}`}>
-              <span className="mi-outlined" style={{ fontSize: '1.3rem' }}>edit</span>
-            </div>
-            <div className={styles.optionText}>
-              <span className={styles.optionLabel}>Edit {label}</span>
-              <span className={styles.optionDesc}>Modify {label.toLowerCase()} details</span>
-            </div>
-            <span className={styles.soonBadge}>Soon</span>
-          </button>
           <button className={`${styles.option} ${styles.optionDanger}`} onClick={handleDelete}>
             <div className={`${styles.optionIcon} ${styles.optionIconDanger}`}>
               <span className="mi-outlined" style={{ fontSize: '1.3rem' }}>delete</span>
