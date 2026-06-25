@@ -478,3 +478,43 @@
   will-change: transform, width;
 }
 
+
+.tabs {
+  position: relative;
+}
+
+.tabUnderline {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  height: 2px;
+  border-radius: 1px 1px 0 0;
+  background: var(--accent);
+  transition: transform 0.32s cubic-bezier(0.22, 1, 0.36, 1), width 0.32s cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: transform, width;
+}
+
+.tabContent {
+  transition: transform 0.18s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.tabContent[data-slide='left'] {
+  animation: tabSlideFromRight 0.22s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.tabContent[data-slide='right'] {
+  animation: tabSlideFromLeft 0.22s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@keyframes tabSlideFromRight {
+  from { opacity: 0; transform: translateX(18px); }
+  to   { opacity: 1; transform: translateX(0);     }
+}
+
+@keyframes tabSlideFromLeft {
+  from { opacity: 0; transform: translateX(-18px); }
+  to   { opacity: 1; transform: translateX(0);      }
+}
+
+
+
