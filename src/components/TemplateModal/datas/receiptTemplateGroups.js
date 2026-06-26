@@ -18,7 +18,8 @@ import { ReceiptTemplate17 } from '../../../components/Templates/ReceiptTemplate
 import { ReceiptTemplate18 } from '../../../components/Templates/ReceiptTemplates/Template18'
 import { ReceiptTemplate19 } from '../../../components/Templates/ReceiptTemplates/Template19'
 import { ReceiptTemplate20 } from '../../../components/Templates/ReceiptTemplates/Template20'
-
+import { ReceiptTemplate21 } from '../../../components/Templates/ReceiptTemplates/Template21'
+import {ReceiptTemplate22 } from '../../../components/Templates/ReceiptTemplates/Template22'
 
 
 export const RECEIPT_TEMPLATE_GROUPS = [
@@ -57,7 +58,7 @@ export const RECEIPT_TEMPLATE_GROUPS = [
       {
         id: 'receiptTemplate3',
         label: 'Spine',
-        tags: ['clean', 'has logo', 'terms'],
+        tags: ['clean', 'has logo', 'payment terms'],
         requires: [
           'logo',
           'name',
@@ -67,7 +68,7 @@ export const RECEIPT_TEMPLATE_GROUPS = [
           'email',
           'website',
           'accountName',
-          
+   
         ],
         Component: ReceiptTemplate3,
       },
@@ -102,45 +103,40 @@ export const RECEIPT_TEMPLATE_GROUPS = [
         ],
         Component: ReceiptTemplate5,
       },
-      {
+
+        {
         id: 'receiptTemplate6',
-        label: 'Bold Corporate',
-        tags: ['clean', 'has logo'],
+        label: 'Gradient',
+        tags: ['clean', 'has logo', 'payment terms','has signature'],
         requires: [
-          'logo',
           'name',
           'address',
           'phone',
           'email',
           'accountName',
+   
         ],
         Component: ReceiptTemplate6,
       },
       {
         id: 'receiptTemplate7',
-        label: 'Refined Full',
-        tags: ['clean', 'has logo'],
+        label: 'Gradient',
+        tags: ['clean', 'has logo', 'payment terms','has signature'],
         requires: [
-          'logo',
           'name',
           'address',
           'phone',
           'email',
-          'website',
-          'accountName'
+          'accountName',
+   
         ],
         Component: ReceiptTemplate7,
       },
-    ],
-  },
 
-  {
-    groupLabel: 'Accent',
-    templates: [
       {
         id: 'receiptTemplate8',
-        label: 'Colour Header',
-        tags: ['accent', 'has logo'],
+        label: 'Bold Corporate',
+        tags: ['clean', 'has logo'],
         requires: [
           'logo',
           'name',
@@ -153,6 +149,41 @@ export const RECEIPT_TEMPLATE_GROUPS = [
       },
       {
         id: 'receiptTemplate9',
+        label: 'Refined Full',
+        tags: ['clean', 'has logo'],
+        requires: [
+          'logo',
+          'name',
+          'address',
+          'phone',
+          'email',
+          'website',
+          'accountName'
+        ],
+        Component: ReceiptTemplate9,
+      },
+    ],
+  },
+
+  {
+    groupLabel: 'Accent',
+    templates: [
+      {
+        id: 'receiptTemplate10',
+        label: 'Colour Header',
+        tags: ['accent', 'has logo'],
+        requires: [
+          'logo',
+          'name',
+          'address',
+          'phone',
+          'email',
+          'accountName',
+        ],
+        Component: ReceiptTemplate10,
+      },
+      {
+        id: 'receiptTemplate11',
         label: 'Info Bar',
         tags: ['accent', 'has logo'],
         requires: [
@@ -165,10 +196,10 @@ export const RECEIPT_TEMPLATE_GROUPS = [
           'website',
           'accountName'
         ],
-        Component: ReceiptTemplate9,
+        Component: ReceiptTemplate11,
       },
       {
-        id: 'receiptTemplate10',
+        id: 'receiptTemplate12',
         label: 'Stitched Top',
         tags: ['accent', 'has logo'],
         requires: [
@@ -181,10 +212,10 @@ export const RECEIPT_TEMPLATE_GROUPS = [
           'website',
           'accountName'
         ],
-        Component: ReceiptTemplate10,
+        Component: ReceiptTemplate12,
       },
       {
-        id: 'receiptTemplate11',
+        id: 'receiptTemplate13',
         label: 'Header Band',
         tags: ['accent', 'has logo', 'signature'],
         requires: [
@@ -197,10 +228,10 @@ export const RECEIPT_TEMPLATE_GROUPS = [
           'signature',
           'accountName'
         ],
-        Component: ReceiptTemplate11,
+        Component: ReceiptTemplate13,
       },
       {
-        id: 'receiptTemplate12',
+        id: 'receiptTemplate14',
         label: 'Full Details',
         tags: ['accent', 'has logo'],
         requires: [
@@ -211,10 +242,10 @@ export const RECEIPT_TEMPLATE_GROUPS = [
           'email',
           'accountName',
         ],
-        Component: ReceiptTemplate12,
+        Component: ReceiptTemplate14,
       },
       {
-        id: 'receiptTemplate13',
+        id: 'receiptTemplate15',
         label: 'Amount First',
         tags: ['accent', 'has logo'],
         requires: [
@@ -227,10 +258,10 @@ export const RECEIPT_TEMPLATE_GROUPS = [
           'website',
           'accountName',
         ],
-        Component: ReceiptTemplate13,
+        Component: ReceiptTemplate15,
       },
       {
-        id: 'receiptTemplate14',
+        id: 'receiptTemplate16',
         label: 'Summary Panel',
         tags: ['accent', 'has logo'],
         requires: [
@@ -242,12 +273,12 @@ export const RECEIPT_TEMPLATE_GROUPS = [
           'email',
           'accountName'
         ],
-        Component: ReceiptTemplate14,
+        Component: ReceiptTemplate16,
       },
       {
-        id: 'receiptTemplate15',
+        id: 'receiptTemplate17',
         label: 'Simple Footer',
-        tags: ['accent', 'no logo', 'notes'],
+        tags: ['accent', 'no logo'],
         requires: [
           'name',
           'tagline',
@@ -256,12 +287,12 @@ export const RECEIPT_TEMPLATE_GROUPS = [
           'email',
           'accountName',
         ],
-        Component: ReceiptTemplate15,
+        Component: ReceiptTemplate17,
       },
       {
-        id: 'receiptTemplate16',
+        id: 'receiptTemplate18',
         label: 'Stitched Split',
-        tags: ['accent', 'has logo', 'terms'],
+        tags: ['accent', 'has logo', 'payment terms'],
         requires: [
           'logo',
           'name',
@@ -271,12 +302,12 @@ export const RECEIPT_TEMPLATE_GROUPS = [
           'email',
           'website',
           'accountName',
-          
+   
         ],
-        Component: ReceiptTemplate16,
+        Component: ReceiptTemplate18,
       },
       {
-        id: 'receiptTemplate17',
+        id: 'receiptTemplate19',
         label: 'Corner Block',
         tags: ['accent', 'has logo', 'notes'],
         requires: [
@@ -289,10 +320,10 @@ export const RECEIPT_TEMPLATE_GROUPS = [
           'website',
           'accountName',
         ],
-        Component: ReceiptTemplate17,
+        Component: ReceiptTemplate19,
       },
       {
-        id: 'receiptTemplate18',
+        id: 'receiptTemplate20',
         label: 'Diagonal Cut',
         tags: ['accent', 'no logo', 'has signature'],
         requires: [
@@ -303,32 +334,33 @@ export const RECEIPT_TEMPLATE_GROUPS = [
           'signature',
           'accountName',
         ],
-        Component: ReceiptTemplate18,
+        Component: ReceiptTemplate20,
       },
     ],
   },
+
 
   {
     groupLabel: 'Solid',
     templates: [
       {
-        id: 'receiptTemplate19',
+        id: 'receiptTemplate21',
         label: 'Full Background',
-        tags: ['solid', 'no logo', 'terms'],
+        tags: ['solid', 'no logo', 'payment terms'],
         requires: [
           'name',
           'address',
           'phone',
           'email',
           'accountName',
-          
+   
         ],
-        Component: ReceiptTemplate19,
+        Component: ReceiptTemplate21,
       },
       {
-        id: 'receiptTemplate20',
+        id: 'receiptTemplate22',
         label: 'Colour Block',
-        tags: ['solid', 'no logo', 'terms'],
+        tags: ['solid', 'no logo', 'payment terms'],
         requires: [
           'name',
           'address',
@@ -336,10 +368,11 @@ export const RECEIPT_TEMPLATE_GROUPS = [
           'email',
           'website',
           'accountName',
-          
+   
         ],
-        Component: ReceiptTemplate20,
+        Component: ReceiptTemplate22,
       },
     ],
   },
+
 ]

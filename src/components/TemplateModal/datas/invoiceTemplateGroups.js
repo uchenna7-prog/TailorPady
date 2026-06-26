@@ -18,6 +18,8 @@ import { InvoiceTemplate17 } from '../../../components/Templates/InvoiceTemplate
 import { InvoiceTemplate18 } from '../../../components/Templates/InvoiceTemplates/Template18'
 import { InvoiceTemplate19 } from '../../../components/Templates/InvoiceTemplates/Template19'
 import { InvoiceTemplate20 } from '../../../components/Templates/InvoiceTemplates/Template20'
+import { InvoiceTemplate21 } from '../../../components/Templates/InvoiceTemplates/Template21'
+import {InvoiceTemplate22 } from '../../../components/Templates/InvoiceTemplates/Template22'
 
 
 export const INVOICE_TEMPLATE_GROUPS = [
@@ -111,12 +113,12 @@ export const INVOICE_TEMPLATE_GROUPS = [
         ],
         Component: InvoiceTemplate5,
       },
-      {
+
+        {
         id: 'invoiceTemplate6',
-        label: 'Bold Corporate',
-        tags: ['clean', 'has logo'],
+        label: 'Gradient',
+        tags: ['clean', 'has logo', 'payment terms','has signature'],
         requires: [
-          'logo',
           'name',
           'address',
           'phone',
@@ -124,36 +126,31 @@ export const INVOICE_TEMPLATE_GROUPS = [
           'accountBank',
           'accountNumber',
           'accountName',
+          'paymentTerms',
         ],
         Component: InvoiceTemplate6,
       },
       {
         id: 'invoiceTemplate7',
-        label: 'Refined Full',
-        tags: ['clean', 'has logo'],
+        label: 'Gradient',
+        tags: ['clean', 'has logo','has signature'],
         requires: [
-          'logo',
           'name',
           'address',
           'phone',
           'email',
-          'website',
           'accountBank',
           'accountNumber',
-          'accountName'
+          'accountName',
+          'paymentTerms',
         ],
         Component: InvoiceTemplate7,
       },
-    ],
-  },
 
-  {
-    groupLabel: 'Accent',
-    templates: [
       {
         id: 'invoiceTemplate8',
-        label: 'Colour Header',
-        tags: ['accent', 'has logo'],
+        label: 'Bold Corporate',
+        tags: ['clean', 'has logo'],
         requires: [
           'logo',
           'name',
@@ -168,6 +165,45 @@ export const INVOICE_TEMPLATE_GROUPS = [
       },
       {
         id: 'invoiceTemplate9',
+        label: 'Refined Full',
+        tags: ['clean', 'has logo'],
+        requires: [
+          'logo',
+          'name',
+          'address',
+          'phone',
+          'email',
+          'website',
+          'accountBank',
+          'accountNumber',
+          'accountName'
+        ],
+        Component: InvoiceTemplate9,
+      },
+    ],
+  },
+
+  {
+    groupLabel: 'Accent',
+    templates: [
+      {
+        id: 'invoiceTemplate10',
+        label: 'Colour Header',
+        tags: ['accent', 'has logo'],
+        requires: [
+          'logo',
+          'name',
+          'address',
+          'phone',
+          'email',
+          'accountBank',
+          'accountNumber',
+          'accountName',
+        ],
+        Component: InvoiceTemplate10,
+      },
+      {
+        id: 'invoiceTemplate11',
         label: 'Info Bar',
         tags: ['accent', 'has logo'],
         requires: [
@@ -182,10 +218,10 @@ export const INVOICE_TEMPLATE_GROUPS = [
           'accountNumber',
           'accountName'
         ],
-        Component: InvoiceTemplate9,
+        Component: InvoiceTemplate11,
       },
       {
-        id: 'invoiceTemplate10',
+        id: 'invoiceTemplate12',
         label: 'Stitched Top',
         tags: ['accent', 'has logo'],
         requires: [
@@ -200,10 +236,10 @@ export const INVOICE_TEMPLATE_GROUPS = [
           'accountNumber',
           'accountName'
         ],
-        Component: InvoiceTemplate10,
+        Component: InvoiceTemplate12,
       },
       {
-        id: 'invoiceTemplate11',
+        id: 'invoiceTemplate13',
         label: 'Header Band',
         tags: ['accent', 'has logo', 'signature'],
         requires: [
@@ -218,10 +254,10 @@ export const INVOICE_TEMPLATE_GROUPS = [
           'accountNumber',
           'accountName'
         ],
-        Component: InvoiceTemplate11,
+        Component: InvoiceTemplate13,
       },
       {
-        id: 'invoiceTemplate12',
+        id: 'invoiceTemplate14',
         label: 'Full Details',
         tags: ['accent', 'has logo'],
         requires: [
@@ -234,10 +270,10 @@ export const INVOICE_TEMPLATE_GROUPS = [
           'accountNumber',
           'accountName',
         ],
-        Component: InvoiceTemplate12,
+        Component: InvoiceTemplate14,
       },
       {
-        id: 'invoiceTemplate13',
+        id: 'invoiceTemplate15',
         label: 'Amount First',
         tags: ['accent', 'has logo'],
         requires: [
@@ -252,10 +288,10 @@ export const INVOICE_TEMPLATE_GROUPS = [
           'accountNumber',
           'accountName',
         ],
-        Component: InvoiceTemplate13,
+        Component: InvoiceTemplate15,
       },
       {
-        id: 'invoiceTemplate14',
+        id: 'invoiceTemplate16',
         label: 'Summary Panel',
         tags: ['accent', 'has logo'],
         requires: [
@@ -269,10 +305,10 @@ export const INVOICE_TEMPLATE_GROUPS = [
           'accountNumber',
           'accountName'
         ],
-        Component: InvoiceTemplate14,
+        Component: InvoiceTemplate16,
       },
       {
-        id: 'invoiceTemplate15',
+        id: 'invoiceTemplate17',
         label: 'Simple Footer',
         tags: ['accent', 'no logo'],
         requires: [
@@ -285,10 +321,10 @@ export const INVOICE_TEMPLATE_GROUPS = [
           'accountNumber',
           'accountName',
         ],
-        Component: InvoiceTemplate15,
+        Component: InvoiceTemplate17,
       },
       {
-        id: 'invoiceTemplate16',
+        id: 'invoiceTemplate18',
         label: 'Stitched Split',
         tags: ['accent', 'has logo', 'payment terms'],
         requires: [
@@ -304,10 +340,10 @@ export const INVOICE_TEMPLATE_GROUPS = [
           'accountName',
           'paymentTerms',
         ],
-        Component: InvoiceTemplate16,
+        Component: InvoiceTemplate18,
       },
       {
-        id: 'invoiceTemplate17',
+        id: 'invoiceTemplate19',
         label: 'Corner Block',
         tags: ['accent', 'has logo', 'notes'],
         requires: [
@@ -322,10 +358,10 @@ export const INVOICE_TEMPLATE_GROUPS = [
           'accountNumber',
           'accountName',
         ],
-        Component: InvoiceTemplate17,
+        Component: InvoiceTemplate19,
       },
       {
-        id: 'invoiceTemplate18',
+        id: 'invoiceTemplate20',
         label: 'Diagonal Cut',
         tags: ['accent', 'no logo', 'has signature'],
         requires: [
@@ -338,16 +374,17 @@ export const INVOICE_TEMPLATE_GROUPS = [
           'accountNumber',
           'accountName',
         ],
-        Component: InvoiceTemplate18,
+        Component: InvoiceTemplate20,
       },
     ],
   },
+
 
   {
     groupLabel: 'Solid',
     templates: [
       {
-        id: 'invoiceTemplate19',
+        id: 'invoiceTemplate21',
         label: 'Full Background',
         tags: ['solid', 'no logo', 'payment terms'],
         requires: [
@@ -360,10 +397,10 @@ export const INVOICE_TEMPLATE_GROUPS = [
           'accountName',
           'paymentTerms',
         ],
-        Component: InvoiceTemplate19,
+        Component: InvoiceTemplate21,
       },
       {
-        id: 'invoiceTemplate20',
+        id: 'invoiceTemplate22',
         label: 'Colour Block',
         tags: ['solid', 'no logo', 'payment terms'],
         requires: [
@@ -377,8 +414,9 @@ export const INVOICE_TEMPLATE_GROUPS = [
           'accountName',
           'paymentTerms',
         ],
-        Component: InvoiceTemplate20,
+        Component: InvoiceTemplate22,
       },
     ],
   },
+
 ]

@@ -18,6 +18,8 @@ import { InvoiceTemplate17 } from '../InvoiceTemplates/Template17'
 import { InvoiceTemplate18 } from '../InvoiceTemplates/Template18'
 import { InvoiceTemplate19 } from '../InvoiceTemplates/Template19'
 import { InvoiceTemplate20 } from '../InvoiceTemplates/Template20'
+import { InvoiceTemplate21 } from '../InvoiceTemplates/Template21'
+import { InvoiceTemplate22 } from '../InvoiceTemplates/Template22'
 
 export const TEMPLATE_MAPPINGS = {
   invoiceTemplate1:  InvoiceTemplate1,
@@ -40,4 +42,6 @@ export const TEMPLATE_MAPPINGS = {
   invoiceTemplate18: InvoiceTemplate18,
   invoiceTemplate19: InvoiceTemplate19,
   invoiceTemplate20: InvoiceTemplate20,
+  invoiceTemplate21: InvoiceTemplate21,
+  invoiceTemplate22: InvoiceTemplate22
 }

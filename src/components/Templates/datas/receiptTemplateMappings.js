@@ -18,6 +18,8 @@ import { ReceiptTemplate17 } from '../ReceiptTemplates/Template17'
 import { ReceiptTemplate18 } from '../ReceiptTemplates/Template18'
 import { ReceiptTemplate19 } from '../ReceiptTemplates/Template19'
 import { ReceiptTemplate20 } from '../ReceiptTemplates/Template20'
+import { ReceiptTemplate21 } from '../ReceiptTemplates/Template21'
+import { ReceiptTemplate22 } from '../ReceiptTemplates/Template22'
 
 export const TEMPLATE_MAPPINGS = {
   receiptTemplate1:  ReceiptTemplate1,
@@ -40,4 +42,6 @@ export const TEMPLATE_MAPPINGS = {
   receiptTemplate18: ReceiptTemplate18,
   receiptTemplate19: ReceiptTemplate19,
   receiptTemplate20: ReceiptTemplate20,
+  receiptTemplate21: ReceiptTemplate21,
+  receiptTemplate22: ReceiptTemplate22
 }

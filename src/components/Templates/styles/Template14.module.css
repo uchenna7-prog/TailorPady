@@ -1,100 +1,141 @@
-.template { 
-   background: #fff; 
-   color: #1a1a1a; 
-   font-family: "Manrope", sans-serif;
-   font-size: 10px; 
-   display: flex; 
-   flex-direction: column; 
-   padding: 0; 
-   min-height: 565px;
-   box-sizing: border-box;
-}
-.header { 
-   display: flex; 
-   justify-content: space-between; 
-   align-items: center; 
-   padding: 14px 16px 10px;
-   gap: 10px; 
+
+.template {
+  background: #fff;
+  color: #1a1a1a;
+  font-family: "Manrope", sans-serif;
+  font-size: 10px;
+  display: flex;
+  flex-direction: column;
+  padding: 0;
+  min-height: 565px;
 }
 
-
-.logoArea {
+.header {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 9px;
+  padding: 12px 16px 8px;
+}
+
+.titleGroup {
+  display: flex;
+  align-items: baseline;
+  gap: 5px;
+  flex: 1;
+}
+
+.invoiceWord,
+.receiptWord {
+  font-size: 17px;
+  font-weight: 900;
+  letter-spacing: 0.05em;
+}
+
+.invoiceNumber,
+.receiptNumber {
+  font-size: 13px;
+  font-weight: 900;
+  color: #888;
+}
+
+.dateBlock {
+  text-align: right;
+  font-size: 10px;
+  flex-shrink: 0;
+}
+
+.dateLabel {
+  font-size: 10px;
+  color: #888;
+  text-transform: uppercase;
+}
+
+.dateValue {
+  font-weight: 700;
+  font-size: 10px;
+  color: var(--brand-primary);
+}
+
+.divider {
+  height: 2px;
+  background: var(--brand-primary-dark);
+  margin: 0 16px;
+}
+
+.fromTo {
+  display: flex;
+  padding: 8px 16px;
+}
+
+.fromToBlock {
   flex: 1;
   min-width: 0;
+  word-break: break-word;
+  overflow-wrap: break-word;
+  font-size: 10px;
+  line-height: 1.5;
 }
 
-
-.brandName {
-  text-transform: uppercase;
-  font-size: 11px;
-  font-weight: 800;
-  letter-spacing: 0.04em;
-  line-height: 1.2;
-}
-.brandSub {
-  font-size: 8.5px;
-  color: #999;
-  letter-spacing: 0.06em;
-  margin-top: 2px;
-}
-.invoiceBox,.receiptBox { 
-   background: var(--brand-gradient); 
-   color: var(--brand-on-primary); 
-   padding: 8px 14px; 
-   border-radius: 3px; 
-   min-width: 80px;
-   max-width: 140px;
-   flex-shrink: 0;
-   display: flex;
-   flex-direction: column;
-   justify-content: center;
-   align-items: center;
+.fromLabel,
+.toLabel {
+  font-size: 13px;
+  font-weight: 900;
+  margin-bottom: 3px;
+  color: var(--brand-primary-dark);
 }
 
-.invoiceTitle,.receiptTitle { 
-   font-size: 16px; 
-   font-weight: 900; 
-   letter-spacing: 0.05em; 
+.fromDivider {
+  height: 1px;
+  background: var(--brand-primary);
+  margin-bottom: 3px;
 }
-.invoiceMeta,.receiptMeta { 
-   display: flex;
-   flex-direction: column;
-   align-items: flex-start;
-   gap: 0 5px; 
-   font-size: 10px; 
-   margin-top: 3px; 
+
+.infoRow {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 1px;
+  align-items: flex-start;
 }
-.invoiceMeta div, .receiptMeta div { 
-   display: flex; 
-   gap: 5px; 
+
+.infoKey {
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.infoValue {
+  flex: 1;
+  min-width: 0;
+  word-break: break-word;
+  font-size: 10px;
 }
 
 .tableWrapper {
   padding: 0 16px;
 }
 
+.forRow {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  padding: 8px 0 10px;
+}
+
+.forLabel {
+  font-size: 13px;
+  font-weight: 900;
+  color: var(--brand-primary-dark);
+  flex-shrink: 0;
+}
+
+.forValue {
+  font-size: 11px;
+  color: #0a0a0a;
+}
+
 .table {
   width: 100%;
   border-collapse: collapse;
   table-layout: fixed;
-}
-
-.orderDescriptionRow {
-  display: flex;
-  gap: 5px;
-  align-items: baseline;
-  padding: 10px 0 12px;
-}
-.orderText {
-  font-weight: 900;
-}
-
-.orderDescLabel {
-  font-size: 11px;
-  color: #0a0a0a;
 }
 
 .colSn    { width: 24px; }
@@ -104,15 +145,14 @@
 .colTotal { width: 22%; }
 
 .tableHeader {
-  background: var(--brand-surface);
-  border-bottom: 1.5px solid var(--brand-primary);
+  background: var(--brand-gradient);
+  color: var(--brand-on-primary);
 }
 
 .tableHeader th {
-  padding: 5px 4px;
+  padding: 6px 4px;
   font-size: 10px;
   font-weight: 700;
-  color: var(--brand-primary-dark);
 }
 
 .tableRow {
@@ -124,79 +164,50 @@
   font-size: 10px;
 }
 
-
-th.colSn,    td.colSn    { text-align: left; }
-th.colDesc,  td.colDesc  { 
-   text-align: left; 
-   word-break: break-word; 
+th.colSn,
+td.colSn {
+  text-align: left;
+  width: 24px;
+  flex-shrink: 0;
 }
 
-th.colQty, td.colQty {
+th.colDesc,
+td.colDesc {
+  text-align: left;
+  word-break: break-word;
+}
+
+th.colQty,
+td.colQty {
   text-align: center;
-  padding-left: 6px;   
-  padding-right: 6px;  
+  padding-left: 6px;
+  padding-right: 6px;
 }
 
-th.colPrice, td.colPrice {
+th.colPrice,
+td.colPrice {
   text-align: center;
-  padding-right: 8px;  
+  padding-right: 8px;
 }
-th.colTotal, td.colTotal { 
-   text-align: center; 
+
+th.colTotal,
+td.colTotal {
+  text-align: center;
+}
+
+td.colTotal {
+  color: var(--brand-primary);
 }
 
 .tableBody {
   padding: 5px 0;
 }
 
-
-.bottom { 
-   margin-top: auto;
-   display: flex; 
-   justify-content: space-between;
-   gap: 7px; 
-   padding: 8px 16px 14px; 
-}
-
-.box { 
-   background: var(--brand-gradient); 
-   color: var(--brand-on-primary); 
-   padding: 9px 10px; 
-   border-radius: 3px; 
-   width: 105px;
-   flex-shrink: 0;
-   font-size: 8.5px;
-   word-break: break-word;
-   overflow-wrap: break-word;
-}
-.boxTitle { 
-   font-weight: 700; 
-   font-size: 9px; 
-   margin-bottom: 2px; 
-}
-.boxName { 
-   font-weight: 700; 
-   font-size: 10px; 
-}
-.boxAddr {
-  font-size: 8.5px;
-}
-.paymentInfo { 
-   font-size: 9px; 
-}
-.paymentLabel { 
-   font-weight: 700; 
-   font-size: 10px; 
-   margin-bottom: 2px; 
-   color: var(--brand-primary); 
-}
-
-/* ── Invoice summary block — 55% right-aligned (matches Template 3) ── */
 .summaryBlock {
   margin-left: auto;
   width: 55%;
-  padding-top: 10px;
   margin-top: 14px;
+  padding: 8px 16px;
 }
 
 .summaryRow {
@@ -208,270 +219,78 @@ th.colTotal, td.colTotal {
 }
 
 .summaryKey {
-  font-size: 9px;
+  font-size: 10px;
   color: #6b7280;
 }
 
 .summaryVal {
-  font-size: 9px;
+  font-size: 10px;
   font-weight: 500;
   color: #1a1a1a;
   font-variant-numeric: tabular-nums;
   font-feature-settings: "tnum";
 }
+
 
 .summaryValDiscount {
   color: #15803d;
   font-weight: 700;
 }
 
-.summaryDivider {
-  height: 1.5px;
-  background: var(--brand-primary-dark, #a07d20);
-  margin: 5px 0;
-}
-
-.summaryTotalRow {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  column-gap: 12px;
-  padding: 4px 0;
-}
-
-.summaryTotalKey {
-  font-size: 10px;
-  font-weight: 900;
-  color: var(--brand-primary-dark, #a07d20);
-  letter-spacing: 0.03em;
-}
-
-.summaryTotalVal {
-  font-size: 10px;
-  font-weight: 900;
-  color: #1a1a1a;
-  font-variant-numeric: tabular-nums;
-  font-feature-settings: "tnum";
-}
-
-/* ── Receipt payment history ── */
-.historySection {
-  padding-top: 10px;
-}
-
-.sectionLabel {
-  font-size: 8px;
-  font-weight: 800;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  margin-bottom: 8px;
-}
-
-.paymentRow {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 7px 0;
-}
-
-.paymentRow:last-of-type {
-  border-bottom: 1px solid var(--brand-primary-dark);
-}
-
-.emoji {
-  font-size: 13px;
-  line-height: 1;
-  flex-shrink: 0;
-  width: 20px;
-  text-align: center;
-}
-
-.paymentMeta {
-  flex: 1;
-  min-width: 0;
-}
-
-.paymentMethod {
-  font-size: 9px;
-  font-weight: 600;
-  color: #1a1a1a;
-  display: flex;
-  align-items: center;
-  gap: 5px;
-}
-
-.paymentDate {
-  font-size: 8px;
-  color: #a8a8a8;
-  margin-top: 1px;
-  font-variant-numeric: tabular-nums;
-}
-
-.amountCurrent {
-  color: #16a34a;
-  font-weight: 700;
-}
-
-.latestBadge {
-  font-size: 7px;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  background: #e8f3f1;
-  color: #595f6c;
-  padding: 2px 5px;
-  border-radius: 3px;
-  line-height: 1;
-}
-
-.paymentAmount {
-  font-size: 10px;
-  font-weight: 600;
-  color: #1a1a1a;
-  font-variant-numeric: tabular-nums;
-  font-feature-settings: "tnum";
-  white-space: nowrap;
-  flex-shrink: 0;
-}
-
-.totalsRow {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  column-gap: 12px;
-  padding: 4px 0;
+.totalBar {
+  width: 55%;
   margin-left: auto;
-}
-
-.totalsKey {
-  font-size: 9px;
-  color: #6b7280;
-}
-
-.totalsVal {
-  font-size: 9px;
-  font-weight: 500;
-  color: #1a1a1a;
-  font-variant-numeric: tabular-nums;
-  font-feature-settings: "tnum";
-}
-
-.amountPaid {
-  color: #16a34a;
-  font-weight: 700;
-  font-size: 10px;
-  font-variant-numeric: tabular-nums;
-}
-
-.totalsDivider {
-  margin: 8px 0;
-}
-
-.totalPaidRow {
   display: flex;
   justify-content: space-between;
-  align-items: center;
-  column-gap: 12px;
-  padding: 4px 0 10px;
-}
-
-.totalPaidKey {
-  font-size: 9px;
+  align-items: baseline;
+  background: var(--brand-gradient);
+  color: var(--brand-on-primary);
+  padding: 8px 16px;
+  margin-top: auto;
   font-weight: 900;
-  color: #1a1a1a;
-  letter-spacing: 0.02em;
-}
-
-.totalPaidVal {
   font-size: 10px;
-  font-weight: 900;
-  color: #1a1a1a;
-  font-variant-numeric: tabular-nums;
-  font-feature-settings: "tnum";
 }
 
-.balanceCallout,
-.paidCallout {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  column-gap: 12px;
-  padding: 4px 0;
-}
-
-.balanceLabel {
-  font-size: 10px;
-  font-weight: 900;
-  color: red;
-  text-transform: uppercase;
-}
-
-.balanceAmount {
+.totalAmount {
   font-size: 13px;
   font-weight: 900;
-  color: red;
-  font-variant-numeric: tabular-nums;
-  font-feature-settings: "tnum";
-  white-space: nowrap;
 }
 
-.paidLabel {
-  font-size: 8.5px;
-  font-weight: 800;
-  color: #16a34a;
-  letter-spacing: 0.01em;
-  text-transform: uppercase;
-}
-
-.paidAmount {
-  color: #16a34a;
-  font-size: 10px;
-  font-weight: 900;
-  font-variant-numeric: tabular-nums;
-  font-feature-settings: "tnum";
-  white-space: nowrap;
-}
-
-/* ── Thank you footer ── */
-.thankYouFooter {
+.footer {
   display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 8px 16px 12px;
-  text-transform: uppercase;
-  font-style: italic;
-}
-.thankYouLine {
-  flex: 1;
-  height: 1px;
-  background: var(--brand-muted);
-}
-.thankYouText {
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 10px;
   font-size: 9px;
-  font-weight: 700;
-  color: var(--brand-primary);
-  white-space: nowrap;
+  line-height: 1.5;
+  padding-top: 8px;
+  margin-top: auto;
+  
 }
 
-/* ── Receipt order total summary ── */
-.orderTotalLabel {
-  font-size: 11px;
-  font-weight: 800;
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
+.footerLabel {
+  font-weight: 700;
+  margin-bottom: 5px;
   color: var(--brand-primary-dark);
 }
-.orderTotalValue {
-  font-size: 11px;
-  font-weight: 900;
-  color: #1a1a1a;
-  font-variant-numeric: tabular-nums;
-  font-feature-settings: "tnum";
+
+.footerLeft {
+  flex: 1;
+  min-width: 0;
+  word-break: break-word;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  align-items: center;
+  padding: 8px 16px;
+  font-size: 9px;
+  margin-top: 8px;
 }
 
-.summarySection {
-  width: 100%;
-  margin-top: 0;
+.footerRight {
+  flex-shrink: 0;
+  padding: 8px 16px;
+  margin-top: 8px;
 }
 
 .breakdownBlock {
@@ -517,3 +336,20 @@ th.colTotal, td.colTotal {
   align-items: center;
   padding: 7px 0;
 }
+
+.orderTotalLabel {
+  font-size: 11px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--brand-primary-dark);
+}
+
+.orderTotalValue {
+  font-size: 11px;
+  font-weight: 900;
+  color: #1a1a1a;
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum";
+}
+

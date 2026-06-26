@@ -1,209 +1,154 @@
+
 .template {
-  background: #fff;
+  background: var(--brand-surface);
   color: #1a1a1a;
   font-family: "Manrope", sans-serif;
   font-size: 10px;
   display: flex;
   flex-direction: column;
+  position: relative;
   min-height: 565px;
+  padding: 14px 16px 16px;
+  gap: 10px;
 }
 
-.header {
-  background: var(--brand-gradient);
-  color: var(--brand-on-primary);
-  padding: 10px 16px;
-  display: grid;
-  grid-template-columns: 1fr auto;
-  align-items: center;
-  gap: 12px 20px;
-  opacity: 0.88;
-  font-size: 9px;
-}
-
-.header > div:first-child {
-  display: flex;
-  flex-direction: row;
-  text-align: left;
-  min-width: 0;
-}
-
-.logoArea {
-  flex: 1;
-  min-width: 0;
-  display: flex;
-  align-items: center;
-  gap: 5px;
-}
-
-.companyName {
-  font-size: 10px;
-  font-weight: 900;
-  letter-spacing: 0.05em;
-  color: var(--brand-on-primary);
-  word-break: break-word;
-}
-
-.tagline {
-  font-size: 7.5px;
-}
-
-.headerRight {
-  font-size: 9px;
-  line-height: 1.6;
-  opacity: 0.88;
-  flex-shrink: 0;
-  margin-left: auto;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-}
-
-@media (max-width: 520px) {
-  .header {
-    grid-template-columns: 1fr 1fr;
-    align-items: start;
-    gap: 4px 12px;
-  }
-
-  .logoArea {
-    grid-column: 1;
-    grid-row: 1 / span 2;
-    align-self: center;
-  }
-
-  .headerRight:first-of-type {
-    grid-column: 2;
-    grid-row: 1;
-  }
-
-  .headerRight:last-of-type {
-    grid-column: 2;
-    grid-row: 2;
-  }
-}
-
-.invoiceRow,
-.receiptRow {
+.topRow {
   display: flex;
   justify-content: space-between;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.titleBox {
+  border: 1.5px solid var(--brand-primary-dark);
+  border-radius: 16px;
+  padding: 10px 22px;
+  display: inline-flex;
   align-items: center;
-  padding: 8px 16px;
-  border-bottom: 1px solid #eee;
 }
 
-.invoiceLeft,
-.receiptLeft {
-  display: flex;
-  align-items: baseline;
-  gap: 4px;
-}
-
-.invoiceWord,
-.receiptWord {
-  font-size: 10px;
+.titleText {
+  font-size: 26px;
   font-weight: 400;
-  color: #555;
+  letter-spacing: 0.12em;
+  color: var(--brand-primary-dark);
+  text-transform: uppercase;
+  line-height: 1;
 }
 
-.invoiceNum,
-.receiptNum {
-  font-size: 18px;
+.logoBox {
+  border: 1.5px solid var(--brand-primary-dark);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 70px;
+  height: 50px;
+  flex-shrink: 0;
+}
+
+.logoBoxImage {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  border-radius: 10px;
+}
+
+.logoBoxText {
+  font-size: 9px;
   font-weight: 900;
   color: var(--brand-primary);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  text-align: center;
+  line-height: 1.3;
 }
 
-.invoiceRight,
-.receiptRight {
-  text-align: right;
-  font-size: 10px;
-  line-height: 1.7;
-}
-
-.label {
-  font-size: 9px;
-  font-weight: 700;
-  color: var(--brand-primary);
-}
 
 .infoRow {
-  display: flex;
-  justify-content: space-between;
-  gap: 8px;
-  padding: 7px 16px 9px;
-  border-bottom: 1px solid #eee;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
 }
 
-.infoRow > div {
-  min-width: 0;
-  flex: 1;
-  font-size: 10px;
-  line-height: 1.6;
-  word-break: break-word;
-  overflow-wrap: break-word;
+.infoBox {
+  border: 1.5px solid var(--brand-primary-dark);
+  border-radius: 16px;
+  padding: 10px 14px;
 }
 
-.infoLabel {
+.infoBoxLabel {
+  font-size: 8px;
   font-weight: 700;
-  font-size: 10px;
-  margin-bottom: 2px;
-  color: var(--brand-primary);
-}
-
-.thankYou {
+  color: #888;
   text-transform: uppercase;
-  text-align: right;
-  font-style: italic;
+  letter-spacing: 0.08em;
+  margin-bottom: 4px;
+}
+
+.infoBoxName {
   font-size: 10px;
-  padding: 8px 16px;
-  color: var(--brand-primary);
-  margin-top: 45px;
+  font-weight: 700;
+  color: #1a1a1a;
+  margin-bottom: 1px;
 }
 
-.tableWrapper {
-  padding: 0 16px;
+.infoBoxDetail {
+  font-size: 8.5px;
+  color: #555;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
 }
 
-.orderDescriptionRow {
+.infoBoxDetail > div{
   display: flex;
   gap: 5px;
-  align-items: baseline;
-  padding: 10px 0 12px;
 }
 
-.orderText {
-  font-weight: 900;
+.infoBoxMeta {
+  font-size: 8.5px;
+  color: #1a1a1a;
+  line-height: 1.85;
+  font-weight: 500;
 }
 
-.orderDescLabel {
-  font-size: 11px;
-  color: #0a0a0a;
+
+.tableBox {
+  border: 1.5px solid var(--brand-primary-dark);
+  border-radius: 16px;
+  padding: 12px 14px 10px;
+  display: flex;
+  flex-direction: column;
 }
 
-.table {
-  width: 100%;
-  border-collapse: collapse;
-  table-layout: fixed;
+.tableHeader {
+  padding: 0 0 6px;
+  border-bottom: 1.5px solid var(--brand-primary-dark);
+  margin-bottom: 4px;
 }
 
-.colDesc  { width: 44%; }
-.colPrice { width: 22%; }
-.colQty   { width: 10%; }
-.colTotal { width: 24%; }
-
-.tableHead {
-  background: var(--brand-gradient);
-  color: var(--brand-on-primary);
-  opacity: 0.88;
-}
-
-.tableHead th {
-  padding: 5px 4px;
-  font-size: 10px;
+.tableHeader th {
+  color: var(--brand-primary-dark);
+  font-size: 8.5px;
   font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  background: transparent;
+  vertical-align: middle;
+  white-space: nowrap;
 }
+
+
+.thDesc   { text-align: left; width: 42%; }
+.thPrice  { text-align: center;width: 23%;  }
+.thQty    { text-align: center; width: 10%; }
+.thSub    { text-align: center;width: 25%; }
 
 .tableRow {
-  border-bottom: 1px dashed #ebebeb;
+  padding: 7px 0;
+  border-bottom: 1px solid #ebebeb;
 }
 
 .tableRow td {
@@ -211,187 +156,372 @@
   font-size: 10px;
 }
 
-th.colDesc,
-td.colDesc {
-  text-align: left;
-  word-break: break-word;
+.tableRow:last-of-type {
+  border-bottom: none;
 }
 
-th.colQty,
-td.colQty {
-  text-align: center;
-  padding-left: 6px;
-  padding-right: 6px;
+.tdDesc  { 
+  font-size: 8.5px; 
+  color: #1a1a1a; 
+  font-weight: 500; 
+  text-align: left; 
+  width: 42%;
+}
+.tdPrice { 
+  font-size: 8.5px; 
+  color: #333; 
+  text-align: center; 
+  font-variant-numeric: tabular-nums; 
+  width: 23%;
+}
+.tdQty   { 
+  font-size: 8.5px; 
+  color: #555; 
+  text-align: center; 
+  width: 10%;
+}
+.tdSub   { 
+  font-size: 8.5px; 
+  color: #1a1a1a; 
+  font-weight: 600; 
+  text-align: center; 
+  font-variant-numeric: tabular-nums; 
+  width: 25%; 
 }
 
-th.colPrice,
-td.colPrice {
-  text-align: center;
-  padding-right: 8px;
-}
 
-th.colTotal,
-td.colTotal {
-  text-align: center;
-}
-
-.tableBody {
-  padding: 5px 0;
-}
-
-.summaryBlock {
-  margin-left: auto;
-  width: 55%;
-  margin-top: 14px;
-  padding: 8px 16px;
-}
-
-.summaryRow {
+.totalsArea {
   display: flex;
+  flex-direction: column;
+  margin-top: 10px;
+  padding-top: 8px;
+  border-top: 1px solid var(--brand-primary-dark);
+  gap: 3px;
+}
+
+.totalsRow {
+  display: flex;
+  align-items: baseline;
   justify-content: space-between;
-  align-items: center;
-  column-gap: 12px;
-  padding: 3px 0;
+  width: 100%;
+  padding: 2px 0;
 }
 
-.summaryKey {
-  font-size: 10px;
-  color: #6b7280;
+.totalsKey {
+  font-size: 8px;
+  font-weight: 600;
+  color: #888;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
 }
 
-.summaryVal {
-  font-size: 10px;
+.totalsVal {
+  font-size: 9px;
   font-weight: 500;
   color: #1a1a1a;
   font-variant-numeric: tabular-nums;
   font-feature-settings: "tnum";
 }
 
+.discountVal { color: #16a34a; }
 
-.summaryValDiscount {
-  color: #15803d;
+.grandTotalRow {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  width: 100%;
+  margin-top: 4px;
+  padding-top: 4px;
+  border-top: 1px solid var(--brand-primary-dark);
+}
+
+.grandTotalKey {
+  font-size: 10px;
+  font-weight: 500;
+  color: #1a1a1a;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+.grandTotalVal {
+  font-size: 14px;
+  font-weight: 800;
+  color: #1a1a1a;
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum";
+}
+
+.historySection {
+  padding: 8px 0 0;
+}
+
+.historySectionLabel {
+  font-size: 8px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #888;
+  margin-bottom: 5px;
+}
+
+.historyRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 0;
+  border-bottom: 1px solid var(--brand-primary-dark);
+}
+
+.historyEmoji {
+  font-size: 12px;
+  line-height: 1;
+  flex-shrink: 0;
+  width: 18px;
+  text-align: center;
+}
+
+.historyMeta {
+  flex: 1;
+  min-width: 0;
+}
+
+.historyMethod {
+  font-size: 8.5px;
+  font-weight: 700;
+  color: var(--brand-primary);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.historyDate {
+  font-size: 8px;
+  color: #aaa;
+  margin-top: 1px;
+  font-variant-numeric: tabular-nums;
+}
+
+.historyAmount {
+  font-size: 9px;
+  font-weight: 600;
+  color: #1a1a1a;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.historyAmountCurrent {
+  color: #16a34a;
   font-weight: 700;
 }
 
-.totalBar {
-  width: 55%;
-  margin-left: auto;
-  display: flex;
-  justify-content: space-between;
-  align-items: baseline;
-  background: var(--brand-gradient);
-  color: var(--brand-on-primary);
-  padding: 8px 16px;
-  margin-top: auto;
-  font-weight: 900;
-  font-size: 10px;
+.latestBadge {
+  font-size: 7px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  background: var(--brand-muted);
+  color: var(--brand-primary);
+  padding: 2px 5px;
+  border-radius: 3px;
+  line-height: 1;
 }
 
-.totalAmount {
+
+.paidSummary {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin-top: 6px;
+  padding-top: 6px;
+  width: 100%;
+}
+
+.paidSummaryRow {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  width: 100%;
+  padding: 2px 0;
+}
+
+.paidSummaryKey {
+  font-size: 8.5px;
+  font-weight: 600;
+  color: #888;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.paidSummaryVal {
+  font-size: 9px;
+  font-weight: 600;
+  color: #1a1a1a;
+  font-variant-numeric: tabular-nums;
+}
+
+.thisPaymentVal {
+  color: #16a34a;
+  font-weight: 700;
+  font-size: 9px;
+}
+
+.totalPaidRow {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  width: 100%;
+  padding: 4px 0 2px;
+  border-top: 1.5px solid var(--brand-primary-dark);
+  margin-top: 3px;
+}
+
+.totalPaidKey {
+  font-size: 10px;
+  font-weight: 800;
+  color: #1a1a1a;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.totalPaidVal {
   font-size: 13px;
   font-weight: 900;
-}
-
-.summarySection {
-  width: 100%;
-  margin-top: 0;
-}
-
-.breakdownBlock {
-  width: 100%;
-  padding: 8px 0 4px;
-  border-bottom: 1px solid var(--brand-primary-dark);
-  margin-bottom: 0;
-}
-
-.breakdownRow {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 3px 0;
-}
-
-.breakdownKey {
-  font-size: 9.5px;
-  color: #6b7280;
-  font-weight: 500;
-}
-
-.breakdownVal {
-  font-size: 9.5px;
-  font-weight: 500;
   color: #1a1a1a;
   font-variant-numeric: tabular-nums;
-  font-feature-settings: "tnum";
 }
 
-.breakdownKeyDiscount {
-  color: #15803d;
+.paidInFullRow {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  width: 100%;
+  padding: 2px 0;
 }
 
-.breakdownValDiscount {
-  color: #15803d;
-  font-weight: 700;
-}
-
-.orderTotalLabel {
-  font-size: 11px;
+.paidInFullKey {
+  font-size: 8.5px;
   font-weight: 800;
+  color: #16a34a;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.paidInFullVal {
+  font-size: 10px;
+  font-weight: 900;
+  color: #16a34a;
+  font-variant-numeric: tabular-nums;
+}
+
+.balanceDueKey {
+  font-size: 8.5px;
+  font-weight: 800;
+  color: #dc2626;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.balanceDueVal {
+  font-size: 10px;
+  font-weight: 900;
+  color: #dc2626;
+  font-variant-numeric: tabular-nums;
+}
+
+
+.brandName{
+  font-weight: 600;
+  font-size: 9px;
+  margin-bottom: 2px;
+  text-transform: uppercase;
+}
+
+.footer {
+  margin-top: auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+  padding-top: 4px;
+}
+
+.footerLeft {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.footerPayLabel {
+  font-size: 8px;
+  font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.1em;
   color: var(--brand-primary-dark);
+  margin-bottom: 4px;
 }
 
-.orderTotalWrap {
+.footerDetail {
+  font-size: 8.5px;
+  color: #444;
+  line-height: 1.85;
+}
+
+/* Right contacts: icon + text in fixed columns, all left-aligned */
+.footerRight {
+  flex: 1;
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 7px 0;
+  flex-direction: column;
+  gap: 4px;
+  align-items: flex-start;
 }
 
-.orderTotalValue {
-  font-size: 11px;
-  font-weight: 900;
-  color: #1a1a1a;
-  font-variant-numeric: tabular-nums;
-  font-feature-settings: "tnum";
-}
-
-.iconRow {
+.footerContactRow {
   display: flex;
   align-items: flex-start;
-  gap: 5px;
-  font-size: 9px;
-  color: inherit;
-  line-height: 1.5;
-  margin-top: 2px;
+  gap: 6px;
+  font-size: 8.5px;
+  color: #555;
 }
 
-.icon {
+.footerIcon,.infoBoxIcon {
+  width: 9px;
+  height: 9px;
   flex-shrink: 0;
-  width: 10px;
-  height: 10px;
-  margin-top: 1px;
   display: flex;
   align-items: center;
-  color: inherit;
+  margin-top: 1px;
+  opacity: 0.55;
 }
 
-.icon svg {
-  width: 10px;
-  height: 10px;
-  stroke: currentColor;
+.footerIcon svg {
+  width: 100%;
+  height: 100%;
+  stroke: #1a1a1a;
   fill: none;
   stroke-width: 1.5;
   stroke-linecap: round;
   stroke-linejoin: round;
-  opacity: 0.55;
 }
 
-.noWrap {
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: clip;
+.footerContactText {
+  font-size: 8.5px;
+  color: #444;
+  line-height: 1.5;
+  word-break: break-word;
+  white-space: normal;
+  flex: 1;
   min-width: 0;
-  max-width: 20ch;
 }
+
+.thankYou {
+  font-size: 9px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: #1a1a1a;
+  margin-top: 6px;
+  text-align: center;
+}
+

@@ -1,300 +1,363 @@
 .template {
-  background: var(--brand-surface);
+  background: transparent;
   color: #1a1a1a;
-  font-family: "Manrope", sans-serif;
+  font-family: 'Manrope', sans-serif;
   font-size: 10px;
-  display: flex;
-  flex-direction: column;
   position: relative;
   min-height: 565px;
-  padding: 14px 16px 16px;
-  gap: 10px;
+  display: flex;
+  flex-direction: column;
 }
 
-.topRow {
+.content {
+  position: relative;
+  z-index: 1;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 22px 26px 20px;
+}
+
+
+/* ── Header ─────────────────────────────────────────── */
+
+.header {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  gap: 10px;
+  margin-bottom: 18px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid #e4e4e4;
 }
 
-.titleBox {
-  border: 1.5px solid var(--brand-primary-dark);
-  border-radius: 16px;
-  padding: 10px 22px;
-  display: inline-flex;
-  align-items: center;
-}
-
-.titleText {
-  font-size: 26px;
-  font-weight: 400;
-  letter-spacing: 0.12em;
-  color: var(--brand-primary-dark);
-  text-transform: uppercase;
-  line-height: 1;
-}
-
-.logoBox {
-  border: 1.5px solid var(--brand-primary-dark);
-  border-radius: 12px;
+.logoBlock {
   display: flex;
   align-items: center;
-  justify-content: center;
-  width: 70px;
-  height: 50px;
-  flex-shrink: 0;
+  gap: 8px;
 }
 
-.logoBoxImage {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  display: block;
-  border-radius: 10px;
+.brandTextBlock {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
 }
 
-.logoBoxText {
-  font-size: 9px;
-  font-weight: 900;
-  color: var(--brand-primary);
+.brandName {
+  font-size: 10px;
+  font-weight: 700;
+  color: #1a1a1a;
   text-transform: uppercase;
-  letter-spacing: 0.08em;
-  text-align: center;
-  line-height: 1.3;
+  letter-spacing: 0.06em;
+}
+
+.brandTagline {
+  font-size: 8px;
+  color: #999;
+  font-weight: 400;
+  letter-spacing: 0.06em;
+}
+
+.titleBlock {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}
+
+.docTitle {
+  font-size: 30px;
+  font-weight: 900;
+  color: var(--brand-primary-dark);
+  letter-spacing: -0.01em;
+  line-height: 1;
+  margin-bottom: 6px;
+}
+
+.metaGroup {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0;
+}
+
+.metaLine {
+  font-size: 8.5px;
+  color: #444;
+  display: flex;
+  justify-content: flex-end;
+  gap: 4px;
+  line-height: 1.8;
+}
+
+.metaKey {
+  font-weight: 700;
+  color: #1a1a1a;
 }
 
 
-.infoRow {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 10px;
+/* ── Info Section ───────────────────────────────────── */
+
+.infoSection {
+  display: flex;
+  gap: 20px;
+  margin-bottom: 18px;
 }
 
-.infoBox {
-  border: 1.5px solid var(--brand-primary-dark);
-  border-radius: 16px;
-  padding: 10px 14px;
+.companyCol {
+  flex: 1;
+  font-size: 9px;
+  color: #444;
+  line-height: 1.85;
 }
 
-.infoBoxLabel {
+.companyName {
+  font-size: 10px;
+  font-weight: 800;
+  color: #1a1a1a;
+  margin-bottom: 3px;
+}
+
+.clientCol {
+  flex: 1;
+  font-size: 9px;
+  color: #444;
+  line-height: 1.85;
+}
+
+.clientLabel {
   font-size: 8px;
   font-weight: 700;
   color: #888;
   text-transform: uppercase;
   letter-spacing: 0.08em;
-  margin-bottom: 4px;
+  margin-bottom: 3px;
 }
 
-.infoBoxName {
+.clientName {
   font-size: 10px;
-  font-weight: 700;
+  font-weight: 800;
   color: #1a1a1a;
-  margin-bottom: 1px;
+  margin-bottom: 3px;
 }
 
-.infoBoxDetail {
-  font-size: 8.5px;
-  color: #555;
+
+/* ── Icons ───────────────────────────────────────────── */
+
+.iconRow {
   display: flex;
-  flex-direction: column;
+  align-items: flex-start;
   gap: 5px;
+  font-size: 9px;
+  color: inherit;
+  line-height: 1.5;
+  margin-top: 2px;
 }
 
-.infoBoxDetail > div{
+.icon {
+  flex-shrink: 0;
+  width: 10px;
+  height: 10px;
+  margin-top: 1px;
   display: flex;
-  gap: 5px;
+  align-items: center;
+  color: inherit;
 }
 
-.infoBoxMeta {
-  font-size: 8.5px;
-  color: #1a1a1a;
-  line-height: 1.85;
-  font-weight: 500;
+.icon svg {
+  width: 10px;
+  height: 10px;
+  stroke: currentColor;
+  fill: none;
+  stroke-width: 1.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  opacity: 0.55;
 }
 
 
-.tableBox {
-  border: 1.5px solid var(--brand-primary-dark);
-  border-radius: 16px;
-  padding: 12px 14px 10px;
-  display: flex;
-  flex-direction: column;
+/* ── Order Description ──────────────────────────────── */
+
+.orderDesc {
+  font-size: 9px;
+  color: #444;
+  margin-bottom: 10px;
 }
 
-.tableHeader {
-  padding: 0 0 6px;
-  border-bottom: 1.5px solid var(--brand-primary-dark);
+
+/* ── Table ──────────────────────────────────────────── */
+
+.tableSection {
+  width: 100%;
+  border-collapse: collapse;
   margin-bottom: 4px;
 }
 
-.tableHeader th {
-  color: var(--brand-primary-dark);
+.tableHeaderRow th {
   font-size: 8.5px;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.06em;
-  background: transparent;
-  vertical-align: middle;
-  white-space: nowrap;
+  color: #777;
+  padding: 6px 4px 8px;
+  border-bottom: 1.5px solid var(--brand-primary-dark);
 }
 
-
-.thDesc   { text-align: left; width: 42%; }
-.thPrice  { text-align: center;width: 23%;  }
-.thQty    { text-align: center; width: 10%; }
-.thSub    { text-align: center;width: 25%; }
-
-.tableRow {
-  padding: 7px 0;
-  border-bottom: 1px solid #ebebeb;
-}
+.thItem   { text-align: left; }
+.thRate   { text-align: right; }
+.thQty    { text-align: center; }
+.thAmount { text-align: right; }
 
 .tableRow td {
-  padding: 6px 4px;
-  font-size: 10px;
+  padding: 8px 4px;
+  border-bottom: 1px solid #f0f0f0;
+  vertical-align: top;
 }
 
-.tableRow:last-of-type {
-  border-bottom: none;
+.tableLastRow td {
+  padding: 8px 4px;
+  border-bottom: 1.5px solid var(--brand-primary-dark);
+  vertical-align: top;
 }
 
-.tdDesc  { 
-  font-size: 8.5px; 
-  color: #1a1a1a; 
-  font-weight: 500; 
-  text-align: left; 
-  width: 42%;
+.tdItem   { text-align: left; }
+.tdRate   { text-align: right; font-size: 9px; color: #444; white-space: nowrap; }
+.tdQty    { text-align: center; font-size: 9px; color: #444; }
+.tdAmount { text-align: right; font-size: 9px; font-weight: 700; color: #1a1a1a; white-space: nowrap; }
+
+.itemName {
+  font-size: 9px;
+  font-weight: 600;
+  color: #1a1a1a;
 }
-.tdPrice { 
-  font-size: 8.5px; 
-  color: #333; 
-  text-align: center; 
-  font-variant-numeric: tabular-nums; 
-  width: 23%;
-}
-.tdQty   { 
-  font-size: 8.5px; 
-  color: #555; 
-  text-align: center; 
-  width: 10%;
-}
-.tdSub   { 
-  font-size: 8.5px; 
-  color: #1a1a1a; 
-  font-weight: 600; 
-  text-align: center; 
-  font-variant-numeric: tabular-nums; 
-  width: 25%; 
+
+.itemDesc {
+  font-size: 7.5px;
+  color: #999;
+  margin-top: 2px;
 }
 
 
-.totalsArea {
-  display: flex;
-  flex-direction: column;
-  margin-top: 10px;
-  padding-top: 8px;
-  border-top: 1px solid var(--brand-primary-dark);
-  gap: 3px;
+/* ── Totals ─────────────────────────────────────────── */
+
+.totalsSection {
+  margin-left: auto;
+  width: 100%;
+  padding-top: 10px;
+  margin-bottom: 10px;
 }
 
 .totalsRow {
   display: flex;
-  align-items: baseline;
   justify-content: space-between;
-  width: 100%;
-  padding: 2px 0;
-}
-
-.totalsKey {
-  font-size: 8px;
-  font-weight: 600;
-  color: #888;
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
+  padding: 3px 0;
+  font-size: 9px;
+  color: #555;
 }
 
 .totalsVal {
-  font-size: 9px;
-  font-weight: 500;
-  color: #1a1a1a;
   font-variant-numeric: tabular-nums;
-  font-feature-settings: "tnum";
+  font-feature-settings: 'tnum';
 }
 
-.discountVal { color: #16a34a; }
+.discountVal {
+  color: #16a34a;
+}
 
 .grandTotalRow {
   display: flex;
-  align-items: baseline;
   justify-content: space-between;
-  width: 100%;
-  margin-top: 4px;
-  padding-top: 4px;
-  border-top: 1px solid var(--brand-primary-dark);
+  padding: 6px 0 5px;
+  margin: 4px 0 2px;
+}
+
+.grandTotalWithTopBorder {
+  border-top: 1.5px solid var(--brand-primary-dark);
 }
 
 .grandTotalKey {
-  font-size: 10px;
-  font-weight: 500;
+  font-size: 10.5px;
+  font-weight: 900;
   color: #1a1a1a;
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
 }
 
 .grandTotalVal {
-  font-size: 14px;
-  font-weight: 800;
+  font-size: 11px;
+  font-weight: 900;
   color: #1a1a1a;
   font-variant-numeric: tabular-nums;
-  font-feature-settings: "tnum";
+  font-feature-settings: 'tnum';
 }
 
+.balanceRow {
+  display: flex;
+  justify-content: space-between;
+  padding: 5px 0 2px;
+  border-top: 1.5px solid #1a1a1a;
+  margin-top: 4px;
+}
+
+.balanceKey {
+  font-size: 10.5px;
+  font-weight: 900;
+  color: #1a1a1a;
+}
+
+.balanceVal {
+  font-size: 11px;
+  font-weight: 900;
+  color: #1a1a1a;
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: 'tnum';
+}
+
+
+/* ── Payment History ────────────────────────────────── */
+
 .historySection {
-  padding: 8px 0 0;
+  padding: 10px 0 0;
+  margin-bottom: 6px;
 }
 
 .historySectionLabel {
-  font-size: 8px;
-  font-weight: 700;
-  letter-spacing: 0.1em;
+  font-size: 8.5px;
+  font-weight: 800;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: #888;
-  margin-bottom: 5px;
+  margin-bottom: 6px;
+  color: #1a1a1a;
 }
 
 .historyRow {
   display: flex;
   align-items: center;
-  gap: 8px;
   padding: 5px 0;
-  border-bottom: 1px solid var(--brand-primary-dark);
+  border-bottom: 1px solid #f0f0f0;
 }
 
 .historyEmoji {
   font-size: 12px;
   line-height: 1;
   flex-shrink: 0;
-  width: 18px;
+  width: 20px;
   text-align: center;
 }
 
 .historyMeta {
   flex: 1;
   min-width: 0;
+  padding-left: 5px;
 }
 
 .historyMethod {
   font-size: 8.5px;
-  font-weight: 700;
-  color: var(--brand-primary);
+  font-weight: 600;
+  color: #1a1a1a;
   display: flex;
   align-items: center;
   gap: 4px;
 }
 
 .historyDate {
-  font-size: 8px;
+  font-size: 7.5px;
   color: #aaa;
   margin-top: 1px;
   font-variant-numeric: tabular-nums;
@@ -302,16 +365,10 @@
 
 .historyAmount {
   font-size: 9px;
-  font-weight: 600;
+  font-weight: 700;
   color: #1a1a1a;
   font-variant-numeric: tabular-nums;
   white-space: nowrap;
-  flex-shrink: 0;
-}
-
-.historyAmountCurrent {
-  color: #16a34a;
-  font-weight: 700;
 }
 
 .latestBadge {
@@ -319,209 +376,142 @@
   font-weight: 700;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  background: var(--brand-muted);
-  color: var(--brand-primary);
+  background: #f0f0f0;
+  color: #555;
   padding: 2px 5px;
   border-radius: 3px;
   line-height: 1;
 }
 
 
-.paidSummary {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-  margin-top: 6px;
+/* ── Paid Summary ───────────────────────────────────── */
+
+.paidSummarySection {
+  margin-left: auto;
+  width: 52%;
   padding-top: 6px;
-  width: 100%;
+  margin-bottom: 12px;
 }
 
-.paidSummaryRow {
+.totalPaidRow {
   display: flex;
-  align-items: baseline;
   justify-content: space-between;
-  width: 100%;
-  padding: 2px 0;
+  padding: 5px 0;
+  border-top: 1.5px solid #1a1a1a;
+  margin-top: 2px;
 }
 
-.paidSummaryKey {
-  font-size: 8.5px;
-  font-weight: 600;
-  color: #888;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-}
-
-.paidSummaryVal {
+.totalPaidKey {
   font-size: 9px;
-  font-weight: 600;
+  font-weight: 700;
+  color: #1a1a1a;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.totalPaidVal {
+  font-size: 9.5px;
+  font-weight: 700;
   color: #1a1a1a;
   font-variant-numeric: tabular-nums;
+  font-feature-settings: 'tnum';
 }
 
 .thisPaymentVal {
   color: #16a34a;
   font-weight: 700;
-  font-size: 9px;
 }
 
-.totalPaidRow {
+.paidCallout {
   display: flex;
-  align-items: baseline;
   justify-content: space-between;
-  width: 100%;
-  padding: 4px 0 2px;
-  border-top: 1.5px solid var(--brand-primary-dark);
-  margin-top: 3px;
+  padding: 5px 0 2px;
+  border-top: 1.5px solid #1a1a1a;
+  margin-top: 4px;
 }
 
-.totalPaidKey {
-  font-size: 10px;
-  font-weight: 800;
-  color: #1a1a1a;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-}
-
-.totalPaidVal {
-  font-size: 13px;
+.paidKey {
+  font-size: 10.5px;
   font-weight: 900;
-  color: #1a1a1a;
-  font-variant-numeric: tabular-nums;
-}
-
-.paidInFullRow {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  width: 100%;
-  padding: 2px 0;
-}
-
-.paidInFullKey {
-  font-size: 8.5px;
-  font-weight: 800;
   color: #16a34a;
   text-transform: uppercase;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.04em;
 }
 
-.paidInFullVal {
-  font-size: 10px;
+.paidVal {
+  font-size: 11px;
   font-weight: 900;
   color: #16a34a;
   font-variant-numeric: tabular-nums;
-}
-
-.balanceDueKey {
-  font-size: 8.5px;
-  font-weight: 800;
-  color: #dc2626;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-}
-
-.balanceDueVal {
-  font-size: 10px;
-  font-weight: 900;
-  color: #dc2626;
-  font-variant-numeric: tabular-nums;
+  font-feature-settings: 'tnum';
 }
 
 
-.brandName{
-  font-weight: 600;
-  font-size: 9px;
-  margin-bottom: 2px;
-  text-transform: uppercase;
-}
+/* ── Footer ─────────────────────────────────────────── */
 
 .footer {
   margin-top: auto;
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  gap: 16px;
-  padding-top: 4px;
+  padding-top: 24px;
 }
 
-.footerLeft {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
+.bankBlock {
+  font-size: 8.5px;
+  color: #555;
+  line-height: 1.85;
+  margin-bottom: 18px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid #e4e4e4;
 }
 
-.footerPayLabel {
+.bankLabel {
   font-size: 8px;
-  font-weight: 700;
+  font-weight: 800;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
-  letter-spacing: 0.1em;
   color: var(--brand-primary-dark);
   margin-bottom: 4px;
 }
 
-.footerDetail {
+.bankRow {
   font-size: 8.5px;
-  color: #444;
+  color: #555;
   line-height: 1.85;
 }
 
-/* Right contacts: icon + text in fixed columns, all left-aligned */
-.footerRight {
-  flex: 1;
+.signatureSection {
+  display: flex;
+  justify-content: center;
+  gap: 60px;
+  margin-bottom: 10px;
+}
+
+.signatureBlock {
   display: flex;
   flex-direction: column;
+  align-items: flex-start;
   gap: 4px;
-  align-items: flex-start;
 }
 
-.footerContactRow {
-  display: flex;
-  align-items: flex-start;
-  gap: 6px;
-  font-size: 8.5px;
-  color: #555;
+.signatureLabel {
+  font-size: 8px;
+  color: var(--brand-primary-dark);
+  letter-spacing: 0.03em;
 }
 
-.footerIcon,.infoBoxIcon {
-  width: 9px;
-  height: 9px;
-  flex-shrink: 0;
-  display: flex;
-  align-items: center;
-  margin-top: 1px;
-  opacity: 0.55;
+.signatureLine {
+  width: 160px;
+  border-bottom: 1px solid var(--brand-primary-dark);
+  height: 16px;
 }
 
-.footerIcon svg {
-  width: 100%;
-  height: 100%;
-  stroke: #1a1a1a;
-  fill: none;
-  stroke-width: 1.5;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-}
-
-.footerContactText {
-  font-size: 8.5px;
-  color: #444;
-  line-height: 1.5;
-  word-break: break-word;
-  white-space: normal;
-  flex: 1;
-  min-width: 0;
-}
-
-.thankYou {
+.signerName {
   font-size: 9px;
-  font-weight: 800;
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
-  color: #1a1a1a;
-  margin-top: 6px;
-  text-align: center;
+  font-weight: 600;
+  color: var(--brand-primary-dark);
+  margin-top: 2px;
 }
 
-
+.footerBottom {
+  display: flex;
+  justify-content: flex-end;
+}

@@ -1,111 +1,177 @@
-.template { 
-   background: #fff; 
-   color: #1a1a1a; 
-   font-family: "Manrope", sans-serif;
-   font-size: 10px; 
-   display: flex; 
-   flex-direction: column; 
-   padding: 0; 
-   position: relative; 
-    min-height: 565px;
+
+.template {
+  background: #fff;
+  color: #1a1a1a;
+  font-family: "Manrope", sans-serif;
+  font-size: 10px;
+  display: flex;
+  flex-direction: column;
+  min-height: 565px;
 }
 
 .header {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  gap: 10px;
-  padding: 14px 16px 6px;
+  background: var(--brand-gradient);
+  color: var(--brand-on-primary);
+  padding: 10px 16px;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  gap: 12px 20px;
+  opacity: 0.88;
+  font-size: 9px;
 }
 
 .header > div:first-child {
-  flex: 1;
+  display: flex;
+  flex-direction: row;
+  text-align: left;
   min-width: 0;
 }
 
-.header > div:last-child {
-  flex-shrink: 0;
-}
-
-.logoRow { 
-  display: flex; 
-  align-items: center; 
-  gap: 8px;           
-}
-
-.companyName { 
-   font-size: 12px; 
-   font-weight: 900; 
-   letter-spacing: 0.04em; 
-   color: var(--brand-primary-dark); 
-}
-.companySub { 
-   font-size: 7.5px; 
-   color: #888; 
-   letter-spacing: 0.06em; 
-   margin-top: 1px; 
-}
-.companyAddress { 
-   font-size: 8.5px; 
-   color: #555; 
-   line-height: 1.5; 
-   margin-top: 2px; 
-}
-.invoiceTitle, .receiptTitle { 
-   font-size: 28px; 
-   font-weight: 300; 
-   color: var(--brand-primary); 
-   letter-spacing: 0.1em; 
-   align-self: center; 
-}
-
-.numberBar { 
-   background: var(--brand-gradient); 
-   color: var(--brand-on-primary); 
-   justify-content: space-between;
-   display: flex; 
-   gap: 7px; 
-   padding: 4px 16px; 
-   font-size: 9px; 
-   font-weight: 600; 
-  
-}
-.billShip { 
-   display: flex; 
-   gap: 16px; 
-   padding: 8px 16px; 
-   font-size: 10px; 
-   line-height: 1.5; 
-}
-.billShip > div {
+.logoArea {
   flex: 1;
   min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.companyName {
+  font-size: 10px;
+  font-weight: 900;
+  letter-spacing: 0.05em;
+  color: var(--brand-on-primary);
   word-break: break-word;
 }
-.billLabel { 
-   font-weight: 700; 
-   font-size: 10px; 
-   color: var(--brand-primary); 
+
+.tagline {
+  font-size: 7.5px;
 }
 
+.headerRight {
+  font-size: 9px;
+  line-height: 1.6;
+  opacity: 0.88;
+  flex-shrink: 0;
+  margin-left: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+@media (max-width: 520px) {
+  .header {
+    grid-template-columns: 1fr 1fr;
+    align-items: start;
+    gap: 4px 12px;
+  }
+
+  .logoArea {
+    grid-column: 1;
+    grid-row: 1 / span 2;
+    align-self: center;
+  }
+
+  .headerRight:first-of-type {
+    grid-column: 2;
+    grid-row: 1;
+  }
+
+  .headerRight:last-of-type {
+    grid-column: 2;
+    grid-row: 2;
+  }
+}
+
+.invoiceRow,
+.receiptRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 16px;
+  border-bottom: 1px solid #eee;
+}
+
+.invoiceLeft,
+.receiptLeft {
+  display: flex;
+  align-items: baseline;
+  gap: 4px;
+}
+
+.invoiceWord,
+.receiptWord {
+  font-size: 10px;
+  font-weight: 400;
+  color: #555;
+}
+
+.invoiceNum,
+.receiptNum {
+  font-size: 18px;
+  font-weight: 900;
+  color: var(--brand-primary);
+}
+
+.invoiceRight,
+.receiptRight {
+  text-align: right;
+  font-size: 10px;
+  line-height: 1.7;
+}
+
+.label {
+  font-size: 9px;
+  font-weight: 700;
+  color: var(--brand-primary);
+}
+
+.infoRow {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 7px 16px 9px;
+  border-bottom: 1px solid #eee;
+}
+
+.infoRow > div {
+  min-width: 0;
+  flex: 1;
+  font-size: 10px;
+  line-height: 1.6;
+  word-break: break-word;
+  overflow-wrap: break-word;
+}
+
+.infoLabel {
+  font-weight: 700;
+  font-size: 10px;
+  margin-bottom: 2px;
+  color: var(--brand-primary);
+}
+
+.thankYou {
+  text-transform: uppercase;
+  text-align: right;
+  font-style: italic;
+  font-size: 10px;
+  padding: 8px 16px;
+  color: var(--brand-primary);
+  margin-top: 45px;
+}
 
 .tableWrapper {
   padding: 0 16px;
 }
 
-.table {
-  width: 100%;
-  border-collapse: collapse;
-  table-layout: fixed;
-}
-
 .orderDescriptionRow {
   display: flex;
-  gap:5px;
+  gap: 5px;
   align-items: baseline;
   padding: 10px 0 12px;
 }
-.orderText{
+
+.orderText {
   font-weight: 900;
 }
 
@@ -114,19 +180,26 @@
   color: #0a0a0a;
 }
 
-.colDesc  { width: 42%; }
-.colQty   { width: 10%; }
-.colPrice { width: 23%; }
-.colTotal { width: 25%; }
-
-.tableHeader {
-  background: var(--brand-gradient);
-  color: var(--brand-on-primary);
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
 }
 
-.tableHeader th {
-  padding: 6px 4px;
-  font-size: 9px;
+.colDesc  { width: 44%; }
+.colPrice { width: 22%; }
+.colQty   { width: 10%; }
+.colTotal { width: 24%; }
+
+.tableHead {
+  background: var(--brand-gradient);
+  color: var(--brand-on-primary);
+  opacity: 0.88;
+}
+
+.tableHead th {
+  padding: 5px 4px;
+  font-size: 10px;
   font-weight: 700;
 }
 
@@ -139,24 +212,28 @@
   font-size: 10px;
 }
 
-/* Column alignment */
-th.colDesc,  td.colDesc  { 
-   text-align: left; 
-   word-break: break-word; 
+th.colDesc,
+td.colDesc {
+  text-align: left;
+  word-break: break-word;
 }
 
-th.colQty, td.colQty {
+th.colQty,
+td.colQty {
   text-align: center;
-  padding-left: 6px;   
-  padding-right: 6px;  
+  padding-left: 6px;
+  padding-right: 6px;
 }
 
-th.colPrice, td.colPrice {
+th.colPrice,
+td.colPrice {
   text-align: center;
-  padding-right: 8px;  
+  padding-right: 8px;
 }
-th.colTotal, td.colTotal { 
-   text-align: center; 
+
+th.colTotal,
+td.colTotal {
+  text-align: center;
 }
 
 .tableBody {
@@ -167,7 +244,7 @@ th.colTotal, td.colTotal {
   margin-left: auto;
   width: 55%;
   margin-top: 14px;
-  padding: 8px 16px; 
+  padding: 8px 16px;
 }
 
 .summaryRow {
@@ -197,81 +274,23 @@ th.colTotal, td.colTotal {
   font-weight: 700;
 }
 
-
 .totalBar {
-   width: 55%; 
+  width: 55%;
   margin-left: auto;
-   display: flex; 
-   justify-content: space-between; 
-   align-items: baseline; 
-   background: var(--brand-gradient); 
-   color: var(--brand-on-primary); 
-   padding: 8px 16px; 
-   margin-top: auto; 
-   font-weight: 900; 
-   font-size: 10px; 
-}
-.totalAmount { 
-   font-size: 13px; 
-   font-weight: 900; 
-}
-
-.footer {
   display: flex;
   justify-content: space-between;
-  align-items: flex-end;
-  padding: 8px 16px;
-  font-size: 10px;
-  margin-top: auto;
-}
-.thankYou { 
-   font-weight: 700; 
-   font-size: 10px; 
-   text-transform: uppercase; 
-   margin-bottom: 2px; 
-   color: var(--brand-primary-dark); 
-}
-.paymentNote { 
-   color: #666; 
-   font-size: 10px; 
-}
-.signArea { 
-   text-align: center; 
-}
-.signLine { 
-   width: 55px; 
-   height: 1px; 
-   background: var(--brand-primary); 
-   margin: 0 auto 2px; 
-}
-.signLabel { 
-   font-size: 10px; 
-   color: #666; 
-}
-.cornerDecoration {
-  width: 50px;
-  height: 50px;
+  align-items: baseline;
   background: var(--brand-gradient);
-  opacity: 0.5;
-  clip-path: polygon(100% 0, 100% 100%, 0 100%);
-  flex-shrink: 0;
-}
-
-
-
-.orderTotalLabel {
-  font-size: 11px;
-  font-weight: 800;
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
-  color: var(--brand-primary-dark);
-}
-.orderTotalValue {
-  font-size: 11px;
+  color: var(--brand-on-primary);
+  padding: 8px 16px;
+  margin-top: auto;
   font-weight: 900;
-  color: #1a1a1a;
-  font-variant-numeric: tabular-nums;
-  font-feature-settings: "tnum";
+  font-size: 10px;
+}
+
+.totalAmount {
+  font-size: 13px;
+  font-weight: 900;
 }
 
 .summarySection {
@@ -307,7 +326,6 @@ th.colTotal, td.colTotal {
   font-feature-settings: "tnum";
 }
 
-/* Discount row — green */
 .breakdownKeyDiscount {
   color: #15803d;
 }
@@ -316,7 +334,6 @@ th.colTotal, td.colTotal {
   color: #15803d;
   font-weight: 700;
 }
-
 
 .orderTotalLabel {
   font-size: 11px;
@@ -333,7 +350,6 @@ th.colTotal, td.colTotal {
   padding: 7px 0;
 }
 
-
 .orderTotalValue {
   font-size: 11px;
   font-weight: 900;
@@ -342,35 +358,42 @@ th.colTotal, td.colTotal {
   font-feature-settings: "tnum";
 }
 
-.billDetailLine {
+.iconRow {
   display: flex;
   align-items: flex-start;
   gap: 5px;
+  font-size: 9px;
+  color: inherit;
   line-height: 1.5;
+  margin-top: 2px;
 }
 
-.billDetailIcon {
-  display: inline-flex;
-  align-items: center;
+.icon {
   flex-shrink: 0;
-  width: 9px;
-  height: 9px;
+  width: 10px;
+  height: 10px;
+  margin-top: 1px;
+  display: flex;
+  align-items: center;
+  color: inherit;
+}
+
+.icon svg {
+  width: 10px;
+  height: 10px;
+  stroke: currentColor;
+  fill: none;
+  stroke-width: 1.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
   opacity: 0.55;
 }
 
-.billDetailIcon svg {
-  width: 100%;
-  height: 100%;
+.noWrap {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: clip;
+  min-width: 0;
+  max-width: 20ch;
 }
-
-
-
-
-
-
-
-
-
-
-
 

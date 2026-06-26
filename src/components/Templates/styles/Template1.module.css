@@ -136,9 +136,8 @@
 }
 
 .footer {
-  margin-top: 16px;
+  margin-top: 30px;
   padding-top: 12px;
-  border-top: 1px solid var(--brand-muted);
   display: flex;
   gap: 16px;
 }

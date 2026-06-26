@@ -1,17 +1,12 @@
+
 import styles from "../styles/Template17.module.css"
 import { getDueDate, calcTax } from "../utils/invoiceUtils"
 import { formatMoney } from "../../../utils/moneyUtils"
-import {
-  PhoneIcon,
-  EmailIcon,
-  LocationIcon,
-  WebsiteIcon,
-} from "../components/icons/icons"
-import { LogoOrName } from "../components/LogoOrBrandName/LogoOrBrandName"
+import { EmailIcon, LocationIcon } from "../components/icons/icons"
+
 
 
 export function InvoiceTemplate17({ invoice, customer, invoiceBrandSettings }) {
-
   
   const dueDate     = getDueDate(invoice, invoiceBrandSettings.dueDays)
   const { currency, showTax, invoiceTaxRate: invoiceBrandSettingsTaxRate } = invoiceBrandSettings
@@ -31,247 +26,188 @@ export function InvoiceTemplate17({ invoice, customer, invoiceBrandSettings }) {
     ? parseFloat(invoice.totalAmount)
     : subtotal + shippingFee - discountAmount + taxAmount
 
-  const discountLabel = discountType === 'percent' ? `Discount (${discountValue}%)` : 'Discount'
-  const brandInitial  = (invoiceBrandSettings.name || invoiceBrandSettings.ownerName || 'B').charAt(0).toUpperCase()
+  const discountLabel = discountType === "percent" ? `Discount (${discountValue}%)` : "Discount"
 
-  const hasContact = invoiceBrandSettings.phone || invoiceBrandSettings.website || invoiceBrandSettings.address
+  const hasContact     = invoiceBrandSettings.email || invoiceBrandSettings.address
+  const hasPaymentInfo = invoiceBrandSettings.accountBank || invoiceBrandSettings.accountName
    const paymentTerms  = invoiceBrandSettings.paymentTerms
 
   return (
     <div className={styles.template}>
 
-      <div className={styles.topShapeWrap}>
-        <svg viewBox="0 0 300 150" preserveAspectRatio="none" style={{ display: 'block', width: '100%', height: 'auto' }}>
-          <path fill={"var(--brand-primary)"} d="M0 0 H300 V150 H120 Q60 150 40 90 L0 0 Z" />
-        </svg>
+      <div className={styles.upperSection}>
+
+        <div className={styles.leftPanel} >
+          <div className={styles.leftMeta}>
+            <div className={styles.metaGroup}>
+              <div className={styles.metaLabel}>TO</div>
+              <div className={styles.clientName}>{customer.name}</div>
+              <div className={styles.clientDetails}>
+                {customer.phone   && <span>{customer.phone}<br /></span>}
+                {customer.email   && <span>{customer.email}<br /></span>}
+                {customer.address && <span>{customer.address}</span>}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className={styles.rightPanel}>
+          <div className={styles.brandRow}>
+
+            <div className={styles.brandInfo}>
+              <div className={styles.brandName} style={{ color: "var(--brand-primary)" }}>
+                {invoiceBrandSettings.name || invoiceBrandSettings.ownerName}
+              </div>
+              {invoiceBrandSettings.tagline && (
+                <div className={styles.brandTagline}>{invoiceBrandSettings.tagline}</div>
+              )}
+            </div>
+          </div>
+
+          <div className={styles.invoiceTitleBlock}>
+            <div className={styles.invoiceTitle}>INVOICE</div>
+          </div>
+
+          <div className={styles.invoiceMetaBox}>
+            <div className={styles.metaBoxCell}>
+              {dueDate && (
+                <>
+                  <div className={styles.metaBoxLabel}>Due Date</div>
+                  <div className={styles.metaBoxValue}>{dueDate}</div>
+                </>
+              )}
+            </div>
+            <div className={styles.metaBoxDivider} />
+            <div className={styles.metaBoxCell}>
+              <div className={styles.metaBoxLabel}>Invoice No</div>
+              <div className={styles.metaBoxValue}>#{invoice.number}</div>
+            </div>
+          </div>
+        </div>
+
       </div>
 
-      <div className={styles.content}>
-
-        <div className={styles.logoBlock}>
-          
-          <LogoOrName invoiceBrandSettings={invoiceBrandSettings} darkBg={false} />
-          
-          <div className={styles.logoText}>
-            <div className={styles.brandName} style={{ color: "var(--brand-primary)" }}>
-              {invoiceBrandSettings.name || invoiceBrandSettings.ownerName}
-            </div>
-            {invoiceBrandSettings.tagline && (
-              <div className={styles.brandTagline}>{invoiceBrandSettings.tagline}</div>
-            )}
-          </div>
+      {invoice.orderDesc && (
+        <div className={styles.orderDescRow}>
+          <span className={styles.orderLabel}>Order:</span>
+          <span className={styles.orderDesc}>{invoice.orderDesc}</span>
         </div>
+      )}
 
-        <div className={styles.topInfo}>
-          <div className={styles.billBlock}>
-            <div className={styles.billLabel}>Billing To</div>
-            <div className={styles.billName}>{customer.name}</div>
-            <div className={styles.billDetails}>
-              {customer.phone && (
-                <span className={styles.billDetailLine}>
-                  <span className={styles.billDetailIcon}><PhoneIcon /></span>
-                  {customer.phone}
-                </span>
-              )}
-              {customer.email && (
-                <span className={styles.billDetailLine}>
-                  <span className={styles.billDetailIcon}><EmailIcon /></span>
-                  {customer.email}
-                </span>
-              )}
-              {customer.address && (
-                <span className={styles.billDetailLine}>
-                  <span className={styles.billDetailIconAddress}><LocationIcon /></span>
-                  {customer.address}
-                </span>
-              )}
-            </div>
-          </div>
-          <div className={styles.invoiceMeta}>
-            <div className={styles.invoiceTitle} style={{ color: "var(--brand-primary)" }}>INVOICE</div>
-            <div className={styles.metaLine}>
-              <span className={styles.metaKey}>Invoice:</span>
-              <span className={styles.metaVal}>{invoice.number}</span>
-            </div>
-            <div className={styles.metaLine}>
-              <span className={styles.metaKey}>Date:</span>
-              <span className={styles.metaVal}>{invoice.date}</span>
-            </div>
-            <div className={styles.metaLine}>
-              <span className={styles.metaKey}>Due Date:</span>
-              <span className={styles.metaVal}>{dueDate}</span>
-            </div>
-          </div>
-        </div>
+      <table className={styles.tableSection}>
 
-        {invoice.orderDesc && (
-          <div className={styles.orderDescRow}>
-            <span className={styles.orderLabel}>ORDER:</span>
-            <span className={styles.orderDesc}>{invoice.orderDesc}</span>
-          </div>
-        )}
+        <thead>
 
-        <div className={styles.tableWrap}>
-          <table className={styles.table}>
-            <thead>
-              <tr className={styles.tableHeadRow}>
-                <th
-                  colSpan={5}
-                  style={{
-                    position: 'absolute',
-                    top: 0, left: 0,
-                    width: '100%', height: '100%',
-                    padding: 0, border: 'none',
-                    zIndex: 0, overflow: 'hidden',
-                    lineHeight: 0,
-                  }}
-                  aria-hidden="true"
-                >
-                  <svg
-                    viewBox="0 0 1000 34"
-                    preserveAspectRatio="none"
-                    style={{ display: 'block', width: '100%', height: '100%' }}
-                  >
-                    <path fill={"var(--brand-primary)"} d="M0 0 H420 L455 34 H0 Z" />
-                    <path fill="var(--brand-muted)" d="M420 6 H1000 V34 H455 Z" />
-                  </svg>
-                </th>
-                <th className={styles.colSn}    style={{ position: 'absolute', zIndex: 1 }}>SN</th>
-                <th className={styles.colDesc}  style={{ position: 'absolute', zIndex: 1 }}>Item Description</th>
-                <th className={styles.colPrice} style={{ position: 'absolute', zIndex: 1 }}>Unit Price</th>
-                <th className={styles.colQty}   style={{ position: 'absolute', zIndex: 1 }}>Qty</th>
-                <th className={styles.colTotal} style={{ position: 'absolute', zIndex: 1 }}>Amount</th>
+          <tr className={styles.tableHeader} style={{ background: "var(--brand-primary)" }}>
+            <th className={styles.thDesc}>Item Description</th>
+            <th className={styles.thPrice}>Unit Price</th>
+            <th className={styles.thQty}>Qty</th>
+            <th className={styles.thSubtotal}>Subtotal</th>
+          </tr>
+
+        </thead>
+
+
+        <tbody className={styles.tableBody}>
+          {invoice.items?.map((item, i) => {
+            const qty        = item.qty ?? 1
+            const unitPrice  = parseFloat(item.price) || 0
+            const lineAmount = qty * unitPrice
+            return (
+              <tr key={i} className={styles.tableRow}>
+                <td className={styles.tdDesc}>{item.name}</td>
+                <td className={styles.tdPrice}>{formatMoney(currency, unitPrice)}</td>
+                <td className={styles.tdQty}>{qty}</td>
+                <td className={styles.tdSubtotal}>{formatMoney(currency, lineAmount)}</td>
               </tr>
-            </thead>
-            <tbody>
-              {invoice.items?.map((item, i) => {
-                const qty        = item.qty ?? 1
-                const unitPrice  = parseFloat(item.price) || 0
-                const lineAmount = qty * unitPrice
-                return (
-                  <tr key={i} className={styles.tableRow}>
-                    <td className={styles.colSn}>{i + 1}</td>
-                    <td className={styles.colDesc}>{item.name}</td>
-                    <td className={styles.colPrice}>{formatMoney(currency, unitPrice)}</td>
-                    <td className={styles.colQty}>{qty}</td>
-                    <td className={styles.colTotal}>{formatMoney(currency, lineAmount)}</td>
-                  </tr>
-                )
-              })}
-            </tbody>
-          </table>
+            )
+          })}
+        </tbody>
+      </table>
+
+      <div className={styles.totalsSection}>
+        <div className={styles.totalsRow}>
+          <span className={styles.totalsLabel}>Subtotal</span>
+          <span className={styles.totalsValue}>{formatMoney(currency, subtotal)}</span>
         </div>
 
-        <div className={styles.bottomArea}>
-          <div className={styles.paymentBlock}>
-            {invoiceBrandSettings.accountBank && (
-              <>
-                <div className={styles.paymentHeading} style={{ color: "var(--brand-primary)" }}>Payment Information</div>
-                <div className={styles.paymentDetails}>
-                  {invoiceBrandSettings.accountNumber && <span>Account: {invoiceBrandSettings.accountNumber}<br /></span>}
-                  {invoiceBrandSettings.accountBank   && <span>Bank: {invoiceBrandSettings.accountBank}<br /></span>}
-                  {invoiceBrandSettings.accountName   && <span>Account Name: {invoiceBrandSettings.accountName}<br /></span>}
-                </div>
-              </>
-            )}
-          </div>
-
-          <div className={styles.totalsBlock}>
-            <div className={styles.totalsRow}>
-              <span className={styles.totalsKey}>Subtotal</span>
-              <span className={styles.totalsVal}>{formatMoney(currency, subtotal)}</span>
-            </div>
-            {shippingFee > 0 && (
-              <div className={styles.totalsRow}>
-                <span className={styles.totalsKey}>Shipping &amp; Delivery</span>
-                <span className={styles.totalsVal}>{formatMoney(currency, shippingFee)}</span>
-              </div>
-            )}
-            {discountAmount > 0 && (
-              <div className={styles.totalsRow}>
-                <span className={`${styles.totalsKey} ${styles.discountKey}`}>{discountLabel}</span>
-                <span className={`${styles.totalsVal} ${styles.discountVal}`}>-{formatMoney(currency, discountAmount)}</span>
-              </div>
-            )}
-            {useTax && taxAmount > 0 && (
-              <div className={styles.totalsRow}>
-                <span className={styles.totalsKey}>VAT ({taxRate}%)</span>
-                <span className={styles.totalsVal}>{formatMoney(currency, taxAmount)}</span>
-              </div>
-            )}
-
-            <div className={styles.grandTotalBox}>
-              <svg className={styles.grandTotalSvg} viewBox="0 0 400 34" preserveAspectRatio="none">
-                <path fill="var(--brand-muted)" d="M0 6 H110 L135 34 H0 Z" />
-                <path fill={"var(--brand-primary)"} d="M100 0 H400 V34 H135 Z" />
-              </svg>
-              <div className={styles.grandTotalContent}>
-                <span className={styles.grandTotalLabel}>Total</span>
-                <span className={styles.grandTotalVal}>{formatMoney(currency, grandTotal)}</span>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        
-        {paymentTerms?.length > 0 && (
-          <div className={styles.termsSection}>
-            <div className={styles.termsSectionLabel}>Notes</div>
-            <ul className={styles.termsList}>
-              {paymentTerms.map((term, i) => (
-                <li key={i} className={styles.termsItem}>{term}</li>
-              ))}
-            </ul>
+        {shippingFee > 0 && (
+          <div className={styles.totalsRow}>
+            <span className={styles.totalsLabel}>Shipping</span>
+            <span className={styles.totalsValue}>{formatMoney(currency, shippingFee)}</span>
           </div>
         )}
-  
 
-        {hasContact && (
-          <div className={styles.contactStrip}>
-            {invoiceBrandSettings.phone && (
-              <span className={styles.contactStripItem}>
-                <span className={styles.contactStripIcon}><PhoneIcon /></span>
-                <span className={styles.contactStripText}>{invoiceBrandSettings.phone}</span>
-              </span>
+        {useTax && taxAmount > 0 && (
+          <div className={styles.totalsRow}>
+            <span className={styles.totalsLabel}>Tax Vat ({taxRate}%)</span>
+            <span className={styles.totalsValue}>{formatMoney(currency, taxAmount)}</span>
+          </div>
+        )}
+
+        {discountAmount > 0 && (
+          <div className={styles.totalsRow}>
+            <span className={styles.totalsLabel}>{discountLabel}</span>
+            <span className={`${styles.totalsValue} ${styles.totalsValueDiscount}`}>−{formatMoney(currency, discountAmount)}</span>
+          </div>
+        )}
+
+        <div className={`${styles.totalsRow} ${styles.orderTotalsRow}`}>
+          <span className={styles.totalsFinalLabel}>Total</span>
+          <span className={styles.totalsFinalValue}>{formatMoney(currency, grandTotal)}</span>
+        </div>
+      </div>
+      
+      {paymentTerms?.length > 0 && (
+        <div className={styles.termsSection}>
+          <div className={styles.termsSectionLabel}>Notes</div>
+          <ul className={styles.termsList}>
+            {paymentTerms.map((term, i) => (
+              <li key={i} className={styles.termsItem}>{term}</li>
+            ))}
+          </ul>
+        </div>
+      )}
+
+      {(hasPaymentInfo || hasContact) && (
+        <div className={styles.footer}>
+
+          <div className={styles.footerBlock}>
+            <div className={styles.footerBlockHeading}>Payment Information</div>
+            {hasPaymentInfo ? (
+              <>
+                {invoiceBrandSettings.accountBank   && <div className={styles.footerBlockLine}>Bank: {invoiceBrandSettings.accountBank}</div>}
+                {invoiceBrandSettings.accountNumber && <div className={styles.footerBlockLine}>Acc No: {invoiceBrandSettings.accountNumber}</div>}
+                 {invoiceBrandSettings.accountName   && <div className={styles.footerBlockLine}>Name: {invoiceBrandSettings.accountName}</div>}
+              </>
+            ) : (
+              <div className={styles.footerBlockLine}>—</div>
             )}
-            {invoiceBrandSettings.website && (
-              <span className={styles.contactStripItem}>
-                <span className={styles.contactStripIcon}><WebsiteIcon /></span>
-                <span className={styles.contactStripText}>{invoiceBrandSettings.website}</span>
-              </span>
+          </div>
+
+          <div className={styles.footerBlock}>
+            <div className={styles.footerBlockHeading}>Contact</div>
+            {invoiceBrandSettings.email && (
+              <div className={styles.footerContactItem}>
+                <span className={styles.footerContactIcon}><EmailIcon /></span>
+                <span className={styles.footerBlockLine}>{invoiceBrandSettings.email}</span>
+              </div>
             )}
             {invoiceBrandSettings.address && (
-              <span className={styles.contactStripItem}>
-                <span className={styles.contactStripIcon}><LocationIcon /></span>
-                <span className={styles.contactStripText}>{invoiceBrandSettings.address}</span>
-              </span>
+              <div className={styles.footerContactItem}>
+                <span className={styles.footerContactIcon}><LocationIcon /></span>
+                <span className={styles.footerBlockLine}>{invoiceBrandSettings.address}</span>
+              </div>
+            )}
+            {invoiceBrandSettings.footer && (
+              <div className={styles.footerNote}>{invoiceBrandSettings.footer}</div>
             )}
           </div>
-        )}
 
-      </div>
-
-      <div className={styles.bottomShapeRow}>
-        <div className={styles.bottomShapeSvgWrap}>
-          <svg viewBox="0 0 500 100" preserveAspectRatio="none" style={{ display: 'block', width: '100%', height: '100%' }}>
-            <path fill={"var(--brand-primary)"} d="M0 0 H280 Q345 0 365 50 L390 100 H0 Z" />
-          </svg>
         </div>
-        {invoiceBrandSettings.footer && (
-          <div className={styles.bottomShapeNote}>
-            {invoiceBrandSettings.footer}
-          </div>
-        )}
-      </div>
+      )}
 
     </div>
   )
 }
-
-
-
-
-
-
-
 

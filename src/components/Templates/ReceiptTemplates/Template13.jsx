@@ -1,3 +1,4 @@
+
 import styles from "../styles/Template13.module.css"
 import { calcTax } from "../utils/receiptUtils"
 import { ReceiptPaymentSummary } from "../components/ReceiptPaymentSummary/ReceiptPaymentSummary"
@@ -6,15 +7,11 @@ import {
   PhoneIcon,
   EmailIcon,
   LocationIcon,
-  WebsiteIcon,
-  BankIcon,
-  UserIcon,
 } from "../components/icons/icons"
 import { LogoOrName } from "../components/LogoOrBrandName/LogoOrBrandName"
 
 
 export function ReceiptTemplate13({ receipt, customer, receiptBrandSettings }) {
-
   const accentColor = receiptBrandSettings.colour || '#0A0A0A'
   const { currency, showTax, receiptTaxRate: receiptBrandSettingsTaxRate } = receiptBrandSettings
 
@@ -39,72 +36,71 @@ export function ReceiptTemplate13({ receipt, customer, receiptBrandSettings }) {
   return (
     <div className={styles.template}>
 
-      <div className={styles.topBar}>
+      <div className={styles.header}>
+        <div>
+          <div className={styles.logoRow}>
+            
+            <LogoOrName receiptBrandSettings={receiptBrandSettings} darkBg={false} />
 
-        <div className={styles.logoArea}>
-
-          <LogoOrName receiptBrandSettings={receiptBrandSettings} darkBg={false} />
-
-          <div>
-            <div className={styles.companyName}>{(receiptBrandSettings.name || receiptBrandSettings.ownerName || '').toUpperCase()}</div>
-            {receiptBrandSettings.tagline && <div className={styles.tagline}>{receiptBrandSettings.tagline}</div>}
+            <div>
+              <span className={styles.companyName}>{(receiptBrandSettings.name || receiptBrandSettings.ownerName || '').toUpperCase()}</span>
+              {receiptBrandSettings.tagline && <div className={styles.companySub}>{receiptBrandSettings.tagline}</div>}
+            </div>
           </div>
         </div>
-
-        <div className={styles.companyInfo}>
-          {receiptBrandSettings.website && (
-            <div className={styles.companyInfoLine}>
-              <span className={styles.companyInfoIcon}><WebsiteIcon /></span>
-              <span>{receiptBrandSettings.website}</span>
-            </div>
-          )}
-          {receiptBrandSettings.email && (
-            <div className={styles.companyInfoLine}>
-              <span className={styles.companyInfoIcon}><EmailIcon /></span>
-              <span>{receiptBrandSettings.email}</span>
-            </div>
-          )}
-          {receiptBrandSettings.phone && (
-            <div className={styles.companyInfoLine}>
-              <span className={styles.companyInfoIcon}><PhoneIcon /></span>
-              <span>{receiptBrandSettings.phone}</span>
-            </div>
-          )}
-        </div>
-
+        <div className={styles.receiptTitle} style={{ color: accentColor }}>RECEIPT</div>
       </div>
 
-      <div className={styles.receiptTitle}>Receipt</div>
-
-      <div className={styles.bar} style={{ background: "var(--brand-muted)", color: accentColor }}>
+      <div className={styles.numberBar}>
         <span>RECEIPT # {receipt.number}</span>
-        <span>DATE ISSUED: {receipt.date}</span>
+        <span>DATE : {receipt.date}</span>
       </div>
 
-      <div className={styles.issuedRow}>
-
+      <div className={styles.billShip}>
         <div>
-          <div className={styles.issuedLabel}>ISSUED TO</div>
-          <div className={styles.issuedName}>{customer.name}</div>
+          <span className={styles.billLabel}>Received From: </span>
+          <div><strong>{customer.name}</strong></div>
           {customer.phone && (
-            <div className={styles.issuedDetailLine}>
-              <span className={styles.issuedDetailIcon}><PhoneIcon /></span>
-              <span>{customer.phone}</span>
+            <div className={styles.billDetailLine}>
+              <span className={styles.billDetailIcon}><PhoneIcon /></span>
+              {customer.phone}
+            </div>
+          )}
+          {customer.email && (
+            <div className={styles.billDetailLine}>
+              <span className={styles.billDetailIcon}><EmailIcon /></span>
+              {customer.email}
             </div>
           )}
           {customer.address && (
-            <div className={styles.issuedDetailLine}>
-              <span className={styles.issuedDetailIcon}><LocationIcon /></span>
-              <span>{customer.address}</span>
+            <div className={styles.billDetailLine}>
+              <span className={styles.billDetailIcon}><LocationIcon /></span>
+              {customer.address}
             </div>
           )}
         </div>
-
-        <div style={{ textAlign: 'right' }}>
-          <div className={styles.amountLabel} style={{ color: accentColor }}>AMOUNT</div>
-          <div className={styles.amountVal} style={{ color: accentColor }}>{formatMoney(currency, grandTotal)}</div>
+        <div>
+          <span className={styles.billLabel}>Received By: </span>
+          <div><strong>{receiptBrandSettings.name || receiptBrandSettings.ownerName}</strong></div>
+          {receiptBrandSettings.phone && (
+            <div className={styles.billDetailLine}>
+              <span className={styles.billDetailIcon}><PhoneIcon /></span>
+              {receiptBrandSettings.phone}
+            </div>
+          )}
+          {receiptBrandSettings.email && (
+            <div className={styles.billDetailLine}>
+              <span className={styles.billDetailIcon}><EmailIcon /></span>
+              {receiptBrandSettings.email}
+            </div>
+          )}
+          {receiptBrandSettings.address && (
+            <div className={styles.billDetailLine}>
+              <span className={styles.billDetailIcon}><LocationIcon /></span>
+              {receiptBrandSettings.address}
+            </div>
+          )}
         </div>
-
       </div>
 
       <div className={styles.tableWrapper}>
@@ -116,11 +112,11 @@ export function ReceiptTemplate13({ receipt, customer, receiptBrandSettings }) {
 
         <table className={styles.table}>
           <thead>
-            <tr className={styles.tableHead}>
+            <tr className={styles.tableHeader}>
               <th className={styles.colDesc}>Item Description</th>
               <th className={styles.colQty}>Qty</th>
               <th className={styles.colPrice}>Unit Price</th>
-              <th className={styles.colTotal}>Amount</th>
+              <th className={styles.colTotal}>Total</th>
             </tr>
           </thead>
           <tbody className={styles.tableBody}>
@@ -130,7 +126,7 @@ export function ReceiptTemplate13({ receipt, customer, receiptBrandSettings }) {
               const lineAmount = qty * unitPrice
               return (
                 <tr key={i} className={styles.tableRow}>
-                  <td className={styles.colDesc}>• {item.name}</td>
+                  <td className={styles.colDesc}>{item.name}</td>
                   <td className={styles.colQty}>{qty}</td>
                   <td className={styles.colPrice}>{formatMoney(currency, unitPrice)}</td>
                   <td className={styles.colTotal}>{formatMoney(currency, lineAmount)}</td>
@@ -177,66 +173,32 @@ export function ReceiptTemplate13({ receipt, customer, receiptBrandSettings }) {
 
       </div>
 
-      {(receiptBrandSettings.name || receiptBrandSettings.phone) && (
-        <>
-          <div className={styles.paymentTitle}>Payment Details</div>
-          <div className={styles.paymentBoxRow}>
+      <div style={{ marginTop: 'auto' }}>
+        <div className={styles.footer}>
+          <div>
             {receiptBrandSettings.name && (
-              <div className={styles.paymentBox} style={{ background: "var(--brand-muted)" }}>
-                <div className={styles.paymentBoxTitle}>
-                  <span className={styles.paymentBoxIcon}><BankIcon /></span>
-                  Bank
-                </div>
-                <div className={styles.paymentBoxContent}>
-                  {receiptBrandSettings.name && <div>Received By: {receiptBrandSettings.name}</div>}
-                </div>
-              </div>
+              <>
+                <div className={styles.thankYou}>Payment Details</div>
+                {receiptBrandSettings.name && <div>Received By : {receiptBrandSettings.name}</div>}
+              </>
             )}
-            {receiptBrandSettings.phone && (
-              <div className={styles.paymentBox} style={{ background: "var(--brand-muted)" }}>
-                <div className={styles.paymentBoxTitle}>
-                  <span className={styles.paymentBoxIcon}><PhoneIcon /></span>
-                  Contact
-                </div>
-                <div className={styles.paymentBoxContent}>
-                  <div>{receiptBrandSettings.phone}</div>
-                  {receiptBrandSettings.email && <div>{receiptBrandSettings.email}</div>}
-                </div>
-              </div>
-            )}
-            {receiptBrandSettings.address && (
-              <div className={styles.paymentBox} style={{ background: "var(--brand-muted)" }}>
-                <div className={styles.paymentBoxTitle}>
-                  <span className={styles.paymentBoxIcon}><LocationIcon /></span>
-                  Visit Us
-                </div>
-                <div className={styles.paymentBoxContent}>
-                  <div>{receiptBrandSettings.address}</div>
-                </div>
-              </div>
-            )}
+            <div className={styles.paymentNote} style={{ fontWeight: 900, color: "var(--brand-primary-dark)" }}>
+              {receiptBrandSettings.footer}
+            </div>
           </div>
-        </>
-      )}
-
-      <div className={styles.thankYou} style={{ color: accentColor }}>
-        {receiptBrandSettings.footer || 'THANK YOU!'}
+          <div className={styles.signArea}>
+            <div className={styles.signLine} />
+            <div className={styles.signLabel}>Signature</div>
+          </div>
+        </div>
+        <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+          <svg style={{ display: 'block', width: 50, height: 50 }} viewBox="0 0 50 50">
+            <polygon points="50,0 50,50 0,50" fill={accentColor} opacity="0.5" />
+          </svg>
+        </div>
       </div>
 
     </div>
   )
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
 

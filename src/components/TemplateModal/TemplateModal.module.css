@@ -5,6 +5,7 @@
   z-index: 5000;
   display: flex;
   flex-direction: column;
+  overflow-x: hidden;
   animation: slideInFromRight 0.3s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
@@ -105,6 +106,7 @@
 .templateList {
   flex: 1;
   overflow-y: auto;
+  overflow-x: hidden;
   -webkit-overflow-scrolling: touch;
   scroll-behavior: smooth;
   padding: 16px 16px calc(32px + env(safe-area-inset-bottom));
@@ -442,7 +444,7 @@
 
   .templateGrid {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
     gap: 24px;
   }
 
@@ -452,6 +454,7 @@
     width: 100%;
     margin: 0 auto;
     padding: 10px 28px;
+    overflow-x: visible;
   }
 
   .sheetBackdrop {
