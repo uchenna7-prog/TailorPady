@@ -4,7 +4,7 @@ import { useProfileSettings } from '../../contexts/ProfileSettingsContext'
 import { TEMPLATE_MAPPINGS } from '../Templates/datas/receiptTemplateMappings'
 import {
   resolveCumulativePaid,
-  buildReceiptWhatsAppMessage
+  buildReceiptWhatsAppMessage,
 } from './utils'
 import { useReceiptBrandSettings } from '../../hooks/useReceiptBrandSettings'
 import { getBrandCSSVars } from '../../utils/cssVariablesUtils'
@@ -23,7 +23,7 @@ import styles from './ReceiptViewer.module.css'
 
 
 const COMPLETED_TOAST_LABELS = {
-  brand: 'Brand details added ✓',
+  brand:           'Brand details added ✓',
   businessContact: 'Business contact added ✓',
   invoiceSettings: 'Invoice details added ✓',
 }
@@ -65,9 +65,10 @@ export default function ReceiptViewer({
   colourId,
   onApplyDefaultTemplates,
   reopenMissingFields = false,
-  completedModal = null,
-  completedFields = [],
+  completedModal      = null,
+  completedFields     = [],
   onReopenMissingFieldsHandled,
+  hideDesign          = false,
 }) {
 
   const { generalSettings, updateManyGeneralSettings } = useGeneralSettings()
@@ -77,21 +78,21 @@ export default function ReceiptViewer({
 
   const paperRef = useRef(null)
   const [receipt, setReceipt] = useState(snapshotedReceipt)
-  const [pdfLoading, setPdfLoading]         = useState(false)
-  const [shareLoading, setShareLoading]     = useState(false)
-  const [showDesignSheet, setShowDesignSheet]     = useState(false)
-  const [showShareSheet, setShowShareSheet]       = useState(false)
-  const [showMoreSheet, setShowMoreSheet]         = useState(false)
-  const [showTemplateModal, setShowTemplateModal] = useState(false)
-  const [showColourSheet, setShowColourSheet]     = useState(false)
-  const [pendingChange, setPendingChange]         = useState(null)
-  const [missingFields, setMissingFields]           = useState(null)
-  const [pendingActionLabel, setPendingActionLabel] = useState(null)
-  const [pendingActionFn, setPendingActionFn]       = useState(null)
+  const [pdfLoading,          setPdfLoading]          = useState(false)
+  const [shareLoading,        setShareLoading]         = useState(false)
+  const [showDesignSheet,     setShowDesignSheet]      = useState(false)
+  const [showShareSheet,      setShowShareSheet]       = useState(false)
+  const [showMoreSheet,       setShowMoreSheet]        = useState(false)
+  const [showTemplateModal,   setShowTemplateModal]    = useState(false)
+  const [showColourSheet,     setShowColourSheet]      = useState(false)
+  const [pendingChange,       setPendingChange]        = useState(null)
+  const [missingFields,       setMissingFields]        = useState(null)
+  const [pendingActionLabel,  setPendingActionLabel]   = useState(null)
+  const [pendingActionFn,     setPendingActionFn]      = useState(null)
   const [activeCompletedModal, setActiveCompletedModal] = useState(null)
 
   const templateKey = receipt.template || generalSettings.receiptTemplate || 'receiptTemplate1'
-  const Template = TEMPLATE_MAPPINGS[templateKey] || TEMPLATE_MAPPINGS.receiptTemplate1
+  const Template    = TEMPLATE_MAPPINGS[templateKey] || TEMPLATE_MAPPINGS.receiptTemplate1
 
   const effectiveColourId = receipt.brandSnapshot?.colourId || colourId
 
@@ -100,22 +101,21 @@ export default function ReceiptViewer({
     receipt.brandSnapshot
   )
 
-  const brandCSSVars = getBrandCSSVars(snapShotedReceiptBrandSettings.colour)
-  const filename = `Receipt-${receipt.number}-${customer.name.replace(/\s+/g, '_')}.pdf`
-
+  const brandCSSVars   = getBrandCSSVars(snapShotedReceiptBrandSettings.colour)
+  const filename       = `Receipt-${receipt.number}-${customer.name.replace(/\s+/g, '_')}.pdf`
   const cumulativePaid = resolveCumulativePaid(receipt)
-  const orderTotal = receipt.orderPrice ? parseFloat(receipt.orderPrice) : cumulativePaid
-  const isFullPay  = cumulativePaid >= orderTotal && orderTotal > 0
+  const orderTotal     = receipt.orderPrice ? parseFloat(receipt.orderPrice) : cumulativePaid
+  const isFullPay      = cumulativePaid >= orderTotal && orderTotal > 0
 
   const returnTo = {
     customerId: customer.id,
-    receiptId: receipt.id,
+    receiptId:  receipt.id,
   }
 
   useEffect(() => {
     if (!reopenMissingFields) return
-    const requires = getRequiresForDoc('receipt', null, templateKey)
-    const missing  = getMissingFields(requires, profileSettings)
+    const requires   = getRequiresForDoc('receipt', null, templateKey)
+    const missing    = getMissingFields(requires, profileSettings)
     const missingSet = new Set(missing)
     const madeProgress = completedFields.some(field => !missingSet.has(field))
 
@@ -169,7 +169,7 @@ export default function ReceiptViewer({
     showToast?.('Preparing…')
     try {
       const exactHeight = Math.ceil(paperRef.current.getBoundingClientRect().height)
-      const message = buildReceiptWhatsAppMessage(receipt, customer, snapShotedReceiptBrandSettings)
+      const message     = buildReceiptWhatsAppMessage(receipt, customer, snapShotedReceiptBrandSettings)
       await sharePDF(paperRef.current, filename, message, brandCSSVars, exactHeight)
       showToast?.('Shared ✓')
     } catch (err) {
@@ -245,26 +245,28 @@ export default function ReceiptViewer({
     setPendingChange(null)
   }
 
+  const headerActions = [
+    !hideDesign && {
+      icon:    'palette',
+      onClick: () => setShowDesignSheet(true),
+    },
+    {
+      icon:    'share',
+      onClick: () => setShowShareSheet(true),
+    },
+    {
+      icon:    'more_vert',
+      onClick: () => setShowMoreSheet(true),
+    },
+  ].filter(Boolean)
+
   return (
     <div className={styles.overlay} onTouchStart={e => e.stopPropagation()} onTouchEnd={e => e.stopPropagation()}>
       <Header
         type="back"
         title={receipt.number}
         onBackClick={onClose}
-        customActions={[
-          {
-            icon:    'palette',
-            onClick: () => setShowDesignSheet(true),
-          },
-          {
-            icon:    'share',
-            onClick: () => setShowShareSheet(true),
-          },
-          {
-            icon:    'more_vert',
-            onClick: () => setShowMoreSheet(true),
-          },
-        ]}
+        customActions={headerActions}
       />
 
       <div className={styles.scrollArea}>

@@ -11,7 +11,9 @@ import { useProfileSettings } from './ProfileSettingsContext'
 import { useCustomers }       from './CustomerContext'
 import {
   subscribeToReceipts,
-  addReceipt as addReceiptToDb,
+  addReceipt    as addReceiptToDb,
+  updateReceipt as updateReceiptInDb,
+  deleteReceipt as deleteReceiptFromDb,
 } from '../services/receiptService'
 
 const ReceiptContext = createContext(null)
@@ -35,8 +37,9 @@ export function ReceiptProvider({ children }) {
     const customerMap = new Map(customers.map(c => [c.id, c]))
     return allReceipts.map(receipt => ({
       ...receipt,
-      customerName:  customerMap.get(receipt.customerId)?.name  ?? 'Unknown',
-      customerPhone: customerMap.get(receipt.customerId)?.phone ?? null,
+      customerName:    customerMap.get(receipt.customerId)?.name    ?? 'Unknown',
+      customerPhone:   customerMap.get(receipt.customerId)?.phone   ?? null,
+      customerAddress: customerMap.get(receipt.customerId)?.address ?? null,
     }))
   }, [allReceipts, customers])
 
@@ -45,6 +48,24 @@ export function ReceiptProvider({ children }) {
     const customerId = data.customerId
     if (!customerId) return
     await addReceiptToDb(user.uid, customerId, data)
+  }, [user])
+
+  const updateReceiptTemplate = useCallback(async (receiptId, templateId) => {
+    if (!user) return
+    await updateReceiptInDb(user.uid, String(receiptId), { template: templateId })
+  }, [user])
+
+  const updateReceiptColour = useCallback(async (receiptId, colourId, colour) => {
+    if (!user) return
+    await updateReceiptInDb(user.uid, String(receiptId), {
+      'brandSnapshot.colourId': colourId,
+      'brandSnapshot.colour':   colour,
+    })
+  }, [user])
+
+  const deleteReceipt = useCallback(async (receiptId) => {
+    if (!user) return
+    await deleteReceiptFromDb(user.uid, String(receiptId))
   }, [user])
 
   const brandInfos = {
@@ -62,6 +83,9 @@ export function ReceiptProvider({ children }) {
     <ReceiptContext.Provider value={{
       allReceipts: enrichedReceipts,
       addReceipt,
+      updateReceiptTemplate,
+      updateReceiptColour,
+      deleteReceipt,
       template:   profileSettings.receiptTemplate,
       brandInfos,
     }}>

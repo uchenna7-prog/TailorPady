@@ -1,23 +1,15 @@
 import { useState, useRef, useCallback, useEffect } from 'react'
-import { useAuth } from '../../contexts/AuthContext'
 import { useGeneralSettings } from '../../contexts/GeneralSettingsContext'
 import { useOrders } from '../../contexts/OrdersContext'
 import { useReceipts } from '../../contexts/ReceiptContext'
-import { deleteReceipt } from '../../services/receiptService'
 import { formatMoney } from '../../utils/moneyUtils'
 import OrderMosaic from '../../components/OrderMosaic/OrderMosaic'
 import ReceiptViewer from '../../components/ReceiptViewer/ReceiptViewer'
 import Header from '../../components/Header/Header'
+import Toast from '../../components/Toast/Toast'
 import BottomNav from '../../components/BottomNav/BottomNav'
 import styles from './Receipts.module.css'
 
-
-function formatDate(dateStr) {
-  if (!dateStr) return 'Unknown Date'
-  const d = new Date(dateStr)
-  if (isNaN(d)) return dateStr
-  return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
-}
 
 function resolveCumulativePaid(receipt) {
   if (typeof receipt.cumulativePaid === 'number') return receipt.cumulativePaid
@@ -80,26 +72,37 @@ function ReceiptCard({ receipt, currency, onTap, isLast, orderItems }) {
 
 
 export default function Receipts({ onMenuClick }) {
-  const { user }            = useAuth()
-  const { generalSettings } = useGeneralSettings()
-  const { allOrders }       = useOrders()
-  const { allReceipts }     = useReceipts()
+  const { generalSettings }                                                          = useGeneralSettings()
+  const { allOrders }                                                                = useOrders()
+  const { allReceipts, updateReceiptTemplate, updateReceiptColour, deleteReceipt }  = useReceipts()
 
   const currency = generalSettings.invoiceCurrency || '₦'
 
-  const [activeTab,     setActiveTab]     = useState('all')
-  const [viewing,       setViewing]       = useState(null)
-  const [search,        setSearch]        = useState('')
-  const [filterOpen,    setFilterOpen]    = useState(false)
-  const [swipeProgress, setSwipeProgress] = useState(0)
+  const [activeTab,       setActiveTab]       = useState('all')
+  const [viewing,         setViewing]         = useState(null)
+  const [search,          setSearch]          = useState('')
+  const [filterOpen,      setFilterOpen]      = useState(false)
+  const [swipeProgress,   setSwipeProgress]   = useState(0)
   const [tabMeasurements, setTabMeasurements] = useState([])
+  const [toastMsg,        setToastMsg]        = useState('')
 
+  const toastTimerRef   = useRef(null)
   const touchStartX     = useRef(null)
   const touchStartY     = useRef(null)
   const swipeAxisLocked = useRef(null)
   const tabsRef         = useRef(null)
   const tabItemRefs     = useRef([])
   const activeTabIdx    = TABS.findIndex(t => t.id === activeTab)
+
+  const showToast = useCallback((msg) => {
+    setToastMsg(msg)
+    clearTimeout(toastTimerRef.current)
+    toastTimerRef.current = setTimeout(() => setToastMsg(''), 2400)
+  }, [])
+
+  useEffect(() => {
+    return () => clearTimeout(toastTimerRef.current)
+  }, [])
 
   const measureTabs = useCallback(() => {
     if (!tabsRef.current) return
@@ -142,7 +145,7 @@ export default function Receipts({ onMenuClick }) {
   }
 
   const filtered = allReceipts.filter(rec => {
-    if (activeTab === 'full') return isFullPayment(rec)
+    if (activeTab === 'full') return  isFullPayment(rec)
     if (activeTab === 'part') return !isFullPayment(rec)
     return true
   })
@@ -244,6 +247,10 @@ export default function Receipts({ onMenuClick }) {
   }
 
   const underlineStyle = getUnderlineStyle()
+
+  const viewingCustomerData = viewing
+    ? { updateReceiptTemplate, updateReceiptColour }
+    : null
 
   return (
     <div className={styles.page}>
@@ -380,20 +387,28 @@ export default function Receipts({ onMenuClick }) {
         <ReceiptViewer
           receipt={viewing}
           customer={{
+            id:      viewing.customerId,
             name:    viewing.customerName    || '—',
             phone:   viewing.customerPhone   || '',
             address: viewing.customerAddress || '',
           }}
+          customerData={viewingCustomerData}
+          hideDesign
           onClose={() => setViewing(null)}
           onDelete={async (id) => {
             try {
-              await deleteReceipt(user.uid, id)
+              await deleteReceipt(id)
               setViewing(null)
-            } catch { /* silent */ }
+              showToast('Receipt deleted')
+            } catch {
+              showToast('Could not delete receipt.')
+            }
           }}
-          showToast={() => {}}
+          showToast={showToast}
         />
       )}
+
+      <Toast message={toastMsg} />
 
       <BottomNav />
     </div>

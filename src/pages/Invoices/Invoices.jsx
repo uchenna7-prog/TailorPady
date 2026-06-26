@@ -1,5 +1,4 @@
-import { useState, useRef, useEffect } from 'react'
-import { useAuth } from '../../contexts/AuthContext'
+import { useState, useRef, useEffect, useCallback } from 'react'
 import { useGeneralSettings } from '../../contexts/GeneralSettingsContext'
 import { useOrders } from '../../contexts/OrdersContext'
 import { useInvoices } from '../../contexts/InvoiceContext'
@@ -7,6 +6,7 @@ import { INVOICE_STATUS_STYLES, INVOICE_STATUS_LABELS } from '../../datas/invoic
 import { formatMoney } from '../../utils/moneyUtils'
 import InvoiceViewer from '../../components/InvoiceViewer/InvoiceViewer'
 import Header from '../../components/Header/Header'
+import Toast from '../../components/Toast/Toast'
 import styles from './Invoices.module.css'
 import BottomNav from '../../components/BottomNav/BottomNav'
 import OrderMosaic from '../../components/OrderMosaic/OrderMosaic'
@@ -81,26 +81,36 @@ function InvoiceRow({ invoice, currency, onTap, isLast, orderItems }) {
 
 
 export default function Invoices({ onMenuClick }) {
-  const { user }            = useAuth()
-  const { generalSettings } = useGeneralSettings()
-  const { allOrders }       = useOrders()
-  const { allInvoices }     = useInvoices()
-  const currency            = generalSettings.invoiceCurrency || '₦'
+  const { generalSettings }                                                                              = useGeneralSettings()
+  const { allOrders }                                                                                    = useOrders()
+  const { allInvoices, updateInvoiceStatus, updateInvoiceTemplate, updateInvoiceColour, deleteInvoice } = useInvoices()
+  const currency = generalSettings.invoiceCurrency || '₦'
 
   const [activeTab,  setActiveTab]  = useState('all')
   const [viewing,    setViewing]    = useState(null)
   const [search,     setSearch]     = useState('')
   const [filterOpen, setFilterOpen] = useState(false)
+  const [toastMsg,   setToastMsg]   = useState('')
 
-  const touchStart  = useRef(null)
-  const tabsRef     = useRef(null)
-  const tabItemsRef = useRef({})
+  const toastTimerRef = useRef(null)
+  const touchStart    = useRef(null)
+  const tabsRef       = useRef(null)
+  const tabItemsRef   = useRef({})
+
+  const showToast = useCallback((msg) => {
+    setToastMsg(msg)
+    clearTimeout(toastTimerRef.current)
+    toastTimerRef.current = setTimeout(() => setToastMsg(''), 2400)
+  }, [])
+
+  useEffect(() => {
+    return () => clearTimeout(toastTimerRef.current)
+  }, [])
 
   useEffect(() => {
     const tabEl       = tabItemsRef.current[activeTab]
     const containerEl = tabsRef.current
     if (!tabEl || !containerEl) return
-
     tabEl.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' })
   }, [activeTab])
 
@@ -158,7 +168,6 @@ export default function Invoices({ onMenuClick }) {
 
   const handleListTouchEnd = (e) => {
     if (!touchStart.current) return
-
     const touch = e.changedTouches[0]
     const dx    = touch.clientX - touchStart.current.x
     const dy    = touch.clientY - touchStart.current.y
@@ -168,13 +177,16 @@ export default function Invoices({ onMenuClick }) {
     if (!isHorizontalSwipe) return
 
     const curIndex = TAB_IDS.indexOf(activeTab)
-
     if (dx < 0 && curIndex < TAB_IDS.length - 1) {
       setActiveTab(TAB_IDS[curIndex + 1])
     } else if (dx > 0 && curIndex > 0) {
       setActiveTab(TAB_IDS[curIndex - 1])
     }
   }
+
+  const viewingCustomerData = viewing
+    ? { updateInvoiceTemplate, updateInvoiceColour }
+    : null
 
   return (
     <div className={styles.page}>
@@ -296,26 +308,34 @@ export default function Invoices({ onMenuClick }) {
         <InvoiceViewer
           invoice={viewing}
           customer={{
+            id:      viewing.customerId,
             name:    viewing.customerName    || '—',
             phone:   viewing.customerPhone   || '',
             address: viewing.customerAddress || '',
           }}
+          customerData={viewingCustomerData}
+          hideDesign
           onClose={() => setViewing(null)}
+          onDelete={async (id) => {
+            try {
+              await deleteInvoice(id)
+              setViewing(null)
+              showToast('Invoice deleted')
+            } catch {
+              showToast('Could not delete invoice.')
+            }
+          }}
           onStatusChange={async (id, newStatus) => {
             try {
-              await updateInvoiceStatus(user.uid, id, newStatus)
+              await updateInvoiceStatus(id, newStatus)
               setViewing(prev => prev ? { ...prev, status: newStatus } : null)
             } catch {}
           }}
-          onDelete={async (id) => {
-            try {
-              await deleteInvoice(user.uid, id)
-              setViewing(null)
-            } catch {}
-          }}
-          showToast={() => {}}
+          showToast={showToast}
         />
       )}
+
+      <Toast message={toastMsg} />
 
       <BottomNav />
 

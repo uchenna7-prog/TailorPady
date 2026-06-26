@@ -24,9 +24,9 @@ export function getDisplayName(user) {
   const fullName = user?.displayName?.trim()
   if (fullName) {
     const parts = fullName.split(/\s+/)
-    return parts.length >= 2 ? parts[1] : parts[0]
+    return parts.length >= 1 ? parts[0] : "there"
   }
-  return user?.email?.split('@')[0] ?? 'there'
+  return 'there'
 }
 
 export function formatDate(dateStr) {

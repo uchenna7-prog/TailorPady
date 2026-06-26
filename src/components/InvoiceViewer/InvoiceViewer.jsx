@@ -20,14 +20,14 @@ import styles from './InvoiceViewer.module.css'
 
 
 const STATUS_LABELS = {
-  unpaid: 'Unpaid',
+  unpaid:    'Unpaid',
   part_paid: 'Part Payment',
-  paid: 'Full Payment',
-  overdue: 'Overdue',
+  paid:      'Full Payment',
+  overdue:   'Overdue',
 }
 
 const COMPLETED_TOAST_LABELS = {
-  brand: 'Brand details added ✓',
+  brand:           'Brand details added ✓',
   businessContact: 'Business contact added ✓',
   invoiceSettings: 'Invoice details added ✓',
 }
@@ -69,9 +69,10 @@ export default function InvoiceViewer({
   colourId,
   onApplyDefaultTemplates,
   reopenMissingFields = false,
-  completedModal = null,
-  completedFields = [],
+  completedModal      = null,
+  completedFields     = [],
   onReopenMissingFieldsHandled,
+  hideDesign          = false,
 }) {
 
   const { generalSettings, updateManyGeneralSettings } = useGeneralSettings()
@@ -81,21 +82,21 @@ export default function InvoiceViewer({
 
   const paperRef = useRef(null)
   const [invoice, setInvoice] = useState(snapShotedInvoice)
-  const [pdfLoading, setPdfLoading]         = useState(false)
-  const [shareLoading, setShareLoading]     = useState(false)
-  const [showDesignSheet, setShowDesignSheet]     = useState(false)
-  const [showShareSheet, setShowShareSheet]       = useState(false)
-  const [showMoreSheet, setShowMoreSheet]         = useState(false)
-  const [showTemplateModal, setShowTemplateModal] = useState(false)
-  const [showColourSheet, setShowColourSheet]     = useState(false)
-  const [pendingChange, setPendingChange]         = useState(null)
-  const [missingFields, setMissingFields]         = useState(null)
-  const [pendingActionLabel, setPendingActionLabel] = useState(null)
-  const [pendingActionFn, setPendingActionFn]       = useState(null)
+  const [pdfLoading,        setPdfLoading]        = useState(false)
+  const [shareLoading,      setShareLoading]       = useState(false)
+  const [showDesignSheet,   setShowDesignSheet]    = useState(false)
+  const [showShareSheet,    setShowShareSheet]     = useState(false)
+  const [showMoreSheet,     setShowMoreSheet]      = useState(false)
+  const [showTemplateModal, setShowTemplateModal]  = useState(false)
+  const [showColourSheet,   setShowColourSheet]    = useState(false)
+  const [pendingChange,     setPendingChange]      = useState(null)
+  const [missingFields,     setMissingFields]      = useState(null)
+  const [pendingActionLabel,  setPendingActionLabel]  = useState(null)
+  const [pendingActionFn,     setPendingActionFn]     = useState(null)
   const [activeCompletedModal, setActiveCompletedModal] = useState(null)
 
   const templateKey = invoice.template || generalSettings.invoiceTemplate || 'invoiceTemplate1'
-  const Template = TEMPLATE_MAPPINGS[templateKey] || TEMPLATE_MAPPINGS.invoiceTemplate1
+  const Template    = TEMPLATE_MAPPINGS[templateKey] || TEMPLATE_MAPPINGS.invoiceTemplate1
 
   const effectiveColourId = invoice.brandSnapshot?.colourId || colourId
 
@@ -105,17 +106,17 @@ export default function InvoiceViewer({
   )
 
   const brandCSSVars = getBrandCSSVars(snapShotedInvoiceBrandSettings.colour)
-  const filename = `Invoice-${invoice.number}-${customer.name.replace(/\s+/g, '_')}.pdf`
+  const filename     = `Invoice-${invoice.number}-${customer.name.replace(/\s+/g, '_')}.pdf`
 
   const returnTo = {
     customerId: customer.id,
-    invoiceId: invoice.id,
+    invoiceId:  invoice.id,
   }
 
   useEffect(() => {
     if (!reopenMissingFields) return
-    const requires = getRequiresForDoc('invoice', templateKey, null)
-    const missing  = getMissingFields(requires, profileSettings)
+    const requires   = getRequiresForDoc('invoice', templateKey, null)
+    const missing    = getMissingFields(requires, profileSettings)
     const missingSet = new Set(missing)
     const madeProgress = completedFields.some(field => !missingSet.has(field))
 
@@ -169,7 +170,7 @@ export default function InvoiceViewer({
     showToast?.('Preparing…')
     try {
       const exactHeight = Math.ceil(paperRef.current.getBoundingClientRect().height)
-      const message = buildInvoiceWhatsAppMessage(invoice, customer, snapShotedInvoiceBrandSettings)
+      const message     = buildInvoiceWhatsAppMessage(invoice, customer, snapShotedInvoiceBrandSettings)
       await sharePDF(paperRef.current, filename, message, brandCSSVars, exactHeight)
       showToast?.('Shared ✓')
     } catch (err) {
@@ -245,26 +246,28 @@ export default function InvoiceViewer({
     setPendingChange(null)
   }
 
+  const headerActions = [
+    !hideDesign && {
+      icon:    'palette',
+      onClick: () => setShowDesignSheet(true),
+    },
+    {
+      icon:    'share',
+      onClick: () => setShowShareSheet(true),
+    },
+    {
+      icon:    'more_vert',
+      onClick: () => setShowMoreSheet(true),
+    },
+  ].filter(Boolean)
+
   return (
     <div className={styles.overlay} onTouchStart={e => e.stopPropagation()} onTouchEnd={e => e.stopPropagation()}>
       <Header
         type="back"
         title={invoice.number}
         onBackClick={onClose}
-        customActions={[
-          {
-            icon:    'palette',
-            onClick: () => setShowDesignSheet(true),
-          },
-          {
-            icon:    'share',
-            onClick: () => setShowShareSheet(true),
-          },
-          {
-            icon:    'more_vert',
-            onClick: () => setShowMoreSheet(true),
-          },
-        ]}
+        customActions={headerActions}
       />
 
       <div className={styles.scrollArea}>
