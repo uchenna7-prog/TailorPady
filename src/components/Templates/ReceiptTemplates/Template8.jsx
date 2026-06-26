@@ -29,7 +29,7 @@ export function ReceiptTemplate8({ receipt, customer, receiptBrandSettings }) {
       <div className={styles.metaStrip}>
 
         <div className={styles.metaStripItem}>
-          <span className={styles.metaStripKey}># Receipt</span>
+          <span className={styles.metaStripKey}>Receipt# </span>
           <span className={styles.metaStripVal}>{receipt.number}</span>
         </div>
 

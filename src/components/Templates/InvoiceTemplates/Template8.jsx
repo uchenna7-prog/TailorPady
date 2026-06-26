@@ -25,7 +25,7 @@ export function InvoiceTemplate8({ invoice, customer, invoiceBrandSettings }) {
 
       <div className={styles.metaStrip}>
         <div className={styles.metaStripItem}>
-          <span className={styles.metaStripKey}># Invoice</span>
+          <span className={styles.metaStripKey}>Invoice# </span>
           <span className={styles.metaStripVal}>{invoice.number}</span>
         </div>
         <div className={styles.metaStripItem}>

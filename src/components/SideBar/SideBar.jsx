@@ -46,8 +46,9 @@ const NAV_SECTIONS = [
     key: 'help',
     label: 'Help',
     items: [
-      { path: '/contact', label: 'Contact Us', icon: 'call'         },
-      { path: '/faq',     label: 'FAQs',       icon: 'help_outline' },
+      { path: '/contact',     label: 'Contact Us',   icon: 'call'         },
+      { path: '/faq',         label: 'FAQs',         icon: 'help_outline' },
+      { path: '/report-bug',  label: 'Report a Bug', icon: 'bug_report'  },
     ],
   },
   {

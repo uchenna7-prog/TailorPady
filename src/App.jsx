@@ -29,6 +29,7 @@ import AgentChat from './pages/AgentChat/AgentChat'
 import TermsAndConditions from './pages/TermsAndConditions/TermsAndConditions'
 import RefundPolicy from './pages/RefundPolicy/RefundPolicy'
 import PrivacyPolicy from './pages/PrivacyPolicy/PrivacyPolicy'
+import BugReport from './pages/BugReport/BugReport'
 import './index.css'
 
 function GuestRoute({ children }) {
@@ -73,6 +74,7 @@ function AppShell() {
           <Route path="/terms"                           element={<TermsAndConditions       onMenuClick={menuClick} />} />
           <Route path="/refund"                          element={<RefundPolicy             onMenuClick={menuClick} />} />
           <Route path="/privacy"                         element={<PrivacyPolicy            onMenuClick={menuClick} />} />
+          <Route path="/report-bug"                      element={<BugReport                onMenuClick={menuClick} />} />
           <Route path="*"                                element={<Navigate to="/" replace />} />
         </Routes>
       </div>
