@@ -51,7 +51,7 @@ export default function Profile({ onMenuClick, isPremium = false, onUpgrade = ()
 
   useEffect(() => {
     if (!user?.uid) return
-    getPersonalInfosFromFirestore(db,user.uid).then(data => {
+    getPersonalInfosFromFirestore(db, user.uid).then(data => {
       if (!data) return
       const merged = {
         fullName:   data.personalFullName   || personalInfo.fullName   || '',
@@ -110,11 +110,11 @@ export default function Profile({ onMenuClick, isPremium = false, onUpgrade = ()
     if (!returnTo) return
     navigate(`/customers/${returnTo.customerId}`, {
       state: {
-        reopenInvoiceId: returnTo.invoiceId ?? null,
-        reopenReceiptId: returnTo.receiptId ?? null,
-        reopenMissingFields: returnTo.reopenMissingFields ?? false,
-        completedModal: returnTo.completedModal ?? null,
-        completedFields: returnTo.completedFields ?? [],
+        reopenInvoiceId:      returnTo.invoiceId      ?? null,
+        reopenReceiptId:      returnTo.receiptId      ?? null,
+        reopenMissingFields:  returnTo.reopenMissingFields ?? false,
+        completedModal:       returnTo.completedModal  ?? null,
+        completedFields:      returnTo.completedFields ?? [],
       },
     })
     setReturnTo(null)
@@ -203,7 +203,7 @@ export default function Profile({ onMenuClick, isPremium = false, onUpgrade = ()
 
         <SectionHeader icon="person" label="Personal Info" />
 
-        <InfoRow icon="badge"  label="Full Name" value={personalInfo.fullName}            placeholder="Not set" />
+        <InfoRow icon="badge"  label="Full Name" value={personalInfo.fullName}             placeholder="Not set" />
         <InfoRow icon="mail"   label="Email"     value={personalInfo.email || user?.email} placeholder="Not set" />
         <InfoRow icon="call"   label="Phone"     value={personalInfo.phone}                placeholder="Not set" />
         <InfoRow
@@ -244,8 +244,21 @@ export default function Profile({ onMenuClick, isPremium = false, onUpgrade = ()
           </div>
         )}
 
-        <InfoRow icon="store"         label="Brand Name" value={profileSettings.brandName}    placeholder="Not set" />
-        <InfoRow icon="format_quote"  label="Tagline"    value={profileSettings.brandTagline} placeholder="Not set" />
+        <InfoRow icon="store"        label="Brand Name" value={profileSettings.brandName}    placeholder="Not set" />
+        <InfoRow icon="format_quote" label="Tagline"    value={profileSettings.brandTagline} placeholder="Not set" />
+
+        {profileSettings.brandSignature && (
+          <div className={styles.row}>
+            <div className={styles.rowIcon}>
+              <span className="mi" style={{ fontSize: '1.15rem' }}>draw</span>
+            </div>
+            <div className={styles.rowText}>
+              <div className={styles.rowLabel}>Signature</div>
+              <img src={profileSettings.brandSignature} alt="Signature" className={styles.sigPreview} />
+            </div>
+          </div>
+        )}
+
         <TappableRow
           icon="edit"
           label="Edit Brand Identity"
@@ -282,19 +295,6 @@ export default function Profile({ onMenuClick, isPremium = false, onUpgrade = ()
           onClick={() => setActiveModal('businessContact')}
           divider={false}
         />
-
-
-        {profileSettings.brandSignature && (
-          <div className={styles.row}>
-            <div className={styles.rowIcon}>
-              <span className="mi" style={{ fontSize: '1.15rem' }}>draw</span>
-            </div>
-            <div className={styles.rowText}>
-              <div className={styles.rowLabel}>Signature</div>
-              <img src={profileSettings.brandSignature} alt="Signature" className={styles.sigPreview} />
-            </div>
-          </div>
-        )}
 
         <SectionHeader icon="share" label="Social Media" />
 
@@ -430,7 +430,6 @@ export default function Profile({ onMenuClick, isPremium = false, onUpgrade = ()
           showToast={showToast}
         />
       )}
-
 
       {activeModal === 'socials' && (
         <SocialsModal onBack={() => setActiveModal(null)} showToast={showToast} />
