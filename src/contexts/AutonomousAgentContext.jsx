@@ -4,6 +4,7 @@ import {
   useState,
   useCallback,
   useEffect,
+  useRef,
   useMemo,
 } from 'react'
 import { useAuth }            from './AuthContext'
@@ -15,8 +16,11 @@ import { useReceipts }        from './ReceiptContext'
 import { useGeneralSettings } from './GeneralSettingsContext'
 import {
   loadAgentDrafts,
-  createAgentDraftIfMissing,
+  createAgentDraft,
   updateAgentDraftStatus,
+  loadScheduledItems,
+  upsertScheduledItem,
+  removeScheduledItem,
 } from '../services/agentService'
 
 const DAY_MS  = 86_400_000
@@ -38,20 +42,21 @@ function durationLabel(duration) {
   return `${amount} ${amount === 1 ? base : unit}`
 }
 
-function formatMoney(amount, currencySymbol = '₦') {
-  if (!amount) return `${currencySymbol}0`
-  return `${currencySymbol}${Number(amount).toLocaleString()}`
-}
-
 function timestampToMs(value) {
   if (!value) return 0
   if (typeof value === 'number') return value
   if (typeof value.toDate === 'function') return value.toDate().getTime()
+  if (value.seconds !== undefined) return value.seconds * 1000 + Math.floor((value.nanoseconds || 0) / 1_000_000)
   if (typeof value === 'string') {
     const parsed = new Date(value)
     return isNaN(parsed) ? 0 : parsed.getTime()
   }
   return 0
+}
+
+function formatMoney(amount, currencySymbol = '₦') {
+  if (!amount) return `${currencySymbol}0`
+  return `${currencySymbol}${Number(amount).toLocaleString()}`
 }
 
 function formatDateLabel(ms) {
@@ -83,200 +88,36 @@ function formatClockLabel(ms) {
   })
 }
 
+function whenLabel(remainingMs) {
+  if (remainingMs <= 0) return 'Soon'
+  const totalMins  = remainingMs / (1000 * 60)
+  const totalHours = remainingMs / HOUR_MS
+  const totalDays  = remainingMs / DAY_MS
+  const totalWeeks = remainingMs / WEEK_MS
+
+  if (totalMins  < 60)  return `In ${Math.round(totalMins)}m`
+  if (totalHours < 24)  return `In ${Math.floor(totalHours)}h ${Math.round(totalMins % 60)}m`
+  if (totalDays  < 7)   return `In ${Math.floor(totalDays)}d`
+  if (totalWeeks < 5)   return `In ${Math.floor(totalWeeks)}w ${Math.floor(totalDays % 7)}d`
+  return `In ${Math.floor(remainingMs / (DAY_MS * 30))}mo`
+}
+
 function getPendingReceiptItems(allPayments, allReceipts) {
   const items = []
-
   allPayments.forEach(payment => {
     if (!Array.isArray(payment.installments) || !payment.installments.length) return
-
     const receiptedIds = new Set(
       allReceipts
         .filter(r => String(r.paymentId) === String(payment.id))
         .flatMap(r => r.installmentIds || [])
         .map(String)
     )
-
     payment.installments.forEach(installment => {
       if (receiptedIds.has(String(installment.id))) return
       items.push({ payment, installment })
     })
   })
-
   return items
-}
-
-function buildCandidateItems({
-  generalSettings,
-  customers,
-  allOrders,
-  allInvoices,
-  allPayments,
-  allReceipts,
-}) {
-  const nowMs      = Date.now()
-  const candidates = []
-
-  if (generalSettings.agentAutoInvoice) {
-    const thresholdMs      = durationToMs(generalSettings.agentAutoInvoiceTimeframe)
-    const invoicedOrderIds = new Set(allInvoices.map(i => i.orderId))
-
-    allOrders
-      .filter(o => {
-        if (invoicedOrderIds.has(o.id)) return false
-        if (o.status === 'cancelled')   return false
-        const createdAtMs = timestampToMs(o.createdAt)
-        return createdAtMs > 0 && (nowMs - createdAtMs) > thresholdMs
-      })
-      .forEach(order => {
-        const orderName = order.desc || 'order'
-        const amount    = formatMoney(order.totalAmount || order.price, generalSettings.invoiceCurrency?.symbol)
-        const due       = order.due || null
-
-        candidates.push({
-          draftId: `invoice-${order.id}`,
-          type:    'invoice',
-          title:   'Invoice drafted',
-          preview: `Drafted invoice for ${orderName} — ${amount}${due ? `, due ${due}` : ''}`,
-          summary: { icon: 'shopping_cart', name: orderName, amount, due },
-          reason:  `This order had no invoice ${durationLabel(generalSettings.agentAutoInvoiceTimeframe)} after it was created. That matches your auto-invoice rule, so Pady drafted one for you to review.`,
-          tag:     'Invoice',
-        })
-      })
-  }
-
-  if (generalSettings.agentAutoReceipt) {
-    getPendingReceiptItems(allPayments, allReceipts).forEach(({ payment, installment }) => {
-      const customer = customers.find(c => c.id === payment.customerId)
-      candidates.push({
-        draftId: `receipt-${payment.id}::${installment.id}`,
-        type:    'receipt',
-        title:   'Receipt drafted',
-        preview: `Receipt for ${formatMoney(installment.amount, generalSettings.receiptCurrency?.symbol)} paid by ${customer?.name || payment.customerName || 'a customer'} via ${installment.method || 'cash'}.`,
-        reason:  `A payment was recorded for ${customer?.name || payment.customerName || 'this customer'} and no receipt had been generated for it yet.`,
-        tag:     'Receipt',
-      })
-    })
-  }
-
-  if (generalSettings.agentBirthdayMessages) {
-    const noticeDurationMs = durationToMs(generalSettings.agentBirthdayNotice)
-    const today            = new Date()
-
-    customers.forEach(customer => {
-      if (!customer.birthday) return
-      const bday     = new Date(customer.birthday)
-      const thisYear = new Date(today.getFullYear(), bday.getMonth(), bday.getDate())
-      const diffMs   = thisYear - today
-
-      if (diffMs >= 0 && diffMs <= noticeDurationMs) {
-        const diffDays = Math.round(diffMs / DAY_MS)
-        candidates.push({
-          draftId: `birthday-${customer.id}-${today.getFullYear()}`,
-          type:    'birthday',
-          title:   'Birthday message drafted',
-          preview: `Hi ${customer.name.split(' ')[0]}! Wishing you a wonderful birthday. It's always a pleasure working with you. Hope to see you soon!`,
-          reason:  diffDays === 0
-            ? `Today is ${customer.name}'s birthday.`
-            : `${customer.name}'s birthday is in ${diffDays} day${diffDays !== 1 ? 's' : ''}, within your ${durationLabel(generalSettings.agentBirthdayNotice)} notice window.`,
-          tag: 'Birthday',
-        })
-      }
-    })
-  }
-
-  if (generalSettings.agentPaymentReminder) {
-    const reminderMs = durationToMs(generalSettings.agentPaymentReminderBefore)
-
-    allInvoices
-      .filter(i => {
-        if (i.status === 'paid' || !i.due) return false
-        const dueTime      = new Date(i.due + 'T23:59:59').getTime()
-        const timeUntilDue = dueTime - nowMs
-        return timeUntilDue > 0 && timeUntilDue <= reminderMs
-      })
-      .forEach(invoice => {
-        candidates.push({
-          draftId: `reminder-${invoice.id}`,
-          type:    'reminder',
-          title:   `Payment reminder drafted — ${invoice.customerName || 'Customer'}`,
-          preview: `Hi ${invoice.customerName || 'there'}, just a reminder that your balance of ${formatMoney(invoice.totalAmount || invoice.price, generalSettings.invoiceCurrency?.symbol)} is due on ${invoice.due}. Kindly make payment at your earliest convenience. Thank you!`,
-          reason:  `The invoice due date is within ${durationLabel(generalSettings.agentPaymentReminderBefore)}, your reminder window.`,
-          tag:     'Reminder',
-        })
-      })
-  }
-
-  if (generalSettings.agentOverdueAlert) {
-    const gracePeriodMs = durationToMs(generalSettings.agentOverdueGracePeriod)
-
-    allInvoices
-      .filter(i => {
-        if (i.status === 'paid' || !i.due) return false
-        const dueTime    = new Date(i.due + 'T23:59:59').getTime()
-        const overdueBy  = nowMs - dueTime
-        return overdueBy >= gracePeriodMs
-      })
-      .forEach(invoice => {
-        candidates.push({
-          draftId: `overdue-${invoice.id}`,
-          type:    'overdue',
-          title:   `Overdue invoice — ${invoice.customerName || 'Customer'}`,
-          preview: `Invoice for ${formatMoney(invoice.totalAmount || invoice.price, generalSettings.invoiceCurrency?.symbol)} from ${invoice.customerName || 'a customer'} is overdue by more than ${durationLabel(generalSettings.agentOverdueGracePeriod)}.`,
-          reason:  `This invoice passed its due date of ${invoice.due} and has been unpaid for longer than your overdue grace period of ${durationLabel(generalSettings.agentOverdueGracePeriod)}.`,
-          tag:     'Overdue',
-        })
-      })
-  }
-
-  if (generalSettings.agentOrderReadyReminder) {
-    const windowMs = durationToMs(generalSettings.agentOrderReadyWindow)
-
-    allOrders
-      .filter(o => {
-        if (o.status !== 'completed') return false
-        const completedAtMs = timestampToMs(o.completedAt || o.updatedAt)
-        return completedAtMs > 0 && (nowMs - completedAtMs) >= windowMs
-      })
-      .forEach(order => {
-        candidates.push({
-          draftId: `orderready-${order.id}`,
-          type:    'orderready',
-          title:   `Ready order not picked up — ${order.customerName || 'Customer'}`,
-          preview: `${order.customerName || 'A customer'}'s order (${order.desc || 'item'}) has been ready for over ${durationLabel(generalSettings.agentOrderReadyWindow)} and hasn't been picked up.`,
-          summary: { icon: 'inventory_2', name: order.desc || 'order', amount: formatMoney(order.totalAmount || order.price, generalSettings.invoiceCurrency?.symbol), due: null },
-          reason:  `The order was marked complete more than ${durationLabel(generalSettings.agentOrderReadyWindow)} ago. Consider reaching out to the customer.`,
-          tag:     'Ready',
-        })
-      })
-  }
-
-  if (generalSettings.agentFollowUp) {
-    const inactivityMs = durationToMs(generalSettings.agentFollowUpInactivity)
-
-    customers.forEach(customer => {
-      const customerOrders = allOrders.filter(o => o.customerId === customer.id)
-      if (!customerOrders.length) return
-
-      const lastOrder = customerOrders.reduce((latest, o) => {
-        const ms = timestampToMs(o.createdAt)
-        return ms > timestampToMs(latest?.createdAt) ? o : latest
-      }, customerOrders[0])
-
-      const lastActivityMs = timestampToMs(lastOrder.createdAt)
-      if (lastActivityMs > 0 && (nowMs - lastActivityMs) >= inactivityMs) {
-        candidates.push({
-          draftId: `followup-${customer.id}`,
-          type:    'followup',
-          title:   'Win-back message drafted',
-          preview: `Hi ${customer.name.split(' ')[0]}! It's been a while since your last visit. We'd love to create something special for you again. Feel free to reach out anytime!`,
-          reason:  `${customer.name} hasn't placed an order in over ${durationLabel(generalSettings.agentFollowUpInactivity)}, your follow-up window.`,
-          tag:     'Follow-up',
-        })
-      }
-    })
-  }
-
-  return candidates
 }
 
 function buildDailyBrief({
@@ -286,8 +127,8 @@ function buildDailyBrief({
   allInvoices,
   allPayments,
   allReceipts,
-  pendingDrafts,
-  upcomingCount,
+  pendingDraftsCount,
+  scheduledCount,
 }) {
   const nowMs   = Date.now()
   const todayMs = new Date().setHours(0, 0, 0, 0)
@@ -299,8 +140,7 @@ function buildDailyBrief({
   const ordersDueToday = activeOrders.filter(o => {
     const due = o.dueDate || o.dueRaw
     if (!due) return false
-    const dueMs = new Date(due + 'T00:00:00').getTime()
-    return dueMs === todayMs
+    return new Date(due + 'T00:00:00').getTime() === todayMs
   })
 
   const overdueInvoices = allInvoices.filter(i => {
@@ -326,30 +166,12 @@ function buildDailyBrief({
   })()
 
   const lines = []
-
-  if (pendingDrafts > 0) {
-    lines.push(`${pendingDrafts} draft${pendingDrafts !== 1 ? 's' : ''} waiting for your review`)
-  }
-
-  if (ordersDueToday.length > 0) {
-    lines.push(`${ordersDueToday.length} order${ordersDueToday.length !== 1 ? 's' : ''} due today`)
-  }
-
-  if (overdueInvoices.length > 0) {
-    lines.push(`${overdueInvoices.length} overdue invoice${overdueInvoices.length !== 1 ? 's' : ''}`)
-  }
-
-  if (pendingReceiptItems.length > 0) {
-    lines.push(`${pendingReceiptItems.length} payment${pendingReceiptItems.length !== 1 ? 's' : ''} without a receipt`)
-  }
-
-  if (upcomingBirthdays.length > 0) {
-    lines.push(`${upcomingBirthdays.length} birthday${upcomingBirthdays.length !== 1 ? 's' : ''} coming up this week`)
-  }
-
-  if (upcomingCount > 0) {
-    lines.push(`${upcomingCount} action${upcomingCount !== 1 ? 's' : ''} scheduled`)
-  }
+  if (pendingDraftsCount > 0)         lines.push(`${pendingDraftsCount} draft${pendingDraftsCount !== 1 ? 's' : ''} waiting for your review`)
+  if (ordersDueToday.length > 0)      lines.push(`${ordersDueToday.length} order${ordersDueToday.length !== 1 ? 's' : ''} due today`)
+  if (overdueInvoices.length > 0)     lines.push(`${overdueInvoices.length} overdue invoice${overdueInvoices.length !== 1 ? 's' : ''}`)
+  if (pendingReceiptItems.length > 0) lines.push(`${pendingReceiptItems.length} payment${pendingReceiptItems.length !== 1 ? 's' : ''} without a receipt`)
+  if (upcomingBirthdays.length > 0)   lines.push(`${upcomingBirthdays.length} birthday${upcomingBirthdays.length !== 1 ? 's' : ''} coming up this week`)
+  if (scheduledCount > 0)             lines.push(`${scheduledCount} action${scheduledCount !== 1 ? 's' : ''} scheduled`)
 
   return {
     lines,
@@ -359,9 +181,269 @@ function buildDailyBrief({
     overdueInvoices:   overdueInvoices.length,
     pendingReceipts:   pendingReceiptItems.length,
     upcomingBirthdays: upcomingBirthdays.map(c => c.name),
-    pendingDrafts,
-    upcomingCount,
+    pendingDrafts:     pendingDraftsCount,
+    upcomingCount:     scheduledCount,
   }
+}
+
+function detectCandidates({
+  generalSettings,
+  customers,
+  allOrders,
+  allInvoices,
+  allPayments,
+  allReceipts,
+}) {
+  const nowMs      = Date.now()
+  const candidates = []
+
+  if (generalSettings.agentAutoInvoice) {
+    const thresholdMs      = durationToMs(generalSettings.agentAutoInvoiceTimeframe)
+    const invoicedOrderIds = new Set(allInvoices.map(i => i.orderId))
+
+    allOrders
+      .filter(o => {
+        if (invoicedOrderIds.has(o.id)) return false
+        if (o.status === 'cancelled')   return false
+        return timestampToMs(o.createdAt) > 0
+      })
+      .forEach(order => {
+        const detectedAt = timestampToMs(order.createdAt)
+        const fireAt     = detectedAt + thresholdMs
+        const visibleAt  = detectedAt
+        const orderName  = order.desc || 'order'
+        const amount     = formatMoney(order.totalAmount || order.price, generalSettings.invoiceCurrency?.symbol)
+
+        candidates.push({
+          id:        `invoice-${order.id}`,
+          type:      'invoice',
+          tag:       'Invoice',
+          title:     'Generate invoice',
+          desc:      `${order.customerName || 'Customer'} — ${orderName}, ${amount}`,
+          detectedAt,
+          fireAt,
+          visibleAt,
+          draftData: {
+            type:    'invoice',
+            title:   'Invoice drafted',
+            preview: `Drafted invoice for ${orderName} — ${amount}${order.due ? `, due ${order.due}` : ''}`,
+            summary: { icon: 'shopping_cart', name: orderName, amount, due: order.due || null },
+            reason:  `This order had no invoice ${durationLabel(generalSettings.agentAutoInvoiceTimeframe)} after it was created.`,
+            tag:     'Invoice',
+            status:  'pending',
+          },
+        })
+      })
+  }
+
+  if (generalSettings.agentAutoReceipt) {
+    const thresholdMs = durationToMs(generalSettings.agentAutoReceiptTimeframe)
+
+    getPendingReceiptItems(allPayments, allReceipts).forEach(({ payment, installment }) => {
+      const customer   = customers.find(c => c.id === payment.customerId)
+      const detectedAt = installment.createdAtMs || timestampToMs(payment.createdAt) || nowMs
+      const fireAt     = detectedAt + thresholdMs
+      const visibleAt  = detectedAt
+
+      candidates.push({
+        id:        `receipt-${payment.id}::${installment.id}`,
+        type:      'receipt',
+        tag:       'Receipt',
+        title:     'Generate receipt',
+        desc:      `${customer?.name || payment.customerName || 'Customer'} — ${formatMoney(installment.amount, generalSettings.receiptCurrency?.symbol)} via ${installment.method || 'cash'}`,
+        detectedAt,
+        fireAt,
+        visibleAt,
+        draftData: {
+          type:    'receipt',
+          title:   'Receipt drafted',
+          preview: `Receipt for ${formatMoney(installment.amount, generalSettings.receiptCurrency?.symbol)} paid by ${customer?.name || payment.customerName || 'a customer'} via ${installment.method || 'cash'}.`,
+          reason:  `A payment was recorded and no receipt had been generated for it yet. Draft created after ${durationLabel(generalSettings.agentAutoReceiptTimeframe)}.`,
+          tag:     'Receipt',
+          status:  'pending',
+        },
+      })
+    })
+  }
+
+  if (generalSettings.agentPaymentReminder) {
+    const reminderMs = durationToMs(generalSettings.agentPaymentReminderBefore)
+
+    allInvoices
+      .filter(i => i.status !== 'paid' && i.due)
+      .forEach(invoice => {
+        const dueMs     = new Date(invoice.due + 'T23:59:59').getTime()
+        const fireAt    = dueMs - reminderMs
+        const visibleAt = fireAt
+
+        if (fireAt < nowMs - DAY_MS) return
+
+        candidates.push({
+          id:        `reminder-${invoice.id}`,
+          type:      'reminder',
+          tag:       'Reminder',
+          title:     'Payment reminder',
+          desc:      `${invoice.customerName || 'Customer'} — due ${invoice.due}`,
+          detectedAt: nowMs,
+          fireAt,
+          visibleAt,
+          draftData: {
+            type:    'reminder',
+            title:   `Payment reminder drafted — ${invoice.customerName || 'Customer'}`,
+            preview: `Hi ${invoice.customerName || 'there'}, just a reminder that your balance of ${formatMoney(invoice.totalAmount || invoice.price, generalSettings.invoiceCurrency?.symbol)} is due on ${invoice.due}. Kindly make payment at your earliest convenience. Thank you!`,
+            reason:  `The invoice due date is within ${durationLabel(generalSettings.agentPaymentReminderBefore)}, your reminder window.`,
+            tag:     'Reminder',
+            status:  'pending',
+          },
+        })
+      })
+  }
+
+  if (generalSettings.agentOverdueAlert) {
+    const gracePeriodMs = durationToMs(generalSettings.agentOverdueGracePeriod)
+
+    allInvoices
+      .filter(i => i.status !== 'paid' && i.due)
+      .forEach(invoice => {
+        const dueMs     = new Date(invoice.due + 'T23:59:59').getTime()
+        const fireAt    = dueMs + gracePeriodMs
+        const visibleAt = dueMs
+
+        candidates.push({
+          id:        `overdue-${invoice.id}`,
+          type:      'overdue',
+          tag:       'Overdue',
+          title:     'Overdue alert',
+          desc:      `${invoice.customerName || 'Customer'} — due ${invoice.due}`,
+          detectedAt: dueMs,
+          fireAt,
+          visibleAt,
+          draftData: {
+            type:    'overdue',
+            title:   `Overdue invoice — ${invoice.customerName || 'Customer'}`,
+            preview: `Invoice for ${formatMoney(invoice.totalAmount || invoice.price, generalSettings.invoiceCurrency?.symbol)} from ${invoice.customerName || 'a customer'} is overdue by more than ${durationLabel(generalSettings.agentOverdueGracePeriod)}.`,
+            reason:  `This invoice passed its due date of ${invoice.due} and has been unpaid for longer than your grace period of ${durationLabel(generalSettings.agentOverdueGracePeriod)}.`,
+            tag:     'Overdue',
+            status:  'pending',
+          },
+        })
+      })
+  }
+
+  if (generalSettings.agentOrderReadyReminder) {
+    const windowMs = durationToMs(generalSettings.agentOrderReadyWindow)
+
+    allOrders
+      .filter(o => o.status === 'completed')
+      .forEach(order => {
+        const completedAtMs = timestampToMs(order.completedAt || order.updatedAt)
+        if (!completedAtMs) return
+        const fireAt    = completedAtMs + windowMs
+        const visibleAt = completedAtMs
+
+        candidates.push({
+          id:        `orderready-${order.id}`,
+          type:      'orderready',
+          tag:       'Ready',
+          title:     'Ready order not picked up',
+          desc:      `${order.customerName || 'Customer'} — ${order.desc || 'item'}`,
+          detectedAt: completedAtMs,
+          fireAt,
+          visibleAt,
+          draftData: {
+            type:    'orderready',
+            title:   `Ready order not picked up — ${order.customerName || 'Customer'}`,
+            preview: `${order.customerName || 'A customer'}'s order (${order.desc || 'item'}) has been ready for over ${durationLabel(generalSettings.agentOrderReadyWindow)} and hasn't been picked up.`,
+            summary: { icon: 'inventory_2', name: order.desc || 'order', amount: formatMoney(order.totalAmount || order.price, generalSettings.invoiceCurrency?.symbol), due: null },
+            reason:  `The order was marked complete more than ${durationLabel(generalSettings.agentOrderReadyWindow)} ago.`,
+            tag:     'Ready',
+            status:  'pending',
+          },
+        })
+      })
+  }
+
+  if (generalSettings.agentBirthdayMessages) {
+    const noticeDurationMs = durationToMs(generalSettings.agentBirthdayNotice)
+    const today            = new Date()
+
+    customers.forEach(customer => {
+      if (!customer.birthday) return
+      const bday     = new Date(customer.birthday)
+      const thisYear = new Date(today.getFullYear(), bday.getMonth(), bday.getDate())
+      const bdayMs   = new Date(today.getFullYear(), bday.getMonth(), bday.getDate(), 23, 59, 59).getTime()
+      const diffDays = Math.round((bdayMs - nowMs) / DAY_MS)
+
+      if (diffDays < -1) return
+
+      const fireAt    = bdayMs
+      const visibleAt = bdayMs - noticeDurationMs
+
+      candidates.push({
+        id:        `birthday-${customer.id}-${today.getFullYear()}`,
+        type:      'birthday',
+        tag:       'Birthday',
+        title:     `Birthday — ${customer.name}`,
+        desc:      diffDays <= 0
+          ? `Today is ${customer.name}'s birthday`
+          : `${customer.name}'s birthday in ${diffDays} day${diffDays !== 1 ? 's' : ''}`,
+        detectedAt: nowMs,
+        fireAt,
+        visibleAt,
+        draftData: {
+          type:    'birthday',
+          title:   'Birthday message drafted',
+          preview: `Hi ${customer.name.split(' ')[0]}! Wishing you a wonderful birthday. It's always a pleasure working with you. Hope to see you soon!`,
+          reason:  diffDays <= 0
+            ? `Today is ${customer.name}'s birthday.`
+            : `${customer.name}'s birthday is in ${diffDays} day${diffDays !== 1 ? 's' : ''}. Draft prepared ${durationLabel(generalSettings.agentBirthdayNotice)} in advance.`,
+          tag:    'Birthday',
+          status: 'pending',
+        },
+      })
+    })
+  }
+
+  if (generalSettings.agentFollowUp) {
+    const inactivityMs = durationToMs(generalSettings.agentFollowUpInactivity)
+
+    customers.forEach(customer => {
+      const customerOrders = allOrders.filter(o => o.customerId === customer.id)
+      if (!customerOrders.length) return
+
+      const lastOrder = customerOrders.reduce((latest, o) =>
+        timestampToMs(o.createdAt) > timestampToMs(latest.createdAt) ? o : latest
+      , customerOrders[0])
+
+      const lastActivityMs = timestampToMs(lastOrder.createdAt)
+      if (!lastActivityMs) return
+
+      const fireAt      = lastActivityMs + inactivityMs
+      const visibleAt   = lastActivityMs + (inactivityMs * 0.75)
+      const inactiveDays = Math.floor((nowMs - lastActivityMs) / DAY_MS)
+
+      candidates.push({
+        id:        `followup-${customer.id}`,
+        type:      'followup',
+        tag:       'Follow-up',
+        title:     `Win-back — ${customer.name}`,
+        desc:      `Last order ${inactiveDays}d ago`,
+        detectedAt: lastActivityMs,
+        fireAt,
+        visibleAt,
+        draftData: {
+          type:    'followup',
+          title:   'Win-back message drafted',
+          preview: `Hi ${customer.name.split(' ')[0]}! It's been a while since your last visit. We'd love to create something special for you again. Feel free to reach out anytime!`,
+          reason:  `${customer.name} hasn't placed an order in over ${durationLabel(generalSettings.agentFollowUpInactivity)}, your follow-up window.`,
+          tag:     'Follow-up',
+          status:  'pending',
+        },
+      })
+    })
+  }
+
+  return candidates
 }
 
 const AutonomousAgentContext = createContext(null)
@@ -377,25 +459,35 @@ export function AutonomousAgentProvider({ children }) {
 
   const enabled = generalSettings.agentEnabled
 
-  const [persistedDrafts,      setPersistedDrafts]      = useState([])
-  const [knownDraftIds,        setKnownDraftIds]        = useState(new Set())
-  const [cancelledUpcomingIds, setCancelledUpcomingIds] = useState([])
+  const [persistedDrafts,   setPersistedDrafts]  = useState([])
+  const [scheduledItems,    setScheduledItems]    = useState([])
+  const [knownDraftIds,     setKnownDraftIds]     = useState(new Set())
+  const [knownScheduledIds, setKnownScheduledIds] = useState(new Set())
+  const processingRef = useRef(new Set())
 
   useEffect(() => {
     if (!user || !enabled) {
       setPersistedDrafts([])
+      setScheduledItems([])
       setKnownDraftIds(new Set())
+      setKnownScheduledIds(new Set())
       return
     }
-    loadAgentDrafts(user.uid).then(loaded => {
-      setPersistedDrafts(loaded)
-      setKnownDraftIds(new Set(loaded.map(d => d.id)))
+    Promise.all([
+      loadAgentDrafts(user.uid),
+      loadScheduledItems(user.uid),
+    ]).then(([drafts, scheduled]) => {
+      setPersistedDrafts(drafts)
+      setScheduledItems(scheduled)
+      setKnownDraftIds(new Set(drafts.map(d => d.id)))
+      setKnownScheduledIds(new Set(scheduled.map(s => s.id)))
     })
   }, [user, enabled])
 
-  const candidates = useMemo(() => {
-    if (!enabled) return []
-    return buildCandidateItems({
+  useEffect(() => {
+    if (!user || !enabled) return
+
+    const candidates = detectCandidates({
       generalSettings,
       customers,
       allOrders,
@@ -403,43 +495,107 @@ export function AutonomousAgentProvider({ children }) {
       allPayments,
       allReceipts,
     })
-  }, [enabled, generalSettings, customers, allOrders, allInvoices, allPayments, allReceipts])
 
-  useEffect(() => {
-    if (!user || !enabled || !candidates.length) return
+    const nowMs = Date.now()
 
     candidates.forEach(candidate => {
-      if (knownDraftIds.has(candidate.draftId)) return
+      if (processingRef.current.has(candidate.id)) return
 
-      setKnownDraftIds(prev => new Set(prev).add(candidate.draftId))
+      const alreadyDraft     = knownDraftIds.has(candidate.id)
+      const alreadyScheduled = knownScheduledIds.has(candidate.id)
 
-      createAgentDraftIfMissing(user.uid, candidate.draftId, {
-        type:    candidate.type,
-        title:   candidate.title,
-        preview: candidate.preview,
-        summary: candidate.summary || null,
-        reason:  candidate.reason,
-        tag:     candidate.tag,
-        status:  'pending',
-      }).then(created => {
-        if (!created) return
-        setPersistedDrafts(prev => [
-          {
-            id:        candidate.draftId,
-            type:      candidate.type,
-            title:     candidate.title,
-            preview:   candidate.preview,
-            summary:   candidate.summary || null,
-            reason:    candidate.reason,
-            tag:       candidate.tag,
-            status:    'pending',
+      if (alreadyDraft) return
+
+      if (candidate.fireAt <= nowMs) {
+        processingRef.current.add(candidate.id)
+        setKnownDraftIds(prev => new Set(prev).add(candidate.id))
+
+        createAgentDraft(user.uid, candidate.id, candidate.draftData).then(created => {
+          processingRef.current.delete(candidate.id)
+          if (!created) return
+          setPersistedDrafts(prev => [{
+            id:        candidate.id,
+            ...candidate.draftData,
             createdAt: Date.now(),
-          },
-          ...prev,
-        ])
-      })
+          }, ...prev])
+
+          if (alreadyScheduled) {
+            removeScheduledItem(user.uid, candidate.id)
+            setScheduledItems(prev => prev.filter(s => s.id !== candidate.id))
+            setKnownScheduledIds(prev => {
+              const next = new Set(prev)
+              next.delete(candidate.id)
+              return next
+            })
+          }
+        })
+        return
+      }
+
+      if (candidate.visibleAt > nowMs) return
+
+      if (!alreadyScheduled) {
+        processingRef.current.add(candidate.id)
+        setKnownScheduledIds(prev => new Set(prev).add(candidate.id))
+
+        const scheduledData = {
+          id:         candidate.id,
+          type:       candidate.type,
+          tag:        candidate.tag,
+          title:      candidate.title,
+          desc:       candidate.desc,
+          detectedAt: candidate.detectedAt,
+          fireAt:     candidate.fireAt,
+          visibleAt:  candidate.visibleAt,
+        }
+
+        upsertScheduledItem(user.uid, candidate.id, scheduledData).then(() => {
+          processingRef.current.delete(candidate.id)
+          setScheduledItems(prev => {
+            if (prev.find(s => s.id === candidate.id)) return prev
+            return [...prev, scheduledData].sort((a, b) => a.fireAt - b.fireAt)
+          })
+        })
+        return
+      }
+
+      const existing = scheduledItems.find(s => s.id === candidate.id)
+      if (existing && existing.fireAt !== candidate.fireAt) {
+        upsertScheduledItem(user.uid, candidate.id, { fireAt: candidate.fireAt })
+        setScheduledItems(prev =>
+          prev
+            .map(s => s.id === candidate.id
+              ? { ...s, fireAt: candidate.fireAt, desc: candidate.desc }
+              : s
+            )
+            .sort((a, b) => a.fireAt - b.fireAt)
+        )
+      }
     })
-  }, [user, enabled, candidates, knownDraftIds])
+
+    const candidateIds = new Set(candidates.map(c => c.id))
+    scheduledItems.forEach(item => {
+      if (!candidateIds.has(item.id) && !knownDraftIds.has(item.id)) {
+        removeScheduledItem(user.uid, item.id)
+        setScheduledItems(prev => prev.filter(s => s.id !== item.id))
+        setKnownScheduledIds(prev => {
+          const next = new Set(prev)
+          next.delete(item.id)
+          return next
+        })
+      }
+    })
+
+  }, [user, enabled, generalSettings, customers, allOrders, allInvoices, allPayments, allReceipts, knownDraftIds, knownScheduledIds, scheduledItems])
+
+  useEffect(() => {
+    if (!scheduledItems.length) return
+    const next  = scheduledItems.find(s => s.fireAt > Date.now())
+    if (!next)  return
+    const delay = Math.min(next.fireAt - Date.now(), 60_000)
+    const tid   = setTimeout(() => setScheduledItems(prev => [...prev]), delay)
+    return () => clearTimeout(tid)
+  }, [scheduledItems])
 
   const activeDrafts = useMemo(
     () => persistedDrafts.filter(d => d.status !== 'discarded'),
@@ -468,176 +624,20 @@ export function AutonomousAgentProvider({ children }) {
   const approvedDrafts = useMemo(() => drafts.filter(d => d.status === 'approved'), [drafts])
 
   const upcomingTasks = useMemo(() => {
-    if (!enabled) return []
     const nowMs = Date.now()
-    const items = []
-
-    if (generalSettings.agentAutoInvoice) {
-      const thresholdMs      = durationToMs(generalSettings.agentAutoInvoiceTimeframe)
-      const invoicedOrderIds = new Set(allInvoices.map(i => i.orderId))
-
-      allOrders
-        .filter(o => {
-          if (invoicedOrderIds.has(o.id)) return false
-          if (o.status === 'cancelled')   return false
-          const createdAtMs = timestampToMs(o.createdAt)
-          const age         = nowMs - createdAtMs
-          return createdAtMs > 0 && age > 0 && age <= thresholdMs
-        })
-        .forEach(order => {
-          const createdAtMs = timestampToMs(order.createdAt)
-          const remaining   = thresholdMs - (nowMs - createdAtMs)
-          const hours       = Math.ceil(remaining / HOUR_MS)
-          const whenLabel   = hours < 1 ? 'Soon' : hours < 24 ? `In ${hours}h` : `In ${Math.ceil(hours / 24)}d`
-
-          items.push({
-            id:    `upcoming-invoice-${order.id}`,
-            type:  'invoice',
-            title: 'Will auto-generate invoice',
-            desc:  `Order for ${order.customerName || 'unknown'} — ${order.desc || ''}.`,
-            when:  whenLabel,
-            tag:   'Invoice',
-          })
-        })
-    }
-
-    if (generalSettings.agentPaymentReminder) {
-      const reminderMs = durationToMs(generalSettings.agentPaymentReminderBefore)
-
-      allInvoices
-        .filter(i => {
-          if (i.status === 'paid' || !i.due) return false
-          const dueTime      = new Date(i.due + 'T23:59:59').getTime()
-          const timeUntilDue = dueTime - nowMs
-          return timeUntilDue > reminderMs && timeUntilDue <= reminderMs * 3
-        })
-        .forEach(invoice => {
-          items.push({
-            id:    `upcoming-reminder-${invoice.id}`,
-            type:  'reminder',
-            title: 'Will draft payment reminder',
-            desc:  `Invoice for ${invoice.customerName || 'a customer'} is due ${invoice.due}.`,
-            when:  `Before ${invoice.due}`,
-            tag:   'Reminder',
-          })
-        })
-    }
-
-    if (generalSettings.agentOverdueAlert) {
-      const gracePeriodMs = durationToMs(generalSettings.agentOverdueGracePeriod)
-
-      allInvoices
-        .filter(i => {
-          if (i.status === 'paid' || !i.due) return false
-          const dueTime   = new Date(i.due + 'T23:59:59').getTime()
-          const overdueBy = nowMs - dueTime
-          return overdueBy > 0 && overdueBy < gracePeriodMs
-        })
-        .forEach(invoice => {
-          const dueTime   = new Date(invoice.due + 'T23:59:59').getTime()
-          const overdueBy = nowMs - dueTime
-          const remaining = gracePeriodMs - overdueBy
-          const hours     = Math.ceil(remaining / HOUR_MS)
-          const whenLabel = hours < 24 ? `In ${hours}h` : `In ${Math.ceil(hours / 24)}d`
-          items.push({
-            id:    `upcoming-overdue-${invoice.id}`,
-            type:  'overdue',
-            title: 'Will flag overdue invoice',
-            desc:  `Invoice for ${invoice.customerName || 'a customer'} due ${invoice.due}.`,
-            when:  whenLabel,
-            tag:   'Overdue',
-          })
-        })
-    }
-
-    if (generalSettings.agentOrderReadyReminder) {
-      const windowMs = durationToMs(generalSettings.agentOrderReadyWindow)
-
-      allOrders
-        .filter(o => {
-          if (o.status !== 'completed') return false
-          const completedAtMs = timestampToMs(o.completedAt || o.updatedAt)
-          const readyFor      = nowMs - completedAtMs
-          return completedAtMs > 0 && readyFor > 0 && readyFor < windowMs
-        })
-        .forEach(order => {
-          const completedAtMs = timestampToMs(order.completedAt || order.updatedAt)
-          const remaining     = windowMs - (nowMs - completedAtMs)
-          const hours         = Math.ceil(remaining / HOUR_MS)
-          const whenLabel     = hours < 24 ? `In ${hours}h` : `In ${Math.ceil(hours / 24)}d`
-          items.push({
-            id:    `upcoming-orderready-${order.id}`,
-            type:  'orderready',
-            title: 'Will nudge about unpicked order',
-            desc:  `${order.customerName || 'A customer'}'s order (${order.desc || 'item'}) is ready.`,
-            when:  whenLabel,
-            tag:   'Ready',
-          })
-        })
-    }
-
-    if (generalSettings.agentBirthdayMessages) {
-      const noticeDurationMs = durationToMs(generalSettings.agentBirthdayNotice)
-      const today            = new Date()
-
-      customers
-        .filter(c => {
-          if (!c.birthday) return false
-          const bday     = new Date(c.birthday)
-          const thisYear = new Date(today.getFullYear(), bday.getMonth(), bday.getDate())
-          const diffMs   = thisYear - today
-          return diffMs > noticeDurationMs && diffMs <= noticeDurationMs + DAY_MS * 7
-        })
-        .forEach(customer => {
-          const bday     = new Date(customer.birthday)
-          const thisYear = new Date(today.getFullYear(), bday.getMonth(), bday.getDate())
-          const diffDays = Math.round((thisYear - today) / DAY_MS)
-          items.push({
-            id:    `upcoming-birthday-${customer.id}`,
-            type:  'birthday',
-            title: 'Will draft birthday message',
-            desc:  `${customer.name}'s birthday is in ${diffDays} day${diffDays !== 1 ? 's' : ''}.`,
-            when:  `In ${diffDays} days`,
-            tag:   'Birthday',
-          })
-        })
-    }
-
-    if (generalSettings.agentFollowUp) {
-      const inactivityMs = durationToMs(generalSettings.agentFollowUpInactivity)
-
-      customers.forEach(customer => {
-        const customerOrders = allOrders.filter(o => o.customerId === customer.id)
-        if (!customerOrders.length) return
-
-        const lastOrder = customerOrders.reduce((latest, o) => {
-          const ms = timestampToMs(o.createdAt)
-          return ms > timestampToMs(latest?.createdAt) ? o : latest
-        }, customerOrders[0])
-
-        const lastActivityMs = timestampToMs(lastOrder.createdAt)
-        if (!lastActivityMs) return
-
-        const inactiveFor = nowMs - lastActivityMs
-        const remaining   = inactivityMs - inactiveFor
-
-        if (inactiveFor > 0 && remaining > 0 && remaining <= inactivityMs * 0.25) {
-          const days      = Math.ceil(remaining / DAY_MS)
-          const whenLabel = days < 1 ? 'Soon' : `In ${days}d`
-          items.push({
-            id:    `upcoming-followup-${customer.id}`,
-            type:  'followup',
-            title: 'Will draft win-back message',
-            desc:  `${customer.name} is approaching your inactivity window.`,
-            when:  whenLabel,
-            tag:   'Follow-up',
-          })
-        }
-      })
-    }
-
-    return items.filter(item => !cancelledUpcomingIds.includes(item.id))
-  }, [enabled, generalSettings, allOrders, allInvoices, customers, cancelledUpcomingIds])
+    return scheduledItems
+      .filter(s => !knownDraftIds.has(s.id))
+      .map(s => ({
+        id:     s.id,
+        type:   s.type,
+        tag:    s.tag,
+        title:  s.title,
+        desc:   s.desc,
+        when:   whenLabel(s.fireAt - nowMs),
+        fireAt: s.fireAt,
+      }))
+      .sort((a, b) => a.fireAt - b.fireAt)
+  }, [scheduledItems, knownDraftIds])
 
   const dailyBrief = useMemo(() => {
     if (!enabled || !generalSettings.agentDailyBrief) return null
@@ -648,17 +648,18 @@ export function AutonomousAgentProvider({ children }) {
       allInvoices,
       allPayments,
       allReceipts,
-      pendingDrafts:  pendingDrafts.length,
-      upcomingCount:  upcomingTasks.length,
+      pendingDraftsCount: pendingDrafts.length,
+      scheduledCount:     upcomingTasks.length,
     })
-  }, [enabled, generalSettings, customers, allOrders, allInvoices, allPayments, allReceipts, pendingDrafts, upcomingTasks])
-
-  const pendingCount  = pendingDrafts.length
-  const approvedCount = approvedDrafts.length
+  }, [enabled, generalSettings, customers, allOrders, allInvoices, allPayments, allReceipts, pendingDrafts.length, upcomingTasks.length])
 
   const cancelUpcoming = useCallback((id) => {
-    setCancelledUpcomingIds(prev => [...prev, id])
-  }, [])
+    if (!user) return
+    removeScheduledItem(user.uid, id)
+    setScheduledItems(prev => prev.filter(s => s.id !== id))
+    setKnownScheduledIds(prev => { const n = new Set(prev); n.delete(id); return n })
+    setKnownDraftIds(prev => new Set(prev).add(id))
+  }, [user])
 
   const approveDraft = useCallback((id) => {
     if (!user) return
@@ -678,8 +679,8 @@ export function AutonomousAgentProvider({ children }) {
       drafts,
       pendingDrafts,
       approvedDrafts,
-      pendingCount,
-      approvedCount,
+      pendingCount:  pendingDrafts.length,
+      approvedCount: approvedDrafts.length,
       upcomingTasks,
       dailyBrief,
       cancelUpcoming,

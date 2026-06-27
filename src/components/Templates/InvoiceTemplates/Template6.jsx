@@ -86,10 +86,7 @@ export function InvoiceTemplate6({ invoice, customer, invoiceBrandSettings }) {
           <div className={styles.clientColLeft}>
             <div className={styles.clientLabel}>Bill to</div>
             <div className={styles.clientName}>{customer.name}</div>
-          </div>
-
-          <div className={styles.clientColRight}>
-            {customer.phone && (
+                        {customer.phone && (
               <div className={styles.iconRow}>
                 <span className={styles.icon}><PhoneIcon /></span>
                 <span>{customer.phone}</span>
@@ -108,6 +105,8 @@ export function InvoiceTemplate6({ invoice, customer, invoiceBrandSettings }) {
               </div>
             )}
           </div>
+
+
         </div>
 
         {invoice.orderDesc && (

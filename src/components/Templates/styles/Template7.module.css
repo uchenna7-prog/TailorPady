@@ -18,7 +18,6 @@
   padding: 22px 16px 16px;
 }
 
-
 .header {
   display: flex;
   justify-content: space-between;
@@ -26,14 +25,15 @@
   margin-bottom: 18px;
   padding-bottom: 14px;
   border-bottom: 1px solid #e4e4e4;
-  gap: 20px;
+  gap: 12px;
 }
 
 .logoBlock {
   display: flex;
   align-items: center;
   gap: 8px;
-  flex: 1.2;
+  flex: 1 1 auto;
+  min-width: 0;
 }
 
 .brandTextBlock {
@@ -48,6 +48,7 @@
   color: #1a1a1a;
   text-transform: uppercase;
   letter-spacing: 0.06em;
+  overflow-wrap: break-word;
 }
 
 .brandTagline {
@@ -58,14 +59,12 @@
 }
 
 .titleBlock {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  flex: 0.5;
+  flex: 0 0 auto;
+  text-align: right;
 }
 
 .docTitle {
-  font-size: 20px;
+  font-size: 17px;
   font-weight: 900;
   color: var(--brand-primary-dark);
   letter-spacing: -0.01em;
@@ -77,15 +76,16 @@
   display: flex;
   flex-direction: column;
   align-items: flex-end;
-  gap: 0;
+  gap: 3px;
 }
 
 .metaLine {
   font-size: 8.5px;
   color: #444;
   display: flex;
-  justify-content: flex-end;
-  gap: 4px;
+  align-items: baseline;
+  gap: 5px;
+  white-space: nowrap;
 }
 
 .metaKey {
@@ -93,10 +93,9 @@
   color: #1a1a1a;
 }
 
-
 .infoSection {
   display: flex;
-  gap: 20px;
+  gap: 30px;
   margin-bottom: 18px;
 }
 
@@ -137,9 +136,6 @@
   margin-bottom: 3px;
 }
 
-
-/* ── Icons ───────────────────────────────────────────── */
-
 .iconRow {
   display: flex;
   align-items: flex-start;
@@ -171,17 +167,11 @@
   opacity: 0.55;
 }
 
-
-/* ── Order Description ──────────────────────────────── */
-
 .orderDesc {
   font-size: 9px;
   color: #444;
   margin-bottom: 10px;
 }
-
-
-/* ── Table ──────────────────────────────────────────── */
 
 .tableSection {
   width: 100%;
@@ -199,10 +189,21 @@
   border-bottom: 1.5px solid var(--brand-primary-dark);
 }
 
-.thItem   { text-align: left; }
-.thRate   { text-align: right; }
-.thQty    { text-align: center; }
-.thAmount { text-align: right; }
+.thItem {
+  text-align: left;
+}
+
+.thRate {
+  text-align: right;
+}
+
+.thQty {
+  text-align: center;
+}
+
+.thAmount {
+  text-align: right;
+}
 
 .tableRow td {
   padding: 8px 4px;
@@ -216,10 +217,30 @@
   vertical-align: top;
 }
 
-.tdItem   { text-align: left; }
-.tdRate   { text-align: right; font-size: 9px; color: #444; white-space: nowrap; }
-.tdQty    { text-align: center; font-size: 9px; color: #444; }
-.tdAmount { text-align: right; font-size: 9px; font-weight: 700; color: #1a1a1a; white-space: nowrap; }
+.tdItem {
+  text-align: left;
+}
+
+.tdRate {
+  text-align: right;
+  font-size: 9px;
+  color: #444;
+  white-space: nowrap;
+}
+
+.tdQty {
+  text-align: center;
+  font-size: 9px;
+  color: #444;
+}
+
+.tdAmount {
+  text-align: right;
+  font-size: 9px;
+  font-weight: 700;
+  color: #1a1a1a;
+  white-space: nowrap;
+}
 
 .itemName {
   font-size: 9px;
@@ -232,9 +253,6 @@
   color: #999;
   margin-top: 2px;
 }
-
-
-/* ── Totals ─────────────────────────────────────────── */
 
 .totalsSection {
   margin-left: auto;
@@ -307,9 +325,6 @@
   font-feature-settings: 'tnum';
 }
 
-
-/* ── Payment History ────────────────────────────────── */
-
 .historySection {
   padding: 10px 0 0;
   margin-bottom: 6px;
@@ -381,9 +396,6 @@
   line-height: 1;
 }
 
-
-/* ── Paid Summary ───────────────────────────────────── */
-
 .paidSummarySection {
   margin-left: auto;
   width: 52%;
@@ -443,9 +455,6 @@
   font-variant-numeric: tabular-nums;
   font-feature-settings: 'tnum';
 }
-
-
-/* ── Footer ─────────────────────────────────────────── */
 
 .footer {
   margin-top: auto;
@@ -512,4 +521,21 @@
 .footerBottom {
   display: flex;
   justify-content: flex-end;
+}
+
+
+
+.balanceKey {
+  font-size: 9px;
+  font-weight: 900;
+  color: #dc2626;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.balanceVal {
+  font-size: 10px;
+  font-weight: 900;
+  color: #dc2626;
+  font-variant-numeric: tabular-nums;
 }

@@ -61,7 +61,7 @@ export function InvoiceTemplate7({ invoice, customer, invoiceBrandSettings }) {
               </div>
               {dueDate && (
                 <div className={styles.metaLine}>
-                  <span className={styles.metaKey}>Date</span>
+                  <span className={styles.metaKey}>Due</span>
                   <span>{dueDate}</span>
                 </div>
               )}
