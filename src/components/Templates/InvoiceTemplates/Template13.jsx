@@ -186,10 +186,21 @@ export function InvoiceTemplate13({ invoice, customer, invoiceBrandSettings }) {
               {invoiceBrandSettings.footer}
             </div>
           </div>
-          <div className={styles.signArea}>
+
+          <div className={styles.signBlock}>
+            <div className={styles.signZone}>
+              {invoiceBrandSettings.signature && (
+                <img
+                  className={styles.signature}
+                  src={invoiceBrandSettings.signature}
+                  alt="Authorised signature"
+                />
+              )}
+            </div>
             <div className={styles.signLine} />
             <div className={styles.signLabel}>Signature</div>
           </div>
+
         </div>
         <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
           <svg style={{ display: 'block', width: 50, height: 50 }} viewBox="0 0 50 50">

@@ -575,13 +575,44 @@ th.colTotal, td.colTotal {
   stroke-linejoin: round;
 }
 
+.signBlock {
+  position: relative;
+}
 
+.signZone {
+  width: 100%;
+  height: 72px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding-bottom: 0;
+}
 
+.signature {
+  max-width: 160px;
+  max-height: 64px;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  object-position: center bottom;
+  position: relative;
+  z-index: 1;
+}
 
+.signLine {
+  position: absolute;
+  bottom: 22px;
+  left: 0;
+  right: 0;
+  height: 1.5px;
+  background: var(--brand-primary);
+}
 
-
-
-
-
-
-
+.signLabel {
+  font-size: 8px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #888;
+  text-align: center;
+}

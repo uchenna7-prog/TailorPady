@@ -203,7 +203,7 @@
 
 .tableRow {
   padding: 9px 16px;
-  border-bottom: 1px solid var(--brand-primary);
+  border-bottom: 1px dashed #ebebeb;
 }
 
 .tableRow td {
@@ -339,7 +339,7 @@
   align-items: center;
   gap: 8px;
   padding: 6px 0;
-  border-bottom: 1px solid var(--brand-primary);
+  border-bottom: 1px dashed #ebebeb;
 }
 
 .historyRow:last-of-type {

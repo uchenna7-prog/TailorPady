@@ -184,8 +184,17 @@ export function InvoiceTemplate20({ invoice, customer, invoiceBrandSettings }) {
           </div>
 
           <div className={styles.signBlock}>
+            <div className={styles.signZone}>
+              {invoiceBrandSettings.signature && (
+                <img
+                  className={styles.signature}
+                  src={invoiceBrandSettings.signature}
+                  alt="Authorised signature"
+                />
+              )}
+            </div>
             <div className={styles.signLine} />
-            <div className={styles.SignLabel}>Authorised Sign</div>
+            <div className={styles.signLabel}>Authorised Signature</div>
           </div>
         </div>
       </div>

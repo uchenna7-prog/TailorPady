@@ -186,10 +186,21 @@ export function ReceiptTemplate13({ receipt, customer, receiptBrandSettings }) {
               {receiptBrandSettings.footer}
             </div>
           </div>
-          <div className={styles.signArea}>
+            
+          <div className={styles.signBlock}>
+            <div className={styles.signZone}>
+              {receiptBrandSettings.signature && (
+                <img
+                  className={styles.signature}
+                  src={receiptBrandSettings.signature}
+                  alt="Authorised signature"
+                />
+              )}
+            </div>
             <div className={styles.signLine} />
             <div className={styles.signLabel}>Signature</div>
           </div>
+
         </div>
         <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
           <svg style={{ display: 'block', width: 50, height: 50 }} viewBox="0 0 50 50">

@@ -16,7 +16,6 @@ export const BRAND_PALETTE = [
       glow:         'rgba(0,48,112,0.40)',
     },
   },
-
   {
     id:    'luxury-midnight-blue',
     style: 'Blue',
@@ -34,7 +33,6 @@ export const BRAND_PALETTE = [
       glow:         'rgba(22,43,96,0.40)',
     },
   },
-
   {
     id:    'jewel-trust-navy',
     style: 'Blue',
@@ -52,7 +50,6 @@ export const BRAND_PALETTE = [
       glow:         'rgba(30,58,114,0.42)',
     },
   },
-
   {
     id:    'signature-ink-blue',
     style: 'Blue',
@@ -70,7 +67,6 @@ export const BRAND_PALETTE = [
       glow:         'rgba(0,68,192,0.40)',
     },
   },
-
   {
     id:    'classic-rich-navy',
     style: 'Blue',
@@ -88,7 +84,6 @@ export const BRAND_PALETTE = [
       glow:         'rgba(42,82,153,0.35)',
     },
   },
-
   {
     id:    'fashion-cobalt',
     style: 'Blue',
@@ -106,7 +101,6 @@ export const BRAND_PALETTE = [
       glow:         'rgba(26,98,204,0.42)',
     },
   },
-
   {
     id:    'signature-cobalt-blue',
     style: 'Blue',
@@ -124,7 +118,6 @@ export const BRAND_PALETTE = [
       glow:         'rgba(69,137,255,0.40)',
     },
   },
-
   {
     id:    'bold-electric-blue',
     style: 'Blue',
@@ -142,7 +135,6 @@ export const BRAND_PALETTE = [
       glow:         'rgba(26,110,245,0.38)',
     },
   },
-
   {
     id:    'signature-cerulean-blue',
     style: 'Blue',
@@ -160,7 +152,6 @@ export const BRAND_PALETTE = [
       glow:         'rgba(65,137,240,0.40)',
     },
   },
-
   {
     id:    'vivid-neon-blue',
     style: 'Blue',
@@ -178,7 +169,6 @@ export const BRAND_PALETTE = [
       glow:         'rgba(34,153,255,0.44)',
     },
   },
-
   {
     id:    'signature-azure',
     style: 'Blue',
@@ -196,7 +186,6 @@ export const BRAND_PALETTE = [
       glow:         'rgba(21,137,238,0.40)',
     },
   },
-
   {
     id:    'neutral-steel-blue',
     style: 'Blue',
@@ -214,7 +203,6 @@ export const BRAND_PALETTE = [
       glow:         'rgba(78,132,192,0.35)',
     },
   },
-
   {
     id:    'nature-sky-blue',
     style: 'Blue',
@@ -232,7 +220,6 @@ export const BRAND_PALETTE = [
       glow:         'rgba(62,164,204,0.38)',
     },
   },
-
   {
     id:    'soft-powder-blue',
     style: 'Blue',
@@ -250,7 +237,6 @@ export const BRAND_PALETTE = [
       glow:         'rgba(132,168,200,0.35)',
     },
   },
-
   {
     id:    'blue-periwinkle',
     style: 'Blue',
@@ -268,7 +254,6 @@ export const BRAND_PALETTE = [
       glow:         'rgba(138,154,224,0.38)',
     },
   },
-
   {
     id:    'blue-denim',
     style: 'Blue',
@@ -286,7 +271,6 @@ export const BRAND_PALETTE = [
       glow:         'rgba(34,120,224,0.38)',
     },
   },
-
   {
     id:    'blue-cornflower',
     style: 'Blue',
@@ -304,7 +288,6 @@ export const BRAND_PALETTE = [
       glow:         'rgba(130,174,255,0.38)',
     },
   },
-
   {
     id:    'nature-deep-sea',
     style: 'Blue',
@@ -322,7 +305,6 @@ export const BRAND_PALETTE = [
       glow:         'rgba(4,92,128,0.42)',
     },
   },
-
   {
     id:    'nature-ocean-blue',
     style: 'Blue',
@@ -340,7 +322,6 @@ export const BRAND_PALETTE = [
       glow:         'rgba(0,135,186,0.40)',
     },
   },
-
   {
     id:    'vibrant-cerulean',
     style: 'Blue',
@@ -358,7 +339,176 @@ export const BRAND_PALETTE = [
       glow:         'rgba(0,154,204,0.40)',
     },
   },
-
+  {
+    id:    'blue-pure',
+    style: 'Blue',
+    label: 'Pure Blue',
+    tokens: {
+      primary:      '#0050E8',
+      primaryLight: '#2068FF',
+      primaryDark:  '#0038C0',
+      onPrimary:    '#ffffff',
+      gradient:     'linear-gradient(135deg, #0050E8 0%, #0038C0 100%)',
+      gradientCard: 'linear-gradient(135deg, rgba(0,80,232,0.13) 0%, rgba(0,56,192,0.06) 100%)',
+      surface:      'rgba(0,80,232,0.08)',
+      surfaceDark:  '#000612',
+      muted:        'rgba(0,80,232,0.25)',
+      glow:         'rgba(32,104,255,0.40)',
+    },
+  },
+  {
+    id:    'blue-royal',
+    style: 'Blue',
+    label: 'Royal Blue',
+    tokens: {
+      primary:      '#4169E1',
+      primaryLight: '#5A80F5',
+      primaryDark:  '#2A50C0',
+      onPrimary:    '#ffffff',
+      gradient:     'linear-gradient(135deg, #4169E1 0%, #2A50C0 100%)',
+      gradientCard: 'linear-gradient(135deg, rgba(65,105,225,0.13) 0%, rgba(42,80,192,0.06) 100%)',
+      surface:      'rgba(65,105,225,0.08)',
+      surfaceDark:  '#060914',
+      muted:        'rgba(65,105,225,0.25)',
+      glow:         'rgba(90,128,245,0.40)',
+    },
+  },
+  {
+    id:    'blue-baby',
+    style: 'Blue',
+    label: 'Baby Blue',
+    tokens: {
+      primary:      '#5AA2CA',
+      primaryLight: '#74BCE0',
+      primaryDark:  '#3C80A8',
+      onPrimary:    '#ffffff',
+      gradient:     'linear-gradient(135deg, #5AA2CA 0%, #3C80A8 100%)',
+      gradientCard: 'linear-gradient(135deg, rgba(90,162,202,0.13) 0%, rgba(60,128,168,0.06) 100%)',
+      surface:      'rgba(90,162,202,0.08)',
+      surfaceDark:  '#080e14',
+      muted:        'rgba(90,162,202,0.25)',
+      glow:         'rgba(116,188,224,0.35)',
+    },
+  },
+  {
+    id:    'blue-sapphire',
+    style: 'Blue',
+    label: 'Sapphire',
+    tokens: {
+      primary:      '#0F52BA',
+      primaryLight: '#1A6ADA',
+      primaryDark:  '#0A3C8A',
+      onPrimary:    '#ffffff',
+      gradient:     'linear-gradient(135deg, #0F52BA 0%, #0A3C8A 100%)',
+      gradientCard: 'linear-gradient(135deg, rgba(15,82,186,0.13) 0%, rgba(10,60,138,0.06) 100%)',
+      surface:      'rgba(15,82,186,0.08)',
+      surfaceDark:  '#020812',
+      muted:        'rgba(15,82,186,0.25)',
+      glow:         'rgba(26,106,218,0.40)',
+    },
+  },
+  {
+    id:    'blue-prussian',
+    style: 'Blue',
+    label: 'Prussian Blue',
+    tokens: {
+      primary:      '#003153',
+      primaryLight: '#004A78',
+      primaryDark:  '#001C32',
+      onPrimary:    '#ffffff',
+      gradient:     'linear-gradient(135deg, #003153 0%, #001C32 100%)',
+      gradientCard: 'linear-gradient(135deg, rgba(0,49,83,0.16) 0%, rgba(0,28,50,0.08) 100%)',
+      surface:      'rgba(0,49,83,0.10)',
+      surfaceDark:  '#000810',
+      muted:        'rgba(0,49,83,0.28)',
+      glow:         'rgba(0,74,120,0.40)',
+    },
+  },
+  {
+    id:    'blue-french',
+    style: 'Blue',
+    label: 'French Blue',
+    tokens: {
+      primary:      '#0072BB',
+      primaryLight: '#0090E0',
+      primaryDark:  '#00528A',
+      onPrimary:    '#ffffff',
+      gradient:     'linear-gradient(135deg, #0072BB 0%, #00528A 100%)',
+      gradientCard: 'linear-gradient(135deg, rgba(0,114,187,0.13) 0%, rgba(0,82,138,0.06) 100%)',
+      surface:      'rgba(0,114,187,0.08)',
+      surfaceDark:  '#001018',
+      muted:        'rgba(0,114,187,0.25)',
+      glow:         'rgba(0,144,224,0.40)',
+    },
+  },
+  {
+    id:    'blue-yale',
+    style: 'Blue',
+    label: 'Yale Blue',
+    tokens: {
+      primary:      '#0F4D92',
+      primaryLight: '#1A62B4',
+      primaryDark:  '#0A3670',
+      onPrimary:    '#ffffff',
+      gradient:     'linear-gradient(135deg, #0F4D92 0%, #0A3670 100%)',
+      gradientCard: 'linear-gradient(135deg, rgba(15,77,146,0.13) 0%, rgba(10,54,112,0.06) 100%)',
+      surface:      'rgba(15,77,146,0.08)',
+      surfaceDark:  '#020a12',
+      muted:        'rgba(15,77,146,0.25)',
+      glow:         'rgba(26,98,180,0.38)',
+    },
+  },
+  {
+    id:    'blue-bluebell',
+    style: 'Blue',
+    label: 'Bluebell',
+    tokens: {
+      primary:      '#7480BC',
+      primaryLight: '#8C9AD4',
+      primaryDark:  '#546098',
+      onPrimary:    '#ffffff',
+      gradient:     'linear-gradient(135deg, #7480BC 0%, #546098 100%)',
+      gradientCard: 'linear-gradient(135deg, rgba(116,128,188,0.13) 0%, rgba(84,96,152,0.06) 100%)',
+      surface:      'rgba(116,128,188,0.08)',
+      surfaceDark:  '#0a0c14',
+      muted:        'rgba(116,128,188,0.28)',
+      glow:         'rgba(140,154,212,0.38)',
+    },
+  },
+  {
+    id:    'blue-lapis',
+    style: 'Blue',
+    label: 'Lapis',
+    tokens: {
+      primary:      '#26619C',
+      primaryLight: '#3478BC',
+      primaryDark:  '#1A4478',
+      onPrimary:    '#ffffff',
+      gradient:     'linear-gradient(135deg, #26619C 0%, #1A4478 100%)',
+      gradientCard: 'linear-gradient(135deg, rgba(38,97,156,0.13) 0%, rgba(26,68,120,0.06) 100%)',
+      surface:      'rgba(38,97,156,0.08)',
+      surfaceDark:  '#040a12',
+      muted:        'rgba(38,97,156,0.28)',
+      glow:         'rgba(52,120,188,0.38)',
+    },
+  },
+  {
+    id:    'blue-slate',
+    style: 'Blue',
+    label: 'Slate Blue',
+    tokens: {
+      primary:      '#6A78C8',
+      primaryLight: '#8492E0',
+      primaryDark:  '#4C58A8',
+      onPrimary:    '#ffffff',
+      gradient:     'linear-gradient(135deg, #6A78C8 0%, #4C58A8 100%)',
+      gradientCard: 'linear-gradient(135deg, rgba(106,120,200,0.13) 0%, rgba(76,88,168,0.06) 100%)',
+      surface:      'rgba(106,120,200,0.08)',
+      surfaceDark:  '#0a0a14',
+      muted:        'rgba(106,120,200,0.28)',
+      glow:         'rgba(132,146,224,0.38)',
+    },
+  },
   {
     id:    'classic-forest-green',
     style: 'Green',
@@ -376,7 +526,6 @@ export const BRAND_PALETTE = [
       glow:         'rgba(35,122,74,0.35)',
     },
   },
-
   {
     id:    'classic-british-racing-green',
     style: 'Green',
@@ -394,7 +543,6 @@ export const BRAND_PALETTE = [
       glow:         'rgba(0,92,51,0.38)',
     },
   },
-
   {
     id:    'jewel-wealth-green',
     style: 'Green',
@@ -412,7 +560,6 @@ export const BRAND_PALETTE = [
       glow:         'rgba(16,122,60,0.40)',
     },
   },
-
   {
     id:    'jewel-emerald',
     style: 'Green',
@@ -430,7 +577,6 @@ export const BRAND_PALETTE = [
       glow:         'rgba(5,138,72,0.40)',
     },
   },
-
   {
     id:    'signature-jade-green',
     style: 'Green',
@@ -448,7 +594,6 @@ export const BRAND_PALETTE = [
       glow:         'rgba(0,160,122,0.38)',
     },
   },
-
   {
     id:    'bold-vivid-emerald',
     style: 'Green',
@@ -466,7 +611,6 @@ export const BRAND_PALETTE = [
       glow:         'rgba(0,168,112,0.38)',
     },
   },
-
   {
     id:    'signature-vivid-green',
     style: 'Green',
@@ -484,7 +628,6 @@ export const BRAND_PALETTE = [
       glow:         'rgba(50,168,16,0.38)',
     },
   },
-
   {
     id:    'nature-pine-green',
     style: 'Green',
@@ -502,7 +645,6 @@ export const BRAND_PALETTE = [
       glow:         'rgba(59,135,100,0.38)',
     },
   },
-
   {
     id:    'soft-sage-green',
     style: 'Green',
@@ -520,7 +662,6 @@ export const BRAND_PALETTE = [
       glow:         'rgba(116,142,120,0.35)',
     },
   },
-
   {
     id:    'earthy-moss',
     style: 'Green',
@@ -538,7 +679,6 @@ export const BRAND_PALETTE = [
       glow:         'rgba(94,130,82,0.35)',
     },
   },
-
   {
     id:    'earthy-olive',
     style: 'Green',
@@ -556,7 +696,6 @@ export const BRAND_PALETTE = [
       glow:         'rgba(133,152,48,0.35)',
     },
   },
-
   {
     id:    'bold-neon-green',
     style: 'Green',
@@ -574,7 +713,6 @@ export const BRAND_PALETTE = [
       glow:         'rgba(77,200,69,0.40)',
     },
   },
-
   {
     id:    'vivid-lime',
     style: 'Green',
@@ -592,7 +730,6 @@ export const BRAND_PALETTE = [
       glow:         'rgba(150,216,0,0.42)',
     },
   },
-
   {
     id:    'vibrant-chartreuse',
     style: 'Green',
@@ -610,7 +747,6 @@ export const BRAND_PALETTE = [
       glow:         'rgba(184,220,0,0.42)',
     },
   },
-
   {
     id:    'green-hunter',
     style: 'Green',
@@ -628,7 +764,6 @@ export const BRAND_PALETTE = [
       glow:         'rgba(71,122,78,0.38)',
     },
   },
-
   {
     id:    'green-fern',
     style: 'Green',
@@ -646,7 +781,176 @@ export const BRAND_PALETTE = [
       glow:         'rgba(101,150,86,0.35)',
     },
   },
-
+  {
+    id:    'green-grass',
+    style: 'Green',
+    label: 'Grass Green',
+    tokens: {
+      primary:      '#2E8B22',
+      primaryLight: '#3AAA2C',
+      primaryDark:  '#1E6014',
+      onPrimary:    '#ffffff',
+      gradient:     'linear-gradient(135deg, #2E8B22 0%, #1E6014 100%)',
+      gradientCard: 'linear-gradient(135deg, rgba(46,139,34,0.13) 0%, rgba(30,96,20,0.06) 100%)',
+      surface:      'rgba(46,139,34,0.08)',
+      surfaceDark:  '#040e04',
+      muted:        'rgba(46,139,34,0.28)',
+      glow:         'rgba(58,170,44,0.38)',
+    },
+  },
+  {
+    id:    'green-kelly',
+    style: 'Green',
+    label: 'Kelly Green',
+    tokens: {
+      primary:      '#3A9C12',
+      primaryLight: '#4CBB1A',
+      primaryDark:  '#287808',
+      onPrimary:    '#ffffff',
+      gradient:     'linear-gradient(135deg, #3A9C12 0%, #287808 100%)',
+      gradientCard: 'linear-gradient(135deg, rgba(58,156,18,0.13) 0%, rgba(40,120,8,0.06) 100%)',
+      surface:      'rgba(58,156,18,0.08)',
+      surfaceDark:  '#041402',
+      muted:        'rgba(58,156,18,0.25)',
+      glow:         'rgba(76,187,26,0.40)',
+    },
+  },
+  {
+    id:    'green-mint',
+    style: 'Green',
+    label: 'Mint Green',
+    tokens: {
+      primary:      '#2AAA7A',
+      primaryLight: '#38C890',
+      primaryDark:  '#1C7C58',
+      onPrimary:    '#ffffff',
+      gradient:     'linear-gradient(135deg, #2AAA7A 0%, #1C7C58 100%)',
+      gradientCard: 'linear-gradient(135deg, rgba(42,170,122,0.13) 0%, rgba(28,124,88,0.06) 100%)',
+      surface:      'rgba(42,170,122,0.08)',
+      surfaceDark:  '#041410',
+      muted:        'rgba(42,170,122,0.25)',
+      glow:         'rgba(56,200,144,0.38)',
+    },
+  },
+  {
+    id:    'green-sea',
+    style: 'Green',
+    label: 'Sea Green',
+    tokens: {
+      primary:      '#2E8B57',
+      primaryLight: '#3AA870',
+      primaryDark:  '#1E6038',
+      onPrimary:    '#ffffff',
+      gradient:     'linear-gradient(135deg, #2E8B57 0%, #1E6038 100%)',
+      gradientCard: 'linear-gradient(135deg, rgba(46,139,87,0.13) 0%, rgba(30,96,56,0.06) 100%)',
+      surface:      'rgba(46,139,87,0.08)',
+      surfaceDark:  '#040e08',
+      muted:        'rgba(46,139,87,0.28)',
+      glow:         'rgba(58,168,112,0.38)',
+    },
+  },
+  {
+    id:    'green-avocado',
+    style: 'Green',
+    label: 'Avocado',
+    tokens: {
+      primary:      '#5A8C20',
+      primaryLight: '#72AA28',
+      primaryDark:  '#406412',
+      onPrimary:    '#ffffff',
+      gradient:     'linear-gradient(135deg, #5A8C20 0%, #406412 100%)',
+      gradientCard: 'linear-gradient(135deg, rgba(90,140,32,0.12) 0%, rgba(64,100,18,0.06) 100%)',
+      surface:      'rgba(90,140,32,0.08)',
+      surfaceDark:  '#081002',
+      muted:        'rgba(90,140,32,0.25)',
+      glow:         'rgba(114,170,40,0.38)',
+    },
+  },
+  {
+    id:    'green-bottle',
+    style: 'Green',
+    label: 'Bottle Green',
+    tokens: {
+      primary:      '#1B4A2A',
+      primaryLight: '#256238',
+      primaryDark:  '#0E2E18',
+      onPrimary:    '#ffffff',
+      gradient:     'linear-gradient(135deg, #1B4A2A 0%, #0E2E18 100%)',
+      gradientCard: 'linear-gradient(135deg, rgba(27,74,42,0.14) 0%, rgba(14,46,24,0.07) 100%)',
+      surface:      'rgba(27,74,42,0.09)',
+      surfaceDark:  '#020804',
+      muted:        'rgba(27,74,42,0.28)',
+      glow:         'rgba(37,98,56,0.38)',
+    },
+  },
+  {
+    id:    'green-spring',
+    style: 'Green',
+    label: 'Spring Green',
+    tokens: {
+      primary:      '#00A858',
+      primaryLight: '#00C870',
+      primaryDark:  '#007C40',
+      onPrimary:    '#ffffff',
+      gradient:     'linear-gradient(135deg, #00A858 0%, #007C40 100%)',
+      gradientCard: 'linear-gradient(135deg, rgba(0,168,88,0.13) 0%, rgba(0,124,64,0.06) 100%)',
+      surface:      'rgba(0,168,88,0.08)',
+      surfaceDark:  '#001408',
+      muted:        'rgba(0,168,88,0.25)',
+      glow:         'rgba(0,200,112,0.40)',
+    },
+  },
+  {
+    id:    'green-viridian',
+    style: 'Green',
+    label: 'Viridian',
+    tokens: {
+      primary:      '#40826D',
+      primaryLight: '#56A08A',
+      primaryDark:  '#2A6050',
+      onPrimary:    '#ffffff',
+      gradient:     'linear-gradient(135deg, #40826D 0%, #2A6050 100%)',
+      gradientCard: 'linear-gradient(135deg, rgba(64,130,109,0.13) 0%, rgba(42,96,80,0.06) 100%)',
+      surface:      'rgba(64,130,109,0.08)',
+      surfaceDark:  '#060e0c',
+      muted:        'rgba(64,130,109,0.28)',
+      glow:         'rgba(86,160,138,0.38)',
+    },
+  },
+  {
+    id:    'green-matcha',
+    style: 'Green',
+    label: 'Matcha',
+    tokens: {
+      primary:      '#5E7C42',
+      primaryLight: '#769A56',
+      primaryDark:  '#405828',
+      onPrimary:    '#ffffff',
+      gradient:     'linear-gradient(135deg, #5E7C42 0%, #405828 100%)',
+      gradientCard: 'linear-gradient(135deg, rgba(94,124,66,0.12) 0%, rgba(64,88,40,0.06) 100%)',
+      surface:      'rgba(94,124,66,0.08)',
+      surfaceDark:  '#080c04',
+      muted:        'rgba(94,124,66,0.28)',
+      glow:         'rgba(118,154,86,0.35)',
+    },
+  },
+  {
+    id:    'green-apple',
+    style: 'Green',
+    label: 'Apple Green',
+    tokens: {
+      primary:      '#6AB82A',
+      primaryLight: '#80D238',
+      primaryDark:  '#4C8818',
+      onPrimary:    '#0a1400',
+      gradient:     'linear-gradient(135deg, #6AB82A 0%, #4C8818 100%)',
+      gradientCard: 'linear-gradient(135deg, rgba(106,184,42,0.12) 0%, rgba(76,136,24,0.06) 100%)',
+      surface:      'rgba(106,184,42,0.08)',
+      surfaceDark:  '#0a1002',
+      muted:        'rgba(106,184,42,0.25)',
+      glow:         'rgba(128,210,56,0.40)',
+    },
+  },
   {
     id:    'bold-flame-red',
     style: 'Red',
@@ -664,7 +968,6 @@ export const BRAND_PALETTE = [
       glow:         'rgba(224,34,20,0.38)',
     },
   },
-
   {
     id:    'bold-ferrari-red',
     style: 'Red',
@@ -682,7 +985,6 @@ export const BRAND_PALETTE = [
       glow:         'rgba(238,0,0,0.40)',
     },
   },
-
   {
     id:    'luxury-cartier-red',
     style: 'Red',
@@ -700,7 +1002,6 @@ export const BRAND_PALETTE = [
       glow:         'rgba(212,0,32,0.38)',
     },
   },
-
   {
     id:    'vibrant-scarlet',
     style: 'Red',
@@ -718,7 +1019,6 @@ export const BRAND_PALETTE = [
       glow:         'rgba(232,0,32,0.42)',
     },
   },
-
   {
     id:    'classic-burgundy',
     style: 'Red',
@@ -736,7 +1036,6 @@ export const BRAND_PALETTE = [
       glow:         'rgba(154,63,72,0.35)',
     },
   },
-
   {
     id:    'earthy-terracotta',
     style: 'Red',
@@ -754,7 +1053,6 @@ export const BRAND_PALETTE = [
       glow:         'rgba(216,86,42,0.35)',
     },
   },
-
   {
     id:    'nature-sunset-coral',
     style: 'Red',
@@ -772,7 +1070,6 @@ export const BRAND_PALETTE = [
       glow:         'rgba(240,112,96,0.38)',
     },
   },
-
   {
     id:    'red-crimson',
     style: 'Red',
@@ -790,7 +1087,6 @@ export const BRAND_PALETTE = [
       glow:         'rgba(190,0,46,0.38)',
     },
   },
-
   {
     id:    'red-maroon',
     style: 'Red',
@@ -808,7 +1104,6 @@ export const BRAND_PALETTE = [
       glow:         'rgba(138,42,42,0.38)',
     },
   },
-
   {
     id:    'red-rust',
     style: 'Red',
@@ -826,7 +1121,6 @@ export const BRAND_PALETTE = [
       glow:         'rgba(212,86,26,0.38)',
     },
   },
-
   {
     id:    'red-rose',
     style: 'Red',
@@ -844,7 +1138,142 @@ export const BRAND_PALETTE = [
       glow:         'rgba(224,32,80,0.38)',
     },
   },
-
+  {
+    id:    'red-pure',
+    style: 'Red',
+    label: 'Pure Red',
+    tokens: {
+      primary:      '#E50000',
+      primaryLight: '#FF2020',
+      primaryDark:  '#B80000',
+      onPrimary:    '#ffffff',
+      gradient:     'linear-gradient(135deg, #E50000 0%, #B80000 100%)',
+      gradientCard: 'linear-gradient(135deg, rgba(229,0,0,0.13) 0%, rgba(184,0,0,0.06) 100%)',
+      surface:      'rgba(229,0,0,0.08)',
+      surfaceDark:  '#1a0000',
+      muted:        'rgba(229,0,0,0.25)',
+      glow:         'rgba(255,32,32,0.40)',
+    },
+  },
+  {
+    id:    'red-cherry',
+    style: 'Red',
+    label: 'Cherry Red',
+    tokens: {
+      primary:      '#C8143A',
+      primaryLight: '#E82050',
+      primaryDark:  '#980E2C',
+      onPrimary:    '#ffffff',
+      gradient:     'linear-gradient(135deg, #C8143A 0%, #980E2C 100%)',
+      gradientCard: 'linear-gradient(135deg, rgba(200,20,58,0.13) 0%, rgba(152,14,44,0.06) 100%)',
+      surface:      'rgba(200,20,58,0.08)',
+      surfaceDark:  '#180004',
+      muted:        'rgba(200,20,58,0.25)',
+      glow:         'rgba(232,32,80,0.38)',
+    },
+  },
+  {
+    id:    'red-tomato',
+    style: 'Red',
+    label: 'Tomato Red',
+    tokens: {
+      primary:      '#E84A30',
+      primaryLight: '#FF6246',
+      primaryDark:  '#C03020',
+      onPrimary:    '#ffffff',
+      gradient:     'linear-gradient(135deg, #E84A30 0%, #C03020 100%)',
+      gradientCard: 'linear-gradient(135deg, rgba(232,74,48,0.13) 0%, rgba(192,48,32,0.06) 100%)',
+      surface:      'rgba(232,74,48,0.08)',
+      surfaceDark:  '#1a0600',
+      muted:        'rgba(232,74,48,0.25)',
+      glow:         'rgba(255,98,70,0.40)',
+    },
+  },
+  {
+    id:    'red-brick',
+    style: 'Red',
+    label: 'Brick Red',
+    tokens: {
+      primary:      '#A0321A',
+      primaryLight: '#BC4228',
+      primaryDark:  '#762010',
+      onPrimary:    '#ffffff',
+      gradient:     'linear-gradient(135deg, #A0321A 0%, #762010 100%)',
+      gradientCard: 'linear-gradient(135deg, rgba(160,50,26,0.13) 0%, rgba(118,32,16,0.06) 100%)',
+      surface:      'rgba(160,50,26,0.08)',
+      surfaceDark:  '#120400',
+      muted:        'rgba(160,50,26,0.25)',
+      glow:         'rgba(188,66,40,0.38)',
+    },
+  },
+  {
+    id:    'red-ruby',
+    style: 'Red',
+    label: 'Ruby',
+    tokens: {
+      primary:      '#9B1120',
+      primaryLight: '#BC1A2A',
+      primaryDark:  '#720C16',
+      onPrimary:    '#ffffff',
+      gradient:     'linear-gradient(135deg, #9B1120 0%, #720C16 100%)',
+      gradientCard: 'linear-gradient(135deg, rgba(155,17,32,0.13) 0%, rgba(114,12,22,0.06) 100%)',
+      surface:      'rgba(155,17,32,0.08)',
+      surfaceDark:  '#140004',
+      muted:        'rgba(155,17,32,0.25)',
+      glow:         'rgba(188,26,42,0.38)',
+    },
+  },
+  {
+    id:    'red-cardinal',
+    style: 'Red',
+    label: 'Cardinal',
+    tokens: {
+      primary:      '#C41E3A',
+      primaryLight: '#E02A4E',
+      primaryDark:  '#94122A',
+      onPrimary:    '#ffffff',
+      gradient:     'linear-gradient(135deg, #C41E3A 0%, #94122A 100%)',
+      gradientCard: 'linear-gradient(135deg, rgba(196,30,58,0.13) 0%, rgba(148,18,42,0.06) 100%)',
+      surface:      'rgba(196,30,58,0.08)',
+      surfaceDark:  '#180006',
+      muted:        'rgba(196,30,58,0.25)',
+      glow:         'rgba(224,42,78,0.38)',
+    },
+  },
+  {
+    id:    'red-vermillion',
+    style: 'Red',
+    label: 'Vermillion',
+    tokens: {
+      primary:      '#E84020',
+      primaryLight: '#FF5835',
+      primaryDark:  '#C02C10',
+      onPrimary:    '#ffffff',
+      gradient:     'linear-gradient(135deg, #E84020 0%, #C02C10 100%)',
+      gradientCard: 'linear-gradient(135deg, rgba(232,64,32,0.13) 0%, rgba(192,44,16,0.06) 100%)',
+      surface:      'rgba(232,64,32,0.08)',
+      surfaceDark:  '#1a0600',
+      muted:        'rgba(232,64,32,0.25)',
+      glow:         'rgba(255,88,53,0.40)',
+    },
+  },
+  {
+    id:    'red-garnet',
+    style: 'Red',
+    label: 'Garnet',
+    tokens: {
+      primary:      '#6E1A26',
+      primaryLight: '#8A2434',
+      primaryDark:  '#480E18',
+      onPrimary:    '#ffffff',
+      gradient:     'linear-gradient(135deg, #6E1A26 0%, #480E18 100%)',
+      gradientCard: 'linear-gradient(135deg, rgba(110,26,38,0.13) 0%, rgba(72,14,24,0.06) 100%)',
+      surface:      'rgba(110,26,38,0.08)',
+      surfaceDark:  '#0e0204',
+      muted:        'rgba(110,26,38,0.28)',
+      glow:         'rgba(138,36,52,0.38)',
+    },
+  },
   {
     id:    'classic-deep-gold',
     style: 'Yellow & Orange',
@@ -862,7 +1291,6 @@ export const BRAND_PALETTE = [
       glow:         'rgba(184,134,11,0.35)',
     },
   },
-
   {
     id:    'luxury-champagne-gold',
     style: 'Yellow & Orange',
@@ -880,7 +1308,6 @@ export const BRAND_PALETTE = [
       glow:         'rgba(201,168,76,0.35)',
     },
   },
-
   {
     id:    'luxury-versace-gold',
     style: 'Yellow & Orange',
@@ -898,7 +1325,6 @@ export const BRAND_PALETTE = [
       glow:         'rgba(232,204,85,0.40)',
     },
   },
-
   {
     id:    'signature-amber-gold',
     style: 'Yellow & Orange',
@@ -916,7 +1342,6 @@ export const BRAND_PALETTE = [
       glow:         'rgba(255,177,51,0.42)',
     },
   },
-
   {
     id:    'nature-amber',
     style: 'Yellow & Orange',
@@ -934,7 +1359,6 @@ export const BRAND_PALETTE = [
       glow:         'rgba(232,144,0,0.40)',
     },
   },
-
   {
     id:    'vibrant-marigold',
     style: 'Yellow & Orange',
@@ -952,7 +1376,6 @@ export const BRAND_PALETTE = [
       glow:         'rgba(255,172,32,0.42)',
     },
   },
-
   {
     id:    'luxury-hermes-orange',
     style: 'Yellow & Orange',
@@ -970,7 +1393,6 @@ export const BRAND_PALETTE = [
       glow:         'rgba(240,136,56,0.38)',
     },
   },
-
   {
     id:    'bold-vivid-orange',
     style: 'Yellow & Orange',
@@ -988,7 +1410,6 @@ export const BRAND_PALETTE = [
       glow:         'rgba(240,96,24,0.38)',
     },
   },
-
   {
     id:    'vibrant-tangerine',
     style: 'Yellow & Orange',
@@ -1006,7 +1427,6 @@ export const BRAND_PALETTE = [
       glow:         'rgba(255,117,32,0.42)',
     },
   },
-
   {
     id:    'nature-golden-wheat',
     style: 'Yellow & Orange',
@@ -1024,7 +1444,6 @@ export const BRAND_PALETTE = [
       glow:         'rgba(220,186,106,0.38)',
     },
   },
-
   {
     id:    'bold-acid-yellow',
     style: 'Yellow & Orange',
@@ -1042,7 +1461,6 @@ export const BRAND_PALETTE = [
       glow:         'rgba(240,210,0,0.42)',
     },
   },
-
   {
     id:    'yellow-mustard',
     style: 'Yellow & Orange',
@@ -1060,7 +1478,6 @@ export const BRAND_PALETTE = [
       glow:         'rgba(224,184,0,0.38)',
     },
   },
-
   {
     id:    'yellow-saffron',
     style: 'Yellow & Orange',
@@ -1078,7 +1495,6 @@ export const BRAND_PALETTE = [
       glow:         'rgba(255,184,51,0.42)',
     },
   },
-
   {
     id:    'orange-pumpkin',
     style: 'Yellow & Orange',
@@ -1096,7 +1512,6 @@ export const BRAND_PALETTE = [
       glow:         'rgba(236,117,32,0.38)',
     },
   },
-
   {
     id:    'soft-warm-peach',
     style: 'Yellow & Orange',
@@ -1114,7 +1529,210 @@ export const BRAND_PALETTE = [
       glow:         'rgba(224,146,120,0.35)',
     },
   },
-
+  {
+    id:    'yellow-pure',
+    style: 'Yellow & Orange',
+    label: 'Pure Yellow',
+    tokens: {
+      primary:      '#FFE000',
+      primaryLight: '#FFEE33',
+      primaryDark:  '#CCB400',
+      onPrimary:    '#1a1800',
+      gradient:     'linear-gradient(135deg, #FFE000 0%, #CCB400 100%)',
+      gradientCard: 'linear-gradient(135deg, rgba(255,224,0,0.14) 0%, rgba(204,180,0,0.07) 100%)',
+      surface:      'rgba(255,224,0,0.09)',
+      surfaceDark:  '#1a1800',
+      muted:        'rgba(255,224,0,0.25)',
+      glow:         'rgba(255,238,51,0.44)',
+    },
+  },
+  {
+    id:    'yellow-lemon',
+    style: 'Yellow & Orange',
+    label: 'Lemon Yellow',
+    tokens: {
+      primary:      '#F5E200',
+      primaryLight: '#FFF033',
+      primaryDark:  '#C8B800',
+      onPrimary:    '#1a1800',
+      gradient:     'linear-gradient(135deg, #F5E200 0%, #C8B800 100%)',
+      gradientCard: 'linear-gradient(135deg, rgba(245,226,0,0.14) 0%, rgba(200,184,0,0.07) 100%)',
+      surface:      'rgba(245,226,0,0.09)',
+      surfaceDark:  '#1a1800',
+      muted:        'rgba(245,226,0,0.25)',
+      glow:         'rgba(255,240,51,0.44)',
+    },
+  },
+  {
+    id:    'yellow-canary',
+    style: 'Yellow & Orange',
+    label: 'Canary Yellow',
+    tokens: {
+      primary:      '#FFCC00',
+      primaryLight: '#FFD933',
+      primaryDark:  '#CCA200',
+      onPrimary:    '#1a1400',
+      gradient:     'linear-gradient(135deg, #FFCC00 0%, #CCA200 100%)',
+      gradientCard: 'linear-gradient(135deg, rgba(255,204,0,0.14) 0%, rgba(204,162,0,0.07) 100%)',
+      surface:      'rgba(255,204,0,0.09)',
+      surfaceDark:  '#1a1400',
+      muted:        'rgba(255,204,0,0.25)',
+      glow:         'rgba(255,217,51,0.44)',
+    },
+  },
+  {
+    id:    'yellow-sunflower',
+    style: 'Yellow & Orange',
+    label: 'Sunflower',
+    tokens: {
+      primary:      '#FFBA00',
+      primaryLight: '#FFCC33',
+      primaryDark:  '#CC9400',
+      onPrimary:    '#1a1400',
+      gradient:     'linear-gradient(135deg, #FFBA00 0%, #CC9400 100%)',
+      gradientCard: 'linear-gradient(135deg, rgba(255,186,0,0.14) 0%, rgba(204,148,0,0.07) 100%)',
+      surface:      'rgba(255,186,0,0.09)',
+      surfaceDark:  '#1a1400',
+      muted:        'rgba(255,186,0,0.25)',
+      glow:         'rgba(255,204,51,0.44)',
+    },
+  },
+  {
+    id:    'yellow-school-bus',
+    style: 'Yellow & Orange',
+    label: 'School Bus',
+    tokens: {
+      primary:      '#FFD800',
+      primaryLight: '#FFE633',
+      primaryDark:  '#CCAC00',
+      onPrimary:    '#1a1800',
+      gradient:     'linear-gradient(135deg, #FFD800 0%, #CCAC00 100%)',
+      gradientCard: 'linear-gradient(135deg, rgba(255,216,0,0.14) 0%, rgba(204,172,0,0.07) 100%)',
+      surface:      'rgba(255,216,0,0.09)',
+      surfaceDark:  '#1a1800',
+      muted:        'rgba(255,216,0,0.25)',
+      glow:         'rgba(255,230,51,0.44)',
+    },
+  },
+  {
+    id:    'yellow-honey',
+    style: 'Yellow & Orange',
+    label: 'Honey',
+    tokens: {
+      primary:      '#D4921E',
+      primaryLight: '#ECA830',
+      primaryDark:  '#A87016',
+      onPrimary:    '#1a1000',
+      gradient:     'linear-gradient(135deg, #D4921E 0%, #A87016 100%)',
+      gradientCard: 'linear-gradient(135deg, rgba(212,146,30,0.13) 0%, rgba(168,112,22,0.06) 100%)',
+      surface:      'rgba(212,146,30,0.08)',
+      surfaceDark:  '#141000',
+      muted:        'rgba(212,146,30,0.25)',
+      glow:         'rgba(236,168,48,0.40)',
+    },
+  },
+  {
+    id:    'yellow-turmeric',
+    style: 'Yellow & Orange',
+    label: 'Turmeric',
+    tokens: {
+      primary:      '#C8A020',
+      primaryLight: '#DEBA30',
+      primaryDark:  '#9C7C18',
+      onPrimary:    '#1a1400',
+      gradient:     'linear-gradient(135deg, #C8A020 0%, #9C7C18 100%)',
+      gradientCard: 'linear-gradient(135deg, rgba(200,160,32,0.13) 0%, rgba(156,124,24,0.06) 100%)',
+      surface:      'rgba(200,160,32,0.08)',
+      surfaceDark:  '#141200',
+      muted:        'rgba(200,160,32,0.25)',
+      glow:         'rgba(222,186,48,0.40)',
+    },
+  },
+  {
+    id:    'orange-pure',
+    style: 'Yellow & Orange',
+    label: 'Pure Orange',
+    tokens: {
+      primary:      '#FF6600',
+      primaryLight: '#FF7F33',
+      primaryDark:  '#CC5200',
+      onPrimary:    '#ffffff',
+      gradient:     'linear-gradient(135deg, #FF6600 0%, #CC5200 100%)',
+      gradientCard: 'linear-gradient(135deg, rgba(255,102,0,0.13) 0%, rgba(204,82,0,0.06) 100%)',
+      surface:      'rgba(255,102,0,0.08)',
+      surfaceDark:  '#180800',
+      muted:        'rgba(255,102,0,0.25)',
+      glow:         'rgba(255,127,51,0.42)',
+    },
+  },
+  {
+    id:    'orange-bright',
+    style: 'Yellow & Orange',
+    label: 'Bright Orange',
+    tokens: {
+      primary:      '#FF5500',
+      primaryLight: '#FF7033',
+      primaryDark:  '#CC4400',
+      onPrimary:    '#ffffff',
+      gradient:     'linear-gradient(135deg, #FF5500 0%, #CC4400 100%)',
+      gradientCard: 'linear-gradient(135deg, rgba(255,85,0,0.13) 0%, rgba(204,68,0,0.06) 100%)',
+      surface:      'rgba(255,85,0,0.08)',
+      surfaceDark:  '#180600',
+      muted:        'rgba(255,85,0,0.25)',
+      glow:         'rgba(255,112,51,0.42)',
+    },
+  },
+  {
+    id:    'orange-apricot',
+    style: 'Yellow & Orange',
+    label: 'Apricot',
+    tokens: {
+      primary:      '#DC8050',
+      primaryLight: '#F09870',
+      primaryDark:  '#B05E30',
+      onPrimary:    '#ffffff',
+      gradient:     'linear-gradient(135deg, #DC8050 0%, #B05E30 100%)',
+      gradientCard: 'linear-gradient(135deg, rgba(220,128,80,0.12) 0%, rgba(176,94,48,0.06) 100%)',
+      surface:      'rgba(220,128,80,0.08)',
+      surfaceDark:  '#1a0a04',
+      muted:        'rgba(220,128,80,0.25)',
+      glow:         'rgba(240,152,112,0.38)',
+    },
+  },
+  {
+    id:    'orange-coral',
+    style: 'Yellow & Orange',
+    label: 'Coral Orange',
+    tokens: {
+      primary:      '#E86840',
+      primaryLight: '#FF8060',
+      primaryDark:  '#C04C28',
+      onPrimary:    '#ffffff',
+      gradient:     'linear-gradient(135deg, #E86840 0%, #C04C28 100%)',
+      gradientCard: 'linear-gradient(135deg, rgba(232,104,64,0.13) 0%, rgba(192,76,40,0.06) 100%)',
+      surface:      'rgba(232,104,64,0.08)',
+      surfaceDark:  '#1a0a04',
+      muted:        'rgba(232,104,64,0.25)',
+      glow:         'rgba(255,128,96,0.40)',
+    },
+  },
+  {
+    id:    'orange-burnt',
+    style: 'Yellow & Orange',
+    label: 'Burnt Orange',
+    tokens: {
+      primary:      '#CC5500',
+      primaryLight: '#E86A10',
+      primaryDark:  '#9C3E00',
+      onPrimary:    '#ffffff',
+      gradient:     'linear-gradient(135deg, #CC5500 0%, #9C3E00 100%)',
+      gradientCard: 'linear-gradient(135deg, rgba(204,85,0,0.13) 0%, rgba(156,62,0,0.06) 100%)',
+      surface:      'rgba(204,85,0,0.08)',
+      surfaceDark:  '#160800',
+      muted:        'rgba(204,85,0,0.25)',
+      glow:         'rgba(232,106,16,0.38)',
+    },
+  },
   {
     id:    'vivid-electric-purple',
     style: 'Purple & Violet',
@@ -1132,7 +1750,6 @@ export const BRAND_PALETTE = [
       glow:         'rgba(155,79,222,0.42)',
     },
   },
-
   {
     id:    'vibrant-violet',
     style: 'Purple & Violet',
@@ -1150,7 +1767,6 @@ export const BRAND_PALETTE = [
       glow:         'rgba(120,34,232,0.44)',
     },
   },
-
   {
     id:    'signature-indigo',
     style: 'Purple & Violet',
@@ -1168,7 +1784,6 @@ export const BRAND_PALETTE = [
       glow:         'rgba(138,132,255,0.42)',
     },
   },
-
   {
     id:    'luxury-deep-plum',
     style: 'Purple & Violet',
@@ -1186,7 +1801,6 @@ export const BRAND_PALETTE = [
       glow:         'rgba(122,43,140,0.38)',
     },
   },
-
   {
     id:    'fashion-aubergine',
     style: 'Purple & Violet',
@@ -1204,7 +1818,6 @@ export const BRAND_PALETTE = [
       glow:         'rgba(88,20,102,0.42)',
     },
   },
-
   {
     id:    'soft-lavender',
     style: 'Purple & Violet',
@@ -1222,7 +1835,6 @@ export const BRAND_PALETTE = [
       glow:         'rgba(152,132,188,0.35)',
     },
   },
-
   {
     id:    'soft-lilac',
     style: 'Purple & Violet',
@@ -1240,7 +1852,6 @@ export const BRAND_PALETTE = [
       glow:         'rgba(168,136,194,0.35)',
     },
   },
-
   {
     id:    'nature-lavender-field',
     style: 'Purple & Violet',
@@ -1258,7 +1869,6 @@ export const BRAND_PALETTE = [
       glow:         'rgba(130,112,188,0.38)',
     },
   },
-
   {
     id:    'purple-grape',
     style: 'Purple & Violet',
@@ -1276,7 +1886,6 @@ export const BRAND_PALETTE = [
       glow:         'rgba(140,68,200,0.38)',
     },
   },
-
   {
     id:    'purple-orchid',
     style: 'Purple & Violet',
@@ -1294,7 +1903,6 @@ export const BRAND_PALETTE = [
       glow:         'rgba(192,108,196,0.38)',
     },
   },
-
   {
     id:    'purple-wisteria',
     style: 'Purple & Violet',
@@ -1312,7 +1920,142 @@ export const BRAND_PALETTE = [
       glow:         'rgba(170,136,216,0.38)',
     },
   },
-
+  {
+    id:    'purple-pure',
+    style: 'Purple & Violet',
+    label: 'Pure Purple',
+    tokens: {
+      primary:      '#7A00C8',
+      primaryLight: '#9A20E0',
+      primaryDark:  '#5A009A',
+      onPrimary:    '#ffffff',
+      gradient:     'linear-gradient(135deg, #7A00C8 0%, #5A009A 100%)',
+      gradientCard: 'linear-gradient(135deg, rgba(122,0,200,0.14) 0%, rgba(90,0,154,0.07) 100%)',
+      surface:      'rgba(122,0,200,0.09)',
+      surfaceDark:  '#0d0018',
+      muted:        'rgba(122,0,200,0.25)',
+      glow:         'rgba(154,32,224,0.44)',
+    },
+  },
+  {
+    id:    'purple-royal',
+    style: 'Purple & Violet',
+    label: 'Royal Purple',
+    tokens: {
+      primary:      '#7851A9',
+      primaryLight: '#9068C4',
+      primaryDark:  '#5A3888',
+      onPrimary:    '#ffffff',
+      gradient:     'linear-gradient(135deg, #7851A9 0%, #5A3888 100%)',
+      gradientCard: 'linear-gradient(135deg, rgba(120,81,169,0.13) 0%, rgba(90,56,136,0.06) 100%)',
+      surface:      'rgba(120,81,169,0.08)',
+      surfaceDark:  '#0c0814',
+      muted:        'rgba(120,81,169,0.25)',
+      glow:         'rgba(144,104,196,0.40)',
+    },
+  },
+  {
+    id:    'purple-amethyst',
+    style: 'Purple & Violet',
+    label: 'Amethyst',
+    tokens: {
+      primary:      '#9B6CC4',
+      primaryLight: '#B484DC',
+      primaryDark:  '#7A4EAA',
+      onPrimary:    '#ffffff',
+      gradient:     'linear-gradient(135deg, #9B6CC4 0%, #7A4EAA 100%)',
+      gradientCard: 'linear-gradient(135deg, rgba(155,108,196,0.13) 0%, rgba(122,78,170,0.06) 100%)',
+      surface:      'rgba(155,108,196,0.08)',
+      surfaceDark:  '#0c0814',
+      muted:        'rgba(155,108,196,0.25)',
+      glow:         'rgba(180,132,220,0.38)',
+    },
+  },
+  {
+    id:    'purple-magenta',
+    style: 'Purple & Violet',
+    label: 'Magenta',
+    tokens: {
+      primary:      '#B000A8',
+      primaryLight: '#CC18C8',
+      primaryDark:  '#840080',
+      onPrimary:    '#ffffff',
+      gradient:     'linear-gradient(135deg, #B000A8 0%, #840080 100%)',
+      gradientCard: 'linear-gradient(135deg, rgba(176,0,168,0.13) 0%, rgba(132,0,128,0.06) 100%)',
+      surface:      'rgba(176,0,168,0.08)',
+      surfaceDark:  '#180018',
+      muted:        'rgba(176,0,168,0.25)',
+      glow:         'rgba(204,24,200,0.42)',
+    },
+  },
+  {
+    id:    'purple-byzantium',
+    style: 'Purple & Violet',
+    label: 'Byzantium',
+    tokens: {
+      primary:      '#702963',
+      primaryLight: '#8C3A7C',
+      primaryDark:  '#4E1A46',
+      onPrimary:    '#ffffff',
+      gradient:     'linear-gradient(135deg, #702963 0%, #4E1A46 100%)',
+      gradientCard: 'linear-gradient(135deg, rgba(112,41,99,0.13) 0%, rgba(78,26,70,0.06) 100%)',
+      surface:      'rgba(112,41,99,0.08)',
+      surfaceDark:  '#0e0410',
+      muted:        'rgba(112,41,99,0.28)',
+      glow:         'rgba(140,58,124,0.38)',
+    },
+  },
+  {
+    id:    'purple-african-violet',
+    style: 'Purple & Violet',
+    label: 'African Violet',
+    tokens: {
+      primary:      '#8474A0',
+      primaryLight: '#9C8CBC',
+      primaryDark:  '#5E5480',
+      onPrimary:    '#ffffff',
+      gradient:     'linear-gradient(135deg, #8474A0 0%, #5E5480 100%)',
+      gradientCard: 'linear-gradient(135deg, rgba(132,116,160,0.12) 0%, rgba(94,84,128,0.06) 100%)',
+      surface:      'rgba(132,116,160,0.08)',
+      surfaceDark:  '#0a0812',
+      muted:        'rgba(132,116,160,0.28)',
+      glow:         'rgba(156,140,188,0.35)',
+    },
+  },
+  {
+    id:    'purple-heather',
+    style: 'Purple & Violet',
+    label: 'Heather',
+    tokens: {
+      primary:      '#9E80AC',
+      primaryLight: '#B89CC8',
+      primaryDark:  '#7A6088',
+      onPrimary:    '#ffffff',
+      gradient:     'linear-gradient(135deg, #9E80AC 0%, #7A6088 100%)',
+      gradientCard: 'linear-gradient(135deg, rgba(158,128,172,0.12) 0%, rgba(122,96,136,0.06) 100%)',
+      surface:      'rgba(158,128,172,0.08)',
+      surfaceDark:  '#0e0a14',
+      muted:        'rgba(158,128,172,0.28)',
+      glow:         'rgba(184,156,200,0.35)',
+    },
+  },
+  {
+    id:    'purple-mulberry',
+    style: 'Purple & Violet',
+    label: 'Mulberry',
+    tokens: {
+      primary:      '#B84884',
+      primaryLight: '#D460A0',
+      primaryDark:  '#8C2C60',
+      onPrimary:    '#ffffff',
+      gradient:     'linear-gradient(135deg, #B84884 0%, #8C2C60 100%)',
+      gradientCard: 'linear-gradient(135deg, rgba(184,72,132,0.13) 0%, rgba(140,44,96,0.06) 100%)',
+      surface:      'rgba(184,72,132,0.08)',
+      surfaceDark:  '#160010',
+      muted:        'rgba(184,72,132,0.25)',
+      glow:         'rgba(212,96,160,0.38)',
+    },
+  },
   {
     id:    'bold-hot-magenta',
     style: 'Pink',
@@ -1330,7 +2073,6 @@ export const BRAND_PALETTE = [
       glow:         'rgba(224,30,130,0.38)',
     },
   },
-
   {
     id:    'fashion-fuchsia',
     style: 'Pink',
@@ -1348,7 +2090,6 @@ export const BRAND_PALETTE = [
       glow:         'rgba(232,0,122,0.40)',
     },
   },
-
   {
     id:    'vibrant-hot-pink',
     style: 'Pink',
@@ -1366,7 +2107,6 @@ export const BRAND_PALETTE = [
       glow:         'rgba(255,32,128,0.44)',
     },
   },
-
   {
     id:    'luxury-rose-gold',
     style: 'Pink',
@@ -1384,7 +2124,6 @@ export const BRAND_PALETTE = [
       glow:         'rgba(183,110,121,0.35)',
     },
   },
-
   {
     id:    'soft-dusty-rose',
     style: 'Pink',
@@ -1402,7 +2141,6 @@ export const BRAND_PALETTE = [
       glow:         'rgba(203,128,146,0.35)',
     },
   },
-
   {
     id:    'soft-blush-pink',
     style: 'Pink',
@@ -1420,7 +2158,6 @@ export const BRAND_PALETTE = [
       glow:         'rgba(216,142,162,0.35)',
     },
   },
-
   {
     id:    'pink-bubblegum',
     style: 'Pink',
@@ -1438,7 +2175,6 @@ export const BRAND_PALETTE = [
       glow:         'rgba(255,112,180,0.42)',
     },
   },
-
   {
     id:    'pink-carnation',
     style: 'Pink',
@@ -1456,7 +2192,6 @@ export const BRAND_PALETTE = [
       glow:         'rgba(232,124,148,0.38)',
     },
   },
-
   {
     id:    'pink-mauve',
     style: 'Pink',
@@ -1474,7 +2209,142 @@ export const BRAND_PALETTE = [
       glow:         'rgba(188,122,148,0.35)',
     },
   },
-
+  {
+    id:    'pink-pure',
+    style: 'Pink',
+    label: 'Pure Pink',
+    tokens: {
+      primary:      '#E86090',
+      primaryLight: '#FF7AAA',
+      primaryDark:  '#C04070',
+      onPrimary:    '#ffffff',
+      gradient:     'linear-gradient(135deg, #E86090 0%, #C04070 100%)',
+      gradientCard: 'linear-gradient(135deg, rgba(232,96,144,0.13) 0%, rgba(192,64,112,0.06) 100%)',
+      surface:      'rgba(232,96,144,0.08)',
+      surfaceDark:  '#18000e',
+      muted:        'rgba(232,96,144,0.25)',
+      glow:         'rgba(255,122,170,0.40)',
+    },
+  },
+  {
+    id:    'pink-flamingo',
+    style: 'Pink',
+    label: 'Flamingo',
+    tokens: {
+      primary:      '#F06888',
+      primaryLight: '#FF80A0',
+      primaryDark:  '#C84868',
+      onPrimary:    '#ffffff',
+      gradient:     'linear-gradient(135deg, #F06888 0%, #C84868 100%)',
+      gradientCard: 'linear-gradient(135deg, rgba(240,104,136,0.13) 0%, rgba(200,72,104,0.06) 100%)',
+      surface:      'rgba(240,104,136,0.08)',
+      surfaceDark:  '#18000e',
+      muted:        'rgba(240,104,136,0.25)',
+      glow:         'rgba(255,128,160,0.42)',
+    },
+  },
+  {
+    id:    'pink-salmon',
+    style: 'Pink',
+    label: 'Salmon Pink',
+    tokens: {
+      primary:      '#E07878',
+      primaryLight: '#F59090',
+      primaryDark:  '#B85858',
+      onPrimary:    '#ffffff',
+      gradient:     'linear-gradient(135deg, #E07878 0%, #B85858 100%)',
+      gradientCard: 'linear-gradient(135deg, rgba(224,120,120,0.13) 0%, rgba(184,88,88,0.06) 100%)',
+      surface:      'rgba(224,120,120,0.08)',
+      surfaceDark:  '#18060a',
+      muted:        'rgba(224,120,120,0.25)',
+      glow:         'rgba(245,144,144,0.38)',
+    },
+  },
+  {
+    id:    'pink-coral',
+    style: 'Pink',
+    label: 'Coral Pink',
+    tokens: {
+      primary:      '#E86870',
+      primaryLight: '#FF8090',
+      primaryDark:  '#C04850',
+      onPrimary:    '#ffffff',
+      gradient:     'linear-gradient(135deg, #E86870 0%, #C04850 100%)',
+      gradientCard: 'linear-gradient(135deg, rgba(232,104,112,0.13) 0%, rgba(192,72,80,0.06) 100%)',
+      surface:      'rgba(232,104,112,0.08)',
+      surfaceDark:  '#18060a',
+      muted:        'rgba(232,104,112,0.25)',
+      glow:         'rgba(255,128,144,0.40)',
+    },
+  },
+  {
+    id:    'pink-peony',
+    style: 'Pink',
+    label: 'Peony',
+    tokens: {
+      primary:      '#C84878',
+      primaryLight: '#E05C90',
+      primaryDark:  '#A02C58',
+      onPrimary:    '#ffffff',
+      gradient:     'linear-gradient(135deg, #C84878 0%, #A02C58 100%)',
+      gradientCard: 'linear-gradient(135deg, rgba(200,72,120,0.13) 0%, rgba(160,44,88,0.06) 100%)',
+      surface:      'rgba(200,72,120,0.08)',
+      surfaceDark:  '#180010',
+      muted:        'rgba(200,72,120,0.25)',
+      glow:         'rgba(224,92,144,0.38)',
+    },
+  },
+  {
+    id:    'pink-raspberry',
+    style: 'Pink',
+    label: 'Raspberry',
+    tokens: {
+      primary:      '#C02060',
+      primaryLight: '#DC3878',
+      primaryDark:  '#920E48',
+      onPrimary:    '#ffffff',
+      gradient:     'linear-gradient(135deg, #C02060 0%, #920E48 100%)',
+      gradientCard: 'linear-gradient(135deg, rgba(192,32,96,0.13) 0%, rgba(146,14,72,0.06) 100%)',
+      surface:      'rgba(192,32,96,0.08)',
+      surfaceDark:  '#18000d',
+      muted:        'rgba(192,32,96,0.25)',
+      glow:         'rgba(220,56,120,0.38)',
+    },
+  },
+  {
+    id:    'pink-watermelon',
+    style: 'Pink',
+    label: 'Watermelon',
+    tokens: {
+      primary:      '#E0405A',
+      primaryLight: '#F85A70',
+      primaryDark:  '#B82840',
+      onPrimary:    '#ffffff',
+      gradient:     'linear-gradient(135deg, #E0405A 0%, #B82840 100%)',
+      gradientCard: 'linear-gradient(135deg, rgba(224,64,90,0.13) 0%, rgba(184,40,64,0.06) 100%)',
+      surface:      'rgba(224,64,90,0.08)',
+      surfaceDark:  '#180208',
+      muted:        'rgba(224,64,90,0.25)',
+      glow:         'rgba(248,90,112,0.40)',
+    },
+  },
+  {
+    id:    'pink-pastel',
+    style: 'Pink',
+    label: 'Pastel Pink',
+    tokens: {
+      primary:      '#DCA0B4',
+      primaryLight: '#EEC0CC',
+      primaryDark:  '#B47890',
+      onPrimary:    '#2a1018',
+      gradient:     'linear-gradient(135deg, #DCA0B4 0%, #B47890 100%)',
+      gradientCard: 'linear-gradient(135deg, rgba(220,160,180,0.13) 0%, rgba(180,120,144,0.06) 100%)',
+      surface:      'rgba(220,160,180,0.08)',
+      surfaceDark:  '#160810',
+      muted:        'rgba(220,160,180,0.28)',
+      glow:         'rgba(238,192,212,0.35)',
+    },
+  },
   {
     id:    'neutral-muted-teal',
     style: 'Teal & Cyan',
@@ -1492,7 +2362,6 @@ export const BRAND_PALETTE = [
       glow:         'rgba(60,152,152,0.35)',
     },
   },
-
   {
     id:    'soft-dusty-teal',
     style: 'Teal & Cyan',
@@ -1510,7 +2379,6 @@ export const BRAND_PALETTE = [
       glow:         'rgba(106,148,148,0.35)',
     },
   },
-
   {
     id:    'luxury-tiffany-blue',
     style: 'Teal & Cyan',
@@ -1528,7 +2396,6 @@ export const BRAND_PALETTE = [
       glow:         'rgba(24,212,206,0.38)',
     },
   },
-
   {
     id:    'bold-cyan',
     style: 'Teal & Cyan',
@@ -1546,7 +2413,6 @@ export const BRAND_PALETTE = [
       glow:         'rgba(0,184,217,0.40)',
     },
   },
-
   {
     id:    'vivid-digital-cyan',
     style: 'Teal & Cyan',
@@ -1564,7 +2430,6 @@ export const BRAND_PALETTE = [
       glow:         'rgba(38,198,218,0.42)',
     },
   },
-
   {
     id:    'teal-dark',
     style: 'Teal & Cyan',
@@ -1582,7 +2447,6 @@ export const BRAND_PALETTE = [
       glow:         'rgba(36,120,120,0.38)',
     },
   },
-
   {
     id:    'teal-aquamarine',
     style: 'Teal & Cyan',
@@ -1600,7 +2464,6 @@ export const BRAND_PALETTE = [
       glow:         'rgba(56,176,158,0.38)',
     },
   },
-
   {
     id:    'teal-seafoam',
     style: 'Teal & Cyan',
@@ -1618,7 +2481,125 @@ export const BRAND_PALETTE = [
       glow:         'rgba(96,192,176,0.38)',
     },
   },
-
+  {
+    id:    'teal-pure',
+    style: 'Teal & Cyan',
+    label: 'Pure Teal',
+    tokens: {
+      primary:      '#008080',
+      primaryLight: '#009E9E',
+      primaryDark:  '#005C5C',
+      onPrimary:    '#ffffff',
+      gradient:     'linear-gradient(135deg, #008080 0%, #005C5C 100%)',
+      gradientCard: 'linear-gradient(135deg, rgba(0,128,128,0.13) 0%, rgba(0,92,92,0.06) 100%)',
+      surface:      'rgba(0,128,128,0.08)',
+      surfaceDark:  '#000e0e',
+      muted:        'rgba(0,128,128,0.25)',
+      glow:         'rgba(0,158,158,0.38)',
+    },
+  },
+  {
+    id:    'teal-turquoise',
+    style: 'Teal & Cyan',
+    label: 'Turquoise',
+    tokens: {
+      primary:      '#18C0A8',
+      primaryLight: '#28D8C0',
+      primaryDark:  '#0E9280',
+      onPrimary:    '#001814',
+      gradient:     'linear-gradient(135deg, #18C0A8 0%, #0E9280 100%)',
+      gradientCard: 'linear-gradient(135deg, rgba(24,192,168,0.13) 0%, rgba(14,146,128,0.06) 100%)',
+      surface:      'rgba(24,192,168,0.08)',
+      surfaceDark:  '#001814',
+      muted:        'rgba(24,192,168,0.25)',
+      glow:         'rgba(40,216,192,0.42)',
+    },
+  },
+  {
+    id:    'teal-mint',
+    style: 'Teal & Cyan',
+    label: 'Mint Teal',
+    tokens: {
+      primary:      '#28B890',
+      primaryLight: '#38D0A8',
+      primaryDark:  '#1A8868',
+      onPrimary:    '#ffffff',
+      gradient:     'linear-gradient(135deg, #28B890 0%, #1A8868 100%)',
+      gradientCard: 'linear-gradient(135deg, rgba(40,184,144,0.13) 0%, rgba(26,136,104,0.06) 100%)',
+      surface:      'rgba(40,184,144,0.08)',
+      surfaceDark:  '#041410',
+      muted:        'rgba(40,184,144,0.25)',
+      glow:         'rgba(56,208,168,0.40)',
+    },
+  },
+  {
+    id:    'teal-verdigris',
+    style: 'Teal & Cyan',
+    label: 'Verdigris',
+    tokens: {
+      primary:      '#4E9B88',
+      primaryLight: '#66B8A4',
+      primaryDark:  '#327868',
+      onPrimary:    '#ffffff',
+      gradient:     'linear-gradient(135deg, #4E9B88 0%, #327868 100%)',
+      gradientCard: 'linear-gradient(135deg, rgba(78,155,136,0.12) 0%, rgba(50,120,104,0.06) 100%)',
+      surface:      'rgba(78,155,136,0.08)',
+      surfaceDark:  '#060e0c',
+      muted:        'rgba(78,155,136,0.25)',
+      glow:         'rgba(102,184,164,0.38)',
+    },
+  },
+  {
+    id:    'teal-persian',
+    style: 'Teal & Cyan',
+    label: 'Persian Teal',
+    tokens: {
+      primary:      '#009B8D',
+      primaryLight: '#00BAAA',
+      primaryDark:  '#007268',
+      onPrimary:    '#ffffff',
+      gradient:     'linear-gradient(135deg, #009B8D 0%, #007268 100%)',
+      gradientCard: 'linear-gradient(135deg, rgba(0,155,141,0.13) 0%, rgba(0,114,104,0.06) 100%)',
+      surface:      'rgba(0,155,141,0.08)',
+      surfaceDark:  '#001410',
+      muted:        'rgba(0,155,141,0.25)',
+      glow:         'rgba(0,186,170,0.40)',
+    },
+  },
+  {
+    id:    'teal-electric',
+    style: 'Teal & Cyan',
+    label: 'Electric Teal',
+    tokens: {
+      primary:      '#00C8C0',
+      primaryLight: '#18E0D8',
+      primaryDark:  '#009890',
+      onPrimary:    '#001816',
+      gradient:     'linear-gradient(135deg, #00C8C0 0%, #009890 100%)',
+      gradientCard: 'linear-gradient(135deg, rgba(0,200,192,0.13) 0%, rgba(0,152,144,0.06) 100%)',
+      surface:      'rgba(0,200,192,0.08)',
+      surfaceDark:  '#001816',
+      muted:        'rgba(0,200,192,0.25)',
+      glow:         'rgba(24,224,216,0.42)',
+    },
+  },
+  {
+    id:    'teal-lagoon',
+    style: 'Teal & Cyan',
+    label: 'Lagoon',
+    tokens: {
+      primary:      '#0A6880',
+      primaryLight: '#0E829E',
+      primaryDark:  '#064C5E',
+      onPrimary:    '#ffffff',
+      gradient:     'linear-gradient(135deg, #0A6880 0%, #064C5E 100%)',
+      gradientCard: 'linear-gradient(135deg, rgba(10,104,128,0.13) 0%, rgba(6,76,94,0.06) 100%)',
+      surface:      'rgba(10,104,128,0.08)',
+      surfaceDark:  '#000e12',
+      muted:        'rgba(10,104,128,0.28)',
+      glow:         'rgba(14,130,158,0.40)',
+    },
+  },
   {
     id:    'earthy-camel',
     style: 'Brown & Tan',
@@ -1636,7 +2617,6 @@ export const BRAND_PALETTE = [
       glow:         'rgba(200,154,88,0.35)',
     },
   },
-
   {
     id:    'earthy-clay-brown',
     style: 'Brown & Tan',
@@ -1654,7 +2634,6 @@ export const BRAND_PALETTE = [
       glow:         'rgba(168,104,72,0.35)',
     },
   },
-
   {
     id:    'earthy-burnt-sienna',
     style: 'Brown & Tan',
@@ -1672,7 +2651,6 @@ export const BRAND_PALETTE = [
       glow:         'rgba(192,104,56,0.35)',
     },
   },
-
   {
     id:    'earthy-cocoa',
     style: 'Brown & Tan',
@@ -1690,7 +2668,6 @@ export const BRAND_PALETTE = [
       glow:         'rgba(138,78,56,0.38)',
     },
   },
-
   {
     id:    'jewel-copper',
     style: 'Brown & Tan',
@@ -1708,7 +2685,6 @@ export const BRAND_PALETTE = [
       glow:         'rgba(192,104,48,0.38)',
     },
   },
-
   {
     id:    'earthy-warm-sand',
     style: 'Brown & Tan',
@@ -1726,7 +2702,6 @@ export const BRAND_PALETTE = [
       glow:         'rgba(222,192,152,0.38)',
     },
   },
-
   {
     id:    'fashion-nude',
     style: 'Brown & Tan',
@@ -1744,7 +2719,6 @@ export const BRAND_PALETTE = [
       glow:         'rgba(220,192,154,0.38)',
     },
   },
-
   {
     id:    'fashion-ecru',
     style: 'Brown & Tan',
@@ -1762,7 +2736,6 @@ export const BRAND_PALETTE = [
       glow:         'rgba(212,200,168,0.38)',
     },
   },
-
   {
     id:    'brown-chocolate',
     style: 'Brown & Tan',
@@ -1780,7 +2753,6 @@ export const BRAND_PALETTE = [
       glow:         'rgba(106,48,32,0.38)',
     },
   },
-
   {
     id:    'brown-mahogany',
     style: 'Brown & Tan',
@@ -1798,7 +2770,6 @@ export const BRAND_PALETTE = [
       glow:         'rgba(138,56,56,0.38)',
     },
   },
-
   {
     id:    'brown-walnut',
     style: 'Brown & Tan',
@@ -1816,7 +2787,210 @@ export const BRAND_PALETTE = [
       glow:         'rgba(122,78,44,0.38)',
     },
   },
-
+  {
+    id:    'brown-tan',
+    style: 'Brown & Tan',
+    label: 'Tan',
+    tokens: {
+      primary:      '#C4A882',
+      primaryLight: '#D8C09A',
+      primaryDark:  '#9C8060',
+      onPrimary:    '#1e1408',
+      gradient:     'linear-gradient(135deg, #C4A882 0%, #9C8060 100%)',
+      gradientCard: 'linear-gradient(135deg, rgba(196,168,130,0.13) 0%, rgba(156,128,96,0.06) 100%)',
+      surface:      'rgba(196,168,130,0.09)',
+      surfaceDark:  '#140e08',
+      muted:        'rgba(196,168,130,0.28)',
+      glow:         'rgba(216,192,154,0.38)',
+    },
+  },
+  {
+    id:    'brown-khaki',
+    style: 'Brown & Tan',
+    label: 'Khaki',
+    tokens: {
+      primary:      '#B0A860',
+      primaryLight: '#C8BE78',
+      primaryDark:  '#888040',
+      onPrimary:    '#141200',
+      gradient:     'linear-gradient(135deg, #B0A860 0%, #888040 100%)',
+      gradientCard: 'linear-gradient(135deg, rgba(176,168,96,0.13) 0%, rgba(136,128,64,0.06) 100%)',
+      surface:      'rgba(176,168,96,0.08)',
+      surfaceDark:  '#120e00',
+      muted:        'rgba(176,168,96,0.25)',
+      glow:         'rgba(200,190,120,0.38)',
+    },
+  },
+  {
+    id:    'brown-mocha',
+    style: 'Brown & Tan',
+    label: 'Mocha',
+    tokens: {
+      primary:      '#7A4A3C',
+      primaryLight: '#9A5E50',
+      primaryDark:  '#522E22',
+      onPrimary:    '#ffffff',
+      gradient:     'linear-gradient(135deg, #7A4A3C 0%, #522E22 100%)',
+      gradientCard: 'linear-gradient(135deg, rgba(122,74,60,0.13) 0%, rgba(82,46,34,0.06) 100%)',
+      surface:      'rgba(122,74,60,0.08)',
+      surfaceDark:  '#0e0804',
+      muted:        'rgba(122,74,60,0.28)',
+      glow:         'rgba(154,94,80,0.38)',
+    },
+  },
+  {
+    id:    'brown-espresso',
+    style: 'Brown & Tan',
+    label: 'Espresso',
+    tokens: {
+      primary:      '#3C1E14',
+      primaryLight: '#5A3020',
+      primaryDark:  '#28120C',
+      onPrimary:    '#ffffff',
+      gradient:     'linear-gradient(135deg, #3C1E14 0%, #28120C 100%)',
+      gradientCard: 'linear-gradient(135deg, rgba(60,30,20,0.14) 0%, rgba(40,18,12,0.07) 100%)',
+      surface:      'rgba(60,30,20,0.08)',
+      surfaceDark:  '#080402',
+      muted:        'rgba(60,30,20,0.28)',
+      glow:         'rgba(90,48,32,0.40)',
+    },
+  },
+  {
+    id:    'brown-hazelnut',
+    style: 'Brown & Tan',
+    label: 'Hazelnut',
+    tokens: {
+      primary:      '#A07050',
+      primaryLight: '#BC8A68',
+      primaryDark:  '#785030',
+      onPrimary:    '#ffffff',
+      gradient:     'linear-gradient(135deg, #A07050 0%, #785030 100%)',
+      gradientCard: 'linear-gradient(135deg, rgba(160,112,80,0.13) 0%, rgba(120,80,48,0.06) 100%)',
+      surface:      'rgba(160,112,80,0.08)',
+      surfaceDark:  '#100800',
+      muted:        'rgba(160,112,80,0.28)',
+      glow:         'rgba(188,138,104,0.35)',
+    },
+  },
+  {
+    id:    'brown-caramel',
+    style: 'Brown & Tan',
+    label: 'Caramel',
+    tokens: {
+      primary:      '#C08040',
+      primaryLight: '#D89858',
+      primaryDark:  '#906020',
+      onPrimary:    '#ffffff',
+      gradient:     'linear-gradient(135deg, #C08040 0%, #906020 100%)',
+      gradientCard: 'linear-gradient(135deg, rgba(192,128,64,0.13) 0%, rgba(144,96,32,0.06) 100%)',
+      surface:      'rgba(192,128,64,0.08)',
+      surfaceDark:  '#140c00',
+      muted:        'rgba(192,128,64,0.25)',
+      glow:         'rgba(216,152,88,0.38)',
+    },
+  },
+  {
+    id:    'brown-taupe',
+    style: 'Brown & Tan',
+    label: 'Taupe',
+    tokens: {
+      primary:      '#8C8070',
+      primaryLight: '#A09888',
+      primaryDark:  '#665E50',
+      onPrimary:    '#ffffff',
+      gradient:     'linear-gradient(135deg, #8C8070 0%, #665E50 100%)',
+      gradientCard: 'linear-gradient(135deg, rgba(140,128,112,0.12) 0%, rgba(102,94,80,0.06) 100%)',
+      surface:      'rgba(140,128,112,0.08)',
+      surfaceDark:  '#0e0c0a',
+      muted:        'rgba(140,128,112,0.25)',
+      glow:         'rgba(160,152,136,0.35)',
+    },
+  },
+  {
+    id:    'brown-stone',
+    style: 'Brown & Tan',
+    label: 'Stone',
+    tokens: {
+      primary:      '#9A9280',
+      primaryLight: '#B0A898',
+      primaryDark:  '#726A58',
+      onPrimary:    '#ffffff',
+      gradient:     'linear-gradient(135deg, #9A9280 0%, #726A58 100%)',
+      gradientCard: 'linear-gradient(135deg, rgba(154,146,128,0.12) 0%, rgba(114,106,88,0.06) 100%)',
+      surface:      'rgba(154,146,128,0.08)',
+      surfaceDark:  '#100e0a',
+      muted:        'rgba(154,146,128,0.25)',
+      glow:         'rgba(176,168,152,0.35)',
+    },
+  },
+  {
+    id:    'brown-mink',
+    style: 'Brown & Tan',
+    label: 'Mink',
+    tokens: {
+      primary:      '#6A5850',
+      primaryLight: '#847068',
+      primaryDark:  '#483C36',
+      onPrimary:    '#ffffff',
+      gradient:     'linear-gradient(135deg, #6A5850 0%, #483C36 100%)',
+      gradientCard: 'linear-gradient(135deg, rgba(106,88,80,0.13) 0%, rgba(72,60,54,0.06) 100%)',
+      surface:      'rgba(106,88,80,0.08)',
+      surfaceDark:  '#0c0806',
+      muted:        'rgba(106,88,80,0.28)',
+      glow:         'rgba(132,112,104,0.35)',
+    },
+  },
+  {
+    id:    'brown-toffee',
+    style: 'Brown & Tan',
+    label: 'Toffee',
+    tokens: {
+      primary:      '#A06030',
+      primaryLight: '#BC7A48',
+      primaryDark:  '#784418',
+      onPrimary:    '#ffffff',
+      gradient:     'linear-gradient(135deg, #A06030 0%, #784418 100%)',
+      gradientCard: 'linear-gradient(135deg, rgba(160,96,48,0.13) 0%, rgba(120,68,24,0.06) 100%)',
+      surface:      'rgba(160,96,48,0.08)',
+      surfaceDark:  '#120800',
+      muted:        'rgba(160,96,48,0.25)',
+      glow:         'rgba(188,122,72,0.38)',
+    },
+  },
+  {
+    id:    'brown-cedar',
+    style: 'Brown & Tan',
+    label: 'Cedar',
+    tokens: {
+      primary:      '#6A3020',
+      primaryLight: '#884030',
+      primaryDark:  '#461C10',
+      onPrimary:    '#ffffff',
+      gradient:     'linear-gradient(135deg, #6A3020 0%, #461C10 100%)',
+      gradientCard: 'linear-gradient(135deg, rgba(106,48,32,0.13) 0%, rgba(70,28,16,0.06) 100%)',
+      surface:      'rgba(106,48,32,0.08)',
+      surfaceDark:  '#0e0600',
+      muted:        'rgba(106,48,32,0.28)',
+      glow:         'rgba(136,64,48,0.38)',
+    },
+  },
+  {
+    id:    'brown-biscuit',
+    style: 'Brown & Tan',
+    label: 'Biscuit',
+    tokens: {
+      primary:      '#C8B090',
+      primaryLight: '#DCC8A8',
+      primaryDark:  '#A08868',
+      onPrimary:    '#1e1808',
+      gradient:     'linear-gradient(135deg, #C8B090 0%, #A08868 100%)',
+      gradientCard: 'linear-gradient(135deg, rgba(200,176,144,0.13) 0%, rgba(160,136,104,0.06) 100%)',
+      surface:      'rgba(200,176,144,0.09)',
+      surfaceDark:  '#140e08',
+      muted:        'rgba(200,176,144,0.28)',
+      glow:         'rgba(220,200,168,0.38)',
+    },
+  },
   {
     id:    'fashion-jet-black',
     style: 'Black & White',
@@ -1834,7 +3008,6 @@ export const BRAND_PALETTE = [
       glow:         'rgba(40,40,40,0.45)',
     },
   },
-
   {
     id:    'classic-warm-black',
     style: 'Black & White',
@@ -1852,7 +3025,6 @@ export const BRAND_PALETTE = [
       glow:         'rgba(58,53,48,0.40)',
     },
   },
-
   {
     id:    'neutral-charcoal',
     style: 'Black & White',
@@ -1870,7 +3042,6 @@ export const BRAND_PALETTE = [
       glow:         'rgba(85,85,85,0.38)',
     },
   },
-
   {
     id:    'vivid-graphite',
     style: 'Black & White',
@@ -1888,7 +3059,6 @@ export const BRAND_PALETTE = [
       glow:         'rgba(97,97,97,0.40)',
     },
   },
-
   {
     id:    'luxury-onyx',
     style: 'Black & White',
@@ -1906,7 +3076,6 @@ export const BRAND_PALETTE = [
       glow:         'rgba(68,68,79,0.40)',
     },
   },
-
   {
     id:    'neutral-slate-grey',
     style: 'Black & White',
@@ -1924,7 +3093,6 @@ export const BRAND_PALETTE = [
       glow:         'rgba(116,130,146,0.35)',
     },
   },
-
   {
     id:    'neutral-cool-grey',
     style: 'Black & White',
@@ -1942,7 +3110,6 @@ export const BRAND_PALETTE = [
       glow:         'rgba(136,152,168,0.35)',
     },
   },
-
   {
     id:    'neutral-warm-grey',
     style: 'Black & White',
@@ -1960,7 +3127,6 @@ export const BRAND_PALETTE = [
       glow:         'rgba(148,140,130,0.35)',
     },
   },
-
   {
     id:    'neutral-pure-white',
     style: 'Black & White',
@@ -1978,7 +3144,6 @@ export const BRAND_PALETTE = [
       glow:         'rgba(210,210,210,0.40)',
     },
   },
-
   {
     id:    'fashion-chanel-ivory',
     style: 'Black & White',
@@ -1996,7 +3161,6 @@ export const BRAND_PALETTE = [
       glow:         'rgba(220,212,192,0.42)',
     },
   },
-
   {
     id:    'bw-ash',
     style: 'Black & White',
@@ -2014,7 +3178,6 @@ export const BRAND_PALETTE = [
       glow:         'rgba(170,170,170,0.38)',
     },
   },
-
   {
     id:    'jewel-silver',
     style: 'Black & White',
@@ -2032,7 +3195,6 @@ export const BRAND_PALETTE = [
       glow:         'rgba(173,173,173,0.40)',
     },
   },
-
   {
     id:    'luxury-platinum',
     style: 'Black & White',
@@ -2050,8 +3212,211 @@ export const BRAND_PALETTE = [
       glow:         'rgba(168,184,188,0.40)',
     },
   },
+  {
+    id:    'bw-gunmetal',
+    style: 'Black & White',
+    label: 'Gunmetal',
+    tokens: {
+      primary:      '#2C3438',
+      primaryLight: '#3E4C52',
+      primaryDark:  '#1A2428',
+      onPrimary:    '#ffffff',
+      gradient:     'linear-gradient(135deg, #2C3438 0%, #1A2428 100%)',
+      gradientCard: 'linear-gradient(135deg, rgba(44,52,56,0.16) 0%, rgba(26,36,40,0.08) 100%)',
+      surface:      'rgba(44,52,56,0.08)',
+      surfaceDark:  '#040608',
+      muted:        'rgba(44,52,56,0.25)',
+      glow:         'rgba(62,76,82,0.40)',
+    },
+  },
+  {
+    id:    'bw-space-grey',
+    style: 'Black & White',
+    label: 'Space Grey',
+    tokens: {
+      primary:      '#5A6268',
+      primaryLight: '#74808A',
+      primaryDark:  '#3C4448',
+      onPrimary:    '#ffffff',
+      gradient:     'linear-gradient(135deg, #5A6268 0%, #3C4448 100%)',
+      gradientCard: 'linear-gradient(135deg, rgba(90,98,104,0.13) 0%, rgba(60,68,72,0.06) 100%)',
+      surface:      'rgba(90,98,104,0.08)',
+      surfaceDark:  '#060808',
+      muted:        'rgba(90,98,104,0.25)',
+      glow:         'rgba(116,128,138,0.38)',
+    },
+  },
+  {
+    id:    'bw-titanium',
+    style: 'Black & White',
+    label: 'Titanium',
+    tokens: {
+      primary:      '#7A8288',
+      primaryLight: '#949EA4',
+      primaryDark:  '#5C6468',
+      onPrimary:    '#ffffff',
+      gradient:     'linear-gradient(135deg, #7A8288 0%, #5C6468 100%)',
+      gradientCard: 'linear-gradient(135deg, rgba(122,130,136,0.13) 0%, rgba(92,100,104,0.06) 100%)',
+      surface:      'rgba(122,130,136,0.08)',
+      surfaceDark:  '#080a0c',
+      muted:        'rgba(122,130,136,0.25)',
+      glow:         'rgba(148,158,164,0.35)',
+    },
+  },
+  {
+    id:    'bw-obsidian',
+    style: 'Black & White',
+    label: 'Obsidian',
+    tokens: {
+      primary:      '#1A1A22',
+      primaryLight: '#2C2C3A',
+      primaryDark:  '#0C0C14',
+      onPrimary:    '#ffffff',
+      gradient:     'linear-gradient(135deg, #1A1A22 0%, #0C0C14 100%)',
+      gradientCard: 'linear-gradient(135deg, rgba(26,26,34,0.18) 0%, rgba(12,12,20,0.09) 100%)',
+      surface:      'rgba(26,26,34,0.08)',
+      surfaceDark:  '#04040a',
+      muted:        'rgba(26,26,34,0.25)',
+      glow:         'rgba(44,44,58,0.44)',
+    },
+  },
+  {
+    id:    'bw-pearl',
+    style: 'Black & White',
+    label: 'Pearl',
+    tokens: {
+      primary:      '#D0CCBC',
+      primaryLight: '#E4E0D0',
+      primaryDark:  '#ACAA98',
+      onPrimary:    '#2a2820',
+      gradient:     'linear-gradient(135deg, #D0CCBC 0%, #ACAA98 100%)',
+      gradientCard: 'linear-gradient(135deg, rgba(208,204,188,0.16) 0%, rgba(172,170,152,0.08) 100%)',
+      surface:      'rgba(208,204,188,0.10)',
+      surfaceDark:  '#181614',
+      muted:        'rgba(208,204,188,0.28)',
+      glow:         'rgba(228,224,208,0.40)',
+    },
+  },
+  {
+    id:    'bw-cream',
+    style: 'Black & White',
+    label: 'Cream',
+    tokens: {
+      primary:      '#E8D8B0',
+      primaryLight: '#F5EAC8',
+      primaryDark:  '#C4B48C',
+      onPrimary:    '#2a2410',
+      gradient:     'linear-gradient(135deg, #E8D8B0 0%, #C4B48C 100%)',
+      gradientCard: 'linear-gradient(135deg, rgba(232,216,176,0.16) 0%, rgba(196,180,140,0.08) 100%)',
+      surface:      'rgba(232,216,176,0.10)',
+      surfaceDark:  '#181408',
+      muted:        'rgba(232,216,176,0.28)',
+      glow:         'rgba(245,234,200,0.42)',
+    },
+  },
+  {
+    id:    'bw-bone',
+    style: 'Black & White',
+    label: 'Bone White',
+    tokens: {
+      primary:      '#D8D0BC',
+      primaryLight: '#ECE4D0',
+      primaryDark:  '#B4AC98',
+      onPrimary:    '#242018',
+      gradient:     'linear-gradient(135deg, #D8D0BC 0%, #B4AC98 100%)',
+      gradientCard: 'linear-gradient(135deg, rgba(216,208,188,0.16) 0%, rgba(180,172,152,0.08) 100%)',
+      surface:      'rgba(216,208,188,0.10)',
+      surfaceDark:  '#181410',
+      muted:        'rgba(216,208,188,0.28)',
+      glow:         'rgba(236,228,208,0.40)',
+    },
+  },
+  {
+    id:    'bw-pebble',
+    style: 'Black & White',
+    label: 'Pebble',
+    tokens: {
+      primary:      '#9A9690',
+      primaryLight: '#B4B0AA',
+      primaryDark:  '#747068',
+      onPrimary:    '#ffffff',
+      gradient:     'linear-gradient(135deg, #9A9690 0%, #747068 100%)',
+      gradientCard: 'linear-gradient(135deg, rgba(154,150,144,0.13) 0%, rgba(116,112,104,0.06) 100%)',
+      surface:      'rgba(154,150,144,0.08)',
+      surfaceDark:  '#0e0e0c',
+      muted:        'rgba(154,150,144,0.25)',
+      glow:         'rgba(180,176,170,0.35)',
+    },
+  },
+  {
+    id:    'bw-storm',
+    style: 'Black & White',
+    label: 'Storm Grey',
+    tokens: {
+      primary:      '#4E5A62',
+      primaryLight: '#637480',
+      primaryDark:  '#343D44',
+      onPrimary:    '#ffffff',
+      gradient:     'linear-gradient(135deg, #4E5A62 0%, #343D44 100%)',
+      gradientCard: 'linear-gradient(135deg, rgba(78,90,98,0.13) 0%, rgba(52,61,68,0.06) 100%)',
+      surface:      'rgba(78,90,98,0.08)',
+      surfaceDark:  '#060a0c',
+      muted:        'rgba(78,90,98,0.25)',
+      glow:         'rgba(99,116,128,0.38)',
+    },
+  },
+  {
+    id:    'bw-iron',
+    style: 'Black & White',
+    label: 'Iron',
+    tokens: {
+      primary:      '#5A5E62',
+      primaryLight: '#72787C',
+      primaryDark:  '#3C4044',
+      onPrimary:    '#ffffff',
+      gradient:     'linear-gradient(135deg, #5A5E62 0%, #3C4044 100%)',
+      gradientCard: 'linear-gradient(135deg, rgba(90,94,98,0.13) 0%, rgba(60,64,68,0.06) 100%)',
+      surface:      'rgba(90,94,98,0.08)',
+      surfaceDark:  '#080a0c',
+      muted:        'rgba(90,94,98,0.25)',
+      glow:         'rgba(114,120,124,0.35)',
+    },
+  },
+  {
+    id:    'bw-midnight',
+    style: 'Black & White',
+    label: 'Midnight',
+    tokens: {
+      primary:      '#0C1020',
+      primaryLight: '#1A2040',
+      primaryDark:  '#060810',
+      onPrimary:    '#ffffff',
+      gradient:     'linear-gradient(135deg, #0C1020 0%, #060810 100%)',
+      gradientCard: 'linear-gradient(135deg, rgba(12,16,32,0.20) 0%, rgba(6,8,16,0.10) 100%)',
+      surface:      'rgba(12,16,32,0.10)',
+      surfaceDark:  '#020408',
+      muted:        'rgba(12,16,32,0.30)',
+      glow:         'rgba(26,32,64,0.44)',
+    },
+  },
+  {
+    id:    'bw-snow',
+    style: 'Black & White',
+    label: 'Snow White',
+    tokens: {
+      primary:      '#F0EEE8',
+      primaryLight: '#FDFCF8',
+      primaryDark:  '#D0CEC8',
+      onPrimary:    '#1a1a18',
+      gradient:     'linear-gradient(135deg, #F0EEE8 0%, #D0CEC8 100%)',
+      gradientCard: 'linear-gradient(135deg, rgba(240,238,232,0.18) 0%, rgba(208,206,200,0.09) 100%)',
+      surface:      'rgba(240,238,232,0.12)',
+      surfaceDark:  '#181818',
+      muted:        'rgba(240,238,232,0.30)',
+      glow:         'rgba(253,252,248,0.40)',
+    },
+  },
 ]
-
 
 export const STYLE_GROUPS = [
   'Blue',
@@ -2065,7 +3430,6 @@ export const STYLE_GROUPS = [
   'Black & White',
 ]
 
-
 export function getPaletteById(id) {
   return BRAND_PALETTE.find(palette => palette.id === id) || null
 }
@@ -2073,6 +3437,5 @@ export function getPaletteById(id) {
 export function getPalettesByStyle(style) {
   return BRAND_PALETTE.filter(palette => palette.style === style)
 }
-
 
 export const DEFAULT_COLOUR_ID = 'fashion-jet-black'

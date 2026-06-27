@@ -312,10 +312,21 @@ export function ReceiptTemplate20({ receipt, customer, receiptBrandSettings }) {
             )}
           </div>
 
+            
           <div className={styles.signBlock}>
+            <div className={styles.signZone}>
+              {receiptBrandSettings.signature && (
+                <img
+                  className={styles.signature}
+                  src={receiptBrandSettings.signature}
+                  alt="Authorised signature"
+                />
+              )}
+            </div>
             <div className={styles.signLine} />
-            <div className={styles.SignLabel}>Authorised Sign</div>
+            <div className={styles.signLabel}>Authorised Signature</div>
           </div>
+
         </div>
       </div>
 

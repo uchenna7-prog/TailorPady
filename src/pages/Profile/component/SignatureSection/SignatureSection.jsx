@@ -194,11 +194,11 @@ function PhotoTab({ onChange, userId }) {
     setProcessing(true)
 
     try {
-      const cleanedDataUrl  = await removeBackground(file)
-      const blackDataUrl    = await forceBlackInk(cleanedDataUrl)
-      const blackBlob       = await fetch(blackDataUrl).then(r => r.blob())
-      const blackFile       = new File([blackBlob], 'signature.png', { type: 'image/png' })
-      const cloudinaryUrl   = await uploadToCloudinary(blackFile, 'signatures')
+      const cleanedDataUrl = await removeBackground(file)
+      const blackDataUrl   = await forceBlackInk(cleanedDataUrl)
+      const blackBlob      = await fetch(blackDataUrl).then(r => r.blob())
+      const blackFile      = new File([blackBlob], 'signature.png', { type: 'image/png' })
+      const cloudinaryUrl  = await uploadToCloudinary(blackFile, 'signatures')
       await incrementAttempts()
       await saveSignatureUrl(cloudinaryUrl)
       setPreview(cloudinaryUrl)
@@ -239,7 +239,6 @@ function PhotoTab({ onChange, userId }) {
               ref={fileRef}
               type="file"
               accept="image/*"
-              capture="environment"
               className={styles.hiddenInput}
               onChange={handleFile}
             />
@@ -249,7 +248,7 @@ function PhotoTab({ onChange, userId }) {
             </p>
             <p className={styles.uploadSub}>
               {canAttempt
-                ? 'Sign on white paper, take a photo — background is removed automatically'
+                ? 'Sign on white paper, take a photo or upload from gallery — background is removed automatically'
                 : 'Your 5 monthly attempts have been used. Resets next month.'}
             </p>
             {canAttempt && <span className={styles.uploadBtn}>Choose Photo</span>}
