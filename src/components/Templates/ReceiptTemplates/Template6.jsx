@@ -285,25 +285,27 @@ export function ReceiptTemplate6({ receipt, customer, receiptBrandSettings }) {
                   <span>{receiptBrandSettings.phone}</span>
                 </div>
               )}
-              {receiptBrandSettings.address && (
-                <div className={styles.iconRow}>
-                  <span className={styles.icon}><LocationIcon /></span>
-                  <span>{receiptBrandSettings.address}</span>
-                </div>
-              )}
+
               {receiptBrandSettings.website && (
                 <div className={styles.iconRow}>
                   <span className={styles.icon}><WebsiteIcon /></span>
                   <span>{receiptBrandSettings.website}</span>
                 </div>
               )}
+              {receiptBrandSettings.address && (
+                <div className={styles.iconRow}>
+                  <span className={styles.icon}><LocationIcon /></span>
+                  <span>{receiptBrandSettings.address}</span>
+                </div>
+              )}
+
 
 
             </div>
            
             {receiptBrandSettings.name && (
               
-              <div>
+              <div className={styles.footerRight}>
                 <div className={styles.footerPayLabel}>Payment Details</div>
                 Received By: {receiptBrandSettings.name}
               </div>

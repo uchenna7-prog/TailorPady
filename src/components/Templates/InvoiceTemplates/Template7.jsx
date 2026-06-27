@@ -56,12 +56,12 @@ export function InvoiceTemplate7({ invoice, customer, invoiceBrandSettings }) {
                 <span>{invoice.number}</span>
               </div>
               <div className={styles.metaLine}>
-                <span className={styles.metaKey}>Issue Date</span>
+                <span className={styles.metaKey}>Date</span>
                 <span>{invoice.date}</span>
               </div>
               {dueDate && (
                 <div className={styles.metaLine}>
-                  <span className={styles.metaKey}>Due Date</span>
+                  <span className={styles.metaKey}>Date</span>
                   <span>{dueDate}</span>
                 </div>
               )}
@@ -88,18 +88,19 @@ export function InvoiceTemplate7({ invoice, customer, invoiceBrandSettings }) {
                 <span>{invoiceBrandSettings.phone}</span>
               </div>
             )}
-            {invoiceBrandSettings.address && (
-              <div className={styles.iconRow}>
-                <span className={styles.icon}><LocationIcon /></span>
-                <span>{invoiceBrandSettings.address}</span>
-              </div>
-            )}
             {invoiceBrandSettings.website && (
               <div className={styles.iconRow}>
                 <span className={styles.icon}><WebsiteIcon /></span>
                 <span>{invoiceBrandSettings.website}</span>
               </div>
             )}
+            {invoiceBrandSettings.address && (
+              <div className={styles.iconRow}>
+                <span className={styles.icon}><LocationIcon /></span>
+                <span>{invoiceBrandSettings.address}</span>
+              </div>
+            )}
+
           </div>
 
           <div className={styles.clientCol}>

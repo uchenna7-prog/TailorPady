@@ -106,18 +106,19 @@ export function ReceiptTemplate7({ receipt, customer, receiptBrandSettings }) {
                 <span>{receiptBrandSettings.phone}</span>
               </div>
             )}
-            {receiptBrandSettings.address && (
-              <div className={styles.iconRow}>
-                <span className={styles.icon}><LocationIcon /></span>
-                <span>{receiptBrandSettings.address}</span>
-              </div>
-            )}
             {receiptBrandSettings.website && (
               <div className={styles.iconRow}>
                 <span className={styles.icon}><WebsiteIcon /></span>
                 <span>{receiptBrandSettings.website}</span>
               </div>
             )}
+            {receiptBrandSettings.address && (
+              <div className={styles.iconRow}>
+                <span className={styles.icon}><LocationIcon /></span>
+                <span>{receiptBrandSettings.address}</span>
+              </div>
+            )}
+
           </div>
 
           <div className={styles.clientCol}>

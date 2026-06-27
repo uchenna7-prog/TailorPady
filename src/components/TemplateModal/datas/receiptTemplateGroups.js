@@ -309,7 +309,7 @@ export const RECEIPT_TEMPLATE_GROUPS = [
       {
         id: 'receiptTemplate19',
         label: 'Corner Block',
-        tags: ['accent', 'has logo', 'notes'],
+        tags: ['accent', 'has logo'],
         requires: [
           'logo',
           'name',

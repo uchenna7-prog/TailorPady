@@ -63,16 +63,16 @@ export function InvoiceTemplate6({ invoice, customer, invoiceBrandSettings }) {
           <div className={styles.metaBlock}>
             <div className={styles.metaLine}>
               <span className={styles.metaKey}>Invoice #</span>
-              <span>{invoice.number}</span>
+              <span className={styles.metaVal}>{invoice.number}</span>
             </div>
             <div className={styles.metaLine}>
-              <span className={styles.metaKey}>Issue Date</span>
-              <span>{invoice.date}</span>
+              <span className={styles.metaKey}>Date</span>
+              <span className={styles.metaVal}>{invoice.date}</span>
             </div>
             {dueDate && (
               <div className={styles.metaLine}>
-                <span className={styles.metaKey}>Due Date</span>
-                <span>{dueDate}</span>
+                <span className={styles.metaKey}>Due</span>
+                <span className={styles.metaVal}>{dueDate}</span>
               </div>
             )}
           </div>
@@ -217,23 +217,24 @@ export function InvoiceTemplate6({ invoice, customer, invoiceBrandSettings }) {
                   <span>{invoiceBrandSettings.phone}</span>
                 </div>
               )}
-              {invoiceBrandSettings.address && (
-                <div className={styles.iconRow}>
-                  <span className={styles.icon}><LocationIcon /></span>
-                  <span>{invoiceBrandSettings.address}</span>
-                </div>
-              )}
               {invoiceBrandSettings.website && (
                 <div className={styles.iconRow}>
                   <span className={styles.icon}><WebsiteIcon /></span>
                   <span>{invoiceBrandSettings.website}</span>
                 </div>
               )}
+              {invoiceBrandSettings.address && (
+                <div className={styles.iconRow}>
+                  <span className={styles.icon}><LocationIcon /></span>
+                  <span>{invoiceBrandSettings.address}</span>
+                </div>
+              )}
+
 
             </div>
 
             {invoiceBrandSettings.accountBank && (
-              <div className={styles.footerLeft}>
+              <div className={styles.footerRight}>
                 <div className={styles.footerPayLabel}>Payment Information</div>
                 {invoiceBrandSettings.accountBank   && <span>Bank: {invoiceBrandSettings.accountBank}<br /></span>}
                   {invoiceBrandSettings.accountNumber && <span>Account No: {invoiceBrandSettings.accountNumber}<br/></span>}

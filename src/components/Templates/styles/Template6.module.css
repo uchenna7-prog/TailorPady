@@ -15,7 +15,7 @@
   flex: 1;
   display: flex;
   flex-direction: column;
-  padding: 22px 26px 18px;
+  padding: 22px 16px 16px;
 }
 
 
@@ -30,6 +30,7 @@
   display: flex;
   align-items: center;
   gap: 8px;
+  flex: 1.3;
 }
 
 .brandName {
@@ -43,27 +44,31 @@
 .metaBlock {
   display: flex;
   flex-direction: column;
-  align-items: flex-end;
   gap: 1px;
+  flex: 0.5;
 }
 
 .metaLine {
   font-size: 8.5px;
   color: #444;
   display: flex;
-  justify-content: flex-end;
   gap: 4px;
-  line-height: 1.75;
 }
 
 .metaKey {
   font-weight: 700;
   color: #1a1a1a;
+  white-space: nowrap;
+
+}
+
+.metaVal{
+  white-space: nowrap;
 }
 
 
 .titleRow {
-  margin-bottom: 16px;
+  margin-bottom: 10px;
 }
 
 .title {
@@ -96,11 +101,9 @@
 }
 
 .clientColRight {
-  flex: 1.2;
-  text-align: right;
+  flex: 1.4;
   font-size: 9px;
   color: #444;
-  line-height: 1.7;
 }
 
 .clientLabel {
@@ -463,8 +466,6 @@
 }
 
 
-/* ── Footer ─────────────────────────────────────────── */
-
 .footer {
   margin-top: auto;
   padding-top: 16px;
@@ -477,7 +478,9 @@
   color: #1a1a1a;
   line-height: 1.85;
   margin-bottom: 14px;
+
 }
+
 
 .footerBrandName {
   font-size: 10px;
@@ -515,8 +518,8 @@
 }
 
 .signatureLine {
-  width: 170px;
-  border-bottom: 1px solid var(--brand-primary-dark);
+  width: 100px;
+  border-bottom: 1.3px solid var(--brand-primary-dark);
   height: 18px;
 }
 

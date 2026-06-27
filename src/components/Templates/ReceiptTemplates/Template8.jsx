@@ -177,27 +177,27 @@ export function ReceiptTemplate8({ receipt, customer, receiptBrandSettings }) {
         {hasExtras && (
           <>
             <div className={styles.totalsRow}>
-              <span className={styles.totalsKey}>subtotal:</span>
+              <span className={styles.totalsKey}>subtotal</span>
               <span className={styles.totalsVal}>{formatMoney(currency, subtotal)}</span>
             </div>
 
             {discountAmount > 0 && (
               <div className={styles.totalsRow}>
-                <span className={styles.totalsKey}>{discountLabel}:</span>
+                <span className={styles.totalsKey}>{discountLabel}</span>
                 <span className={`${styles.totalsVal} ${styles.discountVal}`}>-{formatMoney(currency, discountAmount)}</span>
               </div>
             )}
 
             {shippingFee > 0 && (
               <div className={styles.totalsRow}>
-                <span className={styles.totalsKey}>shipping:</span>
+                <span className={styles.totalsKey}>shipping</span>
                 <span className={styles.totalsVal}>{formatMoney(currency, shippingFee)}</span>
               </div>
             )}
 
             {useTax && taxAmount > 0 && (
               <div className={styles.totalsRow}>
-                <span className={styles.totalsKey}>Sales Tax ({taxRate}%):</span>
+                <span className={styles.totalsKey}>Sales Tax ({taxRate}%)</span>
                 <span className={styles.totalsVal}>{formatMoney(currency, taxAmount)}</span>
               </div>
             )}
@@ -206,7 +206,7 @@ export function ReceiptTemplate8({ receipt, customer, receiptBrandSettings }) {
 
         
         <div className={styles.grandTotalRow}>
-          <span className={styles.grandTotalKey}>Total Amount:</span>
+          <span className={styles.grandTotalKey}>Total Amount</span>
           <span className={styles.grandTotalVal}>
             {formatMoney(currency, paymentRows.length > 0 ? thisPaymentTotal + previouslyPaid : grandTotal)}
           </span>
@@ -245,14 +245,14 @@ export function ReceiptTemplate8({ receipt, customer, receiptBrandSettings }) {
 
           {paymentRows.length > 0 && previouslyPaid > 0 && (
           <div className={styles.totalsRow}>
-            <span className={styles.totalsKey}>previously paid:</span>
+            <span className={styles.totalsKey}>previously paid</span>
             <span className={styles.totalsVal}>{formatMoney(currency, previouslyPaid)}</span>
           </div>
         )}
 
         {paymentRows.length > 0 && thisPaymentTotal > 0 && (
           <div className={styles.totalsRow}>
-            <span className={styles.totalsKey}>this payment:</span>
+            <span className={styles.totalsKey}>this payment</span>
             <span className={styles.totalsVal}>+{formatMoney(currency, thisPaymentTotal)}</span>
           </div>
         )}

@@ -152,33 +152,33 @@ export function InvoiceTemplate8({ invoice, customer, invoiceBrandSettings }) {
 
       <div className={styles.totalsSection}>
         <div className={styles.totalsRow}>
-          <span className={styles.totalsKey}>subtotal:</span>
+          <span className={styles.totalsKey}>subtotal</span>
           <span className={styles.totalsVal}>{formatMoney(currency, subtotal)}</span>
         </div>
 
         {discountAmount > 0 && (
           <div className={styles.totalsRow}>
-            <span className={styles.totalsKey}>{discountLabel}:</span>
+            <span className={styles.totalsKey}>{discountLabel}</span>
             <span className={`${styles.totalsVal} ${styles.discountVal}`}>-{formatMoney(currency, discountAmount)}</span>
           </div>
         )}
 
         {shippingFee > 0 && (
           <div className={styles.totalsRow}>
-            <span className={styles.totalsKey}>shipping:</span>
+            <span className={styles.totalsKey}>shipping</span>
             <span className={styles.totalsVal}>{formatMoney(currency, shippingFee)}</span>
           </div>
         )}
 
         {useTax && taxAmount > 0 && (
           <div className={styles.totalsRow}>
-            <span className={styles.totalsKey}>Sales Tax ({taxRate}%):</span>
+            <span className={styles.totalsKey}>Sales Tax ({taxRate}%)</span>
             <span className={styles.totalsVal}>{formatMoney(currency, taxAmount)}</span>
           </div>
         )}
 
         <div className={styles.grandTotalRow}>
-          <span className={styles.grandTotalKey}>Total Amount:</span>
+          <span className={styles.grandTotalKey}>Total Amount</span>
           <span className={styles.grandTotalVal}>{formatMoney(currency, grandTotal)}</span>
         </div>
       </div>

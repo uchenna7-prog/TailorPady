@@ -345,7 +345,7 @@ export const INVOICE_TEMPLATE_GROUPS = [
       {
         id: 'invoiceTemplate19',
         label: 'Corner Block',
-        tags: ['accent', 'has logo', 'notes'],
+        tags: ['accent', 'has logo'],
         requires: [
           'logo',
           'name',
