@@ -12,22 +12,42 @@ const FONTS = [
 
 const VERCEL_API_URL = import.meta.env.VITE_VERCEL_API_URL
 
-
 async function removeBackground(imageFile) {
   const formData = new FormData()
   formData.append('image', imageFile)
-
   const response = await fetch(`${VERCEL_API_URL}/api/remove-bg`, {
     method: 'POST',
     body: formData,
   })
-
-
   if (!response.ok) throw new Error('Background removal failed')
   const data = await response.json()
   return data.image
 }
 
+function forceBlackInk(dataUrl) {
+  return new Promise((resolve) => {
+    const img = new Image()
+    img.onload = () => {
+      const canvas = document.createElement('canvas')
+      canvas.width  = img.width
+      canvas.height = img.height
+      const ctx = canvas.getContext('2d')
+      ctx.drawImage(img, 0, 0)
+      const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height)
+      const data = imageData.data
+      for (let i = 0; i < data.length; i += 4) {
+        if (data[i + 3] > 10) {
+          data[i]     = 0
+          data[i + 1] = 0
+          data[i + 2] = 0
+        }
+      }
+      ctx.putImageData(imageData, 0, 0)
+      resolve(canvas.toDataURL('image/png'))
+    }
+    img.src = dataUrl
+  })
+}
 
 function DrawTab({ value, onChange }) {
   const canvasRef = useRef(null)
@@ -37,8 +57,8 @@ function DrawTab({ value, onChange }) {
 
   useEffect(() => {
     if (!value || !canvasRef.current) return
-    const img    = new Image()
-    img.onload   = () => {
+    const img  = new Image()
+    img.onload = () => {
       const ctx = canvasRef.current.getContext('2d')
       ctx.clearRect(0, 0, canvasRef.current.width, canvasRef.current.height)
       ctx.drawImage(img, 0, 0)
@@ -64,22 +84,18 @@ function DrawTab({ value, onChange }) {
     const ctx    = canvas.getContext('2d')
     const pts    = points.current
     if (pts.length < 2) return
-
     ctx.lineWidth   = 2.2
     ctx.lineCap     = 'round'
     ctx.lineJoin    = 'round'
     ctx.strokeStyle = getComputedStyle(document.documentElement)
       .getPropertyValue('--text').trim() || '#111'
-
     ctx.beginPath()
     ctx.moveTo(pts[0].x, pts[0].y)
-
     for (let i = 1; i < pts.length - 1; i++) {
       const midX = (pts[i].x + pts[i + 1].x) / 2
       const midY = (pts[i].y + pts[i + 1].y) / 2
       ctx.quadraticCurveTo(pts[i].x, pts[i].y, midX, midY)
     }
-
     const last = pts[pts.length - 1]
     ctx.lineTo(last.x, last.y)
     ctx.stroke()
@@ -141,7 +157,6 @@ function DrawTab({ value, onChange }) {
   )
 }
 
-
 function PhotoTab({ onChange, userId }) {
   const [preview,    setPreview]    = useState(null)
   const [processing, setProcessing] = useState(false)
@@ -179,15 +194,16 @@ function PhotoTab({ onChange, userId }) {
     setProcessing(true)
 
     try {
-      const cleanedDataUrl = await removeBackground(file)
-      const cleanedBlob    = await fetch(cleanedDataUrl).then(r => r.blob())
-      const cleanedFile    = new File([cleanedBlob], 'signature.png', { type: 'image/png' })
-      const cloudinaryUrl  = await uploadToCloudinary(cleanedFile, 'signatures')
+      const cleanedDataUrl  = await removeBackground(file)
+      const blackDataUrl    = await forceBlackInk(cleanedDataUrl)
+      const blackBlob       = await fetch(blackDataUrl).then(r => r.blob())
+      const blackFile       = new File([blackBlob], 'signature.png', { type: 'image/png' })
+      const cloudinaryUrl   = await uploadToCloudinary(blackFile, 'signatures')
       await incrementAttempts()
       await saveSignatureUrl(cloudinaryUrl)
       setPreview(cloudinaryUrl)
       onChange(cloudinaryUrl)
-    } catch (err) {
+    } catch {
       setError('Something went wrong. Please try again.')
     } finally {
       setProcessing(false)
@@ -283,7 +299,6 @@ function PhotoTab({ onChange, userId }) {
   )
 }
 
-
 function TypeTab({ onChange }) {
   const [name,       setName]       = useState('')
   const [selectedId, setSelectedId] = useState('dancing')
@@ -308,7 +323,6 @@ function TypeTab({ onChange }) {
     if (!font) return
     renderToCanvas(name, font.family)
     onChange(canvasRef.current.toDataURL('image/png'))
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [name, selectedId, renderToCanvas])
 
   return (
@@ -343,7 +357,6 @@ function TypeTab({ onChange }) {
     </div>
   )
 }
-
 
 const TABS = [
   { id: 'photo', label: 'Photo', icon: 'photo_camera' },
