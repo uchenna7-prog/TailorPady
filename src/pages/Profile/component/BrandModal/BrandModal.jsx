@@ -1,4 +1,4 @@
-import { useState, useRef } from "react"
+import { useState, useRef, useCallback } from "react"
 import { FullModal } from "../FullModal/FullModal"
 import { FieldGroup } from "../FieldGroup/FieldGroup"
 import { Field } from "../Field/Field"
@@ -7,6 +7,7 @@ import { SignatureSection } from "../SignatureSection/SignatureSection"
 import { getPaletteById } from "../../../../config/brandPalette"
 import { uploadToCloudinary } from "../../../../services/cloudinaryService"
 import { useProfileSettings } from "../../../../contexts/ProfileSettingsContext"
+import { useAuth } from "../../../../contexts/AuthContext"
 import BrandColourPicker from "../../../../components/BrandColourPicker/BrandColourPicker"
 import { LogoCropModal } from "../../../../components/LogoCropModal/LogoCropModal"
 import styles from "./BrandModal.module.css"
@@ -16,6 +17,7 @@ const DEFAULT_COLOUR_ID = 'midnight'
 export function BrandModal({ onBack, showToast }) {
 
   const { profileSettings, updateManyProfileSettings } = useProfileSettings()
+  const { user } = useAuth()
   const logoInputRef = useRef()
 
   const [logoUploading, setLogoUploading] = useState(false)
@@ -35,7 +37,12 @@ export function BrandModal({ onBack, showToast }) {
     brandSignature: profileSettings.brandSignature || null,
   })
 
-  const set = key => val => setLocal(p => ({ ...p, [key]: val }))
+  const set = useCallback(key => val => setLocal(p => ({ ...p, [key]: val })), [])
+
+  const handleSignatureChange = useCallback(
+    val => setLocal(p => ({ ...p, brandSignature: val })),
+    []
+  )
 
   const handleLogoChange = e => {
     const file = e.target.files?.[0]
@@ -166,7 +173,11 @@ export function BrandModal({ onBack, showToast }) {
                 </span>
               </div>
             ) : (
-              <SignatureSection value={local.brandSignature} onChange={set('brandSignature')} />
+              <SignatureSection
+                value={local.brandSignature}
+                onChange={handleSignatureChange}
+                userId={user?.uid}
+              />
             )}
           </Field>
         </FieldGroup>

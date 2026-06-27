@@ -307,7 +307,8 @@ function TypeTab({ onChange }) {
     if (!font) return
     renderToCanvas(name, font.family)
     onChange(canvasRef.current.toDataURL('image/png'))
-  }, [name, selectedId, renderToCanvas, onChange])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [name, selectedId, renderToCanvas])
 
   return (
     <div className={styles.tabPane}>
