@@ -22,7 +22,6 @@ async function removeBackground(imageFile) {
     body: formData,
   })
 
-  console.log('VERCEL_API_URL is:', VERCEL_API_URL)
 
   if (!response.ok) throw new Error('Background removal failed')
   const data = await response.json()
