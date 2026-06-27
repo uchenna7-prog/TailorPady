@@ -24,6 +24,7 @@
   justify-content: space-between;
   align-items: flex-start;
   margin-bottom: 14px;
+  gap: 20px;
 }
 
 .logoBlock {
@@ -481,6 +482,14 @@
 
 }
 
+
+.brandBlock{
+  flex: 1.2;
+}
+
+.footerRight{
+  flex: 0.7;
+}
 
 .footerBrandName {
   font-size: 10px;

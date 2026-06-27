@@ -198,7 +198,7 @@ export function InvoiceTemplate6({ invoice, customer, invoiceBrandSettings }) {
         <div className={styles.footer}>
           <div className={styles.footerBrandBlock}>
 
-            <div>
+            <div className={styles.brandBlock}>
 
               {(invoiceBrandSettings.name || invoiceBrandSettings.ownerName) && (
                 <div className={styles.footerBrandName}>

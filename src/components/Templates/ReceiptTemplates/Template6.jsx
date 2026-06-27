@@ -267,7 +267,7 @@ export function ReceiptTemplate6({ receipt, customer, receiptBrandSettings }) {
         <div className={styles.footer}>
           <div className={styles.footerBrandBlock}>
 
-            <div>
+            <div className={styles.brandBlock}>
               {(receiptBrandSettings.name || receiptBrandSettings.ownerName) && (
               <div className={styles.footerBrandName}>
                 {receiptBrandSettings.name || receiptBrandSettings.ownerName}
