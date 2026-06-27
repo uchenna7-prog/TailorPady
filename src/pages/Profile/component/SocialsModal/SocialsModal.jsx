@@ -1,24 +1,33 @@
+import { useState, useRef, useEffect } from 'react'
+import { SOCIAL_PLATFORMS } from '../../datas'
+import { SocialIcon } from '../SocialIcon/SocialIcon'
+import { FullModal } from '../FullModal/FullModal'
+import { FieldGroup } from '../FieldGroup/FieldGroup'
+import { useProfileSettings } from '../../../../contexts/ProfileSettingsContext'
+import styles from './SocialsModal.module.css'
 
-import { useState } from "react"
-import { SOCIAL_PLATFORMS } from "../../datas"
-import { SocialIcon } from "../SocialIcon/SocialIcon"
-import { FullModal } from "../FullModal/FullModal"
-import { FieldGroup } from "../FieldGroup/FieldGroup"
-import { useProfileSettings } from "../../../../contexts/ProfileSettingsContext"
-import styles from "./SocialsModal.module.css"
+function buildHandles(socials) {
+  return Object.fromEntries((socials || []).map(s => [s.platform, s.handle]))
+}
 
+function buildExpanded(socials) {
+  const active = new Set((socials || []).map(s => s.platform))
+  return Object.fromEntries(SOCIAL_PLATFORMS.map(p => [p.id, active.has(p.id)]))
+}
 
 export function SocialsModal({ onBack, showToast }) {
+  const { profileSettings, isLoading, updateManyProfileSettings } = useProfileSettings()
+  const initializedRef = useRef(false)
 
+  const [handles,  setHandles]  = useState(() => buildHandles(profileSettings.brandSocials))
+  const [expanded, setExpanded] = useState(() => buildExpanded(profileSettings.brandSocials))
 
-  const { profileSettings, updateManyProfileSettings } = useProfileSettings()
-
-  const toMap = arr => Object.fromEntries((arr || []).map(s => [s.platform, s.handle]))
-  const [handles, setHandles]  = useState(() => toMap(profileSettings.brandSocials || []))
-  const [expanded, setExpanded] = useState(() => {
-    const active = new Set((profileSettings.brandSocials || []).map(s => s.platform))
-    return Object.fromEntries(SOCIAL_PLATFORMS.map(p => [p.id, active.has(p.id)]))
-  })
+  useEffect(() => {
+    if (isLoading || initializedRef.current) return
+    initializedRef.current = true
+    setHandles(buildHandles(profileSettings.brandSocials))
+    setExpanded(buildExpanded(profileSettings.brandSocials))
+  }, [isLoading])
 
   const togglePlatform = id => {
     setExpanded(prev => {
@@ -37,11 +46,20 @@ export function SocialsModal({ onBack, showToast }) {
     onBack()
   }
 
+  if (isLoading) {
+    return (
+      <FullModal title="Social Media" onBack={onBack}>
+        <div style={{ display: 'flex', justifyContent: 'center', padding: '48px 0' }}>
+          <div style={{ width: 28, height: 28, border: '2.5px solid var(--border)', borderTopColor: 'var(--accent)', borderRadius: '50%', animation: 'spin 0.7s linear infinite' }} />
+        </div>
+      </FullModal>
+    )
+  }
+
   return (
     <FullModal title="Social Media" onBack={onBack} onSave={save}>
 
       <FieldGroup>
-
         {SOCIAL_PLATFORMS.map(platform => (
           <div key={platform.id} className={styles.socialRow}>
             <button
@@ -50,23 +68,18 @@ export function SocialsModal({ onBack, showToast }) {
               onClick={() => togglePlatform(platform.id)}
             >
               <div className={styles.socialToggleLeft}>
-
                 <div className={`${styles.socialIconWrap} ${expanded[platform.id] ? styles.socialIconActive : ''}`}>
                   <SocialIcon platformId={platform.id} size={18} />
                 </div>
-
                 <span className={styles.socialPlatformLabel}>{platform.label}</span>
-
               </div>
-
               <span className={`mi ${styles.socialChevron} ${expanded[platform.id] ? styles.socialChevronOpen : ''}`} style={{ fontSize: '1rem' }}>
                 expand_more
               </span>
-
             </button>
+
             {expanded[platform.id] && (
               <div className={styles.socialHandleWrap}>
-
                 <span className={styles.socialAt}>@</span>
                 <input
                   className={styles.socialHandleInput}
@@ -79,12 +92,10 @@ export function SocialsModal({ onBack, showToast }) {
                 />
               </div>
             )}
-
           </div>
-
         ))}
       </FieldGroup>
-      
+
     </FullModal>
   )
 }

@@ -8,7 +8,6 @@ import {
 } from '../services/profileService'
 import { db } from '../firebase'
 
-
 const STORAGE_KEY = 'TailorPady_profile_settings'
 
 export const DEFAULTS = {
@@ -42,7 +41,6 @@ export const DEFAULTS = {
   accountName:   '',
 }
 
-
 function loadFromLocalStorage() {
   try {
     const stored = localStorage.getItem(STORAGE_KEY)
@@ -59,22 +57,18 @@ function saveToLocalStorage(settings) {
   } catch {}
 }
 
-
 const ProfileSettingsContext = createContext(null)
 
 export function ProfileSettingsProvider({ children }) {
-
   const { user } = useAuth()
 
-  const cachedSettings          = loadFromLocalStorage()
+  const cachedSettings = loadFromLocalStorage()
   const [settings, setSettings] = useState(cachedSettings ?? { ...DEFAULTS })
-  const [isLoading, setIsLoading] = useState(!cachedSettings)
-  const hasLoadedFromFirestore  = useRef(false)
+  const [isLoading, setIsLoading] = useState(true)
+  const hasLoadedFromFirestore = useRef(false)
 
   useEffect(() => {
-    if (!user?.uid) return
-
-    if (loadFromLocalStorage()) {
+    if (!user?.uid) {
       hasLoadedFromFirestore.current = true
       setIsLoading(false)
       return
@@ -85,19 +79,19 @@ export function ProfileSettingsProvider({ children }) {
     async function loadFromFirestore() {
       try {
         const [brandData, personalData] = await Promise.all([
-        getBrandDataFromFirestore(db, user.uid),
-        getPersonalInfosFromFirestore(db, user.uid),
+          getBrandDataFromFirestore(db, user.uid),
+          getPersonalInfosFromFirestore(db, user.uid),
         ])
         if (cancelled) return
 
         const merged = { ...DEFAULTS, ...personalData, ...brandData }
+        hasLoadedFromFirestore.current = true
         setSettings(merged)
         saveToLocalStorage(merged)
+      } catch {
+        hasLoadedFromFirestore.current = true
       } finally {
-        if (!cancelled) {
-          hasLoadedFromFirestore.current = true
-          setIsLoading(false)
-        }
+        if (!cancelled) setIsLoading(false)
       }
     }
 

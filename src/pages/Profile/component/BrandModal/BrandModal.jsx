@@ -1,41 +1,49 @@
-import { useState, useRef, useCallback } from "react"
-import { FullModal } from "../FullModal/FullModal"
-import { FieldGroup } from "../FieldGroup/FieldGroup"
-import { Field } from "../Field/Field"
-import { TextInput } from "../TextInput/TextInput"
-import { SignatureSection } from "../SignatureSection/SignatureSection"
-import { getPaletteById } from "../../../../config/brandPalette"
-import { uploadToCloudinary } from "../../../../services/cloudinaryService"
-import { useProfileSettings } from "../../../../contexts/ProfileSettingsContext"
-import { useAuth } from "../../../../contexts/AuthContext"
-import BrandColourPicker from "../../../../components/BrandColourPicker/BrandColourPicker"
-import { LogoCropModal } from "../../../../components/LogoCropModal/LogoCropModal"
-import styles from "./BrandModal.module.css"
+import { useState, useRef, useCallback, useEffect } from 'react'
+import { FullModal } from '../FullModal/FullModal'
+import { FieldGroup } from '../FieldGroup/FieldGroup'
+import { Field } from '../Field/Field'
+import { TextInput } from '../TextInput/TextInput'
+import { SignatureSection } from '../SignatureSection/SignatureSection'
+import { getPaletteById } from '../../../../config/brandPalette'
+import { uploadToCloudinary } from '../../../../services/cloudinaryService'
+import { useProfileSettings } from '../../../../contexts/ProfileSettingsContext'
+import { useAuth } from '../../../../contexts/AuthContext'
+import BrandColourPicker from '../../../../components/BrandColourPicker/BrandColourPicker'
+import { LogoCropModal } from '../../../../components/LogoCropModal/LogoCropModal'
+import styles from './BrandModal.module.css'
 
 const DEFAULT_COLOUR_ID = 'midnight'
 
-export function BrandModal({ onBack, showToast }) {
+function buildLocal(ps) {
+  return {
+    brandName:      ps.brandName      || '',
+    brandTagline:   ps.brandTagline   || '',
+    brandColourId:  (ps.brandColourId && !ps.brandColourId.startsWith('#'))
+                      ? ps.brandColourId
+                      : DEFAULT_COLOUR_ID,
+    brandLogo:      ps.brandLogo      || null,
+    brandSignature: ps.brandSignature || null,
+  }
+}
 
-  const { profileSettings, updateManyProfileSettings } = useProfileSettings()
+export function BrandModal({ onBack, showToast }) {
+  const { profileSettings, isLoading, updateManyProfileSettings } = useProfileSettings()
   const { user } = useAuth()
-  const logoInputRef = useRef()
+  const logoInputRef   = useRef()
+  const initializedRef = useRef(false)
 
   const [logoUploading, setLogoUploading] = useState(false)
-  const [logoProgress, setLogoProgress]   = useState(0)
-  const [sigUploading, setSigUploading]   = useState(false)
-  const [sigProgress, setSigProgress]     = useState(0)
+  const [logoProgress,  setLogoProgress]  = useState(0)
+  const [sigUploading,  setSigUploading]  = useState(false)
+  const [sigProgress,   setSigProgress]   = useState(0)
+  const [cropSrc,       setCropSrc]       = useState(null)
+  const [local,         setLocal]         = useState(() => buildLocal(profileSettings))
 
-  const [cropSrc, setCropSrc] = useState(null)
-
-  const [local, setLocal] = useState({
-    brandName:      profileSettings.brandName      || '',
-    brandTagline:   profileSettings.brandTagline   || '',
-    brandColourId:  (profileSettings.brandColourId && !profileSettings.brandColourId.startsWith('#'))
-                      ? profileSettings.brandColourId
-                      : DEFAULT_COLOUR_ID,
-    brandLogo:      profileSettings.brandLogo      || null,
-    brandSignature: profileSettings.brandSignature || null,
-  })
+  useEffect(() => {
+    if (isLoading || initializedRef.current) return
+    initializedRef.current = true
+    setLocal(buildLocal(profileSettings))
+  }, [isLoading])
 
   const set = useCallback(key => val => setLocal(p => ({ ...p, [key]: val })), [])
 
@@ -49,10 +57,8 @@ export function BrandModal({ onBack, showToast }) {
     if (!file) return
     if (!file.type.startsWith('image/')) { showToast('Please select an image file'); return }
     if (file.size > 10 * 1024 * 1024)   { showToast('Image must be under 10MB');    return }
-
     const objectUrl = URL.createObjectURL(file)
     setCropSrc(objectUrl)
-
     if (logoInputRef.current) logoInputRef.current.value = ''
   }
 
@@ -60,7 +66,6 @@ export function BrandModal({ onBack, showToast }) {
     setCropSrc(null)
     setLogoUploading(true)
     setLogoProgress(0)
-
     try {
       const url = await uploadToCloudinary(croppedFile, 'invoices', setLogoProgress)
       setLocal(p => ({ ...p, brandLogo: url }))
@@ -113,6 +118,16 @@ export function BrandModal({ onBack, showToast }) {
   }
 
   const isSaving = logoUploading || sigUploading
+
+  if (isLoading) {
+    return (
+      <FullModal title="Brand Identity" onBack={onBack}>
+        <div style={{ display: 'flex', justifyContent: 'center', padding: '48px 0' }}>
+          <div style={{ width: 28, height: 28, border: '2.5px solid var(--border)', borderTopColor: 'var(--accent)', borderRadius: '50%', animation: 'spin 0.7s linear infinite' }} />
+        </div>
+      </FullModal>
+    )
+  }
 
   return (
     <>

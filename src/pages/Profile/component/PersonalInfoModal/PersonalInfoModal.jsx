@@ -1,32 +1,45 @@
-import { useState } from "react"
-import { parseStoredPhone, buildPhoneNumber, savePersonalInfoLocally } from "../../utils"
-import { useProfileSettings } from "../../../../contexts/ProfileSettingsContext"
-import { FullModal } from "../FullModal/FullModal"
-import { FieldGroup } from "../FieldGroup/FieldGroup"
-import { Field } from "../Field/Field"
-import { TextInput } from "../TextInput/TextInput"
-import { PhoneField } from "../PhoneField/PhoneField"
+import { useState, useRef, useEffect } from 'react'
+import { parseStoredPhone, buildPhoneNumber, savePersonalInfoLocally } from '../../utils'
+import { useProfileSettings } from '../../../../contexts/ProfileSettingsContext'
+import { FullModal } from '../FullModal/FullModal'
+import { FieldGroup } from '../FieldGroup/FieldGroup'
+import { Field } from '../Field/Field'
+import { TextInput } from '../TextInput/TextInput'
+import { PhoneField } from '../PhoneField/PhoneField'
 import { updateProfile } from 'firebase/auth'
-import { MONTHS, DAYS_IN_MONTH } from "../../datas"
-import styles from "./PersonalInfoModal.module.css"
+import { MONTHS, DAYS_IN_MONTH } from '../../datas'
+import styles from './PersonalInfoModal.module.css'
+
+function buildLocal(info) {
+  return {
+    fullName:   info.fullName   || '',
+    email:      info.email      || '',
+    city:       info.city       || '',
+    country:    info.country    || '',
+    sex:        info.sex        || '',
+    birthMonth: info.birthMonth || '',
+    birthDay:   info.birthDay   || '',
+  }
+}
 
 export function PersonalInfoModal({ personalInfo, onBack, onSave, authUser }) {
-
-  const { updateManyProfileSettings } = useProfileSettings()
+  const { isLoading, updateManyProfileSettings } = useProfileSettings()
+  const initializedRef = useRef(false)
 
   const parsed = parseStoredPhone(personalInfo.phone)
-  const [saving, setSaving] = useState(false)
-  const [local, setLocal] = useState({
-    fullName:   personalInfo.fullName   || '',
-    email:      personalInfo.email      || '',
-    city:       personalInfo.city       || '',
-    country:    personalInfo.country    || '',
-    sex:        personalInfo.sex        || '',
-    birthMonth: personalInfo.birthMonth || '',
-    birthDay:   personalInfo.birthDay   || '',
-  })
-  const [phoneLocal, setPhoneLocal]     = useState(parsed.local)
+  const [saving,       setSaving]       = useState(false)
+  const [local,        setLocal]        = useState(() => buildLocal(personalInfo))
+  const [phoneLocal,   setPhoneLocal]   = useState(parsed.local)
   const [phoneCountry, setPhoneCountry] = useState(parsed.country)
+
+  useEffect(() => {
+    if (isLoading || initializedRef.current) return
+    initializedRef.current = true
+    const p = parseStoredPhone(personalInfo.phone)
+    setLocal(buildLocal(personalInfo))
+    setPhoneLocal(p.local)
+    setPhoneCountry(p.country)
+  }, [isLoading])
 
   const set = key => val => setLocal(p => ({ ...p, [key]: val }))
 
@@ -75,6 +88,16 @@ export function PersonalInfoModal({ personalInfo, onBack, onSave, authUser }) {
     } finally {
       setSaving(false)
     }
+  }
+
+  if (isLoading) {
+    return (
+      <FullModal title="Personal Info" onBack={onBack}>
+        <div style={{ display: 'flex', justifyContent: 'center', padding: '48px 0' }}>
+          <div style={{ width: 28, height: 28, border: '2.5px solid var(--border)', borderTopColor: 'var(--accent)', borderRadius: '50%', animation: 'spin 0.7s linear infinite' }} />
+        </div>
+      </FullModal>
+    )
   }
 
   return (
@@ -129,21 +152,25 @@ export function PersonalInfoModal({ personalInfo, onBack, onSave, authUser }) {
         </Field>
 
         <Field label="Birthday">
-
           <div className={styles.personalInfoRow}>
-
-            <select className={styles.personalInfoSelect} value={local.birthMonth} onChange={e => handleMonthChange(e.target.value)}>
+            <select
+              className={styles.personalInfoSelect}
+              value={local.birthMonth}
+              onChange={e => handleMonthChange(e.target.value)}
+            >
               <option value="">Month</option>
               {MONTHS.map(m => <option key={m} value={m}>{m}</option>)}
             </select>
 
-            <select className={styles.personalInfoSelect} value={local.birthDay} onChange={e => set('birthDay')(e.target.value)}>
+            <select
+              className={styles.personalInfoSelect}
+              value={local.birthDay}
+              onChange={e => set('birthDay')(e.target.value)}
+            >
               <option value="">Day</option>
               {dayOptions.map(d => <option key={d} value={d}>{d}</option>)}
             </select>
-
           </div>
-
         </Field>
 
       </FieldGroup>
