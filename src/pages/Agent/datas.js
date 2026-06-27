@@ -34,3 +34,14 @@ export const TAG_COLORS = {
   Birthday:    { bg: 'rgba(236,72,153,0.12)',  color: '#ec4899'        },
 }
 
+
+
+
+export const AGENT_BRIEF_SUBTEXTS = [
+  { day: 5, text: "Happy Friday — here's the wrap-up before the weekend." },
+  { text: "Here's what's waiting for you today." },
+  { text: "Pady's been keeping an eye on things." },
+  { text: "A quick look at what needs your attention." },
+  { text: "Here's where things stand right now." },
+  { text: "Your assistant's rounded up today's essentials." },
+]

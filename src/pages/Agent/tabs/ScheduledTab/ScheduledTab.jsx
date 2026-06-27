@@ -1,15 +1,15 @@
-import { useState } from "react"
-import { DateDivider } from "../../components/DateDivider/DateDivider"
-import { ScheduledDetailSheet } from "./components/ScheduledDetailSheet/ScheduledDetailSheet"
-import { ScheduledRow } from "./components/ScheduledRow/ScheduledRow"
-import { MIcon } from "../../components/MIcon/MIcon"
-import { groupByDate } from "../../utils"
-import styles from "./ScheduledTab.module.css"
+import { useState } from 'react'
+import { MIcon } from '../../components/MIcon/MIcon'
+import { DateDivider } from '../../components/DateDivider/DateDivider'
+import { ScheduledDetailSheet } from './components/ScheduledDetailSheet/ScheduledDetailSheet'
+import { ScheduledRow } from './components/ScheduledRow/ScheduledRow'
+import { groupByDate } from '../../utils'
+import styles from './ScheduledTab.module.css'
 
 export function ScheduledTab({ items, allOrders, allInvoices, allPayments, customers, onCancel }) {
   const [selected, setSelected] = useState(null)
 
-  if (!items.length) return (
+  if (!items?.length) return (
     <div className={styles.emptyTab}>
       <MIcon name="schedule" size="2rem" color="var(--border2)" />
       <p className={styles.emptyTabTitle}>Nothing scheduled</p>
@@ -17,7 +17,7 @@ export function ScheduledTab({ items, allOrders, allInvoices, allPayments, custo
     </div>
   )
 
-  const groups = groupByDate(items, i => i.whenDate || i.when?.split(' ')[0] || 'Upcoming')
+  const groups = groupByDate(items, i => i.whenDate || 'Upcoming')
 
   return (
     <>

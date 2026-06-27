@@ -51,18 +51,25 @@ export const DEFAULTS = {
   agentEnabled: false,
 
   agentAutoInvoice:          false,
-  agentAutoInvoiceTimeframe: '1day',
+  agentAutoInvoiceTimeframe: { amount: 1,  unit: 'days'  },
 
-  agentAutoReceipt: false,
+  agentAutoReceipt:          false,
+  agentAutoReceiptTimeframe: { amount: 1,  unit: 'hours' },
 
-  agentBirthdayMessages:   false,
-  agentBirthdayNoticeDays: 1,
+  agentBirthdayMessages: false,
+  agentBirthdayNotice:   { amount: 1,  unit: 'days'  },
 
   agentFollowUp:           false,
-  agentFollowUpInactivity: '30days',
+  agentFollowUpInactivity: { amount: 30, unit: 'days'  },
 
-  agentPaymentReminder:     false,
-  agentPaymentReminderDays: 1,
+  agentPaymentReminder:       false,
+  agentPaymentReminderBefore: { amount: 1,  unit: 'days'  },
+
+  agentOverdueAlert:       false,
+  agentOverdueGracePeriod: { amount: 1,  unit: 'days'  },
+
+  agentOrderReadyReminder: false,
+  agentOrderReadyWindow:   { amount: 1,  unit: 'days'  },
 
   agentDailyBrief: true,
 }

@@ -1,0 +1,151 @@
+.brief {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  background: var(--bg);
+  padding: 14px 16px 16px;
+}
+
+.brief::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: var(--border);
+}
+
+@media (min-width: 769px) {
+  .brief {
+    padding: 16px 24px 18px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .brief {
+    padding: 18px 40px 20px;
+  }
+}
+
+@media (min-width: 1440px) {
+  .brief {
+    padding: 18px max(40px, calc(50% - 680px)) 20px;
+  }
+}
+
+.header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.headerText {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.greeting {
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--text);
+  letter-spacing: -0.01em;
+}
+
+.subtext {
+  font-size: 0.74rem;
+  color: var(--text2);
+}
+
+.dismissBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  margin: -4px -4px 0 0;
+  border: none;
+  border-radius: 50%;
+  background: transparent;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: background 0.15s ease;
+}
+
+.dismissBtn:hover {
+  background: var(--border);
+}
+
+.dismissBtn:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
+}
+
+.stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.stat {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 7px;
+  padding: 5px 9px;
+  font-family: inherit;
+}
+
+.statClickable {
+  cursor: pointer;
+  transition: border-color 0.15s ease, background 0.15s ease;
+}
+
+.statClickable:hover {
+  border-color: color-mix(in srgb, var(--accent) 35%, var(--border));
+}
+
+.statClickable:active {
+  background: var(--border);
+}
+
+.statClickable:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
+}
+
+.statValue {
+  font-size: 0.76rem;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.statLabel {
+  font-size: 0.72rem;
+  color: var(--text2);
+  font-weight: 400;
+}
+
+.birthdays {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.birthdayText {
+  font-size: 0.72rem;
+  color: var(--text2);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dismissBtn,
+  .statClickable {
+    transition: none;
+  }
+}

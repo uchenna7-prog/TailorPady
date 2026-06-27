@@ -1,12 +1,40 @@
-export function getGreeting(name) {
+export function getGreeting() {
   const hour = new Date().getHours()
-  const salutation = hour < 12 ? 'Good morning' : hour < 17 ? 'Good afternoon' : 'Good evening'
-  return `${salutation}${name ? `, ${name}` : ''}! 👋`
+  if (hour >= 5  && hour < 12) return 'Good morning'
+  if (hour >= 12 && hour < 17) return 'Good afternoon'
+  if (hour >= 17 && hour < 21) return 'Good evening'
+  return 'Good night'
+}
+
+export function getGreetingEmoji() {
+  const hour = new Date().getHours()
+  if (hour >= 5  && hour < 12) return '☀️'
+  if (hour >= 12 && hour < 17) return '👋'
+  if (hour >= 17 && hour < 21) return '🌙'
+  return '😴'
+}
+
+export function getDisplayName(user) {
+  const fullName = user?.displayName?.trim()
+  if (fullName) {
+    const parts = fullName.split(/\s+/)
+    return parts.length >= 1 ? parts[0] : 'there'
+  }
+  return 'there'
+}
+
+export function getBriefSubtext(subtexts) {
+  const day = new Date().getDay()
+  const dayMatch = subtexts.find(s => s.day === day)
+  if (dayMatch) return dayMatch.text
+
+  const pool = subtexts.filter(s => s.day === undefined)
+  return pool[Math.floor(Math.random() * pool.length)]?.text || ''
 }
 
 export function haptic(type = 'light') {
   if (!navigator.vibrate) return
-  if (type === 'light') navigator.vibrate(10)
+  if (type === 'light')  navigator.vibrate(10)
   if (type === 'medium') navigator.vibrate(20)
 }
 
@@ -17,13 +45,12 @@ export function formatTitle(title) {
 export function extractTime(timeStr) {
   if (!timeStr) return ''
   const commaIdx = timeStr.indexOf(', ')
-  if (commaIdx !== -1) return timeStr.slice(commaIdx + 2)
-  return timeStr
+  return commaIdx !== -1 ? timeStr.slice(commaIdx + 2) : timeStr
 }
 
 export function groupByDate(items, getDate) {
   const groups = []
-  const seen = {}
+  const seen   = {}
   items.forEach(item => {
     const key = getDate(item) || 'Other'
     if (!seen[key]) {
@@ -35,30 +62,9 @@ export function groupByDate(items, getDate) {
   return groups
 }
 
-function getOrderIdFromInvoiceDraftId(id) {
-  for (const prefix of ['draft-invoice-', 'upcoming-invoice-', 'invoice-']) {
-    if (id.startsWith(prefix)) return id.slice(prefix.length)
-  }
-  return null
-}
-
-function getPaymentIdFromReceiptDraftId(id) {
-  for (const prefix of ['draft-receipt-', 'receipt-']) {
+function extractIdFromDraftId(id, prefixes) {
+  for (const prefix of prefixes) {
     if (id.startsWith(prefix)) return id.slice(prefix.length).split('::')[0]
-  }
-  return null
-}
-
-function getInvoiceIdFromReminderDraftId(id) {
-  for (const prefix of ['upcoming-reminder-', 'draft-reminder-', 'reminder-']) {
-    if (id.startsWith(prefix)) return id.slice(prefix.length)
-  }
-  return null
-}
-
-function getCustomerIdFromFollowupDraftId(id) {
-  for (const prefix of ['draft-followup-', 'followup-']) {
-    if (id.startsWith(prefix)) return id.slice(prefix.length)
   }
   return null
 }
@@ -69,37 +75,27 @@ export function resolveCustomerName(item, allOrders, allInvoices, allPayments, c
   const id = item.id || ''
   let customerId = null
 
-  if (item.orderId) {
-    const order = allOrders?.find(o => String(o.id) === String(item.orderId))
-    customerId = order?.customerId ?? null
+  const orderId = extractIdFromDraftId(id, ['invoice-', 'upcoming-invoice-'])
+  if (orderId) {
+    customerId = allOrders?.find(o => String(o.id) === String(orderId))?.customerId ?? null
   }
 
   if (!customerId) {
-    const orderId = getOrderIdFromInvoiceDraftId(id)
-    if (orderId) {
-      const order = allOrders?.find(o => String(o.id) === String(orderId))
-      customerId = order?.customerId ?? null
-    }
-  }
-
-  if (!customerId) {
-    const paymentId = getPaymentIdFromReceiptDraftId(id)
+    const paymentId = extractIdFromDraftId(id, ['receipt-'])
     if (paymentId) {
-      const payment = allPayments?.find(p => String(p.id) === String(paymentId))
-      customerId = payment?.customerId ?? null
+      customerId = allPayments?.find(p => String(p.id) === String(paymentId))?.customerId ?? null
     }
   }
 
   if (!customerId) {
-    const invoiceId = getInvoiceIdFromReminderDraftId(id)
+    const invoiceId = extractIdFromDraftId(id, ['reminder-', 'overdue-'])
     if (invoiceId) {
-      const invoice = allInvoices?.find(inv => String(inv.id) === String(invoiceId))
-      customerId = invoice?.customerId ?? null
+      customerId = allInvoices?.find(i => String(i.id) === String(invoiceId))?.customerId ?? null
     }
   }
 
   if (!customerId) {
-    customerId = getCustomerIdFromFollowupDraftId(id)
+    customerId = extractIdFromDraftId(id, ['followup-', 'birthday-', 'orderready-'])
   }
 
   if (!customerId) return null
@@ -110,25 +106,21 @@ export function resolveOrderName(item, allOrders, allInvoices, allPayments) {
   if (!allOrders?.length) return null
 
   const id = item.id || ''
-  let orderId = item.orderId || null
+  let orderId = null
+
+  orderId = extractIdFromDraftId(id, ['invoice-', 'upcoming-invoice-', 'orderready-'])
 
   if (!orderId) {
-    orderId = getOrderIdFromInvoiceDraftId(id)
-  }
-
-  if (!orderId) {
-    const paymentId = getPaymentIdFromReceiptDraftId(id)
+    const paymentId = extractIdFromDraftId(id, ['receipt-'])
     if (paymentId) {
-      const payment = allPayments?.find(p => String(p.id) === String(paymentId))
-      orderId = payment?.orderId ?? null
+      orderId = allPayments?.find(p => String(p.id) === String(paymentId))?.orderId ?? null
     }
   }
 
   if (!orderId) {
-    const invoiceId = getInvoiceIdFromReminderDraftId(id)
+    const invoiceId = extractIdFromDraftId(id, ['reminder-', 'overdue-'])
     if (invoiceId) {
-      const invoice = allInvoices?.find(inv => String(inv.id) === String(invoiceId))
-      orderId = invoice?.orderId ?? null
+      orderId = allInvoices?.find(i => String(i.id) === String(invoiceId))?.orderId ?? null
     }
   }
 
@@ -138,21 +130,21 @@ export function resolveOrderName(item, allOrders, allInvoices, allPayments) {
 }
 
 export function fmt(currency, value) {
-  return `${currency.symbol || currency}${parseFloat(value || 0).toLocaleString('en-NG', {
+  return `${currency?.symbol || currency || '₦'}${parseFloat(value || 0).toLocaleString('en-NG', {
     minimumFractionDigits: 0,
     maximumFractionDigits: 0,
   })}`
 }
 
 export function buildInvoiceMessage(invoice, customer, brand) {
-  const cur = brand?.currency || '₦'
-  const firstName = customer?.name?.split(' ')[0] || customer?.name || 'there'
-  const items = Array.isArray(invoice.items) ? invoice.items : []
-  const discount = parseFloat(invoice.discountAmount) || 0
-  const shipping = parseFloat(invoice.shippingFee) || 0
-  const tax = parseFloat(invoice.taxAmount) || 0
-  const total = parseFloat(invoice.totalAmount) || parseFloat(invoice.price) || 0
-  const lines = []
+  const cur       = brand?.currency || '₦'
+  const firstName = customer?.name?.split(' ')[0] || 'there'
+  const items     = Array.isArray(invoice.items) ? invoice.items : []
+  const discount  = parseFloat(invoice.discountAmount) || 0
+  const shipping  = parseFloat(invoice.shippingFee)    || 0
+  const tax       = parseFloat(invoice.taxAmount)       || 0
+  const total     = parseFloat(invoice.totalAmount)     || parseFloat(invoice.price) || 0
+  const lines     = []
 
   lines.push(`Hi ${firstName},`, '')
   lines.push(`Here is your invoice from *${brand?.name || 'us'}*. 🧾`, '')
@@ -164,7 +156,7 @@ export function buildInvoiceMessage(invoice, customer, brand) {
   if (items.length > 0) {
     lines.push('', '*🛍 Order Breakdown*')
     items.forEach(item => {
-      const qty = item.qty && item.qty > 1 ? ` ×${item.qty}` : ''
+      const qty = item.qty > 1 ? ` ×${item.qty}` : ''
       lines.push(`• ${item.name}${qty}: ${fmt(cur, item.price)}`)
     })
   }
@@ -173,7 +165,7 @@ export function buildInvoiceMessage(invoice, customer, brand) {
     lines.push('')
     if (discount > 0) lines.push(`Discount: -${fmt(cur, discount)}`)
     if (shipping > 0) lines.push(`Shipping: +${fmt(cur, shipping)}`)
-    if (tax > 0) lines.push(`Tax: +${fmt(cur, tax)}`)
+    if (tax > 0)      lines.push(`Tax: +${fmt(cur, tax)}`)
   }
 
   lines.push('', `*Total Due: ${fmt(cur, total)}*`, '')
@@ -191,20 +183,20 @@ export function buildInvoiceMessage(invoice, customer, brand) {
 }
 
 export function buildReceiptMessage(receipt, customer, brand) {
-  const cur = brand?.currency || '₦'
-  const firstName = customer?.name?.split(' ')[0] || customer?.name || 'there'
-  const items = Array.isArray(receipt.items) ? receipt.items : []
-  const discount = parseFloat(receipt.discountAmount) || 0
-  const shipping = parseFloat(receipt.shippingFee) || 0
-  const tax = parseFloat(receipt.taxAmount) || 0
-  const total = parseFloat(receipt.totalAmount) || parseFloat(receipt.orderPrice) || 0
-  const cumulativePaid = parseFloat(receipt.cumulativePaid) || 0
-  const balance = receipt.balance !== undefined ? parseFloat(receipt.balance) : Math.max(0, total - cumulativePaid)
-  const isFullPayment = receipt.isFullPayment ?? balance <= 0
+  const cur                  = brand?.currency || '₦'
+  const firstName            = customer?.name?.split(' ')[0] || 'there'
+  const items                = Array.isArray(receipt.items) ? receipt.items : []
+  const discount             = parseFloat(receipt.discountAmount) || 0
+  const shipping             = parseFloat(receipt.shippingFee)    || 0
+  const tax                  = parseFloat(receipt.taxAmount)       || 0
+  const total                = parseFloat(receipt.totalAmount)     || parseFloat(receipt.orderPrice) || 0
+  const cumulativePaid       = parseFloat(receipt.cumulativePaid)  || 0
+  const balance              = receipt.balance !== undefined ? parseFloat(receipt.balance) : Math.max(0, total - cumulativePaid)
+  const isFullPayment        = receipt.isFullPayment ?? balance <= 0
   const previousInstallments = Array.isArray(receipt.previousInstallments) ? receipt.previousInstallments : []
-  const currentPayments = Array.isArray(receipt.payments) ? receipt.payments : []
-  const allInstallments = [...previousInstallments, ...currentPayments]
-  const lines = []
+  const currentPayments      = Array.isArray(receipt.payments)              ? receipt.payments              : []
+  const allInstallments      = [...previousInstallments, ...currentPayments]
+  const lines                = []
 
   lines.push(`Hi ${firstName},`, '')
   lines.push(`Here is your payment receipt from *${brand?.name || 'us'}*. ✅`, '')
@@ -215,13 +207,13 @@ export function buildReceiptMessage(receipt, customer, brand) {
   if (items.length > 0) {
     lines.push('', '*🛍 Order Breakdown*')
     items.forEach(item => {
-      const qty = item.qty && item.qty > 1 ? ` ×${item.qty}` : ''
+      const qty = item.qty > 1 ? ` ×${item.qty}` : ''
       lines.push(`• ${item.name}${qty}: ${fmt(cur, item.price)}`)
     })
     if (discount > 0 || shipping > 0 || tax > 0) {
       if (discount > 0) lines.push(`Discount: -${fmt(cur, discount)}`)
       if (shipping > 0) lines.push(`Shipping: +${fmt(cur, shipping)}`)
-      if (tax > 0) lines.push(`Tax: +${fmt(cur, tax)}`)
+      if (tax > 0)      lines.push(`Tax: +${fmt(cur, tax)}`)
     }
     lines.push(`Order Total: *${fmt(cur, total)}*`)
   }
@@ -229,9 +221,9 @@ export function buildReceiptMessage(receipt, customer, brand) {
   if (allInstallments.length > 0) {
     lines.push('', `*💳 Payment${allInstallments.length > 1 ? ' History' : ' Received'}*`)
     allInstallments.forEach((installment, i) => {
-      const label = allInstallments.length > 1 ? `Payment ${i + 1}` : 'Amount Paid'
+      const label  = allInstallments.length > 1 ? `Payment ${i + 1}` : 'Amount Paid'
       const method = installment.method ? ` via ${installment.method.charAt(0).toUpperCase()}${installment.method.slice(1)}` : ''
-      const date = installment.date ? ` on ${installment.date}` : ''
+      const date   = installment.date   ? ` on ${installment.date}` : ''
       lines.push(`${label}${method}: *${fmt(cur, installment.amount)}*${date}`)
     })
     if (allInstallments.length > 1) {
@@ -256,25 +248,21 @@ export function buildReceiptMessage(receipt, customer, brand) {
 }
 
 export function buildBrandSnapshot(profileSettings, generalSettings, docType = 'invoice') {
-  const footer = docType === 'invoice' ? generalSettings.invoiceFooter : generalSettings.receiptFooter
-  const currency = docType === 'invoice' ? generalSettings.invoiceCurrency : generalSettings.receiptCurrency
-  const showTax = docType === 'invoice' ? generalSettings.invoiceShowTax : generalSettings.receiptShowTax
-  const taxRate = docType === 'invoice' ? generalSettings.invoiceTaxRate : generalSettings.receiptTaxRate
-
+  const isInvoice = docType === 'invoice'
   return {
-    name: profileSettings.brandName || '',
-    tagline: profileSettings.brandTagline || '',
-    colour: profileSettings.brandColour || '',
-    colourId: profileSettings.brandColourId || '',
-    phone: profileSettings.brandPhone || '',
-    email: profileSettings.brandEmail || '',
-    address: profileSettings.brandAddress || '',
-    logo: profileSettings.brandLogo || '',
-    website: profileSettings.brandWebsite || '',
-    footer: footer || 'Thank you for your patronage 🙏',
-    currency: currency || '₦',
-    showTax: showTax || false,
-    taxRate: taxRate || 0,
-    ...(docType === 'invoice' ? { dueDays: generalSettings.invoiceDueDays || 7 } : {}),
+    name:      profileSettings.brandName     || '',
+    tagline:   profileSettings.brandTagline  || '',
+    colour:    profileSettings.brandColour   || '',
+    colourId:  profileSettings.brandColourId || '',
+    phone:     profileSettings.brandPhone    || '',
+    email:     profileSettings.brandEmail    || '',
+    address:   profileSettings.brandAddress  || '',
+    logo:      profileSettings.brandLogo     || '',
+    website:   profileSettings.brandWebsite  || '',
+    footer:    (isInvoice ? generalSettings.invoiceFooter  : generalSettings.receiptFooter)  || 'Thank you for your patronage 🙏',
+    currency:  (isInvoice ? generalSettings.invoiceCurrency : generalSettings.receiptCurrency) || '₦',
+    showTax:   (isInvoice ? generalSettings.invoiceShowTax  : generalSettings.receiptShowTax)  || false,
+    taxRate:   (isInvoice ? generalSettings.invoiceTaxRate  : generalSettings.receiptTaxRate)  || 0,
+    ...(isInvoice ? { dueDays: generalSettings.invoiceDueDays || 7 } : {}),
   }
 }

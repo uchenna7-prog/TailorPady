@@ -1,4 +1,3 @@
-
 .listWrap {
   display: flex;
   flex-direction: column;
@@ -9,13 +8,10 @@
   flex-direction: column;
 }
 
-
-
 .groupRows {
   background: var(--bg);
   padding: 0 16px;
 }
-
 
 .emptyTab {
   display: flex;
@@ -41,3 +37,20 @@
   line-height: 1.5;
 }
 
+@media (min-width: 769px) {
+  .groupRows {
+    padding: 0 24px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .groupRows {
+    padding: 0 40px;
+  }
+}
+
+@media (min-width: 1440px) {
+  .groupRows {
+    padding: 0 max(40px, calc(50% - 680px));
+  }
+}

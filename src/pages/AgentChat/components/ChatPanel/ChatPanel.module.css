@@ -3,7 +3,7 @@
   flex-direction: column;
   flex: 1;
   overflow: hidden;
-  background: var(--surface);
+  background: var(--bg);
 }
 
 .chatFlowBar {
@@ -132,7 +132,7 @@
   flex-shrink: 0;
   background: var(--surface2);
   border: 1px solid var(--border);
-  border-radius: 20px;
+  border-radius: 8px;
   padding: 5px 12px;
   font-size: 0.72rem;
   font-weight: 600;

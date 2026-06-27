@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import Header from '../../components/Header/Header'
 import BottomNav from '../../components/BottomNav/BottomNav'
 import { useAutonomousAgent } from '../../contexts/AutonomousAgentContext'
+import { useAuth } from '../../contexts/AuthContext'
 import { useOrders } from '../../contexts/OrdersContext'
 import { useInvoices } from '../../contexts/InvoiceContext'
 import { useReceipts } from '../../contexts/ReceiptContext'
@@ -22,36 +23,41 @@ function Agent() {
 
   const {
     enabled,
-    doneTasks,
-    upcomingTasks,
     drafts,
+    pendingDrafts,
+    approvedDrafts,
+    pendingCount,
+    upcomingTasks,
+    dailyBrief,
     cancelUpcoming,
+    approveDraft,
     discardDraft,
   } = useAutonomousAgent()
 
-  const { allOrders }                   = useOrders()
-  const { allInvoices, addInvoice }     = useInvoices()
-  const { allReceipts, addReceipt }     = useReceipts()
-  const { allPayments }                 = usePayments()
-  const { customers }                   = useCustomers()
-  const { generalSettings }             = useGeneralSettings()
-  const { profileSettings }             = useProfileSettings()
+  const { user }                     = useAuth()
+  const { allOrders }               = useOrders()
+  const { allInvoices, addInvoice } = useInvoices()
+  const { allReceipts, addReceipt } = useReceipts()
+  const { allPayments }             = usePayments()
+  const { customers }               = useCustomers()
+  const { generalSettings }         = useGeneralSettings()
+  const { profileSettings }         = useProfileSettings()
 
-  const [tab,             setTab]             = useState('done')
+  const [tab,             setTab]             = useState('activity')
   const [toast,           setToast]           = useState(null)
   const [swipeProgress,   setSwipeProgress]   = useState(0)
   const [tabMeasurements, setTabMeasurements] = useState([])
 
-  const tabsRef        = useRef(null)
-  const tabItemRefs    = useRef([])
-  const touchStartX    = useRef(null)
-  const touchStartY    = useRef(null)
+  const tabsRef         = useRef(null)
+  const tabItemRefs     = useRef([])
+  const touchStartX     = useRef(null)
+  const touchStartY     = useRef(null)
   const swipeAxisLocked = useRef(null)
 
   const TABS = [
-    { key: 'done',     label: 'Activity',  badge: doneTasks.length },
-    { key: 'upcoming', label: 'Scheduled', badge: upcomingTasks.length },
-    { key: 'drafts',   label: 'Drafts',    badge: drafts.length },
+    { key: 'activity',  label: 'Activity',  badge: 0 },
+    { key: 'scheduled', label: 'Scheduled', badge: upcomingTasks.length },
+    { key: 'drafts',    label: 'Drafts',    badge: pendingCount },
   ]
 
   const activeTabIdx = TABS.findIndex(t => t.key === tab)
@@ -72,7 +78,7 @@ function Agent() {
 
   useLayoutEffect(() => {
     measureTabs()
-  }, [tab, doneTasks.length, upcomingTasks.length, drafts.length, measureTabs])
+  }, [tab, upcomingTasks.length, pendingCount, measureTabs])
 
   useEffect(() => {
     window.addEventListener('resize', measureTabs)
@@ -99,8 +105,8 @@ function Agent() {
   }
 
   const handleTouchStart = useCallback((e) => {
-    touchStartX.current    = e.touches[0].clientX
-    touchStartY.current    = e.touches[0].clientY
+    touchStartX.current     = e.touches[0].clientX
+    touchStartY.current     = e.touches[0].clientY
     swipeAxisLocked.current = null
   }, [])
 
@@ -131,7 +137,7 @@ function Agent() {
     if (atEnd   && rawProgress < 0) clamped = rawProgress * 0.15
 
     setSwipeProgress(Math.max(-1, Math.min(1, clamped)))
-  }, [activeTabIdx])
+  }, [activeTabIdx, TABS.length])
 
   const handleTouchEnd = useCallback(() => {
     if (swipeAxisLocked.current === 'horizontal' && Math.abs(swipeProgress) > 0.2) {
@@ -145,7 +151,7 @@ function Agent() {
     touchStartY.current     = null
     swipeAxisLocked.current = null
     setSwipeProgress(0)
-  }, [swipeProgress, activeTabIdx])
+  }, [swipeProgress, activeTabIdx, TABS])
 
   const getUnderlineStyle = () => {
     const current = tabMeasurements[activeTabIdx]
@@ -216,16 +222,19 @@ function Agent() {
         onTouchMove={handleTouchMove}
         onTouchEnd={handleTouchEnd}
       >
-        {tab === 'done' && (
+        {tab === 'activity' && (
           <ActivityTab
-            items={doneTasks}
+            user={user}
+            drafts={drafts}
+            approvedDrafts={approvedDrafts}
+            dailyBrief={dailyBrief}
             allOrders={allOrders}
             allInvoices={allInvoices}
             allPayments={allPayments}
             customers={customers}
           />
         )}
-        {tab === 'upcoming' && (
+        {tab === 'scheduled' && (
           <ScheduledTab
             items={upcomingTasks}
             allOrders={allOrders}
@@ -238,6 +247,9 @@ function Agent() {
         {tab === 'drafts' && (
           <DraftsTab
             items={drafts}
+            pendingDrafts={pendingDrafts}
+            approvedDrafts={approvedDrafts}
+            onApprove={approveDraft}
             onDiscard={discardDraft}
             allOrders={allOrders}
             allInvoices={allInvoices}

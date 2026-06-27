@@ -1,7 +1,20 @@
-
 .listWrap {
   display: flex;
   flex-direction: column;
+}
+
+.section {
+  display: flex;
+  flex-direction: column;
+}
+
+.sectionLabel {
+  font-size: 0.65rem;
+  font-weight: 700;
+  color: var(--text);
+  letter-spacing: 0.01em;
+  text-transform: uppercase;
+  padding: 16px 16px 4px;
 }
 
 .dateGroup {
@@ -9,13 +22,10 @@
   flex-direction: column;
 }
 
-
-
 .groupRows {
   background: var(--bg);
   padding: 0 16px;
 }
-
 
 .emptyTab {
   display: flex;
@@ -41,3 +51,32 @@
   line-height: 1.5;
 }
 
+@media (min-width: 769px) {
+  .sectionLabel {
+    padding: 18px 24px 4px;
+  }
+
+  .groupRows {
+    padding: 0 24px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .sectionLabel {
+    padding: 20px 40px 4px;
+  }
+
+  .groupRows {
+    padding: 0 40px;
+  }
+}
+
+@media (min-width: 1440px) {
+  .sectionLabel {
+    padding: 20px max(40px, calc(50% - 680px)) 4px;
+  }
+
+  .groupRows {
+    padding: 0 max(40px, calc(50% - 680px));
+  }
+}

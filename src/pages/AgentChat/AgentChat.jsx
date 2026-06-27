@@ -5,7 +5,7 @@ import { useAgent } from '../../contexts/AgentContext'
 import { useAutonomousAgent } from '../../contexts/AutonomousAgentContext'
 import { useAuth } from '../../contexts/AuthContext'
 import { ChatPanel } from './components/ChatPanel/ChatPanel'
-import { getGreeting, haptic } from './utils'
+import { getGreeting, getGreetingEmoji, getDisplayName, haptic } from './utils'
 import { AgentTitleIcon } from './components/AgentTitleIcon/AgentTitleIcon'
 import styles from './AgentChat.module.css'
 
@@ -18,8 +18,8 @@ function AgentChat() {
 
   const [inputValue, setInputValue] = useState('')
   const [greeting]                  = useState(() => {
-    const firstName = user?.displayName?.split(' ')[0] || ''
-    return getGreeting(firstName)
+    const name = getDisplayName(user)
+    return `${getGreeting()}, ${name}! ${getGreetingEmoji()}`
   })
 
   function handleSend() {

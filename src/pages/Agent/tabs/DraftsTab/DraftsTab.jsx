@@ -1,13 +1,16 @@
-import { useState } from "react"
-import { DateDivider } from "../../components/DateDivider/DateDivider"
-import { DraftDetailSheet } from "./components/DraftDetailSheet/DraftDetailSheet"
-import { DraftRow } from "./components/DraftRow/DraftRow"
-import { MIcon } from "../../components/MIcon/MIcon"
-import { groupByDate } from "../../utils"
-import styles from "./DraftsTab.module.css"
+import { useState } from 'react'
+import { MIcon } from '../../components/MIcon/MIcon'
+import { DateDivider } from '../../components/DateDivider/DateDivider'
+import { DraftDetailSheet } from './components/DraftDetailSheet/DraftDetailSheet'
+import { DraftRow } from './components/DraftRow/DraftRow'
+import { groupByDate } from '../../utils'
+import styles from './DraftsTab.module.css'
 
 export function DraftsTab({
   items,
+  pendingDrafts,
+  approvedDrafts,
+  onApprove,
   onDiscard,
   allOrders,
   allInvoices,
@@ -21,7 +24,7 @@ export function DraftsTab({
 }) {
   const [selected, setSelected] = useState(null)
 
-  if (!items.length) return (
+  if (!items?.length) return (
     <div className={styles.emptyTab}>
       <MIcon name="edit_note" size="2rem" color="var(--border2)" />
       <p className={styles.emptyTabTitle}>Nothing ready yet</p>
@@ -29,28 +32,36 @@ export function DraftsTab({
     </div>
   )
 
-  const groups = groupByDate(items, i => i.date)
+  const sections = [
+    { label: 'Pending review', items: pendingDrafts },
+    { label: 'Approved',       items: approvedDrafts },
+  ].filter(s => s.items?.length > 0)
 
   return (
     <>
       <div className={styles.listWrap}>
-        {groups.map(group => (
-          <div key={group.date} className={styles.dateGroup}>
-            <DateDivider label={group.date} />
-            <div className={styles.groupRows}>
-              {group.items.map((item, idx) => (
-                <DraftRow
-                  key={item.id}
-                  item={item}
-                  isLast={idx === group.items.length - 1}
-                  allOrders={allOrders}
-                  allInvoices={allInvoices}
-                  allPayments={allPayments}
-                  customers={customers}
-                  onOpen={setSelected}
-                />
-              ))}
-            </div>
+        {sections.map(section => (
+          <div key={section.label} className={styles.section}>
+            <div className={styles.sectionLabel}>{section.label}</div>
+            {groupByDate(section.items, i => i.date).map(group => (
+              <div key={group.date} className={styles.dateGroup}>
+                <DateDivider label={group.date} />
+                <div className={styles.groupRows}>
+                  {group.items.map((item, idx) => (
+                    <DraftRow
+                      key={item.id}
+                      item={item}
+                      isLast={idx === group.items.length - 1}
+                      allOrders={allOrders}
+                      allInvoices={allInvoices}
+                      allPayments={allPayments}
+                      customers={customers}
+                      onOpen={setSelected}
+                    />
+                  ))}
+                </div>
+              </div>
+            ))}
           </div>
         ))}
       </div>
@@ -59,6 +70,7 @@ export function DraftsTab({
         <DraftDetailSheet
           item={selected}
           onClose={() => setSelected(null)}
+          onApprove={onApprove}
           onDiscard={onDiscard}
           allOrders={allOrders}
           allInvoices={allInvoices}
