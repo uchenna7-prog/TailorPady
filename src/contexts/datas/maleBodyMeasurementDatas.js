@@ -1,4 +1,3 @@
-
 import aboveKnee from '../../assets/maleBodyMeasurementImages/aboveKnee.jpg'
 import ankle from '../../assets/maleBodyMeasurementImages/ankle.jpg'
 import armHole from '../../assets/maleBodyMeasurementImages/armHole.jpg'
@@ -37,26 +36,33 @@ import waistToAnkle from '../../assets/maleBodyMeasurementImages/waistToAnkle.jp
 import wrist from '../../assets/maleBodyMeasurementImages/wrist.jpg'
 
 
+export const MALE_BODY_MEASUREMENT_SECTIONS = {
+  'Upper Body': [
+    'Neck', 'Shoulder Width', 'Half Shoulder', 'Chest', 'Cross Back',
+    'Arm Hole', 'Biceps', 'Arm Length', 'Long Sleeve Length',
+    'Long Sleeve Length Circumference', 'Half Arm Length',
+    'Three Quarter Sleeve Length', 'Three Quarter Sleeve Length Circumference',
+    'Elbow Sleeve Length', 'Elbow Sleeve Length Circumference',
+    'Short Sleeve Length', 'Short Sleeve Length Circumference',
+    'Wrist', 'Shirt Length', 'Jacket Length',
+  ],
+  'Mid Section': [
+    'Waist', 'Hip', 'Crotch', 'Fly', 'Inseam',
+  ],
+  'Lower Body': [
+    'Thighs', 'Crotch To Knee', 'Above Knee', 'Below Knee',
+    'Knee To Calf', 'Calf', 'Calf To Ankle', 'Ankle',
+    'Waist To Ankle', 'Pants Length', 'Shorts Length',
+  ],
+}
+
 export const MALE_BODY_MEASUREMENTS = [
-  
-  // Upper body 
-  'Neck', 'Shoulder Width', 'Half Shoulder', 'Chest', 'Cross Back',
-  'Arm Hole', 'Biceps', 'Arm Length',  'Long Sleeve Length', 'Long Sleeve Length Circumference','Half Arm Length', 
-  'Three Quarter Sleeve Length', 'Three Quarter Sleeve Length Circumference', 'Elbow Sleeve Length', 
-  'Elbow Sleeve Length Circumference', 'Short Sleeve Length', 'Short Sleeve Length Circumference', 'Wrist',
-  'Shirt Length', 'Jacket Length',
-  // Mid body
-  'Waist', 'Hip',
-  'Crotch', 'Fly', 'Inseam',
-  // Lower body
-  'Thighs', 'Crotch To Knee', 'Above Knee', 'Below Knee',
-  'Knee To Calf', 'Calf', 'Calf To Ankle', 'Ankle',
-  'Waist To Ankle', 'Pants Length', 'Shorts Length',
+  ...MALE_BODY_MEASUREMENT_SECTIONS['Upper Body'],
+  ...MALE_BODY_MEASUREMENT_SECTIONS['Mid Section'],
+  ...MALE_BODY_MEASUREMENT_SECTIONS['Lower Body'],
 ]
 
-
 export const MALE_BODY_MEASUREMENT_IMAGES = {
-  // Upper body
   'Neck': neck,
   'Shoulder Width': shoulderWidth,
   'Half Shoulder': halfShoulder,
@@ -74,17 +80,14 @@ export const MALE_BODY_MEASUREMENT_IMAGES = {
   'Elbow Sleeve Length Circumference': elbowSleeveLengthCircumference,
   'Short Sleeve Length': shortSleeveLength,
   'Short Sleeve Length Circumference': shortSleeveLengthCircumference,
-  
   'Wrist': wrist,
   'Shirt Length': shirtLength,
   'Jacket Length': jacketLength,
-  // Mid body
   'Waist': waist,
   'Hip': hip,
   'Crotch': crotch,
   'Fly': fly,
   'Inseam': inseam,
-  // Lower body
   'Thighs': thighs,
   'Crotch To Knee': crotchToKnee,
   'Above Knee': aboveKnee,
