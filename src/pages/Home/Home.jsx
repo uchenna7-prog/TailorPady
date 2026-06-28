@@ -230,16 +230,19 @@ function Home({ onMenuClick, onGoToCustomer }) {
     if (!customers.length) return { name: '—', orderCount: 0, totalSpend: 0 }
     const orderCountById = {}
     const totalSpendById = {}
-    allOrders.forEach(order => {
-      if (!order.customerId) return
-      orderCountById[order.customerId] = (orderCountById[order.customerId] || 0) + 1
-      totalSpendById[order.customerId] = (totalSpendById[order.customerId] || 0) + (Number(order.price) || 0)
+    allOrders
+      .filter(o => !['cancelled', 'returned'].includes(o.status))
+      .forEach(order => {
+        if (!order.customerId) return
+        orderCountById[order.customerId] = (orderCountById[order.customerId] || 0) + 1
+        totalSpendById[order.customerId] = (totalSpendById[order.customerId] || 0) + (Number(order.price) || 0)
+      })
+    let topId = null, topSpend = 0
+    Object.entries(totalSpendById).forEach(([id, spend]) => {
+      if (spend > topSpend) { topSpend = spend; topId = id }
     })
-    let topId = null, topCount = 0
-    Object.entries(orderCountById).forEach(([id, count]) => {
-      if (count > topCount) { topCount = count; topId = id }
-    })
-    const topData = topId ? customers.find(c => c.id === topId) : customers[0]
+    if (!topId) return { name: '—', orderCount: 0, totalSpend: 0 }
+    const topData = customers.find(c => c.id === topId)
     if (!topData) return { name: '—', orderCount: 0, totalSpend: 0 }
     return {
       name:       topData.name || `${topData.firstName ?? ''} ${topData.lastName ?? ''}`.trim() || '—',
