@@ -1,90 +1,116 @@
 import { MIcon } from '../../../../components/MIcon/MIcon'
-import { getGreeting, getGreetingEmoji, getDisplayName, getBriefSubtext } from '../../../../utils'
-import { AGENT_BRIEF_SUBTEXTS } from '../../../../datas'
+import { getGreeting, getDisplayName } from '../../../../utils'
 import styles from './DailyBriefCard.module.css'
 
-const STAT_CONFIG = {
-  pendingDrafts:     { icon: 'edit_note',      label: 'draft',           labelPlural: 'drafts'            },
-  ordersDueToday:    { icon: 'calendar_today', label: 'due today',       labelPlural: 'due today'         },
-  overdueInvoices:   { icon: 'warning_amber',  label: 'overdue invoice', labelPlural: 'overdue invoices'  },
-  pendingReceipts:   { icon: 'receipt_long',   label: 'missing receipt', labelPlural: 'missing receipts'  },
-  upcomingCount:     { icon: 'schedule',       label: 'scheduled',       labelPlural: 'scheduled'         },
-}
+const ITEMS_CONFIG = [
+  {
+    key:     'pendingDrafts',
+    icon:    'edit_note',
+    title:   count => count === 1 ? 'Draft awaiting review'   : 'Drafts awaiting review',
+    sub:     count => count === 1 ? 'Tap to review and approve' : 'Tap to review and approve',
+    mod:     'draft',
+  },
+  {
+    key:     'ordersDueToday',
+    icon:    'calendar_today',
+    title:   count => count === 1 ? 'Order due today'         : 'Orders due today',
+    sub:     ()    => 'Check progress and mark ready',
+    mod:     'due',
+  },
+  {
+    key:     'overdueInvoices',
+    icon:    'warning_amber',
+    title:   count => count === 1 ? 'Overdue invoice'         : 'Overdue invoices',
+    sub:     ()    => 'Past due date and unpaid',
+    mod:     'overdue',
+  },
+  {
+    key:     'pendingReceipts',
+    icon:    'receipt_long',
+    title:   count => count === 1 ? 'Payment without a receipt' : 'Payments without receipts',
+    sub:     ()    => 'Receipt will be generated shortly',
+    mod:     'receipt',
+  },
+  {
+    key:     'upcomingCount',
+    icon:    'schedule',
+    title:   count => count === 1 ? 'Action scheduled'        : 'Actions scheduled',
+    sub:     ()    => 'View the Scheduled tab for details',
+    mod:     'scheduled',
+  },
+]
 
-/**
- * @param {object} props
- * @param {object} props.user - current auth user, used to personalize the greeting
- * @param {object} props.brief
- * @param {() => void} [props.onDismiss] - if provided, shows a close button that dismisses the brief for today
- * @param {(key: string) => void} [props.onStatClick] - if provided, stat rows become clickable and call this with the stat key
- */
-export function DailyBriefCard({ user, brief, onDismiss, onStatClick }) {
+export function DailyBriefCard({ user, brief, onDismiss }) {
   if (!brief || brief.isEmpty) return null
 
-  const stats = Object.entries(STAT_CONFIG)
-    .map(([key, config]) => ({ key, value: brief[key], ...config }))
-    .filter(s => s.value > 0)
+  const name     = getDisplayName(user)
+  const greeting = `${getGreeting()}${name ? `, ${name}` : ''} 👋`
+
+  const items = ITEMS_CONFIG
+    .map(cfg => ({ ...cfg, count: brief[cfg.key] || 0 }))
+    .filter(item => item.count > 0)
+
+  const totalCount = items.reduce((sum, item) => sum + item.count, 0)
 
   const hasBirthdays = brief.upcomingBirthdays?.length > 0
-  const clickable = typeof onStatClick === 'function'
 
-  const name = getDisplayName(user)
-  const greeting = `${getGreeting()}, ${name} ${getGreetingEmoji()}`
-  const subtext = getBriefSubtext(AGENT_BRIEF_SUBTEXTS)
+  const summaryLine = totalCount === 0
+    ? "Everything's looking good today."
+    : totalCount === 1
+      ? 'You have 1 thing that needs attention.'
+      : `You have ${totalCount} things that need attention.`
 
   return (
-    <div className={styles.brief}>
-      <div className={styles.header}>
-        <div className={styles.headerText}>
-          <div className={styles.greeting}>{greeting}</div>
-          {subtext && <div className={styles.subtext}>{subtext}</div>}
-        </div>
+    <div className={styles.card}>
 
+      <div className={styles.eyebrow}>
+        <div className={styles.eyebrowLeft}>
+   
+        </div>
         {onDismiss && (
-          <button
-            type="button"
-            className={styles.dismissBtn}
-            onClick={onDismiss}
-            aria-label="Dismiss today's brief"
-          >
-            <MIcon name="close" size="0.8rem" color="var(--text3)" />
+          <button className={styles.dismissBtn} onClick={onDismiss} aria-label="Dismiss">
+            <MIcon name="close" size="0.7rem" color="var(--text3)" />
           </button>
         )}
       </div>
 
-      {stats.length > 0 && (
-        <div className={styles.stats}>
-          {stats.map(stat => {
-            const Tag = clickable ? 'button' : 'div'
-            return (
-              <Tag
-                key={stat.key}
-                type={clickable ? 'button' : undefined}
-                className={`${styles.stat} ${clickable ? styles.statClickable : ''}`}
-                onClick={clickable ? () => onStatClick(stat.key) : undefined}
-              >
-                <MIcon name={stat.icon} size="0.75rem" color="var(--text2)" />
-                <span className={styles.statValue}>{stat.value}</span>
-                <span className={styles.statLabel}>
-                  {stat.value === 1 ? stat.label : stat.labelPlural}
-                </span>
-              </Tag>
-            )
-          })}
+      <p className={styles.greeting}>{greeting}</p>
+      <p className={styles.summary}>{summaryLine}</p>
+
+      {items.length > 0 && (
+        <div className={styles.items}>
+          {items.map((item, idx) => (
+            <div
+              key={item.key}
+              className={`${styles.item} ${idx === 0 ? styles.itemFirst : ''} ${idx === items.length - 1 ? styles.itemLast : ''}`}
+            >
+              <div className={`${styles.itemIcon} ${styles[`icon_${item.mod}`]}`}>
+                <MIcon name={item.icon} size="0.85rem" color="currentColor" />
+              </div>
+              <div className={styles.itemBody}>
+                <p className={styles.itemTitle}>{item.title(item.count)}</p>
+                <p className={styles.itemSub}>{item.sub(item.count)}</p>
+              </div>
+              <span className={styles.itemCount}>{item.count}</span>
+            </div>
+          ))}
         </div>
       )}
 
       {hasBirthdays && (
-        <div className={styles.birthdays}>
-          <MIcon name="cake" size="0.72rem" color="var(--text3)" />
+        <div className={styles.birthdayRow}>
+          <MIcon name="cake" size="0.78rem" color="var(--text3)" />
           <span className={styles.birthdayText}>
             {brief.upcomingBirthdays.length === 1
-              ? `${brief.upcomingBirthdays[0]}'s birthday this week`
-              : `${brief.upcomingBirthdays.slice(0, 2).join(', ')}${brief.upcomingBirthdays.length > 2 ? ` +${brief.upcomingBirthdays.length - 2}` : ''} — birthdays this week`
+              ? `${brief.upcomingBirthdays[0]}'s birthday is coming up this week`
+              : brief.upcomingBirthdays.length === 2
+                ? `${brief.upcomingBirthdays[0]} and ${brief.upcomingBirthdays[1]} have birthdays this week`
+                : `${brief.upcomingBirthdays.slice(0, 2).join(', ')} and ${brief.upcomingBirthdays.length - 2} more have birthdays this week`
             }
           </span>
         </div>
       )}
+
     </div>
   )
 }
