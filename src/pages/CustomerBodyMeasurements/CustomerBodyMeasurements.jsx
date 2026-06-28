@@ -8,9 +8,6 @@ import Header                             from '../../components/Header/Header'
 import styles                             from './CustomerBodyMeasurements.module.css'
 import BottomNav from '../../components/BottomNav/BottomNav'
 
-// ── Load image as base64 AND return its natural dimensions ────
-// This lets us do proper aspect-ratio fitting in the PDF cell
-// instead of blindly stretching to a fixed square.
 async function loadImage(src) {
   return new Promise((resolve) => {
     const img = new Image()
@@ -31,8 +28,6 @@ async function loadImage(src) {
   })
 }
 
-// ── Fit dimensions into a box while preserving aspect ratio ──
-// Equivalent to CSS object-fit: contain.
 function fitInBox(imgW, imgH, boxW, boxH) {
   const scale = Math.min(boxW / imgW, boxH / imgH)
   return {
@@ -41,39 +36,35 @@ function fitInBox(imgW, imgH, boxW, boxH) {
   }
 }
 
-// ── Group entries by body zone ────────────────────────────────
 const SECTION_ORDER = [
   'Upper Body',
-  'Arms',
-  'Torso Length',
-  'Waist & Lower Torso',
-  'Lower Body & Legs',
-  'Other',
+  'Mid Section',
+  'Lower Body',
 ]
 
 const FIELD_SECTION_MAP = {
-  'Neck':            'Upper Body',
-  'Shoulder Width':  'Upper Body',
-  'Half Shoulder':   'Upper Body',
-  'Chest':           'Upper Body',
-  'Cross Back':      'Upper Body',
-  'Arm Hole':        'Upper Body',
-  'Biceps':          'Arms',
-  'Arm Length':      'Arms',
-  'Sleeve Length':   'Arms',
-  'Coat Sleeve':     'Arms',
-  'Wrist':           'Arms',
-  'Shirt Length':    'Torso Length',
-  'Jacket Length':   'Torso Length',
-  'Waist':           'Waist & Lower Torso',
-  'Hip':             'Waist & Lower Torso',
-  'Seat':            'Waist & Lower Torso',
-  'Coat Waist':      'Waist & Lower Torso',
-  'Crotch':          'Lower Body & Legs',
-  'Fly':             'Lower Body & Legs',
-  'Inseam':          'Lower Body & Legs',
-  'Thighs':          'Lower Body & Legs',
-  'Crotch to Knee':  'Lower Body & Legs',
+  'Neck':           'Upper Body',
+  'Shoulder Width': 'Upper Body',
+  'Half Shoulder':  'Upper Body',
+  'Chest':          'Upper Body',
+  'Cross Back':     'Upper Body',
+  'Arm Hole':       'Upper Body',
+  'Biceps':         'Upper Body',
+  'Arm Length':     'Upper Body',
+  'Sleeve Length':  'Upper Body',
+  'Coat Sleeve':    'Upper Body',
+  'Wrist':          'Upper Body',
+  'Shirt Length':   'Mid Section',
+  'Jacket Length':  'Mid Section',
+  'Waist':          'Mid Section',
+  'Hip':            'Mid Section',
+  'Seat':           'Mid Section',
+  'Coat Waist':     'Mid Section',
+  'Crotch':         'Lower Body',
+  'Fly':            'Lower Body',
+  'Inseam':         'Lower Body',
+  'Thighs':         'Lower Body',
+  'Crotch to Knee': 'Lower Body',
 }
 
 function groupEntries(allEntries) {
@@ -81,18 +72,15 @@ function groupEntries(allEntries) {
   SECTION_ORDER.forEach(s => { map[s] = [] })
 
   for (const entry of allEntries) {
-    const section = FIELD_SECTION_MAP[entry.field] || 'Other'
-    if (!map[section]) map[section] = []
+    const section = FIELD_SECTION_MAP[entry.field] || 'Lower Body'
     map[section].push(entry)
   }
 
-  // Return only sections that have at least one entry
   return SECTION_ORDER
     .filter(s => map[s].length > 0)
     .map(s => ({ title: s, entries: map[s] }))
 }
 
-// ── PDF export ────────────────────────────────────────────────
 async function exportPDF(customer, allEntries, imgMap) {
   if (!window.jspdf) {
     await new Promise((resolve, reject) => {
@@ -107,52 +95,40 @@ async function exportPDF(customer, allEntries, imgMap) {
   const { jsPDF } = window.jspdf
   const doc = new jsPDF({ unit: 'mm', format: 'a4' })
 
-  const PAGE_W      = 210
-  const PAGE_H      = 297
-  const MARGIN      = 16
-  const CONTENT_W   = PAGE_W - MARGIN * 2
-  const GOLD        = [176, 141, 91]
-  const INK         = [26, 26, 26]
-  const INK2        = [74, 74, 74]
-  const INK3        = [138, 138, 138]
-  const RULE        = [216, 216, 216]
-  const RULE2       = [239, 239, 239]
-  const SURFACE     = [250, 250, 248]
+  const PAGE_W    = 210
+  const PAGE_H    = 297
+  const MARGIN    = 16
+  const CONTENT_W = PAGE_W - MARGIN * 2
 
-  // Row geometry
-  const ROW_H       = 40    // height of each measurement row
-  const IMG_BOX     = 40    // square box for the illustration
-  const COL_LABEL_W = 68    // label column width (left side of row)
-  const COL_VAL_W   = CONTENT_W - COL_LABEL_W - IMG_BOX - 6 // remaining for value (right-aligned)
+  const BLACK     = [0, 0, 0]
+  const INK       = [26, 26, 26]
+  const INK2      = [74, 74, 74]
+  const INK3      = [138, 138, 138]
+  const RULE      = [200, 200, 200]
+  const RULE2     = [232, 232, 232]
 
-  // Section title height + bottom gap
+  const ROW_H          = 40
+  const IMG_BOX        = 40
   const SECTION_TITLE_H = 10
-  const SECTION_GAP     = 6
-
-  // ── Helpers ──────────────────────────────────────────────────
+  const SECTION_GAP    = 6
 
   function drawHeader(pageNum, totalPages) {
-    // Dark band
     doc.setFillColor(...INK)
     doc.rect(0, 0, PAGE_W, 22, 'F')
 
-    // Gold accent stripe
-    doc.setFillColor(...GOLD)
-    doc.rect(0, 22, PAGE_W, 2, 'F')
+    doc.setFillColor(255, 255, 255)
+    doc.rect(0, 22, PAGE_W, 1.5, 'F')
 
-    // Customer name
     doc.setFont('helvetica', 'bold')
     doc.setFontSize(13)
     doc.setTextColor(255, 255, 255)
     doc.text(customer.name + (customer.sex ? `  (${customer.sex})` : ''), MARGIN, 12)
 
-    // Meta line
     doc.setFont('helvetica', 'normal')
     doc.setFontSize(6.5)
     doc.setTextColor(160, 160, 160)
     doc.text('FULL BODY MEASUREMENTS  ·  INCHES', MARGIN, 18.5)
 
-    // Date + page
     const dateStr = new Date().toLocaleDateString('en-US', {
       month: 'short', day: 'numeric', year: 'numeric',
     })
@@ -172,13 +148,11 @@ async function exportPDF(customer, allEntries, imgMap) {
   }
 
   function drawSectionTitle(title, y) {
-    // Label text
     doc.setFont('helvetica', 'bold')
     doc.setFontSize(7)
-    doc.setTextColor(...GOLD)
+    doc.setTextColor(...INK)
     doc.text(title.toUpperCase(), MARGIN, y + 4)
 
-    // Rule line after title
     const titleWidth = doc.getTextWidth(title.toUpperCase()) + 4
     doc.setDrawColor(...RULE)
     doc.setLineWidth(0.25)
@@ -189,36 +163,30 @@ async function exportPDF(customer, allEntries, imgMap) {
     const { field, value } = entry
     const imgSrc = imgMap[field] || null
 
-    const rowX = MARGIN
-
-    // Illustration
     if (imgSrc) {
       const result = await loadImage(imgSrc)
       if (result) {
         try {
           const { w, h } = fitInBox(result.width, result.height, IMG_BOX, IMG_BOX)
-          const imgX = rowX + (IMG_BOX - w) / 2
+          const imgX = MARGIN + (IMG_BOX - w) / 2
           const imgY = y + (ROW_H - h) / 2
           doc.addImage(result.b64, 'JPEG', imgX, imgY, w, h)
-        } catch (_) { /* skip broken image */ }
+        } catch (_) {}
       }
     }
 
-    const textX = rowX + IMG_BOX + 5
+    const textX = MARGIN + IMG_BOX + 5
 
-    // Field label
     doc.setFont('helvetica', 'bold')
     doc.setFontSize(6)
     doc.setTextColor(...INK3)
     doc.text(field.toUpperCase(), textX, y + ROW_H / 2 - 1)
 
-    // Value — right-aligned
     doc.setFont('helvetica', 'bold')
     doc.setFontSize(13)
     doc.setTextColor(...INK)
     doc.text(`${value}"`, PAGE_W - MARGIN, y + ROW_H / 2 + 4.5, { align: 'right' })
 
-    // Divider (skip on last row of section)
     if (!isLast) {
       doc.setDrawColor(...RULE2)
       doc.setLineWidth(0.2)
@@ -226,19 +194,15 @@ async function exportPDF(customer, allEntries, imgMap) {
     }
   }
 
-  // ── Layout pass: pre-calculate total pages ────────────────
-  // We need total pages before drawing so we can stamp "Page X of N"
-
-  const sections = groupEntries(allEntries)
-  const HEADER_BOTTOM = 28   // y where content starts after header
+  const sections      = groupEntries(allEntries)
+  const HEADER_BOTTOM = 28
   const FOOTER_TOP    = PAGE_H - 14
 
   function calcTotalPages() {
-    let y        = HEADER_BOTTOM
-    let pages    = 1
+    let y     = HEADER_BOTTOM
+    let pages = 1
 
     for (const section of sections) {
-      // Section title
       if (y + SECTION_TITLE_H > FOOTER_TOP) { pages++; y = HEADER_BOTTOM }
       y += SECTION_TITLE_H
 
@@ -253,14 +217,12 @@ async function exportPDF(customer, allEntries, imgMap) {
 
   const totalPages = calcTotalPages()
 
-  // ── Draw pass ─────────────────────────────────────────────
   let currentPage = 1
   let y           = HEADER_BOTTOM
 
   drawHeader(currentPage, totalPages)
 
   for (const section of sections) {
-    // Page break before section title if needed
     if (y + SECTION_TITLE_H > FOOTER_TOP) {
       drawFooter()
       doc.addPage()
@@ -276,14 +238,12 @@ async function exportPDF(customer, allEntries, imgMap) {
       const entry  = section.entries[i]
       const isLast = i === section.entries.length - 1
 
-      // Page break before row if needed
       if (y + ROW_H > FOOTER_TOP) {
         drawFooter()
         doc.addPage()
         currentPage++
         y = HEADER_BOTTOM
         drawHeader(currentPage, totalPages)
-        // Re-draw section title as a continuation header
         drawSectionTitle(section.title + ' (cont.)', y)
         y += SECTION_TITLE_H
       }
@@ -300,7 +260,6 @@ async function exportPDF(customer, allEntries, imgMap) {
   doc.save(`${customer.name.replace(/\s+/g, '_')}_measurements.pdf`)
 }
 
-// ── Edit Measurements Modal ───────────────────────────────────
 function EditMeasurementsModal({ isOpen, customer, onClose, onSave }) {
   const { getBodyMeasurementConfig } = useBodyMeasurementImages()
 
@@ -455,7 +414,6 @@ function EditMeasurementsModal({ isOpen, customer, onClose, onSave }) {
   )
 }
 
-// ── Page ──────────────────────────────────────────────────────
 export default function CustomerBodyMeasurements({ onMenuClick }) {
   const { id }   = useParams()
   const { getCustomer, updateCustomer } = useCustomers()
