@@ -47,34 +47,40 @@ import fullHeight from '../../assets/femaleBodyMeasurementImages/fullHeight.jpg'
 import kurthiHeight from '../../assets/femaleBodyMeasurementImages/kurthiHeight.jpg'
 
 
-export const FEMALE_BODY_MEASUREMENTS = [
-  // Upper body
-  'Neck', 'Front Neck Depth', 'Back Neck Depth',
-  'Shoulder', 'Half Shoulder', 'Front Shoulder', 'Back Shoulder',
-  'Shoulder To Apex', 'Apex To Apex',
-  'Upper Chest', 'Bust', 'Chest', 'Blouse Chest', 'Blouse Below Bust',
-  'Arm Hole', 'Biceps', 'Arm Length','Full Sleeve Length', 
-  'Full Sleeve Length Circumference','Arm Length Half',
-  'Three Quarter Sleeve Length', 'Three Quarter Sleeve Length Circumference',
-  'Elbow Sleeve Length', 'Elbow Sleeve Length Circumference',
-  "Short Sleeve Length","Short Sleeve Length Circumference",
-  'Cap Sleeve', 'Cap Sleeve Circumference',
-  'Wrist',
+export const FEMALE_BODY_MEASUREMENT_SECTIONS = {
+  'Upper Body': [
+    'Neck', 'Front Neck Depth', 'Back Neck Depth',
+    'Shoulder', 'Half Shoulder', 'Front Shoulder', 'Back Shoulder',
+    'Shoulder To Apex', 'Apex To Apex',
+    'Upper Chest', 'Bust', 'Chest', 'Blouse Chest', 'Blouse Below Bust',
+    'Arm Hole', 'Biceps', 'Arm Length', 'Full Sleeve Length',
+    'Full Sleeve Length Circumference', 'Arm Length Half',
+    'Three Quarter Sleeve Length', 'Three Quarter Sleeve Length Circumference',
+    'Elbow Sleeve Length', 'Elbow Sleeve Length Circumference',
+    'Short Sleeve Length', 'Short Sleeve Length Circumference',
+    'Cap Sleeve', 'Cap Sleeve Circumference',
+    'Wrist',
+  ],
+  'Mid Section': [
+    'Blouse Length', 'Shirt Length', 'Shoulder To Waist Length',
+    'Shoulder To Stomach Length', 'Shoulder To Hip Length',
+    'Waist', 'Stomach', 'Hip',
+  ],
+  'Lower Body': [
+    'Crotch',
+    'Thigh', 'Thigh Length', 'Knee Length',
+    'Calf', 'Calf To Ankle', 'Ankle',
+    'Wrist To Ankle', 'Full Height', 'Kurthi Height',
+  ],
+}
 
-  // Mid body
-  'Blouse Length', 'Shirt Length','Shoulder To Waist Length', 'Shoulder To Stomach Length', 'Shoulder To Hip Length',
-  'Waist','Stomach' ,'Hip',  
-  
-  // Lower body
-  'Crotch',
-  'Thigh', 'Thigh Length', 'Knee Length',
-  'Calf', 'Calf To Ankle', 'Ankle',
-  'Wrist To Ankle', 'Full Height', 'Kurthi Height',
+export const FEMALE_BODY_MEASUREMENTS = [
+  ...FEMALE_BODY_MEASUREMENT_SECTIONS['Upper Body'],
+  ...FEMALE_BODY_MEASUREMENT_SECTIONS['Mid Section'],
+  ...FEMALE_BODY_MEASUREMENT_SECTIONS['Lower Body'],
 ]
 
-
 export const FEMALE_BODY_MEASUREMENT_IMAGES = {
-  // Upper body
   'Neck': neck,
   'Front Neck Depth': frontNeckDepth,
   'Back Neck Depth': backNeckDepth,
@@ -99,13 +105,11 @@ export const FEMALE_BODY_MEASUREMENT_IMAGES = {
   'Three Quarter Sleeve Length Circumference': threeQuarterSleeveLengthCircumference,
   'Elbow Sleeve Length': elbowSleeveLength,
   'Elbow Sleeve Length Circumference': elbowSleeveLengthCircumference,
-  "Short Sleeve Length": shortSleeveLength,
-  "Short Sleeve Length Circumference": shortSleeveLengthCircumference,
+  'Short Sleeve Length': shortSleeveLength,
+  'Short Sleeve Length Circumference': shortSleeveLengthCircumference,
   'Cap Sleeve': capSleeve,
   'Cap Sleeve Circumference': capSleeveCircumference,
   'Wrist': wrist,
-
-  // Mid body
   'Blouse Length': blouseLength,
   'Shirt Length': shirtLength,
   'Shoulder To Waist Length': shoulderToWaistLength,
@@ -114,8 +118,6 @@ export const FEMALE_BODY_MEASUREMENT_IMAGES = {
   'Waist': waist,
   'Stomach': stomach,
   'Hip': hip,
-
-  // Lower body 
   'Crotch': crotch,
   'Thigh': thigh,
   'Thigh Length': thighLength,
@@ -125,5 +127,5 @@ export const FEMALE_BODY_MEASUREMENT_IMAGES = {
   'Ankle': ankle,
   'Wrist To Ankle': wristToAnkle,
   'Full Height': fullHeight,
-  'Kurthi Height':kurthiHeight,
+  'Kurthi Height': kurthiHeight,
 }
