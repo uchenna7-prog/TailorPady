@@ -25,51 +25,51 @@
 :root {
   color-scheme: light;
 
-  --shell:    #F3F4F6;
+  --shell:    #EBEBEE;
   --bg:       #FFFFFF;
-  --surface:  #FCFCFD;
-  --surface2: #F7F8FA;
-  --surface3: #F1F2F5;
+  --surface:  #F8F8FB;
+  --surface2: #F2F2F6;
+  --surface3: #EAEAEF;
 
-  --border:  #E6E7EB;
-  --border2: #DCDD E3;
-  --border3: #CED1D8;
+  --border:  #E2E2E9;
+  --border2: #D4D4DD;
+  --border3: #C2C2CE;
 
-  --text:  #111113;
-  --text2: #5C5F66;
-  --text3: #8E9198;
+  --text:  #0D0D10;
+  --text2: #4A4A58;
+  --text3: #8A8A9A;
 
-  --accent:       #111113;
-  --accent-hover: #232428;
+  --accent:       #0D0D10;
+  --accent-hover: #1C1C22;
 
   --danger:       #DC2626;
-  --danger-soft:  rgba(220, 38, 38, 0.10);
+  --danger-soft:  rgba(220, 38, 38, 0.08);
   --success:      #16A34A;
-  --success-soft: rgba(22, 163, 74, 0.10);
-  --warning:      #EA9A18;
-  --warning-soft: rgba(234, 154, 24, 0.10);
+  --success-soft: rgba(22, 163, 74, 0.08);
+  --warning:      #D97706;
+  --warning-soft: rgba(217, 119, 6, 0.08);
   --alert:        #EA580C;
-  --alert-soft:   rgba(234, 88, 12, 0.10);
+  --alert-soft:   rgba(234, 88, 12, 0.08);
   --info:         #2563EB;
-  --info-soft:    rgba(37, 99, 235, 0.10);
+  --info-soft:    rgba(37, 99, 235, 0.08);
 
   --sidebar-width: 280px;
 
-  --st: env(safe-area-inset-top, 0px);
+  --st: env(safe-area-inset-top,    0px);
   --sb: env(safe-area-inset-bottom, 0px);
-  --sl: env(safe-area-inset-left, 0px);
-  --sr: env(safe-area-inset-right, 0px);
+  --sl: env(safe-area-inset-left,   0px);
+  --sr: env(safe-area-inset-right,  0px);
 
-  --brand-primary:       #111113;
-  --brand-primary-light: #232428;
-  --brand-primary-dark:  #09090B;
+  --brand-primary:       #0D0D10;
+  --brand-primary-light: #1C1C22;
+  --brand-primary-dark:  #000000;
   --brand-on-primary:    #FFFFFF;
-  --brand-gradient:      linear-gradient(135deg, #1F2024 0%, #09090B 100%);
-  --brand-gradient-card: linear-gradient(135deg, rgba(17,17,19,.16) 0%, rgba(17,17,19,.08) 100%);
-  --brand-surface:       rgba(17,17,19,.08);
-  --brand-surface-dark:  #09090B;
-  --brand-muted:         rgba(17,17,19,.24);
-  --brand-glow:          rgba(17,17,19,.22);
+  --brand-gradient:      linear-gradient(135deg, #1A1A20 0%, #08080A 100%);
+  --brand-gradient-card: linear-gradient(135deg, rgba(13,13,16,0.12) 0%, rgba(13,13,16,0.06) 100%);
+  --brand-surface:       rgba(13, 13, 16, 0.07);
+  --brand-surface-dark:  #08080A;
+  --brand-muted:         rgba(13, 13, 16, 0.22);
+  --brand-glow:          rgba(13, 13, 16, 0.18);
 
   --transition: 180ms cubic-bezier(0.4, 0, 0.2, 1);
 }
@@ -77,6 +77,168 @@
 :root[data-theme="dark"] {
   color-scheme: dark;
 
-  --shell:    #090909;
-  --bg:       #111113;
-  --surface
+  --shell:    #080809;
+  --bg:       #0E0E10;
+  --surface:  #161618;
+  --surface2: #1C1C1F;
+  --surface3: #242428;
+
+  --border:  #232326;
+  --border2: #2C2C30;
+  --border3: #38383D;
+
+  --text:  #EDEDF0;
+  --text2: #8E8E9E;
+  --text3: #56565F;
+
+  --accent:       #EDEDF0;
+  --accent-hover: #FFFFFF;
+
+  --danger:       #F87171;
+  --danger-soft:  rgba(248, 113, 113, 0.10);
+  --success:      #4ADE80;
+  --success-soft: rgba(74, 222, 128, 0.10);
+  --warning:      #FBBF24;
+  --warning-soft: rgba(251, 191, 36, 0.10);
+  --alert:        #FB923C;
+  --alert-soft:   rgba(251, 146, 60, 0.10);
+  --info:         #60A5FA;
+  --info-soft:    rgba(96, 165, 250, 0.10);
+
+  --sidebar-width: 280px;
+
+  --st: env(safe-area-inset-top,    0px);
+  --sb: env(safe-area-inset-bottom, 0px);
+  --sl: env(safe-area-inset-left,   0px);
+  --sr: env(safe-area-inset-right,  0px);
+
+  --brand-primary:       #EDEDF0;
+  --brand-primary-light: #FFFFFF;
+  --brand-primary-dark:  #C8C8CC;
+  --brand-on-primary:    #0D0D10;
+  --brand-gradient:      linear-gradient(135deg, #1C1C1F 0%, #0E0E10 100%);
+  --brand-gradient-card: linear-gradient(135deg, rgba(237,237,240,0.08) 0%, rgba(237,237,240,0.04) 100%);
+  --brand-surface:       rgba(237, 237, 240, 0.06);
+  --brand-surface-dark:  #080809;
+  --brand-muted:         rgba(237, 237, 240, 0.20);
+  --brand-glow:          rgba(237, 237, 240, 0.12);
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  -webkit-tap-highlight-color: transparent;
+}
+
+html {
+  width: 100%;
+  height: 100%;
+}
+
+body {
+  width: 100%;
+  min-height: 100%;
+  overflow-x: clip;
+  background: var(--shell);
+  color: var(--text);
+  font-family: "Manrope", sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+#root {
+  width: 100%;
+  min-height: 100%;
+}
+
+.mi {
+  font-family: 'Material Icons';
+  font-weight: normal;
+  font-style: normal;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+  font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;
+}
+
+.mi-outlined {
+  font-family: 'Material Icons Outlined';
+  font-weight: normal;
+  font-style: normal;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+  font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;
+}
+
+.appShell {
+  display: flex;
+  min-height: 100vh;
+  overflow-x: clip;
+}
+
+.appContent {
+  flex: 1;
+  min-height: 100vh;
+  min-width: 0;
+  width: 100%;
+  background: var(--bg);
+}
+
+@media (min-width: 769px) {
+  .appContent {
+    width: auto;
+    margin: 10px 10px 10px calc(var(--sidebar-width) + 10px);
+    min-height: calc(100vh - 20px);
+    background: var(--bg);
+    border-radius: 12px;
+    overflow: clip;
+  }
+}
+
+button {
+  cursor: pointer;
+  font-family: "Manrope", sans-serif;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+input, select, textarea {
+  font-family: "Manrope", sans-serif;
+}
+
+::-webkit-scrollbar       { width: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 4px; }
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slideInRight {
+  from { opacity: 0; transform: translateX(16px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes scaleIn {
+  from { opacity: 0; transform: scale(0.96); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
