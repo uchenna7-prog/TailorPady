@@ -36,52 +36,27 @@ function fitInBox(imgW, imgH, boxW, boxH) {
   }
 }
 
-const SECTION_ORDER = [
-  'Upper Body',
-  'Mid Section',
-  'Lower Body',
-]
+function groupEntries(allEntries, sections) {
+  const sectionNames  = Object.keys(sections)
+  const fieldToSection = {}
+  sectionNames.forEach(name => {
+    sections[name].forEach(field => { fieldToSection[field] = name })
+  })
 
-const FIELD_SECTION_MAP = {
-  'Neck':           'Upper Body',
-  'Shoulder Width': 'Upper Body',
-  'Half Shoulder':  'Upper Body',
-  'Chest':          'Upper Body',
-  'Cross Back':     'Upper Body',
-  'Arm Hole':       'Upper Body',
-  'Biceps':         'Upper Body',
-  'Arm Length':     'Upper Body',
-  'Sleeve Length':  'Upper Body',
-  'Coat Sleeve':    'Upper Body',
-  'Wrist':          'Upper Body',
-  'Shirt Length':   'Mid Section',
-  'Jacket Length':  'Mid Section',
-  'Waist':          'Mid Section',
-  'Hip':            'Mid Section',
-  'Seat':           'Mid Section',
-  'Coat Waist':     'Mid Section',
-  'Crotch':         'Lower Body',
-  'Fly':            'Lower Body',
-  'Inseam':         'Lower Body',
-  'Thighs':         'Lower Body',
-  'Crotch to Knee': 'Lower Body',
-}
-
-function groupEntries(allEntries) {
   const map = {}
-  SECTION_ORDER.forEach(s => { map[s] = [] })
+  sectionNames.forEach(s => { map[s] = [] })
 
   for (const entry of allEntries) {
-    const section = FIELD_SECTION_MAP[entry.field] || 'Lower Body'
+    const section = fieldToSection[entry.field] || sectionNames[sectionNames.length - 1]
     map[section].push(entry)
   }
 
-  return SECTION_ORDER
+  return sectionNames
     .filter(s => map[s].length > 0)
     .map(s => ({ title: s, entries: map[s] }))
 }
 
-async function exportPDF(customer, allEntries, imgMap) {
+async function exportPDF(customer, allEntries, imgMap, sectionConfig) {
   if (!window.jspdf) {
     await new Promise((resolve, reject) => {
       const s = document.createElement('script')
@@ -194,7 +169,7 @@ async function exportPDF(customer, allEntries, imgMap) {
     }
   }
 
-  const sections      = groupEntries(allEntries)
+  const sections      = groupEntries(allEntries, sectionConfig)
   const HEADER_BOTTOM = 28
   const FOOTER_TOP    = PAGE_H - 14
 
@@ -447,7 +422,7 @@ export default function CustomerBodyMeasurements({ onMenuClick }) {
   const sex              = customer.sex || ''
   const bodyMeasurements = customer.bodyMeasurements || {}
 
-  const { fields: orderedFields, imgMap } = getBodyMeasurementConfig(sex)
+  const { fields: orderedFields, imgMap, sections } = getBodyMeasurementConfig(sex)
 
   const knownEntries = orderedFields
     .filter(f => bodyMeasurements[f] !== undefined && bodyMeasurements[f] !== '')
@@ -470,7 +445,7 @@ export default function CustomerBodyMeasurements({ onMenuClick }) {
     if (isEmpty || exporting) return
     setExporting(true)
     try {
-      await exportPDF(customer, allEntries, imgMap)
+      await exportPDF(customer, allEntries, imgMap, sections)
     } catch (err) {
       showToast('Export failed. Try again.')
       console.error('[CBM export]', err)
