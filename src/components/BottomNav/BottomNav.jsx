@@ -1,83 +1,109 @@
-import { useEffect, useRef, useState } from 'react'
-import { useNavigate, useLocation } from 'react-router-dom'
-import styles from './BottomNav.module.css'
-
-
-const NAV_ITEMS = [
-  { icon: 'dashboard',     label: 'Dashboard',    route: '/'             },
-  { icon: 'groups',        label: 'Customers',    route: '/customers'    },
-  { icon: 'event',         label: 'Appointments', route: '/appointments' },
-  { icon: 'shopping_cart', label: 'All Orders',   route: '/orders'       },
-  { icon: 'assignment',    label: 'Tasks',        route: '/tasks'        },
-]
-
-function BottomNav() {
-
-  const navigate = useNavigate()
-  const { pathname } = useLocation()
-  const [hidden, setHidden] = useState(false)
-
-  const lastY      = useRef(0)
-  const ticking    = useRef(false)
-  const hiddenRef  = useRef(false)
-
-  useEffect(() => {
-    const onScroll = (e) => {
-      const target = e.target.scrollingElement ?? e.target
-
-      if (ticking.current) return
-      ticking.current = true
-
-      requestAnimationFrame(() => {
-        const currentY = target.scrollTop
-        const delta    = currentY - lastY.current
-
-        if (Math.abs(delta) > 6) {
-          const shouldHide = delta > 0 && currentY > 80
-
-          if (shouldHide !== hiddenRef.current) {
-            hiddenRef.current = shouldHide
-            setHidden(shouldHide)
-          }
-
-          lastY.current = currentY
-        }
-
-        ticking.current = false
-      })
-    }
-
-    setHidden(false)
-    hiddenRef.current = false
-    lastY.current = 0
-
-    document.addEventListener('scroll', onScroll, { capture: true, passive: true })
-    return () => document.removeEventListener('scroll', onScroll, { capture: true })
-  }, [pathname])
-
-  return (
-    <nav className={`${styles.bottomNav} ${hidden ? styles.bottomNavHidden : ''}`}>
-      {NAV_ITEMS.map(item => {
-        const isActive = item.route === '/'
-          ? pathname === '/' || pathname === '/home'
-          : pathname.startsWith(item.route)
-
-        return (
-          <button
-            key={item.route}
-            className={`${styles.navBtn} ${isActive ? styles.navBtnActive : ''}`}
-            onClick={() => navigate(item.route)}
-            aria-label={item.label}
-            aria-current={isActive ? 'page' : undefined}
-          >
-            <span className={`mi ${styles.navIcon}`}>{item.icon}</span>
-            <span className={styles.navLabel}>{item.label}</span>
-            {isActive && <span className={styles.activeDot} />}
-          </button>
-        )
-      })}
-    </nav>
-  )
+.bottomNav {
+  display: none;
 }
 
-export default BottomNav
+@media (max-width: 768px) {
+  .bottomNav {
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 100;
+    background: var(--bg);
+    border-radius: 18px 18px 0 0;
+    border-top: none;
+    padding: 10px 4px calc(10px + var(--sb));
+    box-shadow: 0 -6px 24px rgba(0, 0, 0, 0.10);
+    transform: translateY(0);
+    transition:
+      transform 0.42s cubic-bezier(0.16, 1, 0.3, 1),
+      box-shadow 0.42s cubic-bezier(0.16, 1, 0.3, 1),
+      opacity 0.42s cubic-bezier(0.16, 1, 0.3, 1);
+    will-change: transform, opacity;
+    opacity: 1;
+  }
+
+  .bottomNavHidden {
+    transform: translateY(calc(100% + var(--sb) + 12px));
+    box-shadow: none;
+    opacity: 0;
+  }
+
+  .navBtn {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    flex: 1;
+    padding: 4px 2px 0;
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-family: inherit;
+    color: var(--text3);
+    transition: color 0.2s ease;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .navBtn:active .navIcon {
+    transform: scale(0.88) translateY(-1px);
+  }
+
+  .navBtnActive {
+    color: var(--accent) !important;
+  }
+
+  .navIcon {
+    font-size: 1.45rem;
+    line-height: 1;
+    transition:
+      transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1),
+      color 0.2s ease;
+  }
+
+  .navBtnActive .navIcon {
+    transform: translateY(-2px) scale(1.08);
+  }
+
+  .navLabel {
+    font-size: 0.56rem;
+    font-weight: 600;
+    line-height: 1.3;
+    text-align: center;
+    color: inherit;
+    white-space: nowrap;
+    transition: opacity 0.2s ease;
+  }
+
+  .navBtn:not(.navBtnActive) .navLabel {
+    opacity: 0.7;
+  }
+
+  .activeDot {
+    position: absolute;
+    bottom: -4px;
+    left: 50%;
+    transform: translateX(-50%) scale(1);
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    background: var(--accent);
+    animation: dotPop 0.35s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+  }
+
+  @keyframes dotPop {
+    from {
+      transform: translateX(-50%) scale(0);
+      opacity: 0;
+    }
+    to {
+      transform: translateX(-50%) scale(1);
+      opacity: 1;
+    }
+  }
+}
