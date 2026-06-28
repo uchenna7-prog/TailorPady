@@ -401,10 +401,10 @@ export default function CustomerBodyMeasurements({ onMenuClick }) {
   const toastTimer     = useRef(null)
   const topSentinelRef = useRef(null)
 
-  const showToast = (msg) => {
+  function showToast(msg, duration = 2400) {
     setToastMsg(msg)
     clearTimeout(toastTimer.current)
-    toastTimer.current = setTimeout(() => setToastMsg(''), 2400)
+    toastTimer.current = setTimeout(() => setToastMsg(''), duration)
   }
 
   useEffect(() => {
@@ -447,8 +447,8 @@ export default function CustomerBodyMeasurements({ onMenuClick }) {
     try {
       await exportPDF(customer, allEntries, imgMap, sections)
     } catch (err) {
-      showToast('Export failed. Try again.')
-      console.error('[CBM export]', err)
+      const msg = err?.message || err?.name || String(err) || 'Unknown error'
+      showToast(`Export failed: ${msg}`, 6000)
     } finally {
       setExporting(false)
     }
