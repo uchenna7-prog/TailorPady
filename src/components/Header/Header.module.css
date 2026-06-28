@@ -1,3 +1,4 @@
+
 .header {
   position: sticky;
   top: 0;
@@ -6,12 +7,19 @@
   align-items: center;
   justify-content: space-between;
   padding: 14px 16px;
-  background: var(--bg) ;
+  background: var(--bg);
   backdrop-filter: saturate(180%) blur(20px);
   -webkit-backdrop-filter: saturate(180%) blur(20px);
   border-bottom: 1px solid transparent;
   min-height: 56px;
   transition: border-color 0.25s ease, box-shadow 0.25s ease;
+}
+
+@media (min-width: 769px) {
+  .header {
+    top: 10px;
+    border-radius: 12px 12px 0 0;
+  }
 }
 
 .headerScrolled {
@@ -337,8 +345,8 @@
 
   .notifPanel {
     position: fixed;
-    top: 56px;
-    right: 16px;
+    top: 66px;
+    right: 20px;
     left: auto;
     bottom: auto;
     width: 380px;
