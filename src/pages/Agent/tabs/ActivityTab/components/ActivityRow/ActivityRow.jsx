@@ -4,11 +4,21 @@ import { MIcon } from "../../../../components/MIcon/MIcon"
 import { resolveCustomerName, resolveOrderName, extractTime, haptic, formatTitle } from "../../../../utils"
 import styles from "./ActivityRow.module.css"
 
+const descIcon = {
+  reminder:   'payments',
+  overdue:    'payments',
+  birthday:   'cake',
+  followup:   'person_search',
+  orderready: 'inventory_2',
+}
+
 export function ActivityRow({ item, isLast, allOrders, allInvoices, allPayments, customers, onOpen }) {
   const customerName = resolveCustomerName(item, allOrders, allInvoices, allPayments, customers)
   const orderName = resolveOrderName(item, allOrders, allInvoices, allPayments)
   const displayTitle = formatTitle(item.title)
   const displayTime = extractTime(item.time)
+  const fallbackIcon = descIcon[item.type]
+  const fallbackDesc = !orderName && item.desc ? item.desc : null
 
   return (
     <div
@@ -38,6 +48,13 @@ export function ActivityRow({ item, isLast, allOrders, allInvoices, allPayments,
           <div className={styles.rowMeta}>
             <MIcon name="shopping_cart" size="0.72rem" color="var(--text3)" />
             <span className={styles.rowMetaText}>{orderName}</span>
+          </div>
+        )}
+
+        {fallbackDesc && fallbackIcon && (
+          <div className={styles.rowMeta}>
+            <MIcon name={fallbackIcon} size="0.72rem" color="var(--text3)" />
+            <span className={styles.rowMetaText}>{fallbackDesc}</span>
           </div>
         )}
       </div>
