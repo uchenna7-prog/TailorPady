@@ -74,6 +74,37 @@
 }
 
 
+/* ─── Inline message banner ─────────────────────────────────────────────────── */
+
+.formInlineMsg {
+  display:     flex;
+  align-items: center;
+  gap:         8px;
+  padding:     10px 20px;
+  font-size:   0.78rem;
+  font-weight: 700;
+  flex-shrink: 0;
+  animation:   fadeSlideIn 0.22s ease;
+}
+
+@keyframes fadeSlideIn {
+  from { opacity: 0; transform: translateY(-6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.formInlineMsgOk {
+  background:    rgba(34, 197, 94, 0.10);
+  color:         #16a34a;
+  border-bottom: 1px solid rgba(34, 197, 94, 0.18);
+}
+
+.formInlineMsgErr {
+  background:    rgba(239, 68, 68, 0.08);
+  color:         var(--danger);
+  border-bottom: 1px solid rgba(239, 68, 68, 0.15);
+}
+
+
 /* ─── Section headings ─────────────────────────────────────────────────────── */
 
 .stepHeading {
@@ -94,7 +125,6 @@
   margin-bottom: 12px;
   line-height:   1.4;
 }
-
 
 
 .unitChipRow {
@@ -399,11 +429,11 @@
 }
 
 .slotCard_open {
-  border-color:              var(--accent);
-  background:                var(--surface2);
-  border-bottom-left-radius: 0;
+  border-color:               var(--accent);
+  background:                 var(--surface2);
+  border-bottom-left-radius:  0;
   border-bottom-right-radius: 0;
-  border-bottom-color:       transparent;
+  border-bottom-color:        transparent;
 }
 
 .slotCardLeft {
@@ -484,14 +514,14 @@
 
 
 .slotAccordionBody {
-  background:                var(--surface2);
-  border:                    1px solid var(--accent);
-  border-top:                none;
-  border-bottom-left-radius: 14px;
+  background:                 var(--surface2);
+  border:                     1px solid var(--accent);
+  border-top:                 none;
+  border-bottom-left-radius:  14px;
   border-bottom-right-radius: 14px;
-  padding:                   16px 14px;
-  animation:                 accordionOpen 0.22s cubic-bezier(0.4, 0, 0.2, 1);
-  overflow:                  hidden;
+  padding:                    16px 14px;
+  animation:                  accordionOpen 0.22s cubic-bezier(0.4, 0, 0.2, 1);
+  overflow:                   hidden;
 }
 
 @keyframes accordionOpen {
@@ -584,16 +614,16 @@
 
 @media (min-width: 769px) {
   .formOverlay {
-    background:                 rgba(0, 0, 0, 0.45);
-    backdrop-filter:            blur(4px);
-    -webkit-backdrop-filter:    blur(4px);
-    transform:                  translateX(100%);
-    transition:                 transform 0.3s cubic-bezier(0.32, 0.72, 0, 1);
-    left:                       var(--sidebar-width, 280px);
-    flex-direction:             row;
-    align-items:                stretch;
-    max-width:                 calc(100% - var(--sidebar-width, 280px));
-    justify-content:            flex-end;
+    background:                  rgba(0, 0, 0, 0.45);
+    backdrop-filter:             blur(4px);
+    -webkit-backdrop-filter:     blur(4px);
+    transform:                   translateX(100%);
+    transition:                  transform 0.3s cubic-bezier(0.32, 0.72, 0, 1);
+    left:                        var(--sidebar-width, 280px);
+    flex-direction:              row;
+    align-items:                 stretch;
+    max-width:                   calc(100% - var(--sidebar-width, 280px));
+    justify-content:             flex-end;
   }
 
   .formOverlay_open {
@@ -601,22 +631,19 @@
   }
 
   .formPanel {
-  display:        flex;
-  flex-direction: column;
-  min-height:     0;
-  height:         100%;
-  width:         480px;
-  background:    var(--bg);
+    display:        flex;
+    flex-direction: column;
+    min-height:     0;
+    height:         100%;
+    width:          480px;
+    background:     var(--bg);
+  }
 
-}
-
-.formScrollBody {
-  flex:                       1;
-  min-height:                 0;
-  overflow-y:                 auto;
-  padding-bottom:             100px;
-  -webkit-overflow-scrolling: touch;
-}
-
-
+  .formScrollBody {
+    flex:                       1;
+    min-height:                 0;
+    overflow-y:                 auto;
+    padding-bottom:             100px;
+    -webkit-overflow-scrolling: touch;
+  }
 }
