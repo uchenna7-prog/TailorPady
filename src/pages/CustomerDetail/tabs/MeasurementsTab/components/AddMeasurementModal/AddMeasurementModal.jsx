@@ -79,10 +79,18 @@ function buildSavePayload(measurement, unit, imageUrls, gender) {
   }
 }
 
-async function uploadMeasurementImages(slots) {
+async function uploadMeasurementImages(slots, isOnline) {
   if (!slots?.length) return []
   const urls = await Promise.all(
-    slots.map(slot => slot.file ? uploadToCloudinary(slot.file, 'measurements') : slot.localSrc)
+    slots.map(async slot => {
+      if (!slot.file) return slot.localSrc ?? null
+      if (!isOnline) return null
+      try {
+        return await uploadToCloudinary(slot.file, 'measurements')
+      } catch {
+        return null
+      }
+    })
   )
   return urls.filter(Boolean)
 }
@@ -92,21 +100,31 @@ const hasStyleSelections = styleSelections =>
 
 
 export function AddMeasurementModal({ isOpen, onClose, onSave, gender }) {
-  const [activeTab,        setActiveTab]        = useState('measurements')
-  const [unit,             setUnit]             = useState('in')
-  const [measurement,      setMeasurement]      = useState(createBlankMeasurement)
-  const [validationErrors, setValidationErrors] = useState({})
-  const [isSaving,         setIsSaving]         = useState(false)
-  const [openSlotId,       setOpenSlotId]       = useState(null)
-  const isOnline                                = useNetworkStatus()
-  const detailsRef                              = useRef(null)
-  const scrollBodyRef                           = useRef(null)
-  const slotCardRefs                            = useRef({})
-  const subTabRowRef                            = useRef(null)
+  const [activeTab,         setActiveTab]         = useState('measurements')
+  const [unit,              setUnit]              = useState('in')
+  const [measurement,       setMeasurement]       = useState(createBlankMeasurement)
+  const [validationErrors,  setValidationErrors]  = useState({})
+  const [isSaving,          setIsSaving]          = useState(false)
+  const [openSlotId,        setOpenSlotId]        = useState(null)
+  const [formInlineMsg,     setFormInlineMsg]     = useState(null)
+  const [uploadedImageUrls, setUploadedImageUrls] = useState(null)
+  const isOnline                                  = useNetworkStatus()
+  const detailsRef                                = useRef(null)
+  const scrollBodyRef                             = useRef(null)
+  const slotCardRefs                              = useRef({})
+  const subTabRowRef                              = useRef(null)
+  const formInlineMsgTimer                        = useRef(null)
 
   const { GARMENT_CATEGORIES, FEMALE_FULL_WEAR_TYPES, FEMALE_LOWER_BODY_TYPES, getSlotsForCard } = useGarmentFeatures()
 
   const fullWearTypes = gender === 'Female' ? FEMALE_FULL_WEAR_TYPES : []
+
+
+  function showInlineMsg(text, ok = true) {
+    setFormInlineMsg({ text, ok })
+    clearTimeout(formInlineMsgTimer.current)
+    formInlineMsgTimer.current = setTimeout(() => setFormInlineMsg(null), 2600)
+  }
 
 
   function updateMeasurement(key, value) {
@@ -175,7 +193,7 @@ export function AddMeasurementModal({ isOpen, onClose, onSave, gender }) {
   }
 
   function handleOptionSelect(slotId, optionId, parentSlotId) {
-    const currentValue = measurement.styleSelections?.[slotId]
+    const currentValue  = measurement.styleSelections?.[slotId]
     const isDeselecting = currentValue === optionId
     updateStyleSelection(slotId, isDeselecting ? '' : optionId)
     if (!parentSlotId && !isDeselecting) setOpenSlotId(null)
@@ -216,15 +234,32 @@ export function AddMeasurementModal({ isOpen, onClose, onSave, gender }) {
       const errors = validateMeasurement(measurement)
       if (Object.keys(errors).length > 0) {
         setValidationErrors(errors)
+        showInlineMsg(Object.values(errors)[0], false)
         detailsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
         return
       }
+
+      const hasPendingFiles = measurement.slots.some(s => s.file)
+
+      if (isOnline && hasPendingFiles) {
+        setIsSaving(true)
+        const urls = await uploadMeasurementImages(measurement.slots, true)
+        setUploadedImageUrls(urls)
+        setIsSaving(false)
+      }
+
+      showInlineMsg(
+        !isOnline && hasPendingFiles
+          ? 'Saved — design photos will upload when back online'
+          : 'Measurements saved ✓',
+        true
+      )
       setActiveTab('features')
       return
     }
 
     setIsSaving(true)
-    const imageUrls = await uploadMeasurementImages(measurement.slots)
+    const imageUrls = uploadedImageUrls ?? await uploadMeasurementImages(measurement.slots, isOnline)
     onSave(buildSavePayload(measurement, unit, imageUrls, gender))
     setIsSaving(false)
     resetAndClose()
@@ -232,7 +267,7 @@ export function AddMeasurementModal({ isOpen, onClose, onSave, gender }) {
 
   async function handleSkip() {
     setIsSaving(true)
-    const imageUrls = await uploadMeasurementImages(measurement.slots)
+    const imageUrls = uploadedImageUrls ?? await uploadMeasurementImages(measurement.slots, isOnline)
     onSave({
       ...buildSavePayload(measurement, unit, imageUrls, gender),
       styleSelections: {},
@@ -249,14 +284,17 @@ export function AddMeasurementModal({ isOpen, onClose, onSave, gender }) {
     setActiveTab('measurements')
     setValidationErrors({})
     setOpenSlotId(null)
+    setFormInlineMsg(null)
+    setUploadedImageUrls(null)
+    clearTimeout(formInlineMsgTimer.current)
     onClose()
   }
 
 
-  const isFemaleLoweBody   = gender === 'Female' && measurement.category === 'lower_body'
-  const isFemaleFullBody   = gender === 'Female' && measurement.category === 'full_body'
-  const slots              = getSlotsForCard(measurement.category, measurement.fullWearType, gender, measurement.lowerBodyType)
-  const hasFeatures        = hasStyleSelections(measurement.styleSelections)
+  const isFemaleLoweBody = gender === 'Female' && measurement.category === 'lower_body'
+  const isFemaleFullBody = gender === 'Female' && measurement.category === 'full_body'
+  const slots            = getSlotsForCard(measurement.category, measurement.fullWearType, gender, measurement.lowerBodyType)
+  const hasFeatures      = hasStyleSelections(measurement.styleSelections)
 
   const subTabOptions = isFemaleLoweBody
     ? FEMALE_LOWER_BODY_TYPES
@@ -283,7 +321,7 @@ export function AddMeasurementModal({ isOpen, onClose, onSave, gender }) {
 
   const headerAction = (() => {
     if (activeTab === 'measurements') {
-      return { label: 'Save', onClick: handleSave, disabled: isSaving }
+      return { label: isSaving ? 'Uploading...' : 'Save', onClick: handleSave, disabled: isSaving }
     }
     if (hasFeatures) {
       return { label: isSaving ? 'Saving...' : 'Save', onClick: handleSave, disabled: isSaving }
@@ -320,6 +358,15 @@ export function AddMeasurementModal({ isOpen, onClose, onSave, gender }) {
             Garment Features
           </button>
         </div>
+
+        {formInlineMsg && (
+          <div className={`${styles.formInlineMsg} ${formInlineMsg.ok ? styles.formInlineMsgOk : styles.formInlineMsgErr}`}>
+            <span className="mi" style={{ fontSize: '0.95rem' }}>
+              {formInlineMsg.ok ? 'check_circle' : 'error_outline'}
+            </span>
+            {formInlineMsg.text}
+          </div>
+        )}
 
         <div className={styles.formScrollBody} ref={scrollBodyRef}>
 
@@ -465,7 +512,6 @@ export function AddMeasurementModal({ isOpen, onClose, onSave, gender }) {
                   <span>Tap one of the tabs above to see its garment features.</span>
                 </div>
               )}
-
 
               {slots.length > 0 && (
                 <div className={styles.slotAccordionList}>
