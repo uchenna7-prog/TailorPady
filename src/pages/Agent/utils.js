@@ -64,7 +64,10 @@ export function groupByDate(items, getDate) {
 
 function extractIdFromDraftId(id, prefixes) {
   for (const prefix of prefixes) {
-    if (id.startsWith(prefix)) return id.slice(prefix.length).split('::')[0]
+    if (id.startsWith(prefix)) {
+      const rest = id.slice(prefix.length).split('::')[0]
+      return rest.replace(/-\d{4}$/, '')
+    }
   }
   return null
 }
