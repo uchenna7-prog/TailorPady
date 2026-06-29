@@ -1,10 +1,10 @@
-import { SheetBase } from "../../../../components/SheetBase/SheetBase"
-import { SheetHeader } from "../../../../components/SheetHeader/SheetHeader"
-import { SheetHero } from "../../../../components/SheetHero/SheetHero"
-import { SheetSection } from "../../../../components/SheetSection/SheetSection"
+import { SheetBase }        from "../../../../components/SheetBase/SheetBase"
+import { SheetHeader }      from "../../../../components/SheetHeader/SheetHeader"
+import { SheetHero }        from "../../../../components/SheetHero/SheetHero"
+import { SheetSection }     from "../../../../components/SheetSection/SheetSection"
 import { resolveCustomerName, haptic } from "../../../../utils"
-import { MIcon } from "../../../../components/MIcon/MIcon"
-import styles from "./ScheduledDetailSheet.module.css"
+import { MIcon }            from "../../../../components/MIcon/MIcon"
+import styles               from "./ScheduledDetailSheet.module.css"
 
 export function ScheduledDetailSheet({ item, onClose, onCancel, allOrders, allInvoices, allPayments, customers }) {
   if (!item) return null
@@ -17,7 +17,7 @@ export function ScheduledDetailSheet({ item, onClose, onCancel, allOrders, allIn
 
       <div className={styles.sheetBody}>
         <SheetSection icon="event_note" label="What will happen">
-          <p className={styles.sectionText}>{item.desc}</p>
+          <p className={styles.sectionText}>{item.detail || item.desc}</p>
         </SheetSection>
 
         <div className={styles.sheetMeta}>
