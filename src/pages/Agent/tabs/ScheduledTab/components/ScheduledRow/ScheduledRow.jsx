@@ -7,7 +7,7 @@ import styles from "./ScheduledRow.module.css"
 export function ScheduledRow({ item, isLast, allOrders, allInvoices, allPayments, customers, onOpen }) {
   const customerName = resolveCustomerName(item, allOrders, allInvoices, allPayments, customers)
   const orderName = resolveOrderName(item, allOrders, allInvoices, allPayments)
-  const displayTitle = orderName || formatTitle(item.title)
+  const displayTitle = formatTitle(item.title)
 
   return (
     <div
@@ -33,13 +33,22 @@ export function ScheduledRow({ item, isLast, allOrders, allInvoices, allPayments
           </div>
         )}
 
+        {orderName && (
+          <div className={styles.rowMeta}>
+            <MIcon name="shopping_cart" size="0.72rem" color="var(--text3)" />
+            <span className={styles.rowMetaText}>{orderName}</span>
+          </div>
+        )}
+
         <div className={styles.rowMeta}>
           <MIcon name="schedule" size="0.72rem" color="var(--accent)" />
           <span className={`${styles.rowMetaText} ${styles.rowMetaAccent}`}>{item.when}</span>
         </div>
       </div>
 
-      <TagPill label={item.tag} />
+      <div className={styles.rowRight}>
+        <TagPill label={item.tag} />
+      </div>
     </div>
   )
 }
