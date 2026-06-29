@@ -4,11 +4,21 @@ import { TagPill } from "../../../../components/TagPill/TagPill"
 import { MIcon } from "../../../../components/MIcon/MIcon"
 import styles from "./DraftRow.module.css"
 
+const descIcon = {
+  reminder:   'payments',
+  overdue:    'payments',
+  birthday:   'cake',
+  followup:   'person_search',
+  orderready: 'inventory_2',
+}
+
 export function DraftRow({ item, isLast, allOrders, allInvoices, allPayments, customers, onOpen }) {
   const customerName = resolveCustomerName(item, allOrders, allInvoices, allPayments, customers)
   const orderName = resolveOrderName(item, allOrders, allInvoices, allPayments)
   const displayTitle = formatTitle(item.title)
   const displayTime = extractTime(item.time)
+  const fallbackIcon = descIcon[item.type]
+  const fallbackDesc = !orderName && item.preview ? item.preview : null
 
   return (
     <div
@@ -38,6 +48,13 @@ export function DraftRow({ item, isLast, allOrders, allInvoices, allPayments, cu
           <div className={styles.rowMeta}>
             <MIcon name="shopping_cart" size="0.72rem" color="var(--text3)" />
             <span className={styles.rowMetaText}>{orderName}</span>
+          </div>
+        )}
+
+        {fallbackDesc && fallbackIcon && (
+          <div className={styles.rowMeta}>
+            <MIcon name={fallbackIcon} size="0.72rem" color="var(--text3)" />
+            <span className={`${styles.rowMetaText} ${styles.rowPreview}`}>{fallbackDesc}</span>
           </div>
         )}
       </div>
