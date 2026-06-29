@@ -137,14 +137,14 @@ const FLOWS = {
       key:      'price',
       question: "What's the total price?",
       validate: v => parseMoney(v) !== null,
-      errMsg:   'Please enter a valid amount like 45000 or ₦45,000',
+      errMsg:   'Please enter a valid amount, e.g. 45000 or ₦45,000.',
       transform: v => parseMoney(v),
     },
     {
       key:      'dueDate',
       question: "When is it due? (e.g. May 20, next Friday, tomorrow)",
       validate: v => parseDate(v) !== null,
-      errMsg:   "I didn't get that date. Try 'May 20' or 'next Friday'",
+      errMsg:   "I didn't catch that date. Try something like 'May 20' or 'next Friday'.",
       transform: v => parseDate(v),
     },
     { key: 'deposit',         question: "Has the customer paid a deposit? If yes, how much? (or say 'no')" },
@@ -160,7 +160,7 @@ const FLOWS = {
       key:      'amount',
       question: 'How much did they pay?',
       validate: v => parseMoney(v) !== null,
-      errMsg:   'Please enter a valid amount',
+      errMsg:   'Please enter a valid amount, e.g. 10000 or ₦10,000.',
       transform: v => parseMoney(v),
     },
     { key: 'method',  question: 'How did they pay? (cash / transfer / card)' },
@@ -175,18 +175,18 @@ const FLOWS = {
     },
     {
       key:      'customerName',
-      question: "Is this for a specific customer? (name or 'no')",
+      question: "Is this linked to a specific customer? (name or 'no')",
       transform: v => /^no$/i.test(v.trim()) ? null : v.trim(),
     },
   ],
   add_appt: [
     { key: 'customerName', question: 'Who is the appointment for?' },
-    { key: 'type',         question: 'What type? (fitting / measurement / delivery / consultation / pickup / other)' },
+    { key: 'type',         question: 'What type of appointment? (fitting / measurement / delivery / consultation / pickup / other)' },
     {
       key:      'date',
       question: 'What date?',
       validate: v => parseDate(v) !== null,
-      errMsg:   "I didn't get that date. Try 'May 20' or 'next Friday'",
+      errMsg:   "I didn't catch that date. Try something like 'May 20' or 'next Friday'.",
       transform: v => parseDate(v),
     },
     { key: 'time', question: 'What time? (e.g. 2pm, 14:00)' },
@@ -316,7 +316,7 @@ export function AgentProvider({ children }) {
 
     if (!customer) {
       await agentReply(
-        `I couldn't find a customer named "${data.customerName}". Do you want me to create them first?`,
+        `I couldn't find a customer named "${data.customerName}". Would you like me to create them first?`,
         null,
         [
           { label: 'Yes, create customer first', action: 'create_customer', payload: { name: data.customerName, pendingOrder: data } },
@@ -361,7 +361,7 @@ export function AgentProvider({ children }) {
       const actions = []
 
       if (!hasMeasurements) {
-        lines.push('📐 No measurements yet — I\'ve added a reminder task')
+        lines.push("📐 No measurements on file — I've added a reminder task so it doesn't slip through.")
         await addTask({
           desc:         `Take measurements for ${customer.name}`,
           dueDate:      data.dueDate,
@@ -374,7 +374,7 @@ export function AgentProvider({ children }) {
       }
 
       if (hasDeposit) {
-        lines.push(`💵 Deposit of ${formatMoney(depositAmount, currencySymbol)} noted — record it in Payments`)
+        lines.push(`💵 Deposit of ${formatMoney(depositAmount, currencySymbol)} noted — head to Payments to record it against their order.`)
       }
 
       actions.push({ label: 'Generate invoice now', action: 'gen_invoice', payload: { customerName: customer.name } })
@@ -382,20 +382,20 @@ export function AgentProvider({ children }) {
 
       await agentReply(lines.join('\n'), null, actions)
     } catch {
-      await agentReply('Something went wrong creating that order. Please try again.')
+      await agentReply('Something went wrong while creating that order. Please try again.')
     }
   }
 
   async function executeGenInvoice(data) {
     const customer = findCustomer(customers, data.customerName)
     if (!customer) {
-      await agentReply(`I couldn't find "${data.customerName}" in your customers.`)
+      await agentReply(`I couldn't find "${data.customerName}" in your customer list.`)
       return
     }
 
     const customerOrders   = allOrders.filter(o => o.customerId === customer.id && o.status !== 'cancelled')
     if (!customerOrders.length) {
-      await agentReply(`${customer.name} doesn't have any active orders to invoice.`)
+      await agentReply(`${customer.name} doesn't have any active orders to invoice right now.`)
       return
     }
 
@@ -404,7 +404,7 @@ export function AgentProvider({ children }) {
 
     if (!uninvoicedOrders.length) {
       await agentReply(
-        `All of ${customer.name}'s orders already have invoices. Want to view them?`,
+        `All of ${customer.name}'s orders already have invoices. Would you like to view them?`,
         null,
         [{ label: 'View invoices', action: 'navigate', payload: { route: '/invoices' } }]
       )
@@ -415,7 +415,7 @@ export function AgentProvider({ children }) {
     const currencySymbol = generalSettings.invoiceCurrency?.symbol || '₦'
 
     await agentReply(
-      `I found an uninvoiced order for ${customer.name}:\n📦 **${order.desc}** · ${formatMoney(order.totalAmount || order.price, currencySymbol)}\n\nHead to the Invoices page to generate it.`,
+      `Found an uninvoiced order for ${customer.name}:\n📦 **${order.desc}** · ${formatMoney(order.totalAmount || order.price, currencySymbol)}\n\nHead to the Invoices page to generate and send it.`,
       null,
       [
         { label: 'Go to Invoices', action: 'navigate', payload: { route: '/invoices' } },
@@ -427,7 +427,7 @@ export function AgentProvider({ children }) {
   async function executeRecordPayment(data) {
     const customer = findCustomer(customers, data.customerName)
     if (!customer) {
-      await agentReply(`I couldn't find "${data.customerName}" in your customers.`)
+      await agentReply(`I couldn't find "${data.customerName}" in your customer list.`)
       return
     }
 
@@ -471,7 +471,7 @@ export function AgentProvider({ children }) {
 
   async function executeAddAppt(data) {
     await agentReply(
-      `Got it — ${data.type} appointment for **${data.customerName}** on ${formatDateNice(data.date)} at ${data.time}.\n\nHead to Appointments to confirm and save it.`,
+      `Got it — **${data.type}** appointment for **${data.customerName}** on ${formatDateNice(data.date)} at ${data.time}.\n\nHead to Appointments to confirm and save it.`,
       null,
       [
         { label: 'Go to Appointments', action: 'navigate', payload: { route: '/appointments' } },
@@ -486,7 +486,7 @@ export function AgentProvider({ children }) {
       case 'query_customer': {
         const nameHint = extractCustomerName(text)
         const customer = nameHint ? findCustomer(customers, nameHint) : null
-        if (!customer) { await agentReply('Which customer do you mean?'); return }
+        if (!customer) { await agentReply('Which customer are you asking about?'); return }
 
         const currencySymbol   = generalSettings.invoiceCurrency?.symbol || '₦'
         const customerInvoices = allInvoices.filter(i => i.customerId === customer.id && i.status !== 'paid')
@@ -499,8 +499,8 @@ export function AgentProvider({ children }) {
         const lines = [
           `**${customer.name}**`,
           totalOwed > 0
-            ? `💰 Outstanding: ${formatMoney(balance, currencySymbol)}`
-            : '✅ All paid up — no outstanding balance',
+            ? `💰 Outstanding balance: ${formatMoney(balance, currencySymbol)}`
+            : '✅ No outstanding balance — all paid up.',
         ]
         if (customerInvoices.length) {
           lines.push(`🧾 ${customerInvoices.length} unpaid invoice${customerInvoices.length > 1 ? 's' : ''}`)
@@ -517,7 +517,7 @@ export function AgentProvider({ children }) {
         const pending  = allOrders.filter(o => !['completed', 'delivered', 'cancelled'].includes(o.status))
         const dueToday = pending.filter(o => (o.dueDate || o.dueRaw) === today)
 
-        if (!pending.length) { await agentReply('No active orders right now. All caught up! 🎉'); return }
+        if (!pending.length) { await agentReply('No active orders right now — all caught up! 🎉'); return }
 
         const lines = [
           `You have **${pending.length} active order${pending.length > 1 ? 's' : ''}**`,
@@ -537,7 +537,7 @@ export function AgentProvider({ children }) {
         })
 
         if (!overdueInvoices.length) {
-          await agentReply('No overdue invoices! All payments are on track. ✅')
+          await agentReply('No overdue invoices — all payments are on track. ✅')
           return
         }
 
@@ -561,7 +561,7 @@ export function AgentProvider({ children }) {
         const pendingTasks = tasks.filter(t => !t.done)
 
         await agentReply([
-          'Here\'s your shop snapshot 📊',
+          "Here's a quick overview of your shop 📊",
           '',
           `📦 **${pending.length}** active order${pending.length !== 1 ? 's' : ''}${dueToday.length ? ` · ${dueToday.length} due today` : ''}`,
           `🧾 **${overdue.length}** overdue invoice${overdue.length !== 1 ? 's' : ''}`,
@@ -577,7 +577,7 @@ export function AgentProvider({ children }) {
         if (!customer) { await agentReply("Which customer's measurements do you want to check?"); return }
 
         await agentReply(
-          `To check ${customer.name}'s measurements, head to their profile.`,
+          `To view ${customer.name}'s measurements, head to their profile.`,
           null,
           [{ label: `View ${customer.name}'s profile`, action: 'navigate', payload: { route: '/customers' } }]
         )
@@ -606,7 +606,7 @@ export function AgentProvider({ children }) {
         }
 
         if (!customer || !newStatus) {
-          await agentReply('I need a customer name and new status. For example: "Mark Emeka\'s order as ready"')
+          await agentReply("I need a customer name and a new status to update. For example: \"Mark Emeka's order as ready\".")
           return
         }
 
@@ -622,7 +622,7 @@ export function AgentProvider({ children }) {
         const order = customerOrders[0]
         try {
           await updateOrderStatus(order.id, newStatus)
-          await agentReply(`✅ **${order.desc}** for ${customer.name} marked as ${newStatus}.`)
+          await agentReply(`✅ **${order.desc}** for ${customer.name} has been marked as ${newStatus}.`)
         } catch {
           await agentReply("Couldn't update that order. Please try from the Orders page.")
         }
@@ -631,7 +631,7 @@ export function AgentProvider({ children }) {
 
       default:
         await agentReply(
-          'I\'m not sure what you mean. Try:\n• "Add an order for Uchenna"\n• "How much does Bola owe?"\n• "Emeka just paid 15k"\n• "What\'s happening today?"'
+          "I'm not sure what you mean. Here are some things you can try:\n• \"Add an order for Uchenna\"\n• \"How much does Bola owe?\"\n• \"Emeka just paid 15k\"\n• \"What's happening today?\""
         )
     }
   }
@@ -669,7 +669,7 @@ export function AgentProvider({ children }) {
         break
       case 'cancel':
         setActiveFlow(null)
-        await agentReply('No problem. What else can I help with?')
+        await agentReply('No problem — cancelled. What else can I help with?')
         break
       default:
         break
