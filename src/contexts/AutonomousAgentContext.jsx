@@ -219,16 +219,17 @@ function detectCandidates({
           type:      'invoice',
           tag:       'Invoice',
           title:     'Generate invoice',
-          desc:      `${order.customerName || 'Customer'} — ${orderName}, ${amount}`,
+          desc:      `${order.customerName || 'Customer'} — ${orderName} · ${amount}`,
+          detail:    `An invoice will be generated for ${order.customerName || 'a customer'}'s order: ${orderName} (${amount})${order.due ? `, due ${order.due}` : ''}.`,
           detectedAt,
           fireAt,
           visibleAt,
           draftData: {
             type:    'invoice',
-            title:   'Invoice drafted',
-            preview: `Drafted invoice for ${orderName} — ${amount}${order.due ? `, due ${order.due}` : ''}`,
+            title:   'Invoice ready for review',
+            preview: `Invoice drafted for ${order.customerName || 'a customer'} — ${orderName}, ${amount}${order.due ? `, due ${order.due}` : ''}.`,
             summary: { icon: 'shopping_cart', name: orderName, amount, due: order.due || null },
-            reason:  `This order had no invoice ${durationLabel(generalSettings.agentAutoInvoiceTimeframe)} after it was created.`,
+            reason:  `This order was created ${durationLabel(generalSettings.agentAutoInvoiceTimeframe)} ago without an invoice attached. Your assistant drafted one automatically.`,
             tag:     'Invoice',
             status:  'pending',
           },
@@ -240,25 +241,29 @@ function detectCandidates({
     const thresholdMs = durationToMs(generalSettings.agentAutoReceiptTimeframe)
 
     getPendingReceiptItems(allPayments, allReceipts).forEach(({ payment, installment }) => {
-      const customer   = customers.find(c => c.id === payment.customerId)
-      const detectedAt = installment.createdAtMs || timestampToMs(payment.createdAt) || nowMs
-      const fireAt     = detectedAt + thresholdMs
-      const visibleAt  = detectedAt
+      const customer      = customers.find(c => c.id === payment.customerId)
+      const customerName  = customer?.name || payment.customerName || 'a customer'
+      const amount        = formatMoney(installment.amount, generalSettings.receiptCurrency?.symbol)
+      const method        = installment.method || 'cash'
+      const detectedAt    = installment.createdAtMs || timestampToMs(payment.createdAt) || nowMs
+      const fireAt        = detectedAt + thresholdMs
+      const visibleAt     = detectedAt
 
       candidates.push({
         id:        `receipt-${payment.id}::${installment.id}`,
         type:      'receipt',
         tag:       'Receipt',
         title:     'Generate receipt',
-        desc:      `${customer?.name || payment.customerName || 'Customer'} — ${formatMoney(installment.amount, generalSettings.receiptCurrency?.symbol)} via ${installment.method || 'cash'}`,
+        desc:      `${customerName} — ${amount} via ${method}`,
+        detail:    `A receipt will be generated for the ${amount} ${method} payment recorded from ${customerName}.`,
         detectedAt,
         fireAt,
         visibleAt,
         draftData: {
           type:    'receipt',
-          title:   'Receipt drafted',
-          preview: `Receipt for ${formatMoney(installment.amount, generalSettings.receiptCurrency?.symbol)} paid by ${customer?.name || payment.customerName || 'a customer'} via ${installment.method || 'cash'}.`,
-          reason:  `A payment was recorded and no receipt had been generated for it yet. Draft created after ${durationLabel(generalSettings.agentAutoReceiptTimeframe)}.`,
+          title:   'Receipt ready for review',
+          preview: `Receipt for ${amount} — ${customerName} · paid via ${method}.`,
+          reason:  `A payment of ${amount} was recorded ${durationLabel(generalSettings.agentAutoReceiptTimeframe)} ago with no receipt generated. Your assistant drafted one automatically.`,
           tag:     'Receipt',
           status:  'pending',
         },
@@ -272,9 +277,11 @@ function detectCandidates({
     allInvoices
       .filter(i => i.status !== 'paid' && i.due)
       .forEach(invoice => {
-        const dueMs     = new Date(invoice.due + 'T23:59:59').getTime()
-        const fireAt    = dueMs - reminderMs
-        const visibleAt = fireAt
+        const dueMs      = new Date(invoice.due + 'T23:59:59').getTime()
+        const fireAt     = dueMs - reminderMs
+        const visibleAt  = fireAt
+        const firstName  = invoice.customerName?.split(' ')[0] || 'there'
+        const amount     = formatMoney(invoice.totalAmount || invoice.price, generalSettings.invoiceCurrency?.symbol)
 
         if (fireAt < nowMs - DAY_MS) return
 
@@ -284,14 +291,15 @@ function detectCandidates({
           tag:       'Reminder',
           title:     'Payment reminder',
           desc:      `${invoice.customerName || 'Customer'} — due ${invoice.due}`,
+          detail:    `A payment reminder will be sent to ${invoice.customerName || 'a customer'} for their outstanding balance of ${amount}, due on ${invoice.due}.`,
           detectedAt: nowMs,
           fireAt,
           visibleAt,
           draftData: {
             type:    'reminder',
-            title:   `Payment reminder drafted — ${invoice.customerName || 'Customer'}`,
-            preview: `Hi ${invoice.customerName || 'there'}, just a reminder that your balance of ${formatMoney(invoice.totalAmount || invoice.price, generalSettings.invoiceCurrency?.symbol)} is due on ${invoice.due}. Kindly make payment at your earliest convenience. Thank you!`,
-            reason:  `The invoice due date is within ${durationLabel(generalSettings.agentPaymentReminderBefore)}, your reminder window.`,
+            title:   `Payment reminder — ${invoice.customerName || 'Customer'}`,
+            preview: `Hi ${firstName}, this is a friendly reminder that your balance of ${amount} is due on ${invoice.due}. Kindly make payment at your earliest convenience. Thank you!`,
+            reason:  `${invoice.customerName || 'This customer'}'s invoice falls due within ${durationLabel(generalSettings.agentPaymentReminderBefore)}, which is within your configured reminder window.`,
             tag:     'Reminder',
             status:  'pending',
           },
@@ -308,21 +316,23 @@ function detectCandidates({
         const dueMs     = new Date(invoice.due + 'T23:59:59').getTime()
         const fireAt    = dueMs + gracePeriodMs
         const visibleAt = dueMs
+        const amount    = formatMoney(invoice.totalAmount || invoice.price, generalSettings.invoiceCurrency?.symbol)
 
         candidates.push({
           id:        `overdue-${invoice.id}`,
           type:      'overdue',
           tag:       'Overdue',
           title:     'Overdue alert',
-          desc:      `${invoice.customerName || 'Customer'} — due ${invoice.due}`,
+          desc:      `${invoice.customerName || 'Customer'} — was due ${invoice.due}`,
+          detail:    `An overdue notice will be raised for ${invoice.customerName || 'a customer'}'s unpaid invoice of ${amount}, which was due on ${invoice.due}.`,
           detectedAt: dueMs,
           fireAt,
           visibleAt,
           draftData: {
             type:    'overdue',
             title:   `Overdue invoice — ${invoice.customerName || 'Customer'}`,
-            preview: `Invoice for ${formatMoney(invoice.totalAmount || invoice.price, generalSettings.invoiceCurrency?.symbol)} from ${invoice.customerName || 'a customer'} is overdue by more than ${durationLabel(generalSettings.agentOverdueGracePeriod)}.`,
-            reason:  `This invoice passed its due date of ${invoice.due} and has been unpaid for longer than your grace period of ${durationLabel(generalSettings.agentOverdueGracePeriod)}.`,
+            preview: `${invoice.customerName || 'A customer'}'s invoice for ${amount} is overdue. It was due on ${invoice.due} and has not been settled beyond your grace period of ${durationLabel(generalSettings.agentOverdueGracePeriod)}.`,
+            reason:  `This invoice passed its due date of ${invoice.due} and has remained unpaid beyond your grace period of ${durationLabel(generalSettings.agentOverdueGracePeriod)}.`,
             tag:     'Overdue',
             status:  'pending',
           },
@@ -340,22 +350,24 @@ function detectCandidates({
         if (!completedAtMs) return
         const fireAt    = completedAtMs + windowMs
         const visibleAt = completedAtMs
+        const amount    = formatMoney(order.totalAmount || order.price, generalSettings.invoiceCurrency?.symbol)
 
         candidates.push({
           id:        `orderready-${order.id}`,
           type:      'orderready',
           tag:       'Ready',
-          title:     'Ready order not picked up',
+          title:     'Order ready — not collected',
           desc:      `${order.customerName || 'Customer'} — ${order.desc || 'item'}`,
+          detail:    `A pickup reminder will be raised for ${order.customerName || 'a customer'}'s order (${order.desc || 'item'}), which has been ready for over ${durationLabel(generalSettings.agentOrderReadyWindow)}.`,
           detectedAt: completedAtMs,
           fireAt,
           visibleAt,
           draftData: {
             type:    'orderready',
-            title:   `Ready order not picked up — ${order.customerName || 'Customer'}`,
-            preview: `${order.customerName || 'A customer'}'s order (${order.desc || 'item'}) has been ready for over ${durationLabel(generalSettings.agentOrderReadyWindow)} and hasn't been picked up.`,
-            summary: { icon: 'inventory_2', name: order.desc || 'order', amount: formatMoney(order.totalAmount || order.price, generalSettings.invoiceCurrency?.symbol), due: null },
-            reason:  `The order was marked complete more than ${durationLabel(generalSettings.agentOrderReadyWindow)} ago.`,
+            title:   `Order not collected — ${order.customerName || 'Customer'}`,
+            preview: `${order.customerName || 'A customer'}'s order (${order.desc || 'item'}) has been ready for pickup for over ${durationLabel(generalSettings.agentOrderReadyWindow)} with no collection recorded yet.`,
+            summary: { icon: 'inventory_2', name: order.desc || 'order', amount, due: null },
+            reason:  `This order was marked as completed more than ${durationLabel(generalSettings.agentOrderReadyWindow)} ago with no pickup recorded.`,
             tag:     'Ready',
             status:  'pending',
           },
@@ -370,9 +382,9 @@ function detectCandidates({
     customers.forEach(customer => {
       if (!customer.birthday) return
       const bday     = new Date(customer.birthday)
-      const thisYear = new Date(today.getFullYear(), bday.getMonth(), bday.getDate())
       const bdayMs   = new Date(today.getFullYear(), bday.getMonth(), bday.getDate(), 23, 59, 59).getTime()
       const diffDays = Math.round((bdayMs - nowMs) / DAY_MS)
+      const firstName = customer.name.split(' ')[0]
 
       if (diffDays < -1) return
 
@@ -386,17 +398,20 @@ function detectCandidates({
         title:     `Birthday — ${customer.name}`,
         desc:      diffDays <= 0
           ? `Today is ${customer.name}'s birthday`
-          : `${customer.name}'s birthday in ${diffDays} day${diffDays !== 1 ? 's' : ''}`,
+          : `${customer.name}'s birthday is in ${diffDays} day${diffDays !== 1 ? 's' : ''}`,
+        detail:    diffDays <= 0
+          ? `A birthday message will be sent to ${customer.name} — today is their birthday.`
+          : `A birthday message will be sent to ${customer.name} in ${diffDays} day${diffDays !== 1 ? 's' : ''}.`,
         detectedAt: nowMs,
         fireAt,
         visibleAt,
         draftData: {
           type:    'birthday',
-          title:   'Birthday message drafted',
-          preview: `Hi ${customer.name.split(' ')[0]}! Wishing you a wonderful birthday. It's always a pleasure working with you. Hope to see you soon!`,
+          title:   'Birthday message ready',
+          preview: `Hi ${firstName}! Wishing you a very happy birthday today. It's been such a pleasure working with you — hope your day is everything you deserve! 🎂`,
           reason:  diffDays <= 0
-            ? `Today is ${customer.name}'s birthday.`
-            : `${customer.name}'s birthday is in ${diffDays} day${diffDays !== 1 ? 's' : ''}. Draft prepared ${durationLabel(generalSettings.agentBirthdayNotice)} in advance.`,
+            ? `Today is ${customer.name}'s birthday. The message is ready to send.`
+            : `${customer.name}'s birthday is in ${diffDays} day${diffDays !== 1 ? 's' : ''}. This draft was prepared ${durationLabel(generalSettings.agentBirthdayNotice)} in advance.`,
           tag:    'Birthday',
           status: 'pending',
         },
@@ -418,24 +433,26 @@ function detectCandidates({
       const lastActivityMs = timestampToMs(lastOrder.createdAt)
       if (!lastActivityMs) return
 
-      const fireAt      = lastActivityMs + inactivityMs
-      const visibleAt   = lastActivityMs + (inactivityMs * 0.75)
+      const fireAt       = lastActivityMs + inactivityMs
+      const visibleAt    = lastActivityMs + (inactivityMs * 0.75)
       const inactiveDays = Math.floor((nowMs - lastActivityMs) / DAY_MS)
+      const firstName    = customer.name.split(' ')[0]
 
       candidates.push({
         id:        `followup-${customer.id}`,
         type:      'followup',
         tag:       'Follow-up',
         title:     `Win-back — ${customer.name}`,
-        desc:      `Last order ${inactiveDays}d ago`,
+        desc:      `Last order ${inactiveDays} day${inactiveDays !== 1 ? 's' : ''} ago`,
+        detail:    `A win-back message will be sent to ${customer.name}, who last placed an order ${inactiveDays} day${inactiveDays !== 1 ? 's' : ''} ago.`,
         detectedAt: lastActivityMs,
         fireAt,
         visibleAt,
         draftData: {
           type:    'followup',
-          title:   'Win-back message drafted',
-          preview: `Hi ${customer.name.split(' ')[0]}! It's been a while since your last visit. We'd love to create something special for you again. Feel free to reach out anytime!`,
-          reason:  `${customer.name} hasn't placed an order in over ${durationLabel(generalSettings.agentFollowUpInactivity)}, your follow-up window.`,
+          title:   'Win-back message ready',
+          preview: `Hi ${firstName}! It's been a while since your last visit. We'd love to create something new for you — reach out whenever you're ready!`,
+          reason:  `${customer.name} hasn't placed an order in over ${durationLabel(generalSettings.agentFollowUpInactivity)}, exceeding your configured follow-up inactivity window.`,
           tag:     'Follow-up',
           status:  'pending',
         },
@@ -544,6 +561,7 @@ export function AutonomousAgentProvider({ children }) {
           tag:        candidate.tag,
           title:      candidate.title,
           desc:       candidate.desc,
+          detail:     candidate.detail,
           detectedAt: candidate.detectedAt,
           fireAt:     candidate.fireAt,
           visibleAt:  candidate.visibleAt,
@@ -565,7 +583,7 @@ export function AutonomousAgentProvider({ children }) {
         setScheduledItems(prev =>
           prev
             .map(s => s.id === candidate.id
-              ? { ...s, fireAt: candidate.fireAt, desc: candidate.desc }
+              ? { ...s, fireAt: candidate.fireAt, desc: candidate.desc, detail: candidate.detail }
               : s
             )
             .sort((a, b) => a.fireAt - b.fireAt)
@@ -633,6 +651,7 @@ export function AutonomousAgentProvider({ children }) {
         tag:    s.tag,
         title:  s.title,
         desc:   s.desc,
+        detail: s.detail || s.desc,
         when:   whenLabel(s.fireAt - nowMs),
         fireAt: s.fireAt,
       }))
