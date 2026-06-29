@@ -1,4 +1,3 @@
-
 /* ── Row cards ─────────────────────────────────────────────── */
 
 .row {
@@ -29,7 +28,6 @@
 .row:active {
   background: var(--surface);
 }
-
 
 .rowBody {
   flex: 1;
