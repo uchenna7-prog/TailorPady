@@ -7,7 +7,16 @@ import styles from "./AddOrderModal.module.css"
 const VISIBLE_MEASUREMENT_LIMIT = 3
 
 
-function validateOrder(hasItems, selectedItems, orderDesc, dueDate) {
+function getTodayDateString() {
+  const now = new Date()
+  const year = now.getFullYear()
+  const month = String(now.getMonth() + 1).padStart(2, '0')
+  const day = String(now.getDate()).padStart(2, '0')
+  return `${year}-${month}-${day}`
+}
+
+
+function validateOrder(hasItems, selectedItems, orderDesc, dueDate, minDate) {
   const errors = {}
 
   if (!hasItems && !orderDesc.trim()) {
@@ -25,6 +34,8 @@ function validateOrder(hasItems, selectedItems, orderDesc, dueDate) {
 
   if (!dueDate) {
     errors.dueDate = 'Due date is required'
+  } else if (dueDate < minDate) {
+    errors.dueDate = 'Due date cannot be in the past'
   }
 
   return errors
@@ -47,6 +58,8 @@ export function AddOrderModal({ isOpen, onClose, measurements, onSave, taxRate, 
   const pricingCardRef = useRef(null)
   const orderDescRef   = useRef(null)
   const dueDateRef     = useRef(null)
+
+  const minDueDate = getTodayDateString()
 
   function resetForm() {
     setSelectedItems([])
@@ -101,6 +114,17 @@ export function AddOrderModal({ isOpen, onClose, measurements, onSave, taxRate, 
     }
   }
 
+  function handleDueDateChange(value) {
+    setDueDate(value)
+    if (validationErrors.dueDate) {
+      setValidationErrors(prev => {
+        const updated = { ...prev }
+        delete updated.dueDate
+        return updated
+      })
+    }
+  }
+
   const subtotal = selectedItems.reduce((sum, item) => {
     return sum + (parseFloat(item.price) || 0) * (parseInt(item.qty, 10) || 0)
   }, 0)
@@ -142,7 +166,7 @@ export function AddOrderModal({ isOpen, onClose, measurements, onSave, taxRate, 
   }
 
   function handleSave() {
-    const errors = validateOrder(hasItems, selectedItems, orderDesc, dueDate)
+    const errors = validateOrder(hasItems, selectedItems, orderDesc, dueDate, minDueDate)
 
     if (Object.keys(errors).length > 0) {
       setValidationErrors(errors)
@@ -521,19 +545,11 @@ export function AddOrderModal({ isOpen, onClose, measurements, onSave, taxRate, 
                 </label>
                 <input
                   type="date"
+                  min={minDueDate}
                   className={`${styles.underlineInput} ${validationErrors.dueDate ? styles.underlineInput_error : ''}`}
                   style={{ marginBottom: 0 }}
                   value={dueDate}
-                  onChange={e => {
-                    setDueDate(e.target.value)
-                    if (validationErrors.dueDate) {
-                      setValidationErrors(prev => {
-                        const updated = { ...prev }
-                        delete updated.dueDate
-                        return updated
-                      })
-                    }
-                  }}
+                  onChange={e => handleDueDateChange(e.target.value)}
                 />
                 {validationErrors.dueDate && (
                   <p className={styles.inlineError}>{validationErrors.dueDate}</p>
