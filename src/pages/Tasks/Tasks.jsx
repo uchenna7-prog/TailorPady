@@ -54,6 +54,14 @@ function getInitials(name) {
   return name.trim().split(/\s+/).map(w => w[0]).slice(0, 2).join('').toUpperCase()
 }
 
+function getTodayDateString() {
+  const now = new Date()
+  const year = now.getFullYear()
+  const month = String(now.getMonth() + 1).padStart(2, '0')
+  const day = String(now.getDate()).padStart(2, '0')
+  return `${year}-${month}-${day}`
+}
+
 
 function AddTaskModal({ isOpen, onClose, onSave, customers, allOrders }) {
   const [desc,          setDesc]         = useState('')
@@ -71,6 +79,8 @@ function AddTaskModal({ isOpen, onClose, onSave, customers, allOrders }) {
   const [errors,        setErrors]       = useState({})
 
   const custSearchRef = useRef(null)
+
+  const minDueDate = getTodayDateString()
 
   const custOrders = selectedCust
     ? allOrders.filter(o => String(o.customerId) === String(selectedCust.id))
@@ -95,6 +105,7 @@ function AddTaskModal({ isOpen, onClose, onSave, customers, allOrders }) {
     const newErrors = {}
     if (!desc.trim()) newErrors.desc    = 'Task description is required'
     if (!dueDate)     newErrors.dueDate = 'Due date is required'
+    else if (dueDate < minDueDate) newErrors.dueDate = 'Due date cannot be in the past'
     if (!dueTime)     newErrors.dueTime = 'Due time is required'
     setErrors(newErrors)
     return Object.keys(newErrors).length === 0
@@ -188,6 +199,7 @@ function AddTaskModal({ isOpen, onClose, onSave, customers, allOrders }) {
             <label className={styles.fieldLabel}>Due Date *</label>
             <input
               type="date"
+              min={minDueDate}
               className={`${styles.input} ${errors.dueDate ? styles.inputError : ''}`}
               value={dueDate}
               onChange={e => { setDueDate(e.target.value); clearError('dueDate') }}
