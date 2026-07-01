@@ -207,8 +207,8 @@ export function AddCustomerModal({ isOpen, onClose, onSave }) {
     try {
       setPhotoUploading(true)
       setPhotoProgress(0)
-      const url = await uploadToCloudinary(photoFile, 'customers', pct => setPhotoProgress(pct))
-      return url
+      const uploaded = await uploadToCloudinary(photoFile, 'customers', pct => setPhotoProgress(pct))
+      return uploaded
     } catch {
       return null
     } finally {
@@ -250,18 +250,20 @@ export function AddCustomerModal({ isOpen, onClose, onSave }) {
       return
     }
 
-    const photoUrl   = await uploadPhotoIfNeeded()
-    const allBody    = { ...bodyMeasurements }
+    const photoUpload   = await uploadPhotoIfNeeded()
+    const photoUrl      = photoUpload?.url      || null
+    const photoPublicId = photoUpload?.publicId || null
+    const allBody       = { ...bodyMeasurements }
     customFields.forEach(f => { if (f.label.trim()) allBody[f.label.trim()] = f.value })
     const birthday   = bdayMonth && bdayDay ? `${bdayMonth}-${bdayDay}` : ''
     const builtPhone = buildPhoneNumber(localPhone, selectedCountry.dial_code)
 
     if (localPhone.trim() && builtPhone === null) {
-      onSave({ name, phone: '__INVALID_PHONE__', phoneType, onWhatsApp, sex, birthday, email, address, notes, photo: photoUrl, bodyMeasurements: allBody })
+      onSave({ name, phone: '__INVALID_PHONE__', phoneType, onWhatsApp, sex, birthday, email, address, notes, photo: photoUrl, photoPublicId, bodyMeasurements: allBody })
       return
     }
 
-    onSave({ name, phone: builtPhone || '', phoneType, onWhatsApp, sex, birthday, email, address, notes, photo: photoUrl, bodyMeasurements: allBody })
+    onSave({ name, phone: builtPhone || '', phoneType, onWhatsApp, sex, birthday, email, address, notes, photo: photoUrl, photoPublicId, bodyMeasurements: allBody })
     resetForm()
     onClose()
   }
@@ -275,11 +277,13 @@ export function AddCustomerModal({ isOpen, onClose, onSave }) {
       return
     }
 
-    const photoUrl   = await uploadPhotoIfNeeded()
-    const birthday   = bdayMonth && bdayDay ? `${bdayMonth}-${bdayDay}` : ''
-    const builtPhone = buildPhoneNumber(localPhone, selectedCountry.dial_code)
+    const photoUpload   = await uploadPhotoIfNeeded()
+    const photoUrl      = photoUpload?.url      || null
+    const photoPublicId = photoUpload?.publicId || null
+    const birthday      = bdayMonth && bdayDay ? `${bdayMonth}-${bdayDay}` : ''
+    const builtPhone    = buildPhoneNumber(localPhone, selectedCountry.dial_code)
 
-    onSave({ name, phone: builtPhone || '', phoneType, onWhatsApp, sex, birthday, email, address, notes, photo: photoUrl, bodyMeasurements: {} })
+    onSave({ name, phone: builtPhone || '', phoneType, onWhatsApp, sex, birthday, email, address, notes, photo: photoUrl, photoPublicId, bodyMeasurements: {} })
     resetForm()
     onClose()
   }
