@@ -27,13 +27,13 @@ export function AddPhotoModal({ isOpen, onClose, onSave, GarmentTypes, activeMai
       i === idx ? { ...p, status: 'uploading', progress: 0, error: null } : p
     ))
     try {
-      const url = await uploadToCloudinary(
+      const { url, publicId } = await uploadToCloudinary(
         file,
         'gallery',
         (pct) => setPhotos(prev => prev.map((p, i) => i === idx ? { ...p, progress: pct } : p))
       )
       setPhotos(prev => prev.map((p, i) =>
-        i === idx ? { ...p, storageUrl: url, status: 'done', progress: 100 } : p
+        i === idx ? { ...p, storageUrl: url, publicId, status: 'done', progress: 100 } : p
       ))
     } catch {
       setPhotos(prev => prev.map((p, i) =>
@@ -53,6 +53,7 @@ export function AddPhotoModal({ isOpen, onClose, onSave, GarmentTypes, activeMai
       clothingType: defaultType,
       price:       '',
       storageUrl:  null,
+      publicId:    null,
       status:      'idle',
       progress:    0,
       error:       null,
@@ -136,6 +137,7 @@ export function AddPhotoModal({ isOpen, onClose, onSave, GarmentTypes, activeMai
       onSave({
         id:                Date.now() + Math.random(),
         storageUrl:        p.storageUrl,
+        publicId:          p.publicId,
         category,
         caption:           p.caption.trim(),
         clothingType:      p.clothingType,
