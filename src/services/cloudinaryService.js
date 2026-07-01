@@ -1,6 +1,7 @@
 const CLOUDINARY_CLOUD_NAME   = 'dzqrelgbd'
 const CLOUDINARY_UPLOAD_PRESET = 'TailorPadyUploads'
 const CLOUDINARY_UPLOAD_URL    = `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/image/upload`
+const CLOUDINARY_DELETE_API_URL = 'https://tailor-pady-api.vercel.app/api/delete-cloudinary-image'
 const MAX_IMAGE_DIMENSION = 1200
 const JPEG_QUALITY        = 0.82
 
@@ -80,7 +81,7 @@ export async function deleteFromCloudinary(publicId) {
   if (!publicId) {
     throw new Error('publicId is required to delete an image')
   }
-  const response = await fetch('/api/delete-cloudinary-image', {
+  const response = await fetch(CLOUDINARY_DELETE_API_URL, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ publicId }),
