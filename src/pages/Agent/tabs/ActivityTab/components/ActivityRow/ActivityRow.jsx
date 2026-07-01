@@ -1,7 +1,7 @@
 import { ItemIconBox } from "../../../../components/ItemIconBox/ItemIconBox"
 import { TagPill } from "../../../../components/TagPill/TagPill"
 import { MIcon } from "../../../../components/MIcon/MIcon"
-import { resolveCustomerName, resolveOrderName, extractTime, haptic, formatTitle } from "../../../../utils"
+import { resolveCustomerName, resolveOrderName, extractTime, haptic } from "../../../../utils"
 import styles from "./ActivityRow.module.css"
 
 const descIcon = {
@@ -15,7 +15,7 @@ const descIcon = {
 export function ActivityRow({ item, isLast, allOrders, allInvoices, allPayments, customers, onOpen }) {
   const customerName = resolveCustomerName(item, allOrders, allInvoices, allPayments, customers)
   const orderName = resolveOrderName(item, allOrders, allInvoices, allPayments)
-  const displayTitle = formatTitle(item.title)
+  const displayTitle = item.title
   const displayTime = extractTime(item.time)
   const fallbackIcon = descIcon[item.type]
   const fallbackDesc = !orderName && item.desc ? item.desc : null

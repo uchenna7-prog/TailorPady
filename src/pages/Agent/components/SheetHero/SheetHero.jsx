@@ -1,4 +1,4 @@
-import { formatTitle } from "../../utils"
+
 import { MIcon } from "../MIcon/MIcon"
 import { TagPill } from "../TagPill/TagPill"
 import { ItemIconBox } from "../ItemIconBox/ItemIconBox"
@@ -19,7 +19,7 @@ export function SheetHero({ item, customerName, allOrders, allInvoices, allPayme
       />
       <div className={styles.sheetHeroBody}>
         <TagPill label={item.tag} />
-        <p className={styles.sheetHeroTitle}>{formatTitle(item.title)}</p>
+        <p className={styles.sheetHeroTitle}>{item.title}</p>
         {(customerName || item.time) && (
           <div className={styles.sheetHeroMeta}>
             {customerName && (

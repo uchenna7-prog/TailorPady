@@ -3,6 +3,7 @@ import { ImageCarousel } from "../ImageCarousel/ImageCarousel"
 import { ImageLightbox } from "../ImageLightbox/ImageLightbox"
 import { UNIT_FULL, UNIT_SHORT } from "../../../../../../datas/measurementDatas"
 import { useGarmentFeatures } from "../../../../../../hooks/useGarmentFeatures/useGarmentFeatures"
+import { uploadToCloudinary, deleteFromCloudinary } from "../../../../../../services/cloudinaryService"
 import Header from "../../../../../../components/Header/Header"
 import styles from "./MeasurementDetailsModal.module.css"
 
@@ -25,6 +26,23 @@ function validateDraft(draftName, draftFields) {
     errors.fields = 'Add at least one measurement field'
   }
   return errors
+}
+
+function buildDraftImages(measurement) {
+  const urls = measurement.imgSrcs?.length
+    ? measurement.imgSrcs
+    : measurement.imgSrc
+      ? [measurement.imgSrc]
+      : []
+  const publicIds = measurement.imgPublicIds || []
+
+  return urls.map((url, i) => ({
+    id:       `img-${i}-${Math.random().toString(36).slice(2)}`,
+    url,
+    publicId: publicIds[i] ?? null,
+    file:     null,
+    localSrc: url,
+  }))
 }
 
 function getSelectedLabel(slot, styleSelections) {
@@ -173,20 +191,26 @@ export function MeasurementDetailsModal({ measurement, onClose, onDelete, onUpda
   const [lightboxIndex, setLightboxIndex] = useState(null)
   const [isEditing, setIsEditing] = useState(false)
   const [isSaving, setIsSaving] = useState(false)
+  const [imagesUploading, setImagesUploading] = useState(false)
   const [draftName, setDraftName] = useState('')
   const [draftUnit, setDraftUnit] = useState('in')
   const [draftFields, setDraftFields] = useState([])
+  const [draftImages, setDraftImages] = useState([])
+  const [removedPublicIds, setRemovedPublicIds] = useState([])
   const [validationErrors, setValidationErrors] = useState({})
   const [activeTab, setActiveTab] = useState('details')
 
   const touchStartX = useRef(null)
   const touchStartY = useRef(null)
+  const imageInputRef = useRef(null)
 
   useEffect(() => {
     if (measurement) {
       setDraftName(measurement.name)
       setDraftUnit(measurement.unit ?? 'in')
       setDraftFields(measurement.fields.map(f => ({ ...f, id: f.id ?? Date.now() + Math.random() })))
+      setDraftImages(buildDraftImages(measurement))
+      setRemovedPublicIds([])
       setActiveTab('details')
     }
   }, [measurement])
@@ -206,11 +230,14 @@ export function MeasurementDetailsModal({ measurement, onClose, onDelete, onUpda
     setDraftName(measurement.name)
     setDraftUnit(measurement.unit ?? 'in')
     setDraftFields(measurement.fields.map(f => ({ ...f, id: f.id ?? Date.now() + Math.random() })))
+    setDraftImages(buildDraftImages(measurement))
+    setRemovedPublicIds([])
     setValidationErrors({})
     setIsEditing(true)
   }
 
   function cancelEdit() {
+    draftImages.forEach(img => { if (img.file && img.localSrc) URL.revokeObjectURL(img.localSrc) })
     setValidationErrors({})
     setIsEditing(false)
   }
@@ -244,22 +271,70 @@ export function MeasurementDetailsModal({ measurement, onClose, onDelete, onUpda
     }
   }
 
+  function handleAddImages(e) {
+    const files = Array.from(e.target.files || [])
+    if (files.length === 0) return
+    const newEntries = files.map(file => ({
+      id:       `new-${Date.now()}-${Math.random().toString(36).slice(2)}`,
+      url:      null,
+      publicId: null,
+      file,
+      localSrc: URL.createObjectURL(file),
+    }))
+    setDraftImages(prev => [...prev, ...newEntries])
+    if (imageInputRef.current) imageInputRef.current.value = ''
+  }
+
+  function removeDraftImage(imgId) {
+    setDraftImages(prev => {
+      const target = prev.find(img => img.id === imgId)
+      if (target?.file && target.localSrc) URL.revokeObjectURL(target.localSrc)
+      if (target?.publicId) setRemovedPublicIds(ids => [...ids, target.publicId])
+      return prev.filter(img => img.id !== imgId)
+    })
+  }
+
   async function handleSave() {
     const errors = validateDraft(draftName, draftFields)
     if (Object.keys(errors).length > 0) {
       setValidationErrors(errors)
       return
     }
+
     const filledFields = draftFields
       .filter(f => f.name.trim())
       .map(f => ({ name: f.name.trim(), value: f.value }))
+
+    setIsSaving(true)
+    setImagesUploading(true)
+
+    const uploaded = await Promise.all(
+      draftImages.map(async img => {
+        if (!img.file) return { url: img.url, publicId: img.publicId }
+        try {
+          const { url, publicId } = await uploadToCloudinary(img.file, 'measurements')
+          return { url, publicId }
+        } catch {
+          return null
+        }
+      })
+    )
+
+    const finalImages = uploaded.filter(Boolean)
+
+    removedPublicIds.forEach(publicId => deleteFromCloudinary(publicId).catch(() => {}))
+
     const updatedData = {
-      name: draftName.trim(),
-      unit: draftUnit,
-      fields: filledFields,
-      imgSrcs: measurement.imgSrcs ?? [],
-      imgSrc: measurement.imgSrcs?.[0] ?? measurement.imgSrc ?? null,
+      name:         draftName.trim(),
+      unit:         draftUnit,
+      fields:       filledFields,
+      imgSrcs:      finalImages.map(img => img.url),
+      imgSrc:       finalImages[0]?.url ?? null,
+      imgPublicIds: finalImages.map(img => img.publicId ?? null),
     }
+
+    setIsSaving(false)
+    setImagesUploading(false)
     setIsEditing(false)
     onClose()
     onUpdate(measurement.id, updatedData)
@@ -298,8 +373,9 @@ export function MeasurementDetailsModal({ measurement, onClose, onDelete, onUpda
           title="Edit Measurement"
           onBackClick={cancelEdit}
           customActions={[{
-            label: isSaving ? 'Saving…' : 'Save',
+            label: isSaving ? (imagesUploading ? 'Uploading…' : 'Saving…') : 'Save',
             onClick: handleSave,
+            disabled: isSaving,
           }]}
         />
 
@@ -329,6 +405,38 @@ export function MeasurementDetailsModal({ measurement, onClose, onDelete, onUpda
                 onChange={e => { setDraftName(e.target.value); clearNameError() }}
               />
               {validationErrors.name && <p className={styles.inlineError}>{validationErrors.name}</p>}
+            </div>
+
+            <p className={styles.editSectionLabel} style={{ marginTop: 24 }}>Design References</p>
+            <div className={styles.editCard}>
+              {draftImages.length > 0 && (
+                <div className={styles.editImageRow}>
+                  {draftImages.map(img => (
+                    <div key={img.id} className={styles.editImageThumb}>
+                      <img src={img.localSrc} alt="" className={styles.editImageThumbSrc} />
+                      <button
+                        type="button"
+                        className={styles.editImageRemoveBtn}
+                        onClick={() => removeDraftImage(img.id)}
+                      >
+                        <span className="mi" style={{ fontSize: '0.8rem' }}>close</span>
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
+              <button className={styles.addFieldButton} onClick={() => imageInputRef.current?.click()}>
+                <span className="mi" style={{ fontSize: '0.9rem' }}>add_photo_alternate</span>
+                Add Photos
+              </button>
+              <input
+                ref={imageInputRef}
+                type="file"
+                accept="image/*"
+                multiple
+                hidden
+                onChange={handleAddImages}
+              />
             </div>
 
             <p className={styles.editSectionLabel} style={{ marginTop: 24 }}>Measurements</p>

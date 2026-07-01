@@ -14,6 +14,7 @@ import {
   serverTimestamp,
 } from 'firebase/firestore'
 import { db } from '../firebase'
+import { deleteFromCloudinary } from './cloudinaryService'
 
 function customersRef(uid) {
   return collection(db, 'users', uid, 'customers')
@@ -58,7 +59,7 @@ export async function deleteCustomer(uid, customerId) {
 }
 
 export async function deleteCustomerAndAllData(uid, customerId) {
-  
+
   const batch = writeBatch(db)
 
   const topLevelCollections = ['orders', 'invoices', 'payments', 'receipts']
@@ -77,9 +78,25 @@ export async function deleteCustomerAndAllData(uid, customerId) {
   )
   measurementsSnap.docs.forEach(d => batch.delete(d.ref))
 
+  const customerSnap = await getDoc(customerDoc(uid, customerId))
+  const customerData = customerSnap.exists() ? customerSnap.data() : null
+
   batch.delete(customerDoc(uid, customerId))
 
   await batch.commit()
+
+  const publicIds = []
+
+  measurementsSnap.docs.forEach(d => {
+    const ids = d.data().imgPublicIds
+    if (Array.isArray(ids)) publicIds.push(...ids)
+  })
+
+  if (customerData?.photoPublicId) publicIds.push(customerData.photoPublicId)
+
+  await Promise.all(
+    publicIds.map(publicId => deleteFromCloudinary(publicId).catch(() => {}))
+  )
 }
 
 export function subscribeToCustomers(uid, onSetCustomers, onSetError) {

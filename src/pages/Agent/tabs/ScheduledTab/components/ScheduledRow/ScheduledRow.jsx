@@ -1,4 +1,4 @@
-import { resolveCustomerName, resolveOrderName, formatTitle, haptic } from "../../../../utils"
+import { resolveCustomerName, resolveOrderName, haptic } from "../../../../utils"
 import { ItemIconBox } from "../../../../components/ItemIconBox/ItemIconBox"
 import { MIcon } from "../../../../components/MIcon/MIcon"
 import { TagPill } from "../../../../components/TagPill/TagPill"
@@ -7,7 +7,7 @@ import styles from "./ScheduledRow.module.css"
 export function ScheduledRow({ item, isLast, allOrders, allInvoices, allPayments, customers, onOpen }) {
   const customerName = resolveCustomerName(item, allOrders, allInvoices, allPayments, customers)
   const orderName = resolveOrderName(item, allOrders, allInvoices, allPayments)
-  const displayTitle = formatTitle(item.title)
+  const displayTitle = item.title
 
   return (
     <div

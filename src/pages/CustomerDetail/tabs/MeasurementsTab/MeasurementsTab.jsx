@@ -1,4 +1,3 @@
-
 import { useState, useEffect }           from 'react'
 import { EmptyState }                    from './components/EmptyState/EmptyState'
 import { MeasurementRow }                from './components/MeasurementRow/MeasurementRow'
@@ -9,20 +8,16 @@ import { groupMeasurementsByDate }       from './utils'
 import ConfirmSheet                      from '../../../../components/ConfirmSheet/ConfirmSheet'
 import styles                            from './MeasurementsTab.module.css'
 
-
 export default function MeasurementsTab({ measurements, loading, gender, onSave, onUpdate, onDelete, showToast }) {
-
   const [isAddModalOpen,      setIsAddModalOpen]      = useState(false)
   const [selectedMeasurement, setSelectedMeasurement] = useState(null)
   const [measurementToDelete, setMeasurementToDelete] = useState(null)
-
 
   useEffect(() => {
     const handleOpenAddModal = () => setIsAddModalOpen(true)
     document.addEventListener('openAddMeasurementModal', handleOpenAddModal)
     return () => document.removeEventListener('openAddMeasurementModal', handleOpenAddModal)
   }, [])
-
 
   function handleSave(entry) {
     onSave(entry)
@@ -48,14 +43,13 @@ export default function MeasurementsTab({ measurements, loading, gender, onSave,
     if (!measurementToDelete) return
     const target = measurementToDelete
     setMeasurementToDelete(null)
-    onDelete(target.id)
+    onDelete(target)
     showToast('Measurement deleted')
   }
 
   function handleDeleteCancel() {
     setMeasurementToDelete(null)
   }
-
 
   if (loading) {
     return (
@@ -76,7 +70,6 @@ export default function MeasurementsTab({ measurements, loading, gender, onSave,
           <div key={date} className={styles.measurementGroup}>
             <div className={styles.measurementGroupDate}>{date}</div>
             <div className={styles.measurementGroupDivider} />
-
             {measurementsInGroup.map((measurement, index) => (
               <MeasurementRow
                 key={measurement.id ?? index}
@@ -117,4 +110,3 @@ export default function MeasurementsTab({ measurements, loading, gender, onSave,
     </div>
   )
 }
-

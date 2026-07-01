@@ -63,8 +63,8 @@ function buildSavePayload(measurement, unit, uploadedImages, gender) {
     month: 'short', day: 'numeric', year: 'numeric',
   })
 
-  const imgSrcs       = uploadedImages.map(img => img.url)
-  const imgPublicIds  = uploadedImages.map(img => img.publicId).filter(Boolean)
+  const imgSrcs      = uploadedImages.map(img => img.url)
+  const imgPublicIds = uploadedImages.map(img => img.publicId ?? null)
 
   return {
     id:              Date.now() + Math.random(),
@@ -87,9 +87,7 @@ async function uploadMeasurementImages(slots, isOnline) {
   if (!slots?.length) return []
   const results = await Promise.all(
     slots.map(async slot => {
-      if (!slot.file) {
-        return slot.localSrc ? { url: slot.localSrc, publicId: slot.publicId ?? null } : null
-      }
+      if (!slot.file) return null
       if (!isOnline) return null
       try {
         const { url, publicId } = await uploadToCloudinary(slot.file, 'measurements')

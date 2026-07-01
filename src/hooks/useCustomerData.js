@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react'
 import { useAuth } from '../contexts/AuthContext'
+import { deleteFromCloudinary } from '../services/cloudinaryService'
 
 import {
   subscribeToMeasurements,
@@ -125,8 +126,16 @@ export function useCustomerData(customerId) {
     await updateMeasurementInDb(user.uid, customerId, String(measurementId), data)
   }, [user, customerId])
 
-  const deleteMeasurement = useCallback(async (id) => {
+  const deleteMeasurement = useCallback(async (measurement) => {
     if (!user || !customerId) return
+
+    const id        = typeof measurement === 'object' ? measurement.id : measurement
+    const publicIds = typeof measurement === 'object' ? (measurement.imgPublicIds || []) : []
+
+    await Promise.all(
+      publicIds.map(publicId => deleteFromCloudinary(publicId).catch(() => {}))
+    )
+
     await deleteMeasurementFromDb(user.uid, customerId, String(id))
   }, [user, customerId])
 

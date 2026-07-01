@@ -71,7 +71,7 @@ export const DEFAULTS = {
   agentOrderReadyReminder: false,
   agentOrderReadyWindow:   { amount: 1,  unit: 'days'  },
 
-  agentDailyBrief: true,
+  agentDailyBrief: false,
 }
 
 function loadFromLocalStorage() {

@@ -38,9 +38,6 @@ export function haptic(type = 'light') {
   if (type === 'medium') navigator.vibrate(20)
 }
 
-export function formatTitle(title) {
-  return (title || '').replace(/\s*[—–]\s*/g, ' · ')
-}
 
 export function extractTime(timeStr) {
   if (!timeStr) return ''

@@ -5,7 +5,7 @@ import { Field } from '../Field/Field'
 import { TextInput } from '../TextInput/TextInput'
 import { SignatureSection } from '../SignatureSection/SignatureSection'
 import { getPaletteById } from '../../../../config/brandPalette'
-import { uploadToCloudinary } from '../../../../services/cloudinaryService'
+import { uploadToCloudinary, deleteFromCloudinary } from '../../../../services/cloudinaryService'
 import { useProfileSettings } from '../../../../contexts/ProfileSettingsContext'
 import { useAuth } from '../../../../contexts/AuthContext'
 import BrandColourPicker from '../../../../components/BrandColourPicker/BrandColourPicker'
@@ -68,9 +68,11 @@ export function BrandModal({ onBack, showToast }) {
     setCropSrc(null)
     setLogoUploading(true)
     setLogoProgress(0)
+    const previousPublicId = local.brandLogoPublicId
     try {
       const { url, publicId } = await uploadToCloudinary(croppedFile, 'invoices', setLogoProgress)
       setLocal(p => ({ ...p, brandLogo: url, brandLogoPublicId: publicId }))
+      if (previousPublicId) deleteFromCloudinary(previousPublicId).catch(() => {})
       showToast('Logo uploaded')
     } catch {
       showToast('Upload failed — please try again')
@@ -85,11 +87,16 @@ export function BrandModal({ onBack, showToast }) {
     if (logoInputRef.current) logoInputRef.current.value = ''
   }
 
-  const handleLogoRemove = () => setLocal(p => ({ ...p, brandLogo: null, brandLogoPublicId: null }))
+  const handleLogoRemove = () => {
+    const previousPublicId = local.brandLogoPublicId
+    setLocal(p => ({ ...p, brandLogo: null, brandLogoPublicId: null }))
+    if (previousPublicId) deleteFromCloudinary(previousPublicId).catch(() => {})
+  }
 
   const save = async () => {
     let signatureUrl      = local.brandSignature
     let signaturePublicId = local.brandSignaturePublicId
+    const previousSignaturePublicId = local.brandSignaturePublicId
 
     if (local.brandSignature && local.brandSignature.startsWith('data:')) {
       setSigUploading(true)
@@ -108,6 +115,11 @@ export function BrandModal({ onBack, showToast }) {
       }
       setSigUploading(false)
       setSigProgress(0)
+
+      if (previousSignaturePublicId) deleteFromCloudinary(previousSignaturePublicId).catch(() => {})
+    } else if (!local.brandSignature && previousSignaturePublicId) {
+      deleteFromCloudinary(previousSignaturePublicId).catch(() => {})
+      signaturePublicId = null
     }
 
     const entry = getPaletteById(local.brandColourId)

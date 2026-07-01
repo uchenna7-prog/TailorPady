@@ -1,5 +1,6 @@
 import { createContext, useContext, useState, useEffect, useCallback } from 'react'
 import { useAuth } from './AuthContext'
+import { deleteFromCloudinary } from '../services/cloudinaryService'
 import {
   subscribeToPhotos,
   subscribeToGarmentTypes,
@@ -67,8 +68,13 @@ export function GalleryProvider({ children }) {
     await updatePhotoInDb(user.uid, String(id), data)
   }, [user])
 
-  const deletePhoto = useCallback(async (id) => {
+  const deletePhoto = useCallback(async (photo) => {
     if (!user) return
+    const id        = typeof photo === 'object' ? photo.id       : photo
+    const publicId  = typeof photo === 'object' ? photo.publicId : null
+
+    if (publicId) await deleteFromCloudinary(publicId).catch(() => {})
+
     await deletePhotoFromDb(user.uid, String(id))
   }, [user])
 

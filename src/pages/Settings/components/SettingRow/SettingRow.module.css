@@ -49,7 +49,7 @@
     flex-shrink:0; 
 }
 .rowValue { 
-    font-size:0.8rem;
-    font-weight:700;
+    font-size:0.73rem;
+    font-weight:600;
     color:var(--accent); 
 }

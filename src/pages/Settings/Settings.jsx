@@ -202,19 +202,10 @@ export default function Settings({ onMenuClick }) {
 
   function getAgentSub() {
     if (!generalSettings.agentEnabled) return 'Off'
-    const active = [
-      generalSettings.agentAutoInvoice      && 'Invoices',
-      generalSettings.agentAutoReceipt      && 'Receipts',
-      generalSettings.agentBirthdayMessages && 'Birthdays',
-      generalSettings.agentFollowUp         && 'Follow-ups',
-      generalSettings.agentPaymentReminder  && 'Reminders',
-      generalSettings.agentDailyBrief       && 'Daily brief',
-    ].filter(Boolean)
-    if (active.length === 0) return 'On — no tasks enabled'
-    return 'On · ' + active.join(', ')
+    return "On"
   }
 
-  function getPortfolioTemplateSub() {
+  function getPortfolioTemplate() {
     return portfolioSettings.portfolioTemplate ?? 'Choose a layout for your public page'
   }
 
@@ -227,32 +218,24 @@ export default function Settings({ onMenuClick }) {
     return parts.length > 0 ? parts.join(' · ') : 'Hero and footer images'
   }
 
-  function getCurrencySub() {
+  function getCurrency() {
     const c = resolveCurrencyObject(generalSettings.currency)
-    return `${c.currencyName} · ${c.currencyCode} · ${c.symbol}`
+    return `${c.symbol} (${c.currencyCode})`
   }
 
-  function getInvoiceSub() {
-    const symbol = resolveCurrencySymbol(generalSettings.invoiceCurrency)
+  function getInvoice() {
     const prefix = generalSettings.invoicePrefix  ?? 'INV'
-    const days   = generalSettings.invoiceDueDays ?? 7
-    return `${symbol} · ${prefix} · Due ${days}d`
+    return `${prefix}`
   }
 
-  function getReceiptSub() {
-    const symbol = resolveCurrencySymbol(generalSettings.receiptCurrency)
+  function getReceipt() {
     const prefix = generalSettings.receiptPrefix ?? 'RCP'
-    return `${symbol} · ${prefix}`
+    return `${prefix}`
   }
 
-  function getAppearanceSub() {
-    const theme    = isDarkMode ? 'Dark' : 'Light'
-    const accentMap = {
-      charcoal: 'Charcoal', indigo: 'Indigo', burgundy: 'Burgundy',
-      camel: 'Camel', olive: 'Olive', slate: 'Slate', forest: 'Forest', gold: 'Gold',
-    }
-    const accent = accentMap[generalSettings.accentId] ?? 'Charcoal'
-    return `${theme} · ${accent}`
+  function getAppearance() {
+    const theme    = isDarkMode ? 'Dark Mode' : 'Light Mode'
+    return `${theme}`
   }
 
   const currentCurrencySettings = {
@@ -274,7 +257,8 @@ export default function Settings({ onMenuClick }) {
         <SettingRow
           icon="palette"
           label="Appearance"
-          sub={getAppearanceSub()}
+          sub={"choose your preferred theme and accent color"}
+          value={getAppearance()}
           onClick={() => setIsAppearanceModalOpen(true)}
           chevron
         />
@@ -284,7 +268,8 @@ export default function Settings({ onMenuClick }) {
         <SettingRow
           icon="currency_exchange"
           label="Display Currency"
-          sub={getCurrencySub()}
+          sub={"Choose your preferred currency for your Business"}
+          value={getCurrency()}
           onClick={() => setIsCurrencyModalOpen(true)}
           chevron
         />
@@ -294,7 +279,8 @@ export default function Settings({ onMenuClick }) {
         <SettingRow
           icon="tune"
           label="Invoice Settings"
-          sub={getInvoiceSub()}
+          sub={"Configure your invoice setting preferences"}
+          value={getInvoice()}
           onClick={() => setIsInvoiceModalOpen(true)}
           chevron
         />
@@ -302,7 +288,8 @@ export default function Settings({ onMenuClick }) {
         <SettingRow
           icon="request_quote"
           label="Receipt Settings"
-          sub={getReceiptSub()}
+          sub={"Configure your receipt setting preferences"}
+          value={getReceipt()}
           onClick={() => setIsReceiptModalOpen(true)}
           chevron
         />
@@ -310,7 +297,7 @@ export default function Settings({ onMenuClick }) {
         <SettingRow
           icon="description"
           label="Templates"
-          sub="Choose your preferred invoice and receipt designs"
+          sub="Choose your preferred invoice and receipt templates"
           value={getSelectedTemplates()}
           onClick={() => setIsTemplateModalOpen(true)}
           chevron
@@ -329,7 +316,8 @@ export default function Settings({ onMenuClick }) {
         <SettingRow
           icon="web"
           label="Portfolio Template"
-          sub={getPortfolioTemplateSub()}
+          value={getPortfolioTemplate()}
+          sub={"Choose your preferred portfolio template"}
           onClick={() => setIsPortfolioTemplateModalOpen(true)}
           chevron
         />
@@ -339,7 +327,8 @@ export default function Settings({ onMenuClick }) {
         <SettingRow
           icon={BotIcon}
           label="AI Settings"
-          sub={getAgentSub()}
+          sub={"Configure your AI assistant preferences"}
+          value={getAgentSub()}
           onClick={() => setIsAgentModalOpen(true)}
           chevron
         />

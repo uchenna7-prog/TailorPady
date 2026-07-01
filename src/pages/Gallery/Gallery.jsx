@@ -99,7 +99,7 @@ export default function Gallery({ onMenuClick }) {
   const handleDeleteConfirm = async () => {
     if (!confirmDel) return
     try {
-      await deletePhoto(confirmDel.id)
+      await deletePhoto(confirmDel)
       if (lightboxPhoto?.id === confirmDel.id) setLightboxPhoto(null)
       showToast('Photo deleted')
     } catch { showToast('Failed to delete photo') }
@@ -119,7 +119,7 @@ export default function Gallery({ onMenuClick }) {
         const orphans = photos.filter(
           p => p.category === tabId && removedIds.includes(p.clothingType)
         )
-        await Promise.all(orphans.map(p => deletePhoto(p.id)))
+        await Promise.all(orphans.map(p => deletePhoto(p)))
         if (orphans.length > 0) showToast(`${orphans.length} photo${orphans.length > 1 ? 's' : ''} removed`)
       }
 
