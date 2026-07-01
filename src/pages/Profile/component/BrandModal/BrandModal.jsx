@@ -16,13 +16,15 @@ const DEFAULT_COLOUR_ID = 'midnight'
 
 function buildLocal(ps) {
   return {
-    brandName:      ps.brandName      || '',
-    brandTagline:   ps.brandTagline   || '',
-    brandColourId:  (ps.brandColourId && !ps.brandColourId.startsWith('#'))
-                      ? ps.brandColourId
-                      : DEFAULT_COLOUR_ID,
-    brandLogo:      ps.brandLogo      || null,
-    brandSignature: ps.brandSignature || null,
+    brandName:              ps.brandName              || '',
+    brandTagline:           ps.brandTagline           || '',
+    brandColourId:          (ps.brandColourId && !ps.brandColourId.startsWith('#'))
+                              ? ps.brandColourId
+                              : DEFAULT_COLOUR_ID,
+    brandLogo:              ps.brandLogo              || null,
+    brandLogoPublicId:      ps.brandLogoPublicId      || null,
+    brandSignature:         ps.brandSignature         || null,
+    brandSignaturePublicId: ps.brandSignaturePublicId || null,
   }
 }
 
@@ -67,8 +69,8 @@ export function BrandModal({ onBack, showToast }) {
     setLogoUploading(true)
     setLogoProgress(0)
     try {
-      const url = await uploadToCloudinary(croppedFile, 'invoices', setLogoProgress)
-      setLocal(p => ({ ...p, brandLogo: url }))
+      const { url, publicId } = await uploadToCloudinary(croppedFile, 'invoices', setLogoProgress)
+      setLocal(p => ({ ...p, brandLogo: url, brandLogoPublicId: publicId }))
       showToast('Logo uploaded')
     } catch {
       showToast('Upload failed — please try again')
@@ -83,19 +85,22 @@ export function BrandModal({ onBack, showToast }) {
     if (logoInputRef.current) logoInputRef.current.value = ''
   }
 
-  const handleLogoRemove = () => setLocal(p => ({ ...p, brandLogo: null }))
+  const handleLogoRemove = () => setLocal(p => ({ ...p, brandLogo: null, brandLogoPublicId: null }))
 
   const save = async () => {
-    let signatureUrl = local.brandSignature
+    let signatureUrl      = local.brandSignature
+    let signaturePublicId = local.brandSignaturePublicId
 
     if (local.brandSignature && local.brandSignature.startsWith('data:')) {
       setSigUploading(true)
       setSigProgress(0)
       try {
-        const res  = await fetch(local.brandSignature)
-        const blob = await res.blob()
-        const file = new File([blob], 'signature.png', { type: 'image/png' })
-        signatureUrl = await uploadToCloudinary(file, 'signatures', setSigProgress)
+        const res      = await fetch(local.brandSignature)
+        const blob     = await res.blob()
+        const file     = new File([blob], 'signature.png', { type: 'image/png' })
+        const uploaded = await uploadToCloudinary(file, 'signatures', setSigProgress)
+        signatureUrl      = uploaded.url
+        signaturePublicId = uploaded.publicId
       } catch {
         showToast('Signature upload failed — try again')
         setSigUploading(false)
@@ -109,8 +114,9 @@ export function BrandModal({ onBack, showToast }) {
 
     updateManyProfileSettings({
       ...local,
-      brandSignature: signatureUrl,
-      brandColour:    entry?.tokens.primary || '#1C1814',
+      brandSignature:         signatureUrl,
+      brandSignaturePublicId: signaturePublicId,
+      brandColour:            entry?.tokens.primary || '#1C1814',
     })
 
     showToast('Brand info saved')
