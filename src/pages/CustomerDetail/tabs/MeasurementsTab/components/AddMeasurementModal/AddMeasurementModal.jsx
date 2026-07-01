@@ -58,10 +58,13 @@ function getSlotSummary(slot, styleSelections) {
   return { label: option.label, img: option.img ?? null }
 }
 
-function buildSavePayload(measurement, unit, imageUrls, gender) {
+function buildSavePayload(measurement, unit, uploadedImages, gender) {
   const today = new Date().toLocaleDateString('en-US', {
     month: 'short', day: 'numeric', year: 'numeric',
   })
+
+  const imgSrcs       = uploadedImages.map(img => img.url)
+  const imgPublicIds  = uploadedImages.map(img => img.publicId).filter(Boolean)
 
   return {
     id:              Date.now() + Math.random(),
@@ -71,8 +74,9 @@ function buildSavePayload(measurement, unit, imageUrls, gender) {
     lowerBodyType:   measurement.lowerBodyType || null,
     styleSelections: measurement.styleSelections,
     gender:          gender || null,
-    imgSrcs:         imageUrls,
-    imgSrc:          imageUrls[0] ?? null,
+    imgSrcs,
+    imgSrc:          imgSrcs[0] ?? null,
+    imgPublicIds,
     unit,
     fields:          measurement.fields.filter(f => f.name.trim()).map(f => ({ name: f.name, value: f.value })),
     date:            today,
@@ -81,18 +85,21 @@ function buildSavePayload(measurement, unit, imageUrls, gender) {
 
 async function uploadMeasurementImages(slots, isOnline) {
   if (!slots?.length) return []
-  const urls = await Promise.all(
+  const results = await Promise.all(
     slots.map(async slot => {
-      if (!slot.file) return slot.localSrc ?? null
+      if (!slot.file) {
+        return slot.localSrc ? { url: slot.localSrc, publicId: slot.publicId ?? null } : null
+      }
       if (!isOnline) return null
       try {
-        return await uploadToCloudinary(slot.file, 'measurements')
+        const { url, publicId } = await uploadToCloudinary(slot.file, 'measurements')
+        return { url, publicId }
       } catch {
         return null
       }
     })
   )
-  return urls.filter(Boolean)
+  return results.filter(Boolean)
 }
 
 const hasStyleSelections = styleSelections =>
@@ -107,7 +114,7 @@ export function AddMeasurementModal({ isOpen, onClose, onSave, gender }) {
   const [isSaving,          setIsSaving]          = useState(false)
   const [openSlotId,        setOpenSlotId]        = useState(null)
   const [formInlineMsg,     setFormInlineMsg]     = useState(null)
-  const [uploadedImageUrls, setUploadedImageUrls] = useState(null)
+  const [uploadedImages,    setUploadedImages]    = useState(null)
   const isOnline                                  = useNetworkStatus()
   const detailsRef                                = useRef(null)
   const scrollBodyRef                             = useRef(null)
@@ -243,8 +250,8 @@ export function AddMeasurementModal({ isOpen, onClose, onSave, gender }) {
 
       if (isOnline && hasPendingFiles) {
         setIsSaving(true)
-        const urls = await uploadMeasurementImages(measurement.slots, true)
-        setUploadedImageUrls(urls)
+        const images = await uploadMeasurementImages(measurement.slots, true)
+        setUploadedImages(images)
         setIsSaving(false)
       }
 
@@ -259,17 +266,17 @@ export function AddMeasurementModal({ isOpen, onClose, onSave, gender }) {
     }
 
     setIsSaving(true)
-    const imageUrls = uploadedImageUrls ?? await uploadMeasurementImages(measurement.slots, isOnline)
-    onSave(buildSavePayload(measurement, unit, imageUrls, gender))
+    const images = uploadedImages ?? await uploadMeasurementImages(measurement.slots, isOnline)
+    onSave(buildSavePayload(measurement, unit, images, gender))
     setIsSaving(false)
     resetAndClose()
   }
 
   async function handleSkip() {
     setIsSaving(true)
-    const imageUrls = uploadedImageUrls ?? await uploadMeasurementImages(measurement.slots, isOnline)
+    const images = uploadedImages ?? await uploadMeasurementImages(measurement.slots, isOnline)
     onSave({
-      ...buildSavePayload(measurement, unit, imageUrls, gender),
+      ...buildSavePayload(measurement, unit, images, gender),
       styleSelections: {},
       skippedFeatures: true,
     })
@@ -285,7 +292,7 @@ export function AddMeasurementModal({ isOpen, onClose, onSave, gender }) {
     setValidationErrors({})
     setOpenSlotId(null)
     setFormInlineMsg(null)
-    setUploadedImageUrls(null)
+    setUploadedImages(null)
     clearTimeout(formInlineMsgTimer.current)
     onClose()
   }
