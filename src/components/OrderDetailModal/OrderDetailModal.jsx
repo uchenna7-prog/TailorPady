@@ -263,7 +263,7 @@ export default function OrderDetailModal({
 
       <Header
         type="back"
-        title={orderTitle}
+        title="Order Details"
         onBackClick={onClose}
         backIcon={fullHeight ? 'arrow_back_ios' : 'close'}
         showBorderBottom={false}
