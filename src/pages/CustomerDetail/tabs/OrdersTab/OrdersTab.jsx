@@ -1,22 +1,18 @@
 import { useState, useEffect } from 'react'
 import { useOrders } from '../../../../contexts/OrdersContext'
-import { useAuth } from '../../../../contexts/AuthContext'
 import { useGeneralSettings } from '../../../../contexts/GeneralSettingsContext'
-import { ORDER_STAGE_AUTO_STATUS, ORDER_STATUS_CORRESPONDING_STAGES } from '../../../../datas/orderDatas'
 import { AddOrderModal } from './components/AddOrderModal/AddOrderModal'
-import { OrderDetailsModal } from './components/OrderDetailsModal/OrderDetailsModal'
+import OrderDetailModal from '../../../../components/OrderDetailModal/OrderDetailModal'
 import { OrderRow } from './components/OrderRow/OrderRow'
 import { OrderRowSkeleton } from './components/OrderRowSkeleton/OrderRowSkeleton'
 import { EmptyState } from './components/EmptyState/EmptyState'
 import { formatFirestoreDate } from './utils'
-import ConfirmSheet from '../../../../components/ConfirmSheet/ConfirmSheet'
 import styles from './OrdersTab.module.css'
 
 
 export default function OrdersTab({ customerId, orders, loading, measurements, showToast, onGenerateInvoice }) {
 
-  const { addOrder, deleteOrder, updateOrderStatus, updateOrderStage } = useOrders()
-  const { user } = useAuth()
+  const { addOrder } = useOrders()
   const { generalSettings } = useGeneralSettings()
 
   const taxEnabled = generalSettings.invoiceShowTax ?? false
@@ -24,7 +20,6 @@ export default function OrdersTab({ customerId, orders, loading, measurements, s
 
   const [isModalOpen,   setIsModalOpen]   = useState(false)
   const [selectedOrder, setSelectedOrder] = useState(null)
-  const [orderToDelete, setOrderToDelete] = useState(null)
 
   useEffect(() => {
     const openModal = () => setIsModalOpen(true)
@@ -40,73 +35,6 @@ export default function OrdersTab({ customerId, orders, loading, measurements, s
     } catch {
       showToast('Failed to place order')
     }
-  }
-
-  async function handleDeleteConfirm() {
-  if (!orderToDelete) return
-  const target = orderToDelete
-  setOrderToDelete(null)
-  setSelectedOrder(null)
-  try {
-    await deleteOrder(customerId, target.id)
-    showToast('Order deleted')
-  } catch {
-    showToast('Failed to delete order')
-  }
-  }
-
-  async function handleStatusChange(orderId, newStatus) {
-    try {
-      await updateOrderStatus(customerId, orderId, newStatus)
-      setSelectedOrder(prev =>
-        prev && String(prev.id) === String(orderId) ? { ...prev, status: newStatus } : prev
-      )
-    } catch {
-      throw new Error('Failed to update status')
-    }
-  }
-
-  async function handleStageChange(orderId, newStage) {
-    try {
-      await updateOrderStage(customerId, orderId, newStage)
-      const autoStatus = newStage ? ORDER_STAGE_AUTO_STATUS[newStage] : null
-      if (autoStatus) {
-        await updateOrderStatus(customerId, orderId, autoStatus)
-        setSelectedOrder(prev =>
-          prev && String(prev.id) === String(orderId)
-            ? { ...prev, stage: newStage, status: autoStatus }
-            : prev
-        )
-      } else {
-        setSelectedOrder(prev =>
-          prev && String(prev.id) === String(orderId)
-            ? { ...prev, stage: newStage }
-            : prev
-        )
-      }
-    } catch {
-      throw new Error('Failed to update stage')
-    }
-  }
-
-  function handleShareReviewLink(order) {
-    const reviewToken  = order.reviewToken || crypto.randomUUID()
-    const reviewUrl    = `https://TailorPady.web.app/review/${user?.uid}/${reviewToken}`
-    const customerName = order.customerName || 'there'
-    const message = encodeURIComponent(
-      `Hi ${customerName}! 🙏 Thank you for your order.\n\n` +
-      `We'd love to hear your feedback — it only takes a minute:\n${reviewUrl}\n\n` +
-      `Your review means a lot to us! ⭐`
-    )
-    const rawPhone   = order.customerPhone || ''
-    const cleanPhone = rawPhone.replace(/[\s\-()]/g, '')
-    let waPhone = cleanPhone
-    if (cleanPhone.startsWith('+'))      waPhone = cleanPhone.replace('+', '')
-    else if (cleanPhone.startsWith('0')) waPhone = `234${cleanPhone.slice(1)}`
-    const waUrl = waPhone
-      ? `https://wa.me/${waPhone}?text=${message}`
-      : `https://wa.me/?text=${message}`
-    window.open(waUrl, '_blank', 'noopener,noreferrer')
   }
 
 
@@ -158,29 +86,18 @@ export default function OrdersTab({ customerId, orders, loading, measurements, s
       />
 
       {selectedOrder && (
-        <OrderDetailsModal
+        <OrderDetailModal
           order={selectedOrder}
-          measurements={measurements}
           onClose={() => setSelectedOrder(null)}
-          onDelete={() => setOrderToDelete(selectedOrder)}
-          onStatusChange={handleStatusChange}
-          onStageChange={handleStageChange}
-          onShareReviewLink={handleShareReviewLink}
           onGenerateInvoice={(orderId) => {
             setSelectedOrder(null)
             onGenerateInvoice(orderId)
           }}
+          fullHeight
+          hideCustomerName
           showToast={showToast}
         />
       )}
-
-      <ConfirmSheet
-        open={!!orderToDelete}
-        title="Delete Order?"
-        message="This can't be undone."
-        onConfirm={handleDeleteConfirm}
-        onCancel={() => setOrderToDelete(null)}
-      />
     </div>
   )
 }
