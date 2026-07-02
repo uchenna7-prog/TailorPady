@@ -1,27 +1,6 @@
 import OrderMosaic from '../OrderMosaic/OrderMosaic'
 import styles from './OrderRow.module.css'
-
-const STATUS_COLORS = {
-  pending:       { color: '#a16207', bg: 'rgba(234,179,8,0.12)',   border: 'rgba(234,179,8,0.3)'   },
-  'in-progress': { color: '#2563eb', bg: 'rgba(59,130,246,0.12)',  border: 'rgba(59,130,246,0.3)'  },
-  completed:     { color: '#15803d', bg: 'rgba(21,128,61,0.12)',   border: 'rgba(21,128,61,0.3)'   },
-  delivered:     { color: '#4f46e5', bg: 'rgba(129,140,248,0.12)', border: 'rgba(129,140,248,0.3)' },
-  cancelled:     { color: '#dc2626', bg: 'rgba(239,68,68,0.12)',   border: 'rgba(239,68,68,0.3)'   },
-}
-
-const STAGES = [
-  { value: 'measurement_taken', label: 'Measurement Taken', icon: 'straighten'    },
-  { value: 'fabric_ready',      label: 'Fabric Ready',      icon: 'checkroom'     },
-  { value: 'cutting',           label: 'Cutting',           icon: 'content_cut'   },
-  { value: 'weaving',           label: 'Weaving',           icon: 'texture'       },
-  { value: 'sewing',            label: 'Sewing',            icon: 'construction'  },
-  { value: 'embroidery',        label: 'Embroidery',        icon: 'auto_awesome'  },
-  { value: 'fitting',           label: 'Fitting',           icon: 'accessibility' },
-  { value: 'adjustments',       label: 'Adjustments',       icon: 'tune'          },
-  { value: 'finishing',         label: 'Finishing',         icon: 'dry_cleaning'  },
-  { value: 'quality_check',     label: 'Quality Check',     icon: 'fact_check'    },
-  { value: 'ready',             label: 'Ready',             icon: 'check_circle'  },
-]
+import { ORDER_STATUS_LABELS, ORDER_STATUS_STYLES, ORDER_STAGES } from '../../datas/orderDatas'
 
 export function isOrderOverdue(order) {
   const raw = order.dueRaw || order.dueDate
@@ -38,20 +17,15 @@ function formatDateShort(dateStr) {
 }
 
 export function OrderRow({ order, isLast, onTap }) {
-  
-  const overdue     = isOrderOverdue(order)
-  const dueDateRaw  = order.dueRaw || order.dueDate
-  const stageObj    = STAGES.find(s => s.value === order.stage)
-  const sc          = overdue
-    ? { color: '#ef4444', bg: 'rgba(239,68,68,0.12)', border: 'rgba(239,68,68,0.3)' }
-    : STATUS_COLORS[order.status] ?? STATUS_COLORS.pending
-  const statusLabel = overdue
-    ? 'Overdue'
-    : order.status
-      ? order.status === 'in-progress' ? 'In Progress' : order.status.charAt(0).toUpperCase() + order.status.slice(1)
-      : 'Pending'
-  const priceStr    = order.price != null ? `₦${Number(order.price).toLocaleString()}` : '—'
-  const totalQty    = (order.items || []).reduce((s, i) => s + (parseInt(i.qty, 10) || 0), 0) || order.qty || 0
+  const overdue = isOrderOverdue(order)
+  const dueDateRaw = order.dueRaw || order.dueDate
+  const stageObj = ORDER_STAGES.find(s => s.value === order.stage)
+  const sc = overdue
+    ? { color: '#ef4444', background: 'rgba(239,68,68,0.12)', borderColor: 'rgba(239,68,68,0.3)' }
+    : ORDER_STATUS_STYLES[order.status] ?? ORDER_STATUS_STYLES.pending
+  const statusLabel = overdue ? 'Overdue' : ORDER_STATUS_LABELS[order.status] ?? 'Pending'
+  const priceStr = order.price != null ? `₦${Number(order.price).toLocaleString()}` : '—'
+  const totalQty = (order.items || []).reduce((s, i) => s + (parseInt(i.qty, 10) || 0), 0) || order.qty || 0
 
   return (
     <div
@@ -79,7 +53,7 @@ export function OrderRow({ order, isLast, onTap }) {
         {totalQty > 1 && <div className={styles.orderRowQty}>{totalQty} items</div>}
         <span
           className={styles.orderRowStatusBadge}
-          style={{ color: sc.color, background: sc.bg, borderColor: sc.border }}
+          style={{ color: sc.color, background: sc.background, borderColor: sc.borderColor }}
         >
           {statusLabel}
         </span>

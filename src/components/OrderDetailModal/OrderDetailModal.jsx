@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useOrders } from '../../contexts/OrdersContext'
 import { useAuth } from '../../contexts/AuthContext'
 import {
@@ -7,6 +7,7 @@ import {
   ORDER_STAGES,
   ORDER_STATUS_CORRESPONDING_STAGES,
 } from '../../datas/orderDatas'
+import {getInitials} from '../../utils/nameUtils'
 import Header from '../Header/Header'
 import ConfirmSheet from '../ConfirmSheet/ConfirmSheet'
 import styles from './OrderDetailModal.module.css'
@@ -44,18 +45,18 @@ const STATUS_HINTS = {
   delivered: 'The stage must be Ready before marking this order as Delivered.',
 }
 
-const STATUS_META = {
-  pending: { color: '#eab308', bg: 'rgba(234,179,8,0.12)', border: 'rgba(234,179,8,0.4)' },
-  in_progress: { color: '#818cf8', bg: 'rgba(99,102,241,0.12)', border: 'rgba(99,102,241,0.4)' },
-  completed: { color: '#22c55e', bg: 'rgba(34,197,94,0.12)', border: 'rgba(34,197,94,0.4)' },
-  delivered: { color: '#0ea5e9', bg: 'rgba(14,165,233,0.12)', border: 'rgba(14,165,233,0.4)' },
-  cancelled: { color: '#94a3b8', bg: 'rgba(148,163,184,0.12)', border: 'rgba(148,163,184,0.4)' },
+const STATUS_CLASS = {
+  pending: 'statusPending',
+  in_progress: 'statusInProgress',
+  completed: 'statusCompleted',
+  delivered: 'statusDelivered',
+  cancelled: 'statusCancelled',
 }
 
 const PRIORITY_META = {
-  normal: { label: 'Normal', color: 'var(--text2)', bg: 'var(--surface2)', border: 'var(--border2)' },
-  urgent: { label: 'Urgent', color: '#fb923c', bg: 'rgba(251,146,60,0.14)', border: 'rgba(251,146,60,0.4)' },
-  vip: { label: 'VIP', color: '#a855f7', bg: 'rgba(168,85,247,0.14)', border: 'rgba(168,85,247,0.4)' },
+  normal: { label: 'Normal', color: 'var(--text2)', icon: 'horizontal_rule' },
+  urgent: { label: 'Urgent', color: '#fb923c', icon: 'bolt' },
+  vip: { label: 'VIP', color: '#a855f7', icon: 'star' },
 }
 
 function isStatusAllowed(status, stage) {
@@ -83,13 +84,35 @@ export default function OrderDetailModal({
   const [hint, setHint] = useState(null)
   const [confirmDelete, setConfirmDelete] = useState(false)
   const [showPriorityPicker, setShowPriorityPicker] = useState(false)
+  const [pendingStatus, setPendingStatus] = useState(false)
+  const [pendingStage, setPendingStage] = useState(false)
+  const [pendingPriority, setPendingPriority] = useState(false)
+  const [brokenImages, setBrokenImages] = useState(() => new Set())
+
+  const priorityRef = useRef(null)
 
   useEffect(() => {
     setLocal(order)
     setHint(null)
     setConfirmDelete(false)
     setShowPriorityPicker(false)
+    setBrokenImages(new Set())
   }, [order?.id])
+
+  useEffect(() => {
+    if (!showPriorityPicker) return
+    function handleOutside(e) {
+      if (priorityRef.current && !priorityRef.current.contains(e.target)) {
+        setShowPriorityPicker(false)
+      }
+    }
+    document.addEventListener('mousedown', handleOutside)
+    document.addEventListener('touchstart', handleOutside)
+    return () => {
+      document.removeEventListener('mousedown', handleOutside)
+      document.removeEventListener('touchstart', handleOutside)
+    }
+  }, [showPriorityPicker])
 
   if (!order) return null
 
@@ -115,9 +138,11 @@ export default function OrderDetailModal({
   const stageObj = ORDER_STAGES.find(s => s.value === local.stage)
   const showCustomer = local.customerName && !hideCustomerName
   const currentPriority = PRIORITY_META[local.priority ?? 'normal']
+  const orderTitle = local.desc || local.name || 'Order'
+  const customerInitial = getInitials(local.customerName)
 
   async function handleStatusClick(value) {
-    if (local.status === value) return
+    if (local.status === value || pendingStatus) return
 
     if (!isStatusAllowed(value, local.stage)) {
       setHint(STATUS_HINTS[value] ?? null)
@@ -127,45 +152,62 @@ export default function OrderDetailModal({
     setHint(null)
     const prevStatus = local.status
     setLocal(p => ({ ...p, status: value }))
+    setPendingStatus(true)
 
     try {
       await updateOrderStatus(local.customerId, local.id, value)
+      showToast?.('Status updated')
     } catch {
       setLocal(p => ({ ...p, status: prevStatus }))
       showToast?.('Failed to update status')
+    } finally {
+      setPendingStatus(false)
     }
   }
 
   async function handleStageChange(stageValue) {
+    if (pendingStage || local.stage === stageValue) return
+
     setHint(null)
-    const newStage = local.stage === stageValue ? null : stageValue
-    const autoStatus = newStage ? ORDER_STAGE_AUTO_STATUS[newStage] : null
+    const autoStatus = ORDER_STAGE_AUTO_STATUS[stageValue] ?? null
 
     const prevStage = local.stage
     const prevStatus = local.status
 
-    setLocal(p => ({ ...p, stage: newStage, ...(autoStatus ? { status: autoStatus } : {}) }))
+    setLocal(p => ({ ...p, stage: stageValue, ...(autoStatus ? { status: autoStatus } : {}) }))
+    setPendingStage(true)
 
     try {
-      await updateOrderStage(local.customerId, local.id, newStage)
+      await updateOrderStage(local.customerId, local.id, stageValue)
       if (autoStatus) {
         await updateOrderStatus(local.customerId, local.id, autoStatus)
       }
+      showToast?.('Stage updated')
     } catch {
       setLocal(p => ({ ...p, stage: prevStage, status: prevStatus }))
       showToast?.('Failed to update stage')
+    } finally {
+      setPendingStage(false)
     }
   }
 
   async function handlePriority(priority) {
+    if (pendingPriority || (local.priority ?? 'normal') === priority) {
+      setShowPriorityPicker(false)
+      return
+    }
     const prev = local.priority
     setLocal(p => ({ ...p, priority }))
     setShowPriorityPicker(false)
+    setPendingPriority(true)
     try {
       await updateOrder(local.customerId, local.id, { priority })
+      showToast?.('Priority updated')
     } catch {
       setLocal(p => ({ ...p, priority: prev }))
       showToast?.('Failed to update priority')
+    } finally {
+      setPendingPriority(false)
     }
   }
 
@@ -179,13 +221,25 @@ export default function OrderDetailModal({
     }
   }
 
-  function handleReviewClick() {
+  async function handleReviewClick() {
     if (!canReview) {
       setHint('review')
       return
     }
     setHint(null)
-    const token = local.reviewToken || crypto.randomUUID()
+
+    let token = local.reviewToken
+    if (!token) {
+      token = crypto.randomUUID()
+      setLocal(p => ({ ...p, reviewToken: token }))
+      try {
+        await updateOrder(local.customerId, local.id, { reviewToken: token })
+      } catch {
+        showToast?.('Failed to create review link')
+        return
+      }
+    }
+
     const url = `https://TailorPady.web.app/review/${user?.uid}/${token}`
     const name = local.customerName || 'there'
     const msg = encodeURIComponent(
@@ -198,12 +252,18 @@ export default function OrderDetailModal({
   }
 
   const panel = (
-    <div className={`${styles.panel} ${fullHeight ? styles.panelFullHeight : ''}`}>
+    <div
+      className={`${styles.panel} ${fullHeight ? styles.panelFullHeight : ''}`}
+      onTouchStart={e => e.stopPropagation()}
+      onTouchMove={e => e.stopPropagation()}
+      onTouchEnd={e => e.stopPropagation()}
+      onClick={e => e.stopPropagation()}
+    >
       {!fullHeight && <div className={styles.handle} />}
 
       <Header
         type="back"
-        title={fullHeight ? (local.desc || local.name || 'Order') : 'Order Details'}
+        title={orderTitle}
         onBackClick={onClose}
         backIcon={fullHeight ? 'arrow_back_ios' : 'close'}
         showBorderBottom={false}
@@ -221,80 +281,59 @@ export default function OrderDetailModal({
           </div>
         )}
 
-        <div className={styles.sectionCard}>
-          <div className={styles.sectionLabel}>Status</div>
-          <div className={styles.statusRow}>
-            {Object.entries(ORDER_STATUS_LABELS).map(([value, label]) => {
-              const allowed = isStatusAllowed(value, local.stage)
-              const isActive = local.status === value
-              const meta = STATUS_META[value] ?? STATUS_META.pending
-              return (
-                <button
-                  key={value}
-                  disabled={!allowed}
-                  className={`${styles.statusBtn} ${isActive ? styles.statusBtn_active : ''} ${!allowed ? styles.statusBtn_locked : ''}`}
-                  style={isActive ? { background: meta.bg, borderColor: meta.border, color: meta.color } : {}}
-                  onClick={() => handleStatusClick(value)}
-                >
-                  {label}
-                </button>
-              )
-            })}
-          </div>
-          {hint && hint !== 'review' && (
-            <div className={styles.hintBox}>
-              <span className="mi" style={{ fontSize: '0.9rem', flexShrink: 0 }}>info</span>
-              {hint}
-            </div>
-          )}
-        </div>
-
-        <div className={styles.sectionCard}>
-          {showCustomer && (
-            <>
+        <div className={styles.orderInfoCard}>
+          <div className={styles.titleRow}>
+            <div className={styles.detailTitle}>{orderTitle}</div>
+            <div className={styles.priorityWrap} ref={priorityRef}>
               <button
                 type="button"
-                className={styles.customerRow}
-                onClick={() => { onGoToCustomer && (onClose(), onGoToCustomer(local.customerId)) }}
+                className={styles.priorityTrigger}
+                onClick={() => setShowPriorityPicker(p => !p)}
+                disabled={pendingPriority}
               >
-                <span className="mi" style={{ fontSize: '1.05rem', color: 'var(--text3)' }}>person</span>
-                <div className={styles.customerInfo}>
-                  <div className={styles.customerName}>{local.customerName}</div>
-                  {local.customerPhone && <div className={styles.customerPhone}>{local.customerPhone}</div>}
-                </div>
-                <span className="mi" style={{ fontSize: '1rem', color: 'var(--text3)' }}>arrow_forward_ios</span>
+                <span className={styles.priorityDot} style={{ background: currentPriority.color }} />
+                {currentPriority.label}
+                <span className="mi" style={{ fontSize: '0.9rem' }}>
+                  {showPriorityPicker ? 'expand_less' : 'expand_more'}
+                </span>
               </button>
-              <div className={styles.rowDivider} />
-            </>
-          )}
 
-          <div className={styles.titleRow}>
-            <div className={styles.detailTitle}>{local.desc || local.name || 'Order'}</div>
-            <button
-              type="button"
-              className={styles.priorityBadge}
-              style={{ background: currentPriority.bg, borderColor: currentPriority.border, color: currentPriority.color }}
-              onClick={() => setShowPriorityPicker(p => !p)}
-            >
-              {currentPriority.label}
-              <span className="mi" style={{ fontSize: '0.85rem' }}>
-                {showPriorityPicker ? 'expand_less' : 'expand_more'}
-              </span>
-            </button>
+              {showPriorityPicker && (
+                <div className={styles.priorityDropdown}>
+                  {['normal', 'urgent', 'vip'].map(p => {
+                    const meta = PRIORITY_META[p]
+                    const active = (local.priority ?? 'normal') === p
+                    return (
+                      <button
+                        key={p}
+                        type="button"
+                        className={`${styles.priorityOption} ${active ? styles.priorityOptionActive : ''}`}
+                        onClick={() => handlePriority(p)}
+                      >
+                        <span className="mi" style={{ fontSize: '1rem', color: meta.color }}>{meta.icon}</span>
+                        <span className={styles.priorityOptionLabel}>{meta.label}</span>
+                        {active && <span className="mi" style={{ fontSize: '0.95rem', marginLeft: 'auto', color: meta.color }}>check</span>}
+                      </button>
+                    )
+                  })}
+                </div>
+              )}
+            </div>
           </div>
 
-          {showPriorityPicker && (
-            <div className={styles.priorityPicker}>
-              {['normal', 'urgent', 'vip'].map(p => (
-                <button
-                  key={p}
-                  className={`${styles.priorityChip} ${(local.priority ?? 'normal') === p ? styles[`priorityChip_${p}`] : ''}`}
-                  onClick={() => handlePriority(p)}
-                >
-                  {PRIORITY_META[p].label}
-                </button>
-              ))}
-            </div>
+          {showCustomer && (
+            <button
+              type="button"
+              className={styles.customerRow}
+              onClick={() => { onGoToCustomer && (onClose(), onGoToCustomer(local.customerId)) }}
+            >
+              <span className={styles.customerAvatar}>{customerInitial}</span>
+              <span className={styles.customerInfo}>
+                <span className={styles.customerName}>{local.customerName}</span>
+                {local.customerPhone && <span className={styles.customerPhone}>{local.customerPhone}</span>}
+              </span>
+              <span className="mi" style={{ fontSize: '0.85rem', color: 'var(--text3)' }}>chevron_right</span>
+            </button>
           )}
 
           <div className={styles.orderGrid} style={{ marginTop: 12 }}>
@@ -304,9 +343,7 @@ export default function OrderDetailModal({
             </div>
             <div className={styles.orderCell}>
               <div className={styles.orderCellLabel}>Due</div>
-              <div className={`${styles.orderCellVal} ${overdue ? styles.overdueText : ''}`}>
-                {local.due || '—'}
-              </div>
+              <div className={`${styles.orderCellVal} ${overdue ? styles.orderCellVal_overdue : ''}`}>{local.due || '—'}</div>
               {dueTag && (
                 <span className={`${styles.dueTag} ${overdue ? styles.dueTag_overdue : ''}`}>{dueTag}</span>
               )}
@@ -325,6 +362,32 @@ export default function OrderDetailModal({
         </div>
 
         <div className={styles.sectionCard}>
+          <div className={styles.sectionLabel}>Status</div>
+          <div className={styles.statusRow}>
+            {Object.entries(ORDER_STATUS_LABELS).map(([value, label]) => {
+              const allowed = isStatusAllowed(value, local.stage)
+              const isActive = local.status === value
+              return (
+                <button
+                  key={value}
+                  disabled={!allowed || pendingStatus}
+                  className={`${styles.statusBtn} ${isActive ? `${styles.statusBtn_active} ${styles[STATUS_CLASS[value]] ?? ''}` : ''} ${!allowed ? styles.statusBtn_locked : ''} ${pendingStatus && isActive ? styles.statusBtn_pending : ''}`}
+                  onClick={() => handleStatusClick(value)}
+                >
+                  {label}
+                </button>
+              )
+            })}
+          </div>
+          {hint && hint !== 'review' && (
+            <div className={styles.hintBox}>
+              <span className="mi" style={{ fontSize: '0.9rem', flexShrink: 0 }}>info</span>
+              {hint}
+            </div>
+          )}
+        </div>
+
+        <div className={styles.sectionCard}>
           <div className={styles.stepperHeader}>
             <span className={styles.sectionLabel} style={{ marginBottom: 0 }}>Order Stage</span>
             <span className={styles.stepperCount}>
@@ -332,14 +395,15 @@ export default function OrderDetailModal({
             </span>
           </div>
           <div className={styles.stepperScroll}>
-        <div className={styles.stepperTrack} />
           {ORDER_STAGES.map((s, idx) => {
             const isActive = local.stage === s.value
             const isDone = stageIndex >= 0 && idx < stageIndex
+            const isLast = idx === ORDER_STAGES.length - 1
             return (
               <button
                 key={s.value}
-                className={`${styles.stepperItem} ${isActive ? styles.stepperItem_active : ''} ${isDone ? styles.stepperItem_done : ''}`}
+                disabled={pendingStage}
+                className={`${styles.stepperItem} ${isActive ? styles.stepperItem_active : ''} ${isDone ? styles.stepperItem_done : ''} ${isLast ? styles.stepperItem_last : ''} ${isDone ? styles.stepperItem_lineDone : ''}`}
                 onClick={() => handleStageChange(s.value)}
               >
                 <span className={styles.stepperCircle}>
@@ -359,12 +423,20 @@ export default function OrderDetailModal({
             <div className={styles.sectionLabel}>Selected Garments</div>
             {items.map((item, i) => {
               const lineTotal = (parseInt(item.qty, 10) || 1) * (Number(item.price) || 0)
+              const imgFailed = brokenImages.has(i)
               return (
                 <div key={i} className={`${styles.garmentRow} ${i < items.length - 1 ? styles.garmentRowBorder : ''}`}>
                   <div className={styles.garmentLeft}>
                     <div className={styles.garmentThumb}>
-                      {item.imgSrc
-                        ? <img src={item.imgSrc} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                      {item.imgSrc && !imgFailed
+                        ? (
+                          <img
+                            src={item.imgSrc}
+                            alt=""
+                            style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                            onError={() => setBrokenImages(prev => new Set(prev).add(i))}
+                          />
+                        )
                         : <span className="mi" style={{ fontSize: '1rem', color: 'var(--text3)' }}>checkroom</span>
                       }
                     </div>
@@ -463,7 +535,7 @@ export default function OrderDetailModal({
             onClick={handleReviewClick}
           >
             <span className="mi" style={{ fontSize: '1.05rem',textTransform: 'lowercase' }}>rate_review</span>
-            Share Review Link
+            Share Review Link Via WhatsApp
           </button>
         </div>
       </div>
@@ -471,7 +543,7 @@ export default function OrderDetailModal({
       <ConfirmSheet
         open={confirmDelete}
         title="Delete this order?"
-        message={`"${local.desc || local.name || 'This order'}" will be permanently deleted. This cannot be undone.`}
+        message={`"${orderTitle}" will be permanently deleted. This cannot be undone.`}
         onConfirm={handleDelete}
         onCancel={() => setConfirmDelete(false)}
       />

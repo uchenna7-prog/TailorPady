@@ -116,10 +116,15 @@
 }
 
 .sectionCard {
-  background: var(--surface);
-  border: 1px solid var(--border);
+  background: var(--surface2);
+  border: 1px solid var(--border2);
   border-radius: 14px;
-  padding: 14px ;
+  padding: 14px;
+  margin-bottom: 12px;
+}
+
+.orderInfoCard {
+  padding: 14px 0;
   margin-bottom: 12px;
 }
 
@@ -156,6 +161,36 @@
 
 .statusBtn_active { border-width: 1.5px; }
 
+.statusPending {
+  background: rgba(234, 179, 8, 0.12);
+  border-color: rgba(234, 179, 8, 0.4);
+  color: #eab308;
+}
+
+.statusInProgress {
+  background: rgba(99, 102, 241, 0.12);
+  border-color: rgba(99, 102, 241, 0.4);
+  color: #818cf8;
+}
+
+.statusCompleted {
+  background: rgba(34, 197, 94, 0.12);
+  border-color: rgba(34, 197, 94, 0.4);
+  color: #22c55e;
+}
+
+.statusDelivered {
+  background: rgba(14, 165, 233, 0.12);
+  border-color: rgba(14, 165, 233, 0.4);
+  color: #0ea5e9;
+}
+
+.statusCancelled {
+  background: rgba(148, 163, 184, 0.12);
+  border-color: rgba(148, 163, 184, 0.4);
+  color: #94a3b8;
+}
+
 .statusBtn_locked {
   cursor: default;
   pointer-events: none;
@@ -163,6 +198,15 @@
 }
 
 .statusBtn_locked.statusBtn_active { opacity: 1; }
+
+.statusBtn_pending {
+  opacity: 0.6;
+  cursor: wait;
+}
+
+.statusBtn:disabled:not(.statusBtn_locked):not(.statusBtn_pending) {
+  cursor: default;
+}
 
 .hintBox {
   display: flex;
@@ -185,35 +229,6 @@
   to { opacity: 1; transform: translateY(0); }
 }
 
-.customerRow {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  width: 100%;
-  background: none;
-  border: none;
-  padding: 0 0 10px;
-  font-family: inherit;
-  cursor: pointer;
-  text-align: left;
-}
-
-.customerRow:active { opacity: 0.7; }
-
-.customerInfo { flex: 1; min-width: 0; }
-
-.customerName {
-  font-size: 0.88rem;
-  font-weight: 700;
-  color: var(--text);
-}
-
-.customerPhone {
-  font-size: 0.74rem;
-  color: var(--text3);
-  margin-top: 1px;
-}
-
 .rowDivider {
   height: 1px;
   background: var(--border);
@@ -234,57 +249,144 @@
   line-height: 1.4;
 }
 
-.priorityBadge {
+.customerRow {
   display: flex;
   align-items: center;
-  gap: 2px;
-  flex-shrink: 0;
-  padding: 5px 10px;
-  border-radius: 999px;
+  gap: 10px;
+  width: 100%;
+  margin-top: 10px;
+  padding: 9px 10px;
+  background: var(--surface2);
   border: 1px solid var(--border2);
-  font-size: 0.66rem;
+  border-radius: 12px;
+  font-family: inherit;
+  cursor: pointer;
+  text-align: left;
+  transition: opacity 0.15s, border-color 0.15s;
+}
+
+.customerRow:active {
+  opacity: 0.75;
+}
+
+.customerAvatar {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: var(--accent);
+  color: var(--bg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75rem;
+  font-weight: 800;
+  flex-shrink: 0;
+}
+
+.customerInfo {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  flex: 1;
+}
+
+.customerName {
+  font-size: 0.8rem;
+  font-weight: 800;
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.customerPhone {
+  font-size: 0.68rem;
+  font-weight: 600;
+  color: var(--text3);
+  margin-top: 1px;
+}
+
+.priorityWrap {
+  position: relative;
+  flex-shrink: 0;
+}
+
+.priorityTrigger {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  flex-shrink: 0;
+  padding: 6px 10px;
+  border-radius: 10px;
+  border: 1px solid var(--border2);
+  background: var(--surface2);
+  color: var(--text);
+  font-size: 0.68rem;
   font-weight: 800;
   font-family: inherit;
   cursor: pointer;
   white-space: nowrap;
 }
 
-.priorityPicker {
-  display: flex;
-  gap: 6px;
-  margin-top: 10px;
+.priorityTrigger:disabled {
+  opacity: 0.6;
+  cursor: wait;
 }
 
-.priorityChip {
-  flex: 1;
-  padding: 7px 4px;
+.priorityDot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.priorityDropdown {
+  position: absolute;
+  top: calc(100% + 6px);
+  right: 0;
+  min-width: 150px;
+  display: flex;
+  flex-direction: column;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 6px;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.22);
+  z-index: 10;
+  animation: dropdownIn 0.15s ease;
+}
+
+@keyframes dropdownIn {
+  from { opacity: 0; transform: translateY(-4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.priorityOption {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  width: 100%;
+  padding: 9px 10px;
   border-radius: 9px;
-  border: 1px solid var(--border2);
-  font-size: 0.66rem;
-  font-weight: 800;
+  border: none;
+  background: transparent;
   font-family: inherit;
   cursor: pointer;
-  color: var(--text3);
-  background: transparent;
-  text-align: center;
+  text-align: left;
 }
 
-.priorityChip_normal {
+.priorityOption:active {
   background: var(--surface2);
-  border-color: var(--text2);
+}
+
+.priorityOptionActive {
+  background: var(--surface2);
+}
+
+.priorityOptionLabel {
+  font-size: 0.76rem;
+  font-weight: 700;
   color: var(--text);
-}
-
-.priorityChip_urgent {
-  background: rgba(251, 146, 60, 0.15);
-  border-color: #fb923c;
-  color: #fb923c;
-}
-
-.priorityChip_vip {
-  background: rgba(168, 85, 247, 0.15);
-  border-color: #a855f7;
-  color: #a855f7;
 }
 
 .orderGrid {
@@ -315,7 +417,9 @@
   color: var(--text);
 }
 
-.overdueText { color: #ef4444; }
+.orderCellVal_overdue {
+  color: #ef4444;
+}
 
 .dueTag {
   display: block;
@@ -366,16 +470,6 @@
 
 .stepperScroll::-webkit-scrollbar { display: none; }
 
-.stepperTrack {
-  position: absolute;
-  top: 22px;
-  left: 33px;
-  right: 33px;
-  height: 2px;
-  background: var(--border2);
-  z-index: 0;
-}
-
 .stepperItem {
   display: flex;
   flex-direction: column;
@@ -390,6 +484,26 @@
   padding: 4px 2px 0;
   flex-shrink: 0;
   z-index: 1;
+}
+
+.stepperItem:not(.stepperItem_last)::after {
+  content: '';
+  position: absolute;
+  top: 20px;
+  left: 50%;
+  width: 100%;
+  height: 2px;
+  background: var(--border2);
+  z-index: 0;
+}
+
+.stepperItem_lineDone::after {
+  background: #22c55e;
+}
+
+.stepperItem:disabled {
+  opacity: 0.6;
+  cursor: wait;
 }
 
 .stepperCircle {
