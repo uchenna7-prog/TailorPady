@@ -435,7 +435,7 @@ export default function Settings({ onMenuClick }) {
         <PortfolioTemplateModal
           currentTemplate={portfolioSettings.portfolioTemplate || 'template2'}
           slug={portfolioSlug || user?.uid}
-          onBack={() => setIsPortfolioTemplateModalOpen(false)}
+          onClose={() => setIsPortfolioTemplateModalOpen(false)}
           onSelect={handlePortfolioTemplateSelect}
         />
       )}

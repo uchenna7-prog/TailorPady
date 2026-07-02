@@ -413,6 +413,12 @@ export default function OrderDetailModal({
           </div>
         </div>
 
+
+        <div>
+
+          
+        </div>
+
         {local.customerId && onGoToCustomer && (
           <button
             className={styles.customerBtn}

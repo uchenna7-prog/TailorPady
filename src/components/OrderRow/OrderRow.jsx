@@ -38,6 +38,7 @@ function formatDateShort(dateStr) {
 }
 
 export function OrderRow({ order, isLast, onTap }) {
+  
   const overdue     = isOrderOverdue(order)
   const dueDateRaw  = order.dueRaw || order.dueDate
   const stageObj    = STAGES.find(s => s.value === order.stage)

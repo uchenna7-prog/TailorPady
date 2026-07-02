@@ -57,14 +57,14 @@ export const PRIORITY_BANNER_CONFIG = {
 export const ORDER_STAGE_AUTO_STATUS = {
   measurement_taken: 'pending',
   fabric_ready:      'pending',
-  cutting:           'in_progress',
-  weaving:           'in_progress',
-  sewing:            'in_progress',
-  embroidery:        'in_progress',
-  fitting:           'in_progress',
-  adjustments:       'in_progress',
-  finishing:         'in_progress',
-  quality_check:     'in_progress',
+  cutting:           'in progress',
+  weaving:           'in progress',
+  sewing:            'in progress',
+  embroidery:        'in progress',
+  fitting:           'in progress',
+  adjustments:       'in progress',
+  finishing:         'in progress',
+  quality_check:     'in progress',
   ready:             'completed',
 }
 
