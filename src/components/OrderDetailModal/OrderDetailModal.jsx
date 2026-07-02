@@ -1,8 +1,7 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useOrders } from '../../contexts/OrdersContext'
 import { useAuth } from '../../contexts/AuthContext'
 import {
-  PRIORITY_BANNER_CONFIG,
   ORDER_STAGE_AUTO_STATUS,
   ORDER_STATUS_LABELS,
   ORDER_STAGES,
@@ -45,6 +44,20 @@ const STATUS_HINTS = {
   delivered: 'The stage must be Ready before marking this order as Delivered.',
 }
 
+const STATUS_META = {
+  pending: { color: '#eab308', bg: 'rgba(234,179,8,0.12)', border: 'rgba(234,179,8,0.4)' },
+  in_progress: { color: '#818cf8', bg: 'rgba(99,102,241,0.12)', border: 'rgba(99,102,241,0.4)' },
+  completed: { color: '#22c55e', bg: 'rgba(34,197,94,0.12)', border: 'rgba(34,197,94,0.4)' },
+  delivered: { color: '#0ea5e9', bg: 'rgba(14,165,233,0.12)', border: 'rgba(14,165,233,0.4)' },
+  cancelled: { color: '#94a3b8', bg: 'rgba(148,163,184,0.12)', border: 'rgba(148,163,184,0.4)' },
+}
+
+const PRIORITY_META = {
+  normal: { label: 'Normal', color: 'var(--text2)', bg: 'var(--surface2)', border: 'var(--border2)' },
+  urgent: { label: 'Urgent', color: '#fb923c', bg: 'rgba(251,146,60,0.14)', border: 'rgba(251,146,60,0.4)' },
+  vip: { label: 'VIP', color: '#a855f7', bg: 'rgba(168,85,247,0.14)', border: 'rgba(168,85,247,0.4)' },
+}
+
 function isStatusAllowed(status, stage) {
   if (status === 'cancelled') return true
   const allowed = ORDER_STATUS_CORRESPONDING_STAGES[status]
@@ -69,14 +82,20 @@ export default function OrderDetailModal({
   const [local, setLocal] = useState(order)
   const [hint, setHint] = useState(null)
   const [confirmDelete, setConfirmDelete] = useState(false)
+  const [showPriorityPicker, setShowPriorityPicker] = useState(false)
+
+  useEffect(() => {
+    setLocal(order)
+    setHint(null)
+    setConfirmDelete(false)
+    setShowPriorityPicker(false)
+  }, [order?.id])
 
   if (!order) return null
 
   const overdue = isOverdue(local)
   const dueTag = daysUntil(local.dueRaw || local.dueDate)
   const placedOn = local.takenAt || local.date || formatFirestoreDate(local.createdAt)
-  const stageObj = ORDER_STAGES.find(s => s.value === local.stage)
-  const priorityCfg = PRIORITY_BANNER_CONFIG[local.priority] ?? PRIORITY_BANNER_CONFIG.normal
 
   const subtotal = Number(local.price || 0)
   const shipping = Number(local.shippingFee || 0)
@@ -93,7 +112,9 @@ export default function OrderDetailModal({
 
   const canReview = local.status === 'completed' || local.status === 'delivered'
   const stageIndex = ORDER_STAGES.findIndex(s => s.value === local.stage)
-  const stageProgress = local.stage ? ((stageIndex + 1) / ORDER_STAGES.length) * 100 : 0
+  const stageObj = ORDER_STAGES.find(s => s.value === local.stage)
+  const showCustomer = local.customerName && !hideCustomerName
+  const currentPriority = PRIORITY_META[local.priority ?? 'normal']
 
   async function handleStatusClick(value) {
     if (local.status === value) return
@@ -139,6 +160,7 @@ export default function OrderDetailModal({
   async function handlePriority(priority) {
     const prev = local.priority
     setLocal(p => ({ ...p, priority }))
+    setShowPriorityPicker(false)
     try {
       await updateOrder(local.customerId, local.id, { priority })
     } catch {
@@ -192,69 +214,144 @@ export default function OrderDetailModal({
 
       <div className={styles.body}>
 
-        <span className={`${styles.priorityBanner} ${styles[priorityCfg.className]}`}>
-          {priorityCfg.label}
-        </span>
-
-        <div className={styles.title}>
-          <span className="mi" style={{ fontSize: '1.1rem', marginRight: 6 }}>shopping_cart</span>
-          <span>{local.desc || local.name || 'Order'}</span>
-        </div>
-
-        {local.customerName && !hideCustomerName && (
-          <div className={styles.customer}>
-            <span className="mi" style={{ fontSize: '1rem', color: 'var(--text3)' }}>person</span>
-            {local.customerName}
+        {overdue && (
+          <div className={styles.alertBanner}>
+            <span className="mi" style={{ fontSize: '1rem', flexShrink: 0 }}>warning</span>
+            This order is overdue{dueTag ? ` — ${dueTag}` : ''}.
           </div>
         )}
 
-        <div className={styles.infoGrid}>
-          <div className={styles.infoCell}>
-            <div className={styles.infoCellLabel}>Grand Total</div>
-            <div className={styles.infoCellVal}>₦{grandTotal.toLocaleString()}</div>
+        <div className={styles.sectionCard}>
+          <div className={styles.sectionLabel}>Status</div>
+          <div className={styles.statusRow}>
+            {Object.entries(ORDER_STATUS_LABELS).map(([value, label]) => {
+              const allowed = isStatusAllowed(value, local.stage)
+              const isActive = local.status === value
+              const meta = STATUS_META[value] ?? STATUS_META.pending
+              return (
+                <button
+                  key={value}
+                  disabled={!allowed}
+                  className={`${styles.statusBtn} ${isActive ? styles.statusBtn_active : ''} ${!allowed ? styles.statusBtn_locked : ''}`}
+                  style={isActive ? { background: meta.bg, borderColor: meta.border, color: meta.color } : {}}
+                  onClick={() => handleStatusClick(value)}
+                >
+                  {label}
+                </button>
+              )
+            })}
           </div>
-          <div className={styles.infoCell}>
-            <div className={styles.infoCellLabel}>Status</div>
-            <div
-              className={`${styles.infoCellVal} ${styles.infoCellVal_status}`}
-              style={{ color: overdue ? '#ef4444' : undefined }}
-            >
-              {overdue ? 'Overdue' : (ORDER_STATUS_LABELS[local.status] ?? 'Pending')}
+          {hint && hint !== 'review' && (
+            <div className={styles.hintBox}>
+              <span className="mi" style={{ fontSize: '0.9rem', flexShrink: 0 }}>info</span>
+              {hint}
             </div>
+          )}
+        </div>
+
+        <div className={styles.sectionCard}>
+          {showCustomer && (
+            <>
+              <button
+                type="button"
+                className={styles.customerRow}
+                onClick={() => { onGoToCustomer && (onClose(), onGoToCustomer(local.customerId)) }}
+              >
+                <span className="mi" style={{ fontSize: '1.05rem', color: 'var(--text3)' }}>person</span>
+                <div className={styles.customerInfo}>
+                  <div className={styles.customerName}>{local.customerName}</div>
+                  {local.customerPhone && <div className={styles.customerPhone}>{local.customerPhone}</div>}
+                </div>
+                <span className="mi" style={{ fontSize: '1rem', color: 'var(--text3)' }}>arrow_forward_ios</span>
+              </button>
+              <div className={styles.rowDivider} />
+            </>
+          )}
+
+          <div className={styles.titleRow}>
+            <div className={styles.detailTitle}>{local.desc || local.name || 'Order'}</div>
+            <button
+              type="button"
+              className={styles.priorityBadge}
+              style={{ background: currentPriority.bg, borderColor: currentPriority.border, color: currentPriority.color }}
+              onClick={() => setShowPriorityPicker(p => !p)}
+            >
+              {currentPriority.label}
+              <span className="mi" style={{ fontSize: '0.85rem' }}>
+                {showPriorityPicker ? 'expand_less' : 'expand_more'}
+              </span>
+            </button>
           </div>
-          <div className={styles.infoCell}>
-            <div className={styles.infoCellLabel}>Stage</div>
-            <div className={styles.infoCellVal} style={{ fontSize: '0.82rem' }}>
-              {stageObj ? (
-                <span className={styles.stageVal}>
-                  <span className="mi" style={{ fontSize: '0.9rem' }}>{stageObj.icon}</span>
-                  {stageObj.label}
-                </span>
-              ) : (
-                <span style={{ color: 'var(--text3)', fontWeight: 500, fontSize: '0.78rem' }}>Not set</span>
+
+          {showPriorityPicker && (
+            <div className={styles.priorityPicker}>
+              {['normal', 'urgent', 'vip'].map(p => (
+                <button
+                  key={p}
+                  className={`${styles.priorityChip} ${(local.priority ?? 'normal') === p ? styles[`priorityChip_${p}`] : ''}`}
+                  onClick={() => handlePriority(p)}
+                >
+                  {PRIORITY_META[p].label}
+                </button>
+              ))}
+            </div>
+          )}
+
+          <div className={styles.orderGrid} style={{ marginTop: 12 }}>
+            <div className={styles.orderCell}>
+              <div className={styles.orderCellLabel}>Placed</div>
+              <div className={styles.orderCellVal}>{placedOn || '—'}</div>
+            </div>
+            <div className={styles.orderCell}>
+              <div className={styles.orderCellLabel}>Due</div>
+              <div className={`${styles.orderCellVal} ${overdue ? styles.overdueText : ''}`}>
+                {local.due || '—'}
+              </div>
+              {dueTag && (
+                <span className={`${styles.dueTag} ${overdue ? styles.dueTag_overdue : ''}`}>{dueTag}</span>
               )}
             </div>
           </div>
 
-          <div  className={styles.infoCell}>
-            <div className={styles.infoCellLabel}>Placed on</div>
-            {placedOn && <span className={styles.infoCellVal}>{placedOn}</span>}
-  
+          {!hasCharges && (
+            <>
+              <div className={styles.rowDivider} />
+              <div className={styles.grandTotalRow}>
+                <span className={styles.orderCellLabel}>Grand Total</span>
+                <span className={styles.grandTotalVal}>₦{grandTotal.toLocaleString()}</span>
+              </div>
+            </>
+          )}
+        </div>
+
+        <div className={styles.sectionCard}>
+          <div className={styles.stepperHeader}>
+            <span className={styles.sectionLabel} style={{ marginBottom: 0 }}>Order Stage</span>
+            <span className={styles.stepperCount}>
+              {stageObj ? `${stageIndex + 1} of ${ORDER_STAGES.length} · ${stageObj.label}` : 'Not started'}
+            </span>
           </div>
-
-          <div className={styles.infoCell}>
-            <div className={styles.infoCellLabel}>Due</div>
-            <div
-              className={styles.infoCellVal}
-              style={{ fontSize: '0.85rem', color: local.due ? '#ef4444' : 'var(--text3)' }}
-            >
-              {local.due || '—'}
-              {dueTag && <span className={styles.dueTag}>{dueTag}</span>}
-            </div>
-          </div>
-
-
-
+          <div className={styles.stepperScroll}>
+        <div className={styles.stepperTrack} />
+          {ORDER_STAGES.map((s, idx) => {
+            const isActive = local.stage === s.value
+            const isDone = stageIndex >= 0 && idx < stageIndex
+            return (
+              <button
+                key={s.value}
+                className={`${styles.stepperItem} ${isActive ? styles.stepperItem_active : ''} ${isDone ? styles.stepperItem_done : ''}`}
+                onClick={() => handleStageChange(s.value)}
+              >
+                <span className={styles.stepperCircle}>
+                  <span className="mi" style={{ fontSize: '0.95rem' }}>
+                    {isDone ? 'check' : s.icon}
+                  </span>
+                </span>
+                <span className={styles.stepperLabel}>{s.label}</span>
+              </button>
+            )
+          })}
+        </div>
         </div>
 
         {items.length > 0 && (
@@ -342,120 +439,33 @@ export default function OrderDetailModal({
           </div>
         )}
 
+      </div>
 
-
-        <div className={styles.sectionCard}>
-          <div className={styles.sectionLabel}>
-            Change Stage
-            {local.stage && (
-              <span style={{ float: 'right', color: 'var(--text2)', fontWeight: 700, textTransform: 'none', letterSpacing: 0 }}>
-                {stageIndex + 1} / {ORDER_STAGES.length}
-              </span>
-            )}
-          </div>
-
-          <div className={styles.stageProgressTrack}>
-            <div className={styles.stageProgressFill} style={{ width: `${stageProgress}%` }} />
-          </div>
-
-          <div className={styles.chipWrap}>
-            {ORDER_STAGES.map((s, idx) => (
-              <button
-                key={s.value}
-                className={`${styles.stageChip} ${local.stage === s.value ? styles.stageChip_active : ''} ${idx < stageIndex ? styles.stageChip_done : ''}`}
-                onClick={() => handleStageChange(s.value)}
-              >
-                <span className="mi" style={{ fontSize: '0.85rem' }}>{s.icon}</span>
-                {s.label}
-              </button>
-            ))}
-          </div>
-        </div>
-
-        <div className={styles.sectionCard}>
-          <div className={styles.sectionLabel}>Change Status</div>
-          <div className={styles.statusRow}>
-            {Object.entries(ORDER_STATUS_LABELS).map(([value, label]) => {
-              const allowed = isStatusAllowed(value, local.stage)
-              const isActive = local.status === value
-              return (
-                <button
-                  key={value}
-                  className={`${styles.statusBtn} ${isActive ? styles.statusBtn_active : ''} ${!allowed ? styles.statusBtn_disabled : ''}`}
-                  onClick={() => handleStatusClick(value)}
-                >
-                  {label}
-                </button>
-              )
-            })}
-          </div>
-
-          {hint && hint !== 'review' && (
-            <div className={styles.hintBox} style={{ marginTop: 12 }}>
-              <span className="mi" style={{ fontSize: '0.9rem', flexShrink: 0 }}>info</span>
-              {hint}
-            </div>
-          )}
-        </div>
-
-        <div className={styles.sectionCard}>
-          <div className={styles.sectionLabel}>Priority</div>
-          <div className={styles.priorityRow}>
-            {['normal', 'urgent', 'vip'].map(p => (
-              <button
-                key={p}
-                className={`${styles.priorityBtn} ${(local.priority ?? 'normal') === p ? styles[`priorityBtn_${p}`] : ''}`}
-                onClick={() => handlePriority(p)}
-              >
-                {p.charAt(0).toUpperCase() + p.slice(1)}
-              </button>
-            ))}
-          </div>
-        </div>
-
-
-        <div>
-
-          
-        </div>
-
-        {local.customerId && onGoToCustomer && (
-          <button
-            className={styles.customerBtn}
-            onClick={() => { onClose(); onGoToCustomer(local.customerId) }}
-          >
-            <span className="mi" style={{ fontSize: '1.1rem', textTransform: 'lowercase' }}>account_circle</span>
-            Go to {local.customerName || 'Customer'}'s Profile
-            <span className="mi" style={{ marginLeft: 'auto', fontSize: '1rem', textTransform: 'lowercase' }}>arrow_forward_ios</span>
-          </button>
-        )}
-
-        <button
-          className={`${styles.reviewBtn} ${!canReview ? styles.reviewBtn_disabled : ''}`}
-          onClick={handleReviewClick}
-        >
-          <span className="mi" style={{ fontSize: '1.15rem', textTransform: 'lowercase' }}>rate_review</span>
-          Share Review Link via WhatsApp
-          <span className="mi" style={{ fontSize: '1rem', marginLeft: 'auto', textTransform: 'lowercase' }}>open_in_new</span>
-        </button>
-
+      <div className={styles.footer}>
         {hint === 'review' && (
-          <div className={styles.hintBox} style={{ marginTop: -6, marginBottom: 12 }}>
-            <span className="mi" style={{ fontSize: '0.9rem', flexShrink: 0 }}>info</span>
-            Review links can only be sent once the order is marked as Completed or Delivered.
+          <div className={styles.footerHint}>
+            <span className="mi" style={{ fontSize: '0.85rem', flexShrink: 0 }}>info</span>
+            Review links can only be sent once the order is Completed or Delivered.
           </div>
         )}
-
-        {onGenerateInvoice && (
+        <div className={styles.footerButtons}>
+          {onGenerateInvoice && (
+            <button
+              className={styles.btnPrimary}
+              onClick={() => { onClose(); onGenerateInvoice(local.id) }}
+            >
+              <span className="mi" style={{ fontSize: '1.1rem',textTransform: 'lowercase' }}>receipt_long</span>
+              Generate Invoice
+            </button>
+          )}
           <button
-            className={styles.invoiceBtn}
-            onClick={() => { onClose(); onGenerateInvoice(local.id) }}
+            className={`${styles.btnSecondary} ${!canReview ? styles.btnSecondary_disabled : ''}`}
+            onClick={handleReviewClick}
           >
-            <span className="mi" style={{ fontSize: '1.2rem',textTransform: 'lowercase'  }}>receipt_long</span>
-            Generate Invoice
+            <span className="mi" style={{ fontSize: '1.05rem',textTransform: 'lowercase' }}>rate_review</span>
+            Share Review Link
           </button>
-        )}
-
+        </div>
       </div>
 
       <ConfirmSheet
