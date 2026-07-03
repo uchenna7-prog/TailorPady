@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useOrders } from '../../contexts/OrdersContext'
 import { useAuth } from '../../contexts/AuthContext'
 import {
@@ -92,10 +92,12 @@ export default function OrderDetailModal({
   const [confirmDelete, setConfirmDelete] = useState(false)
   const [showStageSheet, setShowStageSheet] = useState(false)
   const [showStatusSheet, setShowStatusSheet] = useState(false)
+  const [showPriorityMenu, setShowPriorityMenu] = useState(false)
   const [pendingStatus, setPendingStatus] = useState(false)
   const [pendingStage, setPendingStage] = useState(false)
   const [pendingPriority, setPendingPriority] = useState(false)
   const [brokenImages, setBrokenImages] = useState(() => new Set())
+  const priorityRef = useRef(null)
 
   useEffect(() => {
     setLocal(order)
@@ -103,6 +105,7 @@ export default function OrderDetailModal({
     setConfirmDelete(false)
     setShowStageSheet(false)
     setShowStatusSheet(false)
+    setShowPriorityMenu(false)
     setBrokenImages(new Set())
   }, [order?.id])
 
@@ -113,6 +116,21 @@ export default function OrderDetailModal({
     window.addEventListener('popstate', handlePopState)
     return () => window.removeEventListener('popstate', handlePopState)
   }, [])
+
+  useEffect(() => {
+    if (!showPriorityMenu) return
+    function handleClickOutside(e) {
+      if (priorityRef.current && !priorityRef.current.contains(e.target)) {
+        setShowPriorityMenu(false)
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside)
+    document.addEventListener('touchstart', handleClickOutside)
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside)
+      document.removeEventListener('touchstart', handleClickOutside)
+    }
+  }, [showPriorityMenu])
 
   if (!order) return null
 
@@ -142,6 +160,8 @@ export default function OrderDetailModal({
   const stageIndex = ORDER_STAGES.findIndex(s => s.value === local.stage)
   const stageObj = ORDER_STAGES.find(s => s.value === local.stage)
   const statusMeta = STATUS_CHIP[local.status] || STATUS_CHIP.pending
+  const priorityValue = local.priority ?? 'normal'
+  const priorityMeta = PRIORITY_CHIP[priorityValue]
   const showCustomer = local.customerName && !hideCustomerName
   const orderTitle = local.desc || local.name || 'Order'
 
@@ -201,10 +221,14 @@ export default function OrderDetailModal({
   }
 
   async function handlePriority(priority) {
-    if (pendingPriority || (local.priority ?? 'normal') === priority) return
+    if (pendingPriority || priorityValue === priority) {
+      setShowPriorityMenu(false)
+      return
+    }
     const prev = local.priority
     setLocal(p => ({ ...p, priority }))
     setPendingPriority(true)
+    setShowPriorityMenu(false)
     try {
       await updateOrder(local.customerId, local.id, { priority })
       showToast?.('Priority updated')
@@ -282,23 +306,54 @@ export default function OrderDetailModal({
         <div className={styles.detailTitle}>{orderTitle}</div>
 
         <div className={styles.chipLabel}>Priority</div>
-        <div className={styles.chipRow}>
-          {['normal', 'urgent', 'vip'].map(p => {
-            const meta = PRIORITY_CHIP[p]
-            const isActive = (local.priority ?? 'normal') === p
-            return (
-              <button
-                key={p}
-                disabled={pendingPriority}
-                className={`${styles.chipBtn} ${isActive ? styles.chipBtn_active : ''}`}
-                style={isActive ? { background: meta.bg, borderColor: meta.border, color: meta.color } : {}}
-                onClick={() => handlePriority(p)}
-              >
-                {meta.icon && <span className={`mi ${styles.priorityIcon}`} style={{ marginRight: 4 }}>{meta.icon}</span>}
-                {meta.label}
-              </button>
-            )
-          })}
+        <div className={styles.priorityDropdown} ref={priorityRef}>
+          <button
+            type="button"
+            className={styles.priorityTrigger}
+            disabled={pendingPriority}
+            onClick={() => setShowPriorityMenu(v => !v)}
+          >
+            <span className={styles.priorityTriggerLeft}>
+              {priorityMeta.icon && (
+                <span className="mi" style={{ fontSize: '0.9rem', color: priorityMeta.color }}>{priorityMeta.icon}</span>
+              )}
+              <span style={{ color: priorityMeta.color }}>{priorityMeta.label}</span>
+            </span>
+            <span
+              className="mi"
+              style={{
+                fontSize: '1.1rem',
+                color: 'var(--text3)',
+                transform: showPriorityMenu ? 'rotate(180deg)' : 'none',
+                transition: 'transform 0.15s',
+              }}
+            >
+              expand_more
+            </span>
+          </button>
+
+          {showPriorityMenu && (
+            <div className={styles.priorityMenu}>
+              {['normal', 'urgent', 'vip'].map(p => {
+                const meta = PRIORITY_CHIP[p]
+                const isActive = priorityValue === p
+                return (
+                  <button
+                    key={p}
+                    type="button"
+                    className={`${styles.priorityMenuItem} ${isActive ? styles.priorityMenuItemActive : ''}`}
+                    onClick={() => handlePriority(p)}
+                  >
+                    {meta.icon
+                      ? <span className="mi" style={{ fontSize: '0.9rem', color: meta.color }}>{meta.icon}</span>
+                      : <span className={styles.priorityMenuItemDot} />}
+                    <span style={{ color: isActive ? meta.color : 'var(--text)' }}>{meta.label}</span>
+                    {isActive && <span className="mi" style={{ marginLeft: 'auto', fontSize: '1rem', color: meta.color }}>check</span>}
+                  </button>
+                )
+              })}
+            </div>
+          )}
         </div>
 
         <div className={styles.infoGrid}>
@@ -356,8 +411,6 @@ export default function OrderDetailModal({
             <span className="mi" style={{ fontSize: '1.1rem', color: 'var(--text3)' }}>chevron_right</span>
           </button>
         </div>
-
-
 
         {showCustomer && (
           <div className={styles.sectionCard}>
