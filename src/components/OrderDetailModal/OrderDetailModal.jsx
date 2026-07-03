@@ -98,7 +98,16 @@ export default function OrderDetailModal({
   const [pendingStage, setPendingStage] = useState(false)
   const [pendingPriority, setPendingPriority] = useState(false)
   const [brokenImages, setBrokenImages] = useState(() => new Set())
+  const [footerElevated, setFooterElevated] = useState(true)
   const priorityRef = useRef(null)
+  const bodyRef = useRef(null)
+
+  function handleBodyScroll() {
+    const el = bodyRef.current
+    if (!el) return
+    const atBottom = el.scrollHeight - el.scrollTop - el.clientHeight < 4
+    setFooterElevated(!atBottom)
+  }
 
   useEffect(() => {
     setLocal(order)
@@ -110,6 +119,10 @@ export default function OrderDetailModal({
     setShowPriorityMenu(false)
     setBrokenImages(new Set())
   }, [order?.id])
+
+  useEffect(() => {
+    handleBodyScroll()
+  }, [local?.id, local?.items?.length, local?.notes])
 
   useEffect(() => {
     if (!fullHeight) return
@@ -309,7 +322,11 @@ export default function OrderDetailModal({
         ]}
       />
 
-      <div className={styles.body}>
+      <div
+        className={`${styles.body} ${onGenerateInvoice ? styles.bodyWithFooter : ''}`}
+        ref={bodyRef}
+        onScroll={handleBodyScroll}
+      >
 
         <div className={styles.detailTitle}>{orderTitle}</div>
 
@@ -529,31 +546,37 @@ export default function OrderDetailModal({
           </div>
         )}
 
-      </div>
-
-      <div className={styles.footer}>
-        {hint === 'review' && (
-          <div className={styles.footerHint}>
-            <span className="mi" style={{ fontSize: '0.95rem', flexShrink: 0, marginTop: 1 }}>info</span>
-            Review links can only be sent once the order is Completed or Delivered.
+        <div className={styles.sectionCard}>
+          <div className={styles.sectionCardLabel}>
+            <span className={`mi ${styles.sectionIcon}`}>rate_review</span>
+            Customer Review
           </div>
-        )}
-        <div className={styles.footerButtons}>
-          {onGenerateInvoice && (
-            <button className={styles.btnPrimary} onClick={() => { close(); onGenerateInvoice(local.id) }}>
-              <span className="mi" style={{ fontSize: '1.05rem' }}>receipt_long</span>
-              Generate invoice
-            </button>
-          )}
           <button
-            className={`${styles.btnSecondary} ${!canReview ? styles.btnSecondary_disabled : ''}`}
+            type="button"
+            className={`${styles.reviewBtn} ${!canReview ? styles.reviewBtn_disabled : ''}`}
             onClick={handleReviewClick}
           >
-            <span className="mi" style={{ fontSize: '1rem' }}>rate_review</span>
+            <span className="mi" style={{ fontSize: '1rem' }}>share</span>
             Share review link
           </button>
+          {hint === 'review' && (
+            <div className={styles.inlineHint}>
+              <span className="mi" style={{ fontSize: '0.9rem', flexShrink: 0, marginTop: 1 }}>info</span>
+              Review links can only be sent once the order is Completed or Delivered.
+            </div>
+          )}
         </div>
+
       </div>
+
+      {onGenerateInvoice && (
+        <div className={`${styles.floatingFooter} ${footerElevated ? styles.floatingFooterElevated : ''}`}>
+          <button className={styles.btnPrimary} onClick={() => { close(); onGenerateInvoice(local.id) }}>
+            <span className="mi" style={{ fontSize: '1.05rem' }}>receipt_long</span>
+            Generate invoice
+          </button>
+        </div>
+      )}
 
       {showStatusSheet && (
         <div className={styles.stageSheetOverlay} onClick={() => { setShowStatusSheet(false); setStatusHint(null) }}>
