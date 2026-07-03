@@ -84,6 +84,7 @@ export default function OrderDetailModal({
   const [hint, setHint] = useState(null)
   const [confirmDelete, setConfirmDelete] = useState(false)
   const [showPriorityPicker, setShowPriorityPicker] = useState(false)
+  const [showStageList, setShowStageList] = useState(false)
   const [pendingStatus, setPendingStatus] = useState(false)
   const [pendingStage, setPendingStage] = useState(false)
   const [pendingPriority, setPendingPriority] = useState(false)
@@ -96,6 +97,7 @@ export default function OrderDetailModal({
     setHint(null)
     setConfirmDelete(false)
     setShowPriorityPicker(false)
+    setShowStageList(false)
     setBrokenImages(new Set())
   }, [order?.id])
 
@@ -141,6 +143,7 @@ export default function OrderDetailModal({
   const orderTitle = local.desc || local.name || 'Order'
   const customerInitial = getInitials(local.customerName)
   const currentStatusLabel = ORDER_STATUS_LABELS[local.status]
+  const progressPct = stageIndex >= 0 ? ((stageIndex + 1) / ORDER_STAGES.length) * 100 : 0
 
   async function handleStatusClick(value) {
     if (local.status === value || pendingStatus) return
@@ -167,7 +170,10 @@ export default function OrderDetailModal({
   }
 
   async function handleStageChange(stageValue) {
-    if (pendingStage || local.stage === stageValue) return
+    if (pendingStage || local.stage === stageValue) {
+      setShowStageList(false)
+      return
+    }
 
     setHint(null)
     const autoStatus = ORDER_STAGE_AUTO_STATUS[stageValue] ?? null
@@ -177,6 +183,7 @@ export default function OrderDetailModal({
 
     setLocal(p => ({ ...p, stage: stageValue, ...(autoStatus ? { status: autoStatus } : {}) }))
     setPendingStage(true)
+    setShowStageList(false)
 
     try {
       await updateOrderStage(local.customerId, local.id, stageValue)
@@ -282,93 +289,137 @@ export default function OrderDetailModal({
           </div>
         )}
 
-        <div className={styles.hero}>
-          <div className={styles.priorityRow} ref={priorityRef}>
-            <div className={styles.priorityWrap}>
-              <button
-                type="button"
-                className={styles.priorityTrigger}
-                onClick={() => setShowPriorityPicker(p => !p)}
-                disabled={pendingPriority}
-              >
-                <span className={styles.priorityDot} style={{ background: currentPriority.color }} />
-                {currentPriority.label}
-                <span className="mi" style={{ fontSize: '0.9rem' }}>
-                  {showPriorityPicker ? 'expand_less' : 'expand_more'}
-                </span>
-              </button>
-
-              {showPriorityPicker && (
-                <div className={styles.priorityDropdown}>
-                  {['normal', 'urgent', 'vip'].map(p => {
-                    const meta = PRIORITY_META[p]
-                    const active = (local.priority ?? 'normal') === p
-                    return (
-                      <button
-                        key={p}
-                        type="button"
-                        className={`${styles.priorityOption} ${active ? styles.priorityOptionActive : ''}`}
-                        onClick={() => handlePriority(p)}
-                      >
-                        <span className="mi" style={{ fontSize: '1rem', color: meta.color }}>{meta.icon}</span>
-                        <span className={styles.priorityOptionLabel}>{meta.label}</span>
-                        {active && <span className="mi" style={{ fontSize: '0.95rem', marginLeft: 'auto', color: meta.color }}>check</span>}
-                      </button>
-                    )
-                  })}
-                </div>
-              )}
-            </div>
-          </div>
-
-          <div className={styles.titleRow}>
-            <span className={`mi ${styles.titleIcon}`}>shopping_bag</span>
-            <div className={styles.detailTitle}>{orderTitle}</div>
-          </div>
-
-          {showCustomer && (
+        <div className={styles.priorityRow} ref={priorityRef}>
+          <div className={styles.priorityWrap}>
             <button
               type="button"
-              className={styles.customerRow}
-              onClick={() => { onGoToCustomer && (onClose(), onGoToCustomer(local.customerId)) }}
+              className={styles.priorityTrigger}
+              onClick={() => setShowPriorityPicker(p => !p)}
+              disabled={pendingPriority}
             >
-              <span className={styles.customerAvatar}>{customerInitial}</span>
-              <span className={styles.customerInfo}>
-                <span className={styles.customerName}>{local.customerName}</span>
-                {local.customerPhone && <span className={styles.customerPhone}>{local.customerPhone}</span>}
+              <span className={styles.priorityDot} style={{ background: currentPriority.color }} />
+              {currentPriority.label}
+              <span className="mi" style={{ fontSize: '0.9rem' }}>
+                {showPriorityPicker ? 'expand_less' : 'expand_more'}
               </span>
-              <span className="mi" style={{ fontSize: '0.85rem', color: 'var(--text3)' }}>chevron_right</span>
             </button>
-          )}
 
-          <div className={styles.metaChips}>
-            <span className={styles.metaChip}>
-              <span className={styles.metaChipLabel}>Placed</span>
-              {placedOn || '—'}
-            </span>
-            <span className={`${styles.metaChip} ${overdue ? styles.metaChip_overdue : ''}`}>
-              <span className={styles.metaChipLabel}>Due</span>
-              {local.due || '—'}{dueTag ? ` · ${dueTag}` : ''}
-            </span>
+            {showPriorityPicker && (
+              <div className={styles.priorityDropdown}>
+                {['normal', 'urgent', 'vip'].map(p => {
+                  const meta = PRIORITY_META[p]
+                  const active = (local.priority ?? 'normal') === p
+                  return (
+                    <button
+                      key={p}
+                      type="button"
+                      className={`${styles.priorityOption} ${active ? styles.priorityOptionActive : ''}`}
+                      onClick={() => handlePriority(p)}
+                    >
+                      <span className="mi" style={{ fontSize: '1rem', color: meta.color }}>{meta.icon}</span>
+                      <span className={styles.priorityOptionLabel}>{meta.label}</span>
+                      {active && <span className="mi" style={{ fontSize: '0.95rem', marginLeft: 'auto', color: meta.color }}>check</span>}
+                    </button>
+                  )
+                })}
+              </div>
+            )}
           </div>
+        </div>
+
+        <div className={styles.titleRow}>
+          <span className={`mi ${styles.titleIcon}`}>shopping_bag</span>
+          <div className={styles.detailTitle}>{orderTitle}</div>
+        </div>
+
+        {showCustomer && (
+          <button
+            type="button"
+            className={styles.customerRow}
+            onClick={() => { onGoToCustomer && (onClose(), onGoToCustomer(local.customerId)) }}
+          >
+            <span className={styles.customerAvatar}>{customerInitial}</span>
+            <span className={styles.customerInfo}>
+              <span className={styles.customerName}>{local.customerName}</span>
+              {local.customerPhone && <span className={styles.customerPhone}>{local.customerPhone}</span>}
+            </span>
+            <span className="mi" style={{ fontSize: '0.85rem', color: 'var(--text3)' }}>chevron_right</span>
+          </button>
+        )}
+
+        <div className={styles.metaLine}>
+          <span>Placed {placedOn || '—'}</span>
+          <span className={styles.metaDot}>·</span>
+          <span className={overdue ? styles.metaOverdue : ''}>
+            Due {local.due || '—'}{dueTag ? ` · ${dueTag}` : ''}
+          </span>
         </div>
 
         <div className={styles.divider} />
 
-        <div className={styles.statusSection}>
-          <div className={styles.statusSectionHeader}>
-            <span className={styles.sectionLabel}>Status</span>
-            <span className={styles.statusCurrentLabel}>{currentStatusLabel}</span>
+        <div className={styles.progressCard}>
+          <div className={styles.progressHeader}>
+            <span className={styles.sectionLabel} style={{ marginBottom: 0 }}>Progress</span>
+            <span className={`${styles.statusPill} ${styles[STATUS_CLASS[local.status]] ?? ''}`}>
+              {currentStatusLabel}
+            </span>
           </div>
-          <div className={styles.statusRow}>
+
+          <div className={styles.progressBarTrack}>
+            <div className={styles.progressBarFill} style={{ width: `${progressPct}%` }} />
+          </div>
+
+          <div className={styles.progressMeta}>
+            <div>
+              <div className={styles.progressStageName}>{stageObj ? stageObj.label : 'Not started'}</div>
+              <div className={styles.progressStageCount}>
+                {stageObj ? `Stage ${stageIndex + 1} of ${ORDER_STAGES.length}` : 'No stage set'}
+              </div>
+            </div>
+            <button
+              type="button"
+              className={styles.changeStageBtn}
+              onClick={() => setShowStageList(p => !p)}
+              disabled={pendingStage}
+            >
+              {showStageList ? 'Close' : 'Change'}
+            </button>
+          </div>
+
+          {showStageList && (
+            <div className={styles.stageList}>
+              {ORDER_STAGES.map((s, idx) => {
+                const isActive = local.stage === s.value
+                const isDone = stageIndex >= 0 && idx < stageIndex
+                return (
+                  <button
+                    key={s.value}
+                    type="button"
+                    disabled={pendingStage}
+                    className={`${styles.stageRow} ${isActive ? styles.stageRow_active : ''}`}
+                    onClick={() => handleStageChange(s.value)}
+                  >
+                    <span className={`${styles.stageRowIcon} ${isDone ? styles.stageRowIcon_done : ''} ${isActive ? styles.stageRowIcon_active : ''}`}>
+                      <span className="mi" style={{ fontSize: '0.85rem' }}>{isDone ? 'check' : s.icon}</span>
+                    </span>
+                    <span className={styles.stageRowLabel}>{s.label}</span>
+                    {isActive && <span className={styles.stageRowCurrent}>Current</span>}
+                  </button>
+                )
+              })}
+            </div>
+          )}
+
+          <div className={styles.statusSegment}>
             {Object.entries(ORDER_STATUS_LABELS).map(([value, label]) => {
               const allowed = isStatusAllowed(value, local.stage)
               const isActive = local.status === value
               return (
                 <button
                   key={value}
+                  type="button"
                   disabled={!allowed || pendingStatus}
-                  className={`${styles.statusBtn} ${isActive ? `${styles.statusBtn_active} ${styles[STATUS_CLASS[value]] ?? ''}` : ''} ${!allowed ? styles.statusBtn_locked : ''} ${pendingStatus && isActive ? styles.statusBtn_pending : ''}`}
+                  className={`${styles.statusSegmentBtn} ${isActive ? styles.statusSegmentBtn_active : ''} ${!allowed ? styles.statusSegmentBtn_locked : ''}`}
                   onClick={() => handleStatusClick(value)}
                 >
                   {label}
@@ -376,44 +427,13 @@ export default function OrderDetailModal({
               )
             })}
           </div>
+
           {hint && hint !== 'review' && (
             <div className={styles.hintBox}>
               <span className="mi" style={{ fontSize: '0.9rem', flexShrink: 0 }}>info</span>
               {hint}
             </div>
           )}
-        </div>
-
-        <div className={styles.card}>
-          <div className={styles.stepperHeader}>
-            <span className={styles.sectionLabel} style={{ marginBottom: 0 }}>Order Stage</span>
-            <span className={styles.stepperCount}>
-              {stageObj ? `${stageIndex + 1} of ${ORDER_STAGES.length} · ${stageObj.label}` : 'Not started'}
-            </span>
-          </div>
-          <div className={styles.stepperScroll}>
-            {ORDER_STAGES.map((s, idx) => {
-              const isActive = local.stage === s.value
-              const isDone = stageIndex >= 0 && idx < stageIndex
-              const isLast = idx === ORDER_STAGES.length - 1
-              return (
-                <button
-                  key={s.value}
-                  disabled={pendingStage}
-                  className={`${styles.stepperItem} ${isActive ? styles.stepperItem_active : ''} ${isDone ? styles.stepperItem_done : ''} ${isLast ? styles.stepperItem_last : ''} ${isDone ? styles.stepperItem_lineDone : ''}`}
-                  onClick={() => handleStageChange(s.value)}
-                >
-                  <span className={styles.stepperCircle}>
-                    <span className="mi" style={{ fontSize: '0.95rem' }}>
-                      {isDone ? 'check' : s.icon}
-                    </span>
-                  </span>
-                  <span className={styles.stepperLabel}>{s.label}</span>
-                </button>
-              )
-            })}
-          </div>
-          <div className={styles.stepperFade} />
         </div>
 
         {(items.length > 0 || hasCharges) && (
