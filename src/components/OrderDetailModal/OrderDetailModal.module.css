@@ -20,6 +20,7 @@
 }
 
 .panel {
+  position: relative;
   width: 100%;
   max-height: 88dvh;
   background: var(--bg);
@@ -103,6 +104,10 @@
   overflow-y: auto;
   padding: 18px 18px calc(28px + var(--sb, 0px));
   -webkit-overflow-scrolling: touch;
+}
+
+.bodyWithFooter {
+  padding-bottom: calc(104px + var(--sb, 0px));
 }
 
 .detailTitle {
@@ -497,32 +502,12 @@
   margin: 0;
 }
 
-.footer {
-  flex-shrink: 0;
-  padding: 12px 18px calc(14px + var(--sb, 0px));
-  border-top: 1px solid var(--border);
-  background: var(--bg);
-}
-
-.footerHint {
-  display: flex;
-  align-items: flex-start;
-  gap: 8px;
-  padding: 10px 12px;
-  border-radius: 10px;
-  background: rgba(161, 98, 7, 0.08);
-  border: 1px solid rgba(161, 98, 7, 0.22);
-  font-size: 0.7rem;
-  font-weight: 600;
-  color: #a16207;
-  line-height: 1.4;
-  margin-bottom: 10px;
-}
-
-.footerButtons {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
+.floatingFooter {
+  position: absolute;
+  left: 18px;
+  right: 18px;
+  bottom: calc(16px + var(--sb, 0px));
+  z-index: 5;
 }
 
 .btnPrimary {
@@ -546,15 +531,43 @@
   opacity: 0.85;
 }
 
-.btnSecondary {
+.floatingFooter .btnPrimary {
+  width: 100%;
+  border-radius: 16px;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.18);
+  transition: box-shadow 0.2s ease, transform 0.2s ease;
+}
+
+.floatingFooterElevated .btnPrimary {
+  box-shadow: 0 14px 32px rgba(0, 0, 0, 0.38);
+  transform: translateY(-2px);
+}
+
+.inlineHint {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin-top: 10px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: rgba(161, 98, 7, 0.08);
+  border: 1px solid rgba(161, 98, 7, 0.22);
+  font-size: 0.76rem;
+  font-weight: 600;
+  color: #a16207;
+  line-height: 1.4;
+}
+
+.reviewBtn {
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 7px;
+  width: 100%;
   background: rgba(34, 197, 94, 0.07);
   border: 1px solid rgba(34, 197, 94, 0.35);
   border-radius: 12px;
-  padding: 13px 8px;
+  padding: 12px 8px;
   color: #22c55e;
   font-family: inherit;
   font-size: 0.82rem;
@@ -563,13 +576,13 @@
   transition: opacity 0.15s;
 }
 
-.btnSecondary:active {
+.reviewBtn:active {
   opacity: 0.75;
 }
 
-.btnSecondary_disabled {
+.reviewBtn_disabled {
   border-color: var(--border);
-  background: var(--surface);
+  background: var(--surface2);
   color: var(--text2);
 }
 
