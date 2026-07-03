@@ -192,6 +192,51 @@
   margin-bottom: 0;
 }
 
+.rowIcon {
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.rowIconSmall {
+  width: 28px;
+  height: 28px;
+  border-radius: 9px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.stageCardLeft {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.sheetRowLeft {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: 1;
+  min-width: 0;
+}
+
+.priorityIcon {
+  font-size: 0.78rem !important;
+}
+
+.sectionIcon {
+  font-size: 0.8rem !important;
+  color: var(--text3);
+  vertical-align: -2px;
+  margin-right: 6px;
+}
+
 .infoGrid {
   display: grid;
   grid-template-columns: 1fr 1fr;
