@@ -98,82 +98,6 @@
   flex-shrink: 0;
 }
 
-.topBar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 8px 6px;
-  flex-shrink: 0;
-}
-
-.topBarIconBtn {
-  width: 36px;
-  height: 36px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border: none;
-  background: transparent;
-  color: var(--text);
-  border-radius: 50%;
-  cursor: pointer;
-  flex-shrink: 0;
-}
-
-.topBarIconBtn:active {
-  background: var(--surface);
-}
-
-.topBarTitle {
-  font-size: 0.72rem;
-  font-weight: 800;
-  color: var(--text3);
-  text-transform: uppercase;
-  letter-spacing: 0.6px;
-}
-
-.overflowWrap {
-  position: relative;
-}
-
-.overflowMenu {
-  position: absolute;
-  top: calc(100% + 4px);
-  right: 0;
-  min-width: 160px;
-  background: var(--bg);
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  padding: 5px;
-  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.22);
-  z-index: 10;
-  animation: dropdownIn 0.15s ease;
-}
-
-@keyframes dropdownIn {
-  from { opacity: 0; transform: translateY(-4px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-.overflowMenuItem {
-  display: block;
-  width: 100%;
-  text-align: left;
-  padding: 9px 10px;
-  border-radius: 8px;
-  border: none;
-  background: transparent;
-  color: var(--danger);
-  font-family: inherit;
-  font-size: 0.8rem;
-  font-weight: 700;
-  cursor: pointer;
-}
-
-.overflowMenuItem:active {
-  background: var(--surface);
-}
-
 .body {
   flex: 1;
   overflow-y: auto;
@@ -181,18 +105,8 @@
   -webkit-overflow-scrolling: touch;
 }
 
-.alertLine {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  color: #ef4444;
-  font-size: 0.76rem;
-  font-weight: 700;
-  margin-bottom: 14px;
-}
-
 .pageHeader {
-  padding: 6px 0 18px;
+  padding: 10px 0 20px;
 }
 
 .orderTitle {
@@ -222,30 +136,79 @@
   opacity: 0.7;
 }
 
-.priorityWrap {
-  position: relative;
-  margin-top: 10px;
+.sectionLabel {
+  display: block;
+  font-size: 0.6rem;
+  font-weight: 800;
+  color: var(--text3);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 10px;
 }
 
-.priorityLink {
-  display: inline-flex;
+.detailsList {
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 20px;
+}
+
+.detailRow {
+  display: flex;
   align-items: center;
-  gap: 3px;
-  padding: 0;
+  justify-content: space-between;
+  gap: 14px;
+  min-height: 46px;
+  padding: 11px 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.detailRow:last-child {
+  border-bottom: none;
+}
+
+.detailLabel {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text3);
+  flex-shrink: 0;
+}
+
+.detailValue {
+  font-size: 0.86rem;
+  font-weight: 700;
+  color: var(--text);
+  text-align: right;
+}
+
+.detailValueMuted {
+  font-weight: 600;
+  color: var(--text3);
+}
+
+.detailValueOverdue {
+  color: #ef4444;
+}
+
+.detailControl {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.changeLink {
+  padding: 4px 0 4px 4px;
   border: none;
   background: transparent;
+  color: var(--accent);
   font-family: inherit;
-  font-size: 0.72rem;
+  font-size: 0.78rem;
   font-weight: 800;
-  text-transform: uppercase;
-  letter-spacing: 0.3px;
-  text-decoration: underline;
-  text-decoration-style: dotted;
-  text-underline-offset: 3px;
   cursor: pointer;
+  flex-shrink: 0;
 }
 
-.priorityLink:disabled {
+.changeLink:disabled {
   opacity: 0.6;
   cursor: wait;
 }
@@ -253,7 +216,7 @@
 .priorityDropdown {
   position: absolute;
   top: calc(100% + 6px);
-  left: 0;
+  right: 0;
   min-width: 150px;
   display: flex;
   flex-direction: column;
@@ -264,6 +227,11 @@
   box-shadow: 0 12px 32px rgba(0, 0, 0, 0.22);
   z-index: 10;
   animation: dropdownIn 0.15s ease;
+}
+
+@keyframes dropdownIn {
+  from { opacity: 0; transform: translateY(-4px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 .priorityOption {
@@ -301,110 +269,11 @@
   color: var(--text);
 }
 
-.metaRow {
-  display: flex;
-  gap: 32px;
-  padding: 14px 0;
-  border-top: 1px solid var(--border);
-  border-bottom: 1px solid var(--border);
-}
-
-.metaItem {
-  display: flex;
-  flex-direction: column;
-  gap: 3px;
-}
-
-.metaLabel {
-  display: block;
-  font-size: 0.6rem;
-  font-weight: 800;
-  color: var(--text3);
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-}
-
-.metaValue {
-  font-size: 0.86rem;
-  font-weight: 700;
-  color: var(--text);
-}
-
-.metaValueOverdue {
-  color: #ef4444;
-}
-
-.stageSection {
-  padding: 16px 0;
-  border-bottom: 1px solid var(--border);
-}
-
-.stageLine {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  width: 100%;
-  padding: 0;
-  border: none;
-  background: transparent;
-  font-family: inherit;
-  cursor: pointer;
-  text-align: left;
-}
-
-.stageLine:disabled {
-  opacity: 0.6;
-  cursor: wait;
-}
-
-.stageLineText {
-  font-size: 0.95rem;
-  font-weight: 800;
-  color: var(--text);
-}
-
-.stageLineCount {
-  font-size: 0.78rem;
-  font-weight: 600;
-  color: var(--text3);
-}
-
-.statusLine {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-top: 12px;
-}
-
-.statusLineText {
-  font-size: 0.82rem;
-  font-weight: 600;
-  color: var(--text3);
-}
-
-.changeLink {
-  padding: 0;
-  border: none;
-  background: transparent;
-  color: var(--accent);
-  font-family: inherit;
-  font-size: 0.76rem;
-  font-weight: 800;
-  cursor: pointer;
-}
-
-.changeLink:disabled {
-  opacity: 0.6;
-  cursor: wait;
-}
-
 .statusOptions {
-  margin-top: 10px;
   display: flex;
   flex-direction: column;
   gap: 1px;
-  border-top: 1px solid var(--border);
-  padding-top: 6px;
+  padding: 4px 0 10px;
 }
 
 .statusOptionRow {
@@ -428,7 +297,7 @@
 }
 
 .hintText {
-  margin-top: 10px;
+  padding: 0 0 12px;
   font-size: 0.76rem;
   font-weight: 600;
   color: #a16207;
@@ -436,7 +305,8 @@
 }
 
 .financeSection {
-  padding: 18px 0;
+  padding-bottom: 20px;
+  margin-bottom: 20px;
   border-bottom: 1px solid var(--border);
 }
 
@@ -532,7 +402,7 @@
 }
 
 .notesBlock {
-  padding: 18px 0 4px;
+  padding-bottom: 4px;
 }
 
 .notesText {
