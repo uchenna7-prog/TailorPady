@@ -122,41 +122,76 @@
   margin-bottom: 8px;
 }
 
-.chipRow {
+.priorityDropdown {
+  position: relative;
+}
+
+.priorityTrigger {
   display: flex;
-  gap: 6px;
-  flex-wrap: wrap;
-}
-
-.chipBtn {
-  display: inline-flex;
   align-items: center;
-  justify-content: center;
-  padding: 9px 16px;
-  border-radius: 10px;
-  border: 1px solid var(--border2);
-  background: var(--surface2);
-  color: var(--text3);
-  font-size: 0.7rem;
-  font-weight: 800;
-  cursor: pointer;
+  justify-content: space-between;
+  width: 100%;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 12px 14px;
   font-family: inherit;
-  white-space: nowrap;
-  transition: all 0.15s;
+  cursor: pointer;
 }
 
-.chipBtn:disabled {
+.priorityTrigger:disabled {
   cursor: wait;
+  opacity: 0.7;
 }
 
-.chipBtn_active {
-  border-width: 1.5px;
+.priorityTriggerLeft {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 0.86rem;
+  font-weight: 800;
 }
 
-.chipBtn_locked {
-  cursor: default;
-  pointer-events: none;
-  opacity: 0.4;
+.priorityMenu {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  right: 0;
+  background: var(--surface);
+  border: 1px solid var(--border2);
+  border-radius: 12px;
+  padding: 6px;
+  z-index: 20;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.28);
+}
+
+.priorityMenuItem {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 10px 10px;
+  border: none;
+  background: transparent;
+  border-radius: 8px;
+  font-family: inherit;
+  font-size: 0.84rem;
+  font-weight: 700;
+  cursor: pointer;
+  text-align: left;
+}
+
+.priorityMenuItemActive {
+  background: var(--surface2);
+}
+
+.priorityMenuItemDot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--text3);
+  flex-shrink: 0;
+  margin: 0 3px;
 }
 
 .hintText {
@@ -181,15 +216,7 @@
 }
 
 .stateGroup {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
   margin-top: 16px;
-  margin-bottom: 4px;
-}
-
-.stateGroup .stageCard {
-  margin-bottom: 0;
 }
 
 .rowIcon {
@@ -242,7 +269,7 @@
   grid-template-columns: 1fr 1fr;
   gap: 10px;
   margin-top: 18px;
-  margin-bottom: 14px;
+  margin-bottom: 12px;
 }
 
 .infoGridCell {
