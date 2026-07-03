@@ -115,10 +115,6 @@
   text-transform: none;
 }
 
-.bodyWithFooter {
-  padding-bottom: calc(160px + var(--sb, 0px));
-}
-
 .detailTitle {
   font-size: 1.2rem;
   font-weight: 800;
@@ -512,80 +508,22 @@
   margin: 0;
 }
 
-.bodyFade {
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  height: 140px;
-  background: linear-gradient(to bottom, rgba(0, 0, 0, 0), var(--bg) 68%);
-  pointer-events: none;
-  z-index: 4;
-}
-
-.floatingFooter {
-  position: absolute;
-  left: 14px;
-  right: 14px;
-  bottom: calc(14px + var(--sb, 0px));
-  z-index: 5;
+.footerButtons {
   display: flex;
   flex-direction: column;
   gap: 8px;
 }
 
-.footerBar {
-  display: flex;
-  flex-direction: column;
-  gap: 7px;
-  padding: 7px;
-  border-radius: 20px;
-  background: var(--surface);
-  border: 1px solid var(--border2);
-  box-shadow: 0 10px 26px rgba(0, 0, 0, 0.24);
-  backdrop-filter: blur(20px) saturate(160%);
-  -webkit-backdrop-filter: blur(20px) saturate(160%);
-  transition: box-shadow 0.2s ease, transform 0.2s ease;
-}
-
-.floatingFooterElevated .footerBar {
-  box-shadow: 0 20px 44px rgba(0, 0, 0, 0.42);
-  transform: translateY(-2px);
-}
-
-.footerBtnPrimary {
-  width: 100%;
+.btnPrimary {
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 7px;
   background: var(--accent);
-  border: none;
-  border-radius: 15px;
-  padding: 14px 10px;
+  border: 1px solid var(--accent);
+  border-radius: 12px;
+  padding: 13px 10px;
   color: var(--bg);
-  font-family: inherit;
-  font-size: 0.86rem;
-  font-weight: 700;
-  cursor: pointer;
-  transition: opacity 0.15s;
-}
-
-.footerBtnPrimary:active {
-  opacity: 0.85;
-}
-
-.footerBtnSecondary {
-  width: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 7px;
-  background: rgba(34, 197, 94, 0.14);
-  border: none;
-  border-radius: 15px;
-  padding: 13px 8px;
-  color: #22c55e;
   font-family: inherit;
   font-size: 0.84rem;
   font-weight: 700;
@@ -593,12 +531,34 @@
   transition: opacity 0.15s;
 }
 
-.footerBtnSecondary:active {
+.btnPrimary:active {
+  opacity: 0.85;
+}
+
+.btnSecondary {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  background: rgba(34, 197, 94, 0.1);
+  border: 1px solid rgba(34, 197, 94, 0.35);
+  border-radius: 12px;
+  padding: 13px 8px;
+  color: #22c55e;
+  font-family: inherit;
+  font-size: 0.82rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: opacity 0.15s;
+}
+
+.btnSecondary:active {
   opacity: 0.75;
 }
 
-.footerBtnSecondary_disabled {
-  background: var(--surface2);
+.btnSecondary_disabled {
+  border-color: var(--border);
+  background: var(--surface);
   color: var(--text2);
 }
 
@@ -607,14 +567,14 @@
   align-items: flex-start;
   gap: 8px;
   padding: 10px 12px;
-  border-radius: 14px;
-  background: rgba(161, 98, 7, 0.14);
-  border: 1px solid rgba(161, 98, 7, 0.3);
-  font-size: 0.74rem;
+  border-radius: 10px;
+  background: rgba(161, 98, 7, 0.08);
+  border: 1px solid rgba(161, 98, 7, 0.22);
+  font-size: 0.76rem;
   font-weight: 600;
   color: #a16207;
   line-height: 1.4;
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+  margin-bottom: 12px;
   animation: hintIn 0.15s ease;
 }
 
