@@ -7,7 +7,7 @@ import {
   ORDER_STAGES,
   ORDER_STATUS_CORRESPONDING_STAGES,
 } from '../../datas/orderDatas'
-import { getInitials } from '../../utils/nameUtils'
+import Header from '../Header/Header'
 import ConfirmSheet from '../ConfirmSheet/ConfirmSheet'
 import styles from './OrderDetailModal.module.css'
 
@@ -83,7 +83,6 @@ export default function OrderDetailModal({
   const [hint, setHint] = useState(null)
   const [confirmDelete, setConfirmDelete] = useState(false)
   const [showPriorityPicker, setShowPriorityPicker] = useState(false)
-  const [showOverflow, setShowOverflow] = useState(false)
   const [showStageSheet, setShowStageSheet] = useState(false)
   const [showStatusOptions, setShowStatusOptions] = useState(false)
   const [pendingStatus, setPendingStatus] = useState(false)
@@ -92,14 +91,12 @@ export default function OrderDetailModal({
   const [brokenImages, setBrokenImages] = useState(() => new Set())
 
   const priorityRef = useRef(null)
-  const overflowRef = useRef(null)
 
   useEffect(() => {
     setLocal(order)
     setHint(null)
     setConfirmDelete(false)
     setShowPriorityPicker(false)
-    setShowOverflow(false)
     setShowStageSheet(false)
     setShowStatusOptions(false)
     setBrokenImages(new Set())
@@ -127,21 +124,6 @@ export default function OrderDetailModal({
       document.removeEventListener('touchstart', handleOutside)
     }
   }, [showPriorityPicker])
-
-  useEffect(() => {
-    if (!showOverflow) return
-    function handleOutside(e) {
-      if (overflowRef.current && !overflowRef.current.contains(e.target)) {
-        setShowOverflow(false)
-      }
-    }
-    document.addEventListener('mousedown', handleOutside)
-    document.addEventListener('touchstart', handleOutside)
-    return () => {
-      document.removeEventListener('mousedown', handleOutside)
-      document.removeEventListener('touchstart', handleOutside)
-    }
-  }, [showOverflow])
 
   if (!order) return null
 
@@ -173,7 +155,6 @@ export default function OrderDetailModal({
   const showCustomer = local.customerName && !hideCustomerName
   const currentPriority = PRIORITY_META[local.priority ?? 'normal']
   const orderTitle = local.desc || local.name || 'Order'
-  const customerInitial = getInitials(local.customerName)
   const currentStatusLabel = ORDER_STATUS_LABELS[local.status]
   const statusColor = STATUS_COLOR[local.status] ?? 'var(--text2)'
 
@@ -302,39 +283,18 @@ export default function OrderDetailModal({
     >
       {!fullHeight && <div className={styles.handle} />}
 
-      <div className={styles.topBar}>
-        <button type="button" className={styles.topBarIconBtn} onClick={close}>
-          <span className="mi" style={{ fontSize: '1.15rem' }}>
-            {fullHeight ? 'arrow_back' : 'close'}
-          </span>
-        </button>
-        <span className={styles.topBarTitle}>Order Details</span>
-        <div className={styles.overflowWrap} ref={overflowRef}>
-          <button type="button" className={styles.topBarIconBtn} onClick={() => setShowOverflow(p => !p)}>
-            <span className="mi" style={{ fontSize: '1.15rem' }}>more_vert</span>
-          </button>
-          {showOverflow && (
-            <div className={styles.overflowMenu}>
-              <button
-                type="button"
-                className={styles.overflowMenuItem}
-                onClick={() => { setShowOverflow(false); setConfirmDelete(true) }}
-              >
-                Delete order
-              </button>
-            </div>
-          )}
-        </div>
-      </div>
+      <Header
+        type="back"
+        title="Order Details"
+        onBackClick={close}
+        backIcon={fullHeight ? 'arrow_back_ios' : 'close'}
+        showBorderBottom={false}
+        customActions={[
+          { icon: 'delete_outline', onClick: () => setConfirmDelete(true), color: 'var(--text2)', outlined: false },
+        ]}
+      />
 
       <div className={styles.body}>
-
-        {overdue && (
-          <div className={styles.alertLine}>
-            <span className="mi" style={{ fontSize: '0.95rem', flexShrink: 0 }}>warning</span>
-            Overdue{dueTag ? ` · ${dueTag}` : ''}
-          </div>
-        )}
 
         <div className={styles.pageHeader}>
           <div className={styles.orderTitle}>{orderTitle}</div>
@@ -349,73 +309,88 @@ export default function OrderDetailModal({
               <span className="mi" style={{ fontSize: '0.85rem' }}>chevron_right</span>
             </button>
           )}
+        </div>
 
-          <div className={styles.priorityWrap} ref={priorityRef}>
-            <button
-              type="button"
-              className={styles.priorityLink}
-              style={{ color: currentPriority.color }}
-              onClick={() => setShowPriorityPicker(p => !p)}
-              disabled={pendingPriority}
-            >
-              {currentPriority.label} priority
-              <span className="mi" style={{ fontSize: '0.85rem' }}>
-                {showPriorityPicker ? 'expand_less' : 'expand_more'}
+        <div className={styles.detailsList}>
+          <div className={styles.detailRow}>
+            <span className={styles.detailLabel}>Placed</span>
+            <span className={styles.detailValue}>{placedOn || '—'}</span>
+          </div>
+
+          <div className={styles.detailRow}>
+            <span className={styles.detailLabel}>Due</span>
+            <span className={`${styles.detailValue} ${overdue ? styles.detailValueOverdue : ''}`}>
+              {local.due || '—'}{dueTag ? ` · ${dueTag}` : ''}
+            </span>
+          </div>
+
+          <div className={styles.detailRow}>
+            <span className={styles.detailLabel}>Priority</span>
+            <div className={styles.detailControl} ref={priorityRef}>
+              <span className={styles.detailValue} style={{ color: currentPriority.color }}>{currentPriority.label}</span>
+              <button
+                type="button"
+                className={styles.changeLink}
+                onClick={() => setShowPriorityPicker(p => !p)}
+                disabled={pendingPriority}
+              >
+                {showPriorityPicker ? 'Close' : 'Change'}
+              </button>
+
+              {showPriorityPicker && (
+                <div className={styles.priorityDropdown}>
+                  {['normal', 'urgent', 'vip'].map(p => {
+                    const meta = PRIORITY_META[p]
+                    const active = (local.priority ?? 'normal') === p
+                    return (
+                      <button
+                        key={p}
+                        type="button"
+                        className={`${styles.priorityOption} ${active ? styles.priorityOptionActive : ''}`}
+                        onClick={() => handlePriority(p)}
+                      >
+                        <span className={styles.priorityDot} style={{ background: meta.color }} />
+                        <span className={styles.priorityOptionLabel}>{meta.label}</span>
+                        {active && <span className="mi" style={{ fontSize: '0.9rem', marginLeft: 'auto', color: meta.color }}>check</span>}
+                      </button>
+                    )
+                  })}
+                </div>
+              )}
+            </div>
+          </div>
+
+          <div className={styles.detailRow}>
+            <span className={styles.detailLabel}>Stage</span>
+            <div className={styles.detailControl}>
+              <span className={styles.detailValue}>
+                {stageObj ? stageObj.label : 'Not started'}
+                {stageObj && <span className={styles.detailValueMuted}> · {stageIndex + 1}/{ORDER_STAGES.length}</span>}
               </span>
-            </button>
-
-            {showPriorityPicker && (
-              <div className={styles.priorityDropdown}>
-                {['normal', 'urgent', 'vip'].map(p => {
-                  const meta = PRIORITY_META[p]
-                  const active = (local.priority ?? 'normal') === p
-                  return (
-                    <button
-                      key={p}
-                      type="button"
-                      className={`${styles.priorityOption} ${active ? styles.priorityOptionActive : ''}`}
-                      onClick={() => handlePriority(p)}
-                    >
-                      <span className={styles.priorityDot} style={{ background: meta.color }} />
-                      <span className={styles.priorityOptionLabel}>{meta.label}</span>
-                      {active && <span className="mi" style={{ fontSize: '0.9rem', marginLeft: 'auto', color: meta.color }}>check</span>}
-                    </button>
-                  )
-                })}
-              </div>
-            )}
+              <button
+                type="button"
+                className={styles.changeLink}
+                onClick={() => setShowStageSheet(true)}
+                disabled={pendingStage}
+              >
+                Change
+              </button>
+            </div>
           </div>
-        </div>
 
-        <div className={styles.metaRow}>
-          <div className={styles.metaItem}>
-            <span className={styles.metaLabel}>Placed</span>
-            <span className={styles.metaValue}>{placedOn || '—'}</span>
-          </div>
-          <div className={styles.metaItem}>
-            <span className={styles.metaLabel}>Due</span>
-            <span className={`${styles.metaValue} ${overdue ? styles.metaValueOverdue : ''}`}>
-              {local.due || '—'}
-            </span>
-          </div>
-        </div>
-
-        <div className={styles.stageSection}>
-          <button type="button" className={styles.stageLine} onClick={() => setShowStageSheet(true)} disabled={pendingStage}>
-            <span className={styles.stageLineText}>
-              {stageObj ? stageObj.label : 'No stage set'}
-              {stageObj && <span className={styles.stageLineCount}> · Stage {stageIndex + 1} of {ORDER_STAGES.length}</span>}
-            </span>
-            <span className="mi" style={{ fontSize: '0.9rem', color: 'var(--text3)' }}>chevron_right</span>
-          </button>
-
-          <div className={styles.statusLine}>
-            <span className={styles.statusLineText}>
-              Status <span style={{ color: statusColor, fontWeight: 800 }}>{currentStatusLabel}</span>
-            </span>
-            <button type="button" className={styles.changeLink} onClick={() => setShowStatusOptions(p => !p)} disabled={pendingStatus}>
-              {showStatusOptions ? 'Close' : 'Change'}
-            </button>
+          <div className={styles.detailRow}>
+            <span className={styles.detailLabel}>Status</span>
+            <div className={styles.detailControl}>
+              <span className={styles.detailValue} style={{ color: statusColor }}>{currentStatusLabel}</span>
+              <button
+                type="button"
+                className={styles.changeLink}
+                onClick={() => setShowStatusOptions(p => !p)}
+                disabled={pendingStatus}
+              >
+                {showStatusOptions ? 'Close' : 'Change'}
+              </button>
+            </div>
           </div>
 
           {showStatusOptions && (
@@ -448,7 +423,7 @@ export default function OrderDetailModal({
 
         {(items.length > 0 || hasCharges) && (
           <div className={styles.financeSection}>
-            <span className={styles.metaLabel}>Order</span>
+            <span className={styles.sectionLabel}>Order</span>
 
             {items.map((item, i) => {
               const lineTotal = (parseInt(item.qty, 10) || 1) * (Number(item.price) || 0)
@@ -518,7 +493,7 @@ export default function OrderDetailModal({
 
         {local.notes && (
           <div className={styles.notesBlock}>
-            <span className={styles.metaLabel}>Notes</span>
+            <span className={styles.sectionLabel}>Notes</span>
             <p className={styles.notesText}>{local.notes}</p>
           </div>
         )}
