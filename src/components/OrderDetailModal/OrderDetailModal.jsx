@@ -382,45 +382,50 @@ export default function OrderDetailModal({
           </div>
         </div>
 
-        <div className={styles.progressCard}>
+        <div className={styles.stateGroup}>
           <button
             type="button"
-            className={styles.progressStatusRow}
+            className={styles.stageCard}
             onClick={() => { setStatusHint(null); setShowStatusSheet(true) }}
             disabled={pendingStatus}
           >
-            <span
-              className={styles.statusPill}
-              style={{ background: statusMeta.bg, color: statusMeta.color, borderColor: statusMeta.border }}
-            >
-              <span className="mi" style={{ fontSize: '0.85rem' }}>{STATUS_ICON[local.status] || 'schedule'}</span>
+            <div className={styles.stageCardTop}>
+              <div className={styles.rowIcon} style={{ background: statusMeta.bg, color: statusMeta.color }}>
+                <span className="mi" style={{ fontSize: '1.05rem' }}>{STATUS_ICON[local.status] || 'schedule'}</span>
+              </div>
+              <span className="mi" style={{ fontSize: '1.1rem', color: 'var(--text3)' }}>chevron_right</span>
+            </div>
+            <div className={styles.stageCardLabel}>Status</div>
+            <div className={styles.stageCardValue} style={{ color: statusMeta.color }}>
               {ORDER_STATUS_LABELS[local.status] || 'Pending'}
-            </span>
-            <span className="mi" style={{ fontSize: '1.05rem', color: 'var(--text3)' }}>chevron_right</span>
+            </div>
           </button>
 
           <button
             type="button"
-            className={styles.progressStageRow}
+            className={styles.stageCard}
             onClick={() => setShowStageSheet(true)}
             disabled={pendingStage}
           >
+            <div className={styles.stageCardTop}>
+              <div className={styles.rowIcon} style={{ background: 'var(--surface2)', color: 'var(--accent)' }}>
+                <span className="mi" style={{ fontSize: '1.05rem' }}>{stageObj?.icon || 'timeline'}</span>
+              </div>
+              <span className="mi" style={{ fontSize: '1.1rem', color: 'var(--text3)' }}>chevron_right</span>
+            </div>
+            <div className={styles.stageCardLabel}>Stage</div>
             <div className={styles.progressTrack}>
               <div
                 className={styles.progressFill}
                 style={{ width: stageObj ? `${((stageIndex + 1) / ORDER_STAGES.length) * 100}%` : '0%' }}
               />
             </div>
-            <div className={styles.progressStageInfo}>
-              <span className={styles.progressStageLabel}>
-                <span className="mi" style={{ fontSize: '0.85rem', color: 'var(--accent)' }}>{stageObj?.icon || 'timeline'}</span>
-                {stageObj ? stageObj.label : 'Not started'}
-              </span>
-              <span className={styles.progressStageCount}>
-                {stageObj && `${stageIndex + 1} of ${ORDER_STAGES.length}`}
-                <span className="mi" style={{ fontSize: '1rem' }}>chevron_right</span>
-              </span>
+            <div className={styles.stageCardValue}>
+              {stageObj ? stageObj.label : 'Not started'}
             </div>
+            {stageObj && (
+              <div className={styles.stageCardCount}>{stageIndex + 1} of {ORDER_STAGES.length}</div>
+            )}
           </button>
         </div>
 
