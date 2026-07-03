@@ -301,6 +301,20 @@ export default function OrderDetailModal({
           })}
         </div>
 
+        <div className={styles.infoGrid}>
+          <div className={styles.infoGridCell}>
+            <div className={styles.infoGridLabel}>Placed</div>
+            <div className={styles.infoGridValue}>{placedOn || '—'}</div>
+          </div>
+          <div className={styles.infoGridCell}>
+            <div className={styles.infoGridLabel}>Due</div>
+            <div className={`${styles.infoGridValue} ${overdue ? styles.overdueText : ''}`}>
+              {local.due || '—'}
+            </div>
+            {dueTag && <div className={styles.infoGridSub}>{dueTag}</div>}
+          </div>
+        </div>
+
         <div className={styles.stateGroup}>
           <button
             type="button"
@@ -343,19 +357,7 @@ export default function OrderDetailModal({
           </button>
         </div>
 
-        <div className={styles.infoGrid}>
-          <div className={styles.infoGridCell}>
-            <div className={styles.infoGridLabel}>Placed</div>
-            <div className={styles.infoGridValue}>{placedOn || '—'}</div>
-          </div>
-          <div className={styles.infoGridCell}>
-            <div className={styles.infoGridLabel}>Due</div>
-            <div className={`${styles.infoGridValue} ${overdue ? styles.overdueText : ''}`}>
-              {local.due || '—'}
-            </div>
-            {dueTag && <div className={styles.infoGridSub}>{dueTag}</div>}
-          </div>
-        </div>
+
 
         {showCustomer && (
           <div className={styles.sectionCard}>
@@ -377,6 +379,7 @@ export default function OrderDetailModal({
                   <span className="mi" style={{ fontSize: '1rem' }}>call</span>
                 </a>
               )}
+              <span className="mi" style={{ fontSize: '1.1rem', color: 'var(--text3)', flexShrink: 0 }}>chevron_right</span>
             </button>
           </div>
         )}
