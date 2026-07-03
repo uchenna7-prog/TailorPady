@@ -294,11 +294,19 @@
   font-size: 0.68rem;
   font-weight: 600;
   color: var(--text3);
-  margin-top: -3px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.stageProgressRow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
 }
 
 .progressTrack {
-  width: 100%;
+  flex: 1;
   height: 5px;
   border-radius: 3px;
   background: var(--surface2);
