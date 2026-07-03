@@ -128,7 +128,7 @@
 .divider {
   height: 1px;
   background: var(--border);
-  margin: 4px 0 16px;
+  margin: 16px 0;
 }
 
 .card {
@@ -136,10 +136,6 @@
   border: 1px solid var(--border);
   border-radius: 14px;
   padding: 14px;
-  margin-bottom: 12px;
-}
-
-.hero {
   margin-bottom: 12px;
 }
 
@@ -245,7 +241,7 @@
 }
 
 .detailTitle {
-  font-size: 1.05rem;
+  font-size: 1.1rem;
   font-weight: 800;
   color: var(--text);
   line-height: 1.4;
@@ -308,86 +304,49 @@
   margin-top: 1px;
 }
 
-.metaChips {
+.metaLine {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
-}
-
-.metaChip {
-  display: flex;
   align-items: center;
   gap: 5px;
-  padding: 6px 11px;
-  border-radius: 999px;
+  font-size: 0.76rem;
+  font-weight: 600;
+  color: var(--text3);
+}
+
+.metaDot {
+  opacity: 0.6;
+}
+
+.metaOverdue {
+  color: #ef4444;
+  font-weight: 700;
+}
+
+.progressCard {
   background: var(--surface);
   border: 1px solid var(--border);
-  font-size: 0.72rem;
-  font-weight: 700;
-  color: var(--text2);
+  border-radius: 14px;
+  padding: 14px;
+  margin-bottom: 12px;
 }
 
-.metaChipLabel {
-  font-size: 0.58rem;
-  font-weight: 800;
-  color: var(--text3);
-  text-transform: uppercase;
-  letter-spacing: 0.4px;
-}
-
-.metaChip_overdue {
-  border-color: rgba(239, 68, 68, 0.35);
-  color: #ef4444;
-}
-
-.metaChip_overdue .metaChipLabel {
-  color: #ef4444;
-  opacity: 0.8;
-}
-
-.statusSection {
-  margin-bottom: 16px;
-}
-
-.statusSectionHeader {
+.progressHeader {
   display: flex;
   align-items: baseline;
   justify-content: space-between;
   margin-bottom: 10px;
 }
 
-.statusSectionHeader .sectionLabel {
-  margin-bottom: 0;
-}
-
-.statusCurrentLabel {
-  font-size: 0.72rem;
-  font-weight: 700;
-  color: var(--text2);
-}
-
-.statusRow {
-  display: flex;
-  gap: 6px;
-  flex-wrap: wrap;
-}
-
-.statusBtn {
-  min-width: 64px;
-  padding: 9px 5px;
-  border-radius: 10px;
-  border: 1px solid var(--border);
-  background: var(--surface);
-  color: var(--text3);
+.statusPill {
+  padding: 3px 10px;
+  border-radius: 999px;
   font-size: 0.66rem;
   font-weight: 800;
-  font-family: inherit;
-  cursor: pointer;
-  text-align: center;
-  transition: all 0.15s;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  color: var(--text3);
 }
-
-.statusBtn_active { border-width: 1.5px; }
 
 .statusPending {
   background: rgba(234, 179, 8, 0.12);
@@ -419,21 +378,176 @@
   color: #94a3b8;
 }
 
-.statusBtn_locked {
-  cursor: default;
-  pointer-events: none;
-  opacity: 0.4;
+.progressBarTrack {
+  height: 6px;
+  border-radius: 999px;
+  background: var(--border);
+  overflow: hidden;
+  margin-bottom: 10px;
 }
 
-.statusBtn_locked.statusBtn_active { opacity: 1; }
+.progressBarFill {
+  height: 100%;
+  border-radius: 999px;
+  background: var(--accent);
+  transition: width 0.25s ease;
+}
 
-.statusBtn_pending {
+.progressMeta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.progressStageName {
+  font-size: 0.9rem;
+  font-weight: 800;
+  color: var(--text);
+}
+
+.progressStageCount {
+  font-size: 0.68rem;
+  font-weight: 600;
+  color: var(--text3);
+  margin-top: 1px;
+}
+
+.changeStageBtn {
+  padding: 7px 13px;
+  border-radius: 9px;
+  border: 1px solid var(--border);
+  background: var(--bg);
+  color: var(--accent);
+  font-family: inherit;
+  font-size: 0.7rem;
+  font-weight: 800;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.changeStageBtn:disabled {
   opacity: 0.6;
   cursor: wait;
 }
 
-.statusBtn:disabled:not(.statusBtn_locked):not(.statusBtn_pending) {
+.stageList {
+  margin-top: 12px;
+  padding-top: 10px;
+  border-top: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  max-height: 260px;
+  overflow-y: auto;
+}
+
+.stageRow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 8px 6px;
+  border-radius: 9px;
+  border: none;
+  background: transparent;
+  font-family: inherit;
+  cursor: pointer;
+  text-align: left;
+}
+
+.stageRow:disabled {
+  opacity: 0.6;
+  cursor: wait;
+}
+
+.stageRow_active {
+  background: var(--bg);
+}
+
+.stageRowIcon {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg);
+  border: 1.5px solid var(--border);
+  color: var(--text3);
+  flex-shrink: 0;
+}
+
+.stageRowIcon_done {
+  background: rgba(34, 197, 94, 0.15);
+  border-color: #22c55e;
+  color: #22c55e;
+}
+
+.stageRowIcon_active {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--bg);
+}
+
+.stageRowLabel {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--text2);
+  flex: 1;
+}
+
+.stageRow_active .stageRowLabel {
+  color: var(--text);
+}
+
+.stageRowCurrent {
+  font-size: 0.6rem;
+  font-weight: 800;
+  color: var(--accent);
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+}
+
+.statusSegment {
+  display: flex;
+  gap: 4px;
+  margin-top: 12px;
+  padding: 3px;
+  border-radius: 11px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.statusSegment::-webkit-scrollbar { display: none; }
+
+.statusSegmentBtn {
+  flex: 1;
+  min-width: 68px;
+  padding: 7px 6px;
+  border-radius: 8px;
+  border: none;
+  background: transparent;
+  color: var(--text3);
+  font-size: 0.66rem;
+  font-weight: 800;
+  font-family: inherit;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.statusSegmentBtn_active {
+  background: var(--surface);
+  color: var(--text);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
+}
+
+.statusSegmentBtn_locked {
+  opacity: 0.35;
   cursor: default;
+  pointer-events: none;
 }
 
 .hintBox {
@@ -457,113 +571,6 @@
   to { opacity: 1; transform: translateY(0); }
 }
 
-.stepperHeader {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: 8px;
-  margin-bottom: 12px;
-}
-
-.stepperCount {
-  font-size: 0.68rem;
-  font-weight: 700;
-  color: var(--text2);
-  white-space: nowrap;
-}
-
-.stepperScroll {
-  display: flex;
-  overflow-x: auto;
-  scrollbar-width: none;
-  -ms-overflow-style: none;
-  -webkit-overflow-scrolling: touch;
-  padding: 2px 2px 4px;
-  position: relative;
-}
-
-.stepperScroll::-webkit-scrollbar { display: none; }
-
-.stepperFade {
-  position: relative;
-  height: 0;
-  margin-top: -46px;
-  pointer-events: none;
-}
-
-.stepperItem {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 6px;
-  min-width: 66px;
-  position: relative;
-  background: none;
-  border: none;
-  font-family: inherit;
-  cursor: pointer;
-  padding: 4px 2px 0;
-  flex-shrink: 0;
-  z-index: 1;
-}
-
-.stepperItem:not(.stepperItem_last)::after {
-  content: '';
-  position: absolute;
-  top: 20px;
-  left: 50%;
-  width: 100%;
-  height: 2px;
-  background: var(--border);
-  z-index: 0;
-}
-
-.stepperItem_lineDone::after {
-  background: #22c55e;
-}
-
-.stepperItem:disabled {
-  opacity: 0.6;
-  cursor: wait;
-}
-
-.stepperCircle {
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: var(--surface2, var(--bg));
-  border: 2px solid var(--border);
-  color: var(--text3);
-  transition: all 0.18s;
-  z-index: 100;
-}
-
-.stepperItem_active .stepperCircle {
-  background: var(--accent);
-  border-color: var(--accent);
-  color: var(--bg);
-}
-
-.stepperItem_done .stepperCircle {
-  background: rgba(34, 197, 94, 0.15);
-  border-color: #22c55e;
-  color: #22c55e;
-}
-
-.stepperLabel {
-  font-size: 0.6rem;
-  font-weight: 700;
-  color: var(--text3);
-  text-align: center;
-  white-space: nowrap;
-}
-
-.stepperItem_active .stepperLabel { color: var(--text); font-weight: 800; }
-.stepperItem_done .stepperLabel { color: var(--text2); }
-
 .garmentRow {
   display: flex;
   align-items: center;
@@ -583,7 +590,7 @@
   width: 36px;
   height: 36px;
   border-radius: 8px;
-  background: var(--surface2, var(--bg));
+  background: var(--bg);
   border: 1px solid var(--border);
   display: flex;
   align-items: center;
