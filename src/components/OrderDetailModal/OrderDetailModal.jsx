@@ -389,38 +389,37 @@ export default function OrderDetailModal({
             onClick={() => { setStatusHint(null); setShowStatusSheet(true) }}
             disabled={pendingStatus}
           >
-            <div className={styles.stageCardLeft}>
+            <div className={styles.stageCardTop}>
               <div className={styles.rowIcon} style={{ background: statusMeta.bg, color: statusMeta.color }}>
                 <span className="mi" style={{ fontSize: '1.05rem' }}>{STATUS_ICON[local.status] || 'schedule'}</span>
               </div>
-              <div>
-                <div className={styles.stageCardLabel}>Status</div>
-                <div className={styles.stageCardValue} style={{ color: statusMeta.color }}>
-                  {ORDER_STATUS_LABELS[local.status] || 'Pending'}
-                </div>
-              </div>
+              <span className="mi" style={{ fontSize: '1.1rem', color: 'var(--text3)' }}>chevron_right</span>
             </div>
-            <span className="mi" style={{ fontSize: '1.1rem', color: 'var(--text3)' }}>chevron_right</span>
+            <div className={styles.stageCardLabel}>Status</div>
+            <div className={styles.stageCardValue} style={{ color: statusMeta.color }}>
+              {ORDER_STATUS_LABELS[local.status] || 'Pending'}
+            </div>
           </button>
 
-          <button type="button" className={styles.stageCard} style={{ position: 'relative' }} onClick={() => setShowStageSheet(true)} disabled={pendingStage}>
-            {stageObj && (
-              <span className={styles.stageCardCount} style={{ position: 'absolute', top: 10, right: 40 }}>
-                {stageIndex + 1} of {ORDER_STAGES.length}
-              </span>
-            )}
-            <div className={styles.stageCardLeft}>
+          <button
+            type="button"
+            className={styles.stageCard}
+            onClick={() => setShowStageSheet(true)}
+            disabled={pendingStage}
+          >
+            <div className={styles.stageCardTop}>
               <div className={styles.rowIcon} style={{ background: 'var(--surface2)', color: 'var(--accent)' }}>
                 <span className="mi" style={{ fontSize: '1.05rem' }}>{stageObj?.icon || 'timeline'}</span>
               </div>
-              <div>
-                <div className={styles.stageCardLabel}>Stage</div>
-                <div className={styles.stageCardValue}>
-                  {stageObj ? stageObj.label : 'Not started'}
-                </div>
-              </div>
+              <span className="mi" style={{ fontSize: '1.1rem', color: 'var(--text3)' }}>chevron_right</span>
             </div>
-            <span className="mi" style={{ fontSize: '1.1rem', color: 'var(--text3)' }}>chevron_right</span>
+            <div className={styles.stageCardLabel}>Stage</div>
+            <div className={styles.stageCardValue}>
+              {stageObj ? stageObj.label : 'Not started'}
+            </div>
+            {stageObj && (
+              <div className={styles.stageCardCount}>{stageIndex + 1} of {ORDER_STAGES.length}</div>
+            )}
           </button>
         </div>
 
@@ -537,12 +536,6 @@ export default function OrderDetailModal({
         )}
 
         <div className={styles.footerButtons}>
-          {onGenerateInvoice && (
-            <button className={styles.btnPrimary} onClick={() => { close(); onGenerateInvoice(local.id) }}>
-              <span className="mi" style={{ fontSize: '1.05rem' }}>receipt_long</span>
-              Generate invoice
-            </button>
-          )}
           <button
             className={`${styles.btnSecondary} ${!canReview ? styles.btnSecondary_disabled : ''}`}
             onClick={handleReviewClick}
@@ -550,6 +543,12 @@ export default function OrderDetailModal({
             <span className="mi" style={{ fontSize: '1rem' }}>share</span>
             Share review link via WhatsApp
           </button>
+          {onGenerateInvoice && (
+            <button className={styles.btnPrimary} onClick={() => { close(); onGenerateInvoice(local.id) }}>
+              <span className="mi" style={{ fontSize: '1.05rem' }}>receipt_long</span>
+              Generate invoice
+            </button>
+          )}
         </div>
 
       </div>
