@@ -98,16 +98,7 @@ export default function OrderDetailModal({
   const [pendingStage, setPendingStage] = useState(false)
   const [pendingPriority, setPendingPriority] = useState(false)
   const [brokenImages, setBrokenImages] = useState(() => new Set())
-  const [footerElevated, setFooterElevated] = useState(true)
   const priorityRef = useRef(null)
-  const bodyRef = useRef(null)
-
-  function handleBodyScroll() {
-    const el = bodyRef.current
-    if (!el) return
-    const atBottom = el.scrollHeight - el.scrollTop - el.clientHeight < 4
-    setFooterElevated(!atBottom)
-  }
 
   useEffect(() => {
     setLocal(order)
@@ -119,10 +110,6 @@ export default function OrderDetailModal({
     setShowPriorityMenu(false)
     setBrokenImages(new Set())
   }, [order?.id])
-
-  useEffect(() => {
-    handleBodyScroll()
-  }, [local?.id, local?.items?.length, local?.notes])
 
   useEffect(() => {
     if (!fullHeight) return
@@ -322,11 +309,7 @@ export default function OrderDetailModal({
         ]}
       />
 
-      <div
-        className={`${styles.body} ${styles.bodyWithFooter}`}
-        ref={bodyRef}
-        onScroll={handleBodyScroll}
-      >
+      <div className={styles.body}>
 
         <div className={styles.detailTitle}>{orderTitle}</div>
 
@@ -546,32 +529,29 @@ export default function OrderDetailModal({
           </div>
         )}
 
-      </div>
-
-      <div className={styles.bodyFade} />
-
-      <div className={`${styles.floatingFooter} ${footerElevated ? styles.floatingFooterElevated : ''}`}>
         {hint === 'review' && (
           <div className={styles.footerHintCard}>
             <span className="mi" style={{ fontSize: '0.9rem', flexShrink: 0, marginTop: 1 }}>info</span>
             Review links can only be sent once the order is Completed or Delivered.
           </div>
         )}
-        <div className={styles.footerBar}>
+
+        <div className={styles.footerButtons}>
           {onGenerateInvoice && (
-            <button className={styles.footerBtnPrimary} onClick={() => { close(); onGenerateInvoice(local.id) }}>
+            <button className={styles.btnPrimary} onClick={() => { close(); onGenerateInvoice(local.id) }}>
               <span className="mi" style={{ fontSize: '1.05rem' }}>receipt_long</span>
               Generate invoice
             </button>
           )}
           <button
-            className={`${styles.footerBtnSecondary} ${!canReview ? styles.footerBtnSecondary_disabled : ''}`}
+            className={`${styles.btnSecondary} ${!canReview ? styles.btnSecondary_disabled : ''}`}
             onClick={handleReviewClick}
           >
             <span className="mi" style={{ fontSize: '1rem' }}>share</span>
-            Share via WhatsApp
+            Share review link via WhatsApp
           </button>
         </div>
+
       </div>
 
       {showStatusSheet && (
