@@ -292,21 +292,33 @@ export default function OrderDetailModal({
           })}
         </div>
 
-        <button
-          type="button"
-          className={styles.stageCard}
-          style={{ marginTop: 16 }}
-          onClick={() => setShowStatusSheet(true)}
-          disabled={pendingStatus}
-        >
-          <div>
-            <div className={styles.stageCardLabel}>Status</div>
-            <div className={styles.stageCardValue} style={{ color: statusMeta.color }}>
-              {ORDER_STATUS_LABELS[local.status] || 'Pending'}
+        <div className={styles.stateGroup}>
+          <button
+            type="button"
+            className={styles.stageCard}
+            onClick={() => setShowStatusSheet(true)}
+            disabled={pendingStatus}
+          >
+            <div>
+              <div className={styles.stageCardLabel}>Status</div>
+              <div className={styles.stageCardValue} style={{ color: statusMeta.color }}>
+                {ORDER_STATUS_LABELS[local.status] || 'Pending'}
+              </div>
             </div>
-          </div>
-          <span className="mi" style={{ fontSize: '1.1rem', color: 'var(--text3)' }}>chevron_right</span>
-        </button>
+            <span className="mi" style={{ fontSize: '1.1rem', color: 'var(--text3)' }}>chevron_right</span>
+          </button>
+
+          <button type="button" className={styles.stageCard} onClick={() => setShowStageSheet(true)} disabled={pendingStage}>
+            <div>
+              <div className={styles.stageCardLabel}>Stage</div>
+              <div className={styles.stageCardValue}>
+                {stageObj ? stageObj.label : 'Not started'}
+                {stageObj && <span className={styles.stageCardCount}> · {stageIndex + 1} of {ORDER_STAGES.length}</span>}
+              </div>
+            </div>
+            <span className="mi" style={{ fontSize: '1.1rem', color: 'var(--text3)' }}>chevron_right</span>
+          </button>
+        </div>
 
         <div className={styles.infoGrid}>
           <div className={styles.infoGridCell}>
@@ -321,17 +333,6 @@ export default function OrderDetailModal({
             {dueTag && <div className={styles.infoGridSub}>{dueTag}</div>}
           </div>
         </div>
-
-        <button type="button" className={styles.stageCard} onClick={() => setShowStageSheet(true)} disabled={pendingStage}>
-          <div>
-            <div className={styles.stageCardLabel}>Stage</div>
-            <div className={styles.stageCardValue}>
-              {stageObj ? stageObj.label : 'Not started'}
-              {stageObj && <span className={styles.stageCardCount}> · {stageIndex + 1} of {ORDER_STAGES.length}</span>}
-            </div>
-          </div>
-          <span className="mi" style={{ fontSize: '1.1rem', color: 'var(--text3)' }}>chevron_right</span>
-        </button>
 
         {showCustomer && (
           <div className={styles.sectionCard}>
@@ -438,7 +439,10 @@ export default function OrderDetailModal({
 
       <div className={styles.footer}>
         {hint === 'review' && (
-          <div className={styles.footerHint}>Review links can only be sent once the order is Completed or Delivered.</div>
+          <div className={styles.footerHint}>
+            <span className="mi" style={{ fontSize: '0.95rem', flexShrink: 0, marginTop: 1 }}>info</span>
+            Review links can only be sent once the order is Completed or Delivered.
+          </div>
         )}
         <div className={styles.footerButtons}>
           {onGenerateInvoice && (
@@ -474,7 +478,7 @@ export default function OrderDetailModal({
                     className={`${styles.stageSheetRow} ${isActive ? styles.stageSheetRowActive : ''}`}
                     onClick={() => handleStatusClick(value)}
                   >
-                    <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 2 }}>
+                    <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
                       <span
                         className={styles.stageSheetRowLabel}
                         style={locked && !isActive ? { color: 'var(--text3)' } : {}}
@@ -482,9 +486,7 @@ export default function OrderDetailModal({
                         {label}
                       </span>
                       {locked && !isActive && STATUS_HINTS[value] && (
-                        <span style={{ fontSize: '0.68rem', fontWeight: 600, color: 'var(--text3)' }}>
-                          {STATUS_HINTS[value]}
-                        </span>
+                        <span className={styles.lockNote}>{STATUS_HINTS[value]}</span>
                       )}
                     </div>
                     {isActive && <span className={styles.stageSheetCurrent}>Current</span>}
