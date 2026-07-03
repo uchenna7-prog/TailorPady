@@ -93,7 +93,7 @@
   width: 36px;
   height: 4px;
   border-radius: 2px;
-  background: var(--border);
+  background: var(--border2);
   margin: 10px auto 0;
   flex-shrink: 0;
 }
@@ -101,44 +101,165 @@
 .body {
   flex: 1;
   overflow-y: auto;
-  padding: 4px 20px 24px;
+  padding: 18px 18px calc(28px + var(--sb, 0px));
   -webkit-overflow-scrolling: touch;
 }
 
-.pageHeader {
-  padding: 10px 0 20px;
-}
-
-.orderTitle {
-  font-size: 1.5rem;
+.detailTitle {
+  font-size: 1.05rem;
   font-weight: 800;
   color: var(--text);
-  line-height: 1.25;
-  letter-spacing: -0.01em;
+  line-height: 1.35;
+  margin-bottom: 16px;
 }
 
-.customerLink {
-  display: inline-flex;
-  align-items: center;
-  gap: 3px;
-  margin-top: 7px;
-  padding: 0;
-  border: none;
-  background: transparent;
-  color: var(--text2);
-  font-family: inherit;
-  font-size: 0.85rem;
-  font-weight: 700;
+.chipLabel {
+  font-size: 0.58rem;
+  font-weight: 800;
+  color: var(--text3);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 8px;
+}
+
+.chipRow {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.chipBtn {
+  flex: 1;
+  min-width: 70px;
+  padding: 9px 6px;
+  border-radius: 10px;
+  border: 1px solid var(--border2);
+  background: var(--surface2);
+  color: var(--text3);
+  font-size: 0.7rem;
+  font-weight: 800;
   cursor: pointer;
+  text-align: center;
+  font-family: inherit;
+  transition: all 0.15s;
 }
 
-.customerLink:active {
-  opacity: 0.7;
+.chipBtn:disabled {
+  cursor: wait;
 }
 
-.sectionLabel {
+.chipBtn_active {
+  border-width: 1.5px;
+}
+
+.chipBtn_locked {
+  cursor: default;
+  pointer-events: none;
+  opacity: 0.4;
+}
+
+.hintText {
+  margin-top: 10px;
+  font-size: 0.76rem;
+  font-weight: 600;
+  color: #a16207;
+  line-height: 1.4;
+}
+
+.infoGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-top: 18px;
+  margin-bottom: 14px;
+}
+
+.infoGridCell {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 12px 14px;
+}
+
+.infoGridLabel {
+  font-size: 0.58rem;
+  font-weight: 800;
+  color: var(--text3);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 4px;
+}
+
+.infoGridValue {
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.infoGridSub {
+  font-size: 0.66rem;
+  font-weight: 600;
+  color: var(--text3);
+  margin-top: 2px;
+}
+
+.overdueText {
+  color: #ef4444;
+}
+
+.stageCard {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 14px;
+  margin-bottom: 12px;
+  cursor: pointer;
+  font-family: inherit;
+  text-align: left;
+}
+
+.stageCard:disabled {
+  opacity: 0.6;
+  cursor: wait;
+}
+
+.stageCardLabel {
+  font-size: 0.58rem;
+  font-weight: 800;
+  color: var(--text3);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 4px;
+}
+
+.stageCardValue {
+  font-size: 0.92rem;
+  font-weight: 800;
+  color: var(--text);
+}
+
+.stageCardCount {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--text3);
+}
+
+.sectionCard {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 14px;
+  margin-bottom: 12px;
+}
+
+.sectionCardLabel {
   display: block;
-  font-size: 0.6rem;
+  font-size: 0.58rem;
   font-weight: 800;
   color: var(--text3);
   text-transform: uppercase;
@@ -146,171 +267,34 @@
   margin-bottom: 10px;
 }
 
-.detailsList {
-  border-top: 1px solid var(--border);
-  border-bottom: 1px solid var(--border);
-  margin-bottom: 20px;
-}
-
-.detailRow {
+.linkedRow {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: 14px;
-  min-height: 46px;
-  padding: 11px 0;
-  border-bottom: 1px solid var(--border);
-}
-
-.detailRow:last-child {
-  border-bottom: none;
-}
-
-.detailLabel {
-  font-size: 0.8rem;
-  font-weight: 600;
-  color: var(--text3);
-  flex-shrink: 0;
-}
-
-.detailValue {
-  font-size: 0.86rem;
-  font-weight: 700;
-  color: var(--text);
-  text-align: right;
-}
-
-.detailValueMuted {
-  font-weight: 600;
-  color: var(--text3);
-}
-
-.detailValueOverdue {
-  color: #ef4444;
-}
-
-.detailControl {
-  position: relative;
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.changeLink {
-  padding: 4px 0 4px 4px;
-  border: none;
-  background: transparent;
-  color: var(--accent);
-  font-family: inherit;
-  font-size: 0.78rem;
-  font-weight: 800;
-  cursor: pointer;
-  flex-shrink: 0;
-}
-
-.changeLink:disabled {
-  opacity: 0.6;
-  cursor: wait;
-}
-
-.priorityDropdown {
-  position: absolute;
-  top: calc(100% + 6px);
-  right: 0;
-  min-width: 150px;
-  display: flex;
-  flex-direction: column;
-  background: var(--bg);
-  border: 1px solid var(--border);
-  border-radius: 14px;
-  padding: 6px;
-  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.22);
-  z-index: 10;
-  animation: dropdownIn 0.15s ease;
-}
-
-@keyframes dropdownIn {
-  from { opacity: 0; transform: translateY(-4px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-.priorityOption {
-  display: flex;
-  align-items: center;
-  gap: 9px;
+  gap: 8px;
   width: 100%;
-  padding: 9px 10px;
-  border-radius: 9px;
   border: none;
   background: transparent;
-  font-family: inherit;
+  padding: 0;
   cursor: pointer;
-  text-align: left;
+  font-family: inherit;
 }
 
-.priorityOption:active {
-  background: var(--surface);
-}
-
-.priorityOptionActive {
-  background: var(--surface);
-}
-
-.priorityDot {
-  width: 7px;
-  height: 7px;
-  border-radius: 50%;
+.callBtn {
+  margin-left: auto;
+  width: 34px;
+  height: 34px;
+  border-radius: 8px;
+  background: rgba(34, 197, 94, 0.1);
+  border: 1px solid rgba(34, 197, 94, 0.25);
+  color: #22c55e;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
   flex-shrink: 0;
 }
 
-.priorityOptionLabel {
-  font-size: 0.76rem;
-  font-weight: 700;
-  color: var(--text);
-}
-
-.statusOptions {
-  display: flex;
-  flex-direction: column;
-  gap: 1px;
-  padding: 4px 0 10px;
-}
-
-.statusOptionRow {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  width: 100%;
-  padding: 8px 2px;
-  border: none;
-  background: transparent;
-  font-family: inherit;
-  font-size: 0.82rem;
-  cursor: pointer;
-  text-align: left;
-}
-
-.statusOptionRow:disabled {
-  opacity: 0.35;
-  cursor: default;
-  pointer-events: none;
-}
-
-.hintText {
-  padding: 0 0 12px;
-  font-size: 0.76rem;
-  font-weight: 600;
-  color: #a16207;
-  line-height: 1.4;
-}
-
-.financeSection {
-  padding-bottom: 20px;
-  margin-bottom: 20px;
-  border-bottom: 1px solid var(--border);
-}
-
-.lineItem {
+.financeRow {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -319,7 +303,7 @@
   border-bottom: 1px solid var(--border);
 }
 
-.lineItem:last-of-type {
+.financeRow:last-of-type {
   border-bottom: none;
 }
 
@@ -334,7 +318,7 @@
   width: 32px;
   height: 32px;
   border-radius: 8px;
-  background: var(--surface);
+  background: var(--bg);
   border: 1px solid var(--border);
   display: flex;
   align-items: center;
@@ -384,7 +368,7 @@
   font-variant-numeric: tabular-nums;
 }
 
-.chargeValDiscount {
+.chargeVal_discount {
   color: #22c55e;
 }
 
@@ -395,26 +379,22 @@
   margin-top: 8px;
   padding-top: 10px;
   border-top: 1px solid var(--border);
-  font-size: 1rem;
+  font-size: 0.95rem;
   font-weight: 800;
   color: var(--text);
   font-variant-numeric: tabular-nums;
-}
-
-.notesBlock {
-  padding-bottom: 4px;
 }
 
 .notesText {
   font-size: 0.85rem;
   color: var(--text2);
   line-height: 1.55;
-  margin: 8px 0 0;
+  margin: 0;
 }
 
 .footer {
   flex-shrink: 0;
-  padding: 12px 20px calc(14px + var(--sb, 0px));
+  padding: 12px 18px calc(14px + var(--sb, 0px));
   border-top: 1px solid var(--border);
   background: var(--bg);
 }
@@ -459,11 +439,11 @@
   align-items: center;
   justify-content: center;
   gap: 7px;
-  background: transparent;
-  border: 1px solid var(--border);
+  background: rgba(34, 197, 94, 0.07);
+  border: 1px solid rgba(34, 197, 94, 0.35);
   border-radius: 12px;
   padding: 13px 8px;
-  color: var(--text2);
+  color: #22c55e;
   font-family: inherit;
   font-size: 0.82rem;
   font-weight: 700;
@@ -472,11 +452,13 @@
 }
 
 .btnSecondary:active {
-  opacity: 0.7;
+  opacity: 0.75;
 }
 
-.btnSecondaryDisabled {
-  color: var(--text3);
+.btnSecondary_disabled {
+  border-color: var(--border);
+  background: var(--surface);
+  color: var(--text2);
 }
 
 .stageSheetOverlay {
