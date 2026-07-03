@@ -323,7 +323,7 @@ export default function OrderDetailModal({
       />
 
       <div
-        className={`${styles.body} ${onGenerateInvoice ? styles.bodyWithFooter : ''}`}
+        className={`${styles.body} ${styles.bodyWithFooter}`}
         ref={bodyRef}
         onScroll={handleBodyScroll}
       >
@@ -546,37 +546,33 @@ export default function OrderDetailModal({
           </div>
         )}
 
-        <div className={styles.sectionCard}>
-          <div className={styles.sectionCardLabel}>
-            <span className={`mi ${styles.sectionIcon}`}>rate_review</span>
-            Customer Review
+      </div>
+
+      <div className={styles.bodyFade} />
+
+      <div className={`${styles.floatingFooter} ${footerElevated ? styles.floatingFooterElevated : ''}`}>
+        {hint === 'review' && (
+          <div className={styles.footerHintCard}>
+            <span className="mi" style={{ fontSize: '0.9rem', flexShrink: 0, marginTop: 1 }}>info</span>
+            Review links can only be sent once the order is Completed or Delivered.
           </div>
+        )}
+        <div className={styles.footerBar}>
+          {onGenerateInvoice && (
+            <button className={styles.footerBtnPrimary} onClick={() => { close(); onGenerateInvoice(local.id) }}>
+              <span className="mi" style={{ fontSize: '1.05rem' }}>receipt_long</span>
+              Generate invoice
+            </button>
+          )}
           <button
-            type="button"
-            className={`${styles.reviewBtn} ${!canReview ? styles.reviewBtn_disabled : ''}`}
+            className={`${styles.footerBtnSecondary} ${!canReview ? styles.footerBtnSecondary_disabled : ''}`}
             onClick={handleReviewClick}
           >
             <span className="mi" style={{ fontSize: '1rem' }}>share</span>
             Share review link
           </button>
-          {hint === 'review' && (
-            <div className={styles.inlineHint}>
-              <span className="mi" style={{ fontSize: '0.9rem', flexShrink: 0, marginTop: 1 }}>info</span>
-              Review links can only be sent once the order is Completed or Delivered.
-            </div>
-          )}
         </div>
-
       </div>
-
-      {onGenerateInvoice && (
-        <div className={`${styles.floatingFooter} ${footerElevated ? styles.floatingFooterElevated : ''}`}>
-          <button className={styles.btnPrimary} onClick={() => { close(); onGenerateInvoice(local.id) }}>
-            <span className="mi" style={{ fontSize: '1.05rem' }}>receipt_long</span>
-            Generate invoice
-          </button>
-        </div>
-      )}
 
       {showStatusSheet && (
         <div className={styles.stageSheetOverlay} onClick={() => { setShowStatusSheet(false); setStatusHint(null) }}>
