@@ -106,11 +106,11 @@
 }
 
 .detailTitle {
-  font-size: 1.05rem;
+  font-size: 1.2rem;
   font-weight: 800;
   color: var(--text);
-  line-height: 1.35;
-  margin-bottom: 16px;
+  line-height: 1.3;
+  margin-bottom: 18px;
 }
 
 .chipLabel {
@@ -129,9 +129,10 @@
 }
 
 .chipBtn {
-  flex: 1;
-  min-width: 70px;
-  padding: 9px 6px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 9px 16px;
   border-radius: 10px;
   border: 1px solid var(--border2);
   background: var(--surface2);
@@ -139,8 +140,8 @@
   font-size: 0.7rem;
   font-weight: 800;
   cursor: pointer;
-  text-align: center;
   font-family: inherit;
+  white-space: nowrap;
   transition: all 0.15s;
 }
 
