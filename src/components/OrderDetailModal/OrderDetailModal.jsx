@@ -257,7 +257,7 @@ export default function OrderDetailModal({
       <Header
         type="back"
         showBorderBottom={false}
-        title={fullHeight ? orderTitle : 'Order Details'}
+        title="Order Details"
         onBackClick={close}
         backIcon={fullHeight ? 'arrow_back_ios' : 'close'}
         customActions={[
@@ -267,7 +267,7 @@ export default function OrderDetailModal({
 
       <div className={styles.body}>
 
-        {!fullHeight && <div className={styles.detailTitle}>{orderTitle}</div>}
+        <div className={styles.detailTitle}>{orderTitle}</div>
 
         <div className={styles.chipLabel}>Priority</div>
         <div className={styles.chipRow}>
