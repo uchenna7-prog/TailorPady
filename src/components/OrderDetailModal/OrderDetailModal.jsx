@@ -140,6 +140,7 @@ export default function OrderDetailModal({
   const currentPriority = PRIORITY_META[local.priority ?? 'normal']
   const orderTitle = local.desc || local.name || 'Order'
   const customerInitial = getInitials(local.customerName)
+  const currentStatusLabel = ORDER_STATUS_LABELS[local.status]
 
   async function handleStatusClick(value) {
     if (local.status === value || pendingStatus) return
@@ -281,10 +282,9 @@ export default function OrderDetailModal({
           </div>
         )}
 
-        <div className={styles.orderInfoCard}>
-          <div className={styles.titleRow}>
-            <div className={styles.detailTitle}>{orderTitle}</div>
-            <div className={styles.priorityWrap} ref={priorityRef}>
+        <div className={styles.hero}>
+          <div className={styles.priorityRow} ref={priorityRef}>
+            <div className={styles.priorityWrap}>
               <button
                 type="button"
                 className={styles.priorityTrigger}
@@ -321,6 +321,11 @@ export default function OrderDetailModal({
             </div>
           </div>
 
+          <div className={styles.titleRow}>
+            <span className={`mi ${styles.titleIcon}`}>shopping_bag</span>
+            <div className={styles.detailTitle}>{orderTitle}</div>
+          </div>
+
           {showCustomer && (
             <button
               type="button"
@@ -336,33 +341,25 @@ export default function OrderDetailModal({
             </button>
           )}
 
-          <div className={styles.orderGrid} style={{ marginTop: 12 }}>
-            <div className={styles.orderCell}>
-              <div className={styles.orderCellLabel}>Placed</div>
-              <div className={styles.orderCellVal}>{placedOn || '—'}</div>
-            </div>
-            <div className={styles.orderCell}>
-              <div className={styles.orderCellLabel}>Due</div>
-              <div className={`${styles.orderCellVal} ${overdue ? styles.orderCellVal_overdue : ''}`}>{local.due || '—'}</div>
-              {dueTag && (
-                <span className={`${styles.dueTag} ${overdue ? styles.dueTag_overdue : ''}`}>{dueTag}</span>
-              )}
-            </div>
+          <div className={styles.metaChips}>
+            <span className={styles.metaChip}>
+              <span className={styles.metaChipLabel}>Placed</span>
+              {placedOn || '—'}
+            </span>
+            <span className={`${styles.metaChip} ${overdue ? styles.metaChip_overdue : ''}`}>
+              <span className={styles.metaChipLabel}>Due</span>
+              {local.due || '—'}{dueTag ? ` · ${dueTag}` : ''}
+            </span>
           </div>
-
-          {!hasCharges && (
-            <>
-              <div className={styles.rowDivider} />
-              <div className={styles.grandTotalRow}>
-                <span className={styles.orderCellLabel}>Grand Total</span>
-                <span className={styles.grandTotalVal}>₦{grandTotal.toLocaleString()}</span>
-              </div>
-            </>
-          )}
         </div>
 
-        <div className={styles.sectionCard}>
-          <div className={styles.sectionLabel}>Status</div>
+        <div className={styles.divider} />
+
+        <div className={styles.statusSection}>
+          <div className={styles.statusSectionHeader}>
+            <span className={styles.sectionLabel}>Status</span>
+            <span className={styles.statusCurrentLabel}>{currentStatusLabel}</span>
+          </div>
           <div className={styles.statusRow}>
             {Object.entries(ORDER_STATUS_LABELS).map(([value, label]) => {
               const allowed = isStatusAllowed(value, local.stage)
@@ -387,7 +384,7 @@ export default function OrderDetailModal({
           )}
         </div>
 
-        <div className={styles.sectionCard}>
+        <div className={styles.card}>
           <div className={styles.stepperHeader}>
             <span className={styles.sectionLabel} style={{ marginBottom: 0 }}>Order Stage</span>
             <span className={styles.stepperCount}>
@@ -395,37 +392,39 @@ export default function OrderDetailModal({
             </span>
           </div>
           <div className={styles.stepperScroll}>
-          {ORDER_STAGES.map((s, idx) => {
-            const isActive = local.stage === s.value
-            const isDone = stageIndex >= 0 && idx < stageIndex
-            const isLast = idx === ORDER_STAGES.length - 1
-            return (
-              <button
-                key={s.value}
-                disabled={pendingStage}
-                className={`${styles.stepperItem} ${isActive ? styles.stepperItem_active : ''} ${isDone ? styles.stepperItem_done : ''} ${isLast ? styles.stepperItem_last : ''} ${isDone ? styles.stepperItem_lineDone : ''}`}
-                onClick={() => handleStageChange(s.value)}
-              >
-                <span className={styles.stepperCircle}>
-                  <span className="mi" style={{ fontSize: '0.95rem' }}>
-                    {isDone ? 'check' : s.icon}
+            {ORDER_STAGES.map((s, idx) => {
+              const isActive = local.stage === s.value
+              const isDone = stageIndex >= 0 && idx < stageIndex
+              const isLast = idx === ORDER_STAGES.length - 1
+              return (
+                <button
+                  key={s.value}
+                  disabled={pendingStage}
+                  className={`${styles.stepperItem} ${isActive ? styles.stepperItem_active : ''} ${isDone ? styles.stepperItem_done : ''} ${isLast ? styles.stepperItem_last : ''} ${isDone ? styles.stepperItem_lineDone : ''}`}
+                  onClick={() => handleStageChange(s.value)}
+                >
+                  <span className={styles.stepperCircle}>
+                    <span className="mi" style={{ fontSize: '0.95rem' }}>
+                      {isDone ? 'check' : s.icon}
+                    </span>
                   </span>
-                </span>
-                <span className={styles.stepperLabel}>{s.label}</span>
-              </button>
-            )
-          })}
-        </div>
+                  <span className={styles.stepperLabel}>{s.label}</span>
+                </button>
+              )
+            })}
+          </div>
+          <div className={styles.stepperFade} />
         </div>
 
-        {items.length > 0 && (
-          <div className={styles.sectionCard}>
-            <div className={styles.sectionLabel}>Selected Garments</div>
+        {(items.length > 0 || hasCharges) && (
+          <div className={styles.card}>
+            <div className={styles.sectionLabel}>Order Summary</div>
+
             {items.map((item, i) => {
               const lineTotal = (parseInt(item.qty, 10) || 1) * (Number(item.price) || 0)
               const imgFailed = brokenImages.has(i)
               return (
-                <div key={i} className={`${styles.garmentRow} ${i < items.length - 1 ? styles.garmentRowBorder : ''}`}>
+                <div key={i} className={styles.garmentRow}>
                   <div className={styles.garmentLeft}>
                     <div className={styles.garmentThumb}>
                       {item.imgSrc && !imgFailed
@@ -453,22 +452,16 @@ export default function OrderDetailModal({
                 </div>
               )
             })}
-            <div className={styles.garmentSubtotal}>
-              <span>Subtotal (Qty: {totalQty})</span>
-              <span>₦{subtotal.toLocaleString()}</span>
-            </div>
-          </div>
-        )}
 
-        {hasCharges && (
-          <div className={styles.sectionCard}>
-            <div className={styles.sectionLabel}>Discount &amp; Charges</div>
-            <div className={styles.chargeRow}>
-              <span className={styles.chargeLabel}>Subtotal</span>
-              <span className={styles.chargeVal}>₦{subtotal.toLocaleString()}</span>
-            </div>
+            {items.length > 0 && (
+              <div className={styles.summaryRow}>
+                <span className={styles.chargeLabel}>Subtotal (Qty: {totalQty})</span>
+                <span className={styles.chargeVal}>₦{subtotal.toLocaleString()}</span>
+              </div>
+            )}
+
             {discount > 0 && (
-              <div className={styles.chargeRow}>
+              <div className={styles.summaryRow}>
                 <span className={styles.chargeLabel}>
                   <span className="mi" style={{ fontSize: '0.85rem', verticalAlign: 'middle', marginRight: 4 }}>sell</span>
                   Discount{discountLabel ? ` (${discountLabel})` : ''}
@@ -478,8 +471,9 @@ export default function OrderDetailModal({
                 </span>
               </div>
             )}
+
             {shipping > 0 && (
-              <div className={styles.chargeRow}>
+              <div className={styles.summaryRow}>
                 <span className={styles.chargeLabel}>
                   <span className="mi" style={{ fontSize: '0.85rem', verticalAlign: 'middle', marginRight: 4 }}>local_shipping</span>
                   Shipping
@@ -487,8 +481,9 @@ export default function OrderDetailModal({
                 <span className={styles.chargeVal}>₦{shipping.toLocaleString()}</span>
               </div>
             )}
+
             {tax > 0 && (
-              <div className={styles.chargeRow}>
+              <div className={styles.summaryRow}>
                 <span className={styles.chargeLabel}>
                   <span className="mi" style={{ fontSize: '0.85rem', verticalAlign: 'middle', marginRight: 4 }}>receipt</span>
                   Tax{taxRate > 0 ? ` (${taxRate}% VAT)` : ''}
@@ -496,6 +491,7 @@ export default function OrderDetailModal({
                 <span className={styles.chargeVal}>₦{tax.toLocaleString()}</span>
               </div>
             )}
+
             <div className={styles.chargeDivider} />
             <div className={styles.chargeTotal}>
               <span>Grand Total</span>
@@ -505,7 +501,7 @@ export default function OrderDetailModal({
         )}
 
         {local.notes && (
-          <div className={styles.sectionCard}>
+          <div className={styles.notesBlock}>
             <div className={styles.sectionLabel}>Notes</div>
             <p className={styles.notesText}>{local.notes}</p>
           </div>
