@@ -122,19 +122,23 @@
   margin-bottom: 8px;
 }
 
+.priorityDropdownWrap {
+  display: flex;
+}
+
 .priorityDropdown {
   position: relative;
+  display: inline-block;
 }
 
 .priorityTrigger {
-  display: flex;
+  display: inline-flex;
   align-items: center;
-  justify-content: space-between;
-  width: 100%;
+  gap: 10px;
   background: var(--surface);
   border: 1px solid var(--border);
-  border-radius: 12px;
-  padding: 12px 14px;
+  border-radius: 10px;
+  padding: 8px 8px 8px 12px;
   font-family: inherit;
   cursor: pointer;
 }
@@ -147,22 +151,23 @@
 .priorityTriggerLeft {
   display: flex;
   align-items: center;
-  gap: 7px;
-  font-size: 0.86rem;
+  gap: 6px;
+  font-size: 0.8rem;
   font-weight: 800;
+  white-space: nowrap;
 }
 
 .priorityMenu {
   position: absolute;
   top: calc(100% + 6px);
   left: 0;
-  right: 0;
+  min-width: 168px;
   background: var(--surface);
   border: 1px solid var(--border2);
   border-radius: 12px;
   padding: 6px;
   z-index: 20;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.28);
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.32);
 }
 
 .priorityMenuItem {
@@ -175,10 +180,11 @@
   background: transparent;
   border-radius: 8px;
   font-family: inherit;
-  font-size: 0.84rem;
+  font-size: 0.82rem;
   font-weight: 700;
   cursor: pointer;
   text-align: left;
+  white-space: nowrap;
 }
 
 .priorityMenuItemActive {
@@ -589,8 +595,8 @@
 }
 
 .stageSheetTitle {
-  padding: 14px 20px 10px;
-  font-size: 0.95rem;
+  padding: 14px 20px 12px;
+  font-size: 1rem;
   font-weight: 800;
   color: var(--text);
 }
@@ -605,13 +611,18 @@
   align-items: center;
   gap: 10px;
   width: 100%;
-  padding: 12px 10px;
+  padding: 13px 10px;
   border: none;
   background: transparent;
-  border-radius: 10px;
+  border-radius: 12px;
   font-family: inherit;
   cursor: pointer;
   text-align: left;
+  transition: background 0.12s ease;
+}
+
+.stageSheetRow:active {
+  background: var(--surface2);
 }
 
 .stageSheetRow:disabled {
@@ -638,16 +649,36 @@
   letter-spacing: 0.4px;
 }
 
-.lockNote {
-  display: inline-block;
-  margin-top: 3px;
-  padding: 3px 8px;
-  border-radius: 6px;
+.lockIcon {
+  font-size: 1rem !important;
+  color: var(--text3);
+  flex-shrink: 0;
+}
+
+.statusHintBanner {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin: 0 20px 0;
+  padding: 0 12px;
+  border-radius: 10px;
   background: rgba(161, 98, 7, 0.08);
-  border: 1px solid rgba(161, 98, 7, 0.2);
-  font-size: 0.66rem;
+  border: 1px solid rgba(161, 98, 7, 0.22);
+  font-size: 0.76rem;
   font-weight: 600;
   color: #a16207;
+  line-height: 1.4;
+  max-height: 0;
+  opacity: 0;
+  overflow: hidden;
+  transition: max-height 0.2s ease, opacity 0.15s ease, padding 0.2s ease, margin 0.2s ease;
+}
+
+.statusHintBannerOpen {
+  max-height: 80px;
+  opacity: 1;
+  padding: 10px 12px;
+  margin: 0 20px 10px;
 }
 
 @media (min-width: 769px) {
