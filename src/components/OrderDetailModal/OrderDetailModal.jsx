@@ -89,6 +89,7 @@ export default function OrderDetailModal({
 
   const [local, setLocal] = useState(order)
   const [hint, setHint] = useState(null)
+  const [statusHint, setStatusHint] = useState(null)
   const [confirmDelete, setConfirmDelete] = useState(false)
   const [showStageSheet, setShowStageSheet] = useState(false)
   const [showStatusSheet, setShowStatusSheet] = useState(false)
@@ -102,6 +103,7 @@ export default function OrderDetailModal({
   useEffect(() => {
     setLocal(order)
     setHint(null)
+    setStatusHint(null)
     setConfirmDelete(false)
     setShowStageSheet(false)
     setShowStatusSheet(false)
@@ -166,14 +168,20 @@ export default function OrderDetailModal({
   const orderTitle = local.desc || local.name || 'Order'
 
   async function handleStatusClick(value) {
-    if (local.status === value || pendingStatus) return
+    if (pendingStatus) return
 
-    if (!isStatusAllowed(value, local.stage)) {
-      setHint(STATUS_HINTS[value] ?? null)
+    if (local.status === value) {
+      setStatusHint(null)
+      setShowStatusSheet(false)
       return
     }
 
-    setHint(null)
+    if (!isStatusAllowed(value, local.stage)) {
+      setStatusHint(STATUS_HINTS[value] ?? null)
+      return
+    }
+
+    setStatusHint(null)
     const prevStatus = local.status
     setLocal(p => ({ ...p, status: value }))
     setPendingStatus(true)
@@ -306,6 +314,7 @@ export default function OrderDetailModal({
         <div className={styles.detailTitle}>{orderTitle}</div>
 
         <div className={styles.chipLabel}>Priority</div>
+        <div className={styles.priorityDropdownWrap}>
         <div className={styles.priorityDropdown} ref={priorityRef}>
           <button
             type="button"
@@ -355,6 +364,7 @@ export default function OrderDetailModal({
             </div>
           )}
         </div>
+        </div>
 
         <div className={styles.infoGrid}>
           <div className={styles.infoGridCell}>
@@ -374,7 +384,7 @@ export default function OrderDetailModal({
           <button
             type="button"
             className={styles.stageCard}
-            onClick={() => setShowStatusSheet(true)}
+            onClick={() => { setStatusHint(null); setShowStatusSheet(true) }}
             disabled={pendingStatus}
           >
             <div className={styles.stageCardLeft}>
@@ -544,10 +554,14 @@ export default function OrderDetailModal({
       </div>
 
       {showStatusSheet && (
-        <div className={styles.stageSheetOverlay} onClick={() => setShowStatusSheet(false)}>
+        <div className={styles.stageSheetOverlay} onClick={() => { setShowStatusSheet(false); setStatusHint(null) }}>
           <div className={styles.stageSheetPanel} onClick={e => e.stopPropagation()}>
             <div className={styles.handle} />
             <div className={styles.stageSheetTitle}>Change status</div>
+            <div className={`${styles.statusHintBanner} ${statusHint ? styles.statusHintBannerOpen : ''}`}>
+              <span className="mi" style={{ fontSize: '0.95rem', flexShrink: 0, marginTop: 1 }}>info</span>
+              <span>{statusHint}</span>
+            </div>
             <div className={styles.stageSheetList}>
               {Object.entries(ORDER_STATUS_LABELS).map(([value, label]) => {
                 const isActive = local.status === value
@@ -557,7 +571,7 @@ export default function OrderDetailModal({
                   <button
                     key={value}
                     type="button"
-                    disabled={pendingStatus || (locked && !isActive)}
+                    disabled={pendingStatus}
                     className={`${styles.stageSheetRow} ${isActive ? styles.stageSheetRowActive : ''}`}
                     onClick={() => handleStatusClick(value)}
                   >
@@ -570,19 +584,18 @@ export default function OrderDetailModal({
                       >
                         <span className="mi" style={{ fontSize: '0.92rem' }}>{STATUS_ICON[value]}</span>
                       </div>
-                      <div style={{ display: 'flex', flexDirection: 'column' }}>
-                        <span
-                          className={styles.stageSheetRowLabel}
-                          style={locked && !isActive ? { color: 'var(--text3)' } : {}}
-                        >
-                          {label}
-                        </span>
-                        {locked && !isActive && STATUS_HINTS[value] && (
-                          <span className={styles.lockNote}>{STATUS_HINTS[value]}</span>
-                        )}
-                      </div>
+                      <span
+                        className={styles.stageSheetRowLabel}
+                        style={locked && !isActive ? { color: 'var(--text3)' } : {}}
+                      >
+                        {label}
+                      </span>
                     </div>
-                    {isActive && <span className={styles.stageSheetCurrent}>Current</span>}
+                    {isActive
+                      ? <span className={styles.stageSheetCurrent}>Current</span>
+                      : locked
+                        ? <span className={`mi ${styles.lockIcon}`}>lock</span>
+                        : null}
                   </button>
                 )
               })}
