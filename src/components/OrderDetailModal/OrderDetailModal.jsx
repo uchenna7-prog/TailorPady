@@ -569,7 +569,7 @@ export default function OrderDetailModal({
             onClick={handleReviewClick}
           >
             <span className="mi" style={{ fontSize: '1rem' }}>share</span>
-            Share review link
+            Share via WhatsApp
           </button>
         </div>
       </div>
