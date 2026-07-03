@@ -38,10 +38,10 @@ function daysUntil(dateStr) {
 }
 
 const STATUS_HINTS = {
-  pending: 'Set the stage to Measurement Taken or Fabric Ready to mark as Pending.',
-  in_progress: 'Move the order to a work stage (Cutting, Sewing, Fitting, etc.) to mark as In Progress.',
-  completed: 'The stage must be Ready before marking this order as Completed.',
-  delivered: 'The stage must be Ready before marking this order as Delivered.',
+  pending: 'Requires stage: Measurement Taken or Fabric Ready',
+  in_progress: 'Requires a work stage (Cutting, Sewing, Fitting, etc.)',
+  completed: 'Requires stage: Ready',
+  delivered: 'Requires stage: Ready',
 }
 
 const STATUS_CHIP = {
@@ -83,6 +83,7 @@ export default function OrderDetailModal({
   const [hint, setHint] = useState(null)
   const [confirmDelete, setConfirmDelete] = useState(false)
   const [showStageSheet, setShowStageSheet] = useState(false)
+  const [showStatusSheet, setShowStatusSheet] = useState(false)
   const [pendingStatus, setPendingStatus] = useState(false)
   const [pendingStage, setPendingStage] = useState(false)
   const [pendingPriority, setPendingPriority] = useState(false)
@@ -93,6 +94,7 @@ export default function OrderDetailModal({
     setHint(null)
     setConfirmDelete(false)
     setShowStageSheet(false)
+    setShowStatusSheet(false)
     setBrokenImages(new Set())
   }, [order?.id])
 
@@ -131,6 +133,7 @@ export default function OrderDetailModal({
   const canReview = local.status === 'completed' || local.status === 'delivered'
   const stageIndex = ORDER_STAGES.findIndex(s => s.value === local.stage)
   const stageObj = ORDER_STAGES.find(s => s.value === local.stage)
+  const statusMeta = STATUS_CHIP[local.status] || STATUS_CHIP.pending
   const showCustomer = local.customerName && !hideCustomerName
   const orderTitle = local.desc || local.name || 'Order'
 
@@ -146,6 +149,7 @@ export default function OrderDetailModal({
     const prevStatus = local.status
     setLocal(p => ({ ...p, status: value }))
     setPendingStatus(true)
+    setShowStatusSheet(false)
 
     try {
       await updateOrderStatus(local.customerId, local.id, value)
@@ -288,31 +292,21 @@ export default function OrderDetailModal({
           })}
         </div>
 
-        <div className={styles.chipLabel} style={{ marginTop: 16 }}>Status</div>
-        <div className={styles.chipRow}>
-          {Object.entries(ORDER_STATUS_LABELS).map(([value, label]) => {
-            const meta = STATUS_CHIP[value]
-            const isActive = local.status === value
-            const locked = !isStatusAllowed(value, local.stage)
-            return (
-              <button
-                key={value}
-                disabled={pendingStatus || (locked && !isActive)}
-                className={[
-                  styles.chipBtn,
-                  isActive ? styles.chipBtn_active : '',
-                  locked && !isActive ? styles.chipBtn_locked : '',
-                ].join(' ')}
-                style={isActive ? { background: meta.bg, borderColor: meta.border, color: meta.color } : {}}
-                onClick={() => handleStatusClick(value)}
-              >
-                {label}
-              </button>
-            )
-          })}
-        </div>
-
-        {hint && hint !== 'review' && <div className={styles.hintText}>{hint}</div>}
+        <button
+          type="button"
+          className={styles.stageCard}
+          style={{ marginTop: 16 }}
+          onClick={() => setShowStatusSheet(true)}
+          disabled={pendingStatus}
+        >
+          <div>
+            <div className={styles.stageCardLabel}>Status</div>
+            <div className={styles.stageCardValue} style={{ color: statusMeta.color }}>
+              {ORDER_STATUS_LABELS[local.status] || 'Pending'}
+            </div>
+          </div>
+          <span className="mi" style={{ fontSize: '1.1rem', color: 'var(--text3)' }}>chevron_right</span>
+        </button>
 
         <div className={styles.infoGrid}>
           <div className={styles.infoGridCell}>
@@ -462,6 +456,45 @@ export default function OrderDetailModal({
           </button>
         </div>
       </div>
+
+      {showStatusSheet && (
+        <div className={styles.stageSheetOverlay} onClick={() => setShowStatusSheet(false)}>
+          <div className={styles.stageSheetPanel} onClick={e => e.stopPropagation()}>
+            <div className={styles.handle} />
+            <div className={styles.stageSheetTitle}>Change status</div>
+            <div className={styles.stageSheetList}>
+              {Object.entries(ORDER_STATUS_LABELS).map(([value, label]) => {
+                const isActive = local.status === value
+                const locked = !isStatusAllowed(value, local.stage)
+                return (
+                  <button
+                    key={value}
+                    type="button"
+                    disabled={pendingStatus || (locked && !isActive)}
+                    className={`${styles.stageSheetRow} ${isActive ? styles.stageSheetRowActive : ''}`}
+                    onClick={() => handleStatusClick(value)}
+                  >
+                    <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 2 }}>
+                      <span
+                        className={styles.stageSheetRowLabel}
+                        style={locked && !isActive ? { color: 'var(--text3)' } : {}}
+                      >
+                        {label}
+                      </span>
+                      {locked && !isActive && STATUS_HINTS[value] && (
+                        <span style={{ fontSize: '0.68rem', fontWeight: 600, color: 'var(--text3)' }}>
+                          {STATUS_HINTS[value]}
+                        </span>
+                      )}
+                    </div>
+                    {isActive && <span className={styles.stageSheetCurrent}>Current</span>}
+                  </button>
+                )
+              })}
+            </div>
+          </div>
+        </div>
+      )}
 
       {showStageSheet && (
         <div className={styles.stageSheetOverlay} onClick={() => setShowStageSheet(false)}>
