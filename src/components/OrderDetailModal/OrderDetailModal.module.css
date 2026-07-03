@@ -160,11 +160,36 @@
 }
 
 .hintText {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
   margin-top: 10px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: rgba(161, 98, 7, 0.08);
+  border: 1px solid rgba(161, 98, 7, 0.22);
   font-size: 0.76rem;
   font-weight: 600;
   color: #a16207;
   line-height: 1.4;
+}
+
+.hintIcon {
+  font-size: 0.95rem !important;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+.stateGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 16px;
+  margin-bottom: 4px;
+}
+
+.stateGroup .stageCard {
+  margin-bottom: 0;
 }
 
 .infoGrid {
@@ -401,11 +426,18 @@
 }
 
 .footerHint {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: rgba(161, 98, 7, 0.08);
+  border: 1px solid rgba(161, 98, 7, 0.22);
   font-size: 0.7rem;
   font-weight: 600;
   color: #a16207;
   line-height: 1.4;
-  margin-bottom: 8px;
+  margin-bottom: 10px;
 }
 
 .footerButtons {
@@ -532,6 +564,18 @@
   color: var(--accent);
   text-transform: uppercase;
   letter-spacing: 0.4px;
+}
+
+.lockNote {
+  display: inline-block;
+  margin-top: 3px;
+  padding: 3px 8px;
+  border-radius: 6px;
+  background: rgba(161, 98, 7, 0.08);
+  border: 1px solid rgba(161, 98, 7, 0.2);
+  font-size: 0.66rem;
+  font-weight: 600;
+  color: #a16207;
 }
 
 @media (min-width: 769px) {
