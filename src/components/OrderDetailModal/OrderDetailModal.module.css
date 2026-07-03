@@ -116,7 +116,7 @@
 }
 
 .bodyWithFooter {
-  padding-bottom: calc(104px + var(--sb, 0px));
+  padding-bottom: calc(160px + var(--sb, 0px));
 }
 
 .detailTitle {
@@ -517,7 +517,7 @@
   left: 0;
   right: 0;
   bottom: 0;
-  height: 92px;
+  height: 140px;
   background: linear-gradient(to bottom, rgba(0, 0, 0, 0), var(--bg) 68%);
   pointer-events: none;
   z-index: 4;
@@ -536,8 +536,9 @@
 
 .footerBar {
   display: flex;
-  gap: 6px;
-  padding: 6px;
+  flex-direction: column;
+  gap: 7px;
+  padding: 7px;
   border-radius: 20px;
   background: var(--surface);
   border: 1px solid var(--border2);
@@ -553,7 +554,7 @@
 }
 
 .footerBtnPrimary {
-  flex: 1;
+  width: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -561,10 +562,10 @@
   background: var(--accent);
   border: none;
   border-radius: 15px;
-  padding: 13px 10px;
+  padding: 14px 10px;
   color: var(--bg);
   font-family: inherit;
-  font-size: 0.84rem;
+  font-size: 0.86rem;
   font-weight: 700;
   cursor: pointer;
   transition: opacity 0.15s;
@@ -575,7 +576,7 @@
 }
 
 .footerBtnSecondary {
-  flex: 1;
+  width: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -586,7 +587,7 @@
   padding: 13px 8px;
   color: #22c55e;
   font-family: inherit;
-  font-size: 0.82rem;
+  font-size: 0.84rem;
   font-weight: 700;
   cursor: pointer;
   transition: opacity 0.15s;
