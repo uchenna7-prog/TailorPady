@@ -375,7 +375,7 @@ export default function OrderDetailModal({
           </div>
           <div className={styles.infoGridCell}>
             <div className={styles.infoGridLabel}>Due</div>
-            <div className={`${styles.infoGridValue} ${overdue ? styles.overdueText : ''}`}>
+            <div className={`${styles.infoGridValue} ${styles.overdueText}`}>
               {local.due || '—'}
             </div>
             {dueTag && <div className={styles.infoGridSub}>{dueTag}</div>}
@@ -409,6 +409,17 @@ export default function OrderDetailModal({
             onClick={() => setShowStageSheet(true)}
             disabled={pendingStage}
           >
+            <div className={styles.stageProgressRow}>
+              <div className={styles.progressTrack}>
+                <div
+                  className={styles.progressFill}
+                  style={{ width: stageObj ? `${((stageIndex + 1) / ORDER_STAGES.length) * 100}%` : '0%' }}
+                />
+              </div>
+              {stageObj && (
+                <div className={styles.stageCardCount}>{stageIndex + 1} of {ORDER_STAGES.length}</div>
+              )}
+            </div>
             <div className={styles.stageCardTop}>
               <div className={styles.rowIcon} style={{ background: 'var(--surface2)', color: 'var(--accent)' }}>
                 <span className="mi" style={{ fontSize: '1.05rem' }}>{stageObj?.icon || 'timeline'}</span>
@@ -418,17 +429,8 @@ export default function OrderDetailModal({
                 <div className={styles.stageCardValue}>
                   {stageObj ? stageObj.label : 'Not started'}
                 </div>
-                {stageObj && (
-                  <div className={styles.stageCardCount}>{stageIndex + 1} of {ORDER_STAGES.length}</div>
-                )}
               </div>
               <span className="mi" style={{ fontSize: '1.1rem', color: 'var(--text3)' }}>chevron_right</span>
-            </div>
-            <div className={styles.progressTrack}>
-              <div
-                className={styles.progressFill}
-                style={{ width: stageObj ? `${((stageIndex + 1) / ORDER_STAGES.length) * 100}%` : '0%' }}
-              />
             </div>
           </button>
         </div>
