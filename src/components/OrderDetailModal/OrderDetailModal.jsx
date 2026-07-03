@@ -322,7 +322,12 @@ export default function OrderDetailModal({
             <span className="mi" style={{ fontSize: '1.1rem', color: 'var(--text3)' }}>chevron_right</span>
           </button>
 
-          <button type="button" className={styles.stageCard} onClick={() => setShowStageSheet(true)} disabled={pendingStage}>
+          <button type="button" className={styles.stageCard} style={{ position: 'relative' }} onClick={() => setShowStageSheet(true)} disabled={pendingStage}>
+            {stageObj && (
+              <span className={styles.stageCardCount} style={{ position: 'absolute', top: 10, right: 40 }}>
+                {stageIndex + 1} of {ORDER_STAGES.length}
+              </span>
+            )}
             <div className={styles.stageCardLeft}>
               <div className={styles.rowIcon} style={{ background: 'var(--surface2)', color: 'var(--accent)' }}>
                 <span className="mi" style={{ fontSize: '1.05rem' }}>{stageObj?.icon || 'timeline'}</span>
@@ -331,7 +336,6 @@ export default function OrderDetailModal({
                 <div className={styles.stageCardLabel}>Stage</div>
                 <div className={styles.stageCardValue}>
                   {stageObj ? stageObj.label : 'Not started'}
-                  {stageObj && <span className={styles.stageCardCount}> · {stageIndex + 1} of {ORDER_STAGES.length}</span>}
                 </div>
               </div>
             </div>
