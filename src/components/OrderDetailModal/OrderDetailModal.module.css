@@ -19,6 +19,11 @@
   to { opacity: 1; }
 }
 
+@keyframes hintIn {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
 .panel {
   position: relative;
   width: 100%;
@@ -104,6 +109,10 @@
   overflow-y: auto;
   padding: 18px 18px calc(28px + var(--sb, 0px));
   -webkit-overflow-scrolling: touch;
+}
+
+:global(.mi) {
+  text-transform: none;
 }
 
 .bodyWithFooter {
@@ -274,6 +283,7 @@
   color: var(--text3);
   vertical-align: -2px;
   margin-right: 6px;
+  text-transform: none;
 }
 
 .infoGrid {
@@ -502,22 +512,55 @@
   margin: 0;
 }
 
-.floatingFooter {
+.bodyFade {
   position: absolute;
-  left: 18px;
-  right: 18px;
-  bottom: calc(16px + var(--sb, 0px));
-  z-index: 5;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 92px;
+  background: linear-gradient(to bottom, rgba(0, 0, 0, 0), var(--bg) 68%);
+  pointer-events: none;
+  z-index: 4;
 }
 
-.btnPrimary {
+.floatingFooter {
+  position: absolute;
+  left: 14px;
+  right: 14px;
+  bottom: calc(14px + var(--sb, 0px));
+  z-index: 5;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.footerBar {
+  display: flex;
+  gap: 6px;
+  padding: 6px;
+  border-radius: 20px;
+  background: var(--surface);
+  border: 1px solid var(--border2);
+  box-shadow: 0 10px 26px rgba(0, 0, 0, 0.24);
+  backdrop-filter: blur(20px) saturate(160%);
+  -webkit-backdrop-filter: blur(20px) saturate(160%);
+  transition: box-shadow 0.2s ease, transform 0.2s ease;
+}
+
+.floatingFooterElevated .footerBar {
+  box-shadow: 0 20px 44px rgba(0, 0, 0, 0.42);
+  transform: translateY(-2px);
+}
+
+.footerBtnPrimary {
+  flex: 1;
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 7px;
   background: var(--accent);
-  border: 1px solid var(--accent);
-  border-radius: 12px;
+  border: none;
+  border-radius: 15px;
   padding: 13px 10px;
   color: var(--bg);
   font-family: inherit;
@@ -527,47 +570,20 @@
   transition: opacity 0.15s;
 }
 
-.btnPrimary:active {
+.footerBtnPrimary:active {
   opacity: 0.85;
 }
 
-.floatingFooter .btnPrimary {
-  width: 100%;
-  border-radius: 16px;
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.18);
-  transition: box-shadow 0.2s ease, transform 0.2s ease;
-}
-
-.floatingFooterElevated .btnPrimary {
-  box-shadow: 0 14px 32px rgba(0, 0, 0, 0.38);
-  transform: translateY(-2px);
-}
-
-.inlineHint {
-  display: flex;
-  align-items: flex-start;
-  gap: 8px;
-  margin-top: 10px;
-  padding: 10px 12px;
-  border-radius: 10px;
-  background: rgba(161, 98, 7, 0.08);
-  border: 1px solid rgba(161, 98, 7, 0.22);
-  font-size: 0.76rem;
-  font-weight: 600;
-  color: #a16207;
-  line-height: 1.4;
-}
-
-.reviewBtn {
+.footerBtnSecondary {
+  flex: 1;
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 7px;
-  width: 100%;
-  background: rgba(34, 197, 94, 0.07);
-  border: 1px solid rgba(34, 197, 94, 0.35);
-  border-radius: 12px;
-  padding: 12px 8px;
+  background: rgba(34, 197, 94, 0.14);
+  border: none;
+  border-radius: 15px;
+  padding: 13px 8px;
   color: #22c55e;
   font-family: inherit;
   font-size: 0.82rem;
@@ -576,14 +592,29 @@
   transition: opacity 0.15s;
 }
 
-.reviewBtn:active {
+.footerBtnSecondary:active {
   opacity: 0.75;
 }
 
-.reviewBtn_disabled {
-  border-color: var(--border);
+.footerBtnSecondary_disabled {
   background: var(--surface2);
   color: var(--text2);
+}
+
+.footerHintCard {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 10px 12px;
+  border-radius: 14px;
+  background: rgba(161, 98, 7, 0.14);
+  border: 1px solid rgba(161, 98, 7, 0.3);
+  font-size: 0.74rem;
+  font-weight: 600;
+  color: #a16207;
+  line-height: 1.4;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+  animation: hintIn 0.15s ease;
 }
 
 .stageSheetOverlay {
