@@ -38,10 +38,10 @@ function daysUntil(dateStr) {
 }
 
 const STATUS_HINTS = {
-  pending: 'Requires stage: Measurement Taken or Fabric Ready',
-  in_progress: 'Requires a work stage (Cutting, Sewing, Fitting, etc.)',
-  completed: 'Requires stage: Ready',
-  delivered: 'Requires stage: Ready',
+  pending: 'Move the stage to Measurement Taken or Fabric Ready to unlock this status.',
+  in_progress: 'Move the stage to a work stage like Cutting, Sewing, or Fitting to unlock this status.',
+  completed: 'Move the stage to Ready to unlock this status.',
+  delivered: 'Move the stage to Ready to unlock this status.',
 }
 
 const STATUS_CHIP = {
@@ -321,6 +321,7 @@ export default function OrderDetailModal({
             className={styles.priorityTrigger}
             disabled={pendingPriority}
             onClick={() => setShowPriorityMenu(v => !v)}
+            style={{ background: priorityMeta.bg, borderColor: priorityMeta.border }}
           >
             <span className={styles.priorityTriggerLeft}>
               {priorityMeta.icon && (
@@ -332,7 +333,8 @@ export default function OrderDetailModal({
               className="mi"
               style={{
                 fontSize: '1.1rem',
-                color: 'var(--text3)',
+                color: priorityMeta.color,
+                opacity: 0.7,
                 transform: showPriorityMenu ? 'rotate(180deg)' : 'none',
                 transition: 'transform 0.15s',
               }}
@@ -599,6 +601,10 @@ export default function OrderDetailModal({
                   </button>
                 )
               })}
+            </div>
+            <div className={styles.stageSheetFootnote}>
+              <span className="mi" style={{ fontSize: '0.85rem', flexShrink: 0 }}>sync</span>
+              Status updates automatically as you move through order stages
             </div>
           </div>
         </div>
