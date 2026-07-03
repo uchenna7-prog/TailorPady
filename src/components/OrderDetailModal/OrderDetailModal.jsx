@@ -389,12 +389,12 @@ export default function OrderDetailModal({
             onClick={() => { setStatusHint(null); setShowStatusSheet(true) }}
             disabled={pendingStatus}
           >
+            <div className={styles.stageCardLabel}>Status</div>
             <div className={styles.stageCardTop}>
               <div className={styles.rowIcon} style={{ background: statusMeta.bg, color: statusMeta.color }}>
                 <span className="mi" style={{ fontSize: '1.05rem' }}>{STATUS_ICON[local.status] || 'schedule'}</span>
               </div>
               <div style={{ flex: 1, marginLeft: 12 }}>
-                <div className={styles.stageCardLabel}>Status</div>
                 <div className={styles.stageCardValue} style={{ color: statusMeta.color }}>
                   {ORDER_STATUS_LABELS[local.status] || 'Pending'}
                 </div>
@@ -409,6 +409,7 @@ export default function OrderDetailModal({
             onClick={() => setShowStageSheet(true)}
             disabled={pendingStage}
           >
+            <div className={styles.stageCardLabel}>Stage</div>
             <div className={styles.stageProgressRow}>
               <div className={styles.progressTrack}>
                 <div
@@ -425,7 +426,6 @@ export default function OrderDetailModal({
                 <span className="mi" style={{ fontSize: '1.05rem' }}>{stageObj?.icon || 'timeline'}</span>
               </div>
               <div style={{ flex: 1, marginLeft: 12 }}>
-                <div className={styles.stageCardLabel}>Stage</div>
                 <div className={styles.stageCardValue}>
                   {stageObj ? stageObj.label : 'Not started'}
                 </div>
