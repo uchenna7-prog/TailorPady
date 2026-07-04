@@ -2,10 +2,9 @@ import { useState, useEffect, useRef } from 'react'
 import { useOrders } from '../../contexts/OrdersContext'
 import { useAuth } from '../../contexts/AuthContext'
 import {
-  ORDER_STAGE_AUTO_STATUS,
   ORDER_STATUS_LABELS,
   ORDER_STAGES,
-  ORDER_STATUS_CORRESPONDING_STAGES,
+  ORDER_STAGE_AUTO_STATUS,
 } from '../../datas/orderDatas'
 import Header from '../Header/Header'
 import ConfirmSheet from '../ConfirmSheet/ConfirmSheet'
@@ -60,21 +59,25 @@ function daysUntil(dateStr) {
 
 function formatOrderNumber(num) {
   if (num === null || num === undefined) return null
-  return `Order #${String(num).padStart(4, '0')}`
+  return `#${String(num).padStart(4, '0')}`
 }
 
 function getProgressColor(percent) {
   const clamped = Math.max(0, Math.min(100, percent))
-  const hue = 38 + (142 - 38) * (clamped / 100)
-  return `hsl(${hue}, 72%, 45%)`
+  const stops = [
+    { p: 0, h: 40, s: 85, l: 55 },
+    { p: 50, h: 265, s: 68, l: 60 },
+    { p: 100, h: 150, s: 65, l: 42 },
+  ]
+  const [a, b] = clamped <= 50 ? [stops[0], stops[1]] : [stops[1], stops[2]]
+  const t = (clamped - a.p) / (b.p - a.p)
+  const h = a.h + (b.h - a.h) * t
+  const s = a.s + (b.s - a.s) * t
+  const l = a.l + (b.l - a.l) * t
+  return `hsl(${h}, ${s}%, ${l}%)`
 }
 
-const STATUS_HINTS = {
-  pending: 'Move the stage to Measurement Taken or Fabric Ready to unlock this status.',
-  in_progress: 'Move the stage to a work stage like Cutting, Sewing, or Fitting to unlock this status.',
-  completed: 'Move the stage to Ready to unlock this status.',
-  delivered: 'Move the stage to Ready to unlock this status.',
-}
+const DONUT_CIRCUMFERENCE = 2 * Math.PI * 26
 
 const STATUS_CHIP = {
   pending: { color: '#eab308', bg: 'rgba(234,179,8,0.12)', border: 'rgba(234,179,8,0.4)' },
@@ -98,13 +101,7 @@ const STATUS_ICON = {
   cancelled: 'cancel',
 }
 
-function isStatusAllowed(status, stage) {
-  if (status === 'cancelled') return true
-  const allowed = ORDER_STATUS_CORRESPONDING_STAGES[status]
-  if (!allowed) return true
-  if (!stage) return status === 'pending'
-  return Array.isArray(allowed) ? allowed.includes(stage) : allowed === stage
-}
+const CANCELLABLE_STATUSES = ['pending', 'in_progress']
 
 export default function OrderDetailModal({
   order,
@@ -121,12 +118,10 @@ export default function OrderDetailModal({
 
   const [local, setLocal] = useState(order)
   const [hint, setHint] = useState(null)
-  const [statusHint, setStatusHint] = useState(null)
   const [confirmDelete, setConfirmDelete] = useState(false)
   const [showStageSheet, setShowStageSheet] = useState(false)
-  const [showStatusSheet, setShowStatusSheet] = useState(false)
   const [showPriorityMenu, setShowPriorityMenu] = useState(false)
-  const [pendingStatus, setPendingStatus] = useState(false)
+  const [pendingCancel, setPendingCancel] = useState(false)
   const [pendingStage, setPendingStage] = useState(false)
   const [pendingPriority, setPendingPriority] = useState(false)
   const [brokenImages, setBrokenImages] = useState(() => new Set())
@@ -135,10 +130,8 @@ export default function OrderDetailModal({
   useEffect(() => {
     setLocal(order)
     setHint(null)
-    setStatusHint(null)
     setConfirmDelete(false)
     setShowStageSheet(false)
-    setShowStatusSheet(false)
     setShowPriorityMenu(false)
     setBrokenImages(new Set())
   }, [order?.id])
@@ -191,6 +184,8 @@ export default function OrderDetailModal({
   const totalQty = items.reduce((s, i) => s + (parseInt(i.qty, 10) || 1), 0) || local.qty || 1
 
   const canReview = local.status === 'completed' || local.status === 'delivered'
+  const isCancelled = local.status === 'cancelled'
+  const canCancel = CANCELLABLE_STATUSES.includes(local.status) || isCancelled
   const stageHistory = local.stageHistory || {}
   const stageIndex = ORDER_STAGES.findIndex(s => s.value === local.stage)
   const stageObj = ORDER_STAGES.find(s => s.value === local.stage)
@@ -198,52 +193,11 @@ export default function OrderDetailModal({
   const progressColor = getProgressColor(progressPercent)
   const stageUpdatedLabel = formatFullTimestamp(local.updatedAt)
   const statusMeta = STATUS_CHIP[local.status] || STATUS_CHIP.pending
-  const stageBadgeStyle = stageObj
-    ? { background: 'var(--surface2)', color: 'var(--accent)', border: '1px solid var(--border2)' }
-    : { background: 'var(--surface2)', color: 'var(--text3)', border: '1px solid var(--border2)' }
   const priorityValue = local.priority ?? 'normal'
   const priorityMeta = PRIORITY_CHIP[priorityValue]
   const showCustomer = local.customerName && !hideCustomerName
   const orderTitle = local.desc || local.name || 'Order'
   const orderNumberLabel = formatOrderNumber(local.orderNumber)
-
-  const statusTimestampLabel = formatFullTimestamp(local.updatedAt)
-  const statusVerb = local.status === 'completed' ? 'Completed on'
-    : local.status === 'delivered' ? 'Delivered on'
-    : local.status === 'cancelled' ? 'Cancelled on'
-    : local.status === 'in_progress' ? 'Started on'
-    : 'Updated on'
-
-  async function handleStatusClick(value) {
-    if (pendingStatus) return
-
-    if (local.status === value) {
-      setStatusHint(null)
-      setShowStatusSheet(false)
-      return
-    }
-
-    if (!isStatusAllowed(value, local.stage)) {
-      setStatusHint(STATUS_HINTS[value] ?? null)
-      return
-    }
-
-    setStatusHint(null)
-    const prevStatus = local.status
-    setLocal(p => ({ ...p, status: value }))
-    setPendingStatus(true)
-    setShowStatusSheet(false)
-
-    try {
-      await updateOrderStatus(local.customerId, local.id, value)
-      showToast?.('Status updated')
-    } catch {
-      setLocal(p => ({ ...p, status: prevStatus }))
-      showToast?.('Failed to update status')
-    } finally {
-      setPendingStatus(false)
-    }
-  }
 
   async function handleStageChange(stageValue) {
     if (pendingStage || local.stage === stageValue) {
@@ -298,6 +252,23 @@ export default function OrderDetailModal({
       showToast?.('Failed to update priority')
     } finally {
       setPendingPriority(false)
+    }
+  }
+
+  async function handleCancelOrder() {
+    if (pendingCancel) return
+    const prevStatus = local.status
+    const nextStatus = isCancelled ? (ORDER_STAGE_AUTO_STATUS[local.stage] || 'pending') : 'cancelled'
+    setLocal(p => ({ ...p, status: nextStatus }))
+    setPendingCancel(true)
+    try {
+      await updateOrderStatus(local.customerId, local.id, nextStatus)
+      showToast?.(isCancelled ? 'Order restored' : 'Order cancelled')
+    } catch {
+      setLocal(p => ({ ...p, status: prevStatus }))
+      showToast?.(isCancelled ? 'Failed to restore order' : 'Failed to cancel order')
+    } finally {
+      setPendingCancel(false)
     }
   }
 
@@ -370,78 +341,81 @@ export default function OrderDetailModal({
 
         <div className={styles.detailTitle}>{orderTitle}</div>
 
-        <div className={styles.dualColumnRow}>
-          <div className={styles.dualColumn}>
-            <div className={styles.chipLabel}>Priority</div>
-            <div className={styles.priorityDropdown} ref={priorityRef}>
-          <button
-            type="button"
-            className={styles.priorityTrigger}
-            disabled={pendingPriority}
-            onClick={() => setShowPriorityMenu(v => !v)}
-            style={{ background: priorityMeta.bg, borderColor: priorityMeta.border }}
-          >
-            <span className={styles.priorityTriggerLeft}>
-              {priorityMeta.icon && (
-                <span className="mi" style={{ fontSize: '0.9rem', color: priorityMeta.color }}>{priorityMeta.icon}</span>
-              )}
-              <span style={{ color: priorityMeta.color }}>{priorityMeta.label}</span>
-            </span>
-            <span
-              className="mi"
-              style={{
-                fontSize: '1.1rem',
-                color: priorityMeta.color,
-                opacity: 0.7,
-                transform: showPriorityMenu ? 'rotate(180deg)' : 'none',
-                transition: 'transform 0.15s',
-              }}
+        <div className={styles.priorityRow}>
+          <div className={styles.chipLabel}>Priority</div>
+          <div className={styles.priorityDropdown} ref={priorityRef}>
+            <button
+              type="button"
+              className={styles.priorityTrigger}
+              disabled={pendingPriority}
+              onClick={() => setShowPriorityMenu(v => !v)}
+              style={{ background: priorityMeta.bg, borderColor: priorityMeta.border }}
             >
-              expand_more
-            </span>
-          </button>
+              <span className={styles.priorityTriggerLeft}>
+                {priorityMeta.icon && (
+                  <span className="mi" style={{ fontSize: '0.9rem', color: priorityMeta.color }}>{priorityMeta.icon}</span>
+                )}
+                <span style={{ color: priorityMeta.color }}>{priorityMeta.label}</span>
+              </span>
+              <span
+                className="mi"
+                style={{
+                  fontSize: '1.1rem',
+                  color: priorityMeta.color,
+                  opacity: 0.7,
+                  transform: showPriorityMenu ? 'rotate(180deg)' : 'none',
+                  transition: 'transform 0.15s',
+                }}
+              >
+                expand_more
+              </span>
+            </button>
 
-          {showPriorityMenu && (
-            <div className={styles.priorityMenu}>
-              {['normal', 'urgent', 'vip'].map(p => {
-                const meta = PRIORITY_CHIP[p]
-                const isActive = priorityValue === p
-                return (
-                  <button
-                    key={p}
-                    type="button"
-                    className={`${styles.priorityMenuItem} ${isActive ? styles.priorityMenuItemActive : ''}`}
-                    onClick={() => handlePriority(p)}
-                  >
-                    {meta.icon
-                      ? <span className="mi" style={{ fontSize: '0.9rem', color: meta.color }}>{meta.icon}</span>
-                      : <span className={styles.priorityMenuItemDot} />}
-                    <span style={{ color: isActive ? meta.color : 'var(--text)' }}>{meta.label}</span>
-                    {isActive && <span className="mi" style={{ marginLeft: 'auto', fontSize: '1rem', color: meta.color }}>check</span>}
-                  </button>
-                )
-              })}
-            </div>
-          )}
-        </div>
-        </div>
-
-        {orderNumberLabel && (
-          <div className={`${styles.dualColumn} ${styles.dualColumnRight}`}>
-            <div className={styles.chipLabel}>Order No.</div>
-            <div className={styles.orderNumberBold}>{orderNumberLabel}</div>
+            {showPriorityMenu && (
+              <div className={styles.priorityMenu}>
+                {['normal', 'urgent', 'vip'].map(p => {
+                  const meta = PRIORITY_CHIP[p]
+                  const isActive = priorityValue === p
+                  return (
+                    <button
+                      key={p}
+                      type="button"
+                      className={`${styles.priorityMenuItem} ${isActive ? styles.priorityMenuItemActive : ''}`}
+                      onClick={() => handlePriority(p)}
+                    >
+                      {meta.icon
+                        ? <span className="mi" style={{ fontSize: '0.9rem', color: meta.color }}>{meta.icon}</span>
+                        : <span className={styles.priorityMenuItemDot} />}
+                      <span style={{ color: isActive ? meta.color : 'var(--text)' }}>{meta.label}</span>
+                      {isActive && <span className="mi" style={{ marginLeft: 'auto', fontSize: '1rem', color: meta.color }}>check</span>}
+                    </button>
+                  )
+                })}
+              </div>
+            )}
           </div>
-        )}
         </div>
 
         <div className={styles.infoGrid}>
+          {orderNumberLabel && (
+            <div className={styles.infoGridCell}>
+              <div className={styles.infoGridLabel}>Order No</div>
+              <div className={styles.infoGridValue}>{orderNumberLabel}</div>
+            </div>
+          )}
+          <div className={styles.infoGridCell}>
+            <div className={styles.infoGridLabel}>Status</div>
+            <div className={styles.infoGridValue} style={{ color: statusMeta.color }}>
+              {ORDER_STATUS_LABELS[local.status] || 'Pending'}
+            </div>
+          </div>
           <div className={styles.infoGridCell}>
             <div className={styles.infoGridLabel}>Placed</div>
             <div className={styles.infoGridValue}>{placedOn || '—'}</div>
           </div>
           <div className={styles.infoGridCell}>
             <div className={styles.infoGridLabel}>Due</div>
-            <div className={`${styles.infoGridValue} ${styles.overdueText}`}>
+            <div className={`${styles.infoGridValue} ${overdue ? styles.overdueText : ''}`}>
               {local.due || '—'}
             </div>
             {dueTag && <div className={styles.infoGridSub}>{dueTag}</div>}
@@ -452,63 +426,48 @@ export default function OrderDetailModal({
           <button
             type="button"
             className={styles.premiumCard}
-            onClick={() => { setStatusHint(null); setShowStatusSheet(true) }}
-            disabled={pendingStatus}
-          >
-            <div className={styles.cardHeader}>
-              <span className={styles.cardLabel}>Status</span>
-              {pendingStatus
-                ? <span className={`mi ${styles.spinIcon}`} style={{ fontSize: '1.05rem', color: 'var(--text3)' }}>progress_activity</span>
-                : <span className={`mi ${styles.chevronIcon}`} style={{ fontSize: '1.05rem', color: 'var(--text3)' }}>chevron_right</span>
-              }
-            </div>
-            <div className={styles.cardMainRow}>
-              <div className={styles.cardIconBadge} style={{ background: statusMeta.bg, color: statusMeta.color, border: `1px solid ${statusMeta.border}` }}>
-                <span className="mi" style={{ fontSize: '1.15rem' }}>{STATUS_ICON[local.status] || 'schedule'}</span>
-              </div>
-              <div className={styles.cardValue} style={{ color: statusMeta.color }}>
-                {ORDER_STATUS_LABELS[local.status] || 'Pending'}
-              </div>
-            </div>
-            {statusTimestampLabel && (
-              <div className={styles.cardFooter}>
-                <span className="mi" style={{ fontSize: '0.82rem' }}>schedule</span>
-                <span>{statusVerb} {statusTimestampLabel}</span>
-              </div>
-            )}
-          </button>
-
-          <button
-            type="button"
-            className={styles.premiumCard}
             onClick={openStageSheet}
             disabled={pendingStage}
           >
             <div className={styles.cardHeader}>
               <span className={styles.cardLabel}>Production Progress</span>
-              <div className={styles.cardHeaderRight}>
-                <span className={styles.cardPercent} style={{ color: progressColor }}>{progressPercent}%</span>
-                {pendingStage
-                  ? <span className={`mi ${styles.spinIcon}`} style={{ fontSize: '1.05rem', color: 'var(--text3)' }}>progress_activity</span>
-                  : <span className={`mi ${styles.chevronIcon}`} style={{ fontSize: '1.05rem', color: 'var(--text3)' }}>chevron_right</span>
-                }
+              {pendingStage
+                ? <span className={`mi ${styles.spinIcon}`} style={{ fontSize: '1.05rem', color: 'var(--text3)' }}>progress_activity</span>
+                : <span className={`mi ${styles.chevronIcon}`} style={{ fontSize: '1.05rem', color: 'var(--text3)' }}>chevron_right</span>
+              }
+            </div>
+            <div className={styles.donutRow}>
+              <div className={styles.donutContent}>
+                <div className={styles.cardValueRow}>
+                  {stageObj?.icon && (
+                    <span className="mi" style={{ fontSize: '1.05rem', color: progressColor }}>{stageObj.icon}</span>
+                  )}
+                  <div className={styles.cardValue}>{stageObj ? stageObj.label : 'Not started'}</div>
+                </div>
+                {stageUpdatedLabel && (
+                  <div className={styles.donutMeta}>
+                    <span className="mi" style={{ fontSize: '0.82rem' }}>schedule</span>
+                    <span>Updated on {stageUpdatedLabel}</span>
+                  </div>
+                )}
+              </div>
+              <div className={styles.donutWrap}>
+                <svg viewBox="0 0 64 64" className={styles.donutSvg}>
+                  <circle cx="32" cy="32" r="26" fill="none" stroke="var(--surface2)" strokeWidth="7" />
+                  <circle
+                    cx="32" cy="32" r="26" fill="none"
+                    stroke={progressColor}
+                    strokeWidth="7"
+                    strokeLinecap="round"
+                    strokeDasharray={DONUT_CIRCUMFERENCE}
+                    strokeDashoffset={DONUT_CIRCUMFERENCE - (progressPercent / 100) * DONUT_CIRCUMFERENCE}
+                    transform="rotate(-90 32 32)"
+                    className={styles.donutProgress}
+                  />
+                </svg>
+                <span className={styles.donutLabel} style={{ color: progressColor }}>{progressPercent}%</span>
               </div>
             </div>
-            <div className={styles.progressTrack}>
-              <div className={styles.progressFill} style={{ width: `${progressPercent}%`, backgroundColor: progressColor }} />
-            </div>
-            <div className={styles.cardMainRow}>
-              <div className={styles.cardIconBadge} style={stageBadgeStyle}>
-                <span className="mi" style={{ fontSize: '1.15rem' }}>{stageObj?.icon || 'timeline'}</span>
-              </div>
-              <div className={styles.cardValue}>{stageObj ? stageObj.label : 'Not started'}</div>
-            </div>
-            {stageUpdatedLabel && (
-              <div className={styles.cardFooter}>
-                <span className="mi" style={{ fontSize: '0.82rem' }}>schedule</span>
-                <span>Updated on {stageUpdatedLabel}</span>
-              </div>
-            )}
           </button>
         </div>
 
@@ -644,64 +603,19 @@ export default function OrderDetailModal({
               Generate invoice
             </button>
           )}
+          {canCancel && (
+            <button
+              className={isCancelled ? styles.btnRestore : styles.btnDanger}
+              disabled={pendingCancel}
+              onClick={handleCancelOrder}
+            >
+              <span className="mi" style={{ fontSize: '1.05rem' }}>{isCancelled ? 'undo' : 'cancel'}</span>
+              {isCancelled ? 'Restore order' : 'Cancel order'}
+            </button>
+          )}
         </div>
 
       </div>
-
-      {showStatusSheet && (
-        <div className={styles.stageSheetOverlay} onClick={() => { setShowStatusSheet(false); setStatusHint(null) }}>
-          <div className={styles.stageSheetPanel} onClick={e => e.stopPropagation()}>
-            <div className={styles.handle} />
-            <div className={styles.stageSheetTitle}>Change status</div>
-            <div className={`${styles.statusHintBanner} ${statusHint ? styles.statusHintBannerOpen : ''}`}>
-              <span className="mi" style={{ fontSize: '0.95rem', flexShrink: 0, marginTop: 1 }}>info</span>
-              <span>{statusHint}</span>
-            </div>
-            <div className={styles.stageSheetList}>
-              {Object.entries(ORDER_STATUS_LABELS).map(([value, label]) => {
-                const isActive = local.status === value
-                const locked = !isStatusAllowed(value, local.stage)
-                const meta = STATUS_CHIP[value]
-                return (
-                  <button
-                    key={value}
-                    type="button"
-                    disabled={pendingStatus}
-                    className={`${styles.stageSheetRow} ${isActive ? styles.stageSheetRowActive : ''}`}
-                    onClick={() => handleStatusClick(value)}
-                  >
-                    <div className={styles.sheetRowLeft}>
-                      <div
-                        className={styles.rowIconSmall}
-                        style={locked && !isActive
-                          ? { background: 'var(--surface2)', color: 'var(--text3)' }
-                          : { background: meta.bg, color: meta.color }}
-                      >
-                        <span className="mi" style={{ fontSize: '0.92rem' }}>{STATUS_ICON[value]}</span>
-                      </div>
-                      <span
-                        className={styles.stageSheetRowLabel}
-                        style={locked && !isActive ? { color: 'var(--text3)' } : {}}
-                      >
-                        {label}
-                      </span>
-                    </div>
-                    {isActive
-                      ? <span className={styles.stageSheetCurrent}>Current</span>
-                      : locked
-                        ? <span className={`mi ${styles.lockIcon}`}>lock</span>
-                        : null}
-                  </button>
-                )
-              })}
-            </div>
-            <div className={styles.stageSheetFootnote}>
-              <span className="mi" style={{ fontSize: '0.85rem', flexShrink: 0 }}>sync</span>
-              Status updates automatically as you move through order stages
-            </div>
-          </div>
-        </div>
-      )}
 
       {showStageSheet && (
         <div className={styles.stageSheetOverlay} onClick={() => setShowStageSheet(false)}>

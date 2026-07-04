@@ -129,33 +129,14 @@
   color: var(--text3);
   text-transform: uppercase;
   letter-spacing: 0.5px;
-  margin-bottom: 7px;
+  margin-bottom: 8px;
 }
 
-.dualColumnRow {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 16px;
-}
-
-.dualColumn {
+.priorityRow {
   display: flex;
   flex-direction: column;
-  min-width: 0;
-}
-
-.dualColumnRight {
-  align-items: flex-end;
-  text-align: right;
-}
-
-.orderNumberBold {
-  font-size: 1.2rem;
-  font-weight: 900;
-  color: var(--text);
-  font-variant-numeric: tabular-nums;
-  letter-spacing: -0.2px;
+  align-items: flex-start;
+  margin-bottom: 16px;
 }
 
 .priorityDropdown {
@@ -258,7 +239,7 @@
   display: flex;
   flex-direction: column;
   gap: 10px;
-  margin-top: 16px;
+  margin-top: 4px;
   margin-bottom: 12px;
 }
 
@@ -293,10 +274,8 @@
   justify-content: space-between;
 }
 
-.cardHeaderRight {
-  display: flex;
-  align-items: center;
-  gap: 6px;
+.chevronIcon {
+  opacity: 0.55;
 }
 
 .cardLabel {
@@ -305,17 +284,6 @@
   color: var(--text3);
   text-transform: uppercase;
   letter-spacing: 0.6px;
-}
-
-.cardPercent {
-  font-size: 0.82rem;
-  font-weight: 800;
-  color: var(--accent);
-  font-variant-numeric: tabular-nums;
-}
-
-.chevronIcon {
-  opacity: 0.55;
 }
 
 .spinIcon {
@@ -327,20 +295,10 @@
   to { transform: rotate(360deg); }
 }
 
-.cardMainRow {
+.cardValueRow {
   display: flex;
   align-items: center;
-  gap: 12px;
-}
-
-.cardIconBadge {
-  width: 38px;
-  height: 38px;
-  border-radius: 11px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
+  gap: 8px;
 }
 
 .cardValue {
@@ -351,30 +309,53 @@
   letter-spacing: -0.2px;
 }
 
-.cardFooter {
+.donutRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+}
+
+.donutWrap {
+  position: relative;
+  width: 64px;
+  height: 64px;
+  flex-shrink: 0;
+}
+
+.donutSvg {
+  width: 100%;
+  height: 100%;
+}
+
+.donutProgress {
+  transition: stroke-dashoffset 0.3s ease, stroke 0.3s ease;
+}
+
+.donutLabel {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.82rem;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+}
+
+.donutContent {
+  flex: 1;
+  min-width: 0;
+}
+
+.donutMeta {
   display: flex;
   align-items: center;
   gap: 6px;
-  padding-top: 12px;
-  border-top: 1px solid var(--border);
+  margin-top: 4px;
   font-size: 0.7rem;
   font-weight: 600;
   color: var(--text3);
-}
-
-.progressTrack {
-  height: 5px;
-  border-radius: 3px;
-  background: var(--surface2);
-  overflow: hidden;
-}
-
-.progressFill {
-  height: 100%;
-  border-radius: 3px;
-  background-color: var(--accent);
-  background-image: linear-gradient(120deg, rgba(255, 255, 255, 0.28), rgba(255, 255, 255, 0) 65%);
-  transition: width 0.3s ease;
 }
 
 .rowIconSmall {
@@ -411,8 +392,7 @@
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 10px;
-  margin-top: 18px;
-  margin-bottom: 12px;
+  margin-bottom: 16px;
 }
 
 .infoGridCell {
@@ -489,7 +469,7 @@
 
 .linkedRow {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   gap: 8px;
   width: 100%;
   border: none;
@@ -671,6 +651,58 @@
   color: var(--text2);
 }
 
+.btnDanger {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  background: rgba(239, 68, 68, 0.08);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  border-radius: 12px;
+  padding: 13px 8px;
+  color: #ef4444;
+  font-family: inherit;
+  font-size: 0.82rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: opacity 0.15s;
+}
+
+.btnDanger:active {
+  opacity: 0.75;
+}
+
+.btnDanger:disabled {
+  opacity: 0.5;
+  cursor: wait;
+}
+
+.btnRestore {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  background: var(--surface2);
+  border: 1px solid var(--border2);
+  border-radius: 12px;
+  padding: 13px 8px;
+  color: var(--text2);
+  font-family: inherit;
+  font-size: 0.82rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: opacity 0.15s;
+}
+
+.btnRestore:active {
+  opacity: 0.75;
+}
+
+.btnRestore:disabled {
+  opacity: 0.5;
+  cursor: wait;
+}
+
 .footerHintCard {
   display: flex;
   align-items: flex-start;
@@ -776,32 +808,6 @@
   font-size: 1rem !important;
   color: var(--text3);
   flex-shrink: 0;
-}
-
-.statusHintBanner {
-  display: flex;
-  align-items: flex-start;
-  gap: 8px;
-  margin: 0 20px 0;
-  padding: 0 12px;
-  border-radius: 10px;
-  background: rgba(161, 98, 7, 0.08);
-  border: 1px solid rgba(161, 98, 7, 0.22);
-  font-size: 0.76rem;
-  font-weight: 600;
-  color: #a16207;
-  line-height: 1.4;
-  max-height: 0;
-  opacity: 0;
-  overflow: hidden;
-  transition: max-height 0.2s ease, opacity 0.15s ease, padding 0.2s ease, margin 0.2s ease;
-}
-
-.statusHintBannerOpen {
-  max-height: 80px;
-  opacity: 1;
-  padding: 10px 12px;
-  margin: 0 20px 10px;
 }
 
 .stageSheetFootnote {
