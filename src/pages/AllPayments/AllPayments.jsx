@@ -383,7 +383,6 @@ export default function AllPayments({ onMenuClick }) {
   const [filterStatus,  setFilterStatus]  = useState('all')
   const [swipeProgress, setSwipeProgress] = useState(0)
 
-  // Stores measured { left, width } for each tab by index
   const [tabMeasurements, setTabMeasurements] = useState([])
 
   const touchStartX     = useRef(null)
@@ -529,8 +528,6 @@ export default function AllPayments({ onMenuClick }) {
     setSwipeProgress(0)
   }, [swipeProgress, activeTabIdx])
 
-  // Calculate underline position using measured pixel values.
-  // Interpolates between current and neighbouring tab during a swipe gesture.
   const getUnderlineStyle = () => {
     const current = tabMeasurements[activeTabIdx]
     if (!current) return { left: 0, width: 0 }
@@ -640,7 +637,7 @@ export default function AllPayments({ onMenuClick }) {
           )
         })}
 
-        {/* Underline positioned with measured pixel values, not percentages */}
+    
         <div
           className={styles.tabUnderlineTrack}
           style={{

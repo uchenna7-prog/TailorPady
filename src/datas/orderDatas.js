@@ -35,7 +35,7 @@ export const ORDER_STATUS_STYLES = {
 }
 
 export const ORDER_STAGES = [
-  { value: 'Measured', label: 'Measured', icon: 'straighten'    },
+  { value: 'measurement_taken', label: 'Measurement Taken', icon: 'straighten'    },
   { value: 'fabric_ready',      label: 'Fabric Ready',      icon: 'layers'        },
   { value: 'cutting',           label: 'Cutting',           icon: 'content_cut'   },
   { value: 'sewing',            label: 'Sewing',            icon: 'send'          },
@@ -55,7 +55,7 @@ export const PRIORITY_BANNER_CONFIG = {
 }
 
 export const ORDER_STAGE_AUTO_STATUS = {
-  Measured: 'pending',
+  measurement_taken: 'pending',
   fabric_ready:      'pending',
   cutting:           'in_progress',
   weaving:           'in_progress',
@@ -69,7 +69,7 @@ export const ORDER_STAGE_AUTO_STATUS = {
 }
 
 export const ORDER_STATUS_CORRESPONDING_STAGES = {
-  pending:     ['Measured', 'fabric_ready'],
+  pending:     ['measurement_taken', 'fabric_ready'],
   in_progress: ['cutting', 'weaving', 'sewing', 'embroidery', 'fitting', 'adjustments', 'finishing', 'quality_check'],
   completed:   'ready',
   delivered:   'ready',
