@@ -19,6 +19,25 @@ function formatFirestoreDate(ts) {
   return ''
 }
 
+function formatStageTimestamp(ts) {
+  if (!ts) return null
+  const date = typeof ts.toDate === 'function' ? ts.toDate() : new Date(ts)
+  if (isNaN(date.getTime())) return null
+  return date.toLocaleString('en-US', {
+    month: 'short',
+    day: 'numeric',
+    hour: 'numeric',
+    minute: '2-digit',
+  })
+}
+
+function formatTimeOnly(ts) {
+  if (!ts) return null
+  const date = typeof ts.toDate === 'function' ? ts.toDate() : new Date(ts)
+  if (isNaN(date.getTime())) return null
+  return date.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })
+}
+
 function isOverdue(order) {
   const raw = order.dueRaw || order.dueDate
   if (!raw) return false
@@ -94,6 +113,7 @@ export default function OrderDetailModal({
   const [showStageSheet, setShowStageSheet] = useState(false)
   const [showStatusSheet, setShowStatusSheet] = useState(false)
   const [showPriorityMenu, setShowPriorityMenu] = useState(false)
+  const [selectedStage, setSelectedStage] = useState(order?.stage ?? null)
   const [pendingStatus, setPendingStatus] = useState(false)
   const [pendingStage, setPendingStage] = useState(false)
   const [pendingPriority, setPendingPriority] = useState(false)
@@ -108,6 +128,7 @@ export default function OrderDetailModal({
     setShowStageSheet(false)
     setShowStatusSheet(false)
     setShowPriorityMenu(false)
+    setSelectedStage(order?.stage ?? null)
     setBrokenImages(new Set())
   }, [order?.id])
 
@@ -159,13 +180,25 @@ export default function OrderDetailModal({
   const totalQty = items.reduce((s, i) => s + (parseInt(i.qty, 10) || 1), 0) || local.qty || 1
 
   const canReview = local.status === 'completed' || local.status === 'delivered'
+  const stageHistory = local.stageHistory || {}
   const stageIndex = ORDER_STAGES.findIndex(s => s.value === local.stage)
   const stageObj = ORDER_STAGES.find(s => s.value === local.stage)
+  const totalStages = ORDER_STAGES.length
+  const completedStagesCount = stageIndex >= 0 ? stageIndex + 1 : 0
+  const progressPercent = stageObj ? Math.round((completedStagesCount / totalStages) * 100) : 0
+  const updatedLabel = formatTimeOnly(local.updatedAt)
   const statusMeta = STATUS_CHIP[local.status] || STATUS_CHIP.pending
   const priorityValue = local.priority ?? 'normal'
   const priorityMeta = PRIORITY_CHIP[priorityValue]
   const showCustomer = local.customerName && !hideCustomerName
   const orderTitle = local.desc || local.name || 'Order'
+
+  const completedTimestamp = (local.status === 'completed' || local.status === 'delivered')
+    ? stageHistory.ready
+    : local.status === 'cancelled'
+      ? local.updatedAt
+      : null
+  const completedLabel = formatStageTimestamp(completedTimestamp)
 
   async function handleStatusClick(value) {
     if (pendingStatus) return
@@ -209,8 +242,14 @@ export default function OrderDetailModal({
 
     const prevStage = local.stage
     const prevStatus = local.status
+    const prevHistory = local.stageHistory
 
-    setLocal(p => ({ ...p, stage: stageValue, ...(autoStatus ? { status: autoStatus } : {}) }))
+    setLocal(p => ({
+      ...p,
+      stage: stageValue,
+      stageHistory: { ...(p.stageHistory || {}), [stageValue]: new Date() },
+      ...(autoStatus ? { status: autoStatus } : {}),
+    }))
     setPendingStage(true)
     setShowStageSheet(false)
 
@@ -221,7 +260,7 @@ export default function OrderDetailModal({
       }
       showToast?.('Stage updated')
     } catch {
-      setLocal(p => ({ ...p, stage: prevStage, status: prevStatus }))
+      setLocal(p => ({ ...p, stage: prevStage, status: prevStatus, stageHistory: prevHistory }))
       showToast?.('Failed to update stage')
     } finally {
       setPendingStage(false)
@@ -286,6 +325,11 @@ export default function OrderDetailModal({
     const wa = raw.startsWith('+') ? raw.slice(1)
       : raw.startsWith('0') ? `234${raw.slice(1)}` : raw
     window.open(wa ? `https://wa.me/${wa}?text=${msg}` : `https://wa.me/?text=${msg}`, '_blank', 'noopener,noreferrer')
+  }
+
+  function openStageSheet() {
+    setSelectedStage(local.stage)
+    setShowStageSheet(true)
   }
 
   const panel = (
@@ -401,36 +445,39 @@ export default function OrderDetailModal({
               </div>
               <span className="mi" style={{ fontSize: '1.1rem', color: 'var(--text3)' }}>chevron_right</span>
             </div>
+            {completedLabel && (
+              <div className={styles.stageCardMeta}>Completed on {completedLabel}</div>
+            )}
           </button>
 
           <button
             type="button"
             className={styles.stageCard}
-            onClick={() => setShowStageSheet(true)}
+            onClick={openStageSheet}
             disabled={pendingStage}
           >
-            <div className={styles.stageCardLabel}>Stage</div>
-            <div className={styles.stageProgressRow}>
-              <div className={styles.progressTrack}>
-                <div
-                  className={styles.progressFill}
-                  style={{ width: stageObj ? `${((stageIndex + 1) / ORDER_STAGES.length) * 100}%` : '0%' }}
-                />
-              </div>
-              {stageObj && (
-                <div className={styles.stageCardCount}>{stageIndex + 1} of {ORDER_STAGES.length}</div>
-              )}
+            <div className={styles.stageCardTopRow}>
+              <div className={styles.stageCardLabel}>Production Progress</div>
+              <div className={styles.stageCardPercent}>{progressPercent}%</div>
+            </div>
+            <div className={styles.progressTrack}>
+              <div className={styles.progressFill} style={{ width: `${progressPercent}%` }} />
             </div>
             <div className={styles.stageCardTop}>
               <div className={styles.rowIcon} style={{ background: 'var(--surface2)', color: 'var(--accent)' }}>
                 <span className="mi" style={{ fontSize: '1.05rem' }}>{stageObj?.icon || 'timeline'}</span>
               </div>
               <div style={{ flex: 1, marginLeft: 12 }}>
+                <div className={styles.stageCardSubLabel}>Current Stage</div>
                 <div className={styles.stageCardValue}>
                   {stageObj ? stageObj.label : 'Not started'}
                 </div>
               </div>
               <span className="mi" style={{ fontSize: '1.1rem', color: 'var(--text3)' }}>chevron_right</span>
+            </div>
+            <div className={styles.stageCardFooterRow}>
+              <span>{completedStagesCount} of {totalStages} stages completed</span>
+              {updatedLabel && <span>Updated {updatedLabel}</span>}
             </div>
           </button>
         </div>
@@ -624,34 +671,63 @@ export default function OrderDetailModal({
         <div className={styles.stageSheetOverlay} onClick={() => setShowStageSheet(false)}>
           <div className={styles.stageSheetPanel} onClick={e => e.stopPropagation()}>
             <div className={styles.handle} />
-            <div className={styles.stageSheetTitle}>Change stage</div>
-            <div className={styles.stageSheetList}>
+            <div className={styles.stageSheetTitle}>Update Stage</div>
+            <div className={styles.stageSheetSubtitle}>Select the new current stage</div>
+            <div className={`${styles.stageSheetList} ${styles.timelineList}`}>
               {ORDER_STAGES.map((s, idx) => {
-                const isActive = local.stage === s.value
                 const isDone = stageIndex >= 0 && idx < stageIndex
+                const isCurrent = s.value === local.stage
+                const isSelected = s.value === selectedStage
+                const timestamp = formatStageTimestamp(stageHistory[s.value])
+                const isLast = idx === ORDER_STAGES.length - 1
                 return (
                   <button
                     key={s.value}
                     type="button"
                     disabled={pendingStage}
-                    className={`${styles.stageSheetRow} ${isActive ? styles.stageSheetRowActive : ''}`}
-                    onClick={() => handleStageChange(s.value)}
+                    className={`${styles.timelineRow} ${isSelected ? styles.timelineRowSelected : ''}`}
+                    onClick={() => setSelectedStage(s.value)}
                   >
-                    <div className={styles.sheetRowLeft}>
-                      <div
-                        className={styles.rowIconSmall}
-                        style={isDone
-                          ? { background: 'rgba(34,197,94,0.12)', color: '#22c55e' }
-                          : { background: 'var(--surface2)', color: isActive ? 'var(--accent)' : 'var(--text3)' }}
+                    <div className={styles.timelineIndicatorCol}>
+                      <span
+                        className="mi"
+                        style={{
+                          fontSize: '1.2rem',
+                          color: isDone ? '#22c55e' : isCurrent ? 'var(--accent)' : 'var(--text3)',
+                        }}
                       >
-                        <span className="mi" style={{ fontSize: '0.92rem' }}>{isDone ? 'check' : s.icon}</span>
-                      </div>
-                      <span className={styles.stageSheetRowLabel}>{s.label}</span>
+                        {isDone ? 'check_circle' : isCurrent ? 'radio_button_checked' : 'radio_button_unchecked'}
+                      </span>
+                      {!isLast && <span className={styles.timelineLine} />}
                     </div>
-                    {isActive && <span className={styles.stageSheetCurrent}>Current</span>}
+                    <div className={styles.timelineContent}>
+                      <div className={styles.timelineLabel}>{s.label}</div>
+                      <div className={styles.timelineMeta}>
+                        {timestamp ? timestamp : isCurrent ? 'Current stage' : 'Upcoming'}
+                      </div>
+                    </div>
+                    {isCurrent && <span className={styles.stageSheetCurrent}>Current Stage</span>}
+                    {!isCurrent && isDone && <span className={styles.timelineBadgeDone}>Completed</span>}
                   </button>
                 )
               })}
+            </div>
+            <div className={styles.stageSheetFooter}>
+              <button
+                type="button"
+                className={styles.btnPrimary}
+                disabled={pendingStage || selectedStage === local.stage}
+                onClick={() => handleStageChange(selectedStage)}
+              >
+                Update to {ORDER_STAGES.find(s => s.value === selectedStage)?.label || ''}
+              </button>
+              <button
+                type="button"
+                className={styles.btnCancelSheet}
+                onClick={() => setShowStageSheet(false)}
+              >
+                Cancel
+              </button>
             </div>
           </div>
         </div>
