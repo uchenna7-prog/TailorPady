@@ -20,11 +20,13 @@ const orderDocument = (uid, orderId) =>
   doc(db, 'users', uid, 'orders', orderId)
 
 export async function addOrder(uid, customerId, data) {
+  const stage = data.stage ?? null
   const ref = await addDoc(ordersCollection(uid), {
     ...data,
     customerId,
-    status:    data.status ?? 'pending',
-    stage:     data.stage  ?? null,
+    status: data.status ?? 'pending',
+    stage,
+    stageHistory: stage ? { [stage]: serverTimestamp() } : {},
     createdAt: serverTimestamp(),
     updatedAt: serverTimestamp(),
   })
@@ -54,6 +56,7 @@ export async function updateOrderStatus(uid, orderId, status) {
 export async function updateOrderStage(uid, orderId, stage) {
   await updateDoc(orderDocument(uid, orderId), {
     stage,
+    [`stageHistory.${stage}`]: serverTimestamp(),
     updatedAt: serverTimestamp(),
   })
 }
