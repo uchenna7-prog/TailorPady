@@ -38,6 +38,15 @@ function formatTimeOnly(ts) {
   return date.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })
 }
 
+function formatFullTimestamp(ts) {
+  if (!ts) return null
+  const date = typeof ts.toDate === 'function' ? ts.toDate() : new Date(ts)
+  if (isNaN(date.getTime())) return null
+  const datePart = date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+  const timePart = date.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })
+  return `${datePart} • ${timePart}`
+}
+
 function isOverdue(order) {
   const raw = order.dueRaw || order.dueDate
   if (!raw) return false
@@ -193,12 +202,12 @@ export default function OrderDetailModal({
   const showCustomer = local.customerName && !hideCustomerName
   const orderTitle = local.desc || local.name || 'Order'
 
-  const completedTimestamp = (local.status === 'completed' || local.status === 'delivered')
-    ? stageHistory.ready
-    : local.status === 'cancelled'
-      ? local.updatedAt
-      : null
-  const completedLabel = formatStageTimestamp(completedTimestamp)
+  const statusTimestampLabel = formatFullTimestamp(local.updatedAt)
+  const statusVerb = local.status === 'completed' ? 'Completed on'
+    : local.status === 'delivered' ? 'Delivered on'
+    : local.status === 'cancelled' ? 'Cancelled on'
+    : local.status === 'in_progress' ? 'Started on'
+    : 'Updated'
 
   async function handleStatusClick(value) {
     if (pendingStatus) return
@@ -445,8 +454,10 @@ export default function OrderDetailModal({
               </div>
               <span className="mi" style={{ fontSize: '1.1rem', color: 'var(--text3)' }}>chevron_right</span>
             </div>
-            {completedLabel && (
-              <div className={styles.stageCardMeta}>Completed on {completedLabel}</div>
+            {statusTimestampLabel && (
+              <div className={styles.stageCardMeta}>
+                <span>{statusVerb} {statusTimestampLabel}</span>
+              </div>
             )}
           </button>
 
