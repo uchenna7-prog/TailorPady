@@ -275,6 +275,13 @@
   justify-content: space-between;
 }
 
+.stageCardTopRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
 .stageCardLabel {
   font-size: 0.58rem;
   font-weight: 800;
@@ -282,6 +289,15 @@
   text-transform: uppercase;
   letter-spacing: 0.5px;
   margin-bottom: 4px;
+}
+
+.stageCardSubLabel {
+  font-size: 0.6rem;
+  font-weight: 700;
+  color: var(--text3);
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  margin-bottom: 2px;
 }
 
 .stageCardValue {
@@ -297,6 +313,42 @@
   color: var(--text3);
   white-space: nowrap;
   flex-shrink: 0;
+}
+
+.stageCardPercent {
+  font-size: 0.8rem;
+  font-weight: 800;
+  color: var(--accent);
+}
+
+.stageCardMeta {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: var(--text3);
+}
+
+.stageCardMetaDot {
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background: var(--text3);
+  flex-shrink: 0;
+}
+
+.stageCardFooterRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-top: 4px;
+  padding-top: 10px;
+  border-top: 1px solid var(--border);
+  font-size: 0.68rem;
+  font-weight: 600;
+  color: var(--text3);
 }
 
 .stageProgressRow {
@@ -562,6 +614,11 @@
   opacity: 0.85;
 }
 
+.btnPrimary:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
 .btnSecondary {
   display: flex;
   align-items: center;
@@ -617,14 +674,13 @@
 
 .stageSheetPanel {
   width: 100%;
-  max-height: 70dvh;
+  max-height: 78dvh;
   background: var(--bg);
   border-radius: 22px 22px 0 0;
   border-top: 1px solid var(--border);
   display: flex;
   flex-direction: column;
   animation: slideUp 0.25s cubic-bezier(0.32, 0.72, 0, 1);
-  padding-bottom: calc(14px + var(--sb, 0px));
 }
 
 .stageSheetTitle {
@@ -632,6 +688,14 @@
   font-size: 1rem;
   font-weight: 800;
   color: var(--text);
+}
+
+.stageSheetSubtitle {
+  padding: 0 20px 12px;
+  margin-top: -8px;
+  font-size: 0.76rem;
+  font-weight: 600;
+  color: var(--text3);
 }
 
 .stageSheetList {
@@ -680,7 +744,8 @@
   color: var(--accent);
   text-transform: uppercase;
   letter-spacing: 0.4px;
-}0
+  white-space: nowrap;
+}
 
 .lockIcon {
   font-size: 1rem !important;
@@ -725,60 +790,28 @@
   color: var(--text3);
 }
 
-@media (min-width: 769px) {
-  .stageSheetOverlay {
-    left: var(--sidebar-width, 280px);
-  }
-}
-
-.stageCardTopRow {
+.stageSheetFooter {
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 8px;
-}
-
-.stageCardPercent {
-  font-size: 0.8rem;
-  font-weight: 800;
-  color: var(--accent);
-}
-
-.stageCardSubLabel {
-  font-size: 0.6rem;
-  font-weight: 700;
-  color: var(--text3);
-  text-transform: uppercase;
-  letter-spacing: 0.4px;
-  margin-bottom: 2px;
-}
-
-.stageCardMeta {
-  font-size: 0.7rem;
-  font-weight: 600;
-  color: var(--text3);
-  margin-top: 2px;
-}
-
-.stageCardFooterRow {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
+  flex-direction: column;
   gap: 8px;
-  margin-top: 4px;
-  padding-top: 10px;
+  padding: 14px 20px calc(14px + var(--sb, 0px));
   border-top: 1px solid var(--border);
-  font-size: 0.68rem;
-  font-weight: 600;
-  color: var(--text3);
+  flex-shrink: 0;
 }
 
-.stageSheetSubtitle {
-  padding: 0 20px 12px;
-  margin-top: -8px;
-  font-size: 0.76rem;
-  font-weight: 600;
-  color: var(--text3);
+.btnCancelSheet {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 12px 10px;
+  color: var(--text2);
+  font-family: inherit;
+  font-size: 0.82rem;
+  font-weight: 700;
+  cursor: pointer;
 }
 
 .timelineList {
@@ -855,36 +888,8 @@
   margin-top: 2px;
 }
 
-.stageSheetFooter {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  padding: 14px 20px calc(14px + var(--sb, 0px));
-  border-top: 1px solid var(--border);
-}
-
-.btnCancelSheet {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: transparent;
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  padding: 12px 10px;
-  color: var(--text2);
-  font-family: inherit;
-  font-size: 0.82rem;
-  font-weight: 700;
-  cursor: pointer;
-}
-
-.stageSheetPanel {
-  width: 100%;
-  max-height: 78dvh;
-  background: var(--bg);
-  border-radius: 22px 22px 0 0;
-  border-top: 1px solid var(--border);
-  display: flex;
-  flex-direction: column;
-  animation: slideUp 0.25s cubic-bezier(0.32, 0.72, 0, 1);
+@media (min-width: 769px) {
+  .stageSheetOverlay {
+    left: var(--sidebar-width, 280px);
+  }
 }
