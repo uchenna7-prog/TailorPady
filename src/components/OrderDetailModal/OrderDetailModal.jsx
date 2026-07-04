@@ -438,57 +438,57 @@ export default function OrderDetailModal({
         <div className={styles.stateGroup}>
           <button
             type="button"
-            className={styles.stageCard}
+            className={styles.premiumCard}
             onClick={() => { setStatusHint(null); setShowStatusSheet(true) }}
             disabled={pendingStatus}
           >
-            <div className={styles.stageCardLabel}>Status</div>
-            <div className={styles.stageCardTop}>
-              <div className={styles.rowIcon} style={{ background: statusMeta.bg, color: statusMeta.color }}>
-                <span className="mi" style={{ fontSize: '1.05rem' }}>{STATUS_ICON[local.status] || 'schedule'}</span>
+            <div className={styles.cardHeader}>
+              <span className={styles.cardLabel}>Status</span>
+              <span className="mi" style={{ fontSize: '1.05rem', color: 'var(--text3)' }}>chevron_right</span>
+            </div>
+            <div className={styles.cardMainRow}>
+              <div className={styles.cardIconBadge} style={{ background: statusMeta.bg, color: statusMeta.color }}>
+                <span className="mi" style={{ fontSize: '1.15rem' }}>{STATUS_ICON[local.status] || 'schedule'}</span>
               </div>
-              <div style={{ flex: 1, marginLeft: 12 }}>
-                <div className={styles.stageCardValue} style={{ color: statusMeta.color }}>
-                  {ORDER_STATUS_LABELS[local.status] || 'Pending'}
-                </div>
+              <div className={styles.cardValue} style={{ color: statusMeta.color }}>
+                {ORDER_STATUS_LABELS[local.status] || 'Pending'}
               </div>
-              <span className="mi" style={{ fontSize: '1.1rem', color: 'var(--text3)' }}>chevron_right</span>
             </div>
             {statusTimestampLabel && (
-              <div className={styles.stageCardMeta}>
-                <span>{statusVerb} {statusTimestampLabel}</span>
+              <div className={styles.cardFooterRow} style={{ justifyContent: 'flex-end' }}>
+                <span className={styles.cardTimestamp}>{statusVerb} {statusTimestampLabel}</span>
               </div>
             )}
           </button>
 
           <button
             type="button"
-            className={styles.stageCard}
+            className={styles.premiumCard}
             onClick={openStageSheet}
             disabled={pendingStage}
           >
-            <div className={styles.stageCardTopRow}>
-              <div className={styles.stageCardLabel}>Production Progress</div>
-              <div className={styles.stageCardPercent}>{progressPercent}%</div>
+            <div className={styles.cardHeader}>
+              <span className={styles.cardLabel}>Production Progress</span>
+              <div className={styles.cardHeaderRight}>
+                <span className={styles.cardPercent}>{progressPercent}%</span>
+                <span className="mi" style={{ fontSize: '1.05rem', color: 'var(--text3)' }}>chevron_right</span>
+              </div>
             </div>
             <div className={styles.progressTrack}>
               <div className={styles.progressFill} style={{ width: `${progressPercent}%` }} />
             </div>
-            <div className={styles.stageCardTop}>
-              <div className={styles.rowIcon} style={{ background: 'var(--surface2)', color: 'var(--accent)' }}>
-                <span className="mi" style={{ fontSize: '1.05rem' }}>{stageObj?.icon || 'timeline'}</span>
+            <div className={styles.cardMainRow}>
+              <div className={styles.cardIconBadge} style={{ background: 'var(--surface2)', color: 'var(--accent)' }}>
+                <span className="mi" style={{ fontSize: '1.15rem' }}>{stageObj?.icon || 'timeline'}</span>
               </div>
-              <div style={{ flex: 1, marginLeft: 12 }}>
-                <div className={styles.stageCardSubLabel}>Current Stage</div>
-                <div className={styles.stageCardValue}>
-                  {stageObj ? stageObj.label : 'Not started'}
-                </div>
+              <div>
+                <div className={styles.cardSubLabel}>Current Stage</div>
+                <div className={styles.cardValue}>{stageObj ? stageObj.label : 'Not started'}</div>
               </div>
-              <span className="mi" style={{ fontSize: '1.1rem', color: 'var(--text3)' }}>chevron_right</span>
             </div>
-            <div className={styles.stageCardFooterRow}>
-              <span>{completedStagesCount} of {totalStages} stages completed</span>
-              {updatedLabel && <span>Updated {updatedLabel}</span>}
+            <div className={styles.cardFooterRow}>
+              <span className={styles.cardFooterLeft}>{completedStagesCount} of {totalStages} stages completed</span>
+              {updatedLabel && <span className={styles.cardTimestamp}>Updated {updatedLabel}</span>}
             </div>
           </button>
         </div>
