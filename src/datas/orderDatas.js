@@ -35,17 +35,21 @@ export const ORDER_STATUS_STYLES = {
 }
 
 export const ORDER_STAGES = [
-  { value: 'measurement_taken', label: 'Measurement Taken', icon: 'straighten'    },
-  { value: 'fabric_ready',      label: 'Fabric Ready',      icon: 'layers'        },
-  { value: 'cutting',           label: 'Cutting',           icon: 'content_cut'   },
-  { value: 'sewing',            label: 'Sewing',            icon: 'send'          },
-  { value: 'embroidery',        label: 'Embroidery',        icon: 'auto_awesome'  },
-  { value: 'weaving',           label: 'Weaving',           icon: 'texture'       },
-  { value: 'fitting',           label: 'Fitting',           icon: 'accessibility' },
-  { value: 'adjustments',       label: 'Adjustments',       icon: 'tune'          },
-  { value: 'finishing',         label: 'Finishing',         icon: 'dry_cleaning'  },
-  { value: 'quality_check',     label: 'Quality Check',     icon: 'fact_check'    },
-  { value: 'ready',             label: 'Ready',             icon: 'check_circle'  },
+  { value: 'measurement_taken', label: 'Measurement Taken',   icon: 'straighten'    },
+  { value: 'design_selected',   label: 'Design Selected',     icon: 'design_services' },
+  { value: 'fabric_ready',      label: 'Fabric Sourced',      icon: 'layers'        },
+  { value: 'pattern_drafted',   label: 'Pattern Drafted',     icon: 'edit_note'     },
+  { value: 'cutting',           label: 'Fabric Cutting',      icon: 'content_cut'   },
+  { value: 'embroidery',        label: 'Embroidery & Embellishment', icon: 'auto_awesome' },
+  { value: 'sewing',            label: 'Sewing',              icon: 'checkroom'     },
+  { value: 'fitting',           label: 'First Fitting',       icon: 'accessibility' },
+  { value: 'adjustments',       label: 'Alterations',         icon: 'tune'          },
+  { value: 'final_fitting',     label: 'Final Fitting',       icon: 'accessibility_new' },
+  { value: 'finishing',         label: 'Finishing Touches',   icon: 'dry_cleaning'  },
+  { value: 'quality_check',     label: 'Quality Check',       icon: 'fact_check'    },
+  { value: 'packaging',         label: 'Pressing & Packaging', icon: 'inventory_2' },
+  { value: 'ready',             label: 'Ready for Pickup',    icon: 'check_circle'  },
+  { value: 'delivered',         label: 'Delivered',           icon: 'local_shipping' },
 ]
 
 export const PRIORITY_BANNER_CONFIG = {
@@ -56,21 +60,25 @@ export const PRIORITY_BANNER_CONFIG = {
 
 export const ORDER_STAGE_AUTO_STATUS = {
   measurement_taken: 'pending',
-  fabric_ready:      'pending',
-  cutting:           'in_progress',
-  weaving:           'in_progress',
-  sewing:            'in_progress',
-  embroidery:        'in_progress',
-  fitting:           'in_progress',
-  adjustments:       'in_progress',
-  finishing:         'in_progress',
-  quality_check:     'in_progress',
-  ready:             'completed',
+  design_selected:   'pending',
+  fabric_ready:       'pending',
+  pattern_drafted:    'in_progress',
+  cutting:            'in_progress',
+  sewing:             'in_progress',
+  embroidery:         'in_progress',
+  fitting:            'in_progress',
+  adjustments:        'in_progress',
+  final_fitting:      'in_progress',
+  finishing:          'in_progress',
+  quality_check:      'in_progress',
+  packaging:          'in_progress',
+  ready:              'completed',
+  delivered:          'delivered',
 }
 
 export const ORDER_STATUS_CORRESPONDING_STAGES = {
-  pending:     ['measurement_taken', 'fabric_ready'],
-  in_progress: ['cutting', 'weaving', 'sewing', 'embroidery', 'fitting', 'adjustments', 'finishing', 'quality_check'],
+  pending:     ['measurement_taken', 'design_selected', 'fabric_ready'],
+  in_progress: ['pattern_drafted', 'cutting', 'sewing', 'embroidery', 'fitting', 'adjustments', 'final_fitting', 'finishing', 'quality_check', 'packaging'],
   completed:   'ready',
-  delivered:   'ready',
+  delivered:   'delivered',
 }

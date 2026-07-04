@@ -6,6 +6,7 @@ import {
   updateDoc,
   deleteDoc,
   onSnapshot,
+  runTransaction,
   query,
   orderBy,
   where,
@@ -19,11 +20,27 @@ const ordersCollection = (uid) =>
 const orderDocument = (uid, orderId) =>
   doc(db, 'users', uid, 'orders', orderId)
 
+const countersDocument = (uid) =>
+  doc(db, 'users', uid, 'meta', 'counters')
+
+async function getNextOrderNumber(uid) {
+  const ref = countersDocument(uid)
+  return runTransaction(db, async (transaction) => {
+    const snap = await transaction.get(ref)
+    const current = snap.exists() ? (snap.data().orderNumber || 0) : 0
+    const next = current + 1
+    transaction.set(ref, { orderNumber: next }, { merge: true })
+    return next
+  })
+}
+
 export async function addOrder(uid, customerId, data) {
   const stage = data.stage ?? null
+  const orderNumber = await getNextOrderNumber(uid)
   const ref = await addDoc(ordersCollection(uid), {
     ...data,
     customerId,
+    orderNumber,
     status: data.status ?? 'pending',
     stage,
     stageHistory: stage ? { [stage]: serverTimestamp() } : {},

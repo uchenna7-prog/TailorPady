@@ -129,11 +129,33 @@
   color: var(--text3);
   text-transform: uppercase;
   letter-spacing: 0.5px;
-  margin-bottom: 8px;
+  margin-bottom: 7px;
 }
 
-.priorityDropdownWrap {
+.dualColumnRow {
   display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.dualColumn {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.dualColumnRight {
+  align-items: flex-end;
+  text-align: right;
+}
+
+.orderNumberBold {
+  font-size: 1.2rem;
+  font-weight: 900;
+  color: var(--text);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.2px;
 }
 
 .priorityDropdown {
@@ -434,6 +456,27 @@
   margin-bottom: 12px;
 }
 
+.sectionCardBtn {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 14px;
+  margin-bottom: 12px;
+  cursor: pointer;
+  font-family: inherit;
+  text-align: left;
+  transition: background 0.15s ease, transform 0.1s ease;
+}
+
+.sectionCardBtn:active {
+  background: var(--surface2);
+  transform: scale(0.98);
+}
+
 .sectionCardLabel {
   display: block;
   font-size: 0.58rem;
@@ -446,7 +489,7 @@
 
 .linkedRow {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   gap: 8px;
   width: 100%;
   border: none;

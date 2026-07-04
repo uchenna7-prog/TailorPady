@@ -58,6 +58,17 @@ function daysUntil(dateStr) {
   return `${diff}d left`
 }
 
+function formatOrderNumber(num) {
+  if (num === null || num === undefined) return null
+  return `Order #${String(num).padStart(4, '0')}`
+}
+
+function getProgressColor(percent) {
+  const clamped = Math.max(0, Math.min(100, percent))
+  const hue = 38 + (142 - 38) * (clamped / 100)
+  return `hsl(${hue}, 72%, 45%)`
+}
+
 const STATUS_HINTS = {
   pending: 'Move the stage to Measurement Taken or Fabric Ready to unlock this status.',
   in_progress: 'Move the stage to a work stage like Cutting, Sewing, or Fitting to unlock this status.',
@@ -184,6 +195,7 @@ export default function OrderDetailModal({
   const stageIndex = ORDER_STAGES.findIndex(s => s.value === local.stage)
   const stageObj = ORDER_STAGES.find(s => s.value === local.stage)
   const progressPercent = stageIndex >= 0 ? Math.round(((stageIndex + 1) / ORDER_STAGES.length) * 100) : 0
+  const progressColor = getProgressColor(progressPercent)
   const stageUpdatedLabel = formatFullTimestamp(local.updatedAt)
   const statusMeta = STATUS_CHIP[local.status] || STATUS_CHIP.pending
   const stageBadgeStyle = stageObj
@@ -193,6 +205,7 @@ export default function OrderDetailModal({
   const priorityMeta = PRIORITY_CHIP[priorityValue]
   const showCustomer = local.customerName && !hideCustomerName
   const orderTitle = local.desc || local.name || 'Order'
+  const orderNumberLabel = formatOrderNumber(local.orderNumber)
 
   const statusTimestampLabel = formatFullTimestamp(local.updatedAt)
   const statusVerb = local.status === 'completed' ? 'Completed on'
@@ -357,9 +370,10 @@ export default function OrderDetailModal({
 
         <div className={styles.detailTitle}>{orderTitle}</div>
 
-        <div className={styles.chipLabel}>Priority</div>
-        <div className={styles.priorityDropdownWrap}>
-        <div className={styles.priorityDropdown} ref={priorityRef}>
+        <div className={styles.dualColumnRow}>
+          <div className={styles.dualColumn}>
+            <div className={styles.chipLabel}>Priority</div>
+            <div className={styles.priorityDropdown} ref={priorityRef}>
           <button
             type="button"
             className={styles.priorityTrigger}
@@ -410,6 +424,14 @@ export default function OrderDetailModal({
             </div>
           )}
         </div>
+        </div>
+
+        {orderNumberLabel && (
+          <div className={`${styles.dualColumn} ${styles.dualColumnRight}`}>
+            <div className={styles.chipLabel}>Order No.</div>
+            <div className={styles.orderNumberBold}>{orderNumberLabel}</div>
+          </div>
+        )}
         </div>
 
         <div className={styles.infoGrid}>
@@ -465,7 +487,7 @@ export default function OrderDetailModal({
             <div className={styles.cardHeader}>
               <span className={styles.cardLabel}>Production Progress</span>
               <div className={styles.cardHeaderRight}>
-                <span className={styles.cardPercent}>{progressPercent}%</span>
+                <span className={styles.cardPercent} style={{ color: progressColor }}>{progressPercent}%</span>
                 {pendingStage
                   ? <span className={`mi ${styles.spinIcon}`} style={{ fontSize: '1.05rem', color: 'var(--text3)' }}>progress_activity</span>
                   : <span className={`mi ${styles.chevronIcon}`} style={{ fontSize: '1.05rem', color: 'var(--text3)' }}>chevron_right</span>
@@ -473,7 +495,7 @@ export default function OrderDetailModal({
               </div>
             </div>
             <div className={styles.progressTrack}>
-              <div className={styles.progressFill} style={{ width: `${progressPercent}%` }} />
+              <div className={styles.progressFill} style={{ width: `${progressPercent}%`, backgroundColor: progressColor }} />
             </div>
             <div className={styles.cardMainRow}>
               <div className={styles.cardIconBadge} style={stageBadgeStyle}>
@@ -491,9 +513,16 @@ export default function OrderDetailModal({
         </div>
 
         {showCustomer && (
-          <div className={styles.sectionCard}>
-            <div className={styles.sectionCardLabel}>Customer</div>
-            <button type="button" className={styles.linkedRow} onClick={() => { onGoToCustomer && (close(), onGoToCustomer(local.customerId)) }}>
+          <button
+            type="button"
+            className={styles.sectionCardBtn}
+            onClick={() => { onGoToCustomer && (close(), onGoToCustomer(local.customerId)) }}
+          >
+            <div className={styles.cardHeader}>
+              <span className={styles.cardLabel}>Customer</span>
+              <span className={`mi ${styles.chevronIcon}`} style={{ fontSize: '1.05rem', color: 'var(--text3)' }}>chevron_right</span>
+            </div>
+            <div className={styles.linkedRow}>
               <span className="mi" style={{ fontSize: '1rem', color: 'var(--text3)' }}>person</span>
               <div style={{ flex: 1, textAlign: 'left' }}>
                 <div style={{ fontWeight: 700, fontSize: '0.88rem', color: 'var(--text)' }}>{local.customerName}</div>
@@ -510,9 +539,8 @@ export default function OrderDetailModal({
                   <span className="mi" style={{ fontSize: '1rem' }}>call</span>
                 </a>
               )}
-              <span className="mi" style={{ fontSize: '1.1rem', color: 'var(--text3)', flexShrink: 0 }}>chevron_right</span>
-            </button>
-          </div>
+            </div>
+          </button>
         )}
 
         {(items.length > 0 || hasCharges) && (
