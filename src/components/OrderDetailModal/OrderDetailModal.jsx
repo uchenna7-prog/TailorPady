@@ -31,13 +31,6 @@ function formatStageTimestamp(ts) {
   })
 }
 
-function formatTimeOnly(ts) {
-  if (!ts) return null
-  const date = typeof ts.toDate === 'function' ? ts.toDate() : new Date(ts)
-  if (isNaN(date.getTime())) return null
-  return date.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })
-}
-
 function formatFullTimestamp(ts) {
   if (!ts) return null
   const date = typeof ts.toDate === 'function' ? ts.toDate() : new Date(ts)
@@ -122,7 +115,6 @@ export default function OrderDetailModal({
   const [showStageSheet, setShowStageSheet] = useState(false)
   const [showStatusSheet, setShowStatusSheet] = useState(false)
   const [showPriorityMenu, setShowPriorityMenu] = useState(false)
-  const [selectedStage, setSelectedStage] = useState(order?.stage ?? null)
   const [pendingStatus, setPendingStatus] = useState(false)
   const [pendingStage, setPendingStage] = useState(false)
   const [pendingPriority, setPendingPriority] = useState(false)
@@ -137,7 +129,6 @@ export default function OrderDetailModal({
     setShowStageSheet(false)
     setShowStatusSheet(false)
     setShowPriorityMenu(false)
-    setSelectedStage(order?.stage ?? null)
     setBrokenImages(new Set())
   }, [order?.id])
 
@@ -192,10 +183,8 @@ export default function OrderDetailModal({
   const stageHistory = local.stageHistory || {}
   const stageIndex = ORDER_STAGES.findIndex(s => s.value === local.stage)
   const stageObj = ORDER_STAGES.find(s => s.value === local.stage)
-  const totalStages = ORDER_STAGES.length
-  const completedStagesCount = stageIndex >= 0 ? stageIndex + 1 : 0
-  const progressPercent = stageObj ? Math.round((completedStagesCount / totalStages) * 100) : 0
-  const updatedLabel = formatTimeOnly(local.updatedAt)
+  const progressPercent = stageIndex >= 0 ? Math.round(((stageIndex + 1) / ORDER_STAGES.length) * 100) : 0
+  const stageUpdatedLabel = formatFullTimestamp(local.updatedAt)
   const statusMeta = STATUS_CHIP[local.status] || STATUS_CHIP.pending
   const priorityValue = local.priority ?? 'normal'
   const priorityMeta = PRIORITY_CHIP[priorityValue]
@@ -207,7 +196,7 @@ export default function OrderDetailModal({
     : local.status === 'delivered' ? 'Delivered on'
     : local.status === 'cancelled' ? 'Cancelled on'
     : local.status === 'in_progress' ? 'Started on'
-    : 'Updated'
+    : 'Updated on'
 
   async function handleStatusClick(value) {
     if (pendingStatus) return
@@ -337,7 +326,6 @@ export default function OrderDetailModal({
   }
 
   function openStageSheet() {
-    setSelectedStage(local.stage)
     setShowStageSheet(true)
   }
 
@@ -455,8 +443,9 @@ export default function OrderDetailModal({
               </div>
             </div>
             {statusTimestampLabel && (
-              <div className={styles.cardFooterRow} style={{ justifyContent: 'flex-end' }}>
-                <span className={styles.cardTimestamp}>{statusVerb} {statusTimestampLabel}</span>
+              <div className={styles.cardFooter}>
+                <span className="mi" style={{ fontSize: '0.82rem' }}>schedule</span>
+                <span>{statusVerb} {statusTimestampLabel}</span>
               </div>
             )}
           </button>
@@ -481,15 +470,14 @@ export default function OrderDetailModal({
               <div className={styles.cardIconBadge} style={{ background: 'var(--surface2)', color: 'var(--accent)' }}>
                 <span className="mi" style={{ fontSize: '1.15rem' }}>{stageObj?.icon || 'timeline'}</span>
               </div>
-              <div>
-                <div className={styles.cardSubLabel}>Current Stage</div>
-                <div className={styles.cardValue}>{stageObj ? stageObj.label : 'Not started'}</div>
+              <div className={styles.cardValue}>{stageObj ? stageObj.label : 'Not started'}</div>
+            </div>
+            {stageUpdatedLabel && (
+              <div className={styles.cardFooter}>
+                <span className="mi" style={{ fontSize: '0.82rem' }}>schedule</span>
+                <span>Updated on {stageUpdatedLabel}</span>
               </div>
-            </div>
-            <div className={styles.cardFooterRow}>
-              <span className={styles.cardFooterLeft}>{completedStagesCount} of {totalStages} stages completed</span>
-              {updatedLabel && <span className={styles.cardTimestamp}>Updated {updatedLabel}</span>}
-            </div>
+            )}
           </button>
         </div>
 
@@ -683,12 +671,11 @@ export default function OrderDetailModal({
           <div className={styles.stageSheetPanel} onClick={e => e.stopPropagation()}>
             <div className={styles.handle} />
             <div className={styles.stageSheetTitle}>Update Stage</div>
-            <div className={styles.stageSheetSubtitle}>Select the new current stage</div>
+            <div className={styles.stageSheetSubtitle}>Tap a stage to update instantly</div>
             <div className={`${styles.stageSheetList} ${styles.timelineList}`}>
               {ORDER_STAGES.map((s, idx) => {
                 const isDone = stageIndex >= 0 && idx < stageIndex
                 const isCurrent = s.value === local.stage
-                const isSelected = s.value === selectedStage
                 const timestamp = formatStageTimestamp(stageHistory[s.value])
                 const isLast = idx === ORDER_STAGES.length - 1
                 return (
@@ -696,8 +683,8 @@ export default function OrderDetailModal({
                     key={s.value}
                     type="button"
                     disabled={pendingStage}
-                    className={`${styles.timelineRow} ${isSelected ? styles.timelineRowSelected : ''}`}
-                    onClick={() => setSelectedStage(s.value)}
+                    className={styles.timelineRow}
+                    onClick={() => handleStageChange(s.value)}
                   >
                     <div className={styles.timelineIndicatorCol}>
                       <span
@@ -717,28 +704,11 @@ export default function OrderDetailModal({
                         {timestamp ? timestamp : isCurrent ? 'Current stage' : 'Upcoming'}
                       </div>
                     </div>
-                    {isCurrent && <span className={styles.stageSheetCurrent}>Current Stage</span>}
+                    {isCurrent && <span className={styles.stageSheetCurrent}>Current</span>}
                     {!isCurrent && isDone && <span className={styles.timelineBadgeDone}>Completed</span>}
                   </button>
                 )
               })}
-            </div>
-            <div className={styles.stageSheetFooter}>
-              <button
-                type="button"
-                className={styles.btnPrimary}
-                disabled={pendingStage || selectedStage === local.stage}
-                onClick={() => handleStageChange(selectedStage)}
-              >
-                Update to {ORDER_STAGES.find(s => s.value === selectedStage)?.label || ''}
-              </button>
-              <button
-                type="button"
-                className={styles.btnCancelSheet}
-                onClick={() => setShowStageSheet(false)}
-              >
-                Cancel
-              </button>
             </div>
           </div>
         </div>
