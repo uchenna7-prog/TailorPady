@@ -3,7 +3,8 @@ import {
   useContext,
   useState,
   useEffect,
-  useCallback
+  useCallback,
+  useMemo
 } from 'react'
 import { useAuth } from './AuthContext'
 import {
@@ -75,17 +76,19 @@ export function CustomerProvider({ children }) {
     return customers.find(c => String(c.id) === String(id)) ?? null
   }, [customers])
 
+  const value = useMemo(() => ({
+    customers,
+    loading,
+    error,
+    addCustomer,
+    updateCustomer,
+    deleteCustomer,
+    deleteCustomerAndAllData,
+    getCustomer,
+  }), [customers, loading, error, addCustomer, updateCustomer, deleteCustomer, deleteCustomerAndAllData, getCustomer])
+
   return (
-    <CustomerContext.Provider value={{
-      customers,
-      loading,
-      error,
-      addCustomer,
-      updateCustomer,
-      deleteCustomer,
-      deleteCustomerAndAllData,
-      getCustomer,
-    }}>
+    <CustomerContext.Provider value={value}>
       {children}
     </CustomerContext.Provider>
   )

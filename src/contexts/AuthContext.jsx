@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useEffect } from 'react'
+import { createContext, useContext, useState, useEffect, useMemo } from 'react'
 import { onAuthStateChanged } from 'firebase/auth'
 import { auth } from '../firebase'
 import {
@@ -52,22 +52,24 @@ export function AuthProvider({ children }) {
     return unsubscribe
   }, [])
 
+  const value = useMemo(() => ({
+    user,
+    loading,
+    redirecting,
+    setRedirecting,
+    login,
+    loginWithGoogle,
+    signup,
+    logout,
+    resetPassword,
+    changePassword,
+    changeEmail,
+    linkGoogle,
+    unlinkProvider,
+  }), [user, loading, redirecting])
+
   return (
-    <AuthContext.Provider value={{
-      user,
-      loading,
-      redirecting,
-      setRedirecting,
-      login,
-      loginWithGoogle,
-      signup,
-      logout,
-      resetPassword,
-      changePassword,
-      changeEmail,
-      linkGoogle,
-      unlinkProvider,
-    }}>
+    <AuthContext.Provider value={value}>
       {!loading && children}
     </AuthContext.Provider>
   )

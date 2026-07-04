@@ -19,25 +19,24 @@ import {
   createAgentDraft,
   updateAgentDraftStatus,
   loadScheduledItems,
-  upsertScheduledItem,
   removeScheduledItem,
+  commitScheduledChanges,
 } from '../services/agentService'
 
 const DAY_MS  = 86_400_000
 const HOUR_MS = 3_600_000
 const WEEK_MS = 604_800_000
+const TICK_MS = 30_000
+const DEBOUNCE_MS = 2_500
 
 function durationToMs(duration) {
-
   if (!duration || typeof duration !== 'object') return DAY_MS
   const amount = Number(duration.amount) || 1
   const unitMs = { hours: HOUR_MS, days: DAY_MS, weeks: WEEK_MS, months: DAY_MS * 30 }
   return amount * (unitMs[duration.unit] || DAY_MS)
-
 }
 
 function durationLabel(duration) {
-
   if (!duration || typeof duration !== 'object') return '1 day'
   const amount = Number(duration.amount) || 1
   const unit   = duration.unit || 'days'
@@ -46,7 +45,6 @@ function durationLabel(duration) {
 }
 
 function timestampToMs(value) {
-
   if (!value) return 0
   if (typeof value === 'number') return value
   if (typeof value.toDate === 'function') return value.toDate().getTime()
@@ -64,7 +62,6 @@ function formatMoney(amount, currencySymbol = '₦') {
 }
 
 function formatDateLabel(ms) {
-
   if (!ms) return 'Other'
   const date      = new Date(ms)
   const today     = new Date()
@@ -94,7 +91,6 @@ function formatClockLabel(ms) {
 }
 
 function whenLabel(remainingMs) {
-
   if (remainingMs <= 0) return 'Soon'
   const totalMins  = remainingMs / (1000 * 60)
   const totalHours = remainingMs / HOUR_MS
@@ -109,7 +105,6 @@ function whenLabel(remainingMs) {
 }
 
 function getPendingReceiptItems(allPayments, allReceipts) {
-
   const items = []
   allPayments.forEach(payment => {
     if (!Array.isArray(payment.installments) || !payment.installments.length) return
@@ -193,9 +188,6 @@ function buildDailyBrief({
   }
 }
 
-
-
-
 function detectCandidates({
   generalSettings,
   customers,
@@ -204,13 +196,10 @@ function detectCandidates({
   allPayments,
   allReceipts,
 }) {
-
-
   const nowMs      = Date.now()
   const candidates = []
 
   if (generalSettings.agentAutoInvoice) {
-
     const thresholdMs      = durationToMs(generalSettings.agentAutoInvoiceTimeframe)
     const invoicedOrderIds = new Set(allInvoices.map(i => i.orderId))
 
@@ -241,11 +230,11 @@ function detectCandidates({
             type:    'invoice',
             title:   'Invoice ready for review',
             preview: `Invoice drafted for ${order.customerName || 'a customer'}'s order of ${orderName}, totaling ${amount}${order.due ? `, due on ${order.due}` : ''}.`,
-            summary: { 
-              icon: 'shopping_cart', 
-              name: orderName, 
-              amount, 
-              due: order.due || null 
+            summary: {
+              icon: 'shopping_cart',
+              name: orderName,
+              amount,
+              due: order.due || null
             },
             reason:  `This order was created ${durationLabel(generalSettings.agentAutoInvoiceTimeframe)} ago without an invoice attached. Your assistant drafted one automatically.`,
             tag:     'Invoice',
@@ -256,7 +245,6 @@ function detectCandidates({
   }
 
   if (generalSettings.agentAutoReceipt) {
-
     const thresholdMs = durationToMs(generalSettings.agentAutoReceiptTimeframe)
 
     getPendingReceiptItems(allPayments, allReceipts).forEach(({ payment, installment }) => {
@@ -395,7 +383,6 @@ function detectCandidates({
   }
 
   if (generalSettings.agentBirthdayMessages) {
-
     const noticeDurationMs = durationToMs(generalSettings.agentBirthdayNotice)
     const today            = new Date()
 
@@ -425,7 +412,6 @@ function detectCandidates({
         detectedAt: nowMs,
         fireAt,
         visibleAt,
-
         draftData: {
           type:    'birthday',
           title:   'Birthday message ready for review',
@@ -501,6 +487,8 @@ export function AutonomousAgentProvider({ children }) {
   const [scheduledItems,    setScheduledItems]    = useState([])
   const [knownDraftIds,     setKnownDraftIds]     = useState(new Set())
   const [knownScheduledIds, setKnownScheduledIds] = useState(new Set())
+  const [nowTick,           setNowTick]           = useState(() => Date.now())
+  const [agentDataLoaded,   setAgentDataLoaded]   = useState(false)
   const processingRef = useRef(new Set())
 
   useEffect(() => {
@@ -509,23 +497,31 @@ export function AutonomousAgentProvider({ children }) {
       setScheduledItems([])
       setKnownDraftIds(new Set())
       setKnownScheduledIds(new Set())
+      setAgentDataLoaded(false)
       return
     }
+    setAgentDataLoaded(false)
     Promise.all([
       loadAgentDrafts(user.uid),
       loadScheduledItems(user.uid),
     ]).then(([drafts, scheduled]) => {
       setPersistedDrafts(drafts)
-      setScheduledItems(scheduled)
+      setScheduledItems([...scheduled].sort((a, b) => a.fireAt - b.fireAt))
       setKnownDraftIds(new Set(drafts.map(d => d.id)))
       setKnownScheduledIds(new Set(scheduled.map(s => s.id)))
+      setAgentDataLoaded(true)
     })
   }, [user, enabled])
 
   useEffect(() => {
-    if (!user || !enabled) return
+    if (!enabled) return
+    const id = setInterval(() => setNowTick(Date.now()), TICK_MS)
+    return () => clearInterval(id)
+  }, [enabled])
 
-    const candidates = detectCandidates({
+  const candidates = useMemo(() => {
+    if (!enabled) return []
+    return detectCandidates({
       generalSettings,
       customers,
       allOrders,
@@ -533,18 +529,67 @@ export function AutonomousAgentProvider({ children }) {
       allPayments,
       allReceipts,
     })
+  }, [enabled, generalSettings, customers, allOrders, allInvoices, allPayments, allReceipts])
 
-    const nowMs = Date.now()
+  useEffect(() => {
+    if (!user || !enabled || !agentDataLoaded) return
 
-    candidates.forEach(candidate => {
-      if (processingRef.current.has(candidate.id)) return
+    const timer = setTimeout(() => {
+      const nowMs           = Date.now()
+      const scheduleUpserts = []
+      const scheduleRemovals = []
+      const draftsToCreate  = []
 
-      const alreadyDraft     = knownDraftIds.has(candidate.id)
-      const alreadyScheduled = knownScheduledIds.has(candidate.id)
+      candidates.forEach(candidate => {
+        if (processingRef.current.has(candidate.id)) return
 
-      if (alreadyDraft) return
+        const alreadyDraft     = knownDraftIds.has(candidate.id)
+        const alreadyScheduled = knownScheduledIds.has(candidate.id)
 
-      if (candidate.fireAt <= nowMs) {
+        if (alreadyDraft) return
+
+        if (candidate.fireAt <= nowMs) {
+          draftsToCreate.push({ candidate, alreadyScheduled })
+          return
+        }
+
+        if (candidate.visibleAt > nowMs) return
+
+        if (!alreadyScheduled) {
+          scheduleUpserts.push({
+            id:   candidate.id,
+            data: {
+              id:         candidate.id,
+              type:       candidate.type,
+              tag:        candidate.tag,
+              title:      candidate.title,
+              desc:       candidate.desc,
+              detail:     candidate.detail,
+              detectedAt: candidate.detectedAt,
+              fireAt:     candidate.fireAt,
+              visibleAt:  candidate.visibleAt,
+            },
+          })
+          return
+        }
+
+        const existing = scheduledItems.find(s => s.id === candidate.id)
+        if (existing && existing.fireAt !== candidate.fireAt) {
+          scheduleUpserts.push({
+            id:   candidate.id,
+            data: { fireAt: candidate.fireAt, desc: candidate.desc, detail: candidate.detail },
+          })
+        }
+      })
+
+      const candidateIds = new Set(candidates.map(c => c.id))
+      scheduledItems.forEach(item => {
+        if (!candidateIds.has(item.id) && !knownDraftIds.has(item.id)) {
+          scheduleRemovals.push(item.id)
+        }
+      })
+
+      draftsToCreate.forEach(({ candidate, alreadyScheduled }) => {
         processingRef.current.add(candidate.id)
         setKnownDraftIds(prev => new Set(prev).add(candidate.id))
 
@@ -567,74 +612,38 @@ export function AutonomousAgentProvider({ children }) {
             })
           }
         })
-        return
-      }
+      })
 
-      if (candidate.visibleAt > nowMs) return
+      if (!scheduleUpserts.length && !scheduleRemovals.length) return
 
-      if (!alreadyScheduled) {
-        processingRef.current.add(candidate.id)
-        setKnownScheduledIds(prev => new Set(prev).add(candidate.id))
+      const upsertIds = scheduleUpserts.map(u => u.id)
+      upsertIds.forEach(id => processingRef.current.add(id))
+      scheduleRemovals.forEach(id => processingRef.current.add(id))
 
-        const scheduledData = {
-          id:         candidate.id,
-          type:       candidate.type,
-          tag:        candidate.tag,
-          title:      candidate.title,
-          desc:       candidate.desc,
-          detail:     candidate.detail,
-          detectedAt: candidate.detectedAt,
-          fireAt:     candidate.fireAt,
-          visibleAt:  candidate.visibleAt,
-        }
+      commitScheduledChanges(user.uid, { upserts: scheduleUpserts, removals: scheduleRemovals }).then(() => {
+        upsertIds.forEach(id => processingRef.current.delete(id))
+        scheduleRemovals.forEach(id => processingRef.current.delete(id))
 
-        upsertScheduledItem(user.uid, candidate.id, scheduledData).then(() => {
-          processingRef.current.delete(candidate.id)
-          setScheduledItems(prev => {
-            if (prev.find(s => s.id === candidate.id)) return prev
-            return [...prev, scheduledData].sort((a, b) => a.fireAt - b.fireAt)
-          })
-        })
-        return
-      }
-
-      const existing = scheduledItems.find(s => s.id === candidate.id)
-      if (existing && existing.fireAt !== candidate.fireAt) {
-        upsertScheduledItem(user.uid, candidate.id, { fireAt: candidate.fireAt })
-        setScheduledItems(prev =>
-          prev
-            .map(s => s.id === candidate.id
-              ? { ...s, fireAt: candidate.fireAt, desc: candidate.desc, detail: candidate.detail }
-              : s
-            )
-            .sort((a, b) => a.fireAt - b.fireAt)
-        )
-      }
-    })
-
-    const candidateIds = new Set(candidates.map(c => c.id))
-    scheduledItems.forEach(item => {
-      if (!candidateIds.has(item.id) && !knownDraftIds.has(item.id)) {
-        removeScheduledItem(user.uid, item.id)
-        setScheduledItems(prev => prev.filter(s => s.id !== item.id))
         setKnownScheduledIds(prev => {
           const next = new Set(prev)
-          next.delete(item.id)
+          upsertIds.forEach(id => next.add(id))
+          scheduleRemovals.forEach(id => next.delete(id))
           return next
         })
-      }
-    })
 
-  }, [user, enabled, generalSettings, customers, allOrders, allInvoices, allPayments, allReceipts, knownDraftIds, knownScheduledIds, scheduledItems])
+        setScheduledItems(prev => {
+          const kept = prev.filter(s => !scheduleRemovals.includes(s.id))
+          const map  = new Map(kept.map(s => [s.id, s]))
+          scheduleUpserts.forEach(({ id, data }) => {
+            map.set(id, { ...(map.get(id) || {}), ...data })
+          })
+          return [...map.values()].sort((a, b) => a.fireAt - b.fireAt)
+        })
+      })
+    }, DEBOUNCE_MS)
 
-  useEffect(() => {
-    if (!scheduledItems.length) return
-    const next  = scheduledItems.find(s => s.fireAt > Date.now())
-    if (!next)  return
-    const delay = Math.min(next.fireAt - Date.now(), 60_000)
-    const tid   = setTimeout(() => setScheduledItems(prev => [...prev]), delay)
-    return () => clearTimeout(tid)
-  }, [scheduledItems])
+    return () => clearTimeout(timer)
+  }, [user, enabled, agentDataLoaded, candidates, knownDraftIds, knownScheduledIds, scheduledItems])
 
   const activeDrafts = useMemo(
     () => persistedDrafts.filter(d => d.status !== 'discarded'),
@@ -663,7 +672,6 @@ export function AutonomousAgentProvider({ children }) {
   const approvedDrafts = useMemo(() => drafts.filter(d => d.status === 'approved'), [drafts])
 
   const upcomingTasks = useMemo(() => {
-    const nowMs = Date.now()
     return scheduledItems
       .filter(s => !knownDraftIds.has(s.id))
       .map(s => ({
@@ -673,11 +681,11 @@ export function AutonomousAgentProvider({ children }) {
         title:  s.title,
         desc:   s.desc,
         detail: s.detail || s.desc,
-        when:   whenLabel(s.fireAt - nowMs),
+        when:   whenLabel(s.fireAt - nowTick),
         fireAt: s.fireAt,
       }))
       .sort((a, b) => a.fireAt - b.fireAt)
-  }, [scheduledItems, knownDraftIds])
+  }, [scheduledItems, knownDraftIds, nowTick])
 
   const dailyBrief = useMemo(() => {
     if (!enabled || !generalSettings.agentDailyBrief) return null

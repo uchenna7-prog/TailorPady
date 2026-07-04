@@ -11,6 +11,7 @@ import {
   doc,
   setDoc,
   updateDoc,
+  writeBatch,
 } from 'firebase/firestore'
 import { db } from '../firebase'
 
@@ -86,6 +87,21 @@ export async function upsertScheduledItem(uid, itemId, data) {
 export async function removeScheduledItem(uid, itemId) {
   const ref = doc(db, 'users', uid, 'agentScheduled', itemId)
   await deleteDoc(ref)
+}
+
+export async function commitScheduledChanges(uid, { upserts = [], removals = [] }) {
+  if (!upserts.length && !removals.length) return
+  const batch = writeBatch(db)
+
+  upserts.forEach(({ id, data }) => {
+    batch.set(doc(db, 'users', uid, 'agentScheduled', id), data, { merge: true })
+  })
+
+  removals.forEach(id => {
+    batch.delete(doc(db, 'users', uid, 'agentScheduled', id))
+  })
+
+  await batch.commit()
 }
 
 export async function clearScheduledItems(uid) {
