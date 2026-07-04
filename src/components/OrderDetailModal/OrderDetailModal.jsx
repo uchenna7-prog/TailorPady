@@ -186,6 +186,9 @@ export default function OrderDetailModal({
   const progressPercent = stageIndex >= 0 ? Math.round(((stageIndex + 1) / ORDER_STAGES.length) * 100) : 0
   const stageUpdatedLabel = formatFullTimestamp(local.updatedAt)
   const statusMeta = STATUS_CHIP[local.status] || STATUS_CHIP.pending
+  const stageBadgeStyle = stageObj
+    ? { background: 'var(--surface2)', color: 'var(--accent)', border: '1px solid var(--border2)' }
+    : { background: 'var(--surface2)', color: 'var(--text3)', border: '1px solid var(--border2)' }
   const priorityValue = local.priority ?? 'normal'
   const priorityMeta = PRIORITY_CHIP[priorityValue]
   const showCustomer = local.customerName && !hideCustomerName
@@ -432,10 +435,13 @@ export default function OrderDetailModal({
           >
             <div className={styles.cardHeader}>
               <span className={styles.cardLabel}>Status</span>
-              <span className="mi" style={{ fontSize: '1.05rem', color: 'var(--text3)' }}>chevron_right</span>
+              {pendingStatus
+                ? <span className={`mi ${styles.spinIcon}`} style={{ fontSize: '1.05rem', color: 'var(--text3)' }}>progress_activity</span>
+                : <span className={`mi ${styles.chevronIcon}`} style={{ fontSize: '1.05rem', color: 'var(--text3)' }}>chevron_right</span>
+              }
             </div>
             <div className={styles.cardMainRow}>
-              <div className={styles.cardIconBadge} style={{ background: statusMeta.bg, color: statusMeta.color }}>
+              <div className={styles.cardIconBadge} style={{ background: statusMeta.bg, color: statusMeta.color, border: `1px solid ${statusMeta.border}` }}>
                 <span className="mi" style={{ fontSize: '1.15rem' }}>{STATUS_ICON[local.status] || 'schedule'}</span>
               </div>
               <div className={styles.cardValue} style={{ color: statusMeta.color }}>
@@ -460,14 +466,17 @@ export default function OrderDetailModal({
               <span className={styles.cardLabel}>Production Progress</span>
               <div className={styles.cardHeaderRight}>
                 <span className={styles.cardPercent}>{progressPercent}%</span>
-                <span className="mi" style={{ fontSize: '1.05rem', color: 'var(--text3)' }}>chevron_right</span>
+                {pendingStage
+                  ? <span className={`mi ${styles.spinIcon}`} style={{ fontSize: '1.05rem', color: 'var(--text3)' }}>progress_activity</span>
+                  : <span className={`mi ${styles.chevronIcon}`} style={{ fontSize: '1.05rem', color: 'var(--text3)' }}>chevron_right</span>
+                }
               </div>
             </div>
             <div className={styles.progressTrack}>
               <div className={styles.progressFill} style={{ width: `${progressPercent}%` }} />
             </div>
             <div className={styles.cardMainRow}>
-              <div className={styles.cardIconBadge} style={{ background: 'var(--surface2)', color: 'var(--accent)' }}>
+              <div className={styles.cardIconBadge} style={stageBadgeStyle}>
                 <span className="mi" style={{ fontSize: '1.15rem' }}>{stageObj?.icon || 'timeline'}</span>
               </div>
               <div className={styles.cardValue}>{stageObj ? stageObj.label : 'Not started'}</div>
