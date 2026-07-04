@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react'
 import { useOrders } from '../../contexts/OrdersContext'
+import { useInvoices } from '../../contexts/InvoiceContext'
 import { useAuth } from '../../contexts/AuthContext'
 import {
   ORDER_STATUS_LABELS,
@@ -39,13 +40,6 @@ function formatFullTimestamp(ts) {
   return `${datePart} • ${timePart}`
 }
 
-function isOverdue(order) {
-  const raw = order.dueRaw || order.dueDate
-  if (!raw) return false
-  if (['completed', 'delivered', 'cancelled'].includes(order.status)) return false
-  return new Date(raw + 'T23:59:59') < new Date()
-}
-
 function daysUntil(dateStr) {
   if (!dateStr) return null
   const today = new Date(); today.setHours(0, 0, 0, 0)
@@ -60,21 +54,6 @@ function daysUntil(dateStr) {
 function formatOrderNumber(num) {
   if (num === null || num === undefined) return null
   return `#${String(num).padStart(4, '0')}`
-}
-
-function getProgressColor(percent) {
-  const clamped = Math.max(0, Math.min(100, percent))
-  const stops = [
-    { p: 0, h: 40, s: 85, l: 55 },
-    { p: 50, h: 265, s: 68, l: 60 },
-    { p: 100, h: 150, s: 65, l: 42 },
-  ]
-  const [a, b] = clamped <= 50 ? [stops[0], stops[1]] : [stops[1], stops[2]]
-  const t = (clamped - a.p) / (b.p - a.p)
-  const h = a.h + (b.h - a.h) * t
-  const s = a.s + (b.s - a.s) * t
-  const l = a.l + (b.l - a.l) * t
-  return `hsl(${h}, ${s}%, ${l}%)`
 }
 
 const DONUT_CIRCUMFERENCE = 2 * Math.PI * 26
@@ -108,12 +87,14 @@ export default function OrderDetailModal({
   onClose,
   onGoToCustomer,
   onGenerateInvoice,
+  onViewInvoice,
   fullHeight = false,
   noBlur = false,
   hideCustomerName = false,
   showToast,
 }) {
-  const { updateOrderStatus, updateOrderStage, updateOrder, deleteOrder } = useOrders()
+  const { updateOrderStatus, updateOrder, deleteOrder } = useOrders()
+  const { allInvoices } = useInvoices()
   const { user } = useAuth()
 
   const [local, setLocal] = useState(order)
@@ -122,7 +103,6 @@ export default function OrderDetailModal({
   const [showStageSheet, setShowStageSheet] = useState(false)
   const [showPriorityMenu, setShowPriorityMenu] = useState(false)
   const [pendingCancel, setPendingCancel] = useState(false)
-  const [pendingStage, setPendingStage] = useState(false)
   const [pendingPriority, setPendingPriority] = useState(false)
   const [brokenImages, setBrokenImages] = useState(() => new Set())
   const priorityRef = useRef(null)
@@ -166,7 +146,6 @@ export default function OrderDetailModal({
     else onClose()
   }
 
-  const overdue = isOverdue(local)
   const dueTag = daysUntil(local.dueRaw || local.dueDate)
   const placedOn = local.takenAt || local.date || formatFirestoreDate(local.createdAt)
 
@@ -184,23 +163,42 @@ export default function OrderDetailModal({
   const totalQty = items.reduce((s, i) => s + (parseInt(i.qty, 10) || 1), 0) || local.qty || 1
 
   const canReview = local.status === 'completed' || local.status === 'delivered'
+  const reviewAlreadySent = Boolean(local.reviewToken)
+  const linkedInvoice = allInvoices?.find(inv => String(inv.orderId) === String(local.id))
+  const hasInvoice = Boolean(linkedInvoice)
   const isCancelled = local.status === 'cancelled'
   const canCancel = CANCELLABLE_STATUSES.includes(local.status) || isCancelled
   const stageHistory = local.stageHistory || {}
   const stageIndex = ORDER_STAGES.findIndex(s => s.value === local.stage)
   const stageObj = ORDER_STAGES.find(s => s.value === local.stage)
   const progressPercent = stageIndex >= 0 ? Math.round(((stageIndex + 1) / ORDER_STAGES.length) * 100) : 0
-  const progressColor = getProgressColor(progressPercent)
   const stageUpdatedLabel = formatFullTimestamp(local.updatedAt)
   const statusMeta = STATUS_CHIP[local.status] || STATUS_CHIP.pending
+  const progressColor = statusMeta.color
   const priorityValue = local.priority ?? 'normal'
   const priorityMeta = PRIORITY_CHIP[priorityValue]
   const showCustomer = local.customerName && !hideCustomerName
   const orderTitle = local.desc || local.name || 'Order'
   const orderNumberLabel = formatOrderNumber(local.orderNumber)
 
-  async function handleStageChange(stageValue) {
-    if (pendingStage || local.stage === stageValue) {
+  function buildStageHistoryPatch(prevHistory, stageValue) {
+    const targetIndex = ORDER_STAGES.findIndex(s => s.value === stageValue)
+    const now = new Date()
+    const patch = {}
+    const nextHistory = { ...(prevHistory || {}) }
+    ORDER_STAGES.forEach((s, idx) => {
+      if (idx <= targetIndex && !nextHistory[s.value]) {
+        nextHistory[s.value] = now
+        patch[`stageHistory.${s.value}`] = now
+      }
+    })
+    nextHistory[stageValue] = now
+    patch[`stageHistory.${stageValue}`] = now
+    return { nextHistory, patch }
+  }
+
+  function handleStageChange(stageValue) {
+    if (local.stage === stageValue) {
       setShowStageSheet(false)
       return
     }
@@ -211,28 +209,26 @@ export default function OrderDetailModal({
     const prevStage = local.stage
     const prevStatus = local.status
     const prevHistory = local.stageHistory
+    const { nextHistory, patch } = buildStageHistoryPatch(prevHistory, stageValue)
 
     setLocal(p => ({
       ...p,
       stage: stageValue,
-      stageHistory: { ...(p.stageHistory || {}), [stageValue]: new Date() },
+      stageHistory: nextHistory,
       ...(autoStatus ? { status: autoStatus } : {}),
     }))
-    setPendingStage(true)
     setShowStageSheet(false)
 
-    try {
-      await updateOrderStage(local.customerId, local.id, stageValue)
-      if (autoStatus) {
-        await updateOrderStatus(local.customerId, local.id, autoStatus)
-      }
-      showToast?.('Stage updated')
-    } catch {
-      setLocal(p => ({ ...p, stage: prevStage, status: prevStatus, stageHistory: prevHistory }))
-      showToast?.('Failed to update stage')
-    } finally {
-      setPendingStage(false)
-    }
+    updateOrder(local.customerId, local.id, {
+      stage: stageValue,
+      ...(autoStatus ? { status: autoStatus } : {}),
+      ...patch,
+    })
+      .then(() => showToast?.('Stage updated'))
+      .catch(() => {
+        setLocal(p => ({ ...p, stage: prevStage, status: prevStatus, stageHistory: prevHistory }))
+        showToast?.('Failed to update stage')
+      })
   }
 
   async function handlePriority(priority) {
@@ -272,14 +268,11 @@ export default function OrderDetailModal({
     }
   }
 
-  async function handleDelete() {
-    try {
-      await deleteOrder(local.customerId, local.id)
-      close()
-    } catch {
+  function handleDelete() {
+    close()
+    deleteOrder(local.customerId, local.id).catch(() => {
       showToast?.('Failed to delete order')
-      setConfirmDelete(false)
-    }
+    })
   }
 
   async function handleReviewClick() {
@@ -326,16 +319,28 @@ export default function OrderDetailModal({
     >
       {!fullHeight && <div className={styles.handle} />}
 
-      <Header
-        type="back"
-        showBorderBottom={false}
-        title="Order Details"
-        onBackClick={close}
-        backIcon={fullHeight ? 'arrow_back_ios' : 'close'}
-        customActions={[
-          { icon: 'delete', onClick: () => setConfirmDelete(true), color: 'var(--danger)', outlined: true },
-        ]}
-      />
+      {fullHeight ? (
+        <Header
+          type="back"
+          showBorderBottom={false}
+          title="Order Details"
+          onBackClick={close}
+          backIcon="arrow_back_ios"
+          customActions={[
+            { icon: 'delete', onClick: () => setConfirmDelete(true), color: 'var(--danger)', outlined: true },
+          ]}
+        />
+      ) : (
+        <div className={styles.header}>
+          <button className={styles.headerCloseBtn} onClick={close}>
+            <span className="mi" style={{ fontSize: '1.35rem' }}>close</span>
+          </button>
+          <div className={styles.headerTitle}>Order Details</div>
+          <button className={styles.headerDelete} onClick={() => setConfirmDelete(true)}>
+            <span className="mi" style={{ fontSize: '1.1rem' }}>delete_outline</span>
+          </button>
+        </div>
+      )}
 
       <div className={styles.body}>
 
@@ -415,7 +420,7 @@ export default function OrderDetailModal({
           </div>
           <div className={styles.infoGridCell}>
             <div className={styles.infoGridLabel}>Due</div>
-            <div className={`${styles.infoGridValue} ${overdue ? styles.overdueText : ''}`}>
+            <div className={`${styles.infoGridValue} ${styles.overdueText}`}>
               {local.due || '—'}
             </div>
             {dueTag && <div className={styles.infoGridSub}>{dueTag}</div>}
@@ -427,20 +432,16 @@ export default function OrderDetailModal({
             type="button"
             className={styles.premiumCard}
             onClick={openStageSheet}
-            disabled={pendingStage}
           >
             <div className={styles.cardHeader}>
               <span className={styles.cardLabel}>Production Progress</span>
-              {pendingStage
-                ? <span className={`mi ${styles.spinIcon}`} style={{ fontSize: '1.05rem', color: 'var(--text3)' }}>progress_activity</span>
-                : <span className={`mi ${styles.chevronIcon}`} style={{ fontSize: '1.05rem', color: 'var(--text3)' }}>chevron_right</span>
-              }
+              <span className={`mi ${styles.chevronIcon}`} style={{ fontSize: '1.05rem', color: 'var(--text3)' }}>chevron_right</span>
             </div>
             <div className={styles.donutRow}>
               <div className={styles.donutContent}>
                 <div className={styles.cardValueRow}>
                   {stageObj?.icon && (
-                    <span className="mi" style={{ fontSize: '1.05rem', color: progressColor }}>{stageObj.icon}</span>
+                    <span className="mi" style={{ fontSize: '1.05rem', color: 'var(--text)' }}>{stageObj.icon}</span>
                   )}
                   <div className={styles.cardValue}>{stageObj ? stageObj.label : 'Not started'}</div>
                 </div>
@@ -590,17 +591,13 @@ export default function OrderDetailModal({
         )}
 
         <div className={styles.footerButtons}>
-          <button
-            className={`${styles.btnSecondary} ${!canReview ? styles.btnSecondary_disabled : ''}`}
-            onClick={handleReviewClick}
-          >
-            <span className="mi" style={{ fontSize: '1rem' }}>share</span>
-            Share review link via WhatsApp
-          </button>
-          {onGenerateInvoice && (
-            <button className={styles.btnPrimary} onClick={() => { close(); onGenerateInvoice(local.id) }}>
-              <span className="mi" style={{ fontSize: '1.05rem' }}>receipt_long</span>
-              Generate invoice
+          {!reviewAlreadySent && (
+            <button
+              className={`${styles.btnSecondary} ${!canReview ? styles.btnSecondary_disabled : ''}`}
+              onClick={handleReviewClick}
+            >
+              <span className="mi" style={{ fontSize: '1rem' }}>share</span>
+              Share review link via WhatsApp
             </button>
           )}
           {canCancel && (
@@ -611,6 +608,19 @@ export default function OrderDetailModal({
             >
               <span className="mi" style={{ fontSize: '1.05rem' }}>{isCancelled ? 'undo' : 'cancel'}</span>
               {isCancelled ? 'Restore order' : 'Cancel order'}
+            </button>
+          )}
+          {(onGenerateInvoice || onViewInvoice) && (
+            <button
+              className={styles.btnPrimary}
+              onClick={() => {
+                close()
+                if (hasInvoice) onViewInvoice?.(linkedInvoice.id)
+                else onGenerateInvoice?.(local.id)
+              }}
+            >
+              <span className="mi" style={{ fontSize: '1.05rem' }}>receipt_long</span>
+              {hasInvoice ? 'View invoice' : 'Generate invoice'}
             </button>
           )}
         </div>
@@ -633,7 +643,6 @@ export default function OrderDetailModal({
                   <button
                     key={s.value}
                     type="button"
-                    disabled={pendingStage}
                     className={styles.timelineRow}
                     onClick={() => handleStageChange(s.value)}
                   >
@@ -675,7 +684,16 @@ export default function OrderDetailModal({
     </div>
   )
 
-  if (fullHeight) return panel
+  if (fullHeight) {
+    return (
+      <div
+        className={styles.fullHeightBackdrop}
+        onClick={e => e.target === e.currentTarget && close()}
+      >
+        {panel}
+      </div>
+    )
+  }
 
   return (
     <div

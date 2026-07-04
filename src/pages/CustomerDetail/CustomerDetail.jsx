@@ -95,6 +95,11 @@ export default function CustomerDetail({ onMenuClick }) {
     setActiveTab,
   })
 
+  const handleViewInvoice = useCallback((invoiceId) => {
+    setActiveTab('invoices')
+    setReopenInvoiceId(invoiceId)
+  }, [])
+
   useEffect(() => {
     const observer = new IntersectionObserver(
       ([entry]) => setIsScrolled(!entry.isIntersecting),
@@ -630,6 +635,7 @@ export default function CustomerDetail({ onMenuClick }) {
             measurements={customerData.measurements}
             showToast={showToast}
             onGenerateInvoice={handleGenerateInvoice}
+            onViewInvoice={handleViewInvoice}
           />
         )}
         {activeTab === 'invoices' && (

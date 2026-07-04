@@ -1,3 +1,5 @@
+import { useState } from 'react'
+import ConfirmSheet from '../ConfirmSheet/ConfirmSheet'
 import styles from './TaskDetail.module.css'
 
 const PRIORITY_LABELS = { low: 'Low', normal: 'Normal', high: 'High', urgent: 'Urgent' }
@@ -10,9 +12,9 @@ const PRIORITY_COLORS = {
 }
 
 const STATUS_CONFIG = {
-  pending:   { label: 'Pending',   color: '#a16207', bg: 'rgba(234,179,8,0.1)',  border: 'rgba(234,179,8,0.5)'  },
-  overdue:   { label: 'Overdue',   color: '#ef4444', bg: 'rgba(239,68,68,0.12)', border: 'rgba(239,68,68,0.4)'  },
-  completed: { label: 'Completed', color: '#15803d', bg: 'rgba(34,197,94,0.1)',  border: 'rgba(34,197,94,0.5)'  },
+  pending:   { label: 'Pending',   color: '#a16207' },
+  overdue:   { label: 'Overdue',   color: '#ef4444' },
+  completed: { label: 'Completed', color: '#15803d' },
 }
 
 function isTaskDateInPast(task) {
@@ -29,12 +31,6 @@ function getEffectiveStatus(task) {
   return 'pending'
 }
 
-function isChipLocked(key, task) {
-  if (key === 'overdue')  return true
-  if (key === 'pending')  return isTaskDateInPast(task)
-  return false
-}
-
 function formatDate(dateStr) {
   if (!dateStr) return ''
   return new Date(dateStr + 'T00:00:00').toLocaleDateString('en-US', {
@@ -43,16 +39,23 @@ function formatDate(dateStr) {
 }
 
 
-export default function TaskDetail({ task, onClose, onToggle, onDelete }) {
+export default function TaskDetail({ task, onClose, onToggle, onDelete, onGoToCustomer }) {
+  const [confirmDelete, setConfirmDelete] = useState(false)
+
   if (!task) return null
 
   const effectiveStatus = getEffectiveStatus(task)
-  const isOverdue       = effectiveStatus === 'overdue'
-  const pc              = PRIORITY_COLORS[task.priority] ?? PRIORITY_COLORS.normal
+  const isOverdue        = effectiveStatus === 'overdue'
+  const statusMeta       = STATUS_CONFIG[effectiveStatus]
+  const pc                = PRIORITY_COLORS[task.priority] ?? PRIORITY_COLORS.normal
 
-  function handleChipClick(key) {
-    if (key === 'completed' && !task.done)  onToggle(task.id, false)
-    if (key === 'pending'   && task.done)   onToggle(task.id, true)
+  function handleToggleComplete() {
+    onToggle(task.id, !task.done)
+  }
+
+  function handleDeleteConfirm() {
+    setConfirmDelete(false)
+    onDelete(task)
   }
 
   return (
@@ -68,95 +71,85 @@ export default function TaskDetail({ task, onClose, onToggle, onDelete }) {
             <span className="mi" style={{ fontSize: '1.35rem' }}>close</span>
           </button>
           <div className={styles.detailHeaderTitle}>Task Details</div>
-          <button className={styles.detailHeaderDelete} onClick={() => onDelete(task)}>
+          <button className={styles.detailHeaderDelete} onClick={() => setConfirmDelete(true)}>
             <span className="mi" style={{ fontSize: '1.1rem' }}>delete_outline</span>
           </button>
         </div>
 
         <div className={styles.detailBody}>
 
-          <div className={styles.detailStatusRow}>
-            {Object.entries(STATUS_CONFIG).map(([key, cfg]) => {
-              const isActive = effectiveStatus === key
-              const locked   = isChipLocked(key, task)
-
-              return (
-                <button
-                  key={key}
-                  disabled={locked}
-                  className={[
-                    styles.detailStatusBtn,
-                    isActive ? styles.detailStatusBtn_active : '',
-                    locked   ? styles.detailStatusBtn_locked : '',
-                  ].join(' ')}
-                  style={isActive ? {
-                    background:  cfg.bg,
-                    borderColor: cfg.border,
-                    color:       cfg.color,
-                  } : {}}
-                  onClick={() => handleChipClick(key)}
-                >
-                  {cfg.label}
-                </button>
-              )
-            })}
-          </div>
-
           <div className={styles.detailTitle}>{task.desc}</div>
 
-          <div className={styles.detailGrid}>
-            <div className={styles.detailCell}>
-              <div className={styles.detailCellLabel}>Priority</div>
-              <span style={{ color: pc.text, fontWeight: 700, fontSize: '0.9rem' }}>
+          <div className={styles.infoGrid}>
+            <div className={styles.infoGridCell}>
+              <div className={styles.infoGridLabel}>Priority</div>
+              <div className={styles.infoGridValue} style={{ color: pc.text }}>
                 {PRIORITY_LABELS[task.priority] ?? 'Normal'}
-              </span>
+              </div>
             </div>
-            <div className={styles.detailCell}>
-              <div className={styles.detailCellLabel}>Category</div>
-              <div className={styles.detailCellVal} style={{ textTransform: 'capitalize' }}>
+            <div className={styles.infoGridCell}>
+              <div className={styles.infoGridLabel}>Status</div>
+              <div className={styles.infoGridValue} style={{ color: statusMeta.color }}>
+                {statusMeta.label}
+              </div>
+            </div>
+            <div className={styles.infoGridCell}>
+              <div className={styles.infoGridLabel}>Category</div>
+              <div className={styles.infoGridValue} style={{ textTransform: 'capitalize' }}>
                 {task.category || 'General'}
               </div>
             </div>
             {task.dueDate && (
-              <div className={styles.detailCell}>
-                <div className={styles.detailCellLabel}>Due Date</div>
-                <div className={`${styles.detailCellVal} ${isOverdue ? styles.overdueText : ''}`}>
+              <div className={styles.infoGridCell}>
+                <div className={styles.infoGridLabel}>Due Date</div>
+                <div className={`${styles.infoGridValue} ${isOverdue ? styles.overdueText : ''}`}>
                   {formatDate(task.dueDate)}{task.dueTime ? ` · ${task.dueTime}` : ''}
                 </div>
               </div>
             )}
-            <div className={styles.detailCell}>
-              <div className={styles.detailCellLabel}>Status</div>
-              <div
-                className={styles.detailCellVal}
-                style={{
-                  color: effectiveStatus === 'overdue'   ? '#ef4444'
-                       : effectiveStatus === 'completed' ? '#22c55e'
-                       : '#a16207',
-                  textTransform: 'capitalize',
-                }}
-              >
-                {STATUS_CONFIG[effectiveStatus].label}
-              </div>
-            </div>
           </div>
 
           {(task.customerName || task.orderDesc) && (
-            <div className={styles.detailSectionCard}>
-              <div className={styles.detailSectionLabel}>Linked To</div>
-              {task.customerName && (
-                <div className={styles.detailLinkedRow}>
-                  <span className="mi" style={{ fontSize: '1rem', color: 'var(--text3)' }}>person</span>
-                  <span>{task.customerName}</span>
+            onGoToCustomer && task.customerId ? (
+              <button
+                type="button"
+                className={styles.sectionCardBtn}
+                onClick={() => { onClose(); onGoToCustomer(task.customerId) }}
+              >
+                <div className={styles.cardHeader}>
+                  <span className={styles.sectionCardLabel}>Linked To</span>
+                  <span className={`mi ${styles.chevronIcon}`} style={{ fontSize: '1.05rem', color: 'var(--text3)' }}>chevron_right</span>
                 </div>
-              )}
-              {task.orderDesc && (
-                <div className={styles.detailLinkedRow}>
-                  <span className="mi" style={{ fontSize: '1rem', color: 'var(--text3)' }}>content_cut</span>
-                  <span>{task.orderDesc}</span>
-                </div>
-              )}
-            </div>
+                {task.customerName && (
+                  <div className={styles.detailLinkedRow}>
+                    <span className="mi" style={{ fontSize: '1rem', color: 'var(--text3)' }}>person</span>
+                    <span>{task.customerName}</span>
+                  </div>
+                )}
+                {task.orderDesc && (
+                  <div className={styles.detailLinkedRow}>
+                    <span className="mi" style={{ fontSize: '1rem', color: 'var(--text3)' }}>content_cut</span>
+                    <span>{task.orderDesc}</span>
+                  </div>
+                )}
+              </button>
+            ) : (
+              <div className={styles.detailSectionCard}>
+                <div className={styles.detailSectionLabel}>Linked To</div>
+                {task.customerName && (
+                  <div className={styles.detailLinkedRow}>
+                    <span className="mi" style={{ fontSize: '1rem', color: 'var(--text3)' }}>person</span>
+                    <span>{task.customerName}</span>
+                  </div>
+                )}
+                {task.orderDesc && (
+                  <div className={styles.detailLinkedRow}>
+                    <span className="mi" style={{ fontSize: '1rem', color: 'var(--text3)' }}>content_cut</span>
+                    <span>{task.orderDesc}</span>
+                  </div>
+                )}
+              </div>
+            )
           )}
 
           {task.notes && (
@@ -166,13 +159,28 @@ export default function TaskDetail({ task, onClose, onToggle, onDelete }) {
             </div>
           )}
 
-          <button className={styles.detailDeleteBtn} onClick={() => onDelete(task)}>
-            <span className="mi" style={{ fontSize: '1rem' }}>delete_outline</span>
-            Delete Task
-          </button>
+          <div className={styles.footerButtons}>
+            <button
+              className={task.done ? styles.btnRestore : styles.btnPrimary}
+              onClick={handleToggleComplete}
+            >
+              <span className="mi" style={{ fontSize: '1.05rem' }}>
+                {task.done ? 'undo' : 'check_circle'}
+              </span>
+              {task.done ? 'Mark as pending' : 'Mark as complete'}
+            </button>
+          </div>
 
         </div>
       </div>
+
+      <ConfirmSheet
+        open={confirmDelete}
+        title="Delete this task?"
+        message={`"${task.desc}" will be permanently deleted. This cannot be undone.`}
+        onConfirm={handleDeleteConfirm}
+        onCancel={() => setConfirmDelete(false)}
+      />
     </div>
   )
 }

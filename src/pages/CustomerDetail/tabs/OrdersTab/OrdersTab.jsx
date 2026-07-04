@@ -10,7 +10,7 @@ import { formatFirestoreDate } from './utils'
 import styles from './OrdersTab.module.css'
 
 
-export default function OrdersTab({ customerId, orders, loading, measurements, showToast, onGenerateInvoice }) {
+export default function OrdersTab({ customerId, orders, loading, measurements, showToast, onGenerateInvoice, onViewInvoice }) {
 
   const { addOrder } = useOrders()
   const { generalSettings } = useGeneralSettings()
@@ -92,6 +92,10 @@ export default function OrdersTab({ customerId, orders, loading, measurements, s
           onGenerateInvoice={(orderId) => {
             setSelectedOrder(null)
             onGenerateInvoice(orderId)
+          }}
+          onViewInvoice={(invoiceId) => {
+            setSelectedOrder(null)
+            onViewInvoice?.(invoiceId)
           }}
           fullHeight
           hideCustomerName
