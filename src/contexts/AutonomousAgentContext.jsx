@@ -91,6 +91,7 @@ function formatClockLabel(ms) {
 }
 
 function whenLabel(remainingMs) {
+  if (!Number.isFinite(remainingMs)) return '—'
   if (remainingMs <= 0) return 'Soon'
   const totalMins  = remainingMs / (1000 * 60)
   const totalHours = remainingMs / HOUR_MS
@@ -147,7 +148,7 @@ function buildDailyBrief({
 
   const overdueInvoices = allInvoices.filter(i => {
     if (i.status === 'paid' || !i.due) return false
-    return new Date(i.due + 'T23:59:59').getTime() < nowMs
+    return new Date((i.dueRaw || i.due) + 'T23:59:59').getTime() < nowMs
   })
 
   const pendingReceiptItems = generalSettings.agentAutoReceipt
@@ -284,7 +285,9 @@ function detectCandidates({
     allInvoices
       .filter(i => i.status !== 'paid' && i.due)
       .forEach(invoice => {
-        const dueMs      = new Date(invoice.due + 'T23:59:59').getTime()
+        const dueMs = new Date((invoice.dueRaw || invoice.due) + 'T23:59:59').getTime()
+        if (!Number.isFinite(dueMs)) return
+
         const fireAt     = dueMs - reminderMs
         const visibleAt  = fireAt
         const firstName  = invoice.customerName?.split(' ')[0] || 'there'
@@ -320,7 +323,9 @@ function detectCandidates({
     allInvoices
       .filter(i => i.status !== 'paid' && i.due)
       .forEach(invoice => {
-        const dueMs     = new Date(invoice.due + 'T23:59:59').getTime()
+        const dueMs = new Date((invoice.dueRaw || invoice.due) + 'T23:59:59').getTime()
+        if (!Number.isFinite(dueMs)) return
+
         const fireAt    = dueMs + gracePeriodMs
         const visibleAt = dueMs
         const amount    = formatMoney(invoice.totalAmount || invoice.price, generalSettings.invoiceCurrency?.symbol)

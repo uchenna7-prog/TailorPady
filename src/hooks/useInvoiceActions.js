@@ -91,11 +91,16 @@ export function useInvoiceActions({ customerData, orders, showToast, setActiveTa
       try {
         const date = new Date(dateString)
         date.setDate(date.getDate() + (dueDays || 7))
-        return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+        return {
+          display: date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
+          iso:     date.toISOString().slice(0, 10),
+        }
       } catch {
-        return ''
+        return { display: '', iso: '' }
       }
     }
+
+    const dueDateInfo = getDueDate(today, invoiceDueDays)
 
     const newInvoice = {
       id:             Date.now() + Math.random(),
@@ -109,7 +114,8 @@ export function useInvoiceActions({ customerData, orders, showToast, setActiveTa
       qty:            order.qty,
       items:          Array.isArray(order.items) ? order.items : [],
       linkedNames:    linkedMeasurementNames,
-      due:            getDueDate(today, invoiceDueDays),
+      due:            dueDateInfo.display,
+      dueRaw:         dueDateInfo.iso,
       shippingFee:    order.shippingFee    ?? 0,
       discountType:   order.discountType   ?? null,
       discountValue:  order.discountValue  ?? 0,
