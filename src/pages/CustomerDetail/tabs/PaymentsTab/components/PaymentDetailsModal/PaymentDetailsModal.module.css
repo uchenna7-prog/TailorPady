@@ -367,11 +367,11 @@
   align-items: center;
   justify-content: center;
   gap: 7px;
-  background: var(--accent);
+  background: var(--surface);
   border: 1px solid var(--accent);
   border-radius: 12px;
-  padding: 13px 10px;
-  color: var(--bg);
+  padding: 11px 10px;
+  color: var(--accent);
   font-family: inherit;
   font-size: 0.84rem;
   font-weight: 700;
