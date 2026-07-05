@@ -274,7 +274,7 @@ export function PaymentDetailsModal({
                     >
                       <span className="mi" style={{ fontSize: '1rem' }}>receipt</span>
                       {hasReceipt ? 'View receipt' : 'Generate receipt'}
-                      <span className="mi" style={{ fontSize: '1rem' }}>chevron_right</span>
+                      {hasReceipt && (<span className="mi" style={{ fontSize: '1rem' }}>chevron_right</span>)}
                     </button>
                   </div>
                 )

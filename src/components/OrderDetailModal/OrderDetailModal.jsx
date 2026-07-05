@@ -621,6 +621,7 @@ export default function OrderDetailModal({
             >
               <span className="mi" style={{ fontSize: '1.05rem' }}>receipt_long</span>
               {hasInvoice ? 'View invoice' : 'Generate invoice'}
+              {hasInvoice && <span className="mi" style={{ fontSize: '1rem' }}>chevron_right</span>}
             </button>
           )}
         </div>
