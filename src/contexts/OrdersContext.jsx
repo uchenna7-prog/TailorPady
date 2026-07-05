@@ -22,8 +22,8 @@ const OrdersContext = createContext(null)
 export function OrdersProvider({ children }) {
   const { user } = useAuth()
   const [allOrders, setAllOrders] = useState([])
-  const { customers } = useCustomers()  
-  
+  const { customers } = useCustomers()
+
 
   useEffect(() => {
     if (!user) {
@@ -33,7 +33,7 @@ export function OrdersProvider({ children }) {
 
     return subscribeToOrders(user.uid, setAllOrders)
   }, [user])
-  
+
 
 const enrichedOrders = useMemo(() => {
 
@@ -45,15 +45,16 @@ const enrichedOrders = useMemo(() => {
     ...order,
     customerName: customerMap.get(order.customerId)?.name ?? 'Unknown',
     customerPhone: customerMap.get(order.customerId)?.phone ?? null,
-  
+
   }))
   }, [allOrders, customers])
 
   const addOrder = useCallback(async (customerId, data) => {
     if (!user) return
     const { id: _, ...orderData } = data
-    return addOrderToDb(user.uid, customerId, orderData)
-  }, [user])
+    const nextOrderNumber = allOrders.reduce((max, o) => Math.max(max, o.orderNumber || 0), 0) + 1
+    return addOrderToDb(user.uid, customerId, { ...orderData, orderNumber: nextOrderNumber })
+  }, [user, allOrders])
 
   const updateOrder = useCallback(async (customerId, orderId, data) => {
     if (!user) return

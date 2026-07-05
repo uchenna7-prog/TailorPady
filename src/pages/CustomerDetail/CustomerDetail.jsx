@@ -2,7 +2,6 @@ import { useState, useRef, useCallback, useEffect } from 'react'
 import { useParams, useNavigate, useLocation }      from 'react-router-dom'
 import { useCustomers }                             from '../../contexts/CustomerContext'
 import { useOrders }                                from '../../contexts/OrdersContext'
-import { usePremium }                               from '../../contexts/PremiumContext'
 import { useCustomerData }                          from '../../hooks/useCustomerData'
 import { useInvoiceActions }                        from '../../hooks/useInvoiceActions'
 import { useReceiptActions }                        from '../../hooks/useReceiptActions'
@@ -40,7 +39,6 @@ export default function CustomerDetail({ onMenuClick }) {
 
   const { getCustomer, updateCustomer, deleteCustomerAndAllData } = useCustomers()
   const { allOrders }  = useOrders()
-  const { isPremium }  = usePremium()
   const isDeletingRef  = useRef(false)
 
   const customerData = useCustomerData(id)
@@ -336,7 +334,7 @@ export default function CustomerDetail({ onMenuClick }) {
 
   const initials     = getInitials(customer.name)
   const birthday     = getBirthday(customer.birthday)
-  const hasPhoto     = isPremium && customer.photo
+  const hasPhoto     = Boolean(customer.photo)
   const isOnWhatsApp = customer.onWhatsApp === true
   const hasEmail     = Boolean(customer.email?.trim())
 

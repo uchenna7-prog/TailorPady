@@ -1,6 +1,7 @@
 import { useState, useRef } from "react"
 import { getInitials } from "../../../../utils/nameUtils"
 import { uploadToCloudinary, deleteFromCloudinary } from "../../../../services/cloudinaryService"
+import {Header} from "../../../../components/Header/Header"
 import styles from "./EditCustomerModal.module.css"
 
 
@@ -15,16 +16,14 @@ export function EditCustomerModal({ customer, onSave, onClose }) {
     sex:      customer.sex      || '',
     notes:    customer.notes    || '',
   })
-  const [photoLocalSrc,  setPhotoLocalSrc]  = useState(customer.photo || null)
-  const [photoFile,      setPhotoFile]      = useState(null)
-  const [photoRemoved,   setPhotoRemoved]   = useState(false)
-  const [photoUploading, setPhotoUploading] = useState(false)
-  const [photoProgress,  setPhotoProgress]  = useState(0)
-  const [saving,         setSaving]         = useState(false)
+  const [photoLocalSrc, setPhotoLocalSrc] = useState(customer.photo || null)
+  const [photoFile,     setPhotoFile]     = useState(null)
+  const [photoRemoved,  setPhotoRemoved]  = useState(false)
 
   const fileInputRef = useRef(null)
 
   const initials = getInitials(form.name) || '+'
+  const isValid  = form.name.trim() && form.phone.trim()
 
   const set = (field) => (e) => setForm(prev => ({ ...prev, [field]: e.target.value }))
 
@@ -47,53 +46,51 @@ export function EditCustomerModal({ customer, onSave, onClose }) {
     if (fileInputRef.current) fileInputRef.current.value = ''
   }
 
-  const handleSave = async () => {
-    if (!form.name.trim() || !form.phone.trim()) return
+  function handleSave() {
+    if (!isValid) return
 
-    setSaving(true)
-    try {
-      let photo         = customer.photo         ?? null
-      let photoPublicId = customer.photoPublicId ?? null
-      const previousPublicId = customer.photoPublicId ?? null
+    const previousPublicId = customer.photoPublicId ?? null
+    const pendingFile       = photoFile
+    const wasRemoved        = photoRemoved
 
-      if (photoFile) {
-        setPhotoUploading(true)
-        setPhotoProgress(0)
-        const uploaded = await uploadToCloudinary(photoFile, 'customers', setPhotoProgress)
-        photo         = uploaded.url
-        photoPublicId = uploaded.publicId
-        setPhotoUploading(false)
-        setPhotoProgress(0)
-        if (previousPublicId) deleteFromCloudinary(previousPublicId).catch(() => {})
-      } else if (photoRemoved) {
-        photo         = null
-        photoPublicId = null
-        if (previousPublicId) deleteFromCloudinary(previousPublicId).catch(() => {})
-      }
-
-      await onSave({ ...form, photo, photoPublicId })
+    if (pendingFile) {
+      onSave({ ...form, photo: customer.photo ?? null, photoPublicId: previousPublicId })
       onClose()
-    } finally {
-      setSaving(false)
+
+      uploadToCloudinary(pendingFile, 'customers')
+        .then(uploaded => {
+          onSave({ ...form, photo: uploaded.url, photoPublicId: uploaded.publicId })
+          if (previousPublicId) deleteFromCloudinary(previousPublicId).catch(() => {})
+        })
+        .catch(err => {
+          console.error('[EditCustomerModal] photo upload failed:', err)
+        })
+      return
+    }
+
+    const photo         = wasRemoved ? null : (customer.photo ?? null)
+    const photoPublicId = wasRemoved ? null : previousPublicId
+
+    onSave({ ...form, photo, photoPublicId })
+    onClose()
+
+    if (wasRemoved && previousPublicId) {
+      deleteFromCloudinary(previousPublicId).catch(() => {})
     }
   }
 
   return (
     <div className={styles.modalOverlay} onClick={e => e.target === e.currentTarget && onClose()}>
       <div className={styles.modalSheet}>
-        <div className={styles.modalHeader}>
-          <button className={styles.modalCloseBtn} onClick={onClose}>
-            <span className="mi">close</span>
-          </button>
-          <span className={styles.modalTitle}>Edit Customer</span>
-          <button
-            className={styles.modalSaveBtn}
-            onClick={handleSave}
-            disabled={saving || !form.name.trim() || !form.phone.trim()}
-          >
-            {saving ? 'Saving…' : 'Save'}
-          </button>
-        </div>
+
+        <Header
+          type="back"
+          title="Edit Customer"
+          backIcon="close"
+          onBackClick={onClose}
+          customActions={[{ label: 'Save', onClick: handleSave, disabled: !isValid }]}
+        />
+
         <div className={styles.modalBody}>
 
           <div className={styles.photoPickerWrap}>
@@ -106,27 +103,25 @@ export function EditCustomerModal({ customer, onSave, onClose }) {
                   ? <img src={photoLocalSrc} alt={form.name} className={styles.photoPreview} />
                   : <span className={styles.photoInitials}>{initials}</span>
                 }
-
-                {photoUploading && (
-                  <div className={styles.photoUploadOverlay}>
-                    <span className={styles.photoUploadProgress}>{photoProgress}%</span>
-                  </div>
-                )}
-
-                <div className={styles.camBadge}>
-                  <span className="mi" style={{ fontSize: '0.85rem' }}>photo_camera</span>
-                </div>
-
-                <input
-                  ref={fileInputRef}
-                  type="file"
-                  accept="image/*"
-                  hidden
-                  onChange={handlePhotoChange}
-                />
               </div>
 
-              {photoLocalSrc && !photoUploading && (
+              <div
+                className={styles.camBadge}
+                style={{ cursor: 'pointer' }}
+                onClick={() => fileInputRef.current?.click()}
+              >
+                <span className="mi" style={{ fontSize: '0.85rem' }}>photo_camera</span>
+              </div>
+
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/*"
+                hidden
+                onChange={handlePhotoChange}
+              />
+
+              {photoLocalSrc && (
                 <button
                   type="button"
                   className={styles.photoRemoveBtn}

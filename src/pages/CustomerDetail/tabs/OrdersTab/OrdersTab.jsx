@@ -32,8 +32,16 @@ export default function OrdersTab({ customerId, orders, loading, measurements, s
     try {
       await addOrder(customerId, orderData)
       showToast('Order placed ✓')
-    } catch {
-      showToast('Failed to place order')
+    } catch (err) {
+      console.error('[OrdersTab] failed to place order:', err)
+      const code = err?.code
+      if (code === 'resource-exhausted') {
+        showToast('Failed to place order — daily limit reached, try again later')
+      } else if (code === 'permission-denied') {
+        showToast('Failed to place order — permission denied')
+      } else {
+        showToast('Failed to place order')
+      }
     }
   }
 

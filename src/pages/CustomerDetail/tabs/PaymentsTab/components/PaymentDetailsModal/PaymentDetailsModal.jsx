@@ -9,6 +9,7 @@ import styles from "./PaymentDetailsModal.module.css"
 
 const DONUT_CIRCUMFERENCE = 2 * Math.PI * 26
 
+
 export function PaymentDetailsModal({
   payment,
   onClose,
@@ -175,7 +176,7 @@ export function PaymentDetailsModal({
           )}
 
           {hasInstallments && (
-            <div className={styles.sectionCard}>
+            <div className={styles.premiumCard}>
               <div className={styles.cardHeader}>
                 <span className={styles.cardLabel}>Payment Breakdown</span>
               </div>
@@ -215,40 +216,49 @@ export function PaymentDetailsModal({
               {installments.map((inst, idx) => {
                 const hasReceipt = Boolean(inst.receiptId)
                 const methodLabel = inst.method ? capitalise(inst.method) : ''
-                const paidThrough = getTotalPaid(installments.slice(0, idx + 1))
-                const balanceAfter = fullPrice > 0 ? Math.max(0, fullPrice - paidThrough) : null
-
+                const paidBefore = getTotalPaid(installments.slice(0, idx))
+                const paidAfter = paidBefore + (parseFloat(inst.amount) || 0)
+                const balanceBefore = fullPrice > 0 ? Math.max(0, fullPrice - paidBefore) : null
+                const balanceAfter = fullPrice > 0 ? Math.max(0, fullPrice - paidAfter) : null
                 return (
-                  <div key={inst.id ?? idx} className={styles.financeRow}>
-                    <div className={styles.lineItemLeft}>
-                      <div className={styles.garmentThumb}>
+                  <div key={inst.id ?? idx} className={styles.installmentBlock}>
+                    <div className={styles.installmentLineLeft}>
+                      <div className={styles.installmentLineIcon}>
                         <span className="mi" style={{ fontSize: '0.95rem', color: '#22c55e' }}>payments</span>
                       </div>
                       <div>
-                        <div className={styles.lineItemName}>{formatMoney(currency, inst.amount)}</div>
-                        <div className={styles.lineItemSub}>
-                          {inst.date}{inst.time ? ` · ${inst.time}` : ''}{methodLabel ? ` · ${methodLabel}` : ''}
+                        <div className={styles.installmentLineAmount}>{formatMoney(currency, inst.amount)}</div>
+                        <div className={styles.installmentLineSub}>
+                          Payment {idx + 1} of {installments.length}{methodLabel ? ` · ${methodLabel}` : ''}{inst.date ? ` · ${inst.date}` : ''}{inst.time ? ` · ${inst.time}` : ''}
                         </div>
                       </div>
                     </div>
 
-                    <div className={styles.installmentRight}>
-                      {fullPrice > 0 && (
-                        <div
-                          className={styles.installmentBalance}
-                          style={{ color: balanceAfter > 0 ? 'var(--text3)' : '#22c55e' }}
-                        >
-                          {balanceAfter > 0 ? `${formatMoney(currency, balanceAfter)} left` : 'Settled'}
+                    {fullPrice > 0 && (
+                      <div className={styles.balanceLines}>
+                        {idx > 0 && (
+                          <div className={styles.balanceLine}>
+                            <span>Balance before</span>
+                            <span style={{ color: '#ef4444', fontWeight: 700 }}>{formatMoney(currency, balanceBefore)}</span>
+                          </div>
+                        )}
+                        <div className={styles.balanceLine}>
+                          <span>Balance after</span>
+                          <span style={{ color: balanceAfter > 0 ? '#ef4444' : '#22c55e', fontWeight: 700 }}>
+                            {formatMoney(currency, balanceAfter)}
+                          </span>
                         </div>
-                      )}
-                      <button
-                        type="button"
-                        className={styles.receiptLink}
-                        onClick={() => hasReceipt ? onViewReceipt?.(inst) : onGenerateInvoice?.(inst)}
-                      >
-                        {hasReceipt ? 'View receipt' : 'Generate receipt'}
-                      </button>
-                    </div>
+                      </div>
+                    )}
+
+                    <button
+                      type="button"
+                      className={styles.installmentActionBtn}
+                      onClick={() => hasReceipt ? onViewReceipt?.(inst) : onGenerateInvoice?.(inst)}
+                    >
+                      {hasReceipt ? 'View receipt' : 'Generate receipt'}
+                      <span className="mi" style={{ fontSize: '1rem' }}>chevron_right</span>
+                    </button>
                   </div>
                 )
               })}
