@@ -1,7 +1,7 @@
 import { useState, useRef } from "react"
 import { getInitials } from "../../../../utils/nameUtils"
 import { uploadToCloudinary, deleteFromCloudinary } from "../../../../services/cloudinaryService"
-import {Header} from "../../../../components/Header/Header"
+import Header from "../../../../components/Header/Header"
 import styles from "./EditCustomerModal.module.css"
 
 
