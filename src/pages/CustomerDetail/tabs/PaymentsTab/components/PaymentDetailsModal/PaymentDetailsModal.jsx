@@ -16,8 +16,9 @@ export function PaymentDetailsModal({
   onDelete,
   onStatusChange,
   onAddInstallment,
-  onGenerateInvoice,
+  onGenerateReceipt,
   onViewReceipt,
+  receipts = [],
 }) {
   const [showInstallmentModal, setShowInstallmentModal] = useState(false)
   const [showStatusMenu, setShowStatusMenu] = useState(false)
@@ -48,6 +49,12 @@ export function PaymentDetailsModal({
   const progressPercent = Math.round(getProgressPercent(totalPaid, fullPrice, payment.status))
   const currency = getCurrency()
   const balanceLeft = Math.max(0, fullPrice - totalPaid)
+
+  const receiptedInstallmentIds = new Set(
+    receipts
+      .filter(r => String(r.paymentId) === String(payment.id))
+      .flatMap(r => r.installmentIds || [])
+  )
 
   const effectiveStatusValue = isNowFullyPaid ? 'paid' : payment.status
   const activeStatusMeta = PAYMENT_STATUSES.find(s => s.value === effectiveStatusValue) || PAYMENT_STATUSES[0]
@@ -214,7 +221,13 @@ export function PaymentDetailsModal({
               <div className={styles.installmentDivider} />
 
               {installments.map((inst, idx) => {
-                const hasReceipt = Boolean(inst.receiptId)
+                const hasReceipt = receiptedInstallmentIds.has(String(inst.id))
+                const matchedReceipt = hasReceipt
+                  ? receipts.find(r =>
+                      String(r.paymentId) === String(payment.id) &&
+                      (r.installmentIds || []).includes(String(inst.id))
+                    )
+                  : null
                 const methodLabel = inst.method ? capitalise(inst.method) : ''
                 const paidBefore = getTotalPaid(installments.slice(0, idx))
                 const paidAfter = paidBefore + (parseFloat(inst.amount) || 0)
@@ -242,7 +255,7 @@ export function PaymentDetailsModal({
                         {idx > 0 && (
                           <div className={styles.balanceLine}>
                             <span>Balance before</span>
-                            <span style={{fontWeight: 700 }}>{formatMoney(currency, balanceBefore)}</span>
+                            <span style={{ fontWeight: 700 }}>{formatMoney(currency, balanceBefore)}</span>
                           </div>
                         )}
                         <div className={styles.balanceLine}>
@@ -257,8 +270,9 @@ export function PaymentDetailsModal({
                     <button
                       type="button"
                       className={styles.installmentActionBtn}
-                      onClick={() => hasReceipt ? onViewReceipt?.(inst) : onGenerateInvoice?.(inst)}
+                      onClick={() => hasReceipt ? onViewReceipt?.(matchedReceipt?.id) : onGenerateReceipt?.(payment, inst)}
                     >
+                      <span className="mi" style={{ fontSize: '1rem' }}>receipt</span>
                       {hasReceipt ? 'View receipt' : 'Generate receipt'}
                       <span className="mi" style={{ fontSize: '1rem' }}>chevron_right</span>
                     </button>

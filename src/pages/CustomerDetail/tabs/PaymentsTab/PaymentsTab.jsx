@@ -12,11 +12,14 @@ import styles from './PaymentsTab.module.css'
 export default function PaymentsTab({
   orders          = [],
   payments        = [],
+  receipts        = [],
   showToast,
   onSavePayment,
   onUpdatePayment,
   onDeletePayment,
   onInvoicePaid,
+  onGenerateReceipt,
+  onViewReceipt,
 }) {
 
   const [modalOpen,      setModalOpen]      = useState(false)
@@ -131,10 +134,13 @@ export default function PaymentsTab({
       {viewingPayment && (
         <PaymentDetailsModal
           payment={viewingPayment}
+          receipts={receipts}
           onClose={() => setViewingPayment(null)}
           onDelete={() => setDeleteTarget(viewingPayment)}
           onStatusChange={handleStatusChange}
           onAddInstallment={handleAddInstallment}
+          onGenerateReceipt={onGenerateReceipt}
+          onViewReceipt={onViewReceipt}
         />
       )}
 

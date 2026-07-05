@@ -53,6 +53,16 @@
   letter-spacing: -0.2px;
 }
 
+.orderValueRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.78rem;
+  color: var(--text3);
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--border);
+}
+
 .donutRow {
   display: flex;
   align-items: center;
@@ -205,59 +215,64 @@
 }
 
 
-/* ── ACTION TAGS ── */
+/* ── ACTION / GENERATE BUTTON ── */
 
-.installmentAction {
+.installmentActionBtn {
   display: flex;
   align-items: center;
-  flex-shrink: 0;
-}
-
-.actionTagGenerate {
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  padding: 6px 10px;
-  border-radius: 8px;
+  justify-content: center;
+  gap: 4px;
+  width: 100%;
+  padding: 10px;
+  border-radius: 10px;
   border: 1px solid var(--border2);
   background: transparent;
   color: var(--text2);
-  font-size: 0.68rem;
+  font-family: inherit;
+  font-size: 0.78rem;
   font-weight: 700;
-  white-space: nowrap;
+  cursor: pointer;
+  transition: border-color 0.15s ease, color 0.15s ease;
+}
+
+.installmentActionBtn:active {
+  border-color: var(--accent);
+  color: var(--accent);
 }
 
 .actionTagReceipted {
-  display: inline-flex;
+  display: flex;
   align-items: center;
-  gap: 5px;
-  padding: 6px 10px;
-  border-radius: 8px;
+  justify-content: center;
+  gap: 6px;
+  width: 100%;
+  padding: 10px;
+  border-radius: 10px;
   border: 1px solid rgba(34, 197, 94, 0.3);
   background: rgba(34, 197, 94, 0.1);
   color: #15803d;
-  font-size: 0.68rem;
+  font-size: 0.78rem;
   font-weight: 700;
-  white-space: nowrap;
 }
 
 .actionTagGenerating {
-  display: inline-flex;
+  display: flex;
   align-items: center;
-  gap: 6px;
-  padding: 6px 10px;
-  border-radius: 8px;
+  justify-content: center;
+  gap: 7px;
+  width: 100%;
+  padding: 10px;
+  border-radius: 10px;
   border: 1px solid var(--border2);
   background: var(--surface2);
   color: var(--text2);
-  font-size: 0.68rem;
+  font-size: 0.78rem;
   font-weight: 700;
-  white-space: nowrap;
 }
 
 .actionSpinner {
-  width: 12px;
-  height: 12px;
+  width: 13px;
+  height: 13px;
   border: 2px solid var(--border2);
   border-top-color: var(--accent);
   border-radius: 50%;

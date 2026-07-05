@@ -312,6 +312,7 @@
   color: var(--text3);
   text-transform: uppercase;
   letter-spacing: 0.5px;
+  margin-bottom: 10px;
 }
 
 .installmentLineLeft {
@@ -365,17 +366,17 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 4px;
-  width: 100%;
-  padding: 10px;
-  border-radius: 10px;
-  border: 1px solid var(--border2);
-  background: transparent;
-  color: var(--text2);
+  gap: 7px;
+  background: var(--accent);
+  border: 1px solid var(--accent);
+  border-radius: 12px;
+  padding: 13px 10px;
+  color: var(--bg);
   font-family: inherit;
-  font-size: 0.78rem;
+  font-size: 0.84rem;
   font-weight: 700;
   cursor: pointer;
+  transition: opacity 0.15s;
   transition: border-color 0.15s ease, color 0.15s ease;
 }
 

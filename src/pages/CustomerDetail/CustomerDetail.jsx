@@ -91,11 +91,17 @@ export default function CustomerDetail({ onMenuClick }) {
     orders,
     showToast,
     setActiveTab,
+    setReopenReceiptId,
   })
 
   const handleViewInvoice = useCallback((invoiceId) => {
     setActiveTab('invoices')
     setReopenInvoiceId(invoiceId)
+  }, [])
+
+  const handleViewReceipt = useCallback((receiptId) => {
+    setActiveTab('receipts')
+    setReopenReceiptId(receiptId)
   }, [])
 
   useEffect(() => {
@@ -665,11 +671,14 @@ export default function CustomerDetail({ onMenuClick }) {
           <PaymentsTab
             orders={orders}
             payments={customerData.payments}
+            receipts={customerData.receipts}
             showToast={showToast}
             onSavePayment={customerData.savePayment}
             onUpdatePayment={customerData.updatePayment}
             onDeletePayment={customerData.deletePayment}
             onInvoicePaid={handleInvoicePaid}
+            onGenerateReceipt={handleGenerateReceipt}
+            onViewReceipt={handleViewReceipt}
           />
         )}
         {activeTab === 'receipts' && (

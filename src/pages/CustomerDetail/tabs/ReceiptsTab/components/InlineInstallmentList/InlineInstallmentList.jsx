@@ -38,6 +38,13 @@ export function InlineInstallmentList({ order, payment, receipts, generating, on
           <span className={styles.cardLabel}>Payment Overview</span>
         </div>
 
+        {fullPrice > 0 && (
+          <div className={styles.orderValueRow}>
+            <span>Order Value</span>
+            <span style={{ color: 'var(--text)', fontWeight: 700 }}>{formatMoney(currency, fullPrice)}</span>
+          </div>
+        )}
+
         {fullPrice > 0 ? (
           <div className={styles.donutRow}>
             <div className={styles.donutContent}>

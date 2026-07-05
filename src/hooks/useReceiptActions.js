@@ -33,7 +33,7 @@ function readLocalStorageSettings() {
 }
 
 
-export function useReceiptActions({ customerData, orders, showToast, setActiveTab }) {
+export function useReceiptActions({ customerData, orders, showToast, setActiveTab, setReopenReceiptId }) {
 
   const { profileSettings } = useProfileSettings()
   const { generalSettings }  = useGeneralSettings()
@@ -133,12 +133,13 @@ export function useReceiptActions({ customerData, orders, showToast, setActiveTa
     customerData.addReceiptOptimistic(newReceipt)
     showToast(`${receiptNumber} receipt generated ✓`)
     setActiveTab('receipts')
+    setReopenReceiptId?.(newReceipt.id)
 
     customerData.saveReceipt(newReceipt).catch(() => {
       showToast('Receipt saved locally — will sync when online')
     })
 
-  }, [customerData, orders, generalSettings, profileSettings, showToast, setActiveTab])
+  }, [customerData, orders, generalSettings, profileSettings, showToast, setActiveTab, setReopenReceiptId])
 
 
   const handleDeleteReceipt = useCallback(async (receiptId) => {
