@@ -40,14 +40,9 @@ export async function clearAgentMessages(uid) {
 }
 
 export async function loadAgentDrafts(uid) {
-  try {
-    const q    = query(draftsCol(uid), orderBy('createdAt', 'desc'))
-    const snap = await getDocs(q)
-    return snap.docs.map(d => ({ id: d.id, ...d.data() }))
-  } catch (err) {
-    console.error('[agentService] loadAgentDrafts failed:', err)
-    return []
-  }
+  const q    = query(draftsCol(uid), orderBy('createdAt', 'desc'))
+  const snap = await getDocs(q)
+  return snap.docs.map(d => ({ id: d.id, ...d.data() }))
 }
 
 export async function createAgentDraft(uid, draftId, draftData) {
@@ -69,14 +64,9 @@ export async function clearAgentDrafts(uid) {
 }
 
 export async function loadScheduledItems(uid) {
-  try {
-    const q    = query(scheduledCol(uid), orderBy('fireAt', 'asc'))
-    const snap = await getDocs(q)
-    return snap.docs.map(d => ({ id: d.id, ...d.data() }))
-  } catch (err) {
-    console.error('[agentService] loadScheduledItems failed:', err)
-    return []
-  }
+  const q    = query(scheduledCol(uid), orderBy('fireAt', 'asc'))
+  const snap = await getDocs(q)
+  return snap.docs.map(d => ({ id: d.id, ...d.data() }))
 }
 
 export async function upsertScheduledItem(uid, itemId, data) {

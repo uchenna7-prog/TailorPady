@@ -500,17 +500,30 @@ export function AutonomousAgentProvider({ children }) {
       setAgentDataLoaded(false)
       return
     }
+
+    let cancelled = false
     setAgentDataLoaded(false)
-    Promise.all([
-      loadAgentDrafts(user.uid),
-      loadScheduledItems(user.uid),
-    ]).then(([drafts, scheduled]) => {
-      setPersistedDrafts(drafts)
-      setScheduledItems([...scheduled].sort((a, b) => a.fireAt - b.fireAt))
-      setKnownDraftIds(new Set(drafts.map(d => d.id)))
-      setKnownScheduledIds(new Set(scheduled.map(s => s.id)))
-      setAgentDataLoaded(true)
-    })
+
+    function load() {
+      Promise.all([
+        loadAgentDrafts(user.uid),
+        loadScheduledItems(user.uid),
+      ]).then(([drafts, scheduled]) => {
+        if (cancelled) return
+        setPersistedDrafts(drafts)
+        setScheduledItems([...scheduled].sort((a, b) => a.fireAt - b.fireAt))
+        setKnownDraftIds(new Set(drafts.map(d => d.id)))
+        setKnownScheduledIds(new Set(scheduled.map(s => s.id)))
+        setAgentDataLoaded(true)
+      }).catch(err => {
+        console.error('[AutonomousAgentContext] failed to load agent data, will retry:', err)
+        if (cancelled) return
+        setTimeout(load, 15_000)
+      })
+    }
+
+    load()
+    return () => { cancelled = true }
   }, [user, enabled])
 
   useEffect(() => {
