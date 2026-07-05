@@ -87,6 +87,7 @@ export function EditCustomerModal({ customer, onSave, onClose }) {
           type="back"
           title="Edit Customer"
           backIcon="close"
+          showBorderBottom = {true}
           onBackClick={onClose}
           customActions={[{ label: 'Save', onClick: handleSave, disabled: !isValid }]}
         />

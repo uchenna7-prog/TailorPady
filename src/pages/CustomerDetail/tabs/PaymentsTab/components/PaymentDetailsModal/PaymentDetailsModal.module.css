@@ -306,6 +306,14 @@
   padding-bottom: 0;
 }
 
+.installmentHeader {
+  font-size: 0.58rem;
+  font-weight: 800;
+  color: var(--text3);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
 .installmentLineLeft {
   display: flex;
   align-items: center;

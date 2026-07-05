@@ -45,7 +45,7 @@ export function PaymentDetailsModal({
   const isPaid = payment.status === 'paid'
   const isNowFullyPaid = fullPrice > 0 && totalPaid >= fullPrice
   const hasInstallments = installments.length > 0
-  const progressPercent = getProgressPercent(totalPaid, fullPrice, payment.status)
+  const progressPercent = Math.round(getProgressPercent(totalPaid, fullPrice, payment.status))
   const currency = getCurrency()
   const balanceLeft = Math.max(0, fullPrice - totalPaid)
 
@@ -222,6 +222,9 @@ export function PaymentDetailsModal({
                 const balanceAfter = fullPrice > 0 ? Math.max(0, fullPrice - paidAfter) : null
                 return (
                   <div key={inst.id ?? idx} className={styles.installmentBlock}>
+                    <div className={styles.installmentHeader}>
+                      {installments.length > 1 ? `Installment ${idx + 1}` : 'Payment'}
+                    </div>
                     <div className={styles.installmentLineLeft}>
                       <div className={styles.installmentLineIcon}>
                         <span className="mi" style={{ fontSize: '0.95rem', color: '#22c55e' }}>payments</span>
@@ -229,7 +232,7 @@ export function PaymentDetailsModal({
                       <div>
                         <div className={styles.installmentLineAmount}>{formatMoney(currency, inst.amount)}</div>
                         <div className={styles.installmentLineSub}>
-                          Payment {idx + 1} of {installments.length}{methodLabel ? ` · ${methodLabel}` : ''}{inst.date ? ` · ${inst.date}` : ''}{inst.time ? ` · ${inst.time}` : ''}
+                          {[methodLabel, inst.date, inst.time].filter(Boolean).join(' · ')}
                         </div>
                       </div>
                     </div>
@@ -239,7 +242,7 @@ export function PaymentDetailsModal({
                         {idx > 0 && (
                           <div className={styles.balanceLine}>
                             <span>Balance before</span>
-                            <span style={{ color: '#ef4444', fontWeight: 700 }}>{formatMoney(currency, balanceBefore)}</span>
+                            <span style={{fontWeight: 700 }}>{formatMoney(currency, balanceBefore)}</span>
                           </div>
                         )}
                         <div className={styles.balanceLine}>
