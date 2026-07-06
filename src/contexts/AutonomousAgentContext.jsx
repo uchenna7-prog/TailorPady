@@ -358,7 +358,7 @@ function detectCandidates({
     allOrders
       .filter(o => o.status === 'completed')
       .forEach(order => {
-        const completedAtMs = timestampToMs(order.completedAt || order.updatedAt)
+        const completedAtMs = timestampToMs(order.completedAt)
         if (!completedAtMs) return
         const fireAt    = completedAtMs + windowMs
         const visibleAt = completedAtMs
@@ -629,6 +629,14 @@ export function AutonomousAgentProvider({ children }) {
               return next
             })
           }
+        }).catch(err => {
+          console.error('[AutonomousAgentContext] createAgentDraft failed for', candidate.id, err)
+          processingRef.current.delete(candidate.id)
+          setKnownDraftIds(prev => {
+            const next = new Set(prev)
+            next.delete(candidate.id)
+            return next
+          })
         })
       })
 
@@ -657,6 +665,10 @@ export function AutonomousAgentProvider({ children }) {
           })
           return [...map.values()].sort((a, b) => a.fireAt - b.fireAt)
         })
+      }).catch(err => {
+        console.error('[AutonomousAgentContext] commitScheduledChanges failed:', err)
+        upsertIds.forEach(id => processingRef.current.delete(id))
+        scheduleRemovals.forEach(id => processingRef.current.delete(id))
       })
     }, DEBOUNCE_MS)
 
