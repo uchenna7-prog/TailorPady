@@ -84,6 +84,7 @@ export default function CustomerDetail({ onMenuClick }) {
     orders,
     showToast,
     setActiveTab,
+    setReopenInvoiceId,
   })
 
   const { handleGenerateReceipt, handleDeleteReceipt } = useReceiptActions({

@@ -104,7 +104,6 @@ export default function OrderDetailModal({
   const [showPriorityMenu, setShowPriorityMenu] = useState(false)
   const [pendingCancel, setPendingCancel] = useState(false)
   const [pendingPriority, setPendingPriority] = useState(false)
-  const [pendingReview, setPendingReview] = useState(false)
   const [brokenImages, setBrokenImages] = useState(() => new Set())
   const priorityRef = useRef(null)
 
@@ -281,28 +280,18 @@ export default function OrderDetailModal({
       setHint('review')
       return
     }
-    if (pendingReview) return
     setHint(null)
 
-    const waWindow = window.open('', '_blank')
-
     let token = local.reviewToken
-    const prevToken = local.reviewToken
-
     if (!token) {
       token = crypto.randomUUID()
       setLocal(p => ({ ...p, reviewToken: token }))
-      setPendingReview(true)
       try {
         await updateOrder(local.customerId, local.id, { reviewToken: token })
       } catch {
-        setLocal(p => ({ ...p, reviewToken: prevToken }))
         showToast?.('Failed to create review link')
-        waWindow?.close()
-        setPendingReview(false)
         return
       }
-      setPendingReview(false)
     }
 
     const url = `https://TailorPady.web.app/review/${user?.uid}/${token}`
@@ -313,13 +302,7 @@ export default function OrderDetailModal({
     const raw = (local.customerPhone || '').replace(/[\s\-()]/g, '')
     const wa = raw.startsWith('+') ? raw.slice(1)
       : raw.startsWith('0') ? `234${raw.slice(1)}` : raw
-    const waUrl = wa ? `https://wa.me/${wa}?text=${msg}` : `https://wa.me/?text=${msg}`
-
-    if (waWindow) {
-      waWindow.location.href = waUrl
-    } else {
-      window.open(waUrl, '_blank', 'noopener,noreferrer')
-    }
+    window.open(wa ? `https://wa.me/${wa}?text=${msg}` : `https://wa.me/?text=${msg}`, '_blank', 'noopener,noreferrer')
   }
 
   function openStageSheet() {
@@ -608,16 +591,14 @@ export default function OrderDetailModal({
         )}
 
         <div className={styles.footerButtons}>
-          {!reviewAlreadySent && (
-            <button
-              className={`${styles.btnSecondary} ${!canReview ? styles.btnSecondary_disabled : ''}`}
-              disabled={pendingReview}
-              onClick={handleReviewClick}
-            >
-              <span className="mi" style={{ fontSize: '1rem' }}>share</span>
-              {pendingReview ? 'Preparing link…' : 'Share review link via WhatsApp'}
-            </button>
-          )}
+          <button
+            className={`${styles.btnSecondary} ${(reviewAlreadySent || !canReview) ? styles.btnSecondary_disabled : ''}`}
+            onClick={reviewAlreadySent ? undefined : handleReviewClick}
+            disabled={reviewAlreadySent}
+          >
+            <span className="mi" style={{ fontSize: '1rem' }}>{reviewAlreadySent ? 'check_circle' : 'share'}</span>
+            {reviewAlreadySent ? 'Review link sent' : 'Share review link via WhatsApp'}
+          </button>
           {canCancel && (
             <button
               className={isCancelled ? styles.btnRestore : styles.btnDanger}
@@ -639,7 +620,6 @@ export default function OrderDetailModal({
             >
               <span className="mi" style={{ fontSize: '1.05rem' }}>receipt_long</span>
               {hasInvoice ? 'View invoice' : 'Generate invoice'}
-              {hasInvoice && <span className="mi" style={{ fontSize: '1rem' }}>chevron_right</span>}
             </button>
           )}
         </div>

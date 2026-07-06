@@ -33,7 +33,7 @@ function readLocalStorageSettings() {
 }
 
 
-export function useInvoiceActions({ customerData, orders, showToast, setActiveTab }) {
+export function useInvoiceActions({ customerData, orders, showToast, setActiveTab, setReopenInvoiceId }) {
 
   const { profileSettings } = useProfileSettings()
   const { generalSettings }  = useGeneralSettings()
@@ -46,6 +46,7 @@ export function useInvoiceActions({ customerData, orders, showToast, setActiveTa
     if (existingInvoice) {
       showToast('Invoice already exists')
       setActiveTab('invoices')
+      setReopenInvoiceId?.(existingInvoice.id)
       return
     }
 
@@ -129,12 +130,13 @@ export function useInvoiceActions({ customerData, orders, showToast, setActiveTa
     customerData.addInvoiceOptimistic(newInvoice)
     showToast(`${invoiceNumber} generated ✓`)
     setActiveTab('invoices')
+    setReopenInvoiceId?.(newInvoice.id)
 
     customerData.saveInvoice(newInvoice).catch(() => {
       showToast('Invoice saved locally — will sync when online')
     })
 
-  }, [customerData, orders, generalSettings, profileSettings, showToast, setActiveTab])
+  }, [customerData, orders, generalSettings, profileSettings, showToast, setActiveTab, setReopenInvoiceId])
 
 
   const handleInvoicePaid = useCallback(async (orderId, invoiceStatus) => {
