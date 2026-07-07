@@ -1,4 +1,4 @@
-}import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useOrders } from '../../contexts/OrdersContext'
 import { useInvoices } from '../../contexts/InvoiceContext'
 import { useAuth } from '../../contexts/AuthContext'
@@ -53,7 +53,7 @@ function daysUntil(dateStr) {
 
 function formatOrderNumber(num) {
   if (num === null || num === undefined) return null
-  return `#${String(num).padStart(4, '0')}`
+  return `ORD-${String(num).padStart(4, '0')}`
 }
 
 const DONUT_CIRCUMFERENCE = 2 * Math.PI * 26
@@ -327,7 +327,7 @@ export default function OrderDetailModal({
         <Header
           type="back"
           showBorderBottom={false}
-          title="Order Details"
+          title={orderNumberLabel || 'Order Details'}
           onBackClick={close}
           backIcon="arrow_back_ios"
           customActions={[
