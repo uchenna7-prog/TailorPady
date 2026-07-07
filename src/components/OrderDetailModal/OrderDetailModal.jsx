@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react'
+}import { useState, useEffect, useRef } from 'react'
 import { useOrders } from '../../contexts/OrdersContext'
 import { useInvoices } from '../../contexts/InvoiceContext'
 import { useAuth } from '../../contexts/AuthContext'
@@ -163,7 +163,7 @@ export default function OrderDetailModal({
   const totalQty = items.reduce((s, i) => s + (parseInt(i.qty, 10) || 1), 0) || local.qty || 1
 
   const canReview = local.status === 'completed' || local.status === 'delivered'
-  const reviewAlreadySent = Boolean(local.reviewToken)
+  const reviewSharedLabel = formatFullTimestamp(local.reviewSharedAt)
   const linkedInvoice = allInvoices?.find(inv => String(inv.orderId) === String(local.id))
   const hasInvoice = Boolean(linkedInvoice)
   const isCancelled = local.status === 'cancelled'
@@ -303,6 +303,10 @@ export default function OrderDetailModal({
     const wa = raw.startsWith('+') ? raw.slice(1)
       : raw.startsWith('0') ? `234${raw.slice(1)}` : raw
     window.open(wa ? `https://wa.me/${wa}?text=${msg}` : `https://wa.me/?text=${msg}`, '_blank', 'noopener,noreferrer')
+
+    const sharedAt = new Date()
+    setLocal(p => ({ ...p, reviewSharedAt: sharedAt }))
+    updateOrder(local.customerId, local.id, { reviewSharedAt: sharedAt }).catch(() => {})
   }
 
   function openStageSheet() {
@@ -592,13 +596,15 @@ export default function OrderDetailModal({
 
         <div className={styles.footerButtons}>
           <button
-            className={`${styles.btnSecondary} ${(reviewAlreadySent || !canReview) ? styles.btnSecondary_disabled : ''}`}
-            onClick={reviewAlreadySent ? undefined : handleReviewClick}
-            disabled={reviewAlreadySent}
+            className={`${styles.btnSecondary} ${!canReview ? styles.btnSecondary_disabled : ''}`}
+            onClick={handleReviewClick}
           >
-            <span className="mi" style={{ fontSize: '1rem' }}>{reviewAlreadySent ? 'check_circle' : 'share'}</span>
-            {reviewAlreadySent ? 'Review link sent' : 'Share review link via WhatsApp'}
+            <span className="mi" style={{ fontSize: '1rem' }}>share</span>
+            {reviewSharedLabel ? 'Share review link again' : 'Share review link via WhatsApp'}
           </button>
+          {reviewSharedLabel && (
+            <div className={styles.footerMetaText}>Last shared {reviewSharedLabel}</div>
+          )}
           {canCancel && (
             <button
               className={isCancelled ? styles.btnRestore : styles.btnDanger}
