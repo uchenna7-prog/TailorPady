@@ -194,50 +194,64 @@ export default function ReceiptViewer({
     setPendingChange({ type: 'colour', colourId: selectedColourId, colour: hex })
   }
 
-  const handleApplyToThis = async () => {
+  const handleApplyToThis = () => {
     if (!pendingChange) return
-    try {
-      if (pendingChange.type === 'template') {
-        await customerData.updateReceiptTemplate(receipt.id, pendingChange.receiptTemplate)
-        setReceipt(prev => ({ ...prev, template: pendingChange.receiptTemplate }))
-        showToast?.('Template updated for this receipt ✓')
-      } else {
-        await customerData.updateReceiptColour(receipt.id, pendingChange.colourId, pendingChange.colour)
-        setReceipt(prev => ({
-          ...prev,
-          brandSnapshot: { ...prev.brandSnapshot, colourId: pendingChange.colourId, colour: pendingChange.colour },
-        }))
-        showToast?.('Colour updated for this receipt ✓')
-      }
-    } catch {
-      showToast?.(pendingChange.type === 'template' ? 'Could not update template.' : 'Could not update colour.')
-    } finally {
-      setPendingChange(null)
+    const change = pendingChange
+    setPendingChange(null)
+
+    if (change.type === 'template') {
+      const prevTemplate = receipt.template
+      setReceipt(prev => ({ ...prev, template: change.receiptTemplate }))
+      showToast?.('Template updated for this receipt ✓')
+
+      customerData.updateReceiptTemplate(receipt.id, change.receiptTemplate).catch(() => {
+        setReceipt(prev => ({ ...prev, template: prevTemplate }))
+        showToast?.('Could not update template.')
+      })
+    } else {
+      const prevSnapshot = receipt.brandSnapshot
+      setReceipt(prev => ({
+        ...prev,
+        brandSnapshot: { ...prev.brandSnapshot, colourId: change.colourId, colour: change.colour },
+      }))
+      showToast?.('Colour updated for this receipt ✓')
+
+      customerData.updateReceiptColour(receipt.id, change.colourId, change.colour).catch(() => {
+        setReceipt(prev => ({ ...prev, brandSnapshot: prevSnapshot }))
+        showToast?.('Could not update colour.')
+      })
     }
   }
 
-  const handleApplyAsDefault = async () => {
+  const handleApplyAsDefault = () => {
     if (!pendingChange) return
-    try {
-      if (pendingChange.type === 'template') {
-        await customerData.updateReceiptTemplate(receipt.id, pendingChange.receiptTemplate)
-        setReceipt(prev => ({ ...prev, template: pendingChange.receiptTemplate }))
-        updateManyGeneralSettings({ receiptTemplate: pendingChange.receiptTemplate })
-        onApplyDefaultTemplates?.({ receiptTemplate: pendingChange.receiptTemplate })
-        showToast?.('Template updated here and set as default ✓')
-      } else {
-        await customerData.updateReceiptColour(receipt.id, pendingChange.colourId, pendingChange.colour)
-        setReceipt(prev => ({
-          ...prev,
-          brandSnapshot: { ...prev.brandSnapshot, colourId: pendingChange.colourId, colour: pendingChange.colour },
-        }))
-        updateManyProfileSettings({ brandColourId: pendingChange.colourId, brandColour: pendingChange.colour })
-        showToast?.('Colour updated here and set as default ✓')
-      }
-    } catch {
-      showToast?.(pendingChange.type === 'template' ? 'Could not update template.' : 'Could not update colour.')
-    } finally {
-      setPendingChange(null)
+    const change = pendingChange
+    setPendingChange(null)
+
+    if (change.type === 'template') {
+      const prevTemplate = receipt.template
+      setReceipt(prev => ({ ...prev, template: change.receiptTemplate }))
+      updateManyGeneralSettings({ receiptTemplate: change.receiptTemplate })
+      onApplyDefaultTemplates?.({ receiptTemplate: change.receiptTemplate })
+      showToast?.('Template updated here and set as default ✓')
+
+      customerData.updateReceiptTemplate(receipt.id, change.receiptTemplate).catch(() => {
+        setReceipt(prev => ({ ...prev, template: prevTemplate }))
+        showToast?.('Could not update template.')
+      })
+    } else {
+      const prevSnapshot = receipt.brandSnapshot
+      setReceipt(prev => ({
+        ...prev,
+        brandSnapshot: { ...prev.brandSnapshot, colourId: change.colourId, colour: change.colour },
+      }))
+      updateManyProfileSettings({ brandColourId: change.colourId, brandColour: change.colour })
+      showToast?.('Colour updated here and set as default ✓')
+
+      customerData.updateReceiptColour(receipt.id, change.colourId, change.colour).catch(() => {
+        setReceipt(prev => ({ ...prev, brandSnapshot: prevSnapshot }))
+        showToast?.('Could not update colour.')
+      })
     }
   }
 
