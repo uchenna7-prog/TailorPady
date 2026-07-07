@@ -639,6 +639,14 @@
   gap: 8px;
 }
 
+.footerMetaText {
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: var(--text3);
+  text-align: center;
+  margin-top: -2px;
+}
+
 .btnPrimary {
   display: flex;
   align-items: center;
