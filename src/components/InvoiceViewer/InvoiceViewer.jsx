@@ -81,6 +81,7 @@ export default function InvoiceViewer({
   const INVOICE_BRAND_SETTINGS = useInvoiceBrandSettings()
 
   const paperRef = useRef(null)
+  const pendingFieldsRef = useRef(new Set())
   const [invoice, setInvoice] = useState(snapShotedInvoice)
   const [pdfLoading,        setPdfLoading]        = useState(false)
   const [shareLoading,      setShareLoading]       = useState(false)
@@ -112,6 +113,15 @@ export default function InvoiceViewer({
     customerId: customer.id,
     invoiceId:  invoice.id,
   }
+
+  useEffect(() => {
+    setInvoice(prev => {
+      const next = { ...snapShotedInvoice }
+      if (pendingFieldsRef.current.has('template'))      next.template      = prev.template
+      if (pendingFieldsRef.current.has('brandSnapshot'))  next.brandSnapshot = prev.brandSnapshot
+      return next
+    })
+  }, [snapShotedInvoice])
 
   useEffect(() => {
     if (!reopenMissingFields) return
@@ -202,25 +212,33 @@ export default function InvoiceViewer({
 
     if (change.type === 'template') {
       const prevTemplate = invoice.template
+      pendingFieldsRef.current.add('template')
       setInvoice(prev => ({ ...prev, template: change.invoiceTemplate }))
       showToast?.('Template updated for this invoice ✓')
 
-      customerData.updateInvoiceTemplate(invoice.id, change.invoiceTemplate).catch(() => {
-        setInvoice(prev => ({ ...prev, template: prevTemplate }))
-        showToast?.('Could not update template.')
-      })
+      customerData.updateInvoiceTemplate(invoice.id, change.invoiceTemplate)
+        .then(() => { pendingFieldsRef.current.delete('template') })
+        .catch(() => {
+          pendingFieldsRef.current.delete('template')
+          setInvoice(prev => ({ ...prev, template: prevTemplate }))
+          showToast?.('Could not update template.')
+        })
     } else {
       const prevSnapshot = invoice.brandSnapshot
+      pendingFieldsRef.current.add('brandSnapshot')
       setInvoice(prev => ({
         ...prev,
         brandSnapshot: { ...prev.brandSnapshot, colourId: change.colourId, colour: change.colour },
       }))
       showToast?.('Colour updated for this invoice ✓')
 
-      customerData.updateInvoiceColour(invoice.id, change.colourId, change.colour).catch(() => {
-        setInvoice(prev => ({ ...prev, brandSnapshot: prevSnapshot }))
-        showToast?.('Could not update colour.')
-      })
+      customerData.updateInvoiceColour(invoice.id, change.colourId, change.colour)
+        .then(() => { pendingFieldsRef.current.delete('brandSnapshot') })
+        .catch(() => {
+          pendingFieldsRef.current.delete('brandSnapshot')
+          setInvoice(prev => ({ ...prev, brandSnapshot: prevSnapshot }))
+          showToast?.('Could not update colour.')
+        })
     }
   }
 
@@ -231,17 +249,22 @@ export default function InvoiceViewer({
 
     if (change.type === 'template') {
       const prevTemplate = invoice.template
+      pendingFieldsRef.current.add('template')
       setInvoice(prev => ({ ...prev, template: change.invoiceTemplate }))
       updateManyGeneralSettings({ invoiceTemplate: change.invoiceTemplate })
       onApplyDefaultTemplates?.({ invoiceTemplate: change.invoiceTemplate })
       showToast?.('Template updated here and set as default ✓')
 
-      customerData.updateInvoiceTemplate(invoice.id, change.invoiceTemplate).catch(() => {
-        setInvoice(prev => ({ ...prev, template: prevTemplate }))
-        showToast?.('Could not update template.')
-      })
+      customerData.updateInvoiceTemplate(invoice.id, change.invoiceTemplate)
+        .then(() => { pendingFieldsRef.current.delete('template') })
+        .catch(() => {
+          pendingFieldsRef.current.delete('template')
+          setInvoice(prev => ({ ...prev, template: prevTemplate }))
+          showToast?.('Could not update template.')
+        })
     } else {
       const prevSnapshot = invoice.brandSnapshot
+      pendingFieldsRef.current.add('brandSnapshot')
       setInvoice(prev => ({
         ...prev,
         brandSnapshot: { ...prev.brandSnapshot, colourId: change.colourId, colour: change.colour },
@@ -249,10 +272,13 @@ export default function InvoiceViewer({
       updateManyProfileSettings({ brandColourId: change.colourId, brandColour: change.colour })
       showToast?.('Colour updated here and set as default ✓')
 
-      customerData.updateInvoiceColour(invoice.id, change.colourId, change.colour).catch(() => {
-        setInvoice(prev => ({ ...prev, brandSnapshot: prevSnapshot }))
-        showToast?.('Could not update colour.')
-      })
+      customerData.updateInvoiceColour(invoice.id, change.colourId, change.colour)
+        .then(() => { pendingFieldsRef.current.delete('brandSnapshot') })
+        .catch(() => {
+          pendingFieldsRef.current.delete('brandSnapshot')
+          setInvoice(prev => ({ ...prev, brandSnapshot: prevSnapshot }))
+          showToast?.('Could not update colour.')
+        })
     }
   }
 
