@@ -1,8 +1,6 @@
-import { useState, useEffect, useRef, useCallback } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useBrandTokens } from '../../../../hooks/useBrandTokens'
 import styles from './PortfolioTemplate3.module.css'
-
-const pad = n => String(n).padStart(2, '0')
 
 function initials(name = '') {
   return name.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase()
@@ -21,6 +19,12 @@ function buildSocialUrl(platform, handle) {
   }
   return map[platform] || `https://${h}`
 }
+
+const WA_SVG = (
+  <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor">
+    <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+  </svg>
+)
 
 const SOCIAL_ICONS = {
   instagram: (
@@ -65,34 +69,6 @@ function SocialIcon({ platform }) {
     <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
       <path d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/>
     </svg>
-  )
-}
-
-const WA_SVG = (
-  <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor">
-    <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
-  </svg>
-)
-
-function SlideBar({ current, total, onPrev, onNext, light }) {
-  return (
-    <div className={`${styles.slideBar} ${light ? styles.slideBarLight : ''}`}>
-      <button
-        className={`${styles.slideBarArrow} ${current === 0 ? styles.slideBarArrowDim : ''}`}
-        onClick={onPrev}
-        aria-label="Previous slide"
-      >
-        <span className="mi">keyboard_arrow_up</span>
-      </button>
-      <span className={styles.slideBarCount}>{pad(current + 1)} / {pad(total)}</span>
-      <button
-        className={`${styles.slideBarArrow} ${current === total - 1 ? styles.slideBarArrowDim : ''}`}
-        onClick={onNext}
-        aria-label="Next slide"
-      >
-        <span className="mi">keyboard_arrow_down</span>
-      </button>
-    </div>
   )
 }
 
@@ -237,31 +213,17 @@ function Lightbox({ photo, photos, onClose }) {
 }
 
 export function PortfolioTemplate3({ brand, photos, garmentTypes, reviews }) {
-  const [currentSlide,  setCurrentSlide]  = useState(0)
-  const [lightbox,      setLightbox]      = useState(null)
-  const [bookingOpen,   setBookingOpen]   = useState(false)
-  const [navOpen,       setNavOpen]       = useState(false)
-  const [activeTab,     setActiveTab]     = useState(null)
-  const [lightMode,     setLightMode]     = useState(false)
-  const [vh,            setVh]            = useState(() => typeof window !== 'undefined' ? window.innerHeight : 800)
+  const [currentSlide, setCurrentSlide] = useState(0)
+  const [lightbox,     setLightbox]     = useState(null)
+  const [bookingOpen,  setBookingOpen]  = useState(false)
+  const [navOpen,      setNavOpen]      = useState(false)
+  const [activeTab,    setActiveTab]    = useState(null)
+  const [lightMode,    setLightMode]    = useState(false)
+  const [reviewIdx,    setReviewIdx]    = useState(0)
 
-  const currentSlideRef  = useRef(0)
-  const isAnimatingRef   = useRef(false)
-  const lastWheelTime    = useRef(0)
-  const touchStartY      = useRef(0)
-  const touchStartX      = useRef(0)
-  const pageRef          = useRef(null)
-  const galleryRef       = useRef(null)
-  const aboutScrollRef   = useRef(null)
-  const reviewsScrollRef = useRef(null)
+  const galleryRef = useRef(null)
 
   useBrandTokens(brand?.brandColourId)
-
-  useEffect(() => {
-    const update = () => setVh(window.innerHeight)
-    window.addEventListener('resize', update, { passive: true })
-    return () => window.removeEventListener('resize', update)
-  }, [])
 
   const brandName         = brand.brandName             || 'The Tailor'
   const tagline           = brand.brandTagline          || ''
@@ -271,99 +233,54 @@ export function PortfolioTemplate3({ brand, photos, garmentTypes, reviews }) {
   const foundedYear       = brand.brandFoundedYear      || ''
   const turnaround        = brand.brandTurnaround       || ''
   const serviceArea       = brand.brandServiceArea      || ''
-  const styleStatement    = brand.brandStyleStatement   || ''
-  const milestone         = brand.brandMilestone        || ''
   const featuredTechnique = brand.brandFeaturedTechnique || ''
+  const milestone         = brand.brandMilestone        || ''
 
   const completedPhotos = photos.filter(p => p.category === 'completed_works')
   const filteredPhotos  = activeTab
     ? completedPhotos.filter(p => p.clothingType === activeTab)
     : completedPhotos
 
+  const visiblePhotos = filteredPhotos.slice(0, 8)
+  const hiddenCount    = filteredPhotos.length - visiblePhotos.length
+
   const statGarments  = milestone || (completedPhotos.length ? `${completedPhotos.length}+` : '—')
   const yearsCrafting = foundedYear ? new Date().getFullYear() - parseInt(foundedYear) : null
 
+  const aboutCells = [
+    foundedYear       && { lbl: 'Working since', val: foundedYear },
+    serviceArea       && { lbl: 'Based in', val: Array.isArray(serviceArea) ? serviceArea.join(', ') : serviceArea },
+    turnaround        && { lbl: 'Turnaround', val: turnaround },
+    featuredTechnique && { lbl: 'Signature', val: featuredTechnique },
+  ].filter(Boolean).slice(0, 4)
+
   const processSteps = [
-    { num: '01', title: 'Consultation', desc: 'Share your vision, occasion, and deadline. We listen carefully and walk through fabric, fit, and budget.' },
-    { num: '02', title: 'Measurements', desc: 'Precise measurements taken to ensure your garment fits exactly as it should, the first time.' },
-    { num: '03', title: 'Crafting',     desc: 'Every piece is cut and stitched with intention, using techniques refined over years on the floor.' },
-    { num: '04', title: 'Delivery',     desc: turnaround ? `Ready in ${turnaround}, with a final fitting before your piece leaves the shop.` : 'A final fitting, then your bespoke piece is ready to wear.' },
+    { num: '01', title: 'Consultation', desc: 'Share your vision, occasion, and deadline. We talk fabric, fit, and budget.' },
+    { num: '02', title: 'Measurements', desc: 'Precise measurements taken so your garment fits exactly right, the first time.' },
+    { num: '03', title: 'Crafting',     desc: 'Every piece is cut and stitched with intention, using techniques refined over years.' },
+    { num: '04', title: 'Delivery',     desc: turnaround ? `Ready in ${turnaround}, with a final fitting before it leaves the shop.` : 'A final fitting, then your bespoke piece is ready to wear.' },
   ]
 
   const slides = [
-    { id: 'hero',    label: 'Home'    },
-    ...(completedPhotos.length > 0 ? [{ id: 'work',    label: 'Work'    }] : []),
-    { id: 'about',   label: 'About'   },
-    { id: 'process', label: 'Process' },
-    ...(reviews.length > 0          ? [{ id: 'reviews', label: 'Reviews' }] : []),
-    { id: 'book',    label: 'Contact' },
+    { id: 'hero' },
+    ...(completedPhotos.length > 0 ? [{ id: 'work' }] : []),
+    { id: 'about' },
+    { id: 'process' },
+    ...(reviews.length > 0 ? [{ id: 'reviews' }] : []),
+    { id: 'book' },
   ]
-  const totalSlides = slides.length
+  const navLabels = { hero: 'Home', work: 'Work', about: 'About', process: 'Process', reviews: 'Reviews', book: 'Contact' }
   const si = id => slides.findIndex(s => s.id === id)
 
-  const goTo = useCallback((idx) => {
-    if (isAnimatingRef.current || idx < 0 || idx >= totalSlides) return
-    isAnimatingRef.current = true
+  const goTo = idx => {
+    if (idx < 0 || idx >= slides.length) return
     setCurrentSlide(idx)
-    currentSlideRef.current = idx
-    setTimeout(() => { isAnimatingRef.current = false }, 950)
-  }, [totalSlides])
-
-  const goNext = useCallback(() => goTo(currentSlideRef.current + 1), [goTo])
-  const goPrev = useCallback(() => goTo(currentSlideRef.current - 1), [goTo])
-
-  useEffect(() => {
-    const handler = e => {
-      if (bookingOpen || lightbox) return
-      if (e.key === 'ArrowDown' || e.key === 'PageDown') { e.preventDefault(); goNext() }
-      if (e.key === 'ArrowUp'   || e.key === 'PageUp')   { e.preventDefault(); goPrev() }
-    }
-    window.addEventListener('keydown', handler)
-    return () => window.removeEventListener('keydown', handler)
-  }, [goNext, goPrev, bookingOpen, lightbox])
-
-  useEffect(() => {
-    const el = pageRef.current
-    if (!el) return
-    const handler = e => {
-      if (bookingOpen || lightbox) return
-      const inGallery = galleryRef.current?.contains(e.target)
-      const inAbout   = aboutScrollRef.current?.contains(e.target)
-      const inReviews = reviewsScrollRef.current?.contains(e.target)
-      if (inGallery || inAbout || inReviews) {
-        const scrollEl = inGallery ? galleryRef.current : inAbout ? aboutScrollRef.current : reviewsScrollRef.current
-        const { scrollTop, scrollHeight, clientHeight } = scrollEl
-        const atBottom = scrollTop + clientHeight >= scrollHeight - 2
-        const atTop    = scrollTop <= 2
-        if ((e.deltaY > 0 && !atBottom) || (e.deltaY < 0 && !atTop)) return
-      }
-      e.preventDefault()
-      const now = Date.now()
-      if (now - lastWheelTime.current < 950) return
-      lastWheelTime.current = now
-      if (e.deltaY > 20) goNext()
-      else if (e.deltaY < -20) goPrev()
-    }
-    el.addEventListener('wheel', handler, { passive: false })
-    return () => el.removeEventListener('wheel', handler)
-  }, [goNext, goPrev, bookingOpen, lightbox])
-
-  const handleTouchStart = e => {
-    touchStartY.current = e.touches[0].clientY
-    touchStartX.current = e.touches[0].clientX
+    setNavOpen(false)
   }
 
-  const handleTouchEnd = e => {
-    if (bookingOpen || lightbox) return
-    if (galleryRef.current?.contains(e.target))       return
-    if (aboutScrollRef.current?.contains(e.target))   return
-    if (reviewsScrollRef.current?.contains(e.target)) return
-    const dy = e.changedTouches[0].clientY - touchStartY.current
-    const dx = e.changedTouches[0].clientX - touchStartX.current
-    if (Math.abs(dy) > Math.abs(dx) && Math.abs(dy) > 55) {
-      if (dy < 0) goNext()
-      else goPrev()
-    }
+  const goNextFrom = id => {
+    const idx = si(id)
+    goTo(Math.min(idx + 1, slides.length - 1))
   }
 
   const availText = availability === 'open'
@@ -372,17 +289,14 @@ export function PortfolioTemplate3({ brand, photos, garmentTypes, reviews }) {
       ? `Booked until ${new Date(availableUntil).toLocaleDateString('en-GB', { month: 'short', year: 'numeric' })}`
       : 'Fully booked'
 
+  const review = reviews[reviewIdx]
+
   return (
-    <div
-      ref={pageRef}
-      className={`${styles.page} ${lightMode ? styles.lightMode : ''}`}
-      onTouchStart={handleTouchStart}
-      onTouchEnd={handleTouchEnd}
-    >
+    <div className={`${styles.page} ${lightMode ? styles.lightMode : ''}`}>
 
       <nav className={styles.nav}>
         <div className={styles.navInner}>
-          <button className={styles.navBrand} onClick={() => { setNavOpen(false); goTo(0) }}>
+          <button className={styles.navBrand} onClick={() => goTo(0)}>
             {brandName}
           </button>
 
@@ -391,9 +305,9 @@ export function PortfolioTemplate3({ brand, photos, garmentTypes, reviews }) {
               <button
                 key={s.id}
                 className={`${styles.navLink} ${currentSlide === i ? styles.navLinkActive : ''}`}
-                onClick={() => { setNavOpen(false); goTo(i) }}
+                onClick={() => goTo(i)}
               >
-                {s.label}
+                {navLabels[s.id]}
               </button>
             ))}
           </div>
@@ -402,7 +316,7 @@ export function PortfolioTemplate3({ brand, photos, garmentTypes, reviews }) {
             <button className={styles.themeBtn} onClick={() => setLightMode(m => !m)} aria-label="Toggle theme">
               <span className="mi">{lightMode ? 'dark_mode' : 'light_mode'}</span>
             </button>
-            <button className={styles.navOrderBtn} onClick={() => { setNavOpen(false); setBookingOpen(true) }}>
+            <button className={styles.navOrderBtn} onClick={() => setBookingOpen(true)}>
               Order Now
             </button>
             <button className={styles.navBurger} onClick={() => setNavOpen(o => !o)} aria-label="Menu">
@@ -419,349 +333,275 @@ export function PortfolioTemplate3({ brand, photos, garmentTypes, reviews }) {
             key={s.id}
             className={`${styles.dot} ${currentSlide === i ? styles.dotActive : ''}`}
             onClick={() => goTo(i)}
-            aria-label={s.label}
-            title={s.label}
+            aria-label={navLabels[s.id]}
+            title={navLabels[s.id]}
           />
         ))}
       </div>
 
-      <div className={styles.slidesWrap} style={{ height: `${vh}px` }}>
-        <div
-          className={styles.slidesTrack}
-          style={{ transform: `translateY(-${currentSlide * vh}px)` }}
-        >
+      <div className={styles.stage}>
 
-          <div className={styles.slide} style={{ height: `${vh}px` }}>
-            <div className={styles.heroBg}>
-              {brand.heroBgImage
-                ? <img src={brand.heroBgImage} alt="" className={styles.heroBgImg} />
-                : <div className={styles.heroBgFallback} />
-              }
-              <div className={styles.heroBgDim} />
-            </div>
-            <div className={styles.heroContent}>
-              <div className={styles.heroTop}>
-                <span className={styles.heroStatusPill}>
-                  <span className={`${styles.heroDot} ${availability === 'open' ? styles.heroDotOpen : ''}`} />
-                  {availText}
-                </span>
-                {foundedYear && <span className={styles.heroEst}>Est. {foundedYear}</span>}
+        <div className={`${styles.section} ${currentSlide === si('hero') ? styles.sectionActive : ''}`}>
+          <div className={styles.heroBg}>
+            {brand.heroBgImage
+              ? <img src={brand.heroBgImage} alt="" className={styles.heroBgImg} />
+              : <div className={styles.heroBgFallback} />
+            }
+            <div className={styles.heroBgDim} />
+          </div>
+          <div className={styles.heroTop}>
+            <span className={styles.heroStatusPill}>
+              <span className={`${styles.heroDot} ${availability === 'open' ? styles.heroDotOpen : ''}`} />
+              {availText}
+            </span>
+            {foundedYear && <span className={styles.heroEst}>Est. {foundedYear}</span>}
+          </div>
+          <div className={styles.heroBody}>
+            <h1 className={styles.heroName}>{brandName}</h1>
+            {tagline && <p className={styles.heroTagline}>{tagline}</p>}
+          </div>
+          <div className={`${styles.ctaBar} ${styles.ctaBarLight}`}>
+            <button
+              className={`${styles.ctaBtn} ${styles.ctaBtnLight}`}
+              onClick={() => si('work') > -1 ? goNextFrom('hero') : setBookingOpen(true)}
+            >
+              {si('work') > -1 ? 'View My Portfolio' : 'Get In Touch'}
+              <span className="mi">arrow_forward</span>
+            </button>
+          </div>
+        </div>
+
+        {si('work') > -1 && (
+          <div className={`${styles.section} ${currentSlide === si('work') ? styles.sectionActive : ''}`}>
+            <div className={styles.workLayout}>
+              <div className={styles.workHead}>
+                <div>
+                  <span className={styles.sectionTag}>{navLabels.work}</span>
+                  <h2 className={styles.workHeading}>Selected Work</h2>
+                </div>
               </div>
-              <div className={styles.heroCenter}>
-                <h1 className={styles.heroName}>{brandName}</h1>
-                {tagline && <p className={styles.heroTagline}>{tagline}</p>}
-                {styleStatement && <p className={styles.heroStmt}>{styleStatement}</p>}
-              </div>
-              <div className={styles.heroBottom}>
-                <div className={styles.heroBtns}>
-                  <button className={styles.heroBtnPrimary} onClick={() => setBookingOpen(true)}>
-                    Place an Order
+              {garmentTypes.length > 0 && (
+                <div className={styles.filterRow}>
+                  <button
+                    className={`${styles.filterItem} ${!activeTab ? styles.filterItemActive : ''}`}
+                    onClick={() => setActiveTab(null)}
+                  >
+                    All
                   </button>
-                  {si('work') > -1 && (
-                    <button className={styles.heroBtnGhost} onClick={() => goTo(si('work'))}>
-                      View Work
+                  {garmentTypes.map(t => (
+                    <button
+                      key={t.id}
+                      className={`${styles.filterItem} ${activeTab === t.id ? styles.filterItemActive : ''}`}
+                      onClick={() => setActiveTab(t.id)}
+                    >
+                      {t.label}
                     </button>
-                  )}
+                  ))}
                 </div>
-                <div className={styles.heroFoot}>
-                  <span className={styles.heroSlideNum}>{pad(1)} / {pad(totalSlides)}</span>
-                  <div className={styles.heroRule} />
-                  <button className={styles.heroNext} onClick={goNext}>
-                    Scroll <span className="mi" style={{ fontSize: '0.72rem', verticalAlign: 'middle' }}>south</span>
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {si('work') > -1 && (
-            <div className={styles.slide} style={{ height: `${vh}px` }}>
-              <div className={styles.workLayout}>
-                <div className={styles.workSidebar}>
-                  <span className={styles.slideTag}>{pad(si('work') + 1)}</span>
-                  <h2 className={styles.workHeading}>Selected<br />Work</h2>
-                  <p className={styles.workCount}>
-                    {filteredPhotos.length} piece{filteredPhotos.length !== 1 ? 's' : ''}
-                  </p>
-                  {garmentTypes.length > 0 && (
-                    <div className={styles.filterList}>
-                      <button
-                        className={`${styles.filterItem} ${!activeTab ? styles.filterItemActive : ''}`}
-                        onClick={() => setActiveTab(null)}
-                      >
-                        All
-                      </button>
-                      {garmentTypes.map(t => (
-                        <button
-                          key={t.id}
-                          className={`${styles.filterItem} ${activeTab === t.id ? styles.filterItemActive : ''}`}
-                          onClick={() => setActiveTab(t.id)}
-                        >
-                          {t.label}
-                        </button>
-                      ))}
-                    </div>
-                  )}
-                </div>
-                <div className={styles.workGallery} ref={galleryRef}>
-                  {filteredPhotos.length === 0 ? (
-                    <div className={styles.workEmpty}>Nothing in this category yet.</div>
-                  ) : (
-                    filteredPhotos.map((photo, i) => (
-                      <button
-                        key={photo.id}
-                        className={`${styles.galleryCard} ${i === 0 ? styles.galleryCardWide : ''}`}
-                        onClick={() => setLightbox(photo)}
-                      >
-                        <img
-                          src={photo.src || photo.storageUrl}
-                          alt={photo.caption || 'Work'}
-                          className={styles.galleryCardImg}
-                          loading="lazy"
-                        />
-                        <div className={styles.galleryCardOverlay}>
-                          <span className={styles.galleryCardType}>
-                            {photo.clothingTypeLabel || 'Piece'}
-                            {photo.price ? ` · ₦${Number(photo.price).toLocaleString()}` : ''}
-                          </span>
-                          {photo.caption && (
-                            <span className={styles.galleryCardCaption}>{photo.caption}</span>
-                          )}
-                        </div>
-                      </button>
-                    ))
-                  )}
-                </div>
-              </div>
-              <SlideBar current={si('work')} total={totalSlides} onPrev={goPrev} onNext={goNext} />
-            </div>
-          )}
-
-          <div className={styles.slide} style={{ height: `${vh}px` }}>
-            <div className={styles.aboutScrollArea} ref={aboutScrollRef}>
-              <div className={styles.aboutLayout}>
-                <div className={styles.aboutLeft}>
-                  <span className={styles.slideTag}>{pad(si('about') + 1)}</span>
-                  <h2 className={styles.aboutHeading}>
-                    The maker<br />behind<br />{brandName}
-                  </h2>
-                  {(statGarments || yearsCrafting !== null) && (
-                    <div className={styles.aboutNums}>
-                      {statGarments && (
-                        <div className={styles.aboutNum}>
-                          <span className={styles.aboutNumVal}>{statGarments}</span>
-                          <span className={styles.aboutNumLbl}>Garments made</span>
-                        </div>
-                      )}
-                      {yearsCrafting !== null && (
-                        <div className={styles.aboutNum}>
-                          <span className={styles.aboutNumVal}>{yearsCrafting}+</span>
-                          <span className={styles.aboutNumLbl}>Years crafting</span>
-                        </div>
-                      )}
-                    </div>
-                  )}
-                </div>
-                <div className={styles.aboutRight}>
-                  <p className={styles.aboutBio}>
-                    {brandBio || 'Every piece starts with a conversation — about the occasion, the fabric, and the fit you have in mind. From there, it is measured, cut, and finished by hand.'}
-                  </p>
-                  {(foundedYear || serviceArea || turnaround || featuredTechnique) && (
-                    <div className={styles.aboutGrid}>
-                      {foundedYear && (
-                        <div className={styles.aboutCell}>
-                          <span className={styles.aboutCellLbl}>Working since</span>
-                          <span className={styles.aboutCellVal}>{foundedYear}</span>
-                        </div>
-                      )}
-                      {serviceArea && (
-                        <div className={styles.aboutCell}>
-                          <span className={styles.aboutCellLbl}>Based in</span>
-                          <span className={styles.aboutCellVal}>{Array.isArray(serviceArea) ? serviceArea.join(', ') : serviceArea}</span>
-                        </div>
-                      )}
-                      {turnaround && (
-                        <div className={styles.aboutCell}>
-                          <span className={styles.aboutCellLbl}>Turnaround</span>
-                          <span className={styles.aboutCellVal}>{turnaround}</span>
-                        </div>
-                      )}
-                      {featuredTechnique && (
-                        <div className={styles.aboutCell}>
-                          <span className={styles.aboutCellLbl}>Signature</span>
-                          <span className={styles.aboutCellVal}>{featuredTechnique}</span>
-                        </div>
-                      )}
-                    </div>
-                  )}
-                  {garmentTypes.length > 0 && (
-                    <div className={styles.aboutSpecials}>
-                      <span className={styles.aboutCellLbl}>Specialises in</span>
-                      <div className={styles.chipRow}>
-                        {garmentTypes.map(t => (
-                          <span key={t.id} className={styles.chip}>{t.label}</span>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-                  <div className={styles.contactBlock}>
-                    <div className={styles.contactBlockTop}>
-                      {brand.brandLogo
-                        ? <img src={brand.brandLogo} alt={brandName} className={styles.contactLogo} />
-                        : <div className={styles.contactMono}>{initials(brandName)}</div>
-                      }
-                      <div>
-                        <p className={styles.contactName}>{brandName}</p>
-                        {tagline && <p className={styles.contactTag}>{tagline}</p>}
-                      </div>
-                    </div>
-                    <div className={styles.contactLines}>
-                      {brand.brandAddress && (
-                        <span className={styles.contactLine}>
-                          <span className="mi">location_on</span>{brand.brandAddress}
-                        </span>
-                      )}
-                      {brand.brandPhone && (
-                        <a href={`tel:${brand.brandPhone}`} className={styles.contactLine}>
-                          <span className="mi">call</span>{brand.brandPhone}
-                        </a>
-                      )}
-                      {brand.brandEmail && (
-                        <a href={`mailto:${brand.brandEmail}`} className={styles.contactLine}>
-                          <span className="mi">mail</span>{brand.brandEmail}
-                        </a>
-                      )}
-                      {brand.brandWebsite && (
-                        <a href={brand.brandWebsite} target="_blank" rel="noopener noreferrer" className={styles.contactLine}>
-                          <span className="mi">language</span>{brand.brandWebsite}
-                        </a>
-                      )}
-                    </div>
-                    {(brand.brandPhone || (brand.brandSocials || []).length > 0) && (
-                      <div className={styles.socialRow}>
-                        {brand.brandPhone && (
-                          <a href={`https://wa.me/${brand.brandPhone.replace(/\D/g, '')}`} target="_blank" rel="noopener noreferrer" className={styles.socialBtn}>
-                            {WA_SVG}
-                          </a>
+              )}
+              <div className={styles.workGallery} ref={galleryRef}>
+                {visiblePhotos.length === 0 ? (
+                  <div className={styles.workEmpty}>Nothing in this category yet.</div>
+                ) : (
+                  visiblePhotos.map((photo, i) => (
+                    <button
+                      key={photo.id}
+                      className={`${styles.galleryCard} ${i === 0 ? styles.galleryCardWide : ''}`}
+                      onClick={() => setLightbox(photo)}
+                    >
+                      <img
+                        src={photo.src || photo.storageUrl}
+                        alt={photo.caption || 'Work'}
+                        className={styles.galleryCardImg}
+                        loading="lazy"
+                      />
+                      <div className={styles.galleryCardOverlay}>
+                        {photo.caption && (
+                          <span className={styles.galleryCardCaption}>{photo.caption}</span>
                         )}
-                        {(brand.brandSocials || []).map((s, i) => (
-                          <a key={i} href={buildSocialUrl(s.platform, s.handle)} target="_blank" rel="noopener noreferrer" className={styles.socialBtn}>
-                            <SocialIcon platform={s.platform} />
-                          </a>
-                        ))}
                       </div>
-                    )}
-                  </div>
-                </div>
+                      {i === visiblePhotos.length - 1 && hiddenCount > 0 && (
+                        <span className={styles.moreTag}>+{hiddenCount} more</span>
+                      )}
+                    </button>
+                  ))
+                )}
               </div>
             </div>
-            <SlideBar current={si('about')} total={totalSlides} onPrev={goPrev} onNext={goNext} />
+            <div className={styles.ctaBar}>
+              <button className={styles.ctaBtn} onClick={() => goTo(si('book'))}>
+                Like What You See? Get In Touch
+                <span className="mi">arrow_forward</span>
+              </button>
+            </div>
           </div>
+        )}
 
-          <div className={styles.slide} style={{ height: `${vh}px` }}>
-            <div className={styles.processLayout}>
-              <div className={styles.processHead}>
-                <span className={styles.slideTag}>{pad(si('process') + 1)}</span>
-                <h2 className={styles.processHeading}>How it<br />comes together</h2>
-              </div>
-              <div className={styles.processSteps}>
-                {processSteps.map(step => (
-                  <div key={step.num} className={styles.processStep}>
-                    <span className={styles.processNum}>{step.num}</span>
-                    <div className={styles.processStepBody}>
-                      <p className={styles.processStepTitle}>{step.title}</p>
-                      <p className={styles.processStepDesc}>{step.desc}</p>
-                    </div>
+        <div className={`${styles.section} ${currentSlide === si('about') ? styles.sectionActive : ''}`}>
+          <div className={styles.aboutBody}>
+            <span className={styles.sectionTag}>{navLabels.about}</span>
+            <h2 className={styles.aboutHeading}>The Maker Behind {brandName}</h2>
+            <p className={styles.aboutBio}>
+              {brandBio || 'Every piece starts with a conversation about the occasion, the fabric, and the fit you have in mind. From there, it is measured, cut, and finished by hand.'}
+            </p>
+            <div className={styles.aboutNums}>
+              {statGarments && (
+                <div className={styles.aboutNum}>
+                  <span className={styles.aboutNumVal}>{statGarments}</span>
+                  <span className={styles.aboutNumLbl}>Garments made</span>
+                </div>
+              )}
+              {yearsCrafting !== null && (
+                <div className={styles.aboutNum}>
+                  <span className={styles.aboutNumVal}>{yearsCrafting}+</span>
+                  <span className={styles.aboutNumLbl}>Years crafting</span>
+                </div>
+              )}
+            </div>
+            {aboutCells.length > 0 && (
+              <div className={styles.aboutGrid}>
+                {aboutCells.map(c => (
+                  <div key={c.lbl} className={styles.aboutCell}>
+                    <span className={styles.aboutCellLbl}>{c.lbl}</span>
+                    <span className={styles.aboutCellVal}>{c.val}</span>
                   </div>
                 ))}
               </div>
-            </div>
-            <SlideBar current={si('process')} total={totalSlides} onPrev={goPrev} onNext={goNext} />
+            )}
           </div>
+          <div className={styles.ctaBar}>
+            <button className={styles.ctaBtn} onClick={() => goNextFrom('about')}>
+              See My Process
+              <span className="mi">arrow_forward</span>
+            </button>
+          </div>
+        </div>
 
-          {si('reviews') > -1 && (
-            <div className={styles.slide} style={{ height: `${vh}px` }}>
-              <div className={styles.reviewsScrollArea} ref={reviewsScrollRef}>
-                <div className={styles.reviewsLayout}>
-                  <div className={styles.reviewsHead}>
-                    <span className={styles.slideTag}>{pad(si('reviews') + 1)}</span>
-                    <h2 className={styles.reviewsHeading}>From recent<br />clients</h2>
-                  </div>
-                  <div className={styles.reviewsGrid}>
-                    {reviews.map(r => (
-                      <div key={r.id} className={styles.reviewCard}>
-                        <p className={styles.reviewText}>{r.review}</p>
-                        <div className={styles.reviewFoot}>
-                          <div className={styles.reviewAuthor}>
-                            <span className={styles.reviewAvatar}>{(r.customerName || '?').charAt(0).toUpperCase()}</span>
-                            <span className={styles.reviewName}>{r.customerName}</span>
-                          </div>
-                          <span className={styles.reviewStars}>
-                            {'★'.repeat(r.rating)}{'☆'.repeat(Math.max(0, 5 - r.rating))}
-                          </span>
-                        </div>
-                      </div>
-                    ))}
+        <div className={`${styles.section} ${currentSlide === si('process') ? styles.sectionActive : ''}`}>
+          <div className={styles.processBody}>
+            <span className={styles.sectionTag}>{navLabels.process}</span>
+            <h2 className={styles.processHeading}>How It Comes Together</h2>
+            <div className={styles.processSteps}>
+              {processSteps.map(step => (
+                <div key={step.num} className={styles.processStep}>
+                  <span className={styles.processNum}>{step.num}</span>
+                  <p className={styles.processStepTitle}>{step.title}</p>
+                  <p className={styles.processStepDesc}>{step.desc}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+          <div className={styles.ctaBar}>
+            <button className={styles.ctaBtn} onClick={() => goNextFrom('process')}>
+              {si('reviews') > -1 ? 'Read Client Reviews' : 'Ready to Order?'}
+              <span className="mi">arrow_forward</span>
+            </button>
+          </div>
+        </div>
+
+        {si('reviews') > -1 && (
+          <div className={`${styles.section} ${currentSlide === si('reviews') ? styles.sectionActive : ''}`}>
+            <div className={styles.reviewsBody}>
+              <span className={styles.sectionTag}>{navLabels.reviews}</span>
+              <h2 className={styles.reviewsHeading}>From Recent Clients</h2>
+              <span className={styles.reviewCount}>{reviewIdx + 1} of {reviews.length}</span>
+              <div className={styles.reviewStage}>
+                <button
+                  className={`${styles.reviewNavBtn} ${reviewIdx === 0 ? styles.reviewNavBtnDim : ''}`}
+                  onClick={() => setReviewIdx(i => Math.max(0, i - 1))}
+                  aria-label="Previous review"
+                >
+                  <span className="mi">chevron_left</span>
+                </button>
+                <div className={styles.reviewCard}>
+                  <p className={styles.reviewText}>{review?.review}</p>
+                  <div className={styles.reviewFoot}>
+                    <div className={styles.reviewAuthor}>
+                      <span className={styles.reviewAvatar}>{(review?.customerName || '?').charAt(0).toUpperCase()}</span>
+                      <span className={styles.reviewName}>{review?.customerName}</span>
+                    </div>
+                    <span className={styles.reviewStars}>
+                      {'★'.repeat(review?.rating || 0)}{'☆'.repeat(Math.max(0, 5 - (review?.rating || 0)))}
+                    </span>
                   </div>
                 </div>
-              </div>
-              <SlideBar current={si('reviews')} total={totalSlides} onPrev={goPrev} onNext={goNext} />
-            </div>
-          )}
-
-          <div className={styles.slide} style={{ height: `${vh}px` }}>
-            <div className={styles.bookBg}>
-              {brand.footerBgImage
-                ? <img src={brand.footerBgImage} alt="" className={styles.bookBgImg} />
-                : <div className={styles.bookBgFallback} />
-              }
-              <div className={styles.bookBgDim} />
-            </div>
-            <div className={styles.bookContent}>
-              <span className={styles.slideTagLight}>{pad(si('book') + 1)}</span>
-              <h2 className={styles.bookHeading}>Start your<br />piece.</h2>
-              <p className={styles.bookSub}>Tell us the occasion, the fabric, and the date — we'll take it from there.</p>
-              {turnaround && <span className={styles.bookTurnaround}>{turnaround}</span>}
-              <div className={styles.bookBtns}>
-                <button className={styles.bookBtnPrimary} onClick={() => setBookingOpen(true)}>
-                  Place Your Order
+                <button
+                  className={`${styles.reviewNavBtn} ${reviewIdx === reviews.length - 1 ? styles.reviewNavBtnDim : ''}`}
+                  onClick={() => setReviewIdx(i => Math.min(reviews.length - 1, i + 1))}
+                  aria-label="Next review"
+                >
+                  <span className="mi">chevron_right</span>
                 </button>
-                {brand.brandPhone && (
-                  <a
-                    href={`https://wa.me/${brand.brandPhone.replace(/\D/g, '')}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className={styles.bookBtnWa}
-                  >
-                    {WA_SVG}
-                    <span>WhatsApp</span>
-                  </a>
-                )}
               </div>
-              <div className={styles.bookContacts}>
-                {brand.brandPhone && (
-                  <a href={`tel:${brand.brandPhone}`} className={styles.bookContactLink}>
-                    <span className="mi">call</span>{brand.brandPhone}
-                  </a>
-                )}
-                {brand.brandEmail && (
-                  <a href={`mailto:${brand.brandEmail}`} className={styles.bookContactLink}>
-                    <span className="mi">mail</span>{brand.brandEmail}
-                  </a>
-                )}
-              </div>
-              <p className={styles.bookPowered}>
-                Powered by <span style={{ color: 'var(--brand-primary)' }}>TailorPady</span>
-              </p>
             </div>
-            <SlideBar current={si('book')} total={totalSlides} onPrev={goPrev} onNext={goNext} light />
+            <div className={styles.ctaBar}>
+              <button className={styles.ctaBtn} onClick={() => goTo(si('book'))}>
+                Ready to Start Your Piece?
+                <span className="mi">arrow_forward</span>
+              </button>
+            </div>
           </div>
+        )}
 
+        <div className={`${styles.section} ${currentSlide === si('book') ? styles.sectionActive : ''}`}>
+          <div className={styles.bookBg}>
+            {brand.footerBgImage
+              ? <img src={brand.footerBgImage} alt="" className={styles.bookBgImg} />
+              : <div className={styles.bookBgFallback} />
+            }
+            <div className={styles.bookBgDim} />
+          </div>
+          <div className={styles.bookTopTag}>
+            <span className={styles.sectionTagLight}>{navLabels.book}</span>
+          </div>
+          <div className={styles.bookBody}>
+            <h2 className={styles.bookHeading}>Start Your Piece.</h2>
+            <p className={styles.bookSub}>Tell us the occasion, the fabric, and the date. We'll take it from there.</p>
+            {turnaround && <span className={styles.bookTurnaround}>{turnaround}</span>}
+            <div className={styles.bookContacts}>
+              {brand.brandPhone && (
+                <a href={`tel:${brand.brandPhone}`} className={styles.bookContactLink}>
+                  <span className="mi">call</span>{brand.brandPhone}
+                </a>
+              )}
+              {brand.brandEmail && (
+                <a href={`mailto:${brand.brandEmail}`} className={styles.bookContactLink}>
+                  <span className="mi">mail</span>{brand.brandEmail}
+                </a>
+              )}
+              {brand.brandPhone && (
+                <a
+                  href={`https://wa.me/${brand.brandPhone.replace(/\D/g, '')}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className={styles.bookWaLink}
+                >
+                  {WA_SVG}
+                  <span>WhatsApp</span>
+                </a>
+              )}
+              {(brand.brandSocials || []).map((s, i) => (
+                <a key={i} href={buildSocialUrl(s.platform, s.handle)} target="_blank" rel="noopener noreferrer" className={styles.bookContactLink}>
+                  <SocialIcon platform={s.platform} />
+                  <span>{s.platform}</span>
+                </a>
+              ))}
+            </div>
+          </div>
+          <div className={styles.bookFooterInner}>
+            <p className={styles.bookPowered}>
+              Powered by <span style={{ color: 'var(--brand-primary)' }}>TailorPady</span>
+            </p>
+            <button className={styles.bookOrderBtn} onClick={() => setBookingOpen(true)}>
+              Place Your Order
+            </button>
+          </div>
         </div>
+
       </div>
 
       {lightbox && (
-        <Lightbox photo={lightbox} photos={filteredPhotos} onClose={() => setLightbox(null)} />
+        <Lightbox photo={lightbox} photos={visiblePhotos} onClose={() => setLightbox(null)} />
       )}
       <BookingSheet
         isOpen={bookingOpen}
