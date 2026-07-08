@@ -77,6 +77,7 @@ export default function ReceiptViewer({
   const RECEIPT_BRAND_SETTINGS = useReceiptBrandSettings()
 
   const paperRef = useRef(null)
+  const pendingFieldsRef = useRef(new Set())
   const [receipt, setReceipt] = useState(snapshotedReceipt)
   const [pdfLoading,          setPdfLoading]          = useState(false)
   const [shareLoading,        setShareLoading]         = useState(false)
@@ -111,6 +112,15 @@ export default function ReceiptViewer({
     customerId: customer.id,
     receiptId:  receipt.id,
   }
+
+  useEffect(() => {
+    setReceipt(prev => {
+      const next = { ...snapshotedReceipt }
+      if (pendingFieldsRef.current.has('template'))      next.template      = prev.template
+      if (pendingFieldsRef.current.has('brandSnapshot'))  next.brandSnapshot = prev.brandSnapshot
+      return next
+    })
+  }, [snapshotedReceipt])
 
   useEffect(() => {
     if (!reopenMissingFields) return
@@ -201,25 +211,33 @@ export default function ReceiptViewer({
 
     if (change.type === 'template') {
       const prevTemplate = receipt.template
+      pendingFieldsRef.current.add('template')
       setReceipt(prev => ({ ...prev, template: change.receiptTemplate }))
       showToast?.('Template updated for this receipt ✓')
 
-      customerData.updateReceiptTemplate(receipt.id, change.receiptTemplate).catch(() => {
-        setReceipt(prev => ({ ...prev, template: prevTemplate }))
-        showToast?.('Could not update template.')
-      })
+      customerData.updateReceiptTemplate(receipt.id, change.receiptTemplate)
+        .then(() => { pendingFieldsRef.current.delete('template') })
+        .catch(() => {
+          pendingFieldsRef.current.delete('template')
+          setReceipt(prev => ({ ...prev, template: prevTemplate }))
+          showToast?.('Could not update template.')
+        })
     } else {
       const prevSnapshot = receipt.brandSnapshot
+      pendingFieldsRef.current.add('brandSnapshot')
       setReceipt(prev => ({
         ...prev,
         brandSnapshot: { ...prev.brandSnapshot, colourId: change.colourId, colour: change.colour },
       }))
       showToast?.('Colour updated for this receipt ✓')
 
-      customerData.updateReceiptColour(receipt.id, change.colourId, change.colour).catch(() => {
-        setReceipt(prev => ({ ...prev, brandSnapshot: prevSnapshot }))
-        showToast?.('Could not update colour.')
-      })
+      customerData.updateReceiptColour(receipt.id, change.colourId, change.colour)
+        .then(() => { pendingFieldsRef.current.delete('brandSnapshot') })
+        .catch(() => {
+          pendingFieldsRef.current.delete('brandSnapshot')
+          setReceipt(prev => ({ ...prev, brandSnapshot: prevSnapshot }))
+          showToast?.('Could not update colour.')
+        })
     }
   }
 
@@ -230,17 +248,22 @@ export default function ReceiptViewer({
 
     if (change.type === 'template') {
       const prevTemplate = receipt.template
+      pendingFieldsRef.current.add('template')
       setReceipt(prev => ({ ...prev, template: change.receiptTemplate }))
       updateManyGeneralSettings({ receiptTemplate: change.receiptTemplate })
       onApplyDefaultTemplates?.({ receiptTemplate: change.receiptTemplate })
       showToast?.('Template updated here and set as default ✓')
 
-      customerData.updateReceiptTemplate(receipt.id, change.receiptTemplate).catch(() => {
-        setReceipt(prev => ({ ...prev, template: prevTemplate }))
-        showToast?.('Could not update template.')
-      })
+      customerData.updateReceiptTemplate(receipt.id, change.receiptTemplate)
+        .then(() => { pendingFieldsRef.current.delete('template') })
+        .catch(() => {
+          pendingFieldsRef.current.delete('template')
+          setReceipt(prev => ({ ...prev, template: prevTemplate }))
+          showToast?.('Could not update template.')
+        })
     } else {
       const prevSnapshot = receipt.brandSnapshot
+      pendingFieldsRef.current.add('brandSnapshot')
       setReceipt(prev => ({
         ...prev,
         brandSnapshot: { ...prev.brandSnapshot, colourId: change.colourId, colour: change.colour },
@@ -248,10 +271,13 @@ export default function ReceiptViewer({
       updateManyProfileSettings({ brandColourId: change.colourId, brandColour: change.colour })
       showToast?.('Colour updated here and set as default ✓')
 
-      customerData.updateReceiptColour(receipt.id, change.colourId, change.colour).catch(() => {
-        setReceipt(prev => ({ ...prev, brandSnapshot: prevSnapshot }))
-        showToast?.('Could not update colour.')
-      })
+      customerData.updateReceiptColour(receipt.id, change.colourId, change.colour)
+        .then(() => { pendingFieldsRef.current.delete('brandSnapshot') })
+        .catch(() => {
+          pendingFieldsRef.current.delete('brandSnapshot')
+          setReceipt(prev => ({ ...prev, brandSnapshot: prevSnapshot }))
+          showToast?.('Could not update colour.')
+        })
     }
   }
 
