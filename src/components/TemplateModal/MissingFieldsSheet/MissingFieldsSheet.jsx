@@ -139,9 +139,12 @@ export function MissingFieldsSheet({
     return () => clearTimeout(timer)
   }, [completedLabel])
 
-  const docLabel = docType === 'receipt' ? 'receipt' : 'invoice'
+  const docLabel = docType === 'receipt' ? 'receipt' : docType === 'invoice' ? 'invoice' : 'template'
+  const saveVerb = docType === 'both' ? 'use' : 'save'
 
-  const skipLabel = pendingAction === 'download'
+  const skipLabel = docType === 'both'
+    ? 'Use template without these details'
+    : pendingAction === 'download'
     ? `Download ${docLabel} without these details`
     : pendingAction === 'share'
     ? `Share ${docLabel} without these details`
@@ -224,7 +227,7 @@ export function MissingFieldsSheet({
             <p className={styles.sheetTitle}>A few things are missing</p>
             <p className={styles.sheetSubtitle}>
               This template looks best with your business details filled in.
-              Add them now, or save the {docLabel} and finish later.
+              Add them now, or {saveVerb} the {docLabel} and finish later.
             </p>
           </div>
 
