@@ -194,7 +194,7 @@ export function PaymentDetailsModal({
                     <div className={styles.cardValue}>{formatMoney(currency, totalPaid)} received</div>
                     <div className={styles.donutMeta}>
                       <span className="mi" style={{ fontSize: '0.82rem' }}>account_balance_wallet</span>
-                      <span>{balanceLeft > 0 ? `${formatMoney(currency, balanceLeft)} balance left` : 'Fully settled'}</span>
+                      <span style={{ color: '#ef4444' }}>{balanceLeft > 0 ? `${formatMoney(currency, balanceLeft)} balance left` : 'Fully settled'}</span>
                     </div>
                   </div>
                   <div className={styles.donutWrap}>

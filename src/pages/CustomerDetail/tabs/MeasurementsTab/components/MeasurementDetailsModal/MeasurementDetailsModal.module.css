@@ -1,3 +1,7 @@
+.backdrop {
+  display: contents;
+}
+
 .detailPanel {
   position:       fixed;
   top:            0;
@@ -109,7 +113,7 @@
   display:        flex;
   flex-direction: column;
   gap:            6px;
-  margin-top: 25px;
+  margin-top:     25px;
 }
 
 .featureCardLabel {
@@ -464,4 +468,35 @@
   justify-content: center;
   cursor:          pointer;
   padding:         0;
+}
+
+@keyframes measurementBackdropFadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@media (min-width: 769px) {
+  .backdrop {
+    display:         block;
+    position:        fixed;
+    top:             0;
+    left:            var(--sidebar-width, 280px);
+    right:           0;
+    bottom:          0;
+    z-index:         2999;
+    background:      rgba(0, 0, 0, 0.55);
+    backdrop-filter: blur(4px);
+    animation:       measurementBackdropFadeIn 0.18s ease;
+  }
+
+  .detailPanel {
+    position:    fixed;
+    top:         0;
+    left:        auto;
+    right:       0;
+    width:       min(480px, calc(100% - var(--sidebar-width, 280px)));
+    height:      100dvh;
+    max-height:  100dvh;
+    border-left: 1px solid var(--border);
+  }
 }

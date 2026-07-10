@@ -363,121 +363,124 @@ export function MeasurementDetailsModal({ measurement, onClose, onDelete, onUpda
 
   if (isEditing) {
     return (
-      <div
-        className={`${styles.detailPanel} ${styles.detailPanel_open}`}
-        onTouchStart={e => e.stopPropagation()}
-        onTouchEnd={e => e.stopPropagation()}
-      >
-        <Header
-          type="back"
-          title="Edit Measurement"
-          onBackClick={cancelEdit}
-          customActions={[{
-            label: isSaving ? (imagesUploading ? 'Uploading…' : 'Saving…') : 'Save',
-            onClick: handleSave,
-            disabled: isSaving,
-          }]}
-        />
+      <div className={styles.backdrop} onClick={cancelEdit}>
+        <div
+          className={`${styles.detailPanel} ${styles.detailPanel_open}`}
+          onClick={e => e.stopPropagation()}
+          onTouchStart={e => e.stopPropagation()}
+          onTouchEnd={e => e.stopPropagation()}
+        >
+          <Header
+            type="back"
+            title="Edit Measurement"
+            onBackClick={cancelEdit}
+            customActions={[{
+              label: isSaving ? (imagesUploading ? 'Uploading…' : 'Saving…') : 'Save',
+              onClick: handleSave,
+              disabled: isSaving,
+            }]}
+          />
 
-        <div className={styles.detailScrollBody}>
-          <div className={styles.editBody}>
-            <p className={styles.editSectionLabel}>Unit of Measurement</p>
-            <div className={styles.unitChipRow}>
-              {['in', 'cm', 'yd'].map(u => (
-                <button
-                  key={u}
-                  className={`${styles.unitChip} ${draftUnit === u ? styles.unitChip_active : ''}`}
-                  onClick={() => setDraftUnit(u)}
-                >
-                  {UNIT_FULL[u]}
+          <div className={styles.detailScrollBody}>
+            <div className={styles.editBody}>
+              <p className={styles.editSectionLabel}>Unit of Measurement</p>
+              <div className={styles.unitChipRow}>
+                {['in', 'cm', 'yd'].map(u => (
+                  <button
+                    key={u}
+                    className={`${styles.unitChip} ${draftUnit === u ? styles.unitChip_active : ''}`}
+                    onClick={() => setDraftUnit(u)}
+                  >
+                    {UNIT_FULL[u]}
+                  </button>
+                ))}
+              </div>
+
+              <p className={styles.editSectionLabel} style={{ marginTop: 24 }}>Cloth Type Name</p>
+              <div className={styles.editCard}>
+                <label className={styles.fieldLabel}>Name</label>
+                <input
+                  type="text"
+                  className={`${styles.underlineInput} ${validationErrors.name ? styles.underlineInput_error : ''}`}
+                  placeholder="e.g. Shirt"
+                  value={draftName}
+                  onChange={e => { setDraftName(e.target.value); clearNameError() }}
+                />
+                {validationErrors.name && <p className={styles.inlineError}>{validationErrors.name}</p>}
+              </div>
+
+              <p className={styles.editSectionLabel} style={{ marginTop: 24 }}>Design References</p>
+              <div className={styles.editCard}>
+                {draftImages.length > 0 && (
+                  <div className={styles.editImageRow}>
+                    {draftImages.map(img => (
+                      <div key={img.id} className={styles.editImageThumb}>
+                        <img src={img.localSrc} alt="" className={styles.editImageThumbSrc} />
+                        <button
+                          type="button"
+                          className={styles.editImageRemoveBtn}
+                          onClick={() => removeDraftImage(img.id)}
+                        >
+                          <span className="mi" style={{ fontSize: '0.8rem' }}>close</span>
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                )}
+                <button className={styles.addFieldButton} onClick={() => imageInputRef.current?.click()}>
+                  <span className="mi" style={{ fontSize: '0.9rem' }}>add_photo_alternate</span>
+                  Add Photos
                 </button>
-              ))}
-            </div>
+                <input
+                  ref={imageInputRef}
+                  type="file"
+                  accept="image/*"
+                  multiple
+                  hidden
+                  onChange={handleAddImages}
+                />
+              </div>
 
-            <p className={styles.editSectionLabel} style={{ marginTop: 24 }}>Cloth Type Name</p>
-            <div className={styles.editCard}>
-              <label className={styles.fieldLabel}>Name</label>
-              <input
-                type="text"
-                className={`${styles.underlineInput} ${validationErrors.name ? styles.underlineInput_error : ''}`}
-                placeholder="e.g. Shirt"
-                value={draftName}
-                onChange={e => { setDraftName(e.target.value); clearNameError() }}
-              />
-              {validationErrors.name && <p className={styles.inlineError}>{validationErrors.name}</p>}
-            </div>
-
-            <p className={styles.editSectionLabel} style={{ marginTop: 24 }}>Design References</p>
-            <div className={styles.editCard}>
-              {draftImages.length > 0 && (
-                <div className={styles.editImageRow}>
-                  {draftImages.map(img => (
-                    <div key={img.id} className={styles.editImageThumb}>
-                      <img src={img.localSrc} alt="" className={styles.editImageThumbSrc} />
-                      <button
-                        type="button"
-                        className={styles.editImageRemoveBtn}
-                        onClick={() => removeDraftImage(img.id)}
-                      >
-                        <span className="mi" style={{ fontSize: '0.8rem' }}>close</span>
+              <p className={styles.editSectionLabel} style={{ marginTop: 24 }}>Measurements</p>
+              <div className={styles.editCard}>
+                <div className={styles.measureFieldList}>
+                  {draftFields.map(field => (
+                    <div key={field.id} className={styles.measureFieldRow}>
+                      <div className={styles.measureFieldColumn}>
+                        <label>Field</label>
+                        <input
+                          type="text"
+                          className={styles.measureFieldInput}
+                          placeholder="e.g. Neck"
+                          value={field.name}
+                          onChange={e => updateDraftField(field.id, 'name', e.target.value)}
+                        />
+                      </div>
+                      <div className={styles.measureFieldColumn}>
+                        <label>Value</label>
+                        <input
+                          type="number"
+                          className={styles.measureFieldInput}
+                          placeholder="0"
+                          inputMode="decimal"
+                          value={field.value}
+                          onChange={e => updateDraftField(field.id, 'value', e.target.value)}
+                        />
+                      </div>
+                      <button className={styles.removeFieldButton} onClick={() => removeDraftField(field.id)}>
+                        <span className="mi" style={{ fontSize: '1.1rem' }}>remove_circle_outline</span>
                       </button>
                     </div>
                   ))}
                 </div>
-              )}
-              <button className={styles.addFieldButton} onClick={() => imageInputRef.current?.click()}>
-                <span className="mi" style={{ fontSize: '0.9rem' }}>add_photo_alternate</span>
-                Add Photos
-              </button>
-              <input
-                ref={imageInputRef}
-                type="file"
-                accept="image/*"
-                multiple
-                hidden
-                onChange={handleAddImages}
-              />
-            </div>
 
-            <p className={styles.editSectionLabel} style={{ marginTop: 24 }}>Measurements</p>
-            <div className={styles.editCard}>
-              <div className={styles.measureFieldList}>
-                {draftFields.map(field => (
-                  <div key={field.id} className={styles.measureFieldRow}>
-                    <div className={styles.measureFieldColumn}>
-                      <label>Field</label>
-                      <input
-                        type="text"
-                        className={styles.measureFieldInput}
-                        placeholder="e.g. Neck"
-                        value={field.name}
-                        onChange={e => updateDraftField(field.id, 'name', e.target.value)}
-                      />
-                    </div>
-                    <div className={styles.measureFieldColumn}>
-                      <label>Value</label>
-                      <input
-                        type="number"
-                        className={styles.measureFieldInput}
-                        placeholder="0"
-                        inputMode="decimal"
-                        value={field.value}
-                        onChange={e => updateDraftField(field.id, 'value', e.target.value)}
-                      />
-                    </div>
-                    <button className={styles.removeFieldButton} onClick={() => removeDraftField(field.id)}>
-                      <span className="mi" style={{ fontSize: '1.1rem' }}>remove_circle_outline</span>
-                    </button>
-                  </div>
-                ))}
+                {validationErrors.fields && <p className={styles.inlineError}>{validationErrors.fields}</p>}
+
+                <button className={styles.addFieldButton} onClick={addDraftField}>
+                  <span className="mi" style={{ fontSize: '0.9rem' }}>add</span>
+                  Add Field
+                </button>
               </div>
-
-              {validationErrors.fields && <p className={styles.inlineError}>{validationErrors.fields}</p>}
-
-              <button className={styles.addFieldButton} onClick={addDraftField}>
-                <span className="mi" style={{ fontSize: '0.9rem' }}>add</span>
-                Add Field
-              </button>
             </div>
           </div>
         </div>
@@ -487,87 +490,90 @@ export function MeasurementDetailsModal({ measurement, onClose, onDelete, onUpda
 
   return (
     <>
-      <div
-        className={`${styles.detailPanel} ${styles.detailPanel_open}`}
-        onTouchStart={e => { e.stopPropagation(); handleTouchStart(e) }}
-        onTouchEnd={e => { e.stopPropagation(); handleTouchEnd(e) }}
-      >
-        <Header
-          type="back"
-          showBorderBottom={false}
-          title={measurement.name}
-          onBackClick={onClose}
-          customActions={[
-            { icon: 'edit', onClick: enterEditMode, outlined: true },
-            { icon: 'delete', onClick: onDelete, color: 'var(--danger)', outlined: true },
-          ]}
-        />
+      <div className={styles.backdrop} onClick={onClose}>
+        <div
+          className={`${styles.detailPanel} ${styles.detailPanel_open}`}
+          onClick={e => e.stopPropagation()}
+          onTouchStart={e => { e.stopPropagation(); handleTouchStart(e) }}
+          onTouchEnd={e => { e.stopPropagation(); handleTouchEnd(e) }}
+        >
+          <Header
+            type="back"
+            showBorderBottom={false}
+            title={measurement.name}
+            onBackClick={onClose}
+            customActions={[
+              { icon: 'edit', onClick: enterEditMode, outlined: true },
+              { icon: 'delete', onClick: onDelete, color: 'var(--danger)', outlined: true },
+            ]}
+          />
 
-        {hasStyleTab && (
-          <div className={styles.tabBar}>
-            <button
-              className={`${styles.tabBtn} ${activeTab === 'details' ? styles.tabBtn_active : ''}`}
-              onClick={() => setActiveTab('details')}
-            >
-              Details
-            </button>
-            <button
-              className={`${styles.tabBtn} ${activeTab === 'style' ? styles.tabBtn_active : ''}`}
-              onClick={() => setActiveTab('style')}
-            >
-              Garment Features
-            </button>
-          </div>
-        )}
-
-        <div className={styles.detailScrollBody}>
-          {activeTab === 'details' && (
-            <>
-              {images.length > 0
-                ? (
-                  <ImageCarousel
-                    images={images}
-                    className={styles.detailCarouselImage}
-                    onImageClick={(index) => setLightboxIndex(index)}
-                  />
-                )
-                : <DressFormPlaceholder />}
-
-              <div className={styles.infoGrid}>
-                <div className={styles.infoGridCell}>
-                  <div className={styles.infoGridLabel}>Unit</div>
-                  <div className={styles.infoGridValue}>{UNIT_FULL[measurement.unit] ?? measurement.unit}</div>
-                </div>
-                <div className={styles.infoGridCell}>
-                  <div className={styles.infoGridLabel}>Fields</div>
-                  <div className={styles.infoGridValue}>{measurement.fields.length}</div>
-                </div>
-              </div>
-
-              <div className={styles.sectionCard}>
-                <div className={styles.sectionCardLabel}>Measurements</div>
-
-                {measurement.fields.length === 0
-                  ? <p style={{ color: 'var(--text3)', fontSize: '0.8rem' }}>No fields recorded.</p>
-                  : measurement.fields.map((field, index) => (
-                    <div
-                      key={index}
-                      className={`${styles.measurementFieldRow} ${index === measurement.fields.length - 1 ? styles.measurementFieldRow_last : ''}`}
-                    >
-                      <span className={styles.measurementFieldName}>{field.name}</span>
-                      <span className={styles.measurementFieldValue}>
-                        {field.value || '—'}
-                        {field.value && <span className={styles.measurementFieldUnit}>{UNIT_SHORT[measurement.unit] ?? ''}</span>}
-                      </span>
-                    </div>
-                  ))}
-              </div>
-
-              <div className={styles.detailFooterDate}>Saved on {measurement.date}</div>
-            </>
+          {hasStyleTab && (
+            <div className={styles.tabBar}>
+              <button
+                className={`${styles.tabBtn} ${activeTab === 'details' ? styles.tabBtn_active : ''}`}
+                onClick={() => setActiveTab('details')}
+              >
+                Details
+              </button>
+              <button
+                className={`${styles.tabBtn} ${activeTab === 'style' ? styles.tabBtn_active : ''}`}
+                onClick={() => setActiveTab('style')}
+              >
+                Garment Features
+              </button>
+            </div>
           )}
 
-          {activeTab === 'style' && <GarmentFeaturesSection measurement={measurement} />}
+          <div className={styles.detailScrollBody}>
+            {activeTab === 'details' && (
+              <>
+                {images.length > 0
+                  ? (
+                    <ImageCarousel
+                      images={images}
+                      className={styles.detailCarouselImage}
+                      onImageClick={(index) => setLightboxIndex(index)}
+                    />
+                  )
+                  : <DressFormPlaceholder />}
+
+                <div className={styles.infoGrid}>
+                  <div className={styles.infoGridCell}>
+                    <div className={styles.infoGridLabel}>Unit</div>
+                    <div className={styles.infoGridValue}>{UNIT_FULL[measurement.unit] ?? measurement.unit}</div>
+                  </div>
+                  <div className={styles.infoGridCell}>
+                    <div className={styles.infoGridLabel}>Fields</div>
+                    <div className={styles.infoGridValue}>{measurement.fields.length}</div>
+                  </div>
+                </div>
+
+                <div className={styles.sectionCard}>
+                  <div className={styles.sectionCardLabel}>Measurements</div>
+
+                  {measurement.fields.length === 0
+                    ? <p style={{ color: 'var(--text3)', fontSize: '0.8rem' }}>No fields recorded.</p>
+                    : measurement.fields.map((field, index) => (
+                      <div
+                        key={index}
+                        className={`${styles.measurementFieldRow} ${index === measurement.fields.length - 1 ? styles.measurementFieldRow_last : ''}`}
+                      >
+                        <span className={styles.measurementFieldName}>{field.name}</span>
+                        <span className={styles.measurementFieldValue}>
+                          {field.value || '—'}
+                          {field.value && <span className={styles.measurementFieldUnit}>{UNIT_SHORT[measurement.unit] ?? ''}</span>}
+                        </span>
+                      </div>
+                    ))}
+                </div>
+
+                <div className={styles.detailFooterDate}>Saved on {measurement.date}</div>
+              </>
+            )}
+
+            {activeTab === 'style' && <GarmentFeaturesSection measurement={measurement} />}
+          </div>
         </div>
       </div>
 
