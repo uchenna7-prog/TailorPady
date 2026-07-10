@@ -1,4 +1,6 @@
 import { useState, useRef } from 'react'
+import { useAuth } from '../../../../contexts/AuthContext'
+import { startPaystackPayment } from '../../../../services/paystackService'
 import styles from './UpgradeModal.module.css'
 
 const FREE_FEATURES = [
@@ -41,8 +43,11 @@ const TABS = [
 
 const TAB_KEYS = TABS.map(t => t.key)
 
-export default function UpgradeModal({ onClose, onUpgrade }) {
+export default function UpgradeModal({ onClose, onSuccess }) {
+  const { user } = useAuth()
   const [active, setActive] = useState('free')
+  const [payingPlan, setPayingPlan] = useState(null)
+  const [errorMsg, setErrorMsg] = useState('')
   const scrollRef = useRef(null)
   const touchStartX = useRef(null)
   const touchStartY = useRef(null)
@@ -80,6 +85,29 @@ export default function UpgradeModal({ onClose, onUpgrade }) {
 
     touchStartX.current = null
     touchStartY.current = null
+  }
+
+  const handleUpgrade = (billingCycle) => {
+    if (!user) return
+    setErrorMsg('')
+    setPayingPlan(billingCycle)
+
+    startPaystackPayment({
+      email: user.email,
+      uid: user.uid,
+      billingCycle,
+      onSuccess: () => {
+        setPayingPlan(null)
+        onSuccess?.(billingCycle)
+      },
+      onError: (err) => {
+        setPayingPlan(null)
+        setErrorMsg(err.message || 'Something went wrong, please try again')
+      },
+      onClose: () => {
+        setPayingPlan(null)
+      },
+    })
   }
 
   return (
@@ -181,10 +209,15 @@ export default function UpgradeModal({ onClose, onUpgrade }) {
                   </div>
                 ))}
               </div>
-              <button className={styles.ctaBtn} onClick={() => onUpgrade?.('monthly')}>
+              <button
+                className={styles.ctaBtn}
+                onClick={() => handleUpgrade('monthly')}
+                disabled={payingPlan === 'monthly'}
+              >
                 <span className="mi" style={{ fontSize: '1rem' }}>workspace_premium</span>
-                Start Pro — ₦1,200/month
+                {payingPlan === 'monthly' ? 'Processing…' : 'Start Pro — ₦1,200/month'}
               </button>
+              {errorMsg && <p className={styles.fine} style={{ color: '#ef4444' }}>{errorMsg}</p>}
               <p className={styles.fine}>No hidden charges · Instant activation</p>
             </div>
           )}
@@ -221,10 +254,15 @@ export default function UpgradeModal({ onClose, onUpgrade }) {
                   </div>
                 ))}
               </div>
-              <button className={styles.ctaBtn} onClick={() => onUpgrade?.('annual')}>
+              <button
+                className={styles.ctaBtn}
+                onClick={() => handleUpgrade('annual')}
+                disabled={payingPlan === 'annual'}
+              >
                 <span className="mi" style={{ fontSize: '1rem' }}>workspace_premium</span>
-                Start Pro — ₦9,999/year
+                {payingPlan === 'annual' ? 'Processing…' : 'Start Pro — ₦9,999/year'}
               </button>
+              {errorMsg && <p className={styles.fine} style={{ color: '#ef4444' }}>{errorMsg}</p>}
               <p className={styles.fine}>No hidden charges · Instant activation</p>
             </div>
           )}
