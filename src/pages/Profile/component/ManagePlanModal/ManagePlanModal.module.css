@@ -2,7 +2,7 @@
   position: fixed;
   inset: 0;
   background: rgba(0, 0, 0, 0.6);
-  z-index: 600;
+  z-index: 550;
   display: flex;
   align-items: flex-end;
   backdrop-filter: blur(4px);
@@ -12,12 +12,10 @@
   width: 100%;
   background: var(--surface);
   border-radius: 24px 24px 0 0;
-  padding: 12px 24px 32px;
+  padding: 12px 20px 32px;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  gap: 14px;
-  text-align: center;
+  gap: 16px;
   max-height: 88dvh;
   overflow-y: auto;
 }
@@ -27,41 +25,60 @@
   height: 4px;
   border-radius: 2px;
   background: var(--border2);
-  margin-bottom: 8px;
+  margin: 0 auto;
   flex-shrink: 0;
 }
 
-.iconWrap {
-  width: 72px;
-  height: 72px;
-  border-radius: 50%;
-  background: color-mix(in srgb, var(--accent) 16%, transparent);
-  color: var(--accent);
+.header {
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.headerLeft {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.crownIcon {
+  font-size: 1.6rem;
+  color: var(--accent);
   flex-shrink: 0;
 }
 
 .title {
-  font-size: 1.3rem;
+  font-size: 1.05rem;
   font-weight: 900;
   color: var(--text);
+  line-height: 1.2;
 }
 
 .subtitle {
-  font-size: 0.88rem;
+  font-size: 0.75rem;
   color: var(--text3);
-  line-height: 1.5;
-  max-width: 320px;
+  margin-top: 2px;
+}
+
+.closeBtn {
+  background: var(--surface2);
+  border: none;
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text2);
+  cursor: pointer;
+  flex-shrink: 0;
 }
 
 .featureList {
-  width: 100%;
   display: flex;
   flex-direction: column;
   gap: 10px;
-  text-align: left;
   padding: 14px 16px;
   border-radius: 16px;
   background: var(--surface2);
@@ -96,39 +113,71 @@
   min-width: 0;
 }
 
-.renewalCard {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 10px 16px;
-  border-radius: 12px;
-  background: var(--surface2);
-  border: 1px solid var(--border);
-  flex-shrink: 0;
-}
-
-.renewalText {
-  font-size: 0.82rem;
-  font-weight: 700;
-  color: var(--text2);
-}
-
-.doneBtn {
+.cancelBtn {
   width: 100%;
-  padding: 16px;
+  padding: 15px;
   border-radius: 14px;
-  border: none;
-  background: var(--accent);
-  color: #fff;
-  font-size: 0.95rem;
-  font-weight: 800;
+  border: 1px solid #ef4444;
+  background: transparent;
+  color: #ef4444;
+  font-size: 0.9rem;
+  font-weight: 700;
   cursor: pointer;
-  margin-top: 8px;
-  flex-shrink: 0;
 }
 
-.doneBtn:active {
+.cancelBtn:active {
   opacity: 0.85;
+}
+
+.confirmBox {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 16px;
+  border-radius: 16px;
+  background: color-mix(in srgb, #ef4444 8%, transparent);
+  border: 1px solid color-mix(in srgb, #ef4444 25%, transparent);
+}
+
+.confirmText {
+  font-size: 0.82rem;
+  color: var(--text2);
+  line-height: 1.5;
+}
+
+.confirmActions {
+  display: flex;
+  gap: 10px;
+}
+
+.keepBtn {
+  flex: 1;
+  padding: 13px;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  background: var(--bg);
+  color: var(--text);
+  font-size: 0.85rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.confirmCancelBtn {
+  flex: 1;
+  padding: 13px;
+  border-radius: 12px;
+  border: none;
+  background: #ef4444;
+  color: #fff;
+  font-size: 0.85rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.keepBtn:disabled,
+.confirmCancelBtn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }
 
 @media (min-width: 769px) {
@@ -141,7 +190,7 @@
 
   .sheet {
     width: 100%;
-    max-width: 420px;
+    max-width: 440px;
     border-radius: 24px;
     box-shadow: 0 24px 64px rgba(0, 0, 0, 0.24);
     max-height: 86vh;

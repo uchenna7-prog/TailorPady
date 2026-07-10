@@ -1,0 +1,31 @@
+export const FREE_FEATURES = [
+  { icon: 'group',         label: 'Up to 15 customers' },
+  { icon: 'straighten',    label: 'Full body & cloth measurements' },
+  { icon: 'receipt_long',  label: '20 active orders / month' },
+  { icon: 'description',   label: 'All invoice & receipt templates' },
+  { icon: 'print',         label: '10 invoice + 10 receipt generations / month' },
+  { icon: 'palette',       label: 'Basic branding customisation' },
+  { icon: 'photo_library', label: '15 portfolio uploads / month' },
+  { icon: 'link',          label: 'Public portfolio link' },
+  { icon: 'star_rate',     label: '5 review links / month' },
+  { icon: 'payments',      label: 'Basic payment tracking' },
+  { icon: 'smart_toy',     label: '3 AI assistant actions / month' },
+  { icon: 'cake',          label: 'Birthday reminders' },
+]
+
+export const PRO_FEATURES = [
+  { icon: 'all_inclusive',   label: 'Unlimited customers' },
+  { icon: 'all_inclusive',   label: 'Unlimited measurements' },
+  { icon: 'all_inclusive',   label: 'Unlimited active orders' },
+  { icon: 'all_inclusive',   label: 'Unlimited invoice & receipt generations' },
+  { icon: 'palette',         label: 'Full branding — logo, colours, signature' },
+  { icon: 'account_balance', label: 'Bank details & T&Cs on every document' },
+  { icon: 'photo_library',   label: 'Unlimited portfolio uploads' },
+  { icon: 'auto_awesome',    label: 'Fully branded portfolio page' },
+  { icon: 'star',            label: 'Unlimited review links' },
+  { icon: 'bar_chart',       label: 'Advanced payment tracking & reports' },
+  { icon: 'smart_toy',       label: 'Unlimited AI assistant actions' },
+  { icon: 'edit_note',       label: 'Smart invoice auto-drafts' },
+  { icon: 'campaign',        label: 'Customer re-engagement reminders' },
+  { icon: 'cloud',           label: 'Expanded cloud storage' },
+]

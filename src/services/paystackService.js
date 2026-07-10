@@ -63,3 +63,20 @@ export async function startPaystackPayment({ email, uid, billingCycle, onSuccess
 
   handler.openIframe()
 }
+
+export async function cancelSubscription({ uid, onSuccess, onError }) {
+  try {
+    const response = await fetch(`${API_BASE}/api/cancel-subscription`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ uid }),
+    })
+    const data = await response.json()
+    if (!response.ok) {
+      throw new Error(data.error || 'Could not cancel subscription')
+    }
+    onSuccess?.(data)
+  } catch (err) {
+    onError?.(err)
+  }
+}

@@ -116,11 +116,11 @@ export function ReceiptTemplate12({ receipt, customer, receiptBrandSettings }) {
         <div className={styles.invoiceMetaBlock}>
           <div className={styles.metaTable}>
             <div className={styles.metaRow}>
-              <span className={styles.metaKey}>Receipt #:</span>
+              <span className={styles.metaKey}>Receipt #</span>
               <span className={styles.metaVal}>{receipt.number}</span>
             </div>
             <div className={styles.metaRow}>
-              <span className={styles.metaKey}>Date:</span>
+              <span className={styles.metaKey}>Date</span>
               <span className={styles.metaVal}>{receipt.date}</span>
             </div>
           </div>

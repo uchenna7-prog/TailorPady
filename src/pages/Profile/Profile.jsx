@@ -3,6 +3,7 @@ import { useNavigate, useLocation } from 'react-router-dom'
 import { useProfileSettings } from '../../contexts/ProfileSettingsContext'
 import { useGeneralSettings } from '../../contexts/GeneralSettingsContext'
 import { useAuth } from '../../contexts/AuthContext'
+import { usePremium } from '../../contexts/PremiumContext'
 import { getPersonalInfosFromFirestore } from '../../services/profileService'
 import { getPaletteById, DEFAULT_COLOUR_ID } from '../../config/brandPalette'
 import { SOCIAL_PLATFORMS } from './datas'
@@ -22,6 +23,7 @@ import { ConnectedAccountsModal } from './component/ConnectedAccountsModal/Conne
 import UpgradeModal from './component/UpgradeModal/UpgradeModal'
 import BillingHistoryModal from './component/BillingHistoryModal/BillingHistoryModal'
 import PremiumSuccessModal from './component/PremiumSuccessModal/PremiumSuccessModal'
+import ManagePlanModal from './component/ManagePlanModal/ManagePlanModal'
 import { getOrSetJoinDate, loadPersonalInfo, savePersonalInfoLocally } from './utils'
 import BottomNav from '../../components/BottomNav/BottomNav'
 import Header from '../../components/Header/Header'
@@ -36,6 +38,7 @@ export default function Profile({ onMenuClick, isPremium = false, onUpgrade = ()
   const { profileSettings } = useProfileSettings()
   const { updateManyGeneralSettings } = useGeneralSettings()
   const { user, logout } = useAuth()
+  const { plan, nextRenewal } = usePremium()
   const navigate = useNavigate()
   const location = useLocation()
 
@@ -139,6 +142,11 @@ export default function Profile({ onMenuClick, isPremium = false, onUpgrade = ()
     setPremiumSuccess(info)
     onUpgrade?.(info.billingCycle)
   }, [onUpgrade])
+
+  const handleSubscriptionCancelled = useCallback(() => {
+    setActiveModal(null)
+    showToast("Subscription cancelled — you'll keep Pro until it renews")
+  }, [showToast])
 
   const handleLogout = async () => {
     setLogoutConfirm(false)
@@ -335,16 +343,22 @@ export default function Profile({ onMenuClick, isPremium = false, onUpgrade = ()
 
         <SectionHeader icon="workspace_premium" label="My Plan" />
 
-        <div className={styles.row}>
+        <div
+          className={`${styles.row} ${isPremium ? styles.upgradeStrip : ''}`}
+          onClick={isPremium ? () => setActiveModal('managePlan') : undefined}
+        >
           <div className={styles.planLeft}>
             <div className={styles.planName}>{isPremium ? 'TailorPady Pro' : 'Free Plan'}</div>
             <div className={styles.planSub}>
               {isPremium
-                ? 'All features unlocked — invoice customisation, branded PDFs & more'
+                ? 'Unlimited everything, full branding & priority tools'
                 : 'Basic features only. Upgrade to unlock brand customisation.'}
             </div>
           </div>
           <PlanBadge isPremium={isPremium} />
+          {isPremium && (
+            <span className="mi" style={{ fontSize: '1rem', color: 'var(--text3)' }}>chevron_right</span>
+          )}
         </div>
 
         {!isPremium && (
@@ -452,6 +466,17 @@ export default function Profile({ onMenuClick, isPremium = false, onUpgrade = ()
 
       {activeModal === 'billing' && (
         <BillingHistoryModal onClose={() => setActiveModal(null)} />
+      )}
+
+      {activeModal === 'managePlan' && (
+        <ManagePlanModal
+          uid={user?.uid}
+          plan={plan}
+          nextRenewal={nextRenewal}
+          onClose={() => setActiveModal(null)}
+          onCancelled={handleSubscriptionCancelled}
+          showToast={showToast}
+        />
       )}
 
       {activeModal === 'changePassword' && (

@@ -1,4 +1,3 @@
-
 import { useState, useEffect, useRef } from 'react'
 import { ORDER_STATUS_STYLES, ORDER_STATUS_LABELS } from '../../../../../../datas/orderDatas'
 import { getCurrency,formatMoney } from '../../../../../../utils/moneyUtils'
@@ -73,165 +72,171 @@ export function AddInvoiceModal({
 
   return (
     <div
-      className={`${styles.pickerOverlay} ${isOpen ? styles.pickerOverlay_open : ''}`}
-      onTouchStart={e => e.stopPropagation()}
-      onTouchEnd={e => e.stopPropagation()}
+      className={`${styles.backdrop} ${isOpen ? styles.backdrop_open : ''}`}
+      onClick={onClose}
     >
-      <Header
-        type="back"
-        title="New Invoice"
-        onBackClick={onClose}
-      />
+      <div
+        className={`${styles.pickerOverlay} ${isOpen ? styles.pickerOverlay_open : ''}`}
+        onClick={e => e.stopPropagation()}
+        onTouchStart={e => e.stopPropagation()}
+        onTouchEnd={e => e.stopPropagation()}
+      >
+        <Header
+          type="back"
+          title="New Invoice"
+          onBackClick={onClose}
+        />
 
-      {showAllInvoiced && (
-        <div className={styles.pickerEmpty}>
-          <span className="mi" style={{ fontSize: '2rem', color: 'var(--text3)',textTransform: "lowercase" }}>receipt_long</span>
-          <p>All orders already have invoices.</p>
-        </div>
-      )}
+        {showAllInvoiced && (
+          <div className={styles.pickerEmpty}>
+            <span className="mi" style={{ fontSize: '2rem', color: 'var(--text3)',textTransform: "lowercase" }}>receipt_long</span>
+            <p>All orders already have invoices.</p>
+          </div>
+        )}
 
-      {showNoSearchMatch && (
-        <div className={styles.pickerEmpty}>
-          <span className="mi" style={{ fontSize: '2rem', color: 'var(--text3)' }}>search_off</span>
-          <p>No orders match your search</p>
-        </div>
-      )}
+        {showNoSearchMatch && (
+          <div className={styles.pickerEmpty}>
+            <span className="mi" style={{ fontSize: '2rem', color: 'var(--text3)' }}>search_off</span>
+            <p>No orders match your search</p>
+          </div>
+        )}
 
-      {!showAllInvoiced && (
-        <div className={styles.pickerScrollBody}>
-          <div style={{ padding: '20px' }}>
+        {!showAllInvoiced && (
+          <div className={styles.pickerScrollBody}>
+            <div style={{ padding: '20px' }}>
 
-            <p className={styles.stepHeading}>1. Select Orders</p>
+              <p className={styles.stepHeading}>1. Select Orders</p>
 
-            {showSearch && (
-              <div className={styles.clothSearchBar}>
-                <span className="mi" style={{ fontSize: '1.1rem', color: 'var(--text3)' }}>search</span>
-                <input
-                  type="text"
-                  placeholder="Search orders…"
-                  value={search}
-                  onChange={e => setSearch(e.target.value)}
-                  className={styles.clothSearchInput}
-                />
-                {search.length > 0 && (
-                  <button
-                    className={styles.clothSearchClear}
-                    onClick={() => setSearch('')}
-                  >
-                    <span className="mi" style={{ fontSize: '1rem' }}>close</span>
-                  </button>
-                )}
+              {showSearch && (
+                <div className={styles.clothSearchBar}>
+                  <span className="mi" style={{ fontSize: '1.1rem', color: 'var(--text3)' }}>search</span>
+                  <input
+                    type="text"
+                    placeholder="Search orders…"
+                    value={search}
+                    onChange={e => setSearch(e.target.value)}
+                    className={styles.clothSearchInput}
+                  />
+                  {search.length > 0 && (
+                    <button
+                      className={styles.clothSearchClear}
+                      onClick={() => setSearch('')}
+                    >
+                      <span className="mi" style={{ fontSize: '1rem' }}>close</span>
+                    </button>
+                  )}
+                </div>
+              )}
+
+              <div className={styles.clothPickerList}>
+                {filtered.map(order => {
+                  const isSelected   = selectedIds.has(order.id)
+                  const isGenerating = generatingIds.has(order.id)
+                  const statusKey    = order.status || 'pending'
+                  const badgeLabel   = ORDER_STATUS_LABELS[statusKey] ?? order.status
+                  const badgeStyle   = ORDER_STATUS_STYLES[statusKey] ?? ORDER_STATUS_STYLES.pending
+
+                  return (
+                    <div
+                      key={order.id}
+                      className={`
+                        ${styles.clothPickerItem}
+                        ${isSelected   ? styles.clothPickerItem_selected   : ''}
+                        ${isGenerating ? styles.clothPickerItem_generating : ''}
+                      `}
+                      onClick={() => toggleOrder(order)}
+                    >
+                      <OrderMosaic items={order.items || []} size="sm" />
+
+                      <div className={styles.clothInfo}>
+                        <h5>{order.desc || 'Untitled Order'}</h5>
+                        <span className={styles.orderStatusBadge} style={badgeStyle}>
+                          {badgeLabel}
+                        </span>
+                      </div>
+
+                      <div className={`${styles.clothCheckCircle} ${isSelected ? styles.clothCheckCircle_checked : ''}`}>
+                        {isGenerating
+                          ? <div className={styles.pickerSpinner} />
+                          : isSelected
+                            ? <span className="mi" style={{ fontSize: '0.9rem' }}>check</span>
+                            : null
+                        }
+                      </div>
+                    </div>
+                  )
+                })}
               </div>
-            )}
 
-            <div className={styles.clothPickerList}>
-              {filtered.map(order => {
-                const isSelected   = selectedIds.has(order.id)
-                const isGenerating = generatingIds.has(order.id)
-                const statusKey    = order.status || 'pending'
-                const badgeLabel   = ORDER_STATUS_LABELS[statusKey] ?? order.status
-                const badgeStyle   = ORDER_STATUS_STYLES[statusKey] ?? ORDER_STATUS_STYLES.pending
+    
+              {selectedOrders.length > 0 && (
+                <div ref={step2Ref}>
+                  <p className={styles.stepHeading} style={{ marginTop: 24 }}>
+                    {`2. Generate Invoice${selectedOrders.length > 1 ? 's' : ''}`}
+                  </p>
 
-                return (
-                  <div
-                    key={order.id}
-                    className={`
-                      ${styles.clothPickerItem}
-                      ${isSelected   ? styles.clothPickerItem_selected   : ''}
-                      ${isGenerating ? styles.clothPickerItem_generating : ''}
-                    `}
-                    onClick={() => toggleOrder(order)}
-                  >
-                    <OrderMosaic items={order.items || []} size="sm" />
+                  <div className={styles.generateCard}>
+                    {selectedOrders.map((order, idx) => {
+                      const isGenerating = generatingIds.has(order.id)
+                      const isLast       = idx === selectedOrders.length - 1
 
-                    <div className={styles.clothInfo}>
-                      <h5>{order.desc || 'Untitled Order'}</h5>
-                      <span className={styles.orderStatusBadge} style={badgeStyle}>
-                        {badgeLabel}
-                      </span>
-                    </div>
+                      return (
+                        <div
+                          key={order.id}
+                          className={`${styles.generateOrderRow} ${isLast ? styles.generateOrderRow_last : ''}`}
+                        >
+                          <OrderMosaic items={order.items || []} size="sm" />
 
-                    <div className={`${styles.clothCheckCircle} ${isSelected ? styles.clothCheckCircle_checked : ''}`}>
-                      {isGenerating
-                        ? <div className={styles.pickerSpinner} />
-                        : isSelected
-                          ? <span className="mi" style={{ fontSize: '0.9rem' }}>check</span>
-                          : null
-                      }
-                    </div>
-                  </div>
-                )
-              })}
-            </div>
-
-  
-            {selectedOrders.length > 0 && (
-              <div ref={step2Ref}>
-                <p className={styles.stepHeading} style={{ marginTop: 24 }}>
-                  {`2. Generate Invoice${selectedOrders.length > 1 ? 's' : ''}`}
-                </p>
-
-                <div className={styles.generateCard}>
-                  {selectedOrders.map((order, idx) => {
-                    const isGenerating = generatingIds.has(order.id)
-                    const isLast       = idx === selectedOrders.length - 1
-
-                    return (
-                      <div
-                        key={order.id}
-                        className={`${styles.generateOrderRow} ${isLast ? styles.generateOrderRow_last : ''}`}
-                      >
-                        <OrderMosaic items={order.items || []} size="sm" />
-
-                        <div style={{ flex: 1, minWidth: 0 }}>
-                          <div className={styles.generateOrderName}>
-                            {order.desc || 'Untitled Order'}
+                          <div style={{ flex: 1, minWidth: 0 }}>
+                            <div className={styles.generateOrderName}>
+                              {order.desc || 'Untitled Order'}
+                            </div>
+                            {order.price != null && (
+                              <div className={styles.generateOrderPrice}>
+                                {formatMoney(currency, order.price, 0, 0)}
+                              </div>
+                            )}
                           </div>
-                          {order.price != null && (
-                            <div className={styles.generateOrderPrice}>
-                              {formatMoney(currency, order.price, 0, 0)}
+
+                          {isGenerating && (
+                            <div className={styles.generateRowSpinnerWrap}>
+                              <div className={styles.pickerSpinner} />
                             </div>
                           )}
                         </div>
+                      )
+                    })}
 
-                        {isGenerating && (
-                          <div className={styles.generateRowSpinnerWrap}>
-                            <div className={styles.pickerSpinner} />
-                          </div>
-                        )}
-                      </div>
-                    )
-                  })}
+                    <div className={styles.generateDivider} />
 
-                  <div className={styles.generateDivider} />
-
-                  <button
-                    className={styles.generateInlineButton}
-                    onClick={() => onGenerateSelected(selectedOrders)}
-                    disabled={isAnyGenerating}
-                  >
-                    {isAnyGenerating ? (
-                      <>
-                        <div className={styles.pickerSpinnerWhite} />
-                        Generating…
-                      </>
-                    ) : (
-                      <>
-                        <span className="mi" style={{ fontSize: '1.1rem', color:"var(--text)",textTransform: "lowercase" }}>receipt_long</span>
-                        {selectedOrders.length > 1
-                          ? `Generate ${selectedOrders.length} Invoices`
-                          : 'Generate Invoice'
-                        }
-                      </>
-                    )}
-                  </button>
+                    <button
+                      className={styles.generateInlineButton}
+                      onClick={() => onGenerateSelected(selectedOrders)}
+                      disabled={isAnyGenerating}
+                    >
+                      {isAnyGenerating ? (
+                        <>
+                          <div className={styles.pickerSpinnerWhite} />
+                          Generating…
+                        </>
+                      ) : (
+                        <>
+                          <span className="mi" style={{ fontSize: '1.1rem', color:"var(--text)",textTransform: "lowercase" }}>receipt_long</span>
+                          {selectedOrders.length > 1
+                            ? `Generate ${selectedOrders.length} Invoices`
+                            : 'Generate Invoice'
+                          }
+                        </>
+                      )}
+                    </button>
+                  </div>
                 </div>
-              </div>
-            )}
+              )}
 
+            </div>
           </div>
-        </div>
-      )}
+        )}
+      </div>
     </div>
   )
 }

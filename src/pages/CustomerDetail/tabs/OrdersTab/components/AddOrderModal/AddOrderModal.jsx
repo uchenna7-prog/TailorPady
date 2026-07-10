@@ -220,371 +220,377 @@ export function AddOrderModal({ isOpen, onClose, measurements, onSave, taxRate, 
 
   return (
     <div
-      className={`${styles.formOverlay} ${isOpen ? styles.formOverlay_open : ''}`}
-      onTouchStart={e => e.stopPropagation()}
-      onTouchEnd={e => e.stopPropagation()}
+      className={`${styles.backdrop} ${isOpen ? styles.backdrop_open : ''}`}
+      onClick={handleClose}
     >
+      <div
+        className={`${styles.formOverlay} ${isOpen ? styles.formOverlay_open : ''}`}
+        onClick={e => e.stopPropagation()}
+        onTouchStart={e => e.stopPropagation()}
+        onTouchEnd={e => e.stopPropagation()}
+      >
 
-      <Header
-        type="back"
-        title="New Order"
-        onBackClick={handleClose}
-        customActions={[{ label: 'Place Order', onClick: handleSave }]}
-      />
+        <Header
+          type="back"
+          title="New Order"
+          onBackClick={handleClose}
+          customActions={[{ label: 'Place Order', onClick: handleSave }]}
+        />
 
-      <div className={styles.formScrollBody}>
-        <div style={{ padding: '20px' }}>
+        <div className={styles.formScrollBody}>
+          <div style={{ padding: '20px' }}>
 
-          <p className={styles.stepHeading}>1. Select Clothes</p>
+            <p className={styles.stepHeading}>1. Select Clothes</p>
 
-          {measurements.length > VISIBLE_MEASUREMENT_LIMIT && (
-            <div className={styles.clothSearchBar}>
-              <span className="mi" style={{ fontSize: '1.1rem', color: 'var(--text3)' }}>search</span>
-              <input
-                type="text"
-                placeholder="Search cloth type…"
-                value={clothSearchText}
-                onChange={e => setClothSearchText(e.target.value)}
-                className={styles.clothSearchInput}
-              />
-              {clothSearchText.length > 0 && (
-                <button
-                  style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text3)', display: 'flex', alignItems: 'center', padding: 0 }}
-                  onClick={() => setClothSearchText('')}
-                >
-                  <span className="mi" style={{ fontSize: '1rem' }}>close</span>
-                </button>
-              )}
-            </div>
-          )}
-
-          <div className={styles.clothPickerList}>
-            {visibleMeasurements.map(measurement => {
-              const isSelected = selectedItems.find(i => i.id === String(measurement.id))
-              const coverImg = measurement.imgSrcs?.[0] ?? measurement.imgSrc ?? null
-
-              return (
-                <div
-                  key={measurement.id}
-                  className={`${styles.clothPickerItem} ${isSelected ? styles.clothPickerItem_selected : ''}`}
-                  onClick={() => toggleItemSelection(measurement)}
-                >
-                  <div className={styles.clothThumb}>
-                    {coverImg
-                      ? <img src={coverImg} alt={measurement.name} />
-                      : <span className="mi" style={{ fontSize: '1.1rem' }}>checkroom</span>
-                    }
-                  </div>
-                  <div className={styles.clothInfo}>
-                    <h5>{measurement.name}</h5>
-                    <span>{measurement.fields?.length || 0} measurements</span>
-                  </div>
-                  <div className={`${styles.clothCheckCircle} ${isSelected ? styles.clothCheckCircle_checked : ''}`}>
-                    {isSelected && <span className="mi" style={{ fontSize: '0.9rem' }}>check</span>}
-                  </div>
-                </div>
-              )
-            })}
-          </div>
-
-          {hiddenCount > 0 && (
-            <div className={styles.clothHiddenHint}>
-              <div className={styles.clothHiddenHintDots}>
-                <span /><span /><span />
-              </div>
-              <span className={styles.clothHiddenHintText}>
-                More results available — use the search bar above
-              </span>
-            </div>
-          )}
-
-          {isSearching && visibleMeasurements.length === 0 && (
-            <div className={styles.clothEmptySearch}>
-              <span className="mi" style={{ fontSize: '1.6rem' }}>search_off</span>
-              <span>No results for "<strong>{clothSearchText}</strong>"</span>
-            </div>
-          )}
-
-          {hasItems && (
-            <>
-              <p
-                ref={pricingCardRef}
-                className={styles.stepHeading}
-                style={{ marginTop: 24 }}
-              >
-                2. Price &amp; Quantity Per Item
-              </p>
-
-              <div className={`${styles.pricingCard} ${validationErrors.pricing ? styles.pricingCard_error : ''}`}>
-                {selectedItems.map((item, idx) => {
-                  const lineAmount = (parseFloat(item.price) || 0) * (parseInt(item.qty, 10) || 0)
-                  const showAmount = lineAmount > 0
-                  const isLast = idx === selectedItems.length - 1
-
-                  return (
-                    <div key={item.id} className={`${styles.pricingItem} ${isLast ? styles.pricingItem_last : ''}`}>
-                      <div className={styles.pricingItemMeta}>
-                        <div className={styles.pricingThumb}>
-                          {item.imgSrc
-                            ? <img src={item.imgSrc} alt="" />
-                            : <span className="mi" style={{ fontSize: '0.85rem' }}>checkroom</span>
-                          }
-                        </div>
-                        <span className={styles.pricingItemName}>{item.name}</span>
-                        {showAmount && (
-                          <span className={styles.pricingItemAmount}>
-                            ₦{lineAmount.toLocaleString()}
-                          </span>
-                        )}
-                      </div>
-
-                      <div className={styles.pricingInputRow}>
-                        <div className={styles.pricingFieldPrice}>
-                          <label className={styles.fieldLabel}>
-                            Price (₦) <span className={styles.requiredStar}>*</span>
-                          </label>
-                          <input
-                            type="number"
-                            inputMode="numeric"
-                            placeholder="0"
-                            className={styles.pricingInput}
-                            value={item.price}
-                            onChange={e => updateItemField(item.id, 'price', e.target.value)}
-                          />
-                        </div>
-
-                        <div className={styles.pricingFieldQty}>
-                          <label className={styles.fieldLabel}>
-                            Qty <span className={styles.requiredStar}>*</span>
-                          </label>
-                          <input
-                            type="number"
-                            inputMode="numeric"
-                            placeholder="1"
-                            min="1"
-                            className={styles.pricingInput}
-                            value={item.qty}
-                            onChange={e => updateItemField(item.id, 'qty', e.target.value)}
-                          />
-                        </div>
-                      </div>
-                    </div>
-                  )
-                })}
-
-                {validationErrors.pricing && (
-                  <div className={styles.pricingError}>
-                    <span className="mi" style={{ fontSize: '0.9rem' }}>error_outline</span>
-                    {validationErrors.pricing}
-                  </div>
+            {measurements.length > VISIBLE_MEASUREMENT_LIMIT && (
+              <div className={styles.clothSearchBar}>
+                <span className="mi" style={{ fontSize: '1.1rem', color: 'var(--text3)' }}>search</span>
+                <input
+                  type="text"
+                  placeholder="Search cloth type…"
+                  value={clothSearchText}
+                  onChange={e => setClothSearchText(e.target.value)}
+                  className={styles.clothSearchInput}
+                />
+                {clothSearchText.length > 0 && (
+                  <button
+                    style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text3)', display: 'flex', alignItems: 'center', padding: 0 }}
+                    onClick={() => setClothSearchText('')}
+                  >
+                    <span className="mi" style={{ fontSize: '1rem' }}>close</span>
+                  </button>
                 )}
-
-                <div className={styles.orderTotalRow}>
-                  <span>Subtotal (Qty: {totalQty})</span>
-                  <span style={{ color: 'var(--text2)' }}>₦{subtotal.toLocaleString()}</span>
-                </div>
               </div>
+            )}
 
-              <p className={styles.stepHeading} style={{ marginTop: 24 }}>
-                3. Discount &amp; Charges
-              </p>
+            <div className={styles.clothPickerList}>
+              {visibleMeasurements.map(measurement => {
+                const isSelected = selectedItems.find(i => i.id === String(measurement.id))
+                const coverImg = measurement.imgSrcs?.[0] ?? measurement.imgSrc ?? null
 
-              <div className={styles.chargesCard}>
-                <div className={styles.chargeRow}>
-                  <div className={styles.chargeRowLeft}>
-                    <div className={styles.chargeIconBox}>
-                      <span className="mi" style={{ fontSize: '1rem' }}>local_shipping</span>
+                return (
+                  <div
+                    key={measurement.id}
+                    className={`${styles.clothPickerItem} ${isSelected ? styles.clothPickerItem_selected : ''}`}
+                    onClick={() => toggleItemSelection(measurement)}
+                  >
+                    <div className={styles.clothThumb}>
+                      {coverImg
+                        ? <img src={coverImg} alt={measurement.name} />
+                        : <span className="mi" style={{ fontSize: '1.1rem' }}>checkroom</span>
+                      }
                     </div>
-                    <div>
-                      <div className={styles.chargeRowLabel}>Shipping Fee</div>
-                      <div className={styles.chargeRowSub}>Delivery cost charged to the customer</div>
+                    <div className={styles.clothInfo}>
+                      <h5>{measurement.name}</h5>
+                      <span>{measurement.fields?.length || 0} measurements</span>
+                    </div>
+                    <div className={`${styles.clothCheckCircle} ${isSelected ? styles.clothCheckCircle_checked : ''}`}>
+                      {isSelected && <span className="mi" style={{ fontSize: '0.9rem' }}>check</span>}
                     </div>
                   </div>
-                  <div className={styles.chargeInputWrapper}>
-                    <span className={styles.chargeInputPrefix}>₦</span>
-                    <input
-                      type="number"
-                      inputMode="numeric"
-                      placeholder="0"
-                      className={styles.chargeInput}
-                      value={shippingFee}
-                      onChange={e => setShippingFee(e.target.value)}
-                    />
+                )
+              })}
+            </div>
+
+            {hiddenCount > 0 && (
+              <div className={styles.clothHiddenHint}>
+                <div className={styles.clothHiddenHintDots}>
+                  <span /><span /><span />
+                </div>
+                <span className={styles.clothHiddenHintText}>
+                  More results available — use the search bar above
+                </span>
+              </div>
+            )}
+
+            {isSearching && visibleMeasurements.length === 0 && (
+              <div className={styles.clothEmptySearch}>
+                <span className="mi" style={{ fontSize: '1.6rem' }}>search_off</span>
+                <span>No results for "<strong>{clothSearchText}</strong>"</span>
+              </div>
+            )}
+
+            {hasItems && (
+              <>
+                <p
+                  ref={pricingCardRef}
+                  className={styles.stepHeading}
+                  style={{ marginTop: 24 }}
+                >
+                  2. Price &amp; Quantity Per Item
+                </p>
+
+                <div className={`${styles.pricingCard} ${validationErrors.pricing ? styles.pricingCard_error : ''}`}>
+                  {selectedItems.map((item, idx) => {
+                    const lineAmount = (parseFloat(item.price) || 0) * (parseInt(item.qty, 10) || 0)
+                    const showAmount = lineAmount > 0
+                    const isLast = idx === selectedItems.length - 1
+
+                    return (
+                      <div key={item.id} className={`${styles.pricingItem} ${isLast ? styles.pricingItem_last : ''}`}>
+                        <div className={styles.pricingItemMeta}>
+                          <div className={styles.pricingThumb}>
+                            {item.imgSrc
+                              ? <img src={item.imgSrc} alt="" />
+                              : <span className="mi" style={{ fontSize: '0.85rem' }}>checkroom</span>
+                            }
+                          </div>
+                          <span className={styles.pricingItemName}>{item.name}</span>
+                          {showAmount && (
+                            <span className={styles.pricingItemAmount}>
+                              ₦{lineAmount.toLocaleString()}
+                            </span>
+                          )}
+                        </div>
+
+                        <div className={styles.pricingInputRow}>
+                          <div className={styles.pricingFieldPrice}>
+                            <label className={styles.fieldLabel}>
+                              Price (₦) <span className={styles.requiredStar}>*</span>
+                            </label>
+                            <input
+                              type="number"
+                              inputMode="numeric"
+                              placeholder="0"
+                              className={styles.pricingInput}
+                              value={item.price}
+                              onChange={e => updateItemField(item.id, 'price', e.target.value)}
+                            />
+                          </div>
+
+                          <div className={styles.pricingFieldQty}>
+                            <label className={styles.fieldLabel}>
+                              Qty <span className={styles.requiredStar}>*</span>
+                            </label>
+                            <input
+                              type="number"
+                              inputMode="numeric"
+                              placeholder="1"
+                              min="1"
+                              className={styles.pricingInput}
+                              value={item.qty}
+                              onChange={e => updateItemField(item.id, 'qty', e.target.value)}
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    )
+                  })}
+
+                  {validationErrors.pricing && (
+                    <div className={styles.pricingError}>
+                      <span className="mi" style={{ fontSize: '0.9rem' }}>error_outline</span>
+                      {validationErrors.pricing}
+                    </div>
+                  )}
+
+                  <div className={styles.orderTotalRow}>
+                    <span>Subtotal (Qty: {totalQty})</span>
+                    <span style={{ color: 'var(--text2)' }}>₦{subtotal.toLocaleString()}</span>
                   </div>
                 </div>
 
-                <div className={styles.chargeDivider} />
+                <p className={styles.stepHeading} style={{ marginTop: 24 }}>
+                  3. Discount &amp; Charges
+                </p>
 
-                <div className={styles.chargeRow}>
-                  <div className={styles.chargeRowLeft}>
-                    <div className={styles.chargeIconBox}>
-                      <span className="mi" style={{ fontSize: '1rem' }}>sell</span>
+                <div className={styles.chargesCard}>
+                  <div className={styles.chargeRow}>
+                    <div className={styles.chargeRowLeft}>
+                      <div className={styles.chargeIconBox}>
+                        <span className="mi" style={{ fontSize: '1rem' }}>local_shipping</span>
+                      </div>
+                      <div>
+                        <div className={styles.chargeRowLabel}>Shipping Fee</div>
+                        <div className={styles.chargeRowSub}>Delivery cost charged to the customer</div>
+                      </div>
                     </div>
-                    <div>
-                      <div className={styles.chargeRowLabel}>Discount</div>
-                      <div className={styles.chargeRowSub}>Deducted from the order subtotal</div>
-                    </div>
-                  </div>
-                  <div className={styles.discountInputGroup}>
-                    <div className={styles.discountTypeToggle}>
-                      <button
-                        className={`${styles.discountTypeBtn} ${discountType === 'fixed' ? styles.discountTypeBtn_active : ''}`}
-                        onClick={() => setDiscountType('fixed')}
-                      >₦</button>
-                      <button
-                        className={`${styles.discountTypeBtn} ${discountType === 'percent' ? styles.discountTypeBtn_active : ''}`}
-                        onClick={() => setDiscountType('percent')}
-                      >%</button>
-                    </div>
-                    <div className={styles.chargeInputWrapper} style={{ width: 80 }}>
+                    <div className={styles.chargeInputWrapper}>
+                      <span className={styles.chargeInputPrefix}>₦</span>
                       <input
                         type="number"
                         inputMode="numeric"
                         placeholder="0"
                         className={styles.chargeInput}
-                        value={discountValue}
-                        onChange={e => setDiscountValue(e.target.value)}
+                        value={shippingFee}
+                        onChange={e => setShippingFee(e.target.value)}
                       />
                     </div>
                   </div>
-                </div>
 
-                {taxEnabled && (
-                  <>
-                    <div className={styles.chargeDivider} />
-                    <div className={styles.chargeRow}>
-                      <div className={styles.chargeRowLeft}>
-                        <div className={styles.chargeIconBox}>
-                          <span className="mi" style={{ fontSize: '1rem' }}>receipt</span>
-                        </div>
-                        <div>
-                          <div className={styles.chargeRowLabel}>
-                            Tax
-                            <span className={styles.taxBadge}>{taxPercentLabel} VAT</span>
+                  <div className={styles.chargeDivider} />
+
+                  <div className={styles.chargeRow}>
+                    <div className={styles.chargeRowLeft}>
+                      <div className={styles.chargeIconBox}>
+                        <span className="mi" style={{ fontSize: '1rem' }}>sell</span>
+                      </div>
+                      <div>
+                        <div className={styles.chargeRowLabel}>Discount</div>
+                        <div className={styles.chargeRowSub}>Deducted from the order subtotal</div>
+                      </div>
+                    </div>
+                    <div className={styles.discountInputGroup}>
+                      <div className={styles.discountTypeToggle}>
+                        <button
+                          className={`${styles.discountTypeBtn} ${discountType === 'fixed' ? styles.discountTypeBtn_active : ''}`}
+                          onClick={() => setDiscountType('fixed')}
+                        >₦</button>
+                        <button
+                          className={`${styles.discountTypeBtn} ${discountType === 'percent' ? styles.discountTypeBtn_active : ''}`}
+                          onClick={() => setDiscountType('percent')}
+                        >%</button>
+                      </div>
+                      <div className={styles.chargeInputWrapper} style={{ width: 80 }}>
+                        <input
+                          type="number"
+                          inputMode="numeric"
+                          placeholder="0"
+                          className={styles.chargeInput}
+                          value={discountValue}
+                          onChange={e => setDiscountValue(e.target.value)}
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  {taxEnabled && (
+                    <>
+                      <div className={styles.chargeDivider} />
+                      <div className={styles.chargeRow}>
+                        <div className={styles.chargeRowLeft}>
+                          <div className={styles.chargeIconBox}>
+                            <span className="mi" style={{ fontSize: '1rem' }}>receipt</span>
                           </div>
-                          <div className={styles.chargeRowSub}>Applied to subtotal after discount</div>
+                          <div>
+                            <div className={styles.chargeRowLabel}>
+                              Tax
+                              <span className={styles.taxBadge}>{taxPercentLabel} VAT</span>
+                            </div>
+                            <div className={styles.chargeRowSub}>Applied to subtotal after discount</div>
+                          </div>
+                        </div>
+                        <div className={styles.chargeReadOnly}>
+                          ₦{taxAmount.toLocaleString()}
+                          <span className={styles.lockIcon}>
+                            <span className="mi" style={{ fontSize: '0.8rem' }}>lock</span>
+                          </span>
                         </div>
                       </div>
-                      <div className={styles.chargeReadOnly}>
-                        ₦{taxAmount.toLocaleString()}
-                        <span className={styles.lockIcon}>
-                          <span className="mi" style={{ fontSize: '0.8rem' }}>lock</span>
+                    </>
+                  )}
+
+                  <div className={styles.chargeTotalBlock}>
+                    <div className={styles.chargeSummaryRow}>
+                      <span className={styles.chargeSummaryLabel}>Subtotal</span>
+                      <span className={styles.chargeSummaryValue}>₦{subtotal.toLocaleString()}</span>
+                    </div>
+                    {discountAmount > 0 && (
+                      <div className={styles.chargeSummaryRow}>
+                        <span className={`${styles.chargeSummaryLabel} ${styles.chargeSummaryLabel_discount}`}>
+                          Discount{discountType === 'percent' && rawDiscountInput > 0 ? ` (${rawDiscountInput}%)` : ''}
+                        </span>
+                        <span className={`${styles.chargeSummaryValue} ${styles.chargeSummaryValue_discount}`}>
+                          −₦{discountAmount.toLocaleString()}
                         </span>
                       </div>
+                    )}
+                    {shippingAmount > 0 && (
+                      <div className={styles.chargeSummaryRow}>
+                        <span className={styles.chargeSummaryLabel}>Shipping</span>
+                        <span className={styles.chargeSummaryValue}>₦{shippingAmount.toLocaleString()}</span>
+                      </div>
+                    )}
+                    {taxEnabled && taxAmount > 0 && (
+                      <div className={styles.chargeSummaryRow}>
+                        <span className={styles.chargeSummaryLabel}>Tax ({taxPercentLabel})</span>
+                        <span className={styles.chargeSummaryValue}>₦{taxAmount.toLocaleString()}</span>
+                      </div>
+                    )}
+                    <div className={styles.chargeTotalDivider} />
+                    <div className={styles.chargeTotalRow}>
+                      <span>Grand Total</span>
+                      <span>₦{grandTotal.toLocaleString()}</span>
                     </div>
-                  </>
-                )}
-
-                <div className={styles.chargeTotalBlock}>
-                  <div className={styles.chargeSummaryRow}>
-                    <span className={styles.chargeSummaryLabel}>Subtotal</span>
-                    <span className={styles.chargeSummaryValue}>₦{subtotal.toLocaleString()}</span>
-                  </div>
-                  {discountAmount > 0 && (
-                    <div className={styles.chargeSummaryRow}>
-                      <span className={`${styles.chargeSummaryLabel} ${styles.chargeSummaryLabel_discount}`}>
-                        Discount{discountType === 'percent' && rawDiscountInput > 0 ? ` (${rawDiscountInput}%)` : ''}
-                      </span>
-                      <span className={`${styles.chargeSummaryValue} ${styles.chargeSummaryValue_discount}`}>
-                        −₦{discountAmount.toLocaleString()}
-                      </span>
-                    </div>
-                  )}
-                  {shippingAmount > 0 && (
-                    <div className={styles.chargeSummaryRow}>
-                      <span className={styles.chargeSummaryLabel}>Shipping</span>
-                      <span className={styles.chargeSummaryValue}>₦{shippingAmount.toLocaleString()}</span>
-                    </div>
-                  )}
-                  {taxEnabled && taxAmount > 0 && (
-                    <div className={styles.chargeSummaryRow}>
-                      <span className={styles.chargeSummaryLabel}>Tax ({taxPercentLabel})</span>
-                      <span className={styles.chargeSummaryValue}>₦{taxAmount.toLocaleString()}</span>
-                    </div>
-                  )}
-                  <div className={styles.chargeTotalDivider} />
-                  <div className={styles.chargeTotalRow}>
-                    <span>Grand Total</span>
-                    <span>₦{grandTotal.toLocaleString()}</span>
                   </div>
                 </div>
-              </div>
-            </>
-          )}
-
-          <p className={styles.stepHeading} style={{ marginTop: 24 }}>
-            {hasItems ? '4' : '2'}. Final Details
-          </p>
-
-          <div
-            ref={orderDescRef}
-            className={`${styles.detailsCard} ${validationErrors.orderDesc ? styles.detailsCard_error : ''}`}
-          >
-            <label className={styles.fieldLabel}>
-              Order Description
-              {!hasItems && <span className={styles.requiredStar}> *</span>}
-            </label>
-            <input
-              type="text"
-              className={`${styles.underlineInput} ${validationErrors.orderDesc ? styles.underlineInput_error : ''}`}
-              placeholder="e.g. Complete Suit Set"
-              value={orderDesc}
-              onChange={e => {
-                setOrderDesc(e.target.value)
-                clearOrderDescError()
-              }}
-            />
-            {validationErrors.orderDesc && (
-              <p className={styles.inlineError}>{validationErrors.orderDesc}</p>
+              </>
             )}
 
-            <div style={{ display: 'flex', gap: 14, marginBottom: 20 }}>
-              <div style={{ flex: 1 }} ref={dueDateRef}>
-                <label className={styles.fieldLabel}>
-                  Due Date <span className={styles.requiredStar}>*</span>
-                </label>
-                <input
-                  type="date"
-                  min={minDueDate}
-                  className={`${styles.underlineInput} ${validationErrors.dueDate ? styles.underlineInput_error : ''}`}
-                  style={{ marginBottom: 0 }}
-                  value={dueDate}
-                  onChange={e => handleDueDateChange(e.target.value)}
-                />
-                {validationErrors.dueDate && (
-                  <p className={styles.inlineError}>{validationErrors.dueDate}</p>
-                )}
-              </div>
-              <div style={{ flex: 1 }}>
-                <label className={styles.fieldLabel}>Total Qty</label>
-                <div className={styles.underlineInput} style={{ borderBottomColor: 'var(--border)', opacity: 0.8 }}>
-                  {totalQty}
+            <p className={styles.stepHeading} style={{ marginTop: 24 }}>
+              {hasItems ? '4' : '2'}. Final Details
+            </p>
+
+            <div
+              ref={orderDescRef}
+              className={`${styles.detailsCard} ${validationErrors.orderDesc ? styles.detailsCard_error : ''}`}
+            >
+              <label className={styles.fieldLabel}>
+                Order Description
+                {!hasItems && <span className={styles.requiredStar}> *</span>}
+              </label>
+              <input
+                type="text"
+                className={`${styles.underlineInput} ${validationErrors.orderDesc ? styles.underlineInput_error : ''}`}
+                placeholder="e.g. Complete Suit Set"
+                value={orderDesc}
+                onChange={e => {
+                  setOrderDesc(e.target.value)
+                  clearOrderDescError()
+                }}
+              />
+              {validationErrors.orderDesc && (
+                <p className={styles.inlineError}>{validationErrors.orderDesc}</p>
+              )}
+
+              <div style={{ display: 'flex', gap: 14, marginBottom: 20 }}>
+                <div style={{ flex: 1 }} ref={dueDateRef}>
+                  <label className={styles.fieldLabel}>
+                    Due Date <span className={styles.requiredStar}>*</span>
+                  </label>
+                  <input
+                    type="date"
+                    min={minDueDate}
+                    className={`${styles.underlineInput} ${validationErrors.dueDate ? styles.underlineInput_error : ''}`}
+                    style={{ marginBottom: 0 }}
+                    value={dueDate}
+                    onChange={e => handleDueDateChange(e.target.value)}
+                  />
+                  {validationErrors.dueDate && (
+                    <p className={styles.inlineError}>{validationErrors.dueDate}</p>
+                  )}
+                </div>
+                <div style={{ flex: 1 }}>
+                  <label className={styles.fieldLabel}>Total Qty</label>
+                  <div className={styles.underlineInput} style={{ borderBottomColor: 'var(--border)', opacity: 0.8 }}>
+                    {totalQty}
+                  </div>
                 </div>
               </div>
+
+              <label className={styles.fieldLabel}>Priority</label>
+              <div className={styles.priorityChipRow}>
+                {['normal', 'urgent', 'vip'].map(p => (
+                  <button
+                    key={p}
+                    className={`${styles.priorityChip} ${priority === p ? styles[`priorityChip_${p}`] : ''}`}
+                    onClick={() => setPriority(p)}
+                  >
+                    {p.charAt(0).toUpperCase() + p.slice(1)}
+                  </button>
+                ))}
+              </div>
+
+              <label className={styles.fieldLabel} style={{ marginTop: 20 }}>Notes</label>
+              <textarea
+                className={styles.notesTextarea}
+                placeholder="Fabric color, styles, etc..."
+                value={notes}
+                onChange={e => setNotes(e.target.value)}
+              />
             </div>
 
-            <label className={styles.fieldLabel}>Priority</label>
-            <div className={styles.priorityChipRow}>
-              {['normal', 'urgent', 'vip'].map(p => (
-                <button
-                  key={p}
-                  className={`${styles.priorityChip} ${priority === p ? styles[`priorityChip_${p}`] : ''}`}
-                  onClick={() => setPriority(p)}
-                >
-                  {p.charAt(0).toUpperCase() + p.slice(1)}
-                </button>
-              ))}
-            </div>
-
-            <label className={styles.fieldLabel} style={{ marginTop: 20 }}>Notes</label>
-            <textarea
-              className={styles.notesTextarea}
-              placeholder="Fabric color, styles, etc..."
-              value={notes}
-              onChange={e => setNotes(e.target.value)}
-            />
           </div>
-
         </div>
       </div>
     </div>

@@ -1,3 +1,4 @@
+import { PRO_FEATURES } from '../../../../config/planFeatures'
 import styles from './PremiumSuccessModal.module.css'
 
 function formatRenewal(billingCycle, nextRenewal) {
@@ -26,8 +27,17 @@ export default function PremiumSuccessModal({ billingCycle, nextRenewal, onClose
         </div>
 
         <div className={styles.title}>You're on Pro!</div>
-        <div className={styles.subtitle}>
-          Your {planLabel} plan is active. Enjoy unlimited customers, branded invoices, receipts and more.
+        <div className={styles.subtitle}>Your {planLabel} plan is active. Here's everything you've unlocked:</div>
+
+        <div className={styles.featureList}>
+          {PRO_FEATURES.map((f, i) => (
+            <div key={i} className={styles.featureRow}>
+              <div className={styles.featureIconWrap}>
+                <span className="mi" style={{ fontSize: '0.85rem' }}>{f.icon}</span>
+              </div>
+              <span className={styles.featureLabel}>{f.label}</span>
+            </div>
+          ))}
         </div>
 
         <div className={styles.renewalCard}>

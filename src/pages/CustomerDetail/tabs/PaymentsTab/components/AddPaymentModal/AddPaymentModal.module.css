@@ -1,3 +1,7 @@
+.backdrop {
+  display: contents;
+}
+
 .pickerOverlay {
   position: fixed;
   top: 0;
@@ -26,7 +30,7 @@
 
 .pickerEmpty {
   position: absolute;
-  top: 56px; /* below the modal header */
+  top: 56px;
   left: 0;
   right: 0;
   bottom: 0;
@@ -171,3 +175,41 @@
   to   { opacity: 1; transform: translateY(0);    }
 }
 
+@media (min-width: 769px) {
+  .backdrop {
+    display:         block;
+    position:        fixed;
+    top:             0;
+    left:            var(--sidebar-width, 280px);
+    right:           0;
+    bottom:          0;
+    z-index:         3499;
+    background:      transparent;
+    backdrop-filter: none;
+    opacity:         0;
+    pointer-events:  none;
+    transition:      opacity 0.3s ease;
+  }
+
+  .backdrop_open {
+    background:      rgba(0, 0, 0, 0.55);
+    backdrop-filter: blur(4px);
+    opacity:         1;
+    pointer-events:  auto;
+  }
+
+  .pickerOverlay {
+    top:         0;
+    left:        auto;
+    right:       0;
+    width:       min(480px, calc(100% - var(--sidebar-width, 280px)));
+    height:      100dvh;
+    max-height:  100dvh;
+    border-left: 1px solid var(--border);
+    transform:   translateX(100%);
+  }
+
+  .pickerOverlay_open {
+    transform: translateX(0);
+  }
+}

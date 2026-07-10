@@ -63,100 +63,106 @@ export function AddPaymentModal({ isOpen, onClose, orders, payments, onSave }) {
 
   return (
     <div
-      className={`${styles.pickerOverlay} ${isOpen ? styles.pickerOverlay_open : ''}`}
-      onTouchStart={e => e.stopPropagation()}
-      onTouchEnd={e => e.stopPropagation()}
+      className={`${styles.backdrop} ${isOpen ? styles.backdrop_open : ''}`}
+      onClick={onClose}
     >
-      <Header
-        type="back"
-        title="New Payment"
-        onBackClick={onClose}
-      />
+      <div
+        className={`${styles.pickerOverlay} ${isOpen ? styles.pickerOverlay_open : ''}`}
+        onClick={e => e.stopPropagation()}
+        onTouchStart={e => e.stopPropagation()}
+        onTouchEnd={e => e.stopPropagation()}
+      >
+        <Header
+          type="back"
+          title="New Payment"
+          onBackClick={onClose}
+        />
 
-      {showAllHavePayments && (
-        <div className={styles.pickerEmpty}>
-          <span className="mi" style={{ fontSize: '2rem', color: 'var(--text3)', textTransform: 'lowercase' }}>assignment</span>
-          <p>All orders already have a payment recorded.</p>
-          <p>Open an existing payment to add an instalment.</p>
-        </div>
-      )}
-
-      {showNoSearchMatch && (
-        <div className={styles.pickerEmpty}>
-          <span className="mi" style={{ fontSize: '2rem', color: 'var(--text3)', textTransform: 'lowercase' }}>search_off</span>
-          <p>No orders match your search</p>
-        </div>
-      )}
-
-      {!showAllHavePayments && (
-        <div className={styles.pickerScrollBody}>
-          <div style={{ padding: '20px' }}>
-
-            <p className={styles.stepHeading}>1. Select Order</p>
-
-            {showSearch && (
-              <div className={styles.clothSearchBar}>
-                <span className="mi" style={{ fontSize: '1.1rem', color: 'var(--text3)', textTransform: 'lowercase' }}>search</span>
-                <input
-                  type="text"
-                  className={styles.clothSearchInput}
-                  placeholder="Search orders…"
-                  value={search}
-                  onChange={e => setSearch(e.target.value)}
-                />
-                {search.length > 0 && (
-                  <button
-                    style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text3)', display: 'flex', alignItems: 'center', padding: 0 }}
-                    onClick={() => setSearch('')}
-                  >
-                    <span className="mi" style={{ fontSize: '1rem', textTransform: 'lowercase' }}>close</span>
-                  </button>
-                )}
-              </div>
-            )}
-
-            <div className={styles.clothPickerList}>
-              {filteredOrders.map(order => {
-                const isSelected = selectedOrderId === order.id
-                return (
-                  <div key={order.id}>
-                    <div
-                      className={`
-                        ${styles.clothPickerItem}
-                        ${isSelected ? styles.clothPickerItem_selected : ''}
-                        ${saving && isSelected ? styles.clothPickerItem_saving : ''}
-                      `}
-                      onClick={() => !saving && handleToggleOrder(order)}
-                    >
-                      <OrderMosaic items={order.items || []} size="sm" fallbackIcon="content_cut" />
-                      <div className={styles.clothInfo}>
-                        <h5>{order.desc || 'Untitled Order'}</h5>
-                        {order.due
-                          ? <span style={{ color: '#ef4444' }}>Due {order.due}</span>
-                          : <span>No due date</span>
-                        }
-                      </div>
-                      <div className={`${styles.clothCheckCircle} ${isSelected ? styles.clothCheckCircle_checked : ''}`}>
-                        {isSelected && <span className="mi" style={{ fontSize: '0.9rem' }}>check</span>}
-                      </div>
-                    </div>
-
-                    {isSelected && (
-                      <div ref={expandedRef} className={styles.accordionBody}>
-                        <p className={styles.stepHeading} style={{ marginTop: 0, marginBottom: 16 }}>
-                          2. Payment Details
-                        </p>
-                        <InlinePaymentForm order={order} onSave={handleSave} saving={saving} />
-                      </div>
-                    )}
-                  </div>
-                )
-              })}
-            </div>
-
+        {showAllHavePayments && (
+          <div className={styles.pickerEmpty}>
+            <span className="mi" style={{ fontSize: '2rem', color: 'var(--text3)', textTransform: 'lowercase' }}>assignment</span>
+            <p>All orders already have a payment recorded.</p>
+            <p>Open an existing payment to add an instalment.</p>
           </div>
-        </div>
-      )}
+        )}
+
+        {showNoSearchMatch && (
+          <div className={styles.pickerEmpty}>
+            <span className="mi" style={{ fontSize: '2rem', color: 'var(--text3)', textTransform: 'lowercase' }}>search_off</span>
+            <p>No orders match your search</p>
+          </div>
+        )}
+
+        {!showAllHavePayments && (
+          <div className={styles.pickerScrollBody}>
+            <div style={{ padding: '20px' }}>
+
+              <p className={styles.stepHeading}>1. Select Order</p>
+
+              {showSearch && (
+                <div className={styles.clothSearchBar}>
+                  <span className="mi" style={{ fontSize: '1.1rem', color: 'var(--text3)', textTransform: 'lowercase' }}>search</span>
+                  <input
+                    type="text"
+                    className={styles.clothSearchInput}
+                    placeholder="Search orders…"
+                    value={search}
+                    onChange={e => setSearch(e.target.value)}
+                  />
+                  {search.length > 0 && (
+                    <button
+                      style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text3)', display: 'flex', alignItems: 'center', padding: 0 }}
+                      onClick={() => setSearch('')}
+                    >
+                      <span className="mi" style={{ fontSize: '1rem', textTransform: 'lowercase' }}>close</span>
+                    </button>
+                  )}
+                </div>
+              )}
+
+              <div className={styles.clothPickerList}>
+                {filteredOrders.map(order => {
+                  const isSelected = selectedOrderId === order.id
+                  return (
+                    <div key={order.id}>
+                      <div
+                        className={`
+                          ${styles.clothPickerItem}
+                          ${isSelected ? styles.clothPickerItem_selected : ''}
+                          ${saving && isSelected ? styles.clothPickerItem_saving : ''}
+                        `}
+                        onClick={() => !saving && handleToggleOrder(order)}
+                      >
+                        <OrderMosaic items={order.items || []} size="sm" fallbackIcon="content_cut" />
+                        <div className={styles.clothInfo}>
+                          <h5>{order.desc || 'Untitled Order'}</h5>
+                          {order.due
+                            ? <span style={{ color: '#ef4444' }}>Due {order.due}</span>
+                            : <span>No due date</span>
+                          }
+                        </div>
+                        <div className={`${styles.clothCheckCircle} ${isSelected ? styles.clothCheckCircle_checked : ''}`}>
+                          {isSelected && <span className="mi" style={{ fontSize: '0.9rem' }}>check</span>}
+                        </div>
+                      </div>
+
+                      {isSelected && (
+                        <div ref={expandedRef} className={styles.accordionBody}>
+                          <p className={styles.stepHeading} style={{ marginTop: 0, marginBottom: 16 }}>
+                            2. Payment Details
+                          </p>
+                          <InlinePaymentForm order={order} onSave={handleSave} saving={saving} />
+                        </div>
+                      )}
+                    </div>
+                  )
+                })}
+              </div>
+
+            </div>
+          </div>
+        )}
+      </div>
     </div>
   )
 }

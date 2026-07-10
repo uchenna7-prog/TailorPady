@@ -124,7 +124,7 @@
 .metaRow {
   display: flex;
   align-items: flex-start;
-  gap: 6px;
+  gap: 5px;
   justify-content: flex-end;
 }
 

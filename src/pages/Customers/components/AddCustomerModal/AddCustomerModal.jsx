@@ -2,6 +2,7 @@ import { useState, useRef } from "react"
 import { getInitials } from "../../../../utils/nameUtils"
 import { useBodyMeasurementImages } from "../../../../contexts/BodyMeasurementImagesContext"
 import { CountryCodePicker } from "../../../../components/CountryCodePicker/CountryCodePicker"
+import { DEFAULT_COUNTRY, COUNTRIES } from "../../../../datas/dialCodes"
 import { buildPhoneNumber } from "../../utils"
 import { uploadToCloudinary } from "../../../../services/cloudinaryService"
 import { useNetworkStatus } from "../../../../hooks/useNetworkStatus"
@@ -9,31 +10,15 @@ import Header from "../../../../components/Header/Header"
 import styles from "./AddCustomerModal.module.css"
 
 
-const MONTHS          = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']
-const DAYS            = Array.from({ length: 31 }, (_, i) => i + 1)
-const DEFAULT_COUNTRY = { name: 'Nigeria', dial_code: '+234', flag: '🇳🇬' }
-
-const COUNTRY_DIAL_CODES = [
-  { dial_code: '+1',   name: 'United States', flag: '🇺🇸' },
-  { dial_code: '+44',  name: 'United Kingdom', flag: '🇬🇧' },
-  { dial_code: '+234', name: 'Nigeria',        flag: '🇳🇬' },
-  { dial_code: '+233', name: 'Ghana',          flag: '🇬🇭' },
-  { dial_code: '+254', name: 'Kenya',          flag: '🇰🇪' },
-  { dial_code: '+27',  name: 'South Africa',   flag: '🇿🇦' },
-  { dial_code: '+91',  name: 'India',          flag: '🇮🇳' },
-  { dial_code: '+49',  name: 'Germany',        flag: '🇩🇪' },
-  { dial_code: '+33',  name: 'France',         flag: '🇫🇷' },
-  { dial_code: '+86',  name: 'China',          flag: '🇨🇳' },
-  { dial_code: '+55',  name: 'Brazil',         flag: '🇧🇷' },
-  { dial_code: '+20',  name: 'Egypt',          flag: '🇪🇬' },
-]
+const MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']
+const DAYS   = Array.from({ length: 31 }, (_, i) => i + 1)
 
 
 function detectCountryFromNumber(rawNumber) {
   const cleaned = rawNumber.replace(/\s+/g, '').replace(/-/g, '')
   if (!cleaned.startsWith('+')) return null
 
-  const sorted = [...COUNTRY_DIAL_CODES].sort((a, b) => b.dial_code.length - a.dial_code.length)
+  const sorted = [...COUNTRIES].sort((a, b) => b.dial_code.length - a.dial_code.length)
 
   for (const country of sorted) {
     if (cleaned.startsWith(country.dial_code)) {

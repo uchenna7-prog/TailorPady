@@ -95,3 +95,16 @@
   color: var(--text);
   letter-spacing: -0.02em;
 }
+
+
+.flagImg {
+  border-radius: 2px;
+  object-fit: cover;
+  display: inline-block;
+  vertical-align: middle;
+}
+
+.flagFallback {
+  font-size: 1rem;
+  display: inline-block;
+}

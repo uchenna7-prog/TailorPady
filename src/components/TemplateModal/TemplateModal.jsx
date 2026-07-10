@@ -83,6 +83,7 @@ export function TemplateModal({
   lockToTab,
   onClose,
   onSelect,
+  returnTo,
 }) {
   const { profileSettings }    = useProfileSettings()
   const RECEIPT_BRAND_SETTINGS = useReceiptBrandSettings()
@@ -455,6 +456,7 @@ export function TemplateModal({
             invoiceTemplate: selectedInvoiceTemplate,
             receiptTemplate: selectedReceiptTemplate,
           }}
+          returnTo={returnTo}
         />
       )}
 

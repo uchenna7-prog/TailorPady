@@ -1,38 +1,27 @@
 import { useState, useRef, useEffect } from 'react'
 import styles from './CountryCodePicker.module.css'
+import { COUNTRIES } from '../../datas/dialCodes'
 
+function FlagIcon({ cca2 }) {
+  if (!cca2) return <span className={styles.flagFallback}>🏳</span>
+  return (
+    <img
+      src={`https://flagcdn.com/24x18/${cca2.toLowerCase()}.png`}
+      srcSet={`https://flagcdn.com/48x36/${cca2.toLowerCase()}.png 2x`}
+      alt=""
+      width={24}
+      height={18}
+      className={styles.flagImg}
+      loading="lazy"
+    />
+  )
+}
 
 export function CountryCodePicker({ selected, onSelect }) {
 
-  const [open,      setOpen]      = useState(false)
-  const [search,    setSearch]    = useState('')
-  const [countries, setCountries] = useState([])
-  const [loading,   setLoading]   = useState(false)
+  const [open, setOpen] = useState(false)
+  const [search, setSearch] = useState('')
   const dropdownRef = useRef(null)
-
-  useEffect(() => {
-    if (!open || countries.length > 0) return
-    setLoading(true)
-    fetch('https://restcountries.com/v3.1/all?fields=name,idd,flag,cca2')
-      .then(r => r.json())
-      .then(data => {
-        const list = []
-        data.forEach(c => {
-          const root     = c.idd?.root || ''
-          const suffix   = c.idd?.suffixes
-          if (!root) return
-          const suffixes = Array.isArray(suffix) && suffix.length === 1 ? suffix : (suffix || [''])
-          suffixes.forEach(s => {
-            const dial_code = root + s
-            list.push({ name: c.name?.common || '', dial_code, flag: c.flag || '', cca2: c.cca2 || '' })
-          })
-        })
-        list.sort((a, b) => a.name.localeCompare(b.name))
-        setCountries(list)
-      })
-      .catch(() => {})
-      .finally(() => setLoading(false))
-  }, [open, countries.length])
 
   useEffect(() => {
     if (!open) return
@@ -47,11 +36,11 @@ export function CountryCodePicker({ selected, onSelect }) {
   }, [open])
 
   const filtered = search.trim()
-    ? countries.filter(c =>
+    ? COUNTRIES.filter(c =>
         c.name.toLowerCase().includes(search.toLowerCase()) ||
         c.dial_code.includes(search)
       )
-    : countries
+    : COUNTRIES
 
   const handleSelect = (country) => {
     onSelect(country)
@@ -66,7 +55,9 @@ export function CountryCodePicker({ selected, onSelect }) {
         className={styles.ccBtn}
         onClick={() => setOpen(v => !v)}
       >
-        <span className={styles.ccFlag}>{selected.flag}</span>
+        <span className={styles.ccFlag}>
+          <FlagIcon cca2={selected.cca2} />
+        </span>
         <span className={styles.ccCode}>{selected.dial_code}</span>
         <span className="mi" style={{ fontSize: '0.9rem', color: 'var(--text3)' }}>expand_more</span>
       </button>
@@ -84,20 +75,19 @@ export function CountryCodePicker({ selected, onSelect }) {
             />
           </div>
           <div className={styles.ccList}>
-            {loading && (
-              <div className={styles.ccListEmpty}>Loading countries…</div>
-            )}
-            {!loading && filtered.length === 0 && (
+            {filtered.length === 0 && (
               <div className={styles.ccListEmpty}>No results</div>
             )}
-            {!loading && filtered.map((c, i) => (
+            {filtered.map((c, i) => (
               <button
                 key={`${c.cca2}-${c.dial_code}-${i}`}
                 type="button"
                 className={`${styles.ccOption} ${selected.dial_code === c.dial_code && selected.name === c.name ? styles.ccOptionActive : ''}`}
                 onClick={() => handleSelect(c)}
               >
-                <span className={styles.ccFlag}>{c.flag}</span>
+                <span className={styles.ccFlag}>
+                  <FlagIcon cca2={c.cca2} />
+                </span>
                 <span className={styles.ccOptionName}>{c.name}</span>
                 <span className={styles.ccOptionCode}>{c.dial_code}</span>
               </button>

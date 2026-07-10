@@ -23,13 +23,19 @@ function normaliseCurrency(raw) {
   return raw
 }
 
-function getFlagEmoji(countryCode) {
-  if (!countryCode || countryCode.length !== 2) return '🏳'
-  return countryCode
-    .toUpperCase()
-    .split('')
-    .map(c => String.fromCodePoint(0x1f1e6 - 65 + c.charCodeAt(0)))
-    .join('')
+function FlagIcon({ countryCode }) {
+  if (!countryCode) return <span className={styles.flagFallback}>🏳</span>
+  return (
+    <img
+      src={`https://flagcdn.com/24x18/${countryCode.toLowerCase()}.png`}
+      srcSet={`https://flagcdn.com/48x36/${countryCode.toLowerCase()}.png 2x`}
+      alt=""
+      width={24}
+      height={18}
+      className={styles.flagImg}
+      loading="lazy"
+    />
+  )
 }
 
 
@@ -79,7 +85,7 @@ export function ReceiptSettingsModal({ onBack, showToast }) {
                 onClick={() => setCurrencyPickerOpen(v => !v)}
               >
                 <div className={styles.currencyBtnLeft}>
-                  <span className={styles.currencyFlag}>{getFlagEmoji(currency.countryCode)}</span>
+                  <FlagIcon countryCode={currency.countryCode} />
                   <div className={styles.currencyText}>
                     <span className={styles.currencyCountry}>{currency.country}</span>
                     <span className={styles.currencyName}>{currency.currencyName}</span>

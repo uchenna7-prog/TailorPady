@@ -86,16 +86,16 @@ export function InvoiceTemplate12({ invoice, customer, invoiceBrandSettings }) {
         <div className={styles.invoiceMetaBlock}>
           <div className={styles.metaTable}>
             <div className={styles.metaRow}>
-              <span className={styles.metaKey}>Invoice #:</span>
+              <span className={styles.metaKey}>Invoice #</span>
               <span className={styles.metaVal}>{invoice.number}</span>
             </div>
             <div className={styles.metaRow}>
-              <span className={styles.metaKey}>Date:</span>
+              <span className={styles.metaKey}>Date</span>
               <span className={styles.metaVal}>{invoice.date}</span>
             </div>
             {dueDate && (
               <div className={styles.metaRow}>
-                <span className={styles.metaKey}>Due:</span>
+                <span className={styles.metaKey}>Due</span>
                 <span className={styles.metaVal}>{dueDate}</span>
               </div>
             )}

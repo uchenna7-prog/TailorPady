@@ -4,15 +4,8 @@ import { CurrencyPickerSheet } from '../CurrencyPickerSheet/CurrencyPickerSheet'
 import { SegmentControl } from '../../components/SegmentControl/SegmentControl'
 import { Field } from '../Field/Field'
 import { FieldGroup } from '../FieldGroup/FieldGroup'
+import { DEFAULT_CURRENCY } from '../../../../datas/currencies'
 import styles from './CurrencyModal.module.css'
-
-const DEFAULT_CURRENCY = {
-  country:      'Nigeria',
-  countryCode:  'NG',
-  currencyCode: 'NGN',
-  currencyName: 'Nigerian Naira',
-  symbol:       '₦',
-}
 
 function normaliseCurrency(raw) {
   if (!raw) return DEFAULT_CURRENCY
@@ -37,13 +30,19 @@ function formatPreview(currency, symbolPosition, decimals, numberFormat) {
     : `${formattedAmount} ${symbol}`
 }
 
-function getFlagEmoji(countryCode) {
-  if (!countryCode || countryCode.length !== 2) return '🏳'
-  return countryCode
-    .toUpperCase()
-    .split('')
-    .map(c => String.fromCodePoint(0x1f1e6 - 65 + c.charCodeAt(0)))
-    .join('')
+function FlagIcon({ countryCode }) {
+  if (!countryCode) return <span className={styles.flagFallback}>🏳</span>
+  return (
+    <img
+      src={`https://flagcdn.com/24x18/${countryCode.toLowerCase()}.png`}
+      srcSet={`https://flagcdn.com/48x36/${countryCode.toLowerCase()}.png 2x`}
+      alt=""
+      width={24}
+      height={18}
+      className={styles.flagImg}
+      loading="lazy"
+    />
+  )
 }
 
 
@@ -80,7 +79,9 @@ export function CurrencyModal({ currentSettings, onBack, onSave }) {
                 <div className={styles.currencyBtnLeft}>
                   {currency ? (
                     <>
-                      <span className={styles.currencyFlag}>{getFlagEmoji(currency.countryCode)}</span>
+                      <span className={styles.currencyFlag}>
+                        <FlagIcon countryCode={currency.countryCode} />
+                      </span>
                       <div className={styles.currencyText}>
                         <span className={styles.currencyCountry}>{currency.country}</span>
                         <span className={styles.currencyName}>{currency.currencyName}</span>
