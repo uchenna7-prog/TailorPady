@@ -21,6 +21,7 @@ import { ChangeEmailModal } from './component/ChangeEmailModal/ChangeEmailModal'
 import { ConnectedAccountsModal } from './component/ConnectedAccountsModal/ConnectedAccountsModal'
 import UpgradeModal from './component/UpgradeModal/UpgradeModal'
 import BillingHistoryModal from './component/BillingHistoryModal/BillingHistoryModal'
+import PremiumSuccessModal from './component/PremiumSuccessModal/PremiumSuccessModal'
 import { getOrSetJoinDate, loadPersonalInfo, savePersonalInfoLocally } from './utils'
 import BottomNav from '../../components/BottomNav/BottomNav'
 import Header from '../../components/Header/Header'
@@ -45,6 +46,7 @@ export default function Profile({ onMenuClick, isPremium = false, onUpgrade = ()
   const [toastMsg,      setToastMsg]      = useState('')
   const [pendingTemplate, setPendingTemplate] = useState(null)
   const [returnTo, setReturnTo] = useState(null)
+  const [premiumSuccess, setPremiumSuccess] = useState(null)
   const toastTimer = useRef(null)
 
   const joinDate = getOrSetJoinDate()
@@ -131,6 +133,12 @@ export default function Profile({ onMenuClick, isPremium = false, onUpgrade = ()
     applyPendingTemplateIfAny('Business contact saved')
     returnToOriginIfAny()
   }, [applyPendingTemplateIfAny, returnToOriginIfAny])
+
+  const handleUpgradeSuccess = useCallback((info) => {
+    setActiveModal(null)
+    setPremiumSuccess(info)
+    onUpgrade?.(info.billingCycle)
+  }, [onUpgrade])
 
   const handleLogout = async () => {
     setLogoutConfirm(false)
@@ -438,12 +446,12 @@ export default function Profile({ onMenuClick, isPremium = false, onUpgrade = ()
       {activeModal === 'upgrade' && (
         <UpgradeModal
           onClose={() => setActiveModal(null)}
-          onUpgrade={billingCycle => { setActiveModal(null); onUpgrade(billingCycle) }}
+          onSuccess={handleUpgradeSuccess}
         />
       )}
 
       {activeModal === 'billing' && (
-        <BillingHistoryModal onClose={() => setActiveModal(null)} isPremium={isPremium} />
+        <BillingHistoryModal onClose={() => setActiveModal(null)} />
       )}
 
       {activeModal === 'changePassword' && (
@@ -456,6 +464,14 @@ export default function Profile({ onMenuClick, isPremium = false, onUpgrade = ()
 
       {activeModal === 'connectedAccounts' && (
         <ConnectedAccountsModal onBack={() => setActiveModal(null)} showToast={showToast} />
+      )}
+
+      {premiumSuccess && (
+        <PremiumSuccessModal
+          billingCycle={premiumSuccess.billingCycle}
+          nextRenewal={premiumSuccess.nextRenewal}
+          onClose={() => setPremiumSuccess(null)}
+        />
       )}
 
       <ConfirmSheet

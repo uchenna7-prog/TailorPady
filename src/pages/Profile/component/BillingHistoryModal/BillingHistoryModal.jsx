@@ -1,3 +1,7 @@
+import { useState, useEffect } from 'react'
+import { useAuth } from '../../../../contexts/AuthContext'
+import { usePremium } from '../../../../contexts/PremiumContext'
+import { subscribeToSubscriptionPayments } from '../../../../services/subscriptionPaymentsService'
 import styles from './BillingHistoryModal.module.css'
 
 const STATUS_META = {
@@ -6,16 +10,33 @@ const STATUS_META = {
   failed:  { label: 'Failed',  color: '#ef4444' },
 }
 
-const MOCK_INVOICES = [
-  { id: 'INV-2024-006', date: 'Jun 1, 2025',  amount: '₦20,000', plan: 'Pro Annual',   status: 'paid' },
-  { id: 'INV-2024-005', date: 'Jun 1, 2024',  amount: '₦20,000', plan: 'Pro Annual',   status: 'paid' },
-  { id: 'INV-2024-004', date: 'May 1, 2024',  amount: '₦2,500',  plan: 'Pro Monthly',  status: 'paid' },
-  { id: 'INV-2024-003', date: 'Apr 1, 2024',  amount: '₦2,500',  plan: 'Pro Monthly',  status: 'paid' },
-  { id: 'INV-2024-002', date: 'Mar 1, 2024',  amount: '₦2,500',  plan: 'Pro Monthly',  status: 'failed' },
-  { id: 'INV-2024-001', date: 'Feb 1, 2024',  amount: '₦2,500',  plan: 'Pro Monthly',  status: 'paid' },
-]
+function formatNaira(amountInKobo) {
+  if (amountInKobo == null) return '—'
+  return `₦${(amountInKobo / 100).toLocaleString('en-NG')}`
+}
 
-export default function BillingHistoryModal({ onClose, isPremium, nextRenewal = 'Jun 1, 2026' }) {
+function formatDate(iso) {
+  if (!iso) return '—'
+  const date = new Date(iso)
+  if (isNaN(date.getTime())) return '—'
+  return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+}
+
+export default function BillingHistoryModal({ onClose }) {
+  const { user } = useAuth()
+  const { isPremium, plan, nextRenewal, paymentFailed } = usePremium()
+  const [payments, setPayments] = useState([])
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    if (!user?.uid) return
+    const unsub = subscribeToSubscriptionPayments(user.uid, list => {
+      setPayments(list)
+      setLoading(false)
+    })
+    return unsub
+  }, [user?.uid])
+
   return (
     <div className={styles.overlay} onClick={onClose}>
       <div className={styles.sheet} onClick={e => e.stopPropagation()}>
@@ -40,11 +61,15 @@ export default function BillingHistoryModal({ onClose, isPremium, nextRenewal = 
             <div className={styles.statusCardLeft}>
               <span className={`mi ${styles.statusIcon}`}>workspace_premium</span>
               <div>
-                <div className={styles.statusPlan}>TailorPady Pro · Annual</div>
-                <div className={styles.statusRenewal}>Renews {nextRenewal}</div>
+                <div className={styles.statusPlan}>{plan || 'TailorPady Pro'}</div>
+                <div className={styles.statusRenewal}>
+                  {paymentFailed ? 'Payment failed — update your card' : `Renews ${formatDate(nextRenewal)}`}
+                </div>
               </div>
             </div>
-            <div className={styles.activePill}>Active</div>
+            <div className={paymentFailed ? styles.failedPill : styles.activePill}>
+              {paymentFailed ? 'Action needed' : 'Active'}
+            </div>
           </div>
         )}
 
@@ -55,23 +80,36 @@ export default function BillingHistoryModal({ onClose, isPremium, nextRenewal = 
           </div>
         )}
 
-        {isPremium && (
+        {isPremium && loading && (
+          <div className={styles.freeBanner}>
+            <span className={styles.freeBannerText}>Loading payment history…</span>
+          </div>
+        )}
+
+        {isPremium && !loading && payments.length === 0 && (
+          <div className={styles.freeBanner}>
+            <span className="mi" style={{ fontSize: '1.2rem', color: 'var(--text3)' }}>info</span>
+            <span className={styles.freeBannerText}>No payments recorded yet.</span>
+          </div>
+        )}
+
+        {isPremium && !loading && payments.length > 0 && (
           <div className={styles.list}>
-            {MOCK_INVOICES.map((inv, i) => {
-              const meta = STATUS_META[inv.status]
+            {payments.map((inv, i) => {
+              const meta = STATUS_META[inv.status] || STATUS_META.pending
               return (
-                <div key={inv.id} className={`${styles.invoiceRow} ${i === MOCK_INVOICES.length - 1 ? styles.noDivider : ''}`}>
+                <div key={inv.id} className={`${styles.invoiceRow} ${i === payments.length - 1 ? styles.noDivider : ''}`}>
                   <div className={styles.invoiceIcon}>
                     <span className="mi" style={{ fontSize: '1rem', color: inv.status === 'failed' ? '#ef4444' : 'var(--text2)' }}>
                       {inv.status === 'failed' ? 'error_outline' : 'receipt'}
                     </span>
                   </div>
                   <div className={styles.invoiceText}>
-                    <div className={styles.invoicePlan}>{inv.plan}</div>
-                    <div className={styles.invoiceDate}>{inv.date} · {inv.id}</div>
+                    <div className={styles.invoicePlan}>{inv.plan || 'Subscription payment'}</div>
+                    <div className={styles.invoiceDate}>{formatDate(inv.paidAt)} · {inv.reference}</div>
                   </div>
                   <div className={styles.invoiceRight}>
-                    <div className={styles.invoiceAmount}>{inv.amount}</div>
+                    <div className={styles.invoiceAmount}>{formatNaira(inv.amount)}</div>
                     <div className={styles.invoiceStatus} style={{ color: meta.color }}>{meta.label}</div>
                   </div>
                 </div>

@@ -1,11 +1,5 @@
-
-// ─────────────────────────────────────────────────────────────
-// Reads isPremium from Firestore: users/{uid}/settings/premium
-// Free by default. Set isPremium: true in Firestore to upgrade.
-// ─────────────────────────────────────────────────────────────
-
 import { createContext, useContext, useState, useEffect } from 'react'
-import { doc, onSnapshot, setDoc } from 'firebase/firestore'
+import { doc, onSnapshot } from 'firebase/firestore'
 import { db } from '../firebase'
 import { useAuth } from './AuthContext'
 
@@ -13,40 +7,52 @@ const PremiumContext = createContext(null)
 
 export function PremiumProvider({ children }) {
   const { user } = useAuth()
-  const [isPremium, setIsPremium] = useState(true)
-  const [loading,   setLoading]   = useState(true)
+  const [isPremium, setIsPremium] = useState(false)
+  const [plan, setPlan] = useState(null)
+  const [billingCycle, setBillingCycle] = useState(null)
+  const [nextRenewal, setNextRenewal] = useState(null)
+  const [paymentFailed, setPaymentFailed] = useState(false)
+  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     if (!user) {
       setIsPremium(false)
+      setPlan(null)
+      setBillingCycle(null)
+      setNextRenewal(null)
+      setPaymentFailed(false)
       setLoading(false)
       return
     }
 
-    // Listen to users/{uid}/settings/premium in real-time
     const ref = doc(db, 'users', user.uid, 'settings', 'premium')
     const unsub = onSnapshot(ref,
       (snap) => {
-        setIsPremium(snap.exists() ? snap.data().isPremium === true : false)
+        if (snap.exists()) {
+          const data = snap.data()
+          setIsPremium(data.isPremium === true)
+          setPlan(data.plan || null)
+          setBillingCycle(data.billingCycle || null)
+          setNextRenewal(data.nextRenewal || null)
+          setPaymentFailed(data.paymentFailed === true)
+        } else {
+          setIsPremium(false)
+          setPlan(null)
+          setBillingCycle(null)
+          setNextRenewal(null)
+          setPaymentFailed(false)
+        }
         setLoading(false)
       },
-      (err) => {
-        console.error('[PremiumContext]', err)
+      () => {
         setLoading(false)
       }
     )
     return unsub
   }, [user])
 
-  // Call this when user successfully upgrades
-  const upgradeToPremium = async () => {
-    if (!user) return
-    const ref = doc(db, 'users', user.uid, 'settings', 'premium')
-    await setDoc(ref, { isPremium: true }, { merge: true })
-  }
-
   return (
-    <PremiumContext.Provider value={{ isPremium, loading, upgradeToPremium }}>
+    <PremiumContext.Provider value={{ isPremium, plan, billingCycle, nextRenewal, paymentFailed, loading }}>
       {children}
     </PremiumContext.Provider>
   )

@@ -216,3 +216,15 @@
   font-size: 0.72rem;
   color: var(--text3);
 }
+
+.failedPill {
+  font-size: 0.7rem;
+  font-weight: 800;
+  color: #ef4444;
+  background: color-mix(in srgb, #ef4444 14%, transparent);
+  padding: 4px 10px;
+  border-radius: 20px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  flex-shrink: 0;
+}

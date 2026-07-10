@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Routes, Route, Navigate, useNavigate } from 'react-router-dom'
 import { useAuth } from './contexts/AuthContext'
+import { usePremium } from './contexts/PremiumContext'
 import RequireAuth from './components/RequireAuth/RequireAuth'
 import ScrollToTop from './components/ScrollToTop/ScrollToTop'
 import SideBar from './components/SideBar/SideBar'
@@ -42,6 +43,7 @@ function GuestRoute({ children }) {
 function AppShell() {
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const navigate = useNavigate()
+  const { isPremium } = usePremium()
 
   const menuClick = () => setSidebarOpen(true)
 
@@ -65,7 +67,7 @@ function AppShell() {
           <Route path="/reports"                         element={<Reports                  onMenuClick={menuClick} />} />
           <Route path="/gallery"                         element={<Gallery                  onMenuClick={menuClick} />} />
           <Route path="/settings"                        element={<Settings                 onMenuClick={menuClick} />} />
-          <Route path="/profile"                         element={<Profile                  onMenuClick={menuClick} />} />
+          <Route path="/profile"                         element={<Profile                  onMenuClick={menuClick} isPremium={isPremium} />} />
           <Route path="/contact"                         element={<Contact                  onMenuClick={menuClick} />} />
           <Route path="/faq"                             element={<FAQ                      onMenuClick={menuClick} />} />
           <Route path="/reviews"                         element={<Reviews                  onMenuClick={menuClick} />} />
