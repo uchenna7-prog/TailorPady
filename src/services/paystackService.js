@@ -1,9 +1,14 @@
 const PAYSTACK_SCRIPT_URL = 'https://js.paystack.co/v1/inline.js'
-const API_BASE = 'https://tailor-pady-api.vercel.app'
+const API_BASE = 'https://tailorpadyapi.vercel.app'
 
 const AMOUNTS = {
   monthly: 120000,
   annual: 999900,
+}
+
+const PLAN_CODES = {
+  monthly: import.meta.env.VITE_PAYSTACK_PLAN_MONTHLY,
+  annual: import.meta.env.VITE_PAYSTACK_PLAN_ANNUAL,
 }
 
 function loadPaystackScript() {
@@ -45,6 +50,7 @@ export async function startPaystackPayment({ email, uid, billingCycle, onSuccess
     key: import.meta.env.VITE_PAYSTACK_PUBLIC_KEY,
     email,
     amount: AMOUNTS[billingCycle],
+    plan: PLAN_CODES[billingCycle],
     currency: 'NGN',
     metadata: { uid, billingCycle },
     callback: (response) => {
