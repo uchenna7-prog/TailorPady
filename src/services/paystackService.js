@@ -1,5 +1,5 @@
 const PAYSTACK_SCRIPT_URL = 'https://js.paystack.co/v1/inline.js'
-const API_BASE = 'https://tailorpadyapi.vercel.app'
+const API_BASE = 'https://tailor-pady-api.vercel.app'
 
 const AMOUNTS = {
   monthly: 120000,
