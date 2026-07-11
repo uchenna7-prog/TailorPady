@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect, useCallback } from 'react'
+import { useLocation, useNavigate } from 'react-router-dom'
 import { useGeneralSettings } from '../../contexts/GeneralSettingsContext'
 import { useOrders } from '../../contexts/OrdersContext'
 import { useInvoices } from '../../contexts/InvoiceContext'
@@ -86,11 +87,17 @@ export default function Invoices({ onMenuClick }) {
   const { allInvoices, updateInvoiceStatus, updateInvoiceTemplate, updateInvoiceColour, deleteInvoice } = useInvoices()
   const currency = generalSettings.invoiceCurrency || '₦'
 
+  const location = useLocation()
+  const navigate  = useNavigate()
+
   const [activeTab,  setActiveTab]  = useState('all')
   const [viewing,    setViewing]    = useState(null)
   const [search,     setSearch]     = useState('')
   const [filterOpen, setFilterOpen] = useState(false)
   const [toastMsg,   setToastMsg]   = useState('')
+  const [pendingReopen, setPendingReopen] = useState(false)
+  const [pendingCompletedModal, setPendingCompletedModal] = useState(null)
+  const [pendingCompletedFields, setPendingCompletedFields] = useState([])
 
   const toastTimerRef = useRef(null)
   const touchStart    = useRef(null)
@@ -113,6 +120,23 @@ export default function Invoices({ onMenuClick }) {
     if (!tabEl || !containerEl) return
     tabEl.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' })
   }, [activeTab])
+
+  useEffect(() => {
+    const navState = location.state
+    if (!navState?.reopenInvoiceId) return
+
+    const match = allInvoices.find(inv => inv.id === navState.reopenInvoiceId)
+    if (match) {
+      setViewing(match)
+      if (navState.reopenMissingFields) {
+        setPendingReopen(true)
+        setPendingCompletedModal(navState.completedModal ?? null)
+        setPendingCompletedFields(navState.completedFields ?? [])
+      }
+    }
+
+    navigate(location.pathname, { replace: true, state: null })
+  }, [location.state, allInvoices])
 
   const orderItemsMap = {}
   for (const order of allOrders) {
@@ -315,6 +339,15 @@ export default function Invoices({ onMenuClick }) {
           }}
           customerData={viewingCustomerData}
           hideDesign
+          returnPath="/invoices"
+          reopenMissingFields={pendingReopen}
+          completedModal={pendingCompletedModal}
+          completedFields={pendingCompletedFields}
+          onReopenMissingFieldsHandled={() => {
+            setPendingReopen(false)
+            setPendingCompletedModal(null)
+            setPendingCompletedFields([])
+          }}
           onClose={() => setViewing(null)}
           onDelete={async (id) => {
             try {

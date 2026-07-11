@@ -1,5 +1,3 @@
-/* src/pages/Inventory/Inventory.module.css */
-
 .page {
   background: var(--bg);
   min-height: 100dvh;
@@ -7,7 +5,6 @@
   flex-direction: column;
 }
 
-/* -- SUMMARY STRIP -- */
 .summaryStrip {
   display: flex;
   align-items: center;
@@ -430,6 +427,10 @@
 .fab:active { transform: scale(0.93); }
 
 /* -- ADD/EDIT ITEM MODAL (slide-up) -- */
+.backdrop {
+  display: contents;
+}
+
 .modalOverlay {
   position: fixed;
   inset: 0;
@@ -909,3 +910,49 @@
 
 .adjustConfirmBtn:active { opacity: 0.8; }
 .adjustConfirmBtn:disabled { opacity: 0.25; cursor: not-allowed; }
+
+@keyframes itemModalBackdropFadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes itemModalSlideInRight {
+  from { transform: translateX(100%); }
+  to   { transform: translateX(0); }
+}
+
+@media (min-width: 769px) {
+  .backdrop {
+    display:         block;
+    position:        fixed;
+    top:             0;
+    left:            var(--sidebar-width, 280px);
+    right:           0;
+    bottom:          0;
+    z-index:         1999;
+    background:      rgba(0, 0, 0, 0.55);
+    backdrop-filter: blur(4px);
+    animation:       itemModalBackdropFadeIn 0.2s ease;
+  }
+
+  .modalOverlay {
+    top:         0;
+    left:        auto;
+    right:       0;
+    width:       min(480px, calc(100% - var(--sidebar-width, 280px)));
+    height:      100dvh;
+    max-height:  100dvh;
+    border-left: 1px solid var(--border);
+    animation:   itemModalSlideInRight 0.32s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .sheetOverlay {
+    left: var(--sidebar-width, 280px);
+  }
+
+  .sheet {
+    max-width:     480px;
+    margin:        0 auto;
+    border-radius: 20px 20px 0 0;
+  }
+}

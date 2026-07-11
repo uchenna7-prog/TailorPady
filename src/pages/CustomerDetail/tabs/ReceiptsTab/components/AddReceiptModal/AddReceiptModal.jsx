@@ -53,121 +53,127 @@ export function AddReceiptModal({ isOpen, onClose, orders, payments, receipts, o
 
   return (
     <div
-      className={`${styles.pickerOverlay} ${isOpen ? styles.pickerOverlay_open : ''}`}
-      onTouchStart={e => e.stopPropagation()}
-      onTouchEnd={e => e.stopPropagation()}
+      className={`${styles.backdrop} ${isOpen ? styles.backdrop_open : ''}`}
+      onClick={onClose}
     >
+      <div
+        className={`${styles.pickerOverlay} ${isOpen ? styles.pickerOverlay_open : ''}`}
+        onClick={e => e.stopPropagation()}
+        onTouchStart={e => e.stopPropagation()}
+        onTouchEnd={e => e.stopPropagation()}
+      >
 
-      <Header
-        type="back"
-        title="New Receipt"
-        onBackClick={onClose}
-      />
+        <Header
+          type="back"
+          title="New Receipt"
+          onBackClick={onClose}
+        />
 
-      {showAllReceiptsGenerated && (
-        <div className={styles.pickerEmpty}>
-          <span className="mi" style={{ fontSize: '2rem', color: 'var(--text3)' }}>receipt_long</span>
-          <p style={{ fontWeight: 700, color: 'var(--text2)' }}>All receipts generated</p>
-          <p>Every recorded payment already has a receipt. Record a new payment first to generate another.</p>
-        </div>
-      )}
-
-      {showNoSearchMatch && (
-        <div className={styles.pickerEmpty}>
-          <span className="mi" style={{ fontSize: '2rem', color: 'var(--text3)' }}>search_off</span>
-          <p>No orders match your search</p>
-        </div>
-      )}
-
-      {!showAllReceiptsGenerated && (
-        <div className={styles.pickerScrollBody}>
-          <div style={{ padding: '20px' }}>
-
-            <p className={styles.stepHeading}>1. Select Order</p>
-
-            {showSearch && (
-              <div className={styles.clothSearchBar}>
-                <span className="mi" style={{ fontSize: '1.1rem', color: 'var(--text3)' }}>search</span>
-                <input
-                  type="text"
-                  className={styles.clothSearchInput}
-                  placeholder="Search orders…"
-                  value={search}
-                  onChange={e => setSearch(e.target.value)}
-                />
-                {search.length > 0 && (
-                  <button
-                    style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text3)', display: 'flex', alignItems: 'center', padding: 0 }}
-                    onClick={() => setSearch('')}
-                  >
-                    <span className="mi" style={{ fontSize: '1rem' }}>close</span>
-                  </button>
-                )}
-              </div>
-            )}
-
-            <div className={styles.clothPickerList}>
-              {filteredOrders.map(order => {
-                const isSelected  = selectedOrderId === order.id
-                const payment     = payments.find(p => String(p.orderId) === String(order.id))
-                const installs    = payment?.installments || []
-                const paid        = getTotalPaid(installs)
-                const price       = parseFloat(order.totalAmount ?? order.price) || 0
-                const isFullyPaid = price > 0 && paid >= price
-
-                const receiptedIds = new Set(
-                  receipts
-                    .filter(r => String(r.paymentId) === String(payment?.id))
-                    .flatMap(r => r.installmentIds || [])
-                )
-                const pendingCount = installs.filter(i => !receiptedIds.has(String(i.id))).length
-                const installCount = installs.length
-
-                return (
-                  <div key={order.id}>
-                    <div
-                      className={`${styles.clothPickerItem} ${isSelected ? styles.clothPickerItem_selected : ''}`}
-                      onClick={() => handleToggleOrder(order)}
-                    >
-                      <OrderMosaic items={order.items || []} size="sm" />
-
-                      <div className={styles.clothInfo}>
-                        <h5>{order.desc || 'Untitled Order'}</h5>
-                        <span style={{ color: isFullyPaid ? '#15803d' : '#fb923c' }}>
-                          {installCount} {installCount === 1 ? 'payment' : 'payments'} ·{' '}
-                          {pendingCount === installCount
-                            ? 'No receipts yet'
-                            : `${pendingCount} pending`
-                          }
-                        </span>
-                      </div>
-
-                      <div className={`${styles.clothCheckCircle} ${isSelected ? styles.clothCheckCircle_checked : ''}`}>
-                        {isSelected
-                          ? <span className="mi" style={{ fontSize: '0.9rem' }}>check</span>
-                          : <span className="mi" style={{ fontSize: '0.9rem', color: 'var(--text3)' }}>expand_more</span>
-                        }
-                      </div>
-                    </div>
-
-                    {isSelected && (
-                      <div ref={expandedRef} className={styles.accordionBody}>
-                        <InlineInstallmentList
-                          order={order}
-                          payment={payment}
-                          receipts={receipts}
-                          onSelectPayment={onSelectPayment}
-                        />
-                      </div>
-                    )}
-                  </div>
-                )
-              })}
-            </div>
-
+        {showAllReceiptsGenerated && (
+          <div className={styles.pickerEmpty}>
+            <span className="mi" style={{ fontSize: '2rem', color: 'var(--text3)' }}>receipt_long</span>
+            <p style={{ fontWeight: 700, color: 'var(--text2)' }}>All receipts generated</p>
+            <p>Every recorded payment already has a receipt. Record a new payment first to generate another.</p>
           </div>
-        </div>
-      )}
+        )}
+
+        {showNoSearchMatch && (
+          <div className={styles.pickerEmpty}>
+            <span className="mi" style={{ fontSize: '2rem', color: 'var(--text3)' }}>search_off</span>
+            <p>No orders match your search</p>
+          </div>
+        )}
+
+        {!showAllReceiptsGenerated && (
+          <div className={styles.pickerScrollBody}>
+            <div style={{ padding: '20px' }}>
+
+              <p className={styles.stepHeading}>1. Select Order</p>
+
+              {showSearch && (
+                <div className={styles.clothSearchBar}>
+                  <span className="mi" style={{ fontSize: '1.1rem', color: 'var(--text3)' }}>search</span>
+                  <input
+                    type="text"
+                    className={styles.clothSearchInput}
+                    placeholder="Search orders…"
+                    value={search}
+                    onChange={e => setSearch(e.target.value)}
+                  />
+                  {search.length > 0 && (
+                    <button
+                      style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text3)', display: 'flex', alignItems: 'center', padding: 0 }}
+                      onClick={() => setSearch('')}
+                    >
+                      <span className="mi" style={{ fontSize: '1rem' }}>close</span>
+                    </button>
+                  )}
+                </div>
+              )}
+
+              <div className={styles.clothPickerList}>
+                {filteredOrders.map(order => {
+                  const isSelected  = selectedOrderId === order.id
+                  const payment     = payments.find(p => String(p.orderId) === String(order.id))
+                  const installs    = payment?.installments || []
+                  const paid        = getTotalPaid(installs)
+                  const price       = parseFloat(order.totalAmount ?? order.price) || 0
+                  const isFullyPaid = price > 0 && paid >= price
+
+                  const receiptedIds = new Set(
+                    receipts
+                      .filter(r => String(r.paymentId) === String(payment?.id))
+                      .flatMap(r => r.installmentIds || [])
+                  )
+                  const pendingCount = installs.filter(i => !receiptedIds.has(String(i.id))).length
+                  const installCount = installs.length
+
+                  return (
+                    <div key={order.id}>
+                      <div
+                        className={`${styles.clothPickerItem} ${isSelected ? styles.clothPickerItem_selected : ''}`}
+                        onClick={() => handleToggleOrder(order)}
+                      >
+                        <OrderMosaic items={order.items || []} size="sm" />
+
+                        <div className={styles.clothInfo}>
+                          <h5>{order.desc || 'Untitled Order'}</h5>
+                          <span style={{ color: isFullyPaid ? '#15803d' : '#fb923c' }}>
+                            {installCount} {installCount === 1 ? 'payment' : 'payments'} ·{' '}
+                            {pendingCount === installCount
+                              ? 'No receipts yet'
+                              : `${pendingCount} pending`
+                            }
+                          </span>
+                        </div>
+
+                        <div className={`${styles.clothCheckCircle} ${isSelected ? styles.clothCheckCircle_checked : ''}`}>
+                          {isSelected
+                            ? <span className="mi" style={{ fontSize: '0.9rem' }}>check</span>
+                            : <span className="mi" style={{ fontSize: '0.9rem', color: 'var(--text3)' }}>expand_more</span>
+                          }
+                        </div>
+                      </div>
+
+                      {isSelected && (
+                        <div ref={expandedRef} className={styles.accordionBody}>
+                          <InlineInstallmentList
+                            order={order}
+                            payment={payment}
+                            receipts={receipts}
+                            onSelectPayment={onSelectPayment}
+                          />
+                        </div>
+                      )}
+                    </div>
+                  )
+                })}
+              </div>
+
+            </div>
+          </div>
+        )}
+      </div>
     </div>
   )
 }

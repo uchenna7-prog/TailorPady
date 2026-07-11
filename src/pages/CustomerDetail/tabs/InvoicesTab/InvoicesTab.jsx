@@ -23,6 +23,7 @@ export default function InvoiceTab({
   showToast,
   reopenInvoiceId,
   reopenMissingFields = false,
+  reopenTemplateModal = false,
   completedModal = null,
   completedFields = [],
   onReopenInvoiceHandled,
@@ -36,6 +37,7 @@ export default function InvoiceTab({
   const [pendingReopen,  setPendingReopen]  = useState(false)
   const [pendingCompletedModal, setPendingCompletedModal] = useState(null)
   const [pendingCompletedFields, setPendingCompletedFields] = useState([])
+  const [pendingReopenTemplateModal, setPendingReopenTemplateModal] = useState(false)
 
   const currency      = getCurrency()
   const orderItemsMap = buildOrderItemsMap(orders)
@@ -56,6 +58,9 @@ export default function InvoiceTab({
       setPendingReopen(true)
       setPendingCompletedModal(completedModal)
       setPendingCompletedFields(completedFields)
+    }
+    if (reopenTemplateModal) {
+      setPendingReopenTemplateModal(true)
     }
     onReopenInvoiceHandled?.()
   }, [reopenInvoiceId, invoices])
@@ -195,6 +200,8 @@ export default function InvoiceTab({
             setPendingCompletedModal(null)
             setPendingCompletedFields([])
           }}
+          reopenTemplateModal={pendingReopenTemplateModal}
+          onReopenTemplateModalHandled={() => setPendingReopenTemplateModal(false)}
         />
       )}
 

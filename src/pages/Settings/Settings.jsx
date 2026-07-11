@@ -83,10 +83,14 @@ export default function Settings({ onMenuClick }) {
 
   useEffect(() => {
     const navState = location.state
-    if (!navState?.autoOpenModal) return
+    if (!navState?.autoOpenModal && !navState?.reopenTemplateModal) return
 
     if (navState.autoOpenModal === 'invoiceSettings') {
       setIsInvoiceModalOpen(true)
+    }
+
+    if (navState.reopenTemplateModal) {
+      setIsTemplateModalOpen(true)
     }
 
     if (navState.pendingTemplate) {
@@ -127,6 +131,7 @@ export default function Settings({ onMenuClick }) {
         reopenMissingFields: returnTo.reopenMissingFields ?? false,
         completedModal: returnTo.completedModal ?? null,
         completedFields: returnTo.completedFields ?? [],
+        reopenTemplateModal: returnTo.reopenTemplateModal ?? false,
       },
     })
     setReturnTo(null)
@@ -401,6 +406,7 @@ export default function Settings({ onMenuClick }) {
         colourId={profileSettings.brandColourId}
         onClose={() => setIsTemplateModalOpen(false)}
         onSelect={handleTemplateSelect}
+        returnTo={{ reopenTemplateModal: true }}
       />
 
       {isInvoiceModalOpen && (

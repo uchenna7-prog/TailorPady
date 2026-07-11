@@ -136,218 +136,226 @@ function AddTaskModal({ isOpen, onClose, onSave, customers, allOrders }) {
   }
 
   return (
-    <div className={`${styles.modalOverlay} ${isOpen ? styles.modalOpen : ''}`}>
-      <Header
-        type="back"
-        title="New Task"
-        onBackClick={handleClose}
-        customActions={[{ label: 'Add', onClick: handleSave, color: 'var(--accent)' }]}
-      />
+    <div
+      className={`${styles.backdrop} ${isOpen ? styles.backdropOpen : ''}`}
+      onClick={handleClose}
+    >
+      <div
+        className={`${styles.modalOverlay} ${isOpen ? styles.modalOpen : ''}`}
+        onClick={e => e.stopPropagation()}
+      >
+        <Header
+          type="back"
+          title="New Task"
+          onBackClick={handleClose}
+          customActions={[{ label: 'Add', onClick: handleSave, color: 'var(--accent)' }]}
+        />
 
-      <div className={styles.modalBody}>
+        <div className={styles.modalBody}>
 
-        <div className={styles.fieldGroup}>
-          <label className={styles.fieldLabel}>What needs to be done? *</label>
-          <textarea
-            className={`${styles.textarea} ${errors.desc ? styles.inputError : ''}`}
-            placeholder="e.g. Finish sewing the Senator suit for Uchendu"
-            value={desc}
-            onChange={e => { setDesc(e.target.value); clearError('desc') }}
-            rows={2}
-          />
-          {errors.desc && <span className={styles.errorMsg}>{errors.desc}</span>}
-        </div>
-
-        <div className={styles.fieldGroup}>
-          <label className={styles.fieldLabel}>Category</label>
-          <div className={styles.categoryGrid}>
-            {CATEGORIES.map(cat => (
-              <button
-                key={cat.id}
-                className={`${styles.categoryChip} ${category === cat.id ? styles.categoryActive : ''}`}
-                onClick={() => setCategory(cat.id)}
-              >
-                <span className="mi" style={{ fontSize: '1.2rem' }}>{cat.icon}</span>
-                <span>{cat.label}</span>
-              </button>
-            ))}
-          </div>
-        </div>
-
-        <div className={styles.fieldGroup}>
-          <label className={styles.fieldLabel}>Priority</label>
-          <div className={styles.priorityRow}>
-            {Object.entries(PRIORITY_LABELS).map(([key, label]) => (
-              <button
-                key={key}
-                className={`${styles.priorityChip} ${priority === key ? styles.priorityActive : ''}`}
-                style={priority === key ? {
-                  background:  PRIORITY_COLORS[key].bg,
-                  borderColor: PRIORITY_COLORS[key].border,
-                  color:       PRIORITY_COLORS[key].text,
-                } : {}}
-                onClick={() => setPriority(key)}
-              >
-                {label}
-              </button>
-            ))}
-          </div>
-        </div>
-
-        <div className={styles.fieldRow}>
-          <div className={styles.fieldGroup} style={{ flex: 1 }}>
-            <label className={styles.fieldLabel}>Due Date *</label>
-            <input
-              type="date"
-              min={minDueDate}
-              className={`${styles.input} ${errors.dueDate ? styles.inputError : ''}`}
-              value={dueDate}
-              onChange={e => { setDueDate(e.target.value); clearError('dueDate') }}
+          <div className={styles.fieldGroup}>
+            <label className={styles.fieldLabel}>What needs to be done? *</label>
+            <textarea
+              className={`${styles.textarea} ${errors.desc ? styles.inputError : ''}`}
+              placeholder="e.g. Finish sewing the Senator suit for Uchendu"
+              value={desc}
+              onChange={e => { setDesc(e.target.value); clearError('desc') }}
+              rows={2}
             />
-            {errors.dueDate && <span className={styles.errorMsg}>{errors.dueDate}</span>}
+            {errors.desc && <span className={styles.errorMsg}>{errors.desc}</span>}
           </div>
-          <div className={styles.fieldGroup} style={{ flex: 1 }}>
-            <label className={styles.fieldLabel}>Due Time *</label>
-            <input
-              type="time"
-              className={`${styles.input} ${errors.dueTime ? styles.inputError : ''}`}
-              value={dueTime}
-              onChange={e => { setDueTime(e.target.value); clearError('dueTime') }}
-            />
-            {errors.dueTime && <span className={styles.errorMsg}>{errors.dueTime}</span>}
-          </div>
-        </div>
 
-        <div className={styles.fieldGroup}>
-          <div className={styles.toggleRow}>
-            <div>
-              <div className={styles.toggleLabel}>Reminder</div>
-              <div className={styles.toggleSub}>Get notified when due</div>
+          <div className={styles.fieldGroup}>
+            <label className={styles.fieldLabel}>Category</label>
+            <div className={styles.categoryGrid}>
+              {CATEGORIES.map(cat => (
+                <button
+                  key={cat.id}
+                  className={`${styles.categoryChip} ${category === cat.id ? styles.categoryActive : ''}`}
+                  onClick={() => setCategory(cat.id)}
+                >
+                  <span className="mi" style={{ fontSize: '1.2rem' }}>{cat.icon}</span>
+                  <span>{cat.label}</span>
+                </button>
+              ))}
             </div>
-            <button
-              className={`${styles.toggle} ${reminder ? styles.toggleOn : ''}`}
-              onClick={() => setReminder(p => !p)}
-            >
-              <span className={styles.toggleThumb} />
-            </button>
           </div>
-        </div>
 
-        <div className={styles.fieldGroup}>
-          <label className={styles.fieldLabel}>
-            Related Client <span className={styles.optional}>(optional)</span>
-          </label>
-          {selectedCust ? (
-            <div className={styles.selectedChip}>
-              <div className={styles.chipAvatar}>{getInitials(selectedCust.name)}</div>
-              <span className={styles.chipName}>{selectedCust.name}</span>
-              <button
-                className={styles.chipRemove}
-                onClick={() => { setSelectedCust(null); setSelectedOrder(null) }}
-              >
-                <span className="mi" style={{ fontSize: '1rem' }}>close</span>
-              </button>
+          <div className={styles.fieldGroup}>
+            <label className={styles.fieldLabel}>Priority</label>
+            <div className={styles.priorityRow}>
+              {Object.entries(PRIORITY_LABELS).map(([key, label]) => (
+                <button
+                  key={key}
+                  className={`${styles.priorityChip} ${priority === key ? styles.priorityActive : ''}`}
+                  style={priority === key ? {
+                    background:  PRIORITY_COLORS[key].bg,
+                    borderColor: PRIORITY_COLORS[key].border,
+                    color:       PRIORITY_COLORS[key].text,
+                  } : {}}
+                  onClick={() => setPriority(key)}
+                >
+                  {label}
+                </button>
+              ))}
             </div>
-          ) : (
-            <div className={styles.searchWrap} ref={custSearchRef}>
-              <span className="mi" style={{ color: 'var(--text3)', fontSize: '1.1rem' }}>search</span>
+          </div>
+
+          <div className={styles.fieldRow}>
+            <div className={styles.fieldGroup} style={{ flex: 1 }}>
+              <label className={styles.fieldLabel}>Due Date *</label>
               <input
-                type="text"
-                className={styles.searchInput}
-                placeholder="Search client name or phone…"
-                value={custQuery}
-                onChange={e => { setCustQuery(e.target.value); setCustDropOpen(true) }}
-                onFocus={() => setCustDropOpen(true)}
-                onBlur={() => setTimeout(() => setCustDropOpen(false), 150)}
+                type="date"
+                min={minDueDate}
+                className={`${styles.input} ${errors.dueDate ? styles.inputError : ''}`}
+                value={dueDate}
+                onChange={e => { setDueDate(e.target.value); clearError('dueDate') }}
               />
-              {custDropOpen && (
-                <div className={styles.dropdown}>
-                  {filteredCusts.length === 0 ? (
-                    <div className={styles.dropEmpty}>No clients found</div>
-                  ) : (
-                    filteredCusts.map(c => (
-                      <button
-                        key={c.id}
-                        className={styles.dropItem}
-                        onMouseDown={e => e.preventDefault()}
-                        onClick={() => {
-                          setSelectedCust(c)
-                          setCustQuery('')
-                          setCustDropOpen(false)
-                          setSelectedOrder(null)
-                        }}
-                      >
-                        <div className={styles.dropAvatar}>{getInitials(c.name)}</div>
-                        <div>
-                          <div className={styles.dropName}>{c.name}</div>
-                          <div className={styles.dropMeta}>{c.phone}</div>
-                        </div>
-                      </button>
-                    ))
-                  )}
-                </div>
-              )}
+              {errors.dueDate && <span className={styles.errorMsg}>{errors.dueDate}</span>}
             </div>
-          )}
-        </div>
+            <div className={styles.fieldGroup} style={{ flex: 1 }}>
+              <label className={styles.fieldLabel}>Due Time *</label>
+              <input
+                type="time"
+                className={`${styles.input} ${errors.dueTime ? styles.inputError : ''}`}
+                value={dueTime}
+                onChange={e => { setDueTime(e.target.value); clearError('dueTime') }}
+              />
+              {errors.dueTime && <span className={styles.errorMsg}>{errors.dueTime}</span>}
+            </div>
+          </div>
 
-        {selectedCust && (
+          <div className={styles.fieldGroup}>
+            <div className={styles.toggleRow}>
+              <div>
+                <div className={styles.toggleLabel}>Reminder</div>
+                <div className={styles.toggleSub}>Get notified when due</div>
+              </div>
+              <button
+                className={`${styles.toggle} ${reminder ? styles.toggleOn : ''}`}
+                onClick={() => setReminder(p => !p)}
+              >
+                <span className={styles.toggleThumb} />
+              </button>
+            </div>
+          </div>
+
           <div className={styles.fieldGroup}>
             <label className={styles.fieldLabel}>
-              Related Order <span className={styles.optional}>(optional)</span>
+              Related Client <span className={styles.optional}>(optional)</span>
             </label>
-            {selectedOrder ? (
+            {selectedCust ? (
               <div className={styles.selectedChip}>
-                <span className={styles.chipName}>
-                  <span className="mi" style={{ fontSize: '1rem', verticalAlign: 'middle', marginRight: '4px' }}>content_cut</span>
-                  {selectedOrder.desc}
-                </span>
-                <button className={styles.chipRemove} onClick={() => setSelectedOrder(null)}>
+                <div className={styles.chipAvatar}>{getInitials(selectedCust.name)}</div>
+                <span className={styles.chipName}>{selectedCust.name}</span>
+                <button
+                  className={styles.chipRemove}
+                  onClick={() => { setSelectedCust(null); setSelectedOrder(null) }}
+                >
                   <span className="mi" style={{ fontSize: '1rem' }}>close</span>
                 </button>
               </div>
             ) : (
-              <div className={styles.orderDropWrap}>
-                <button className={styles.orderDropBtn} onClick={() => setOrderDropOpen(p => !p)}>
-                  <span className="mi" style={{ fontSize: '1.1rem', color: 'var(--text3)' }}>assignment</span>
-                  <span>{custOrders.length === 0 ? 'No orders for this client' : 'Select an order…'}</span>
-                  <span className="mi" style={{ fontSize: '1rem', color: 'var(--text3)', marginLeft: 'auto' }}>expand_more</span>
-                </button>
-                {orderDropOpen && custOrders.length > 0 && (
+              <div className={styles.searchWrap} ref={custSearchRef}>
+                <span className="mi" style={{ color: 'var(--text3)', fontSize: '1.1rem' }}>search</span>
+                <input
+                  type="text"
+                  className={styles.searchInput}
+                  placeholder="Search client name or phone…"
+                  value={custQuery}
+                  onChange={e => { setCustQuery(e.target.value); setCustDropOpen(true) }}
+                  onFocus={() => setCustDropOpen(true)}
+                  onBlur={() => setTimeout(() => setCustDropOpen(false), 150)}
+                />
+                {custDropOpen && (
                   <div className={styles.dropdown}>
-                    {custOrders.map(o => (
-                      <button
-                        key={o.id}
-                        className={styles.dropItem}
-                        onClick={() => { setSelectedOrder(o); setOrderDropOpen(false) }}
-                      >
-                        <span className="mi" style={{ fontSize: '1.1rem' }}>content_cut</span>
-                        <div>
-                          <div className={styles.dropName}>{o.desc}</div>
-                          <div className={styles.dropMeta}>{o.due ? `Due ${o.due}` : o.status}</div>
-                        </div>
-                      </button>
-                    ))}
+                    {filteredCusts.length === 0 ? (
+                      <div className={styles.dropEmpty}>No clients found</div>
+                    ) : (
+                      filteredCusts.map(c => (
+                        <button
+                          key={c.id}
+                          className={styles.dropItem}
+                          onMouseDown={e => e.preventDefault()}
+                          onClick={() => {
+                            setSelectedCust(c)
+                            setCustQuery('')
+                            setCustDropOpen(false)
+                            setSelectedOrder(null)
+                          }}
+                        >
+                          <div className={styles.dropAvatar}>{getInitials(c.name)}</div>
+                          <div>
+                            <div className={styles.dropName}>{c.name}</div>
+                            <div className={styles.dropMeta}>{c.phone}</div>
+                          </div>
+                        </button>
+                      ))
+                    )}
                   </div>
                 )}
               </div>
             )}
           </div>
-        )}
 
-        <div className={styles.fieldGroup}>
-          <label className={styles.fieldLabel}>
-            Notes <span className={styles.optional}>(optional)</span>
-          </label>
-          <textarea
-            className={styles.textarea}
-            placeholder="Any extra details…"
-            value={notes}
-            onChange={e => setNotes(e.target.value)}
-            rows={2}
-          />
+          {selectedCust && (
+            <div className={styles.fieldGroup}>
+              <label className={styles.fieldLabel}>
+                Related Order <span className={styles.optional}>(optional)</span>
+              </label>
+              {selectedOrder ? (
+                <div className={styles.selectedChip}>
+                  <span className={styles.chipName}>
+                    <span className="mi" style={{ fontSize: '1rem', verticalAlign: 'middle', marginRight: '4px' }}>content_cut</span>
+                    {selectedOrder.desc}
+                  </span>
+                  <button className={styles.chipRemove} onClick={() => setSelectedOrder(null)}>
+                    <span className="mi" style={{ fontSize: '1rem' }}>close</span>
+                  </button>
+                </div>
+              ) : (
+                <div className={styles.orderDropWrap}>
+                  <button className={styles.orderDropBtn} onClick={() => setOrderDropOpen(p => !p)}>
+                    <span className="mi" style={{ fontSize: '1.1rem', color: 'var(--text3)' }}>assignment</span>
+                    <span>{custOrders.length === 0 ? 'No orders for this client' : 'Select an order…'}</span>
+                    <span className="mi" style={{ fontSize: '1rem', color: 'var(--text3)', marginLeft: 'auto' }}>expand_more</span>
+                  </button>
+                  {orderDropOpen && custOrders.length > 0 && (
+                    <div className={styles.dropdown}>
+                      {custOrders.map(o => (
+                        <button
+                          key={o.id}
+                          className={styles.dropItem}
+                          onClick={() => { setSelectedOrder(o); setOrderDropOpen(false) }}
+                        >
+                          <span className="mi" style={{ fontSize: '1.1rem' }}>content_cut</span>
+                          <div>
+                            <div className={styles.dropName}>{o.desc}</div>
+                            <div className={styles.dropMeta}>{o.due ? `Due ${o.due}` : o.status}</div>
+                          </div>
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+          )}
+
+          <div className={styles.fieldGroup}>
+            <label className={styles.fieldLabel}>
+              Notes <span className={styles.optional}>(optional)</span>
+            </label>
+            <textarea
+              className={styles.textarea}
+              placeholder="Any extra details…"
+              value={notes}
+              onChange={e => setNotes(e.target.value)}
+              rows={2}
+            />
+          </div>
+
         </div>
-
       </div>
     </div>
   )

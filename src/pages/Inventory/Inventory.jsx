@@ -153,127 +153,129 @@ function ItemModal({ isOpen, editItem, onClose, onSave }) {
   if (!isOpen) return null
 
   return (
-    <div className={styles.modalOverlay}>
-      <div className={styles.modalHeader}>
-        <div className={styles.modalHeaderLeft}>
-          <button className={styles.modalBack} onClick={handleClose}>
-            <span className="mi" style={{ fontSize: '1.6rem' }}>arrow_back</span>
-          </button>
-          <span className={styles.modalTitle}>
-            {editItem ? 'Edit Item' : 'New Item'}
-          </span>
-        </div>
-        <button
-          className={styles.modalSaveBtn}
-          onClick={handleSave}
-          disabled={!name.trim()}
-        >
-          {editItem ? 'Update' : 'Add'}
-        </button>
-      </div>
-
-      <div className={styles.modalBody}>
-
-        {/* Name */}
-        <div className={styles.fieldGroup}>
-          <label className={styles.fieldLabel}>Item Name *</label>
-          <input
-            type="text"
-            className={styles.input}
-            placeholder="e.g. Navy Blue Ankara, White Thread…"
-            value={name}
-            onChange={e => setName(e.target.value)}
-          />
-        </div>
-
-        {/* Category */}
-        <div className={styles.fieldGroup}>
-          <label className={styles.fieldLabel}>Category</label>
-          <div className={styles.categoryGrid}>
-            {CATEGORIES.map(cat => (
-              <button
-                key={cat.id}
-                className={`${styles.catChip} ${category === cat.id ? styles.catChipActive : ''}`}
-                onClick={() => setCategory(cat.id)}
-              >
-                <span className="mi" style={{ fontSize: '1.1rem' }}>{cat.icon}</span>
-                <span>{cat.label}</span>
-              </button>
-            ))}
+    <div className={styles.backdrop} onClick={handleClose}>
+      <div className={styles.modalOverlay} onClick={e => e.stopPropagation()}>
+        <div className={styles.modalHeader}>
+          <div className={styles.modalHeaderLeft}>
+            <button className={styles.modalBack} onClick={handleClose}>
+              <span className="mi" style={{ fontSize: '1.6rem' }}>arrow_back</span>
+            </button>
+            <span className={styles.modalTitle}>
+              {editItem ? 'Edit Item' : 'New Item'}
+            </span>
           </div>
+          <button
+            className={styles.modalSaveBtn}
+            onClick={handleSave}
+            disabled={!name.trim()}
+          >
+            {editItem ? 'Update' : 'Add'}
+          </button>
         </div>
 
-        {/* Colour (optional, great for fabrics/threads) */}
-        <div className={styles.fieldGroup}>
-          <label className={styles.fieldLabel}>
-            Colour / Variant <span className={styles.optional}>(optional)</span>
-          </label>
-          <input
-            type="text"
-            className={styles.input}
-            placeholder="e.g. Royal Blue, #D4AF37…"
-            value={colour}
-            onChange={e => setColour(e.target.value)}
-          />
-        </div>
+        <div className={styles.modalBody}>
 
-        {/* Quantity + Unit */}
-        <div className={styles.fieldRow}>
-          <div className={styles.fieldGroup} style={{ flex: 1 }}>
-            <label className={styles.fieldLabel}>Quantity</label>
+          {/* Name */}
+          <div className={styles.fieldGroup}>
+            <label className={styles.fieldLabel}>Item Name *</label>
+            <input
+              type="text"
+              className={styles.input}
+              placeholder="e.g. Navy Blue Ankara, White Thread…"
+              value={name}
+              onChange={e => setName(e.target.value)}
+            />
+          </div>
+
+          {/* Category */}
+          <div className={styles.fieldGroup}>
+            <label className={styles.fieldLabel}>Category</label>
+            <div className={styles.categoryGrid}>
+              {CATEGORIES.map(cat => (
+                <button
+                  key={cat.id}
+                  className={`${styles.catChip} ${category === cat.id ? styles.catChipActive : ''}`}
+                  onClick={() => setCategory(cat.id)}
+                >
+                  <span className="mi" style={{ fontSize: '1.1rem' }}>{cat.icon}</span>
+                  <span>{cat.label}</span>
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Colour (optional, great for fabrics/threads) */}
+          <div className={styles.fieldGroup}>
+            <label className={styles.fieldLabel}>
+              Colour / Variant <span className={styles.optional}>(optional)</span>
+            </label>
+            <input
+              type="text"
+              className={styles.input}
+              placeholder="e.g. Royal Blue, #D4AF37…"
+              value={colour}
+              onChange={e => setColour(e.target.value)}
+            />
+          </div>
+
+          {/* Quantity + Unit */}
+          <div className={styles.fieldRow}>
+            <div className={styles.fieldGroup} style={{ flex: 1 }}>
+              <label className={styles.fieldLabel}>Quantity</label>
+              <input
+                type="number"
+                inputMode="decimal"
+                className={styles.input}
+                placeholder="0"
+                value={quantity}
+                onChange={e => setQuantity(e.target.value)}
+              />
+            </div>
+            <div className={styles.fieldGroup} style={{ flex: 1 }}>
+              <label className={styles.fieldLabel}>Unit</label>
+              <select
+                className={styles.input}
+                value={unit}
+                onChange={e => setUnit(e.target.value)}
+              >
+                {UNITS.map(u => (
+                  <option key={u} value={u}>{u}</option>
+                ))}
+              </select>
+            </div>
+          </div>
+
+          {/* Low stock threshold */}
+          <div className={styles.fieldGroup}>
+            <label className={styles.fieldLabel}>Low Stock Alert Threshold</label>
             <input
               type="number"
               inputMode="decimal"
               className={styles.input}
-              placeholder="0"
-              value={quantity}
-              onChange={e => setQuantity(e.target.value)}
+              placeholder="5"
+              value={lowStockAt}
+              onChange={e => setLowStockAt(e.target.value)}
+            />
+            <div className={styles.fieldHint}>
+              You'll see a warning when quantity falls to or below this number
+            </div>
+          </div>
+
+          {/* Notes */}
+          <div className={styles.fieldGroup}>
+            <label className={styles.fieldLabel}>
+              Notes <span className={styles.optional}>(optional)</span>
+            </label>
+            <textarea
+              className={styles.textarea}
+              placeholder="Supplier, brand, where you buy it…"
+              value={notes}
+              onChange={e => setNotes(e.target.value)}
+              rows={2}
             />
           </div>
-          <div className={styles.fieldGroup} style={{ flex: 1 }}>
-            <label className={styles.fieldLabel}>Unit</label>
-            <select
-              className={styles.input}
-              value={unit}
-              onChange={e => setUnit(e.target.value)}
-            >
-              {UNITS.map(u => (
-                <option key={u} value={u}>{u}</option>
-              ))}
-            </select>
-          </div>
-        </div>
 
-        {/* Low stock threshold */}
-        <div className={styles.fieldGroup}>
-          <label className={styles.fieldLabel}>Low Stock Alert Threshold</label>
-          <input
-            type="number"
-            inputMode="decimal"
-            className={styles.input}
-            placeholder="5"
-            value={lowStockAt}
-            onChange={e => setLowStockAt(e.target.value)}
-          />
-          <div className={styles.fieldHint}>
-            You'll see a warning when quantity falls to or below this number
-          </div>
         </div>
-
-        {/* Notes */}
-        <div className={styles.fieldGroup}>
-          <label className={styles.fieldLabel}>
-            Notes <span className={styles.optional}>(optional)</span>
-          </label>
-          <textarea
-            className={styles.textarea}
-            placeholder="Supplier, brand, where you buy it…"
-            value={notes}
-            onChange={e => setNotes(e.target.value)}
-            rows={2}
-          />
-        </div>
-
       </div>
     </div>
   )

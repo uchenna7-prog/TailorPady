@@ -104,211 +104,213 @@ function AddAppointmentModal({ isOpen, onClose, onSave, customers, allOrders }) 
   if (!isOpen) return null
 
   return (
-    <div className={styles.modalOverlay}>
-      <Header
-        type="back"
-        title="New Appointment"
-        onBackClick={handleClose}
-        customActions={[{ label: 'Save', onClick: handleSave, color: 'var(--accent)' }]}
-      />
+    <div className={styles.backdrop} onClick={handleClose}>
+      <div className={styles.modalOverlay} onClick={e => e.stopPropagation()}>
+        <Header
+          type="back"
+          title="New Appointment"
+          onBackClick={handleClose}
+          customActions={[{ label: 'Save', onClick: handleSave, color: 'var(--accent)' }]}
+        />
 
-      <div className={styles.modalBody}>
+        <div className={styles.modalBody}>
 
-        <div className={styles.fieldGroup}>
-          <label className={styles.fieldLabel}>Appointment Title *</label>
-          <input
-            type="text"
-            className={`${styles.input} ${errors.title ? styles.inputError : ''}`}
-            placeholder="e.g. Final fitting for Senator suit"
-            value={title}
-            onChange={e => { setTitle(e.target.value); clearError('title') }}
-          />
-          {errors.title && <span className={styles.errorMsg}>{errors.title}</span>}
-        </div>
-
-        <div className={styles.fieldGroup}>
-          <label className={styles.fieldLabel}>Type</label>
-          <div className={styles.categoryGrid}>
-            {APPT_TYPES.map(t => (
-              <button
-                key={t.id}
-                className={`${styles.categoryChip} ${type === t.id ? styles.categoryActive : ''}`}
-                onClick={() => setType(t.id)}
-              >
-                <span className="mi" style={{ fontSize: '1.2rem' }}>{t.icon}</span>
-                <span>{t.label}</span>
-              </button>
-            ))}
-          </div>
-        </div>
-
-        <div className={styles.fieldRow}>
-          <div className={styles.fieldGroup} style={{ flex: 1 }}>
-            <label className={styles.fieldLabel}>Date *</label>
+          <div className={styles.fieldGroup}>
+            <label className={styles.fieldLabel}>Appointment Title *</label>
             <input
-              type="date"
-              className={`${styles.input} ${errors.date ? styles.inputError : ''}`}
-              value={date}
-              onChange={e => { setDate(e.target.value); clearError('date') }}
+              type="text"
+              className={`${styles.input} ${errors.title ? styles.inputError : ''}`}
+              placeholder="e.g. Final fitting for Senator suit"
+              value={title}
+              onChange={e => { setTitle(e.target.value); clearError('title') }}
             />
-            {errors.date && <span className={styles.errorMsg}>{errors.date}</span>}
+            {errors.title && <span className={styles.errorMsg}>{errors.title}</span>}
           </div>
-          <div className={styles.fieldGroup} style={{ flex: 1 }}>
-            <label className={styles.fieldLabel}>Time *</label>
-            <input
-              type="time"
-              className={`${styles.input} ${errors.time ? styles.inputError : ''}`}
-              value={time}
-              onChange={e => { setTime(e.target.value); clearError('time') }}
-            />
-            {errors.time && <span className={styles.errorMsg}>{errors.time}</span>}
-          </div>
-        </div>
 
-        <div className={styles.fieldGroup}>
-          <label className={styles.fieldLabel}>
-            Location <span className={styles.optional}>(optional)</span>
-          </label>
-          <input
-            type="text"
-            className={styles.input}
-            placeholder="e.g. Shop, Client's address…"
-            value={location}
-            onChange={e => setLocation(e.target.value)}
-          />
-        </div>
-
-        <div className={styles.fieldGroup}>
-          <div className={styles.toggleRow}>
-            <div>
-              <div className={styles.toggleLabel}>Reminder</div>
-              <div className={styles.toggleSub}>Don't let this slip</div>
+          <div className={styles.fieldGroup}>
+            <label className={styles.fieldLabel}>Type</label>
+            <div className={styles.categoryGrid}>
+              {APPT_TYPES.map(t => (
+                <button
+                  key={t.id}
+                  className={`${styles.categoryChip} ${type === t.id ? styles.categoryActive : ''}`}
+                  onClick={() => setType(t.id)}
+                >
+                  <span className="mi" style={{ fontSize: '1.2rem' }}>{t.icon}</span>
+                  <span>{t.label}</span>
+                </button>
+              ))}
             </div>
-            <button
-              className={`${styles.toggle} ${reminder ? styles.toggleOn : ''}`}
-              onClick={() => setReminder(p => !p)}
-            >
-              <span className={styles.toggleThumb} />
-            </button>
           </div>
-        </div>
 
-        <div className={styles.fieldGroup}>
-          <label className={styles.fieldLabel}>Client *</label>
-          {selectedCust ? (
-            <div className={`${styles.selectedChip} ${errors.cust ? styles.selectedChipError : ''}`}>
-              <div className={styles.chipAvatar}>{getInitials(selectedCust.name)}</div>
-              <div style={{ flex: 1 }}>
-                <div className={styles.chipName}>{selectedCust.name}</div>
-                {selectedCust.phone && <div className={styles.chipSub}>{selectedCust.phone}</div>}
+          <div className={styles.fieldRow}>
+            <div className={styles.fieldGroup} style={{ flex: 1 }}>
+              <label className={styles.fieldLabel}>Date *</label>
+              <input
+                type="date"
+                className={`${styles.input} ${errors.date ? styles.inputError : ''}`}
+                value={date}
+                onChange={e => { setDate(e.target.value); clearError('date') }}
+              />
+              {errors.date && <span className={styles.errorMsg}>{errors.date}</span>}
+            </div>
+            <div className={styles.fieldGroup} style={{ flex: 1 }}>
+              <label className={styles.fieldLabel}>Time *</label>
+              <input
+                type="time"
+                className={`${styles.input} ${errors.time ? styles.inputError : ''}`}
+                value={time}
+                onChange={e => { setTime(e.target.value); clearError('time') }}
+              />
+              {errors.time && <span className={styles.errorMsg}>{errors.time}</span>}
+            </div>
+          </div>
+
+          <div className={styles.fieldGroup}>
+            <label className={styles.fieldLabel}>
+              Location <span className={styles.optional}>(optional)</span>
+            </label>
+            <input
+              type="text"
+              className={styles.input}
+              placeholder="e.g. Shop, Client's address…"
+              value={location}
+              onChange={e => setLocation(e.target.value)}
+            />
+          </div>
+
+          <div className={styles.fieldGroup}>
+            <div className={styles.toggleRow}>
+              <div>
+                <div className={styles.toggleLabel}>Reminder</div>
+                <div className={styles.toggleSub}>Don't let this slip</div>
               </div>
               <button
-                className={styles.chipRemove}
-                onClick={() => { setSelectedCust(null); setSelectedOrder(null) }}
+                className={`${styles.toggle} ${reminder ? styles.toggleOn : ''}`}
+                onClick={() => setReminder(p => !p)}
               >
-                <span className="mi" style={{ fontSize: '1rem' }}>close</span>
+                <span className={styles.toggleThumb} />
               </button>
             </div>
-          ) : (
-            <div className={`${styles.searchWrap} ${errors.cust ? styles.inputError : ''}`}>
-              <span className="mi" style={{ color: 'var(--text3)', fontSize: '1.1rem' }}>search</span>
-              <input
-                type="text"
-                className={styles.searchInput}
-                placeholder="Search client name or phone…"
-                value={custQuery}
-                onChange={e => { setCustQuery(e.target.value); setCustDropOpen(true); clearError('cust') }}
-                onFocus={() => { setCustDropOpen(true); clearError('cust') }}
-                onBlur={() => setTimeout(() => setCustDropOpen(false), 150)}
-              />
-              {custDropOpen && (
-                <div className={styles.dropdown}>
-                  {filteredCusts.length === 0 ? (
-                    <div className={styles.dropEmpty}>No clients found</div>
-                  ) : (
-                    filteredCusts.map(c => (
-                      <button
-                        key={c.id}
-                        className={styles.dropItem}
-                        onMouseDown={e => e.preventDefault()}
-                        onClick={() => {
-                          setSelectedCust(c)
-                          setCustQuery('')
-                          setCustDropOpen(false)
-                          setSelectedOrder(null)
-                          clearError('cust')
-                        }}
-                      >
-                        <div className={styles.dropAvatar}>{getInitials(c.name)}</div>
-                        <div>
-                          <div className={styles.dropName}>{c.name}</div>
-                          <div className={styles.dropMeta}>{c.phone}</div>
-                        </div>
-                      </button>
-                    ))
+          </div>
+
+          <div className={styles.fieldGroup}>
+            <label className={styles.fieldLabel}>Client *</label>
+            {selectedCust ? (
+              <div className={`${styles.selectedChip} ${errors.cust ? styles.selectedChipError : ''}`}>
+                <div className={styles.chipAvatar}>{getInitials(selectedCust.name)}</div>
+                <div style={{ flex: 1 }}>
+                  <div className={styles.chipName}>{selectedCust.name}</div>
+                  {selectedCust.phone && <div className={styles.chipSub}>{selectedCust.phone}</div>}
+                </div>
+                <button
+                  className={styles.chipRemove}
+                  onClick={() => { setSelectedCust(null); setSelectedOrder(null) }}
+                >
+                  <span className="mi" style={{ fontSize: '1rem' }}>close</span>
+                </button>
+              </div>
+            ) : (
+              <div className={`${styles.searchWrap} ${errors.cust ? styles.inputError : ''}`}>
+                <span className="mi" style={{ color: 'var(--text3)', fontSize: '1.1rem' }}>search</span>
+                <input
+                  type="text"
+                  className={styles.searchInput}
+                  placeholder="Search client name or phone…"
+                  value={custQuery}
+                  onChange={e => { setCustQuery(e.target.value); setCustDropOpen(true); clearError('cust') }}
+                  onFocus={() => { setCustDropOpen(true); clearError('cust') }}
+                  onBlur={() => setTimeout(() => setCustDropOpen(false), 150)}
+                />
+                {custDropOpen && (
+                  <div className={styles.dropdown}>
+                    {filteredCusts.length === 0 ? (
+                      <div className={styles.dropEmpty}>No clients found</div>
+                    ) : (
+                      filteredCusts.map(c => (
+                        <button
+                          key={c.id}
+                          className={styles.dropItem}
+                          onMouseDown={e => e.preventDefault()}
+                          onClick={() => {
+                            setSelectedCust(c)
+                            setCustQuery('')
+                            setCustDropOpen(false)
+                            setSelectedOrder(null)
+                            clearError('cust')
+                          }}
+                        >
+                          <div className={styles.dropAvatar}>{getInitials(c.name)}</div>
+                          <div>
+                            <div className={styles.dropName}>{c.name}</div>
+                            <div className={styles.dropMeta}>{c.phone}</div>
+                          </div>
+                        </button>
+                      ))
+                    )}
+                  </div>
+                )}
+              </div>
+            )}
+            {errors.cust && <span className={styles.errorMsg}>{errors.cust}</span>}
+          </div>
+
+          {selectedCust && (
+            <div className={styles.fieldGroup}>
+              <label className={styles.fieldLabel}>
+                Related Order <span className={styles.optional}>(optional)</span>
+              </label>
+              {selectedOrder ? (
+                <div className={styles.selectedChip}>
+                  <span className="mi" style={{ fontSize: '1rem', color: 'var(--accent)' }}>content_cut</span>
+                  <span className={styles.chipName}>{selectedOrder.desc}</span>
+                  <button className={styles.chipRemove} onClick={() => setSelectedOrder(null)}>
+                    <span className="mi" style={{ fontSize: '1rem' }}>close</span>
+                  </button>
+                </div>
+              ) : (
+                <div className={styles.orderDropWrap}>
+                  <button className={styles.orderDropBtn} onClick={() => setOrderDropOpen(p => !p)}>
+                    <span className="mi" style={{ fontSize: '1.1rem', color: 'var(--text3)' }}>content_cut</span>
+                    <span>{custOrders.length === 0 ? 'No orders for this client' : 'Select an order…'}</span>
+                    <span className="mi" style={{ fontSize: '1rem', color: 'var(--text3)', marginLeft: 'auto' }}>expand_more</span>
+                  </button>
+                  {orderDropOpen && custOrders.length > 0 && (
+                    <div className={styles.dropdown}>
+                      {custOrders.map(o => (
+                        <button
+                          key={o.id}
+                          className={styles.dropItem}
+                          onClick={() => { setSelectedOrder(o); setOrderDropOpen(false) }}
+                        >
+                          <span className="mi" style={{ fontSize: '1.1rem' }}>content_cut</span>
+                          <div>
+                            <div className={styles.dropName}>{o.desc}</div>
+                            <div className={styles.dropMeta}>{o.due ? `Due ${o.due}` : o.status}</div>
+                          </div>
+                        </button>
+                      ))}
+                    </div>
                   )}
                 </div>
               )}
             </div>
           )}
-          {errors.cust && <span className={styles.errorMsg}>{errors.cust}</span>}
-        </div>
 
-        {selectedCust && (
           <div className={styles.fieldGroup}>
             <label className={styles.fieldLabel}>
-              Related Order <span className={styles.optional}>(optional)</span>
+              Notes <span className={styles.optional}>(optional)</span>
             </label>
-            {selectedOrder ? (
-              <div className={styles.selectedChip}>
-                <span className="mi" style={{ fontSize: '1rem', color: 'var(--accent)' }}>content_cut</span>
-                <span className={styles.chipName}>{selectedOrder.desc}</span>
-                <button className={styles.chipRemove} onClick={() => setSelectedOrder(null)}>
-                  <span className="mi" style={{ fontSize: '1rem' }}>close</span>
-                </button>
-              </div>
-            ) : (
-              <div className={styles.orderDropWrap}>
-                <button className={styles.orderDropBtn} onClick={() => setOrderDropOpen(p => !p)}>
-                  <span className="mi" style={{ fontSize: '1.1rem', color: 'var(--text3)' }}>content_cut</span>
-                  <span>{custOrders.length === 0 ? 'No orders for this client' : 'Select an order…'}</span>
-                  <span className="mi" style={{ fontSize: '1rem', color: 'var(--text3)', marginLeft: 'auto' }}>expand_more</span>
-                </button>
-                {orderDropOpen && custOrders.length > 0 && (
-                  <div className={styles.dropdown}>
-                    {custOrders.map(o => (
-                      <button
-                        key={o.id}
-                        className={styles.dropItem}
-                        onClick={() => { setSelectedOrder(o); setOrderDropOpen(false) }}
-                      >
-                        <span className="mi" style={{ fontSize: '1.1rem' }}>content_cut</span>
-                        <div>
-                          <div className={styles.dropName}>{o.desc}</div>
-                          <div className={styles.dropMeta}>{o.due ? `Due ${o.due}` : o.status}</div>
-                        </div>
-                      </button>
-                    ))}
-                  </div>
-                )}
-              </div>
-            )}
+            <textarea
+              className={styles.textarea}
+              placeholder="Anything to remember about this appointment…"
+              value={notes}
+              onChange={e => setNotes(e.target.value)}
+              rows={2}
+            />
           </div>
-        )}
 
-        <div className={styles.fieldGroup}>
-          <label className={styles.fieldLabel}>
-            Notes <span className={styles.optional}>(optional)</span>
-          </label>
-          <textarea
-            className={styles.textarea}
-            placeholder="Anything to remember about this appointment…"
-            value={notes}
-            onChange={e => setNotes(e.target.value)}
-            rows={2}
-          />
         </div>
-
       </div>
     </div>
   )

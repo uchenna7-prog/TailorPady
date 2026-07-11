@@ -21,6 +21,7 @@ export default function ReceiptTab({
   showToast,
   reopenReceiptId,
   reopenMissingFields = false,
+  reopenTemplateModal = false,
   completedModal = null,
   completedFields = [],
   onReopenReceiptHandled,
@@ -33,6 +34,7 @@ export default function ReceiptTab({
   const [pendingReopen, setPendingReopen] = useState(false)
   const [pendingCompletedModal, setPendingCompletedModal] = useState(null)
   const [pendingCompletedFields, setPendingCompletedFields] = useState([])
+  const [pendingReopenTemplateModal, setPendingReopenTemplateModal] = useState(false)
 
   const currency      = getCurrency()
   const orderItemsMap = buildOrderItemsMap(orders)
@@ -59,6 +61,9 @@ export default function ReceiptTab({
       setPendingReopen(true)
       setPendingCompletedModal(completedModal)
       setPendingCompletedFields(completedFields)
+    }
+    if (reopenTemplateModal) {
+      setPendingReopenTemplateModal(true)
     }
     onReopenReceiptHandled?.()
   }, [reopenReceiptId, receipts])
@@ -125,6 +130,8 @@ export default function ReceiptTab({
             setPendingCompletedModal(null)
             setPendingCompletedFields([])
           }}
+          reopenTemplateModal={pendingReopenTemplateModal}
+          onReopenTemplateModalHandled={() => setPendingReopenTemplateModal(false)}
         />
       )}
 

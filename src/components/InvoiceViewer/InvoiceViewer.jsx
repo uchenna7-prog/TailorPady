@@ -73,6 +73,8 @@ export default function InvoiceViewer({
   completedFields     = [],
   onReopenMissingFieldsHandled,
   hideDesign          = false,
+  reopenTemplateModal = false,
+  onReopenTemplateModalHandled,
 }) {
 
   const { generalSettings, updateManyGeneralSettings } = useGeneralSettings()
@@ -114,6 +116,11 @@ export default function InvoiceViewer({
     invoiceId:  invoice.id,
   }
 
+  const templateModalReturnTo = {
+    ...returnTo,
+    reopenTemplateModal: true,
+  }
+
   useEffect(() => {
     setInvoice(prev => {
       const next = { ...snapShotedInvoice }
@@ -145,6 +152,12 @@ export default function InvoiceViewer({
 
     onReopenMissingFieldsHandled?.()
   }, [reopenMissingFields])
+
+  useEffect(() => {
+    if (!reopenTemplateModal) return
+    setShowTemplateModal(true)
+    onReopenTemplateModalHandled?.()
+  }, [reopenTemplateModal])
 
   const checkMissingThen = (label, action) => {
     const requires = getRequiresForDoc('invoice', templateKey, null)
@@ -360,6 +373,7 @@ export default function InvoiceViewer({
           lockToTab="invoice"
           onClose={() => setShowTemplateModal(false)}
           onSelect={handleTemplateSelect}
+          returnTo={templateModalReturnTo}
         />
       )}
 

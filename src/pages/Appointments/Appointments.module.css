@@ -247,6 +247,10 @@
 
 /* ── ADD APPOINTMENT MODAL ── */
 
+.backdrop {
+  display: contents;
+}
+
 .modalOverlay {
   position: fixed;
   inset: 0;
@@ -340,3 +344,39 @@
 
 .orderDropWrap { position: relative; }
 .orderDropBtn { width: 100%; display: flex; align-items: center; gap: 8px; background: var(--surface); border: 1px solid var(--border2); border-radius: 12px; padding: 13px 14px; color: var(--text3); font-size: 0.88rem; cursor: pointer; font-family: 'Manrope', sans-serif; }
+
+@keyframes apptModalBackdropFadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes apptModalSlideInRight {
+  from { transform: translateX(100%); }
+  to   { transform: translateX(0); }
+}
+
+@media (min-width: 769px) {
+  .backdrop {
+    display:         block;
+    position:        fixed;
+    top:             0;
+    left:            var(--sidebar-width, 280px);
+    right:           0;
+    bottom:          0;
+    z-index:         1999;
+    background:      rgba(0, 0, 0, 0.55);
+    backdrop-filter: blur(4px);
+    animation:       apptModalBackdropFadeIn 0.2s ease;
+  }
+
+  .modalOverlay {
+    top:         0;
+    left:        auto;
+    right:       0;
+    width:       min(480px, calc(100% - var(--sidebar-width, 280px)));
+    height:      100dvh;
+    max-height:  100dvh;
+    border-left: 1px solid var(--border);
+    animation:   apptModalSlideInRight 0.32s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+}

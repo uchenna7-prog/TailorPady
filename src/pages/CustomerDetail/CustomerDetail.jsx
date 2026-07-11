@@ -54,6 +54,7 @@ export default function CustomerDetail({ onMenuClick }) {
   const [reopenInvoiceId, setReopenInvoiceId] = useState(null)
   const [reopenReceiptId, setReopenReceiptId] = useState(null)
   const [reopenMissingFields, setReopenMissingFields] = useState(false)
+  const [reopenTemplateModal, setReopenTemplateModal] = useState(false)
   const [completedModal, setCompletedModal]   = useState(null)
   const [completedFields, setCompletedFields] = useState([])
 
@@ -169,6 +170,7 @@ export default function CustomerDetail({ onMenuClick }) {
     setReopenMissingFields(navState.reopenMissingFields ?? false)
     setCompletedModal(navState.completedModal ?? null)
     setCompletedFields(navState.completedFields ?? [])
+    setReopenTemplateModal(navState.reopenTemplateModal ?? false)
 
     navigate(location.pathname, { replace: true, state: null })
   }, [location.state])
@@ -658,11 +660,13 @@ export default function CustomerDetail({ onMenuClick }) {
             showToast={showToast}
             reopenInvoiceId={reopenInvoiceId}
             reopenMissingFields={reopenMissingFields}
+            reopenTemplateModal={reopenTemplateModal}
             completedModal={completedModal}
             completedFields={completedFields}
             onReopenInvoiceHandled={() => {
               setReopenInvoiceId(null)
               setReopenMissingFields(false)
+              setReopenTemplateModal(false)
               setCompletedModal(null)
               setCompletedFields([])
             }}
@@ -694,11 +698,13 @@ export default function CustomerDetail({ onMenuClick }) {
             showToast={showToast}
             reopenReceiptId={reopenReceiptId}
             reopenMissingFields={reopenMissingFields}
+            reopenTemplateModal={reopenTemplateModal}
             completedModal={completedModal}
             completedFields={completedFields}
             onReopenReceiptHandled={() => {
               setReopenReceiptId(null)
               setReopenMissingFields(false)
+              setReopenTemplateModal(false)
               setCompletedModal(null)
               setCompletedFields([])
             }}
