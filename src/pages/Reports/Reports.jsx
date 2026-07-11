@@ -3,6 +3,8 @@ import { useOrders }    from '../../contexts/OrdersContext'
 import { useTasks }     from '../../contexts/TaskContext'
 import { usePayments }  from '../../contexts/PaymentContext'
 import { useCustomers } from '../../contexts/CustomerContext'
+import { useAppointments, parseApptDate, getEffectiveStatus } from '../../contexts/AppointmentContext'
+import { useRevenueGoal } from '../../contexts/RevenueGoalContext'
 import Header           from '../../components/Header/Header'
 import BottomNav        from '../../components/BottomNav/BottomNav'
 import styles           from './Reports.module.css'
@@ -55,6 +57,78 @@ function fmt(amount) {
 function pct(part, total) {
   if (!total) return 0
   return Math.round((part / total) * 100)
+}
+
+function mostFrequent(items, key) {
+  const counts = {}
+  items.forEach(item => {
+    const val = item[key]
+    if (!val) return
+    counts[val] = (counts[val] || 0) + 1
+  })
+  let topKey   = null
+  let topCount = 0
+  Object.entries(counts).forEach(([k, c]) => {
+    if (c > topCount) { topKey = k; topCount = c }
+  })
+  return topKey ? { label: topKey, count: topCount } : null
+}
+
+function capitalize(str) {
+  return str.charAt(0).toUpperCase() + str.slice(1)
+}
+
+function isOverdueOrder(order) {
+  if (!order.dueRaw) return false
+  if (order.status === 'delivered' || order.status === 'completed') return false
+  return new Date(order.dueRaw + 'T23:59:59') < new Date()
+}
+
+function orderBucket(order) {
+  if (order.status === 'delivered') return 'delivered'
+  if (order.status === 'completed') return 'completed'
+  if (isOverdueOrder(order)) return 'overdue'
+  if (!order.status || order.status === 'pending' || order.status === 'in_progress') return 'inProgress'
+  return 'other'
+}
+
+function periodBounds(id) {
+  const now = new Date()
+  switch (id) {
+    case 'week': {
+      const start = new Date(now)
+      start.setDate(start.getDate() - start.getDay())
+      start.setHours(0, 0, 0, 0)
+      const end = new Date(start)
+      end.setDate(start.getDate() + 7)
+      return { start, end }
+    }
+    case 'month': {
+      const start = new Date(now.getFullYear(), now.getMonth(), 1)
+      const end   = new Date(now.getFullYear(), now.getMonth() + 1, 1)
+      return { start, end }
+    }
+    case '3mo': {
+      const start = new Date(now.getFullYear(), now.getMonth() - 2, 1)
+      const end   = new Date(now.getFullYear(), now.getMonth() + 1, 1)
+      return { start, end }
+    }
+    case 'year': {
+      const start = new Date(now.getFullYear(), 0, 1)
+      const end   = new Date(now.getFullYear() + 1, 0, 1)
+      return { start, end }
+    }
+    default: return { start: null, end: null }
+  }
+}
+
+function apptInPeriod(appt, periodId) {
+  const { start, end } = periodBounds(periodId)
+  const d = parseApptDate(appt)
+  if (!d) return false
+  if (start && d < start) return false
+  if (end && d >= end) return false
+  return true
 }
 
 
@@ -134,29 +208,74 @@ function InsightRow({ items }) {
   )
 }
 
-function StatCard({ icon, label, value, sub }) {
+const TONE_COLORS = {
+  info:     '#6366f1',
+  positive: '#22c55e',
+  warning:  '#f97316',
+  neutral:  null,
+}
+
+function StatCard({ icon, label, value, sub, tone = 'neutral' }) {
+  const subColor = TONE_COLORS[tone]
   return (
     <div className={styles.statCard}>
       <span className={`mi ${styles.statIcon}`}>{icon}</span>
       <div className={styles.statValue}>{value}</div>
       <div className={styles.statLabel}>{label}</div>
-      {sub && <div className={styles.statSub}>{sub}</div>}
+      {sub && (
+        <div className={styles.statSub} style={subColor ? { color: subColor } : undefined}>
+          {sub}
+        </div>
+      )}
     </div>
   )
 }
 
-function CollectionBar({ rate }) {
+function GoalProgressCard({ goal, derived, fmt }) {
+  if (!goal || !derived) {
+    return (
+      <div className={styles.collectionCard}>
+        <div className={styles.collectionTop}>
+          <div>
+            <div className={styles.collectionLabel}>Revenue Goal</div>
+            <div className={styles.collectionSub}>Set a goal to track your progress here</div>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  const periodLabel = goal.period === 'weekly'
+    ? 'This week'
+    : goal.period === 'yearly'
+      ? 'This year'
+      : 'This month'
+
+  const previousLabel = goal.period === 'weekly'
+    ? 'last week'
+    : goal.period === 'yearly'
+      ? 'last year'
+      : 'last month'
+
+  const deltaAbs   = Math.abs(derived.delta)
+  const deltaColor = derived.isUp ? '#22c55e' : '#f97316'
+  const deltaArrow = derived.isUp ? '▲' : '▼'
+  const deltaWord  = derived.isUp ? 'more' : 'less'
+
   return (
     <div className={styles.collectionCard}>
       <div className={styles.collectionTop}>
         <div>
-          <div className={styles.collectionLabel}>Collection Rate</div>
-          <div className={styles.collectionSub}>Payments received vs order value</div>
+          <div className={styles.collectionLabel}>Revenue Goal</div>
+          <div className={styles.collectionSub}>{periodLabel} · {fmt(derived.earnedThis)} of {fmt(goal.goal)}</div>
         </div>
-        <div className={styles.collectionRate}>{rate}%</div>
+        <div className={styles.collectionRate}>{derived.percent}%</div>
       </div>
       <div className={styles.collectionTrack}>
-        <div className={styles.collectionFill} style={{ width: `${Math.min(rate, 100)}%` }} />
+        <div className={styles.collectionFill} style={{ width: `${Math.min(derived.percent, 100)}%` }} />
+      </div>
+      <div className={styles.collectionSub} style={{ color: deltaColor, marginTop: 8 }}>
+        {deltaArrow} {fmt(deltaAbs)} {deltaWord} than {previousLabel}
       </div>
     </div>
   )
@@ -212,9 +331,12 @@ export default function Reports({ onMenuClick }) {
   const { tasks }       = useTasks()
   const { allPayments } = usePayments()
   const { customers }   = useCustomers()
+  const { allAppointments } = useAppointments()
+  const { goal, derived: goalDerived } = useRevenueGoal()
 
   const [perfPeriod,  setPerfPeriod]  = useState('month')
   const [orderPeriod, setOrderPeriod] = useState('month')
+  const [apptPeriod,  setApptPeriod]  = useState('month')
   const [taskPeriod,  setTaskPeriod]  = useState('month')
   const [custPeriod,  setCustPeriod]  = useState('month')
 
@@ -236,68 +358,98 @@ export default function Reports({ onMenuClick }) {
       })
     })
 
-    const collectionRate = orderValue > 0 ? Math.round((payReceived / orderValue) * 100) : 0
-    const outstanding    = Math.max(0, orderValue - payReceived)
-    return { totalOrders, orderValue, payReceived, collectionRate, outstanding }
+    const outstanding = Math.max(0, orderValue - payReceived)
+    return { totalOrders, orderValue, payReceived, outstanding }
   }, [orders, allPayments, perfPeriod])
 
   const orderStats = useMemo(() => {
-    const start      = periodStart(orderPeriod)
-    const filtered   = orders.filter(o => inPeriod(o, start))
-    const total      = filtered.length
-    const delivered  = filtered.filter(o => o.status === 'delivered').length
-    const inProgress = filtered.filter(o => o.status === 'pending' || o.status === 'in_progress').length
-    const completed  = filtered.filter(o => o.status === 'completed').length
-    const overdue    = filtered.filter(o => {
-      if (!o.due) return false
-      return new Date(o.due + 'T23:59:59') < new Date() &&
-        o.status !== 'delivered' && o.status !== 'completed'
-    }).length
+    const start    = periodStart(orderPeriod)
+    const filtered = orders.filter(o => inPeriod(o, start))
+    const total    = filtered.length
 
-    const turnaroundSamples = orders.filter(o => {
-      const created = parseItemDate(o)
-      return (o.status === 'delivered' || o.status === 'completed') && created && o.due
-    })
-    const avgDays = turnaroundSamples.length > 0
+    const buckets = { delivered: 0, inProgress: 0, completed: 0, overdue: 0, other: 0 }
+    filtered.forEach(o => { buckets[orderBucket(o)] += 1 })
+
+    const withDueDate = filtered.filter(o => o.dueRaw && parseItemDate(o))
+    const avgDays = withDueDate.length > 0
       ? Math.round(
-          turnaroundSamples.reduce((s, o) => {
+          withDueDate.reduce((s, o) => {
             const created = parseItemDate(o)
-            const due     = new Date(o.due)
+            const due     = new Date(o.dueRaw + 'T23:59:59')
             return s + Math.max(0, (due - created) / (1000 * 60 * 60 * 24))
-          }, 0) / turnaroundSamples.length
+          }, 0) / withDueDate.length
         )
       : null
 
-    return { total, delivered, inProgress, completed, overdue, avgDays }
+    return { total, avgDays, ...buckets }
   }, [orders, orderPeriod])
+
+  const apptStats = useMemo(() => {
+    const filtered = allAppointments.filter(a => apptInPeriod(a, apptPeriod))
+    const total    = filtered.length
+
+    const buckets = { done: 0, upcoming: 0, missed: 0, cancelled: 0 }
+    filtered.forEach(a => { buckets[getEffectiveStatus(a)] += 1 })
+
+    const resolved   = buckets.done + buckets.missed
+    const showUpRate = resolved > 0 ? Math.round((buckets.done / resolved) * 100) : null
+    const cancelRate = total > 0 ? Math.round((buckets.cancelled / total) * 100) : null
+
+    const topType = mostFrequent(filtered, 'type')
+
+    const missedByCustomer = {}
+    filtered.forEach(a => {
+      if (getEffectiveStatus(a) === 'missed' && a.customerId) {
+        missedByCustomer[a.customerId] = (missedByCustomer[a.customerId] || 0) + 1
+      }
+    })
+    const repeatNoShows = Object.values(missedByCustomer).filter(c => c > 1).length
+
+    return { total, showUpRate, cancelRate, topType, repeatNoShows, ...buckets }
+  }, [allAppointments, apptPeriod])
 
   const taskStats = useMemo(() => {
     const start    = periodStart(taskPeriod)
     const filtered = tasks.filter(t => inPeriod(t, start))
     const total    = filtered.length
     const done     = filtered.filter(t => t.done).length
-    const pending  = filtered.filter(t => !t.done && new Date(t.dueDate + 'T23:59:59') >= new Date()).length
     const overdue  = filtered.filter(t => {
-      if (!t.dueDate || t.done) return false
+      if (t.done || !t.dueDate) return false
       return new Date(t.dueDate + 'T23:59:59') < new Date()
     }).length
-    return { total, done, pending, overdue }
+    const pending  = Math.max(0, total - done - overdue)
+
+    const topCategory = mostFrequent(filtered, 'category')
+    const openTasks   = filtered.filter(t => !t.done)
+    const topPriority = mostFrequent(openTasks, 'priority')
+
+    return { total, done, pending, overdue, topCategory, topPriority }
   }, [tasks, taskPeriod])
 
   const custStats = useMemo(() => {
-    const start      = periodStart(custPeriod)
-    const newClients = customers.filter(c => inPeriod(c, start)).length
-    const orderMap   = {}
-    orders.forEach(o => {
-      if (o.customerId) orderMap[o.customerId] = (orderMap[o.customerId] || 0) + 1
+    const start        = periodStart(custPeriod)
+    const periodOrders = orders.filter(o => inPeriod(o, start))
+
+    const orderCountMap = {}
+    periodOrders.forEach(o => {
+      if (o.customerId) orderCountMap[o.customerId] = (orderCountMap[o.customerId] || 0) + 1
     })
-    const repeatCount   = Object.values(orderMap).filter(c => c > 1).length
-    const activeCount   = Object.keys(orderMap).length
-    const inactiveCount = Math.max(0, customers.length - activeCount)
-    const avgOrders     = customers.length > 0
-      ? (orders.length / customers.length).toFixed(1)
+
+    const buckets = { newCount: 0, repeatCount: 0, activeCount: 0, inactiveCount: 0 }
+    customers.forEach(c => {
+      const isNew      = inPeriod(c, start)
+      const orderCount = orderCountMap[c.id] || 0
+      if (isNew)                    buckets.newCount      += 1
+      else if (orderCount > 1)      buckets.repeatCount    += 1
+      else if (orderCount === 1)    buckets.activeCount    += 1
+      else                          buckets.inactiveCount += 1
+    })
+
+    const avgOrders = customers.length > 0
+      ? (periodOrders.length / customers.length).toFixed(1)
       : '0'
-    return { total: customers.length, newClients, repeatCount, inactiveCount, avgOrders }
+
+    return { total: customers.length, avgOrders, ...buckets }
   }, [customers, custPeriod, orders])
 
   return (
@@ -306,15 +458,23 @@ export default function Reports({ onMenuClick }) {
 
       <div className={styles.scrollArea}>
 
-        <Section title="Performance" period={perfPeriod} onPeriodChange={setPerfPeriod}>
-          <CollectionBar rate={perfStats.collectionRate} />
-          <div className={styles.statsGrid}>
-            <StatCard icon="receipt_long"          label="Total Orders"  value={perfStats.totalOrders}     sub="in period"       />
-            <StatCard icon="sell"                   label="Order Value"   value={fmt(perfStats.orderValue)} sub="est. revenue"    />
-            <StatCard icon="account_balance_wallet" label="Received"      value={fmt(perfStats.payReceived)}                      />
-            <StatCard icon="pending_actions"        label="Outstanding"   value={fmt(perfStats.outstanding)} sub="unpaid balance" />
+        <section className={styles.section}>
+          <div className={styles.sectionHeader}>
+            <h3 className={styles.sectionTitle}>Performance</h3>
           </div>
-        </Section>
+
+          <GoalProgressCard goal={goal} derived={goalDerived} fmt={fmt} />
+
+          <div className={styles.sectionHeader} style={{ marginTop: 20, justifyContent: 'flex-end' }}>
+            <PeriodSelector value={perfPeriod} onChange={setPerfPeriod} />
+          </div>
+          <div className={styles.statsGrid}>
+            <StatCard icon="receipt_long"          label="Orders Placed"      value={perfStats.totalOrders} />
+            <StatCard icon="sell"                   label="Total Order Value"  value={fmt(perfStats.orderValue)}  sub="Full value of orders placed" tone="info" />
+            <StatCard icon="account_balance_wallet" label="Amount Collected"   value={fmt(perfStats.payReceived)} sub="Payments received so far"     tone="positive" />
+            <StatCard icon="pending_actions"        label="Amount Outstanding" value={fmt(perfStats.outstanding)} sub="Still owed by clients"        tone="warning"  />
+          </div>
+        </section>
 
         <Section title="Orders" period={orderPeriod} onPeriodChange={setOrderPeriod}>
           <div className={styles.chartCard}>
@@ -325,6 +485,7 @@ export default function Reports({ onMenuClick }) {
                   { value: orderStats.inProgress, color: '#fb923c' },
                   { value: orderStats.completed,  color: '#22c55e' },
                   { value: orderStats.overdue,    color: '#ef4444' },
+                  { value: orderStats.other,      color: '#94a3b8' },
                 ]}
                 centerLabel={orderStats.total}
                 centerSub="Total"
@@ -334,12 +495,50 @@ export default function Reports({ onMenuClick }) {
                 <StatusRow label="In Progress" count={orderStats.inProgress} total={orderStats.total} color="#fb923c" />
                 <StatusRow label="Completed"   count={orderStats.completed}  total={orderStats.total} color="#22c55e" />
                 <StatusRow label="Overdue"     count={orderStats.overdue}    total={orderStats.total} color="#ef4444" />
+                {orderStats.other > 0 && (
+                  <StatusRow label="Other" count={orderStats.other} total={orderStats.total} color="#94a3b8" />
+                )}
               </div>
             </div>
             {orderStats.avgDays !== null && (
               <InsightRow items={[
-                { value: `${orderStats.avgDays}d`, label: 'Avg Turnaround' },
-                { value: `${pct(orderStats.delivered + orderStats.completed, orderStats.total)}%`, label: 'Completion Rate' },
+                { value: `${orderStats.avgDays}d`, label: 'Usual Wait Time' },
+                { value: `${pct(orderStats.delivered + orderStats.completed, orderStats.total)}%`, label: 'Orders Finished' },
+              ]} />
+            )}
+          </div>
+        </Section>
+
+        <Section title="Appointments" period={apptPeriod} onPeriodChange={setApptPeriod}>
+          <div className={styles.chartCard}>
+            <div className={styles.chartCardInner}>
+              <DonutChart
+                segments={[
+                  { value: apptStats.done,      color: '#22c55e' },
+                  { value: apptStats.upcoming,  color: '#818cf8' },
+                  { value: apptStats.missed,    color: '#ef4444' },
+                  { value: apptStats.cancelled, color: '#94a3b8' },
+                ]}
+                centerLabel={apptStats.total}
+                centerSub="Total"
+              />
+              <div className={styles.statusRows}>
+                <StatusRow label="Completed" count={apptStats.done}      total={apptStats.total} color="#22c55e" />
+                <StatusRow label="Upcoming"  count={apptStats.upcoming}  total={apptStats.total} color="#818cf8" />
+                <StatusRow label="Missed"    count={apptStats.missed}    total={apptStats.total} color="#ef4444" />
+                <StatusRow label="Cancelled" count={apptStats.cancelled} total={apptStats.total} color="#94a3b8" />
+              </div>
+            </div>
+            {apptStats.showUpRate !== null && (
+              <InsightRow items={[
+                { value: `${apptStats.showUpRate}%`, label: 'Show-up Rate' },
+                { value: `${apptStats.cancelRate ?? 0}%`, label: 'Cancelled' },
+              ]} />
+            )}
+            {apptStats.total > 0 && (
+              <InsightRow items={[
+                ...(apptStats.topType ? [{ value: capitalize(apptStats.topType.label), label: 'Most Booked Type' }] : []),
+                { value: apptStats.repeatNoShows, label: 'Repeat No-Shows' },
               ]} />
             )}
           </div>
@@ -363,6 +562,12 @@ export default function Reports({ onMenuClick }) {
                 <StatusRow label="Overdue"     count={taskStats.overdue} total={taskStats.total} color="#ef4444" />
               </div>
             </div>
+            {(taskStats.topCategory || taskStats.topPriority) && (
+              <InsightRow items={[
+                ...(taskStats.topCategory ? [{ value: capitalize(taskStats.topCategory.label), label: 'Most Common Category' }] : []),
+                ...(taskStats.topPriority ? [{ value: capitalize(taskStats.topPriority.label), label: 'Top Priority (Open Tasks)' }] : []),
+              ]} />
+            )}
           </div>
         </Section>
 
@@ -371,23 +576,25 @@ export default function Reports({ onMenuClick }) {
             <div className={styles.chartCardInner}>
               <DonutChart
                 segments={[
-                  { value: custStats.newClients,    color: '#22c55e' },
+                  { value: custStats.newCount,      color: '#22c55e' },
                   { value: custStats.repeatCount,   color: '#818cf8' },
+                  { value: custStats.activeCount,   color: '#fb923c' },
                   { value: custStats.inactiveCount, color: '#94a3b8' },
                 ]}
                 centerLabel={custStats.total}
                 centerSub="Clients"
               />
               <div className={styles.statusRows}>
-                <StatusRow label="New"      count={custStats.newClients}    total={custStats.total} color="#22c55e" />
-                <StatusRow label="Repeat"   count={custStats.repeatCount}   total={custStats.total} color="#818cf8" />
-                <StatusRow label="Inactive" count={custStats.inactiveCount} total={custStats.total} color="#94a3b8" />
+                <StatusRow label="New"           count={custStats.newCount}      total={custStats.total} color="#22c55e" />
+                <StatusRow label="Repeat"        count={custStats.repeatCount}   total={custStats.total} color="#818cf8" />
+                <StatusRow label="One-time"      count={custStats.activeCount}   total={custStats.total} color="#fb923c" />
+                <StatusRow label="No Orders Yet" count={custStats.inactiveCount} total={custStats.total} color="#94a3b8" />
               </div>
             </div>
             <InsightRow items={[
-              { value: custStats.newClients,  label: 'New This Period' },
-              { value: custStats.repeatCount, label: 'Repeat Clients'  },
-              { value: custStats.avgOrders,   label: 'Avg Orders'      },
+              { value: custStats.newCount,    label: 'New This Period'      },
+              { value: custStats.repeatCount, label: 'Repeat Clients'       },
+              { value: custStats.avgOrders,   label: 'Avg Orders / Client'  },
             ]} />
           </div>
         </Section>
