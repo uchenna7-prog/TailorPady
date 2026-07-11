@@ -71,6 +71,7 @@ export default function ReceiptViewer({
   hideDesign          = false,
   reopenTemplateModal = false,
   onReopenTemplateModalHandled,
+  returnPath          = null,
 }) {
 
   const { generalSettings, updateManyGeneralSettings } = useGeneralSettings()
@@ -110,10 +111,9 @@ export default function ReceiptViewer({
   const orderTotal     = receipt.orderPrice ? parseFloat(receipt.orderPrice) : cumulativePaid
   const isFullPay      = cumulativePaid >= orderTotal && orderTotal > 0
 
-  const returnTo = {
-    customerId: customer.id,
-    receiptId:  receipt.id,
-  }
+  const returnTo = returnPath
+    ? { returnPath, receiptId: receipt.id }
+    : { customerId: customer.id, receiptId: receipt.id }
 
   const templateModalReturnTo = {
     ...returnTo,

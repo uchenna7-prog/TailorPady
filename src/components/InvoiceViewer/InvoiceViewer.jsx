@@ -75,6 +75,7 @@ export default function InvoiceViewer({
   hideDesign          = false,
   reopenTemplateModal = false,
   onReopenTemplateModalHandled,
+  returnPath          = null,
 }) {
 
   const { generalSettings, updateManyGeneralSettings } = useGeneralSettings()
@@ -111,10 +112,9 @@ export default function InvoiceViewer({
   const brandCSSVars = getBrandCSSVars(snapShotedInvoiceBrandSettings.colour)
   const filename     = `Invoice-${invoice.number}-${customer.name.replace(/\s+/g, '_')}.pdf`
 
-  const returnTo = {
-    customerId: customer.id,
-    invoiceId:  invoice.id,
-  }
+  const returnTo = returnPath
+    ? { returnPath, invoiceId: invoice.id }
+    : { customerId: customer.id, invoiceId: invoice.id }
 
   const templateModalReturnTo = {
     ...returnTo,

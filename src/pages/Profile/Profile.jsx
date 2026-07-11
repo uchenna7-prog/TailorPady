@@ -125,6 +125,16 @@ export default function Profile({ onMenuClick, isPremium = false, onUpgrade = ()
           reopenTemplateModal:  returnTo.reopenTemplateModal ?? false,
         },
       })
+    } else if (returnTo.returnPath) {
+      navigate(returnTo.returnPath, {
+        state: {
+          reopenInvoiceId:     returnTo.invoiceId ?? null,
+          reopenReceiptId:     returnTo.receiptId ?? null,
+          reopenMissingFields: returnTo.reopenMissingFields ?? false,
+          completedModal:      returnTo.completedModal ?? null,
+          completedFields:     returnTo.completedFields ?? [],
+        },
+      })
     } else if (returnTo.reopenTemplateModal) {
       navigate('/settings', {
         state: { reopenTemplateModal: true },

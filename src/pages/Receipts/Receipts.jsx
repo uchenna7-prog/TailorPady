@@ -1,4 +1,5 @@
 import { useState, useRef, useCallback, useEffect } from 'react'
+import { useLocation, useNavigate } from 'react-router-dom'
 import { useGeneralSettings } from '../../contexts/GeneralSettingsContext'
 import { useOrders } from '../../contexts/OrdersContext'
 import { useReceipts } from '../../contexts/ReceiptContext'
@@ -78,6 +79,9 @@ export default function Receipts({ onMenuClick }) {
 
   const currency = generalSettings.invoiceCurrency || '₦'
 
+  const location = useLocation()
+  const navigate  = useNavigate()
+
   const [activeTab,       setActiveTab]       = useState('all')
   const [viewing,         setViewing]         = useState(null)
   const [search,          setSearch]          = useState('')
@@ -85,6 +89,9 @@ export default function Receipts({ onMenuClick }) {
   const [swipeProgress,   setSwipeProgress]   = useState(0)
   const [tabMeasurements, setTabMeasurements] = useState([])
   const [toastMsg,        setToastMsg]        = useState('')
+  const [pendingReopen, setPendingReopen] = useState(false)
+  const [pendingCompletedModal, setPendingCompletedModal] = useState(null)
+  const [pendingCompletedFields, setPendingCompletedFields] = useState([])
 
   const toastTimerRef   = useRef(null)
   const touchStartX     = useRef(null)
@@ -136,6 +143,23 @@ export default function Receipts({ onMenuClick }) {
       activeEl.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' })
     }
   }, [activeTab, activeTabIdx])
+
+  useEffect(() => {
+    const navState = location.state
+    if (!navState?.reopenReceiptId) return
+
+    const match = allReceipts.find(rec => rec.id === navState.reopenReceiptId)
+    if (match) {
+      setViewing(match)
+      if (navState.reopenMissingFields) {
+        setPendingReopen(true)
+        setPendingCompletedModal(navState.completedModal ?? null)
+        setPendingCompletedFields(navState.completedFields ?? [])
+      }
+    }
+
+    navigate(location.pathname, { replace: true, state: null })
+  }, [location.state, allReceipts])
 
   const orderItemsMap = {}
   for (const order of allOrders) {
@@ -394,6 +418,15 @@ export default function Receipts({ onMenuClick }) {
           }}
           customerData={viewingCustomerData}
           hideDesign
+          returnPath="/receipts"
+          reopenMissingFields={pendingReopen}
+          completedModal={pendingCompletedModal}
+          completedFields={pendingCompletedFields}
+          onReopenMissingFieldsHandled={() => {
+            setPendingReopen(false)
+            setPendingCompletedModal(null)
+            setPendingCompletedFields([])
+          }}
           onClose={() => setViewing(null)}
           onDelete={async (id) => {
             try {

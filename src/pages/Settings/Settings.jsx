@@ -125,15 +125,29 @@ export default function Settings({ onMenuClick }) {
 
   function returnToOriginIfAny() {
     if (!returnTo) return
-    navigate(`/customers/${returnTo.customerId}`, {
-      state: {
-        reopenInvoiceId: returnTo.invoiceId,
-        reopenMissingFields: returnTo.reopenMissingFields ?? false,
-        completedModal: returnTo.completedModal ?? null,
-        completedFields: returnTo.completedFields ?? [],
-        reopenTemplateModal: returnTo.reopenTemplateModal ?? false,
-      },
-    })
+
+    if (returnTo.customerId) {
+      navigate(`/customers/${returnTo.customerId}`, {
+        state: {
+          reopenInvoiceId: returnTo.invoiceId,
+          reopenMissingFields: returnTo.reopenMissingFields ?? false,
+          completedModal: returnTo.completedModal ?? null,
+          completedFields: returnTo.completedFields ?? [],
+          reopenTemplateModal: returnTo.reopenTemplateModal ?? false,
+        },
+      })
+    } else if (returnTo.returnPath) {
+      navigate(returnTo.returnPath, {
+        state: {
+          reopenInvoiceId: returnTo.invoiceId ?? null,
+          reopenReceiptId: returnTo.receiptId ?? null,
+          reopenMissingFields: returnTo.reopenMissingFields ?? false,
+          completedModal: returnTo.completedModal ?? null,
+          completedFields: returnTo.completedFields ?? [],
+        },
+      })
+    }
+
     setReturnTo(null)
   }
 
