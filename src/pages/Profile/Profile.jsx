@@ -511,6 +511,7 @@ export default function Profile({ onMenuClick, isPremium = false, onUpgrade = ()
       <ConfirmSheet
         open={logoutConfirm}
         title="Log Out?"
+        confirmText = 'Log Out'
         onConfirm={handleLogout}
         onCancel={() => setLogoutConfirm(false)}
       />
