@@ -16,23 +16,23 @@
   border-top: 1px solid var(--border);
 }
 
-.confirmSheet h4 { 
-    font-size: 1rem; 
-    font-weight: 800; 
-    color: var(--text); 
-    margin-bottom: 6px; 
+.confirmSheet h4 {
+  font-size: 1rem;
+  font-weight: 800;
+  color: var(--text);
+  margin-bottom: 6px;
 }
 
-.confirmSheet p { 
-    font-size: 0.8rem; 
-    color: var(--text2); 
-    margin-bottom: 20px; 
+.confirmSheet p {
+  font-size: 0.8rem;
+  color: var(--text2);
+  margin-bottom: 20px;
 }
 
-.confirmActions { 
-    display: flex; 
-    flex-direction: column; 
-    gap: 10px; 
+.confirmActions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
 }
 
 .btnConfirmDel {
@@ -45,6 +45,11 @@
   font-family: 'Manrope', sans-serif;
   font-size: 0.85rem;
   cursor: pointer;
+  transition: opacity 0.15s;
+}
+
+.btnConfirmDel:hover {
+  opacity: 0.88;
 }
 
 .btnConfirmCancel {
@@ -57,4 +62,25 @@
   font-family: 'Manrope', sans-serif;
   font-size: 0.85rem;
   cursor: pointer;
+  transition: background 0.15s;
+}
+
+.btnConfirmCancel:hover {
+  background: var(--border);
+}
+
+@media (min-width: 640px) {
+  .confirmOverlay {
+    align-items: center;
+    justify-content: center;
+  }
+
+  .confirmSheet {
+    width: 100%;
+    max-width: 420px;
+    border-radius: 20px;
+    border: 1px solid var(--border);
+    border-top: 1px solid var(--border);
+    padding: 28px 24px;
+  }
 }
