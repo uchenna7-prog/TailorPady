@@ -60,7 +60,7 @@
   line-height: 1.4;
   color: var(--text2);
   box-shadow: 0 8px 24px rgba(0,0,0,0.14);
-  z-index: 350;
+  z-index: 100;
   animation: statInfoDropIn 0.16s ease;
 }
 
