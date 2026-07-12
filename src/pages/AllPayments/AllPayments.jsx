@@ -150,11 +150,6 @@ function PaymentRow({ row, isLast, onTap, orderItems }) {
       <div className={styles.info}>
         <div className={styles.titleRow}>
           <span className={styles.desc}>{row.orderDesc || 'Payment'}</span>
-          {isPartInstall && (
-            <span className={styles.installBadge}>
-              {row.installIndex}/{row.totalInstallments}
-            </span>
-          )}
         </div>
 
         <div className={styles.metaRow}>
@@ -182,7 +177,7 @@ function PaymentRow({ row, isLast, onTap, orderItems }) {
           <div className={styles.progressWrapRight}>
             <div
               className={styles.progressBarRight}
-              style={{ width: `${pct}%`, background: pct >= 100 ? '#15803d' : sm.color }}
+              style={{ width: `${pct}%`, background: sm.color }}
             />
           </div>
         )}
@@ -220,12 +215,23 @@ function PaymentDetail({ row, onClose, onNavigateToCustomer, orderItems }) {
       onClick={e => e.target === e.currentTarget && onClose()}
     >
       <div className={styles.fullScreenModal}>
-        <Header
-          type="back"
-          title="Payment Details"
-          onBackClick={onClose}
-          backIcon="arrow_back_ios"
-        />
+        <div className={styles.detailHandle} />
+
+        <div className={styles.mobileHeader}>
+          <button className={styles.mobileCloseBtn} onClick={onClose}>
+            <span className="mi" style={{ fontSize: '1.35rem' }}>close</span>
+          </button>
+          <div className={styles.mobileHeaderTitle}>Payment Details</div>
+        </div>
+
+        <div className={styles.desktopHeaderWrap}>
+          <Header
+            type="back"
+            title="Payment Details"
+            onBackClick={onClose}
+            backIcon="arrow_back_ios"
+          />
+        </div>
 
         <div className={styles.modalBody}>
 

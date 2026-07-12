@@ -397,15 +397,29 @@ function ItemDetail({ item, onClose, onEdit, onDelete, onAdjust }) {
         onClick={e => e.target === e.currentTarget && onClose()}
       >
         <div className={styles.itemDetailModal}>
-          <Header
-            type="back"
-            title="Item Details"
-            onBackClick={onClose}
-            backIcon="arrow_back_ios"
-            customActions={[
-              { icon: 'delete_outline', onClick: onDelete, color: 'var(--danger)' }
-            ]}
-          />
+          <div className={styles.detailHandle} />
+
+          <div className={styles.mobileHeader}>
+            <button className={styles.mobileCloseBtn} onClick={onClose}>
+              <span className="mi" style={{ fontSize: '1.35rem' }}>close</span>
+            </button>
+            <div className={styles.mobileHeaderTitle}>Item Details</div>
+            <button className={styles.mobileHeaderDelete} onClick={onDelete}>
+              <span className="mi" style={{ fontSize: '1.1rem' }}>delete_outline</span>
+            </button>
+          </div>
+
+          <div className={styles.desktopHeaderWrap}>
+            <Header
+              type="back"
+              title="Item Details"
+              onBackClick={onClose}
+              backIcon="arrow_back_ios"
+              customActions={[
+                { icon: 'delete_outline', onClick: onDelete, color: 'var(--danger)' }
+              ]}
+            />
+          </div>
 
           <div className={styles.modalBody}>
 
