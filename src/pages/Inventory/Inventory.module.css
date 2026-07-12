@@ -1,3 +1,5 @@
+/* src/pages/Inventory/Inventory.module.css */
+
 .page {
   background: var(--bg);
   min-height: 100dvh;
@@ -5,6 +7,7 @@
   flex-direction: column;
 }
 
+/* -- SUMMARY STRIP -- */
 .summaryStrip {
   display: flex;
   align-items: center;
@@ -947,12 +950,25 @@
   }
 
   .sheetOverlay {
-    left: var(--sidebar-width, 280px);
+    left:            var(--sidebar-width, 280px);
+    align-items:     stretch;
+    justify-content: flex-end;
   }
 
   .sheet {
+    width:         min(480px, 100%);
     max-width:     480px;
-    margin:        0 auto;
-    border-radius: 20px 20px 0 0;
+    height:        100dvh;
+    max-height:    100dvh !important;
+    margin:        0;
+    border-radius: 0;
+    border-top:    none;
+    border-left:   1px solid var(--border);
+    animation:     sheetSlideInRight 0.32s cubic-bezier(0.4, 0, 0.2, 1);
   }
+}
+
+@keyframes sheetSlideInRight {
+  from { transform: translateX(100%); }
+  to   { transform: translateX(0); }
 }

@@ -301,7 +301,7 @@
   height: 56px;
   border-radius: 10px;
   background: var(--accent);
-  color: #fff;
+  color: var(--bg);
   border: none;
   display: flex;
   align-items: center;
@@ -399,7 +399,7 @@
   border-radius: 14px;
   border: none;
   background: var(--accent);
-  color: #fff;
+  color: var(--bg);
   font-family: 'Manrope', sans-serif;
   font-size: 0.85rem;
   font-weight: 800;
@@ -658,14 +658,27 @@
   opacity: 0.75;
 }
 
+@keyframes sheetSlideInRight {
+  from { transform: translateX(100%); }
+  to   { transform: translateX(0); }
+}
+
 @media (min-width: 769px) {
   .sheetOverlay {
-    left: var(--sidebar-width, 280px);
+    left:            var(--sidebar-width, 280px);
+    align-items:     stretch;
+    justify-content: flex-end;
   }
 
   .sheet {
+    width:         min(480px, 100%);
     max-width:     480px;
-    margin:        0 auto;
-    border-radius: 20px 20px 0 0;
+    height:        100dvh;
+    max-height:    100dvh;
+    margin:        0;
+    border-radius: 0;
+    border-top:    none;
+    border-left:   1px solid var(--border);
+    animation:     sheetSlideInRight 0.32s cubic-bezier(0.4, 0, 0.2, 1);
   }
 }

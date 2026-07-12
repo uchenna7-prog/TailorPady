@@ -2,6 +2,7 @@ import { useState, useRef } from 'react'
 import { useAuth } from '../../../../contexts/AuthContext'
 import { startPaystackPayment } from '../../../../services/paystackService'
 import { FREE_FEATURES, PRO_FEATURES } from '../../../../config/planFeatures'
+import Header from '../../../../components/Header/Header'
 import styles from './UpgradeModal.module.css'
 
 const TABS = [
@@ -80,163 +81,152 @@ export default function UpgradeModal({ onClose, onSuccess }) {
   }
 
   return (
-    <div className={styles.overlay} onClick={onClose}>
-      <div className={styles.sheet} onClick={e => e.stopPropagation()}>
+    <div className={styles.upgradeModalContainer}>
 
-        <div className={styles.fixedHeader}>
-          <div className={styles.handle} />
+      <Header
+        type="back"
+        title="TailorPady Pro"
+        onBackClick={onClose}
+        showBorderBottom={false}
+      />
 
-          <div className={styles.headerInner}>
-            <div className={styles.headerLeft}>
-              <span className={`mi ${styles.crownIcon}`}>workspace_premium</span>
-              <div className={styles.headerText}>
-                <div className={styles.title}>TailorPady Pro</div>
-                <div className={styles.subtitle}>Run your tailoring business like a pro</div>
+
+      <div className={styles.tabs}>
+        {TABS.map(tab => (
+          <button
+            key={tab.key}
+            className={`${styles.tabBtn} ${active === tab.key ? styles.tabActive : ''}`}
+            onClick={() => handleTab(tab.key)}
+          >
+            {tab.label}
+            {tab.pill && <span className={styles.savePill}>{tab.pill}</span>}
+          </button>
+        ))}
+      </div>
+
+      <div
+        className={styles.scrollBody}
+        ref={scrollRef}
+        onTouchStart={handleTouchStart}
+        onTouchEnd={handleTouchEnd}
+      >
+
+        {active === 'free' && (
+          <div className={styles.planCard} key="free">
+            <div className={styles.planHeader}>
+              <div className={styles.planTitleRow}>
+                <div className={styles.planName}>Free Plan</div>
+                <div className={styles.planCurrentBadge}>Current plan</div>
+              </div>
+              <div className={styles.planPriceRow}>
+                <span className={styles.planAmount}>₦0</span>
+                <span className={styles.planPeriod}>/month</span>
               </div>
             </div>
-            <button className={styles.closeBtn} onClick={onClose}>
-              <span className="mi">close</span>
+            <div className={styles.divider} />
+            <div className={styles.featureList}>
+              {FREE_FEATURES.map((f, i) => (
+                <div key={i} className={styles.featureRow}>
+                  <div className={styles.featureIconWrap}>
+                    <span className="mi" style={{ fontSize: '0.85rem' }}>{f.icon}</span>
+                  </div>
+                  <span className={styles.featureLabel}>{f.label}</span>
+                </div>
+              ))}
+            </div>
+            <button className={`${styles.ctaBtn} ${styles.ctaBtnFree}`} disabled>
+              <span className="mi" style={{ fontSize: '1rem' }}>check_circle</span>
+              You're on this plan
             </button>
           </div>
+        )}
 
-          <div className={styles.tabs}>
-            {TABS.map(tab => (
-              <button
-                key={tab.key}
-                className={`${styles.tabBtn} ${active === tab.key ? styles.tabActive : ''}`}
-                onClick={() => handleTab(tab.key)}
-              >
-                {tab.label}
-                {tab.pill && <span className={styles.savePill}>{tab.pill}</span>}
-              </button>
-            ))}
+        {active === 'monthly' && (
+          <div className={`${styles.planCard} ${styles.planCardPro}`} key="monthly">
+            <div className={styles.planCardProGlow} />
+            <div className={styles.planHeader}>
+              <div className={styles.planTitleRow}>
+                <div className={styles.planNamePro}>Pro Monthly</div>
+                <div className={styles.planPopularBadge}>
+                  <span className="mi" style={{ fontSize: '0.65rem' }}>star</span>
+                  Pro
+                </div>
+              </div>
+              <div className={styles.planPriceRow}>
+                <span className={styles.planAmount}>₦1,200</span>
+                <span className={styles.planPeriod}>/month</span>
+              </div>
+              <div className={styles.planBilled}>Billed monthly · Cancel anytime</div>
+            </div>
+            <div className={styles.divider} />
+            <div className={styles.featureList}>
+              {PRO_FEATURES.map((f, i) => (
+                <div key={i} className={styles.featureRow}>
+                  <div className={`${styles.featureIconWrap} ${styles.featureIconPro}`}>
+                    <span className="mi" style={{ fontSize: '0.85rem' }}>{f.icon}</span>
+                  </div>
+                  <span className={styles.featureLabelPro}>{f.label}</span>
+                </div>
+              ))}
+            </div>
+            <button
+              className={styles.ctaBtn}
+              onClick={() => handleUpgrade('monthly')}
+              disabled={payingPlan === 'monthly'}
+            >
+              <span className="mi" style={{ fontSize: '1rem' }}>workspace_premium</span>
+              {payingPlan === 'monthly' ? 'Processing…' : 'Start Pro — ₦1,200/month'}
+            </button>
+            {errorMsg && <p className={styles.fine} style={{ color: '#ef4444' }}>{errorMsg}</p>}
+            <p className={styles.fine}>No hidden charges · Instant activation</p>
           </div>
-        </div>
+        )}
 
-        <div
-          className={styles.scrollBody}
-          ref={scrollRef}
-          onTouchStart={handleTouchStart}
-          onTouchEnd={handleTouchEnd}
-        >
-
-          {active === 'free' && (
-            <div className={styles.planCard} key="free">
-              <div className={styles.planHeader}>
-                <div className={styles.planTitleRow}>
-                  <div className={styles.planName}>Free Plan</div>
-                  <div className={styles.planCurrentBadge}>Current plan</div>
-                </div>
-                <div className={styles.planPriceRow}>
-                  <span className={styles.planAmount}>₦0</span>
-                  <span className={styles.planPeriod}>/month</span>
+        {active === 'annual' && (
+          <div className={`${styles.planCard} ${styles.planCardPro}`} key="annual">
+            <div className={styles.planCardProGlow} />
+            <div className={styles.planHeader}>
+              <div className={styles.planTitleRow}>
+                <div className={styles.planNamePro}>Pro Annual</div>
+                <div className={styles.planPopularBadge}>
+                  <span className="mi" style={{ fontSize: '0.65rem' }}>star</span>
+                  Most popular
                 </div>
               </div>
-              <div className={styles.divider} />
-              <div className={styles.featureList}>
-                {FREE_FEATURES.map((f, i) => (
-                  <div key={i} className={styles.featureRow}>
-                    <div className={styles.featureIconWrap}>
-                      <span className="mi" style={{ fontSize: '0.85rem' }}>{f.icon}</span>
-                    </div>
-                    <span className={styles.featureLabel}>{f.label}</span>
-                  </div>
-                ))}
+              <div className={styles.planPriceRow}>
+                <span className={styles.planAmount}>₦833</span>
+                <span className={styles.planPeriod}>/month</span>
               </div>
-              <button className={`${styles.ctaBtn} ${styles.ctaBtnFree}`} disabled>
-                <span className="mi" style={{ fontSize: '1rem' }}>check_circle</span>
-                You're on this plan
-              </button>
+              <div className={styles.planBilled}>Billed as ₦9,999/year</div>
+              <div className={styles.planSavingsBadge}>
+                <span className="mi" style={{ fontSize: '0.75rem' }}>savings</span>
+                You save ₦4,401 vs monthly
+              </div>
             </div>
-          )}
-
-          {active === 'monthly' && (
-            <div className={`${styles.planCard} ${styles.planCardPro}`} key="monthly">
-              <div className={styles.planCardProGlow} />
-              <div className={styles.planHeader}>
-                <div className={styles.planTitleRow}>
-                  <div className={styles.planNamePro}>Pro Monthly</div>
-                  <div className={styles.planPopularBadge}>
-                    <span className="mi" style={{ fontSize: '0.65rem' }}>star</span>
-                    Pro
+            <div className={styles.divider} />
+            <div className={styles.featureList}>
+              {PRO_FEATURES.map((f, i) => (
+                <div key={i} className={styles.featureRow}>
+                  <div className={`${styles.featureIconWrap} ${styles.featureIconPro}`}>
+                    <span className="mi" style={{ fontSize: '0.85rem' }}>{f.icon}</span>
                   </div>
+                  <span className={styles.featureLabelPro}>{f.label}</span>
                 </div>
-                <div className={styles.planPriceRow}>
-                  <span className={styles.planAmount}>₦1,200</span>
-                  <span className={styles.planPeriod}>/month</span>
-                </div>
-                <div className={styles.planBilled}>Billed monthly · Cancel anytime</div>
-              </div>
-              <div className={styles.divider} />
-              <div className={styles.featureList}>
-                {PRO_FEATURES.map((f, i) => (
-                  <div key={i} className={styles.featureRow}>
-                    <div className={`${styles.featureIconWrap} ${styles.featureIconPro}`}>
-                      <span className="mi" style={{ fontSize: '0.85rem' }}>{f.icon}</span>
-                    </div>
-                    <span className={styles.featureLabelPro}>{f.label}</span>
-                  </div>
-                ))}
-              </div>
-              <button
-                className={styles.ctaBtn}
-                onClick={() => handleUpgrade('monthly')}
-                disabled={payingPlan === 'monthly'}
-              >
-                <span className="mi" style={{ fontSize: '1rem' }}>workspace_premium</span>
-                {payingPlan === 'monthly' ? 'Processing…' : 'Start Pro — ₦1,200/month'}
-              </button>
-              {errorMsg && <p className={styles.fine} style={{ color: '#ef4444' }}>{errorMsg}</p>}
-              <p className={styles.fine}>No hidden charges · Instant activation</p>
+              ))}
             </div>
-          )}
+            <button
+              className={styles.ctaBtn}
+              onClick={() => handleUpgrade('annual')}
+              disabled={payingPlan === 'annual'}
+            >
+              <span className="mi" style={{ fontSize: '1rem' }}>workspace_premium</span>
+              {payingPlan === 'annual' ? 'Processing…' : 'Start Pro — ₦9,999/year'}
+            </button>
+            {errorMsg && <p className={styles.fine} style={{ color: '#ef4444' }}>{errorMsg}</p>}
+            <p className={styles.fine}>No hidden charges · Instant activation</p>
+          </div>
+        )}
 
-          {active === 'annual' && (
-            <div className={`${styles.planCard} ${styles.planCardPro}`} key="annual">
-              <div className={styles.planCardProGlow} />
-              <div className={styles.planHeader}>
-                <div className={styles.planTitleRow}>
-                  <div className={styles.planNamePro}>Pro Annual</div>
-                  <div className={styles.planPopularBadge}>
-                    <span className="mi" style={{ fontSize: '0.65rem' }}>star</span>
-                    Most popular
-                  </div>
-                </div>
-                <div className={styles.planPriceRow}>
-                  <span className={styles.planAmount}>₦833</span>
-                  <span className={styles.planPeriod}>/month</span>
-                </div>
-                <div className={styles.planBilled}>Billed as ₦9,999/year</div>
-                <div className={styles.planSavingsBadge}>
-                  <span className="mi" style={{ fontSize: '0.75rem' }}>savings</span>
-                  You save ₦4,401 vs monthly
-                </div>
-              </div>
-              <div className={styles.divider} />
-              <div className={styles.featureList}>
-                {PRO_FEATURES.map((f, i) => (
-                  <div key={i} className={styles.featureRow}>
-                    <div className={`${styles.featureIconWrap} ${styles.featureIconPro}`}>
-                      <span className="mi" style={{ fontSize: '0.85rem' }}>{f.icon}</span>
-                    </div>
-                    <span className={styles.featureLabelPro}>{f.label}</span>
-                  </div>
-                ))}
-              </div>
-              <button
-                className={styles.ctaBtn}
-                onClick={() => handleUpgrade('annual')}
-                disabled={payingPlan === 'annual'}
-              >
-                <span className="mi" style={{ fontSize: '1rem' }}>workspace_premium</span>
-                {payingPlan === 'annual' ? 'Processing…' : 'Start Pro — ₦9,999/year'}
-              </button>
-              {errorMsg && <p className={styles.fine} style={{ color: '#ef4444' }}>{errorMsg}</p>}
-              <p className={styles.fine}>No hidden charges · Instant activation</p>
-            </div>
-          )}
-
-        </div>
       </div>
     </div>
   )

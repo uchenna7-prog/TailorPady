@@ -48,38 +48,42 @@ export default function ManagePlanModal({ uid, plan, nextRenewal, onClose, onCan
           </button>
         </div>
 
-        <div className={styles.featureList}>
-          {PRO_FEATURES.map((f, i) => (
-            <div key={i} className={styles.featureRow}>
-              <div className={styles.featureIconWrap}>
-                <span className="mi" style={{ fontSize: '0.85rem' }}>{f.icon}</span>
+        <div className={styles.body}>
+
+          <div className={styles.featureList}>
+            {PRO_FEATURES.map((f, i) => (
+              <div key={i} className={styles.featureRow}>
+                <div className={styles.featureIconWrap}>
+                  <span className="mi" style={{ fontSize: '0.85rem' }}>{f.icon}</span>
+                </div>
+                <span className={styles.featureLabel}>{f.label}</span>
               </div>
-              <span className={styles.featureLabel}>{f.label}</span>
-            </div>
-          ))}
-        </div>
-
-        {!confirmingCancel && (
-          <button className={styles.cancelBtn} onClick={() => setConfirmingCancel(true)}>
-            Cancel Subscription
-          </button>
-        )}
-
-        {confirmingCancel && (
-          <div className={styles.confirmBox}>
-            <div className={styles.confirmText}>
-              You'll keep Pro features until {formatDate(nextRenewal)}, then move to the Free plan.
-            </div>
-            <div className={styles.confirmActions}>
-              <button className={styles.keepBtn} onClick={() => setConfirmingCancel(false)} disabled={cancelling}>
-                Keep Plan
-              </button>
-              <button className={styles.confirmCancelBtn} onClick={handleCancel} disabled={cancelling}>
-                {cancelling ? 'Cancelling…' : 'Confirm Cancel'}
-              </button>
-            </div>
+            ))}
           </div>
-        )}
+
+          {!confirmingCancel && (
+            <button className={styles.cancelBtn} onClick={() => setConfirmingCancel(true)}>
+              Cancel Subscription
+            </button>
+          )}
+
+          {confirmingCancel && (
+            <div className={styles.confirmBox}>
+              <div className={styles.confirmText}>
+                You'll keep Pro features until {formatDate(nextRenewal)}, then move to the Free plan.
+              </div>
+              <div className={styles.confirmActions}>
+                <button className={styles.keepBtn} onClick={() => setConfirmingCancel(false)} disabled={cancelling}>
+                  Keep Plan
+                </button>
+                <button className={styles.confirmCancelBtn} onClick={handleCancel} disabled={cancelling}>
+                  {cancelling ? 'Cancelling…' : 'Confirm Cancel'}
+                </button>
+              </div>
+            </div>
+          )}
+
+        </div>
       </div>
     </div>
   )
