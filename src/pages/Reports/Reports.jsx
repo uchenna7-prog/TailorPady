@@ -587,6 +587,12 @@ export default function Reports({ onMenuClick }) {
                 <StatusRow label="Overdue"     count={taskStats.overdue} total={taskStats.total} color="#ef4444" />
               </div>
             </div>
+            {taskStats.total > 0 && (
+              <InsightRow items={[
+                { value: `${pct(taskStats.done, taskStats.total)}%`, label: 'Completion Rate' },
+                { value: `${pct(taskStats.overdue, taskStats.total)}%`, label: 'Overdue Rate' },
+              ]} />
+            )}
           </div>
         </Section>
 
