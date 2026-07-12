@@ -691,13 +691,58 @@
   padding-bottom: 0;
 }
 
+.installmentBlockCurrent {
+  position: relative;
+  padding-left: 14px;
+}
+
+.installmentBlockCurrent::before {
+  content: '';
+  position: absolute;
+  left: -2px;
+  top: 4px;
+  bottom: 4px;
+  width: 3px;
+  border-radius: 3px;
+  background: var(--accent);
+}
+
 .installmentHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
   font-size: 0.58rem;
   font-weight: 800;
   color: var(--text3);
   text-transform: uppercase;
   letter-spacing: 0.5px;
   margin-bottom: 10px;
+}
+
+.currentBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 0.56rem;
+  font-weight: 800;
+  color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 12%, transparent);
+  border: 1px solid color-mix(in srgb, var(--accent) 32%, transparent);
+  border-radius: 20px;
+  padding: 3px 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.currentBadgeDot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--accent);
+  flex-shrink: 0;
 }
 
 .installmentLineLeft {

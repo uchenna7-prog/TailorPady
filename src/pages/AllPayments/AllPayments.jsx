@@ -212,6 +212,7 @@ function PaymentDetail({ row, onClose, onNavigateToCustomer, orderItems }) {
   const hasPrevious   = (row.previousInstallments?.length > 0) || previousPaid > 0
   const rawPct        = fullPrice > 0 ? (totalPaid / fullPrice) * 100 : 0
   const progressPercent = Math.round(rawPct >= 100 ? 100 : Math.min(99, rawPct))
+  const isMultiInstallment = row.totalInstallments > 1
 
   return (
     <div
@@ -252,7 +253,7 @@ function PaymentDetail({ row, onClose, onNavigateToCustomer, orderItems }) {
               <span className={styles.statusDot} style={{ background: sm.color }} />
               <span style={{ color: sm.color }}>
                 {sm.label}
-                {row.totalInstallments > 1 ? ` · ${row.installIndex}/${row.totalInstallments}` : ''}
+                {isMultiInstallment ? ` · ${row.installIndex}/${row.totalInstallments}` : ''}
               </span>
             </div>
           </div>
@@ -334,7 +335,9 @@ function PaymentDetail({ row, onClose, onNavigateToCustomer, orderItems }) {
 
               return (
                 <div key={i} className={styles.installmentBlock}>
-                  <div className={styles.installmentHeader}>Installment {i + 1}</div>
+                  <div className={styles.installmentHeader}>
+                    <span>Installment {i + 1}</span>
+                  </div>
                   <div className={styles.installmentLineLeft}>
                     <div className={styles.installmentLineIcon}>
                       <span className="mi" style={{ fontSize: '0.95rem', color: '#22c55e' }}>payments</span>
@@ -367,9 +370,17 @@ function PaymentDetail({ row, onClose, onNavigateToCustomer, orderItems }) {
               )
             })}
 
-            <div className={styles.installmentBlock}>
+            <div
+              className={`${styles.installmentBlock} ${isMultiInstallment ? styles.installmentBlockCurrent : ''}`}
+            >
               <div className={styles.installmentHeader}>
-                {row.totalInstallments > 1 ? `Installment ${row.installIndex}` : 'This Payment'}
+                <span>{isMultiInstallment ? `Installment ${row.installIndex}` : 'This Payment'}</span>
+                {isMultiInstallment && (
+                  <span className={styles.currentBadge}>
+                    <span className={styles.currentBadgeDot} />
+                    Current
+                  </span>
+                )}
               </div>
               <div className={styles.installmentLineLeft}>
                 <div className={styles.installmentLineIcon}>
