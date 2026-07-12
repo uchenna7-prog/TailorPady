@@ -17,6 +17,8 @@ import BottomNav from '../../components/BottomNav/BottomNav'
 
 // ── Constants ─────────────────────────────────────────────────
 
+const DONUT_CIRCUMFERENCE = 2 * Math.PI * 26
+
 const CATEGORIES = [
   { id: 'fabric',    label: 'Fabric',    icon: 'layers'         },
   { id: 'thread',    label: 'Thread',    icon: 'linear_scale'   },
@@ -284,8 +286,8 @@ function ItemModal({ isOpen, editItem, onClose, onSave }) {
 // ── Adjust Quantity Sheet ─────────────────────────────────────
 
 function AdjustSheet({ item, onClose, onAdjust }) {
-  const [delta,  setDelta]  = useState('')
-  const [mode,   setMode]   = useState('use')   // 'use' | 'restock'
+  const [delta, setDelta] = useState('')
+  const [mode,  setMode]  = useState('use')   // 'use' | 'restock'
 
   if (!item) return null
 
@@ -303,180 +305,193 @@ function AdjustSheet({ item, onClose, onAdjust }) {
     : qty + (parseFloat(delta) || 0)
 
   return (
-    <div className={styles.sheetOverlay} onClick={e => e.target === e.currentTarget && onClose()}>
-      <div className={styles.sheet}>
-        <div className={styles.sheetHandle} />
+    <div className={styles.adjustSheetOverlay} onClick={e => e.target === e.currentTarget && onClose()}>
+      <div className={styles.adjustSheetPanel} onClick={e => e.stopPropagation()}>
+        <div className={styles.handle} />
 
-        <div className={styles.sheetHeader}>
-          <div className={styles.sheetTitle}>Adjust Stock</div>
-          <button onClick={onClose} style={{ background: 'none', border: 'none', color: 'var(--text2)', display: 'flex', cursor: 'pointer' }}>
-            <span className="mi" style={{ fontSize: '1.4rem' }}>close</span>
-          </button>
+        <div className={styles.adjustSheetTitle}>Adjust Stock</div>
+        <div className={styles.adjustSheetSubtitle}>{item.name}</div>
+
+        <div className={styles.adjustCurrent}>
+          Current: <strong>{item.quantity} {item.unit}</strong>
         </div>
 
-        <div className={styles.sheetBody}>
-          <div className={styles.adjustItemName}>{item.name}</div>
-          <div className={styles.adjustCurrent}>
-            Current: <strong>{item.quantity} {item.unit}</strong>
-          </div>
-
-          {/* Mode toggle */}
-          <div className={styles.adjustModeRow}>
-            <button
-              className={`${styles.modeBtn} ${mode === 'use' ? styles.modeBtnUse : ''}`}
-              onClick={() => setMode('use')}
-            >
-              <span className="mi" style={{ fontSize: '1rem' }}>remove_circle_outline</span>
-              Used / Remove
-            </button>
-            <button
-              className={`${styles.modeBtn} ${mode === 'restock' ? styles.modeBtnRestock : ''}`}
-              onClick={() => setMode('restock')}
-            >
-              <span className="mi" style={{ fontSize: '1rem' }}>add_circle_outline</span>
-              Restock / Add
-            </button>
-          </div>
-
-          <div className={styles.fieldGroup} style={{ marginTop: 18 }}>
-            <label className={styles.fieldLabel}>
-              {mode === 'use' ? 'Amount Used' : 'Amount Added'} ({item.unit})
-            </label>
-            <input
-              autoFocus
-              type="number"
-              inputMode="decimal"
-              className={styles.input}
-              placeholder="0"
-              value={delta}
-              onChange={e => setDelta(e.target.value)}
-            />
-          </div>
-
-          {delta && parseFloat(delta) > 0 && (
-            <div className={styles.adjustPreview}>
-              New quantity: <strong style={{ color: previewQty <= 0 ? '#ef4444' : previewQty <= (item.lowStockAt || 5) ? '#fb923c' : '#15803d' }}>
-                {previewQty} {item.unit}
-              </strong>
-            </div>
-          )}
-
+        <div className={styles.adjustModeRow}>
           <button
-            className={styles.adjustConfirmBtn}
-            onClick={handleConfirm}
-            disabled={!delta || parseFloat(delta) <= 0}
+            className={`${styles.modeBtn} ${mode === 'use' ? styles.modeBtnUse : ''}`}
+            onClick={() => setMode('use')}
           >
-            Confirm
+            <span className="mi" style={{ fontSize: '1rem' }}>remove_circle_outline</span>
+            Used / Remove
+          </button>
+          <button
+            className={`${styles.modeBtn} ${mode === 'restock' ? styles.modeBtnRestock : ''}`}
+            onClick={() => setMode('restock')}
+          >
+            <span className="mi" style={{ fontSize: '1rem' }}>add_circle_outline</span>
+            Restock / Add
           </button>
         </div>
+
+        <div className={styles.fieldGroup} style={{ marginTop: 18 }}>
+          <label className={styles.fieldLabel}>
+            {mode === 'use' ? 'Amount Used' : 'Amount Added'} ({item.unit})
+          </label>
+          <input
+            autoFocus
+            type="number"
+            inputMode="decimal"
+            className={styles.input}
+            placeholder="0"
+            value={delta}
+            onChange={e => setDelta(e.target.value)}
+          />
+        </div>
+
+        {delta && parseFloat(delta) > 0 && (
+          <div className={styles.adjustPreview}>
+            New quantity: <strong style={{ color: previewQty <= 0 ? '#ef4444' : previewQty <= (item.lowStockAt || 5) ? '#fb923c' : '#15803d' }}>
+              {previewQty} {item.unit}
+            </strong>
+          </div>
+        )}
+
+        <button
+          className={styles.btnPrimary}
+          onClick={handleConfirm}
+          disabled={!delta || parseFloat(delta) <= 0}
+        >
+          Confirm
+        </button>
       </div>
     </div>
   )
 }
 
-// ── Item Detail Sheet ─────────────────────────────────────────
+// ── Item Detail Modal ────────────────────────────────────────
 
 function ItemDetail({ item, onClose, onEdit, onDelete, onAdjust }) {
   if (!item) return null
+
   const cat    = CAT_MAP[item.category] ?? CAT_MAP.other
   const status = stockStatus(item)
   const sc     = STATUS_CONFIG[status]
+
   const [adjustOpen, setAdjustOpen] = useState(false)
+
+  const lowStockAt   = parseFloat(item.lowStockAt) || 5
+  const quantity      = parseFloat(item.quantity) || 0
+  const target         = Math.max(lowStockAt * 2, 1)
+  const stockPercent = Math.round(Math.min(100, (quantity / target) * 100))
+
+  const statusNote = status === 'out'
+    ? 'Out of stock'
+    : status === 'low'
+      ? 'Below threshold'
+      : 'Healthy stock'
 
   return (
     <>
-      <div className={styles.sheetOverlay} onClick={e => e.target === e.currentTarget && onClose()}>
-        <div className={styles.sheet} style={{ maxHeight: '88dvh' }}>
-          <div className={styles.sheetHandle} />
+      <div
+        className={styles.itemDetailBackdrop}
+        onClick={e => e.target === e.currentTarget && onClose()}
+      >
+        <div className={styles.itemDetailModal}>
+          <Header
+            type="back"
+            title="Item Details"
+            onBackClick={onClose}
+            backIcon="arrow_back_ios"
+            customActions={[
+              { icon: 'delete_outline', onClick: onDelete, color: 'var(--danger)' }
+            ]}
+          />
 
-          <div className={styles.sheetHeader}>
-            <div className={styles.sheetTitle}>Item Details</div>
-            <button onClick={onClose} style={{ background: 'none', border: 'none', color: 'var(--text2)', display: 'flex', cursor: 'pointer' }}>
-              <span className="mi" style={{ fontSize: '1.4rem' }}>close</span>
-            </button>
-          </div>
+          <div className={styles.modalBody}>
 
-          <div className={styles.sheetBody}>
-
-            {/* Hero row */}
-            <div className={styles.detailHero}>
-              <div className={styles.detailIconWrap}>
-                <span className="mi" style={{ fontSize: '1.8rem', color: sc.color }}>{cat.icon}</span>
+            <div className={styles.detailTitleRow}>
+              <div className={styles.detailIconWrap} style={{ background: sc.bg, borderColor: sc.border }}>
+                <span className="mi" style={{ fontSize: '1.5rem', color: sc.color }}>{cat.icon}</span>
               </div>
-              <div className={styles.detailHeroInfo}>
-                <div className={styles.detailName}>{item.name}</div>
-                {item.colour && <div className={styles.detailColour}>{item.colour}</div>}
-                <span
-                  className={styles.statusPill}
-                  style={{ background: sc.bg, color: sc.color, borderColor: sc.border, borderRadius: '6px' }}
-                >
-                  {sc.label}
-                </span>
+              <div>
+                <div className={styles.detailTitle}>{item.name}</div>
+                {item.colour && <div className={styles.detailSubtitle}>{item.colour}</div>}
               </div>
             </div>
 
-            {/* Stats grid */}
-            <div className={styles.detailGrid}>
-              <div className={styles.detailCell}>
-                <div className={styles.detailCellLabel}>Quantity</div>
-                <div className={styles.detailCellVal} style={{ color: sc.color, fontSize: '1.3rem' }}>
-                  {item.quantity}
-                </div>
-                <div className={styles.detailCellSub}>{item.unit}</div>
-              </div>
-              <div className={styles.detailCell}>
-                <div className={styles.detailCellLabel}>Category</div>
-                <div className={styles.detailCellVal}>{cat.label}</div>
-              </div>
-              <div className={styles.detailCell}>
-                <div className={styles.detailCellLabel}>Low Stock At</div>
-                <div className={styles.detailCellVal}>{item.lowStockAt ?? 5} {item.unit}</div>
-              </div>
-              <div className={styles.detailCell}>
-                <div className={styles.detailCellLabel}>Status</div>
-                <div className={styles.detailCellVal} style={{ color: sc.color }}>{sc.label}</div>
+            <div className={styles.statusRow}>
+              <div className={styles.chipLabel}>Stock Status</div>
+              <div className={styles.statusBadge} style={{ background: sc.bg, borderColor: sc.border }}>
+                <span className={styles.statusDot} style={{ background: sc.color }} />
+                <span style={{ color: sc.color }}>{sc.label}</span>
               </div>
             </div>
 
-            {/* Stock progress bar */}
-            {parseFloat(item.lowStockAt) > 0 && (
-              <div className={styles.stockBarWrap}>
-                <div className={styles.stockBarLabelRow}>
-                  <span className={styles.stockBarLabel}>Stock Level</span>
-                  <span className={styles.stockBarFigure}>{item.quantity} / {item.lowStockAt} threshold</span>
-                </div>
-                <div className={styles.stockBarTrack}>
-                  <div
-                    className={styles.stockBarFill}
-                    style={{
-                      width: `${Math.min(100, (parseFloat(item.quantity) / Math.max(parseFloat(item.lowStockAt) * 2, 1)) * 100)}%`,
-                      background: sc.color,
-                    }}
-                  />
-                </div>
+            <div className={styles.infoGrid}>
+              <div className={styles.infoGridCell}>
+                <div className={styles.infoGridLabel}>Category</div>
+                <div className={styles.infoGridValue}>{cat.label}</div>
               </div>
-            )}
+              <div className={styles.infoGridCell}>
+                <div className={styles.infoGridLabel}>Quantity</div>
+                <div className={styles.infoGridValue}>{item.quantity} {item.unit}</div>
+              </div>
+              <div className={styles.infoGridCell}>
+                <div className={styles.infoGridLabel}>Low Stock At</div>
+                <div className={styles.infoGridValue}>{lowStockAt} {item.unit}</div>
+              </div>
+              <div className={styles.infoGridCell}>
+                <div className={styles.infoGridLabel}>Unit</div>
+                <div className={styles.infoGridValue}>{item.unit}</div>
+              </div>
+            </div>
 
             {item.notes && (
-              <div className={styles.detailNotes}>
-                <div className={styles.detailNotesLabel}>Notes</div>
-                <p>{item.notes}</p>
+              <div className={styles.detailSectionCard}>
+                <div className={styles.detailSectionLabel}>Notes</div>
+                <p className={styles.detailNoteText}>{item.notes}</p>
               </div>
             )}
 
-            {/* Actions */}
-            <button className={styles.adjustBtn} onClick={() => setAdjustOpen(true)}>
-              <span className="mi" style={{ fontSize: '1rem' }}>tune</span>
-              Adjust Stock
-            </button>
+            <div className={styles.premiumCard}>
+              <div className={styles.cardHeader}>
+                <span className={styles.cardLabel}>Stock Level</span>
+              </div>
+              <div className={styles.donutRow}>
+                <div className={styles.donutContent}>
+                  <div className={styles.cardValue}>{item.quantity} {item.unit} in stock</div>
+                  <div className={styles.donutMeta}>
+                    <span className="mi" style={{ fontSize: '0.82rem' }}>warning_amber</span>
+                    <span style={{ color: sc.color }}>{statusNote}</span>
+                  </div>
+                </div>
+                <div className={styles.donutWrap}>
+                  <svg viewBox="0 0 64 64" className={styles.donutSvg}>
+                    <circle cx="32" cy="32" r="26" fill="none" stroke="var(--surface2)" strokeWidth="7" />
+                    <circle
+                      cx="32" cy="32" r="26" fill="none"
+                      stroke={sc.color}
+                      strokeWidth="7"
+                      strokeLinecap="round"
+                      strokeDasharray={DONUT_CIRCUMFERENCE}
+                      strokeDashoffset={DONUT_CIRCUMFERENCE - (stockPercent / 100) * DONUT_CIRCUMFERENCE}
+                      transform="rotate(-90 32 32)"
+                      className={styles.donutProgress}
+                    />
+                  </svg>
+                  <span className={styles.donutLabel} style={{ color: sc.color }}>{stockPercent}%</span>
+                </div>
+              </div>
+            </div>
 
-            <div className={styles.detailActionRow}>
-              <button className={styles.editBtn} onClick={onEdit}>
+            <div className={styles.footerButtons}>
+              <button className={styles.btnPrimary} onClick={() => setAdjustOpen(true)}>
+                <span className="mi" style={{ fontSize: '1.05rem' }}>tune</span>
+                Adjust Stock
+              </button>
+              <button className={styles.btnSecondary} onClick={onEdit}>
                 <span className="mi" style={{ fontSize: '1rem' }}>edit</span>
                 Edit Item
-              </button>
-              <button className={styles.deleteBtn} onClick={onDelete}>
-                <span className="mi" style={{ fontSize: '1rem' }}>delete_outline</span>
               </button>
             </div>
 

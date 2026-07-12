@@ -8,6 +8,8 @@ import OrderMosaic      from '../../components/OrderMosaic/OrderMosaic'
 import styles from './AllPayments.module.css'
 import BottomNav from '../../components/BottomNav/BottomNav'
 
+const DONUT_CIRCUMFERENCE = 2 * Math.PI * 26
+
 function fmt(amount) {
   if (amount === null || amount === undefined || amount === '') return '—'
   return `₦${Number(amount).toLocaleString('en-NG')}`
@@ -196,174 +198,220 @@ function PaymentRow({ row, isLast, onTap, orderItems }) {
   )
 }
 
-function PaymentDetail({ row, onClose, onNavigateToCustomer, orderImageUrl }) {
+function PaymentDetail({ row, onClose, onNavigateToCustomer, orderItems }) {
   if (!row) return null
 
-  const sm              = STATUS_META[row.paymentStatus] ?? STATUS_META.not_paid
-  const mLabel          = METHOD_LABELS[row.method] ?? '—'
-  const fullPrice       = parseFloat(row.orderPrice) || 0
-  const thisAmount      = parseFloat(row.amount) || 0
-  const previousPaid    = parseFloat(row.previousPaid) || 0
-  const totalPaid       = parseFloat(row.totalPaid) || 0
-  const balanceBefore   = fullPrice > 0 ? Math.max(0, fullPrice - previousPaid) : 0
-  const balanceAfter    = fullPrice > 0 ? Math.max(0, fullPrice - totalPaid)    : 0
-  const hasPrevious     = (row.previousInstallments?.length > 0) || previousPaid > 0
-  const rawPct = fullPrice > 0 ? (totalPaid / fullPrice) * 100 : 0
-  const pct    = rawPct >= 100 ? 100 : Math.min(99, rawPct)
-
-  const cellStyle = {
-    background: 'var(--bg)',
-    border: '1px solid var(--border)',
-    borderRadius: 12,
-    padding: '12px 14px',
-  }
-  const cellLbl = {
-    fontSize: '0.58rem', fontWeight: 800, color: 'var(--text3)',
-    textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 4,
-  }
-  const cellVal = {
-    fontSize: '0.88rem', fontWeight: 700, color: 'var(--text)', lineHeight: 1.3,
-  }
+  const sm            = STATUS_META[row.paymentStatus] ?? STATUS_META.not_paid
+  const mLabel        = METHOD_LABELS[row.method] ?? '—'
+  const fullPrice     = parseFloat(row.orderPrice) || 0
+  const thisAmount    = parseFloat(row.amount) || 0
+  const previousPaid  = parseFloat(row.previousPaid) || 0
+  const totalPaid     = parseFloat(row.totalPaid) || 0
+  const balanceBefore = fullPrice > 0 ? Math.max(0, fullPrice - previousPaid) : 0
+  const balanceAfter  = fullPrice > 0 ? Math.max(0, fullPrice - totalPaid) : 0
+  const hasPrevious   = (row.previousInstallments?.length > 0) || previousPaid > 0
+  const rawPct        = fullPrice > 0 ? (totalPaid / fullPrice) * 100 : 0
+  const progressPercent = Math.round(rawPct >= 100 ? 100 : Math.min(99, rawPct))
 
   return (
-    <div className={styles.sheetOverlay} onClick={e => e.target === e.currentTarget && onClose()}>
-      <div className={styles.sheet}>
-        <div className={styles.sheetHandle} />
+    <div
+      className={styles.backdrop}
+      onClick={e => e.target === e.currentTarget && onClose()}
+    >
+      <div className={styles.fullScreenModal}>
+        <Header
+          type="back"
+          title="Payment Details"
+          onBackClick={onClose}
+          backIcon="arrow_back_ios"
+        />
 
-        <div className={styles.sheetHeader}>
-          <span className={styles.sheetTitle}>Payment Details</span>
-          <button onClick={onClose} style={{ background: 'none', border: 'none', color: 'var(--text2)', display: 'flex', cursor: 'pointer' }}>
-            <span className="mi" style={{ fontSize: '1.4rem' }}>close</span>
-          </button>
-        </div>
+        <div className={styles.modalBody}>
 
-        <div className={styles.sheetBody}>
-          <div className={styles.amountHero}>
-            {orderImageUrl && (
-              <div className={styles.detailImgWrap}>
-                <img
-                  src={orderImageUrl}
-                  alt={row.orderDesc || 'Order'}
-                  className={styles.detailImg}
-                />
+          <div className={styles.detailTitleRow}>
+            <div
+              className={styles.detailMosaicWrap}
+              style={{ '--mosaic-border': sm.border, '--mosaic-bg': sm.bg }}
+            >
+              <OrderMosaic
+                items={orderItems}
+                size="sm"
+                overdue={false}
+                className={styles.mosaicOverride}
+              />
+            </div>
+            <div className={styles.detailTitle}>{row.orderDesc || 'Payment'}</div>
+          </div>
+
+          <div className={styles.statusRow}>
+            <div className={styles.chipLabel}>Payment Status</div>
+            <div
+              className={styles.statusBadge}
+              style={{ background: sm.bg, borderColor: sm.border }}
+            >
+              <span className={styles.statusDot} style={{ background: sm.color }} />
+              <span style={{ color: sm.color }}>
+                {sm.label}
+                {row.totalInstallments > 1 ? ` · ${row.installIndex}/${row.totalInstallments}` : ''}
+              </span>
+            </div>
+          </div>
+
+          <div className={styles.infoGrid}>
+            <div className={styles.infoGridCell}>
+              <div className={styles.infoGridLabel}>Customer</div>
+              <div className={styles.infoGridValue}>{row.customerName}</div>
+            </div>
+            <div className={styles.infoGridCell}>
+              <div className={styles.infoGridLabel}>Date</div>
+              <div className={styles.infoGridValue}>{row.date}</div>
+            </div>
+            {fullPrice > 0 && (
+              <div className={styles.infoGridCell}>
+                <div className={styles.infoGridLabel}>Order Value</div>
+                <div className={styles.infoGridValue}>{fmt(fullPrice)}</div>
               </div>
             )}
-            <div className={styles.heroAmount} style={{ color: sm.color }}>
-              {row.amount !== null ? fmt(row.amount) : '₦ —'}
-            </div>
-            <div
-              className={styles.heroPill}
-              style={{ background: `${sm.color}18`, color: sm.color, borderColor: `${sm.color}40` }}
-            >
-              {sm.label}
-              {row.totalInstallments > 1 && ` · ${row.installIndex}/${row.totalInstallments}`}
+            <div className={styles.infoGridCell}>
+              <div className={styles.infoGridLabel}>Method</div>
+              <div className={styles.infoGridValue}>{row.method ? mLabel : '—'}</div>
             </div>
           </div>
-
-          <div className={styles.cellGrid}>
-            <div style={cellStyle}>
-              <div style={cellLbl}>Customer</div>
-              <div style={cellVal}>{row.customerName}</div>
-            </div>
-            <div style={cellStyle}>
-              <div style={cellLbl}>Date</div>
-              <div style={cellVal}>{row.date}</div>
-            </div>
-            <div style={cellStyle}>
-              <div style={cellLbl}>Order</div>
-              <div style={cellVal}>{row.orderDesc || '—'}</div>
-            </div>
-            <div style={cellStyle}>
-              <div style={cellLbl}>Method</div>
-              <div style={cellVal}>{row.method ? mLabel : '—'}</div>
-            </div>
-          </div>
-
-          {fullPrice > 0 && (
-            <div className={styles.progressSection}>
-              <div className={styles.progressLabelRow}>
-                <span className={styles.progressLabel}>Order Value</span>
-                <span className={styles.progressFigure} style={{ color: 'var(--text)', fontWeight: 700 }}>
-                  {fmt(row.orderPrice)}
-                </span>
-              </div>
-
-              {hasPrevious && (
-                <>
-                  {(row.previousInstallments || []).map((p, i) => (
-                    <div key={i} className={styles.progressLabelRow} style={{ marginTop: 6 }}>
-                      <span className={styles.progressLabel} style={{ color: '#6b7280' }}>
-                        Payment {i + 1} · {p.date}{p.method ? ` · ${p.method.charAt(0).toUpperCase() + p.method.slice(1)}` : ''}
-                      </span>
-                      <span className={styles.progressFigure} style={{ color: '#6b7280' }}>
-                        {fmt(p.amount)}
-                      </span>
-                    </div>
-                  ))}
-                  <div className={styles.progressLabelRow} style={{ marginTop: 8, paddingTop: 8, borderTop: '1px solid var(--border)' }}>
-                    <span className={styles.progressLabel}>Balance Before This Payment</span>
-                    <span className={styles.progressFigure} style={{ color: '#f59e0b', fontWeight: 700 }}>
-                      {fmt(balanceBefore)}
-                    </span>
-                  </div>
-                </>
-              )}
-
-              <div className={styles.progressLabelRow} style={{ marginTop: 8 }}>
-                <span className={styles.progressLabel}>This Payment</span>
-                <span className={styles.progressFigure} style={{ color: '#22c55e', fontWeight: 700 }}>
-                  {fmt(thisAmount)}
-                </span>
-              </div>
-
-              {balanceAfter > 0 && (
-                <div className={styles.progressLabelRow} style={{ marginTop: 6 }}>
-                  <span className={styles.progressLabel}>Balance Remaining</span>
-                  <span className={styles.progressFigure} style={{ color: '#ef4444', fontWeight: 700 }}>
-                    {fmt(balanceAfter)}
-                  </span>
-                </div>
-              )}
-              {balanceAfter === 0 && (
-                <div className={styles.progressLabelRow} style={{ marginTop: 6 }}>
-                  <span className={styles.progressLabel}>Balance Remaining</span>
-                  <span className={styles.progressFigure} style={{ color: '#22c55e', fontWeight: 700 }}>
-                    Fully Paid ✓
-                  </span>
-                </div>
-              )}
-
-              <div className={styles.progressTrack} style={{ marginTop: 12 }}>
-                <div
-                  className={styles.progressFill}
-                  style={{ width: `${pct}%`, background: sm.color }}
-                />
-              </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 4 }}>
-                <span style={{ fontSize: '0.62rem', color: 'var(--text3)', fontWeight: 600 }}>
-                  {fmt(totalPaid)} paid
-                </span>
-                <span style={{ fontSize: '0.62rem', color: 'var(--text3)', fontWeight: 600 }}>
-                  {fmt(fullPrice)} total
-                </span>
-              </div>
-            </div>
-          )}
 
           {row.notes && (
-            <div className={styles.notesBox}>
-              <div className={styles.notesLabel}>Notes</div>
-              <p className={styles.notesText}>{row.notes}</p>
+            <div className={styles.detailSectionCard}>
+              <div className={styles.detailSectionLabel}>Notes</div>
+              <p className={styles.detailNoteText}>{row.notes}</p>
             </div>
           )}
 
-          <button
-            className={styles.viewCustomerBtn}
-            onClick={() => { onClose(); onNavigateToCustomer(row.customerId) }}
-          >
-            <span className="mi" style={{ fontSize: '1rem' }}>open_in_new</span>
-            View {row.customerName}'s Profile
-          </button>
+          <div className={styles.premiumCard}>
+            <div className={styles.cardHeader}>
+              <span className={styles.cardLabel}>Payment Breakdown</span>
+            </div>
+
+            {fullPrice > 0 ? (
+              <div className={styles.donutRow}>
+                <div className={styles.donutContent}>
+                  <div className={styles.cardValue}>{fmt(totalPaid)} received</div>
+                  <div className={styles.donutMeta}>
+                    <span className="mi" style={{ fontSize: '0.82rem' }}>account_balance_wallet</span>
+                    <span style={{ color: balanceAfter > 0 ? '#ef4444' : '#22c55e' }}>
+                      {balanceAfter > 0 ? `${fmt(balanceAfter)} balance left` : 'Fully settled'}
+                    </span>
+                  </div>
+                </div>
+                <div className={styles.donutWrap}>
+                  <svg viewBox="0 0 64 64" className={styles.donutSvg}>
+                    <circle cx="32" cy="32" r="26" fill="none" stroke="var(--surface2)" strokeWidth="7" />
+                    <circle
+                      cx="32" cy="32" r="26" fill="none"
+                      stroke={sm.color}
+                      strokeWidth="7"
+                      strokeLinecap="round"
+                      strokeDasharray={DONUT_CIRCUMFERENCE}
+                      strokeDashoffset={DONUT_CIRCUMFERENCE - (progressPercent / 100) * DONUT_CIRCUMFERENCE}
+                      transform="rotate(-90 32 32)"
+                      className={styles.donutProgress}
+                    />
+                  </svg>
+                  <span className={styles.donutLabel} style={{ color: sm.color }}>{progressPercent}%</span>
+                </div>
+              </div>
+            ) : (
+              <div className={styles.cardValue}>{fmt(totalPaid)} received</div>
+            )}
+
+            <div className={styles.installmentDivider} />
+
+            {hasPrevious && (row.previousInstallments || []).map((p, i) => {
+              const paidBeforeThis = (row.previousInstallments || [])
+                .slice(0, i)
+                .reduce((s, x) => s + (parseFloat(x.amount) || 0), 0)
+              const paidAfterThis = paidBeforeThis + (parseFloat(p.amount) || 0)
+              const balBeforeThis = fullPrice > 0 ? Math.max(0, fullPrice - paidBeforeThis) : null
+              const balAfterThis  = fullPrice > 0 ? Math.max(0, fullPrice - paidAfterThis) : null
+
+              return (
+                <div key={i} className={styles.installmentBlock}>
+                  <div className={styles.installmentHeader}>Installment {i + 1}</div>
+                  <div className={styles.installmentLineLeft}>
+                    <div className={styles.installmentLineIcon}>
+                      <span className="mi" style={{ fontSize: '0.95rem', color: '#22c55e' }}>payments</span>
+                    </div>
+                    <div>
+                      <div className={styles.installmentLineAmount}>{fmt(p.amount)}</div>
+                      <div className={styles.installmentLineSub}>
+                        {[p.method ? p.method.charAt(0).toUpperCase() + p.method.slice(1) : '', p.date].filter(Boolean).join(' · ')}
+                      </div>
+                    </div>
+                  </div>
+
+                  {fullPrice > 0 && (
+                    <div className={styles.balanceLines}>
+                      {i > 0 && (
+                        <div className={styles.balanceLine}>
+                          <span>Balance before</span>
+                          <span style={{ fontWeight: 700 }}>{fmt(balBeforeThis)}</span>
+                        </div>
+                      )}
+                      <div className={styles.balanceLine}>
+                        <span>Balance after</span>
+                        <span style={{ color: balAfterThis > 0 ? '#ef4444' : '#22c55e', fontWeight: 700 }}>
+                          {fmt(balAfterThis)}
+                        </span>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )
+            })}
+
+            <div className={styles.installmentBlock}>
+              <div className={styles.installmentHeader}>
+                {row.totalInstallments > 1 ? `Installment ${row.installIndex}` : 'This Payment'}
+              </div>
+              <div className={styles.installmentLineLeft}>
+                <div className={styles.installmentLineIcon}>
+                  <span className="mi" style={{ fontSize: '0.95rem', color: '#22c55e' }}>payments</span>
+                </div>
+                <div>
+                  <div className={styles.installmentLineAmount}>{row.amount !== null ? fmt(thisAmount) : '—'}</div>
+                  <div className={styles.installmentLineSub}>
+                    {[row.method ? mLabel : '', row.date].filter(Boolean).join(' · ')}
+                  </div>
+                </div>
+              </div>
+
+              {fullPrice > 0 && (
+                <div className={styles.balanceLines}>
+                  {hasPrevious && (
+                    <div className={styles.balanceLine}>
+                      <span>Balance before</span>
+                      <span style={{ fontWeight: 700 }}>{fmt(balanceBefore)}</span>
+                    </div>
+                  )}
+                  <div className={styles.balanceLine}>
+                    <span>Balance after</span>
+                    <span style={{ color: balanceAfter > 0 ? '#ef4444' : '#22c55e', fontWeight: 700 }}>
+                      {fmt(balanceAfter)}
+                    </span>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+
+          <div className={styles.footerButtons}>
+            <button
+              className={styles.btnPrimary}
+              onClick={() => { onClose(); onNavigateToCustomer(row.customerId) }}
+            >
+              <span className="mi" style={{ fontSize: '1.05rem' }}>open_in_new</span>
+              View {row.customerName}'s Profile
+            </button>
+          </div>
+
         </div>
       </div>
     </div>
@@ -394,8 +442,6 @@ export default function AllPayments({ onMenuClick }) {
 
   const activeTabIdx = TABS.findIndex(t => t.id === activeTab)
 
-  // Measure each tab's position relative to the tabs container
-  // so the underline can be positioned precisely regardless of tab width.
   const measureTabs = useCallback(() => {
     if (!tabsRef.current) return
     const containerRect = tabsRef.current.getBoundingClientRect()
@@ -413,7 +459,6 @@ export default function AllPayments({ onMenuClick }) {
     setTabMeasurements(measurements)
   }, [])
 
-  // Re-measure on mount, tab change, and resize
   useEffect(() => {
     measureTabs()
   }, [activeTab, measureTabs])
@@ -423,7 +468,6 @@ export default function AllPayments({ onMenuClick }) {
     return () => window.removeEventListener('resize', measureTabs)
   }, [measureTabs])
 
-  // Scroll active tab into view when it changes
   useEffect(() => {
     if (!tabsRef.current) return
     const activeEl = tabItemRefs.current[activeTabIdx]
@@ -637,7 +681,7 @@ export default function AllPayments({ onMenuClick }) {
           )
         })}
 
-    
+
         <div
           className={styles.tabUnderlineTrack}
           style={{
@@ -694,7 +738,7 @@ export default function AllPayments({ onMenuClick }) {
           row={detailRow}
           onClose={() => setDetailRow(null)}
           onNavigateToCustomer={(id) => navigate(`/customers/${id}`)}
-          orderImageUrl={(orderItemsMap[`${detailRow.customerId}__${detailRow.orderId}`]?.[0]?.imgSrc) ?? null}
+          orderItems={orderItemsMap[`${detailRow.customerId}__${detailRow.orderId}`] ?? []}
         />
       )}
 
