@@ -13,10 +13,17 @@ export function SectionSkeleton() {
       {[0, 1, 2].map(i => (
         <div key={i} className={styles.sectionSkeletonItem}>
           <Skeleton width={80} height={80} borderRadius={12} style={{ flexShrink: 0 }} />
-          <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 7 }}>
+
+          <div className={styles.sectionSkeletonInfo}>
             <Skeleton width="70%" height={13} borderRadius={4} />
-            <Skeleton width="50%" height={10} borderRadius={4} />
-            <Skeleton width="60%" height={10} borderRadius={4} />
+            <Skeleton width={90}  height={11} borderRadius={4} style={{ marginTop: 6 }} />
+            <Skeleton width={70}  height={10} borderRadius={4} style={{ marginTop: 5 }} />
+          </div>
+
+          <div className={styles.sectionSkeletonRight}>
+            <Skeleton width={62} height={14} borderRadius={4} />
+            <Skeleton width={44} height={16} borderRadius={5} style={{ marginTop: 5 }} />
+            <Skeleton width={54} height={9}  borderRadius={4} style={{ marginTop: 6 }} />
           </div>
         </div>
       ))}

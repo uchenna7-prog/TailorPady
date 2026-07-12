@@ -28,6 +28,7 @@ import { RevenueGoalModal } from './components/RevenueGoalModal/RevenueGoalModal
 import { StatCard } from './components/StatCard/StatCard'
 import { UrgentStrip } from './components/UrgentStrip/UrgentStrip'
 import { RevenueGoalCard } from './components/RevenueGoalCard/RevenueGoalCard'
+import { RevenueGoalCardSkeleton } from './components/RevenueGoalCardSkeleton/RevenueGoalCardSkeleton'
 import { EmptyRevenueCard } from './components/EmptyRevenueCard/EmptyRevenueCard'
 import { RecentTasksSection } from './components/RecentTasksSection/RecentTasksSection'
 import { PastAppointmentsSection } from './components/PastAppointmentsSection/PastAppointmentsSection'
@@ -418,7 +419,7 @@ function Home({ onMenuClick, onGoToCustomer }) {
           </section>
 
           {goalLoading ? (
-            <CardSkeleton height={110} />
+            <RevenueGoalCardSkeleton />
           ) : goal && derived ? (
             <RevenueGoalCard
               goal={goal}
