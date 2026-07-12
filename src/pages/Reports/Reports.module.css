@@ -108,6 +108,7 @@
 }
 
 .statCard {
+  position: relative;
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: 10px;
@@ -116,6 +117,49 @@
   flex-direction: column;
   align-items: flex-start;
   min-height: 130px;
+}
+
+.statInfoBtn {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  border: none;
+  background: transparent;
+  color: var(--text3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  padding: 0;
+  transition: background 0.15s, color 0.15s;
+}
+.statInfoBtn:active { background: var(--surface2); color: var(--text2); }
+
+.statInfoBackdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 349;
+}
+
+.statInfoPopover {
+  position: absolute;
+  top: 34px;
+  right: 6px;
+  width: 168px;
+  background: var(--surface2);
+  border: 1px solid var(--border2);
+  border-radius: 10px;
+  padding: 10px 12px;
+  font-size: 0.68rem;
+  font-weight: 600;
+  line-height: 1.4;
+  color: var(--text2);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.14);
+  z-index: 350;
+  animation: dropIn 0.16s ease;
 }
 
 .statIcon {
@@ -207,6 +251,156 @@
   background: linear-gradient(90deg, #ef4444 0%, #fb923c 40%, #22c55e 100%);
   background-size: 200% 100%;
   background-position: right center;
+}
+
+
+.goalCard {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 18px;
+  margin-bottom: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.goalCardEmpty {
+  flex-direction: row;
+  align-items: center;
+  gap: 12px;
+}
+
+.goalCardTop {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.goalIconBadge {
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
+  background: rgba(99, 102, 241, 0.12);
+  color: #6366f1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.goalIconBadge .mi { font-size: 1.1rem; }
+
+.goalCardTitleBlock {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.goalCardTitle {
+  font-size: 0.7rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  color: var(--text3);
+}
+
+.goalCardPeriod {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--text2);
+}
+
+.goalCardMain {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
+
+.goalRingWrap {
+  position: relative;
+  width: 72px;
+  height: 72px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.goalRingPercent {
+  position: absolute;
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: var(--text);
+  font-variant-numeric: tabular-nums;
+}
+
+.goalAmounts {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+}
+
+.goalAmountEarned {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: var(--text);
+  letter-spacing: -0.5px;
+  line-height: 1.1;
+}
+
+.goalAmountTarget {
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--text3);
+  margin-bottom: 4px;
+}
+
+.goalDeltaPill {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  width: fit-content;
+  padding: 3px 9px 3px 7px;
+  border-radius: 20px;
+  font-size: 0.68rem;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.goalDeltaPillUp {
+  background: rgba(34, 197, 94, 0.12);
+  color: #22c55e;
+}
+
+.goalDeltaPillDown {
+  background: rgba(249, 115, 22, 0.12);
+  color: #f97316;
+}
+
+.goalEmptyIcon {
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
+  background: var(--surface2);
+  color: var(--text3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.goalEmptyTitle {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.goalEmptySub {
+  font-size: 0.72rem;
+  color: var(--text3);
+  margin-top: 2px;
 }
 
 
@@ -359,6 +553,11 @@
   .collectionCard  { padding: 14px 16px; }
   .collectionRate  { font-size: 1.5rem; }
 
+  .goalCard         { padding: 15px; }
+  .goalRingWrap     { width: 64px; height: 64px; }
+  .goalRingPercent  { font-size: 0.85rem; }
+  .goalAmountEarned { font-size: 1.3rem; }
+
   .chartCard       { padding: 14px; }
   .chartCardInner  { gap: 10px; }
 
@@ -399,6 +598,12 @@
 
   .collectionCard { padding: 20px 24px; }
   .collectionRate { font-size: 2rem; }
+
+  .goalCard         { padding: 22px 26px; border-radius: 16px; }
+  .goalRingWrap     { width: 84px; height: 84px; }
+  .goalRingPercent  { font-size: 1.05rem; }
+  .goalAmountEarned { font-size: 1.75rem; }
+  .goalAmountTarget { font-size: 0.78rem; }
 
   .chartCard      { padding: 20px; }
   .chartCardInner { gap: 24px; }

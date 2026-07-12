@@ -120,6 +120,7 @@ function Home({ onMenuClick, onGoToCustomer }) {
   const [confirmDelAppt,    setConfirmDelAppt]     = useState(null)
   const [confirmDelTask,    setConfirmDelTask]     = useState(null)
   const [toastMsg,          setToastMsg]          = useState('')
+  const [openStatInfo,      setOpenStatInfo]      = useState(null)
   const toastTimer = useRef(null)
 
   const greetingTextRef  = useRef(getGreeting())
@@ -340,10 +341,10 @@ function Home({ onMenuClick, onGoToCustomer }) {
   })()
 
   const STAT_CARDS = [
-    { desktopIcon: 'shopping_bag',  value: activeOrders.length,        label: 'Active Orders',   sub: orderStatSub?.text       ?? null, subColor: orderStatSub?.color       ?? 'var(--text3)', route: '/orders'       },
+    { desktopIcon: 'shopping_bag',  value: activeOrders.length,        label: 'Active Orders',   sub: orderStatSub?.text       ?? null, subColor: orderStatSub?.color       ?? 'var(--text3)', route: '/orders',       tooltip: 'Orders that have not been delivered or completed yet.' },
     { desktopIcon: 'receipt_long',  value: zeroPaymentInvoices.length, label: 'Unpaid Invoices', sub: invoiceStatSub?.text     ?? null, subColor: invoiceStatSub?.color     ?? 'var(--text3)', route: '/invoices',    tooltip: 'Only invoices with no payment recorded yet.' },
-    { desktopIcon: 'event',         value: todayAppointmentCount,      label: "Today's Appts",   sub: appointmentStatSub?.text ?? null, subColor: appointmentStatSub?.color ?? 'var(--text3)', route: '/appointments' },
-    { desktopIcon: 'task_alt',      value: pendingTasks.length,        label: 'Pending Tasks',   sub: taskStatSub?.text        ?? null, subColor: taskStatSub?.color        ?? 'var(--text3)', route: '/tasks'        },
+    { desktopIcon: 'event',         value: todayAppointmentCount,      label: "Today's Appts",   sub: appointmentStatSub?.text ?? null, subColor: appointmentStatSub?.color ?? 'var(--text3)', route: '/appointments', tooltip: 'Appointments scheduled for today.' },
+    { desktopIcon: 'task_alt',      value: pendingTasks.length,        label: 'Pending Tasks',   sub: taskStatSub?.text        ?? null, subColor: taskStatSub?.color        ?? 'var(--text3)', route: '/tasks',        tooltip: 'Tasks that are not yet marked done.' },
   ]
 
   const recentActiveOrders   = activeOrders.slice(0, 3)
@@ -401,7 +402,16 @@ function Home({ onMenuClick, onGoToCustomer }) {
 
           <section className={styles.statsGrid}>
             {ordersReady && invoicesReady && appointmentsReady && tasksReady ? (
-              STAT_CARDS.map((card, i) => <StatCard key={i} card={card} navigate={navigate} />)
+              STAT_CARDS.map((card, i) => (
+                <StatCard
+                  key={i}
+                  card={card}
+                  navigate={navigate}
+                  isInfoOpen={openStatInfo === i}
+                  onToggleInfo={() => setOpenStatInfo(prev => (prev === i ? null : i))}
+                  onCloseInfo={() => setOpenStatInfo(prev => (prev === i ? null : prev))}
+                />
+              ))
             ) : (
               [0, 1, 2, 3].map(i => <StatCardSkeleton key={i} />)
             )}

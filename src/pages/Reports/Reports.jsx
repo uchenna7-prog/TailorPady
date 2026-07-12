@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useEffect } from 'react'
 import { useOrders }    from '../../contexts/OrdersContext'
 import { useTasks }     from '../../contexts/TaskContext'
 import { usePayments }  from '../../contexts/PaymentContext'
@@ -57,25 +57,6 @@ function fmt(amount) {
 function pct(part, total) {
   if (!total) return 0
   return Math.round((part / total) * 100)
-}
-
-function mostFrequent(items, key) {
-  const counts = {}
-  items.forEach(item => {
-    const val = item[key]
-    if (!val) return
-    counts[val] = (counts[val] || 0) + 1
-  })
-  let topKey   = null
-  let topCount = 0
-  Object.entries(counts).forEach(([k, c]) => {
-    if (c > topCount) { topKey = k; topCount = c }
-  })
-  return topKey ? { label: topKey, count: topCount } : null
-}
-
-function capitalize(str) {
-  return str.charAt(0).toUpperCase() + str.slice(1)
 }
 
 function isOverdueOrder(order) {
@@ -215,18 +196,36 @@ const TONE_COLORS = {
   neutral:  null,
 }
 
-function StatCard({ icon, label, value, sub, tone = 'neutral' }) {
-  const subColor = TONE_COLORS[tone]
+function StatCard({ icon, label, value, info, isInfoOpen, onToggleInfo, onCloseInfo }) {
+  useEffect(() => {
+    if (!isInfoOpen) return
+    const timer = setTimeout(() => onCloseInfo(), 4000)
+    return () => clearTimeout(timer)
+  }, [isInfoOpen, onCloseInfo])
+
   return (
     <div className={styles.statCard}>
+      {info && (
+        <>
+          <button
+            type="button"
+            className={styles.statInfoBtn}
+            onClick={onToggleInfo}
+            aria-label="More info"
+          >
+            <span className="mi" style={{ fontSize: '0.8rem' }}>info</span>
+          </button>
+          {isInfoOpen && (
+            <>
+              <div className={styles.statInfoBackdrop} onClick={onCloseInfo} />
+              <div className={styles.statInfoPopover}>{info}</div>
+            </>
+          )}
+        </>
+      )}
       <span className={`mi ${styles.statIcon}`}>{icon}</span>
       <div className={styles.statValue}>{value}</div>
       <div className={styles.statLabel}>{label}</div>
-      {sub && (
-        <div className={styles.statSub} style={subColor ? { color: subColor } : undefined}>
-          {sub}
-        </div>
-      )}
     </div>
   )
 }
@@ -259,7 +258,7 @@ function GoalProgressCard({ goal, derived, fmt }) {
 
   const deltaAbs   = Math.abs(derived.delta)
   const deltaColor = derived.isUp ? '#22c55e' : '#f97316'
-  const deltaArrow = derived.isUp ? '▲' : '▼'
+  const deltaIcon  = derived.isUp ? 'trending_up' : 'trending_down'
   const deltaWord  = derived.isUp ? 'more' : 'less'
 
   return (
@@ -274,8 +273,9 @@ function GoalProgressCard({ goal, derived, fmt }) {
       <div className={styles.collectionTrack}>
         <div className={styles.collectionFill} style={{ width: `${Math.min(derived.percent, 100)}%` }} />
       </div>
-      <div className={styles.collectionSub} style={{ color: deltaColor, marginTop: 8 }}>
-        {deltaArrow} {fmt(deltaAbs)} {deltaWord} than {previousLabel}
+      <div className={styles.collectionSub} style={{ color: deltaColor, marginTop: 8, display: 'flex', alignItems: 'center', gap: 4 }}>
+        <span className="mi" style={{ fontSize: '0.8rem' }}>{deltaIcon}</span>
+        {fmt(deltaAbs)} {deltaWord} than {previousLabel}
       </div>
     </div>
   )
@@ -339,6 +339,7 @@ export default function Reports({ onMenuClick }) {
   const [apptPeriod,  setApptPeriod]  = useState('month')
   const [taskPeriod,  setTaskPeriod]  = useState('month')
   const [custPeriod,  setCustPeriod]  = useState('month')
+  const [openStatInfo, setOpenStatInfo] = useState(null)
 
   const orders = useMemo(() => Array.isArray(allOrders) ? allOrders : [], [allOrders])
 
@@ -395,17 +396,7 @@ export default function Reports({ onMenuClick }) {
     const showUpRate = resolved > 0 ? Math.round((buckets.done / resolved) * 100) : null
     const cancelRate = total > 0 ? Math.round((buckets.cancelled / total) * 100) : null
 
-    const topType = mostFrequent(filtered, 'type')
-
-    const missedByCustomer = {}
-    filtered.forEach(a => {
-      if (getEffectiveStatus(a) === 'missed' && a.customerId) {
-        missedByCustomer[a.customerId] = (missedByCustomer[a.customerId] || 0) + 1
-      }
-    })
-    const repeatNoShows = Object.values(missedByCustomer).filter(c => c > 1).length
-
-    return { total, showUpRate, cancelRate, topType, repeatNoShows, ...buckets }
+    return { total, showUpRate, cancelRate, ...buckets }
   }, [allAppointments, apptPeriod])
 
   const taskStats = useMemo(() => {
@@ -419,11 +410,7 @@ export default function Reports({ onMenuClick }) {
     }).length
     const pending  = Math.max(0, total - done - overdue)
 
-    const topCategory = mostFrequent(filtered, 'category')
-    const openTasks   = filtered.filter(t => !t.done)
-    const topPriority = mostFrequent(openTasks, 'priority')
-
-    return { total, done, pending, overdue, topCategory, topPriority }
+    return { total, done, pending, overdue }
   }, [tasks, taskPeriod])
 
   const custStats = useMemo(() => {
@@ -469,10 +456,26 @@ export default function Reports({ onMenuClick }) {
             <PeriodSelector value={perfPeriod} onChange={setPerfPeriod} />
           </div>
           <div className={styles.statsGrid}>
-            <StatCard icon="receipt_long"          label="Orders Placed"      value={perfStats.totalOrders} />
-            <StatCard icon="sell"                   label="Total Order Value"  value={fmt(perfStats.orderValue)}  sub="Full value of orders placed" tone="info" />
-            <StatCard icon="account_balance_wallet" label="Amount Collected"   value={fmt(perfStats.payReceived)} sub="Payments received so far"     tone="positive" />
-            <StatCard icon="pending_actions"        label="Amount Outstanding" value={fmt(perfStats.outstanding)} sub="Still owed by clients"        tone="warning"  />
+            <StatCard icon="receipt_long"          label="Orders Placed"      value={perfStats.totalOrders}      info="Number of new orders placed in this period"
+              isInfoOpen={openStatInfo === 0}
+              onToggleInfo={() => setOpenStatInfo(p => (p === 0 ? null : 0))}
+              onCloseInfo={() => setOpenStatInfo(p => (p === 0 ? null : p))}
+            />
+            <StatCard icon="sell"                   label="Total Order Value"  value={fmt(perfStats.orderValue)}  info="Full value of all orders placed in this period"
+              isInfoOpen={openStatInfo === 1}
+              onToggleInfo={() => setOpenStatInfo(p => (p === 1 ? null : 1))}
+              onCloseInfo={() => setOpenStatInfo(p => (p === 1 ? null : p))}
+            />
+            <StatCard icon="account_balance_wallet" label="Amount Collected"   value={fmt(perfStats.payReceived)} info="Payments received from clients so far"
+              isInfoOpen={openStatInfo === 2}
+              onToggleInfo={() => setOpenStatInfo(p => (p === 2 ? null : 2))}
+              onCloseInfo={() => setOpenStatInfo(p => (p === 2 ? null : p))}
+            />
+            <StatCard icon="pending_actions"        label="Amount Outstanding" value={fmt(perfStats.outstanding)} info="Amount still owed by clients"
+              isInfoOpen={openStatInfo === 3}
+              onToggleInfo={() => setOpenStatInfo(p => (p === 3 ? null : 3))}
+              onCloseInfo={() => setOpenStatInfo(p => (p === 3 ? null : p))}
+            />
           </div>
         </section>
 
@@ -535,12 +538,6 @@ export default function Reports({ onMenuClick }) {
                 { value: `${apptStats.cancelRate ?? 0}%`, label: 'Cancelled' },
               ]} />
             )}
-            {apptStats.total > 0 && (
-              <InsightRow items={[
-                ...(apptStats.topType ? [{ value: capitalize(apptStats.topType.label), label: 'Most Booked Type' }] : []),
-                { value: apptStats.repeatNoShows, label: 'Repeat No-Shows' },
-              ]} />
-            )}
           </div>
         </Section>
 
@@ -562,12 +559,6 @@ export default function Reports({ onMenuClick }) {
                 <StatusRow label="Overdue"     count={taskStats.overdue} total={taskStats.total} color="#ef4444" />
               </div>
             </div>
-            {(taskStats.topCategory || taskStats.topPriority) && (
-              <InsightRow items={[
-                ...(taskStats.topCategory ? [{ value: capitalize(taskStats.topCategory.label), label: 'Most Common Category' }] : []),
-                ...(taskStats.topPriority ? [{ value: capitalize(taskStats.topPriority.label), label: 'Top Priority (Open Tasks)' }] : []),
-              ]} />
-            )}
           </div>
         </Section>
 
