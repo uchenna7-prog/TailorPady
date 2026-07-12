@@ -512,6 +512,34 @@ export default function Reports({ onMenuClick }) {
           </div>
         </Section>
 
+        <Section title="Customers" period={custPeriod} onPeriodChange={setCustPeriod}>
+          <div className={styles.chartCard}>
+            <div className={styles.chartCardInner}>
+              <DonutChart
+                segments={[
+                  { value: custStats.newCount,      color: '#22c55e' },
+                  { value: custStats.repeatCount,   color: '#818cf8' },
+                  { value: custStats.activeCount,   color: '#fb923c' },
+                  { value: custStats.inactiveCount, color: '#94a3b8' },
+                ]}
+                centerLabel={custStats.total}
+                centerSub="Clients"
+              />
+              <div className={styles.statusRows}>
+                <StatusRow label="New"           count={custStats.newCount}      total={custStats.total} color="#22c55e" />
+                <StatusRow label="Repeat"        count={custStats.repeatCount}   total={custStats.total} color="#818cf8" />
+                <StatusRow label="One-time"      count={custStats.activeCount}   total={custStats.total} color="#fb923c" />
+                <StatusRow label="No Orders Yet" count={custStats.inactiveCount} total={custStats.total} color="#94a3b8" />
+              </div>
+            </div>
+            <InsightRow items={[
+              { value: custStats.newCount,    label: 'New This Period'      },
+              { value: custStats.repeatCount, label: 'Repeat Clients'       },
+              { value: custStats.avgOrders,   label: 'Avg Orders / Client'  },
+            ]} />
+          </div>
+        </Section>
+
         <Section title="Appointments" period={apptPeriod} onPeriodChange={setApptPeriod}>
           <div className={styles.chartCard}>
             <div className={styles.chartCardInner}>
@@ -562,33 +590,6 @@ export default function Reports({ onMenuClick }) {
           </div>
         </Section>
 
-        <Section title="Customers" period={custPeriod} onPeriodChange={setCustPeriod}>
-          <div className={styles.chartCard}>
-            <div className={styles.chartCardInner}>
-              <DonutChart
-                segments={[
-                  { value: custStats.newCount,      color: '#22c55e' },
-                  { value: custStats.repeatCount,   color: '#818cf8' },
-                  { value: custStats.activeCount,   color: '#fb923c' },
-                  { value: custStats.inactiveCount, color: '#94a3b8' },
-                ]}
-                centerLabel={custStats.total}
-                centerSub="Clients"
-              />
-              <div className={styles.statusRows}>
-                <StatusRow label="New"           count={custStats.newCount}      total={custStats.total} color="#22c55e" />
-                <StatusRow label="Repeat"        count={custStats.repeatCount}   total={custStats.total} color="#818cf8" />
-                <StatusRow label="One-time"      count={custStats.activeCount}   total={custStats.total} color="#fb923c" />
-                <StatusRow label="No Orders Yet" count={custStats.inactiveCount} total={custStats.total} color="#94a3b8" />
-              </div>
-            </div>
-            <InsightRow items={[
-              { value: custStats.newCount,    label: 'New This Period'      },
-              { value: custStats.repeatCount, label: 'Repeat Clients'       },
-              { value: custStats.avgOrders,   label: 'Avg Orders / Client'  },
-            ]} />
-          </div>
-        </Section>
 
         <div style={{ height: 40 }} />
       </div>

@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import ConfirmSheet from '../ConfirmSheet/ConfirmSheet'
 import styles from './TaskDetail.module.css'
 
@@ -12,9 +12,15 @@ const PRIORITY_COLORS = {
 }
 
 const STATUS_CONFIG = {
-  pending:   { label: 'Pending',   color: '#a16207' },
-  overdue:   { label: 'Overdue',   color: '#ef4444' },
-  completed: { label: 'Completed', color: '#15803d' },
+  pending:   { label: 'Pending',   color: '#a16207', bg: 'rgba(234,179,8,0.1)',  border: 'rgba(234,179,8,0.5)'  },
+  overdue:   { label: 'Overdue',   color: '#ef4444', bg: 'rgba(239,68,68,0.12)', border: 'rgba(239,68,68,0.4)'  },
+  completed: { label: 'Completed', color: '#15803d', bg: 'rgba(34,197,94,0.1)',  border: 'rgba(34,197,94,0.5)'  },
+}
+
+const STATUS_ICON = {
+  pending: 'schedule',
+  overdue: 'event_busy',
+  completed: 'check_circle',
 }
 
 function isTaskDateInPast(task) {
@@ -31,6 +37,12 @@ function getEffectiveStatus(task) {
   return 'pending'
 }
 
+function isChipLocked(key, task) {
+  if (key === 'overdue')  return true
+  if (key === 'pending')  return isTaskDateInPast(task)
+  return false
+}
+
 function formatDate(dateStr) {
   if (!dateStr) return ''
   return new Date(dateStr + 'T00:00:00').toLocaleDateString('en-US', {
@@ -41,16 +53,52 @@ function formatDate(dateStr) {
 
 export default function TaskDetail({ task, onClose, onToggle, onDelete, onGoToCustomer }) {
   const [confirmDelete, setConfirmDelete] = useState(false)
+  const [showStatusMenu, setShowStatusMenu] = useState(false)
+  const [localDone, setLocalDone] = useState(task?.done ?? false)
+  const statusRef = useRef(null)
+
+  useEffect(() => {
+    setLocalDone(task?.done ?? false)
+  }, [task?.id, task?.done])
+
+  useEffect(() => {
+    if (!showStatusMenu) return
+    function handleClickOutside(e) {
+      if (statusRef.current && !statusRef.current.contains(e.target)) {
+        setShowStatusMenu(false)
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside)
+    document.addEventListener('touchstart', handleClickOutside)
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside)
+      document.removeEventListener('touchstart', handleClickOutside)
+    }
+  }, [showStatusMenu])
 
   if (!task) return null
 
-  const effectiveStatus = getEffectiveStatus(task)
+  const effectiveTask   = { ...task, done: localDone }
+  const effectiveStatus = getEffectiveStatus(effectiveTask)
   const isOverdue        = effectiveStatus === 'overdue'
-  const statusMeta       = STATUS_CONFIG[effectiveStatus]
+  const activeMeta       = STATUS_CONFIG[effectiveStatus] || STATUS_CONFIG.pending
   const pc                = PRIORITY_COLORS[task.priority] ?? PRIORITY_COLORS.normal
 
-  function handleToggleComplete() {
-    onToggle(task.id, !task.done)
+  async function handleStatusPick(key) {
+    if (isChipLocked(key, effectiveTask) || key === effectiveStatus) {
+      setShowStatusMenu(false)
+      return
+    }
+    setShowStatusMenu(false)
+    if (key === 'completed' || key === 'pending') {
+      const prevDone = localDone
+      setLocalDone(key === 'completed')
+      try {
+        await onToggle(task.id, prevDone)
+      } catch {
+        setLocalDone(prevDone)
+      }
+    }
   }
 
   function handleDeleteConfirm() {
@@ -80,17 +128,76 @@ export default function TaskDetail({ task, onClose, onToggle, onDelete, onGoToCu
 
           <div className={styles.detailTitle}>{task.desc}</div>
 
+          <div className={styles.statusRow}>
+            <div className={styles.chipLabel}>Status</div>
+            <div className={styles.statusDropdown} ref={statusRef}>
+              <button
+                type="button"
+                className={styles.statusTrigger}
+                onClick={() => setShowStatusMenu(v => !v)}
+                style={{ background: activeMeta.bg, borderColor: activeMeta.border }}
+              >
+                <span className={styles.statusTriggerLeft}>
+                  <span className="mi" style={{ fontSize: '0.9rem', color: activeMeta.color }}>
+                    {STATUS_ICON[effectiveStatus]}
+                  </span>
+                  <span style={{ color: activeMeta.color }}>{activeMeta.label}</span>
+                </span>
+                <span
+                  className="mi"
+                  style={{
+                    fontSize: '1.1rem',
+                    color: activeMeta.color,
+                    opacity: 0.7,
+                    transform: showStatusMenu ? 'rotate(180deg)' : 'none',
+                    transition: 'transform 0.15s',
+                  }}
+                >
+                  expand_more
+                </span>
+              </button>
+
+              {showStatusMenu && (
+                <div className={styles.statusMenu}>
+                  {Object.entries(STATUS_CONFIG).map(([key, cfg]) => {
+                    const isActive = effectiveStatus === key
+                    const locked = isChipLocked(key, effectiveTask)
+                    return (
+                      <button
+                        key={key}
+                        type="button"
+                        disabled={locked}
+                        className={`${styles.statusMenuItem} ${isActive ? styles.statusMenuItemActive : ''} ${locked ? styles.statusMenuItemLocked : ''}`}
+                        onClick={() => handleStatusPick(key)}
+                      >
+                        <span
+                          className="mi"
+                          style={{ fontSize: '0.9rem', color: locked && !isActive ? 'var(--text3)' : cfg.color }}
+                        >
+                          {STATUS_ICON[key]}
+                        </span>
+                        <span style={{ color: isActive ? cfg.color : locked ? 'var(--text3)' : 'var(--text)' }}>
+                          {cfg.label}
+                        </span>
+                        {isActive && (
+                          <span className="mi" style={{ marginLeft: 'auto', fontSize: '1rem', color: cfg.color }}>check</span>
+                        )}
+                        {locked && !isActive && (
+                          <span className="mi" style={{ marginLeft: 'auto', fontSize: '0.9rem', color: 'var(--text3)' }}>lock</span>
+                        )}
+                      </button>
+                    )
+                  })}
+                </div>
+              )}
+            </div>
+          </div>
+
           <div className={styles.infoGrid}>
             <div className={styles.infoGridCell}>
               <div className={styles.infoGridLabel}>Priority</div>
               <div className={styles.infoGridValue} style={{ color: pc.text }}>
                 {PRIORITY_LABELS[task.priority] ?? 'Normal'}
-              </div>
-            </div>
-            <div className={styles.infoGridCell}>
-              <div className={styles.infoGridLabel}>Status</div>
-              <div className={styles.infoGridValue} style={{ color: statusMeta.color }}>
-                {statusMeta.label}
               </div>
             </div>
             <div className={styles.infoGridCell}>
@@ -158,18 +265,6 @@ export default function TaskDetail({ task, onClose, onToggle, onDelete, onGoToCu
               <p className={styles.detailNoteText}>{task.notes}</p>
             </div>
           )}
-
-          <div className={styles.footerButtons}>
-            <button
-              className={task.done ? styles.btnRestore : styles.btnPrimary}
-              onClick={handleToggleComplete}
-            >
-              <span className="mi" style={{ fontSize: '1.05rem' }}>
-                {task.done ? 'undo' : 'check_circle'}
-              </span>
-              {task.done ? 'Mark as pending' : 'Mark as complete'}
-            </button>
-          </div>
 
         </div>
       </div>
