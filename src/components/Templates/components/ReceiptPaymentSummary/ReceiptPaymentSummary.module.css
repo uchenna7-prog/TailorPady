@@ -163,47 +163,74 @@
   flex-shrink: 0;
 }
 
-.balanceCallout,
-.paidCallout {
+.balanceRow {
   display: flex;
   justify-content: space-between;
   align-items: center;
   column-gap: 12px;
   padding: 4px 0;
   margin-left: auto;
-  margin-bottom: 15px;
   width: 55%;
 }
 
-.balanceLabel {
-  font-size: 10px;
-  font-weight: 900;
-  color: red;
+.balanceKey {
+  font-size: 9px;
+  font-weight: 700;
+  color: #6b7280;
   text-transform: uppercase;
+  letter-spacing: 0.04em;
 }
 
-.balanceAmount {
-  font-size: 13px;
+.balanceValDue {
+  font-size: 12px;
   font-weight: 900;
-  color: red;
+  color: #dc2626;
   font-variant-numeric: tabular-nums;
   font-feature-settings: "tnum";
   white-space: nowrap;
 }
 
-.paidLabel {
+.balanceValClear {
+  font-size: 12px;
+  font-weight: 900;
+  color: #16a34a;
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum";
+  white-space: nowrap;
+}
+
+.stampWrapper {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  padding: 14px 0 6px;
+}
+
+.stamp {
+  position: relative;
+  display: inline-block;
+  padding: 5px 20px;
+  border-radius: 3px;
+  border: 1.5px solid;
+  outline: 1px solid;
+  outline-offset: 2px;
   font-size: 10px;
   font-weight: 800;
-  color: #16a34a;
-  letter-spacing: 0.01em;
   text-transform: uppercase;
+  letter-spacing: 0.15em;
+  white-space: nowrap;
+  opacity: 0.85;
+  transform: rotate(-8deg);
 }
 
-.paidAmount {
+.stampPaid {
   color: #16a34a;
-  font-size: 10px;
-  font-weight: 900;
-  font-variant-numeric: tabular-nums;
-  font-feature-settings: "tnum";
-  white-space: nowrap;
+  border-color: #16a34a;
+  outline-color: #16a34a;
+}
+
+.stampPartial {
+  color: #d97706;
+  border-color: #d97706;
+  outline-color: #d97706;
 }
