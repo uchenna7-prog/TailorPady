@@ -478,7 +478,7 @@
 
 .stampWrapper {
   display: flex;
-  justify-content: center;
+  justify-content: flex-end;
   padding: 14px 0 4px;
   width: 100%;
 }
