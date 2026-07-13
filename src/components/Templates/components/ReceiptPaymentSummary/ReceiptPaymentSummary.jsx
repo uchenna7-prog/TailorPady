@@ -173,21 +173,23 @@ export function ReceiptPaymentSummary({ receipt, receiptBrandSettings, isTemplat
           </span>
         </div>
 
-        {!isFullyPaid ? (
-          <div className={styles.balanceCallout}>
-            <div>
-              <div className={styles.balanceLabel}>Balance</div>
-            </div>
-            <span className={styles.balanceAmount}>{formatMoney(currency, balanceRemaining)}</span>
+        <div className={styles.balanceRow}>
+          <span className={styles.balanceKey} style={dark ? { color: onPrimary } : {}}>
+            Balance Due
+          </span>
+          <span
+            className={isFullyPaid ? styles.balanceValClear : styles.balanceValDue}
+            style={dark ? { color: onPrimary } : {}}
+          >
+            {formatMoney(currency, isFullyPaid ? 0 : balanceRemaining)}
+          </span>
+        </div>
+
+        <div className={styles.stampWrapper}>
+          <div className={`${styles.stamp} ${isFullyPaid ? styles.stampPaid : styles.stampPartial}`}>
+            {isFullyPaid ? 'Paid In Full' : 'Partially Paid'}
           </div>
-        ) : (
-          <div className={styles.paidCallout}>
-            <div>
-              <div className={styles.paidLabel}>✓ PAID IN FULL</div>
-            </div>
-            <span className={styles.paidAmount}>{formatMoney(currency, grandTotal)}</span>
-          </div>
-        )}
+        </div>
 
       </div>
 
