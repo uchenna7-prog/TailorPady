@@ -237,17 +237,18 @@ export function ReceiptTemplate4({ receipt, customer, receiptBrandSettings }) {
             <span className={styles.tdVal}>{formatMoney(currency, thisPaymentTotal + previouslyPaid)}</span>
           </div>
 
-          {!isFullyPaid ? (
-            <div className={styles.balanceRow}>
-              <span className={styles.balanceLabel}>Balance</span>
-              <span className={styles.balanceVal}>{formatMoney(currency, balanceRemaining)}</span>
+          <div className={styles.balanceRow}>
+            <span className={styles.balanceLabel}>Balance Due</span>
+            <span className={isFullyPaid ? styles.balanceValClear : styles.balanceVal}>
+              {formatMoney(currency, isFullyPaid ? 0 : balanceRemaining)}
+            </span>
+          </div>
+
+          <div className={styles.stampWrapper}>
+            <div className={`${styles.stamp} ${isFullyPaid ? styles.stampPaid : styles.stampPartial}`}>
+              {isFullyPaid ? "Paid In Full" : "Partially Paid"}
             </div>
-          ) : (
-            <div className={styles.paidRow}>
-              <span className={styles.paidLabel}>Paid In Full</span>
-              <span className={styles.paidVal}>{formatMoney(currency, grandTotal)}</span>
-            </div>
-          )}
+          </div>
 
         </div>
       </div>
@@ -299,6 +300,3 @@ export function ReceiptTemplate4({ receipt, customer, receiptBrandSettings }) {
     </div>
   )
 }
-
-
-
