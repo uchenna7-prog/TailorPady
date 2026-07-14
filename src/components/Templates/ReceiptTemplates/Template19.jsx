@@ -303,17 +303,18 @@ export function ReceiptTemplate19({ receipt, customer, receiptBrandSettings }) {
               </div>
             </div>
 
-            {!isFullyPaid ? (
-              <div className={styles.balanceCallout}>
-                <span className={styles.balanceLabel}>Balance Remaining</span>
-                <span className={styles.balanceAmount}>{formatMoney(currency, balanceRemaining)}</span>
+            <div className={styles.balanceCallout}>
+              <span className={styles.balanceLabel}>Balance Due</span>
+              <span className={isFullyPaid ? styles.balanceValueClear : styles.balanceAmount}>
+                {formatMoney(currency, isFullyPaid ? 0 : balanceRemaining)}
+              </span>
+            </div>
+
+            <div className={styles.stampWrapper}>
+              <div className={`${styles.stamp} ${isFullyPaid ? styles.stampPaid : styles.stampPartial}`}>
+                {isFullyPaid ? "Paid In Full" : "Partially Paid"}
               </div>
-            ) : (
-              <div className={styles.paidCallout}>
-                <span className={styles.paidLabel}>Paid In Full</span>
-                <span className={styles.paidAmount}>{formatMoney(currency, grandTotal)}</span>
-              </div>
-            )}
+            </div>
           </div>
         </div>
 
