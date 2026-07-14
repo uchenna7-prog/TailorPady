@@ -223,17 +223,19 @@ export function ReceiptTemplate9({ receipt, customer, receiptBrandSettings }) {
                 <span className={styles.totalPaidKey}>Total Paid</span>
                 <span className={styles.totalPaidVal}>{formatMoney(currency, thisPaymentTotal + previouslyPaid)}</span>
               </div>
-              {isFullyPaid ? (
-                <div className={styles.paidInFullRow}>
-                  <span className={styles.paidInFullKey}>✓ Paid In Full</span>
-                  <span className={styles.paidInFullVal}>{formatMoney(currency, grandTotal)}</span>
+
+              <div className={styles.paidInFullRow}>
+                <span className={styles.balanceDueKey}>Balance Due</span>
+                <span className={isFullyPaid ? styles.balanceValClear : styles.balanceDueVal}>
+                  {formatMoney(currency, isFullyPaid ? 0 : balanceRemaining)}
+                </span>
+              </div>
+
+              <div className={styles.stampWrapper}>
+                <div className={`${styles.stamp} ${isFullyPaid ? styles.stampPaid : styles.stampPartial}`}>
+                  {isFullyPaid ? "Paid In Full" : "Partially Paid"}
                 </div>
-              ) : (
-                <div className={styles.paidInFullRow}>
-                  <span className={styles.balanceDueKey}>Balance Due</span>
-                  <span className={styles.balanceDueVal}>{formatMoney(currency, balanceRemaining)}</span>
-                </div>
-              )}
+              </div>
             </div>
           </>
         )}
@@ -288,4 +290,3 @@ export function ReceiptTemplate9({ receipt, customer, receiptBrandSettings }) {
     </div>
   )
 }
-
