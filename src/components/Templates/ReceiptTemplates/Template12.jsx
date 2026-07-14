@@ -250,17 +250,19 @@ export function ReceiptTemplate12({ receipt, customer, receiptBrandSettings }) {
               <span className={styles.grandLabel}>Total Paid</span>
               <span className={styles.grandValue}>{formatMoney(currency, thisPaymentTotal + previouslyPaid)}</span>
             </div>
-            {!isFullyPaid ? (
-              <div className={styles.balanceRow}>
-                <span className={styles.balanceLabel}>Balance</span>
-                <span className={styles.balanceValue}>{formatMoney(currency, balanceRemaining)}</span>
+
+            <div className={styles.balanceRow}>
+              <span className={styles.balanceLabel}>Balance Due</span>
+              <span className={isFullyPaid ? styles.balanceValueClear : styles.balanceValue}>
+                {formatMoney(currency, isFullyPaid ? 0 : balanceRemaining)}
+              </span>
+            </div>
+
+            <div className={styles.stampWrapper}>
+              <div className={`${styles.stamp} ${isFullyPaid ? styles.stampPaid : styles.stampPartial}`}>
+                {isFullyPaid ? "Paid In Full" : "Partially Paid"}
               </div>
-            ) : (
-              <div className={styles.paidRow}>
-                <span className={styles.paidLabel}>Paid In Full</span>
-                <span className={styles.paidValue}>{formatMoney(currency, grandTotal)}</span>
-              </div>
-            )}
+            </div>
           </div>
         </div>
       </div>
@@ -336,4 +338,3 @@ function ThornBorder() {
     </svg>
   )
 }
-
