@@ -246,7 +246,7 @@ export function ReceiptTemplate4({ receipt, customer, receiptBrandSettings }) {
 
           <div className={styles.stampWrapper}>
             <div className={`${styles.stamp} ${isFullyPaid ? styles.stampPaid : styles.stampPartial}`}>
-              {isFullyPaid ? "Paid In Full" : "Partially Paid"}
+              {isFullyPaid ? "PAID" : "PARTIAL"}
             </div>
           </div>
 
