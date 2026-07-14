@@ -239,18 +239,18 @@ export function ReceiptTemplate17({ receipt, customer, receiptBrandSettings }) {
               </span>
             </div>
 
+            <div className={styles.totalsRow}>
+              <span className={styles.totalsFinalLabel} style={{ color: "var(--brand-primary)" }}>Balance Due</span>
+              <span className={styles.totalsFinalValue} style={{ color: isFullyPaid ? "#16a34a" : "#dc2626" }}>
+                {formatMoney(currency, isFullyPaid ? 0 : balanceRemaining)}
+              </span>
+            </div>
 
-            {!isFullyPaid ? (
-              <div className={styles.totalsRow}>
-                <span className={styles.totalsFinalLabel} style={{ color: "#dc2626" }}>Balance Due</span>
-                <span className={styles.totalsFinalValue} style={{ color: "#dc2626" }}>{formatMoney(currency, balanceRemaining)}</span>
+            <div className={styles.stampWrapper}>
+              <div className={`${styles.stamp} ${isFullyPaid ? styles.stampPaid : styles.stampPartial}`}>
+                {isFullyPaid ? "Paid In Full" : "Partially Paid"}
               </div>
-            ) : (
-              <div className={styles.totalsRow}>
-                <span className={styles.totalsFinalLabel} style={{ color: "#16a34a" }}>Paid In Full</span>
-                <span className={styles.totalsFinalValue} style={{ color: "#16a34a" }}>{formatMoney(currency, grandTotal)}</span>
-              </div>
-            )}
+            </div>
           </div>
         </div>
       )}
@@ -295,4 +295,3 @@ export function ReceiptTemplate17({ receipt, customer, receiptBrandSettings }) {
     </div>
   )
 }
-
