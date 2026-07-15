@@ -258,11 +258,6 @@ export function ReceiptTemplate6({ receipt, customer, receiptBrandSettings }) {
               </span>
             </div>
 
-            <div className={styles.stampWrapper}>
-              <div className={`${styles.stamp} ${isFullyPaid ? styles.stampPaid : styles.stampPartial}`}>
-                {isFullyPaid ? 'PAID' : 'PARTIAL'}
-              </div>
-            </div>
           </div>
         )}
 

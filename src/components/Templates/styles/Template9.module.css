@@ -1,4 +1,3 @@
-
 .template {
   background: var(--brand-surface);
   color: #1a1a1a;
@@ -421,47 +420,6 @@
   font-variant-numeric: tabular-nums;
 }
 
-.stampWrapper {
-  display: flex;
-  justify-content: flex-end;
-  width: 100%;
-  margin: 20px 0 4px;
-}
-
-.stamp {
-  position: relative;
-  display: inline-block;
-  padding: 5px 20px;
-  border-radius: 3px;
-  border: 1.5px solid currentColor;
-  font-size: 10px;
-  font-weight: 800;
-  text-transform: uppercase;
-  letter-spacing: 0.15em;
-  white-space: nowrap;
-  opacity: 0.85;
-  transform: rotate(-8deg);
-}
-
-.stamp::after {
-  content: "";
-  position: absolute;
-  top: -4px;
-  left: -4px;
-  right: -4px;
-  bottom: -4px;
-  border: 1px solid currentColor;
-  border-radius: 5px;
-  pointer-events: none;
-}
-
-.stampPaid {
-  color: #16a34a;
-}
-
-.stampPartial {
-  color: #d97706;
-}
 
 
 .brandName{

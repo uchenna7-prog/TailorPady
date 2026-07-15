@@ -1,4 +1,3 @@
-
 import styles from "../styles/Template17.module.css"
 import { calcTax } from "../utils/receiptUtils"
 import { resolveCumulativePaid, buildPaymentRows } from "../../ReceiptViewer/utils"
@@ -246,11 +245,6 @@ export function ReceiptTemplate17({ receipt, customer, receiptBrandSettings }) {
               </span>
             </div>
 
-            <div className={styles.stampWrapper}>
-              <div className={`${styles.stamp} ${isFullyPaid ? styles.stampPaid : styles.stampPartial}`}>
-                {isFullyPaid ? "PAID" : "PARTIAL"}
-              </div>
-            </div>
           </div>
         </div>
       )}
