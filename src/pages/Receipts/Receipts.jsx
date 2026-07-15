@@ -12,16 +12,26 @@ import BottomNav from '../../components/BottomNav/BottomNav'
 import styles from './Receipts.module.css'
 
 
-function resolveCumulativePaid(receipt) {
-  if (typeof receipt.cumulativePaid === 'number') return receipt.cumulativePaid
-  if (typeof receipt.amountPaid     === 'number') return receipt.amountPaid
+function getReceiptTotal(receipt) {
+  return parseFloat(receipt.totalAmount ?? receipt.orderPrice) || 0
+}
+
+function getReceiptOwnAmount(receipt) {
+  if (Array.isArray(receipt.payments) && receipt.payments.length > 0) {
+    return receipt.payments.reduce((sum, p) => sum + (parseFloat(p.amount) || 0), 0)
+  }
   return parseFloat(receipt.amountPaid) || 0
 }
 
+function getReceiptCumulativePaid(receipt) {
+  if (typeof receipt.cumulativePaid === 'number') return receipt.cumulativePaid
+  return getReceiptOwnAmount(receipt)
+}
+
 function isFullPayment(receipt) {
-  const paid  = resolveCumulativePaid(receipt)
-  const total = receipt.orderPrice ? parseFloat(receipt.orderPrice) : paid
-  return paid >= total && total > 0
+  if (typeof receipt.isFullPayment === 'boolean') return receipt.isFullPayment
+  const total = getReceiptTotal(receipt)
+  return total > 0 && getReceiptCumulativePaid(receipt) >= total
 }
 
 const TABS = [
@@ -36,10 +46,10 @@ const STATUS_STYLES = {
 }
 
 function ReceiptCard({ receipt, currency, onTap, isLast, orderItems }) {
-  const paid  = resolveCumulativePaid(receipt)
-  const full  = isFullPayment(receipt)
-  const sty   = full ? STATUS_STYLES.full : STATUS_STYLES.part
-  const label = full ? 'Paid in Full' : 'Part Payment'
+  const amount = getReceiptOwnAmount(receipt)
+  const full   = isFullPayment(receipt)
+  const sty    = full ? STATUS_STYLES.full : STATUS_STYLES.part
+  const label  = full ? 'Paid in Full' : 'Part Payment'
 
   return (
     <div
@@ -58,7 +68,7 @@ function ReceiptCard({ receipt, currency, onTap, isLast, orderItems }) {
       </div>
 
       <div className={styles.receiptListRight}>
-        <div className={styles.receiptListAmount}>{formatMoney(currency, paid)}</div>
+        <div className={styles.receiptListAmount}>{formatMoney(currency, amount)}</div>
         <span className={styles.receiptStatusPill} style={{
           background: sty.bg,
           color:      sty.color,
@@ -169,6 +179,7 @@ export default function Receipts({ onMenuClick }) {
   }
 
   const filtered = allReceipts.filter(rec => {
+    if (activeTab === 'all')  return true
     if (activeTab === 'full') return  isFullPayment(rec)
     if (activeTab === 'part') return !isFullPayment(rec)
     return true
