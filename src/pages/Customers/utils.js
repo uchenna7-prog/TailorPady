@@ -1,3 +1,5 @@
+import { parsePhoneNumberFromString } from 'libphonenumber-js'
+
 
 export function getBirthdayStr(birthday) {
   if (!birthday) return ''
@@ -9,14 +11,21 @@ export function getBirthdayStr(birthday) {
 }
 
 
-export function buildPhoneNumber(localNumber, countryDialCode) {
-  
+export function buildPhoneNumber(localNumber, countryCca2) {
   const digits = localNumber.replace(/\D/g, '')
-  if (digits.length === 11 && digits.startsWith('0')) {
-    return `${countryDialCode} ${digits.slice(1)}`
-  }
-  if (digits.length === 10) {
-    return `${countryDialCode} ${digits}`
-  }
-  return null
+  if (!digits) return null
+
+  const parsed = parsePhoneNumberFromString(digits, countryCca2)
+  if (!parsed || !parsed.isValid()) return null
+
+  return parsed.number
+}
+
+
+export function isValidLocalPhoneNumber(localNumber, countryCca2) {
+  const digits = localNumber.replace(/\D/g, '')
+  if (!digits) return false
+
+  const parsed = parsePhoneNumberFromString(digits, countryCca2)
+  return !!parsed && parsed.isValid()
 }

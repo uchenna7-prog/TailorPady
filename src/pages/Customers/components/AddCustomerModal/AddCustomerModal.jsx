@@ -3,7 +3,7 @@ import { getInitials } from "../../../../utils/nameUtils"
 import { useBodyMeasurementImages } from "../../../../contexts/BodyMeasurementImagesContext"
 import { CountryCodePicker } from "../../../../components/CountryCodePicker/CountryCodePicker"
 import { DEFAULT_COUNTRY, COUNTRIES } from "../../../../datas/dialCodes"
-import { buildPhoneNumber } from "../../utils"
+import { buildPhoneNumber, isValidLocalPhoneNumber } from "../../utils"
 import { uploadToCloudinary } from "../../../../services/cloudinaryService"
 import { useNetworkStatus } from "../../../../hooks/useNetworkStatus"
 import Header from "../../../../components/Header/Header"
@@ -14,8 +14,13 @@ const MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov
 const DAYS   = Array.from({ length: 31 }, (_, i) => i + 1)
 
 
+function normalizeDigits(rawNumber) {
+  return rawNumber.replace(/\D/g, '')
+}
+
+
 function detectCountryFromNumber(rawNumber) {
-  const cleaned = rawNumber.replace(/\s+/g, '').replace(/-/g, '')
+  const cleaned = rawNumber.replace(/[^\d+]/g, '')
   if (!cleaned.startsWith('+')) return null
 
   const sorted = [...COUNTRIES].sort((a, b) => b.dial_code.length - a.dial_code.length)
@@ -27,6 +32,19 @@ function detectCountryFromNumber(rawNumber) {
   }
 
   return null
+}
+
+
+function dedupeContactNumbers(rawNumbers) {
+  const seen = new Set()
+  const result = []
+  for (const num of rawNumbers) {
+    const key = normalizeDigits(num)
+    if (!key || seen.has(key)) continue
+    seen.add(key)
+    result.push(num)
+  }
+  return result
 }
 
 
@@ -86,7 +104,7 @@ export function AddCustomerModal({ isOpen, onClose, onSave }) {
       setSelectedCountry(detected.country)
       setLocalPhone(detected.local)
     } else {
-      setLocalPhone(rawNumber.replace(/\D/g, ''))
+      setLocalPhone(normalizeDigits(rawNumber))
     }
     setContactNumbers(null)
   }
@@ -97,7 +115,9 @@ export function AddCustomerModal({ isOpen, onClose, onSave }) {
     try {
       const contacts = await navigator.contacts.select(['tel'], { multiple: false })
       if (!contacts?.length) return
-      const numbers = contacts[0].tel || []
+      const rawNumbers = contacts[0].tel || []
+      if (rawNumbers.length === 0) return
+      const numbers = dedupeContactNumbers(rawNumbers)
       if (numbers.length === 0) return
       if (numbers.length === 1) applyContactNumber(numbers[0])
       else setContactNumbers(numbers)
@@ -207,8 +227,8 @@ export function AddCustomerModal({ isOpen, onClose, onSave }) {
     if (!name)             { showInlineMsg('Name is required', false); return false }
     if (!sex)              { setSexError(true); showInlineMsg('Please select a sex', false); return false }
     if (!localPhone.trim()) { showInlineMsg('Phone number is required', false); return false }
-    if (buildPhoneNumber(localPhone, selectedCountry.dial_code) === null) {
-      showInlineMsg('Phone must be 10 digits (or 11 starting with 0)', false)
+    if (!isValidLocalPhoneNumber(localPhone, selectedCountry.cca2)) {
+      showInlineMsg('Please enter a valid phone number', false)
       return false
     }
     if (onWhatsApp === null) {
@@ -241,7 +261,7 @@ export function AddCustomerModal({ isOpen, onClose, onSave }) {
     const allBody       = { ...bodyMeasurements }
     customFields.forEach(f => { if (f.label.trim()) allBody[f.label.trim()] = f.value })
     const birthday   = bdayMonth && bdayDay ? `${bdayMonth}-${bdayDay}` : ''
-    const builtPhone = buildPhoneNumber(localPhone, selectedCountry.dial_code)
+    const builtPhone = buildPhoneNumber(localPhone, selectedCountry.cca2)
 
     if (localPhone.trim() && builtPhone === null) {
       onSave({ name, phone: '__INVALID_PHONE__', phoneType, onWhatsApp, sex, birthday, email, address, notes, photo: photoUrl, photoPublicId, bodyMeasurements: allBody })
@@ -266,7 +286,7 @@ export function AddCustomerModal({ isOpen, onClose, onSave }) {
     const photoUrl      = photoUpload?.url      || null
     const photoPublicId = photoUpload?.publicId || null
     const birthday      = bdayMonth && bdayDay ? `${bdayMonth}-${bdayDay}` : ''
-    const builtPhone    = buildPhoneNumber(localPhone, selectedCountry.dial_code)
+    const builtPhone    = buildPhoneNumber(localPhone, selectedCountry.cca2)
 
     onSave({ name, phone: builtPhone || '', phoneType, onWhatsApp, sex, birthday, email, address, notes, photo: photoUrl, photoPublicId, bodyMeasurements: {} })
     resetForm()
@@ -275,13 +295,12 @@ export function AddCustomerModal({ isOpen, onClose, onSave }) {
 
 
   const phoneDigits = localPhone.replace(/\D/g, '')
-  const phoneHint   = (() => {
+
+  const phoneHint = (() => {
     if (!phoneDigits) return null
-    if (phoneDigits.length === 11 && phoneDigits.startsWith('0'))  return { ok: true,  msg: 'Leading 0 will be removed when saving' }
-    if (phoneDigits.length === 10)                                  return { ok: true,  msg: 'Valid' }
-    if (phoneDigits.length > 11)                                    return { ok: false, msg: 'Too many digits' }
-    if (phoneDigits.length === 11 && !phoneDigits.startsWith('0')) return { ok: false, msg: '11-digit numbers must start with 0' }
-    return { ok: false, msg: `${10 - phoneDigits.length} more digit${10 - phoneDigits.length !== 1 ? 's' : ''} needed` }
+    return isValidLocalPhoneNumber(localPhone, selectedCountry.cca2)
+      ? { ok: true, msg: 'Valid' }
+      : { ok: false, msg: 'Enter a valid phone number' }
   })()
 
 
