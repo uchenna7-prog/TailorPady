@@ -26,6 +26,22 @@ function formatDate(dateStr) {
   return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
 }
 
+function computeInvoiceTotal(invoice) {
+  if (typeof invoice.totalAmount === 'number' && invoice.totalAmount > 0) {
+    return invoice.totalAmount
+  }
+
+  const itemsSubtotal = invoice.items?.length > 0
+    ? invoice.items.reduce((sum, item) => sum + (parseFloat(item.price) || 0) * (parseInt(item.qty, 10) || 1), 0)
+    : (parseFloat(invoice.price) || 0)
+
+  const shippingFee = parseFloat(invoice.shippingFee) || 0
+  const discountAmount = parseFloat(invoice.discountAmount) || 0
+  const taxAmount = parseFloat(invoice.taxAmount) || 0
+
+  return itemsSubtotal - discountAmount + shippingFee + taxAmount
+}
+
 
 const TABS = [
   { id: 'all',       label: 'All'          },
@@ -39,9 +55,7 @@ const TAB_IDS = TABS.map(t => t.id)
 
 
 function InvoiceRow({ invoice, currency, onTap, isLast, orderItems }) {
-  const total = invoice.items?.length > 0
-    ? invoice.items.reduce((sum, item) => sum + (parseFloat(item.price) || 0), 0)
-    : (parseFloat(invoice.price) || 0)
+  const total = computeInvoiceTotal(invoice)
 
   const overdue   = isOverdue(invoice)
   const statusKey = overdue && invoice.status !== 'paid' ? 'overdue' : (invoice.status || 'unpaid')
