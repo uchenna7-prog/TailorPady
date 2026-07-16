@@ -5,8 +5,8 @@ import { SheetHeader } from "../../../../components/SheetHeader/SheetHeader"
 import { SheetHero } from "../../../../components/SheetHero/SheetHero"
 import { SheetSection } from "../../../../components/SheetSection/SheetSection"
 import { haptic, buildBrandSnapshot, buildInvoiceMessage, buildReceiptMessage } from "../../../../utils"
-import InvoiceViewer from "../../../../../../components/InvoiceViewer/InvoiceViewer"
-import ReceiptViewer from "../../../../../../components/ReceiptViewer/ReceiptViewer"
+import InvoiceViewer from "../../../../../../components/TemplateViewers/InvoiceViewer/InvoiceViewer"
+import ReceiptViewer from "../../../../../../components/TemplateViewers/ReceiptViewer/ReceiptViewer"
 import styles from "./DraftDetailSheet.module.css"
 
 function getOrderIdFromInvoiceDraftId(draftId) {

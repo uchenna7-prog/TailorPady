@@ -24,7 +24,7 @@ const DESTINATIONS = {
     actionLabel: 'Add brand details',
     completedLabel: 'Brand details added',
     fieldKeys: ['logo', 'name', 'tagline', 'signature'],
-    route: '/profile',
+    route: '/account',
     modal: 'brand',
   },
   contact: {
@@ -33,7 +33,7 @@ const DESTINATIONS = {
     actionLabel: 'Add contact details',
     completedLabel: 'Business contact added',
     fieldKeys: ['phone', 'email', 'address', 'website'],
-    route: '/profile',
+    route: '/account',
     modal: 'businessContact',
   },
   invoice: {

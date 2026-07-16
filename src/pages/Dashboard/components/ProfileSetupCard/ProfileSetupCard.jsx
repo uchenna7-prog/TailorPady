@@ -19,7 +19,7 @@ export function ProfileSetupCard({ completedCount, totalCount, nextItem }) {
   const isDone = completedCount >= totalCount
 
   return (
-    <div className={styles.card} onClick={() => navigate('/profile')} role="button" tabIndex={0}>
+    <div className={styles.card} onClick={() => navigate('/account')} role="button" tabIndex={0}>
       <div className={styles.inner}>
 
         <div className={styles.iconWrap}>

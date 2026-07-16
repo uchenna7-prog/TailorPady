@@ -1,5 +1,5 @@
 import styles from "../styles/Template4.module.css"
-import { getDueDate, calcTax } from "../utils/invoiceUtils"
+import { getDueDate, calcTax } from "../../../utils/invoiceUtils"
 import { formatMoney } from "../../../utils/moneyUtils"
 import { PhoneIcon, EmailIcon, LocationIcon, WebsiteIcon } from "../components/icons/icons"
 import { LogoOrName } from "../components/LogoOrBrandName/LogoOrBrandName"

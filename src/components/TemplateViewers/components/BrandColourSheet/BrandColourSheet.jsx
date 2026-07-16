@@ -1,6 +1,6 @@
 import { useState } from 'react'
-import BrandColourPicker from '../BrandColourPicker/BrandColourPicker'
-import Header from '../Header/Header'
+import BrandColourPicker from '../../../BrandColourPicker/BrandColourPicker'
+import Header from '../../../Header/Header'
 import styles from './BrandColourSheet.module.css'
 
 export function BrandColourSheet({ currentColourId, onClose, onSelect }) {

@@ -1,6 +1,5 @@
 import styles from "../styles/Template9.module.css"
-import { calcTax } from "../utils/receiptUtils"
-import { resolveCumulativePaid, buildPaymentRows } from "../../ReceiptViewer/utils"
+import { resolveCumulativePaid,buildPaymentRows, calcTax } from "../../../utils/receiptUtils"
 import { formatMoney } from "../../../utils/moneyUtils"
 import { PhoneIcon, EmailIcon, LocationIcon, WebsiteIcon } from "../components/icons/icons"
 

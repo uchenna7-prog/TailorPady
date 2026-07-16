@@ -1,5 +1,5 @@
 import styles from "../styles/Template2.module.css"
-import { getDueDate } from "../utils/invoiceUtils"
+import { getDueDate } from "../../../utils/invoiceUtils"
 import { ItemsTable } from "../components/InvoiceItemsTable/InvoiceItemsTable"
 import { LogoOrName } from "../components/LogoOrBrandName/LogoOrBrandName"
 import { PhoneIcon, EmailIcon, LocationIcon } from "../components/icons/icons"

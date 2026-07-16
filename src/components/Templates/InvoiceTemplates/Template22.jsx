@@ -1,6 +1,6 @@
 
 import styles from "../styles/Template22.module.css"
-import { getDueDate, calcTax } from "../utils/invoiceUtils"
+import { getDueDate, calcTax } from "../../../utils/invoiceUtils"
 import { formatMoney } from "../../../utils/moneyUtils"
 import { PhoneIcon, EmailIcon, LocationIcon, WebsiteIcon } from "../components/icons/icons"
 

@@ -1,4 +1,4 @@
-import { calcTax } from "../../utils/receiptUtils"
+import { calcTax } from "../../../../utils/receiptUtils"
 import styles from "./ReceiptItemsTable.module.css"
 import { formatMoney } from "../../../../utils/moneyUtils"
 import { useBrandTokens } from "../../../../hooks/useBrandTokens"

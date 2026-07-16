@@ -1,4 +1,4 @@
-import { formatMoney } from '../../utils/moneyUtils'
+import { formatMoney } from '../../../utils/moneyUtils'
 
 
 export function buildInvoiceWhatsAppMessage(invoice, customer,invoiceBrandSettings ) {

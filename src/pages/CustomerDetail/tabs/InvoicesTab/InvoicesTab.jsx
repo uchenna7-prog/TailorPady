@@ -6,7 +6,7 @@ import { EmptyState } from './components/EmptyState/EmptyState'
 import { InvoiceRow } from './components/InvoiceRow/InvoiceRow'
 import { InvoiceRowSkeleton } from './components/InvoiceRowSkeleton/InvoiceRowSkeleton'
 import { AddInvoiceModal } from './components/AddInvoiceModal/AddInvoiceModal'
-import InvoiceViewer from '../../../../components/InvoiceViewer/InvoiceViewer'
+import InvoiceViewer from '../../../../components/TemplateViewers/InvoiceViewer/InvoiceViewer'
 import ConfirmSheet from '../../../../components/ConfirmSheet/ConfirmSheet'
 import styles from './InvoicesTab.module.css'
 

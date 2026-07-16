@@ -1,30 +1,26 @@
 import { useRef, useState, useEffect } from 'react'
-import { useGeneralSettings } from '../../contexts/GeneralSettingsContext'
-import { useProfileSettings } from '../../contexts/ProfileSettingsContext'
-import { TEMPLATE_MAPPINGS } from '../Templates/datas/invoiceTemplateMappings'
-import { buildInvoiceWhatsAppMessage } from './utils'
-import { sharePDF, downloadPDF } from '../../utils/pdfUtils'
-import { getBrandCSSVars } from '../../utils/cssVariablesUtils'
-import { useInvoiceBrandSettings } from '../../hooks/useInvoiceBrandSettings'
-import { getPaletteById } from '../../config/brandPalette'
-import { getMissingFields, getRequiresForDoc } from '../TemplateModal/templateRequiresUtils'
-import { TemplateModal } from '../TemplateModal/TemplateModal'
-import { MissingFieldsSheet } from '../TemplateModal/MissingFieldsSheet/MissingFieldsSheet'
-import { DesignOptionsSheet } from '../DesignOptionsSheet/DesignOptionsSheet'
-import { ShareOptionsSheet } from '../ShareOptionsSheet/ShareOptionsSheet'
-import { MoreOptionsSheet } from '../MoreOptionsSheet/MoreOptionsSheet'
-import { BrandColourSheet } from '../BrandColourSheet/BrandColourSheet'
-import { ApplyScopeSheet } from '../ApplyScopeSheet/ApplyScopeSheet'
-import Header from '../Header/Header'
-import styles from './InvoiceViewer.module.css'
+import { useGeneralSettings } from '../../../contexts/GeneralSettingsContext'
+import { useProfileSettings } from '../../../contexts/ProfileSettingsContext'
+import { TEMPLATE_MAPPINGS } from '../../Templates/datas/receiptTemplateMappings'
+import {
+  resolveCumulativePaid,
+  buildReceiptWhatsAppMessage,
+} from '../../../utils/receiptUtils'
+import { useReceiptBrandSettings } from '../../../hooks/useReceiptBrandSettings'
+import { getBrandCSSVars } from '../../../utils/cssVariablesUtils'
+import { sharePDF, downloadPDF } from '../../../utils/pdfUtils'
+import { getPaletteById } from '../../../config/brandPalette'
+import { getMissingFields, getRequiresForDoc } from '../../TemplateModal/templateRequiresUtils'
+import { TemplateModal } from '../../TemplateModal/TemplateModal'
+import { MissingFieldsSheet } from '../../TemplateModal/MissingFieldsSheet/MissingFieldsSheet'
+import { DesignOptionsSheet } from '../components/DesignOptionsSheet/DesignOptionsSheet'
+import { ShareOptionsSheet } from '../components/ShareOptionsSheet/ShareOptionsSheet'
+import { MoreOptionsSheet } from '../components/MoreOptionsSheet/MoreOptionsSheet'
+import { BrandColourSheet } from '../components/BrandColourSheet/BrandColourSheet'
+import { ApplyScopeSheet } from '../components/ApplyScopeSheet/ApplyScopeSheet'
+import Header from '../../Header/Header'
+import styles from './ReceiptViewer.module.css'
 
-
-const STATUS_LABELS = {
-  unpaid:    'Unpaid',
-  part_paid: 'Part Payment',
-  paid:      'Full Payment',
-  overdue:   'Overdue',
-}
 
 const COMPLETED_TOAST_LABELS = {
   brand:           'Brand details added ✓',
@@ -43,15 +39,15 @@ function normalizeCurrency(currency) {
   return currency || '₦'
 }
 
-function buildSnapshotedBrandSettings(invoiceBrandSettings, brandSnapshot) {
+function buildSnapshotedBrandSettings(receiptBrandSettings, brandSnapshot) {
   const merged = brandSnapshot
     ? {
-        ...invoiceBrandSettings,
+        ...receiptBrandSettings,
         ...Object.fromEntries(
           Object.entries(brandSnapshot).filter(([, v]) => v !== '' && v !== null && v !== undefined)
         ),
       }
-    : invoiceBrandSettings
+    : receiptBrandSettings
 
   return {
     ...merged,
@@ -59,8 +55,8 @@ function buildSnapshotedBrandSettings(invoiceBrandSettings, brandSnapshot) {
   }
 }
 
-export default function InvoiceViewer({
-  invoice: snapShotedInvoice,
+export default function ReceiptViewer({
+  receipt: snapshotedReceipt,
   customer,
   onClose,
   onDelete,
@@ -81,40 +77,43 @@ export default function InvoiceViewer({
   const { generalSettings, updateManyGeneralSettings } = useGeneralSettings()
   const { profileSettings, updateManyProfileSettings } = useProfileSettings()
 
-  const INVOICE_BRAND_SETTINGS = useInvoiceBrandSettings()
+  const RECEIPT_BRAND_SETTINGS = useReceiptBrandSettings()
 
   const paperRef = useRef(null)
   const pendingFieldsRef = useRef(new Set())
-  const [invoice, setInvoice] = useState(snapShotedInvoice)
-  const [pdfLoading,        setPdfLoading]        = useState(false)
-  const [shareLoading,      setShareLoading]       = useState(false)
-  const [showDesignSheet,   setShowDesignSheet]    = useState(false)
-  const [showShareSheet,    setShowShareSheet]     = useState(false)
-  const [showMoreSheet,     setShowMoreSheet]      = useState(false)
-  const [showTemplateModal, setShowTemplateModal]  = useState(false)
-  const [showColourSheet,   setShowColourSheet]    = useState(false)
-  const [pendingChange,     setPendingChange]      = useState(null)
-  const [missingFields,     setMissingFields]      = useState(null)
-  const [pendingActionLabel,  setPendingActionLabel]  = useState(null)
-  const [pendingActionFn,     setPendingActionFn]     = useState(null)
+  const [receipt, setReceipt] = useState(snapshotedReceipt)
+  const [pdfLoading,          setPdfLoading]          = useState(false)
+  const [shareLoading,        setShareLoading]         = useState(false)
+  const [showDesignSheet,     setShowDesignSheet]      = useState(false)
+  const [showShareSheet,      setShowShareSheet]       = useState(false)
+  const [showMoreSheet,       setShowMoreSheet]        = useState(false)
+  const [showTemplateModal,   setShowTemplateModal]    = useState(false)
+  const [showColourSheet,     setShowColourSheet]      = useState(false)
+  const [pendingChange,       setPendingChange]        = useState(null)
+  const [missingFields,       setMissingFields]        = useState(null)
+  const [pendingActionLabel,  setPendingActionLabel]   = useState(null)
+  const [pendingActionFn,     setPendingActionFn]      = useState(null)
   const [activeCompletedModal, setActiveCompletedModal] = useState(null)
 
-  const templateKey = invoice.template || generalSettings.invoiceTemplate || 'invoiceTemplate1'
-  const Template    = TEMPLATE_MAPPINGS[templateKey] || TEMPLATE_MAPPINGS.invoiceTemplate1
+  const templateKey = receipt.template || generalSettings.receiptTemplate || 'receiptTemplate1'
+  const Template    = TEMPLATE_MAPPINGS[templateKey] || TEMPLATE_MAPPINGS.receiptTemplate1
 
-  const effectiveColourId = invoice.brandSnapshot?.colourId || colourId
+  const effectiveColourId = receipt.brandSnapshot?.colourId || colourId
 
-  const snapShotedInvoiceBrandSettings = buildSnapshotedBrandSettings(
-    INVOICE_BRAND_SETTINGS,
-    invoice.brandSnapshot
+  const snapShotedReceiptBrandSettings = buildSnapshotedBrandSettings(
+    RECEIPT_BRAND_SETTINGS,
+    receipt.brandSnapshot
   )
 
-  const brandCSSVars = getBrandCSSVars(snapShotedInvoiceBrandSettings.colour)
-  const filename     = `Invoice-${invoice.number}-${customer.name.replace(/\s+/g, '_')}.pdf`
+  const brandCSSVars   = getBrandCSSVars(snapShotedReceiptBrandSettings.colour)
+  const filename       = `Receipt-${receipt.number}-${customer.name.replace(/\s+/g, '_')}.pdf`
+  const cumulativePaid = resolveCumulativePaid(receipt)
+  const orderTotal     = receipt.orderPrice ? parseFloat(receipt.orderPrice) : cumulativePaid
+  const isFullPay      = cumulativePaid >= orderTotal && orderTotal > 0
 
   const returnTo = returnPath
-    ? { returnPath, invoiceId: invoice.id }
-    : { customerId: customer.id, invoiceId: invoice.id }
+    ? { returnPath, receiptId: receipt.id }
+    : { customerId: customer.id, receiptId: receipt.id }
 
   const templateModalReturnTo = {
     ...returnTo,
@@ -122,17 +121,17 @@ export default function InvoiceViewer({
   }
 
   useEffect(() => {
-    setInvoice(prev => {
-      const next = { ...snapShotedInvoice }
+    setReceipt(prev => {
+      const next = { ...snapshotedReceipt }
       if (pendingFieldsRef.current.has('template'))      next.template      = prev.template
       if (pendingFieldsRef.current.has('brandSnapshot'))  next.brandSnapshot = prev.brandSnapshot
       return next
     })
-  }, [snapShotedInvoice])
+  }, [snapshotedReceipt])
 
   useEffect(() => {
     if (!reopenMissingFields) return
-    const requires   = getRequiresForDoc('invoice', templateKey, null)
+    const requires   = getRequiresForDoc('receipt', null, templateKey)
     const missing    = getMissingFields(requires, profileSettings)
     const missingSet = new Set(missing)
     const madeProgress = completedFields.some(field => !missingSet.has(field))
@@ -160,7 +159,7 @@ export default function InvoiceViewer({
   }, [reopenTemplateModal])
 
   const checkMissingThen = (label, action) => {
-    const requires = getRequiresForDoc('invoice', templateKey, null)
+    const requires = getRequiresForDoc('receipt', null, templateKey)
     const missing  = getMissingFields(requires, profileSettings)
     if (missing.length > 0) {
       setPendingActionLabel(label)
@@ -193,7 +192,7 @@ export default function InvoiceViewer({
     showToast?.('Preparing…')
     try {
       const exactHeight = Math.ceil(paperRef.current.getBoundingClientRect().height)
-      const message     = buildInvoiceWhatsAppMessage(invoice, customer, snapShotedInvoiceBrandSettings)
+      const message     = buildReceiptWhatsAppMessage(receipt, customer, snapShotedReceiptBrandSettings)
       await sharePDF(paperRef.current, filename, message, brandCSSVars, exactHeight)
       showToast?.('Shared ✓')
     } catch (err) {
@@ -208,8 +207,8 @@ export default function InvoiceViewer({
   const handleDownload = () => checkMissingThen('download', executeDownload)
   const handleShare    = () => checkMissingThen('share', executeShare)
 
-  const handleTemplateSelect = ({ invoiceTemplate }) => {
-    setPendingChange({ type: 'template', invoiceTemplate })
+  const handleTemplateSelect = ({ receiptTemplate }) => {
+    setPendingChange({ type: 'template', receiptTemplate })
   }
 
   const handleColourSelect = (selectedColourId) => {
@@ -224,32 +223,32 @@ export default function InvoiceViewer({
     setPendingChange(null)
 
     if (change.type === 'template') {
-      const prevTemplate = invoice.template
+      const prevTemplate = receipt.template
       pendingFieldsRef.current.add('template')
-      setInvoice(prev => ({ ...prev, template: change.invoiceTemplate }))
-      showToast?.('Template updated for this invoice ✓')
+      setReceipt(prev => ({ ...prev, template: change.receiptTemplate }))
+      showToast?.('Template updated for this receipt ✓')
 
-      customerData.updateInvoiceTemplate(invoice.id, change.invoiceTemplate)
+      customerData.updateReceiptTemplate(receipt.id, change.receiptTemplate)
         .then(() => { pendingFieldsRef.current.delete('template') })
         .catch(() => {
           pendingFieldsRef.current.delete('template')
-          setInvoice(prev => ({ ...prev, template: prevTemplate }))
+          setReceipt(prev => ({ ...prev, template: prevTemplate }))
           showToast?.('Could not update template.')
         })
     } else {
-      const prevSnapshot = invoice.brandSnapshot
+      const prevSnapshot = receipt.brandSnapshot
       pendingFieldsRef.current.add('brandSnapshot')
-      setInvoice(prev => ({
+      setReceipt(prev => ({
         ...prev,
         brandSnapshot: { ...prev.brandSnapshot, colourId: change.colourId, colour: change.colour },
       }))
-      showToast?.('Colour updated for this invoice ✓')
+      showToast?.('Colour updated for this receipt ✓')
 
-      customerData.updateInvoiceColour(invoice.id, change.colourId, change.colour)
+      customerData.updateReceiptColour(receipt.id, change.colourId, change.colour)
         .then(() => { pendingFieldsRef.current.delete('brandSnapshot') })
         .catch(() => {
           pendingFieldsRef.current.delete('brandSnapshot')
-          setInvoice(prev => ({ ...prev, brandSnapshot: prevSnapshot }))
+          setReceipt(prev => ({ ...prev, brandSnapshot: prevSnapshot }))
           showToast?.('Could not update colour.')
         })
     }
@@ -261,35 +260,35 @@ export default function InvoiceViewer({
     setPendingChange(null)
 
     if (change.type === 'template') {
-      const prevTemplate = invoice.template
+      const prevTemplate = receipt.template
       pendingFieldsRef.current.add('template')
-      setInvoice(prev => ({ ...prev, template: change.invoiceTemplate }))
-      updateManyGeneralSettings({ invoiceTemplate: change.invoiceTemplate })
-      onApplyDefaultTemplates?.({ invoiceTemplate: change.invoiceTemplate })
+      setReceipt(prev => ({ ...prev, template: change.receiptTemplate }))
+      updateManyGeneralSettings({ receiptTemplate: change.receiptTemplate })
+      onApplyDefaultTemplates?.({ receiptTemplate: change.receiptTemplate })
       showToast?.('Template updated here and set as default ✓')
 
-      customerData.updateInvoiceTemplate(invoice.id, change.invoiceTemplate)
+      customerData.updateReceiptTemplate(receipt.id, change.receiptTemplate)
         .then(() => { pendingFieldsRef.current.delete('template') })
         .catch(() => {
           pendingFieldsRef.current.delete('template')
-          setInvoice(prev => ({ ...prev, template: prevTemplate }))
+          setReceipt(prev => ({ ...prev, template: prevTemplate }))
           showToast?.('Could not update template.')
         })
     } else {
-      const prevSnapshot = invoice.brandSnapshot
+      const prevSnapshot = receipt.brandSnapshot
       pendingFieldsRef.current.add('brandSnapshot')
-      setInvoice(prev => ({
+      setReceipt(prev => ({
         ...prev,
         brandSnapshot: { ...prev.brandSnapshot, colourId: change.colourId, colour: change.colour },
       }))
       updateManyProfileSettings({ brandColourId: change.colourId, brandColour: change.colour })
       showToast?.('Colour updated here and set as default ✓')
 
-      customerData.updateInvoiceColour(invoice.id, change.colourId, change.colour)
+      customerData.updateReceiptColour(receipt.id, change.colourId, change.colour)
         .then(() => { pendingFieldsRef.current.delete('brandSnapshot') })
         .catch(() => {
           pendingFieldsRef.current.delete('brandSnapshot')
-          setInvoice(prev => ({ ...prev, brandSnapshot: prevSnapshot }))
+          setReceipt(prev => ({ ...prev, brandSnapshot: prevSnapshot }))
           showToast?.('Could not update colour.')
         })
     }
@@ -318,7 +317,7 @@ export default function InvoiceViewer({
     <div className={styles.overlay} onTouchStart={e => e.stopPropagation()} onTouchEnd={e => e.stopPropagation()}>
       <Header
         type="back"
-        title={invoice.number}
+        title={receipt.number}
         onBackClick={onClose}
         customActions={headerActions}
       />
@@ -326,14 +325,14 @@ export default function InvoiceViewer({
       <div className={styles.scrollArea}>
 
         <div className={styles.statusRow}>
-          <div className={`${styles.statusBadge} ${styles[`status_${invoice.status}`]}`}>
-            {STATUS_LABELS[invoice.status] || invoice.status}
+          <div className={`${styles.statusBadge} ${isFullPay ? styles.status_paid : styles.status_part_paid}`}>
+            {isFullPay ? 'Paid in Full' : 'Part Payment'}
           </div>
         </div>
 
         <div className={styles.paperWrap}>
-          <div ref={paperRef} className={styles.paperInner} style={brandCSSVars}>
-            <Template invoice={invoice} customer={customer} invoiceBrandSettings={snapShotedInvoiceBrandSettings} />
+          <div className={styles.paperInner} ref={paperRef} style={brandCSSVars}>
+            <Template receipt={receipt} customer={customer} receiptBrandSettings={snapShotedReceiptBrandSettings} />
           </div>
         </div>
 
@@ -349,7 +348,7 @@ export default function InvoiceViewer({
 
       {showShareSheet && (
         <ShareOptionsSheet
-          docType="invoice"
+          docType="receipt"
           onClose={() => setShowShareSheet(false)}
           onShare={handleShare}
           onDownload={handleDownload}
@@ -358,19 +357,19 @@ export default function InvoiceViewer({
 
       {showMoreSheet && (
         <MoreOptionsSheet
-          docType="invoice"
+          docType="receipt"
           onClose={() => setShowMoreSheet(false)}
-          onDelete={() => onDelete(invoice.id)}
+          onDelete={() => onDelete(receipt.id)}
         />
       )}
 
       {showTemplateModal && (
         <TemplateModal
           isOpen={showTemplateModal}
-          currentInvoiceTemplate={templateKey}
-          currentReceiptTemplate={generalSettings.receiptTemplate}
+          currentInvoiceTemplate={generalSettings.invoiceTemplate}
+          currentReceiptTemplate={templateKey}
           colourId={effectiveColourId}
-          lockToTab="invoice"
+          lockToTab="receipt"
           onClose={() => setShowTemplateModal(false)}
           onSelect={handleTemplateSelect}
           returnTo={templateModalReturnTo}
@@ -391,11 +390,11 @@ export default function InvoiceViewer({
           title={pendingChange.type === 'colour' ? 'Apply new colour' : 'Apply new template'}
           description={
             pendingChange.type === 'colour'
-              ? 'Apply to this invoice only, or apply here and make it your default going forward?'
-              : 'Apply to this invoice only, or apply here and make it your default going forward?'
+              ? 'Apply to this receipt only, or apply here and make it your default going forward?'
+              : 'Apply to this receipt only, or apply here and make it your default going forward?'
           }
-          thisLabel="This invoice only"
-          defaultLabel="This invoice + set as default"
+          thisLabel="This receipt only"
+          defaultLabel="This receipt + set as default"
           onApplyToThis={handleApplyToThis}
           onApplyToDefault={handleApplyAsDefault}
           onCancel={handleCancelScope}
@@ -405,7 +404,7 @@ export default function InvoiceViewer({
       {missingFields !== null && missingFields.length > 0 && (
         <MissingFieldsSheet
           missingFields={missingFields}
-          docType="invoice"
+          docType="receipt"
           pendingAction={pendingActionLabel}
           returnTo={returnTo}
           completedModal={activeCompletedModal}

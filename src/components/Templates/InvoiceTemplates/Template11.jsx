@@ -1,6 +1,6 @@
 
 import styles from "../styles/Template11.module.css"
-import { getDueDate, calcTax } from "../utils/invoiceUtils"
+import { getDueDate, calcTax } from "../../../utils/invoiceUtils"
 import { formatMoney } from "../../../utils/moneyUtils"
 import { PhoneIcon, EmailIcon, LocationIcon, WebsiteIcon, UserIcon, HashIcon } from "../components/icons/icons"
 import { LogoOrName } from "../components/LogoOrBrandName/LogoOrBrandName"

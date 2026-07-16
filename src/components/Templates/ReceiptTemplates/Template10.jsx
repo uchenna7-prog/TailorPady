@@ -3,7 +3,7 @@ import styles from "../styles/Template10.module.css"
 import { ReceiptPaymentSummary } from "../components/ReceiptPaymentSummary/ReceiptPaymentSummary"
 import { ItemsTable } from "../components/ReceiptItemsTable/ReceiptItemsTable"
 import { LogoOrName } from "../components/LogoOrBrandName/LogoOrBrandName"
-import { calcTax } from "../utils/receiptUtils"
+import { calcTax } from "../../../utils/receiptUtils"
 import { PhoneIcon, EmailIcon, LocationIcon } from "../components/icons/icons"
 
 export function ReceiptTemplate10({ receipt, customer, receiptBrandSettings }) {

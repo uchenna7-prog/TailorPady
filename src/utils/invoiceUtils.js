@@ -23,9 +23,3 @@ export function getDueDate(invoice, dueDays) {
 }
 
 
-export function sanitizePhone(raw) {
-  if (!raw) return ''
-  return raw.replace(/\D/g, '').replace(/^0/, '')
-}
-
-

@@ -5,7 +5,7 @@ import { buildOrderItemsMap, groupReceiptsByDate } from './utils'
 import { EmptyState } from './components/EmptyState/EmptyState'
 import { AddReceiptModal } from './components/AddReceiptModal/AddReceiptModal'
 import { ReceiptRow } from './components/ReceiptRow/ReceiptRow'
-import ReceiptViewer from '../../../../components/ReceiptViewer/ReceiptViewer'
+import ReceiptViewer from '../../../../components/TemplateViewers/ReceiptViewer/ReceiptViewer'
 import ConfirmSheet from '../../../../components/ConfirmSheet/ConfirmSheet'
 import styles from './ReceiptsTab.module.css'
 

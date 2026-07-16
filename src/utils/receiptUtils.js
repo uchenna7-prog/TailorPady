@@ -1,4 +1,13 @@
-import { formatMoney } from '../../utils/moneyUtils'
+import { formatMoney } from './moneyUtils'
+
+
+
+export function calcTax(subtotal, taxRate, showTax) {
+  
+  if (!showTax || !taxRate) return 0
+  return subtotal * (taxRate / 100)
+}
+
 
 
 export function resolveCumulativePaid(receipt) {
@@ -118,6 +127,3 @@ export function buildReceiptWhatsAppMessage(receipt, customer, receiptBrandSetti
 
   return lines.join('\n')
 }
-
-
-

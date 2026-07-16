@@ -1,5 +1,5 @@
 import styles from "../styles/Template5.module.css"
-import { calcTax } from "../utils/receiptUtils"
+import { calcTax } from "../../../utils/receiptUtils"
 import { ReceiptPaymentSummary } from "../components/ReceiptPaymentSummary/ReceiptPaymentSummary"
 import { formatMoney } from "../../../utils/moneyUtils"
 import { PhoneIcon, EmailIcon, LocationIcon } from "../components/icons/icons"

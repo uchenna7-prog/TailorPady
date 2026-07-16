@@ -1,6 +1,6 @@
 
 import styles from "../styles/Template16.module.css"
-import { getDueDate, calcTax } from "../utils/invoiceUtils"
+import { getDueDate, calcTax } from "../../../utils/invoiceUtils"
 import { formatMoney } from "../../../utils/moneyUtils"
 import { LogoOrName } from "../components/LogoOrBrandName/LogoOrBrandName"
 

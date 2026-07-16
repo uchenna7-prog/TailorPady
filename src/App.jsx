@@ -5,6 +5,7 @@ import { usePremium } from './contexts/PremiumContext'
 import RequireAuth from './components/RequireAuth/RequireAuth'
 import ScrollToTop from './components/ScrollToTop/ScrollToTop'
 import SideBar from './components/SideBar/SideBar'
+import LandingPage from './pages/LandingPage/LandingPage'
 import Login from './pages/Login/Login'
 import Signup from './pages/Signup/Signup'
 import Dashboard from './pages/Dashboard/Dashboard'
@@ -87,6 +88,7 @@ function AppShell() {
 export default function App() {
   return (
     <Routes>
+      <Route path="/"       element={<LandingPage />} />
       <Route path="/login"  element={<GuestRoute><Login  /></GuestRoute>} />
       <Route path="/signup" element={<GuestRoute><Signup /></GuestRoute>} />
       <Route

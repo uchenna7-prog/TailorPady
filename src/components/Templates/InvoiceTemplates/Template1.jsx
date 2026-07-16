@@ -1,6 +1,6 @@
 import styles from "../styles/Template1.module.css"
 import { ItemsTable } from "../components/InvoiceItemsTable/InvoiceItemsTable"
-import { getDueDate } from "../utils/invoiceUtils"
+import { getDueDate } from "../../../utils/invoiceUtils"
 import { PhoneIcon, EmailIcon, LocationIcon } from "../components/icons/icons"
 
 

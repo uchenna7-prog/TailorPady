@@ -1,5 +1,5 @@
-import { calcTax } from '../../utils/invoiceUtils'
-import { resolveCumulativePaid, buildPaymentRows } from '../../../ReceiptViewer/utils'
+import { calcTax } from '../../../../utils/invoiceUtils'
+import { resolveCumulativePaid, buildPaymentRows } from '../../../../utils/receiptUtils'
 import { formatMoney } from '../../../../utils/moneyUtils'
 import styles from './ReceiptPaymentSummary.module.css'
 
