@@ -7,7 +7,7 @@ import ScrollToTop from './components/ScrollToTop/ScrollToTop'
 import SideBar from './components/SideBar/SideBar'
 import Login from './pages/Login/Login'
 import Signup from './pages/Signup/Signup'
-import Home from './pages/Home/Home'
+import Dashboard from './pages/Dashboard/Dashboard'
 import Customers from './pages/Customers/Customers'
 import CustomerDetail from './pages/CustomerDetail/CustomerDetail'
 import CustomerBodyMeasurements from './pages/CustomerBodyMeasurements/CustomerBodyMeasurements'
@@ -15,12 +15,12 @@ import Tasks from './pages/Tasks/Tasks'
 import Orders from './pages/Orders/Orders'
 import Invoices from './pages/Invoices/Invoices'
 import Receipts from './pages/Receipts/Receipts'
-import AllPayments from './pages/AllPayments/AllPayments'
+import Payments from './pages/Payments/Payments'
 import Inventory from './pages/Inventory/Inventory'
 import Reports from './pages/Reports/Reports'
 import Gallery from './pages/Gallery/Gallery'
 import Settings from './pages/Settings/Settings'
-import Profile from './pages/Profile/Profile'
+import Account from './pages/Account/Account'
 import Contact from './pages/Contact/Contact'
 import FAQ from './pages/FAQ/FAQ'
 import Appointments from './pages/Appointments/Appointments'
@@ -36,7 +36,7 @@ import './index.css'
 function GuestRoute({ children }) {
   const { user, loading } = useAuth()
   if (loading) return null
-  if (user) return <Navigate to="/" replace />
+  if (user) return <Navigate to="/dashboard" replace />
   return children
 }
 
@@ -53,7 +53,7 @@ function AppShell() {
       <div className="appContent">
         <ScrollToTop />
         <Routes>
-          <Route path="/"                                element={<Home                     onMenuClick={menuClick} />} />
+          <Route path="/dashboard"                       element={<Dashboard                     onMenuClick={menuClick} />} />
           <Route path="/appointments"                    element={<Appointments             onMenuClick={menuClick} />} />
           <Route path="/customers"                       element={<Customers                onMenuClick={menuClick} />} />
           <Route path="/customers/:id"                   element={<CustomerDetail           onMenuClick={menuClick} />} />
@@ -62,12 +62,12 @@ function AppShell() {
           <Route path="/orders"                          element={<Orders                   onMenuClick={menuClick} onGoToCustomer={id => navigate(`/customers/${id}`)} />} />
           <Route path="/invoices"                        element={<Invoices                 onMenuClick={menuClick} />} />
           <Route path="/receipts"                        element={<Receipts                 onMenuClick={menuClick} />} />
-          <Route path="/payments"                        element={<AllPayments              onMenuClick={menuClick} />} />
+          <Route path="/payments"                        element={<Payments              onMenuClick={menuClick} />} />
           <Route path="/inventory"                       element={<Inventory                onMenuClick={menuClick} />} />
           <Route path="/reports"                         element={<Reports                  onMenuClick={menuClick} />} />
           <Route path="/gallery"                         element={<Gallery                  onMenuClick={menuClick} />} />
           <Route path="/settings"                        element={<Settings                 onMenuClick={menuClick} />} />
-          <Route path="/profile"                         element={<Profile                  onMenuClick={menuClick} isPremium={isPremium} />} />
+          <Route path="/account"                         element={<Account                  onMenuClick={menuClick} isPremium={isPremium} />} />
           <Route path="/contact"                         element={<Contact                  onMenuClick={menuClick} />} />
           <Route path="/faq"                             element={<FAQ                      onMenuClick={menuClick} />} />
           <Route path="/reviews"                         element={<Reviews                  onMenuClick={menuClick} />} />
@@ -77,7 +77,7 @@ function AppShell() {
           <Route path="/refund"                          element={<RefundPolicy             onMenuClick={menuClick} />} />
           <Route path="/privacy"                         element={<PrivacyPolicy            onMenuClick={menuClick} />} />
           <Route path="/report-bug"                      element={<BugReport                onMenuClick={menuClick} />} />
-          <Route path="*"                                element={<Navigate to="/" replace />} />
+          <Route path="*"                                element={<Navigate to="/dashboard" replace />} />
         </Routes>
       </div>
     </div>

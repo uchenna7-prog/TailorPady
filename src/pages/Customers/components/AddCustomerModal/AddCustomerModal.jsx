@@ -1,7 +1,7 @@
 import { useState, useRef } from "react"
 import { getInitials } from "../../../../utils/nameUtils"
 import { useBodyMeasurementImages } from "../../../../contexts/BodyMeasurementImagesContext"
-import { CountryCodePicker } from "../../../../components/CountryCodePicker/CountryCodePicker"
+import { Dropdown } from "../../../../components/Dropdown/Dropdown"
 import { DEFAULT_COUNTRY, COUNTRIES } from "../../../../datas/dialCodes"
 import { buildPhoneNumber, isValidLocalPhoneNumber } from "../../utils"
 import { uploadToCloudinary } from "../../../../services/cloudinaryService"
@@ -12,6 +12,7 @@ import styles from "./AddCustomerModal.module.css"
 
 const MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']
 const DAYS   = Array.from({ length: 31 }, (_, i) => i + 1)
+const PHONE_TYPES = ['Mobile', 'Home', 'Work']
 
 
 function normalizeDigits(rawNumber) {
@@ -45,6 +46,22 @@ function dedupeContactNumbers(rawNumbers) {
     result.push(num)
   }
   return result
+}
+
+
+function FlagIcon({ cca2 }) {
+  if (!cca2) return <span className={styles.flagFallback}>🏳</span>
+  return (
+    <img
+      src={`https://flagcdn.com/24x18/${cca2.toLowerCase()}.png`}
+      srcSet={`https://flagcdn.com/48x36/${cca2.toLowerCase()}.png 2x`}
+      alt=""
+      width={24}
+      height={18}
+      className={styles.flagImg}
+      loading="lazy"
+    />
+  )
 }
 
 
@@ -89,6 +106,8 @@ export function AddCustomerModal({ isOpen, onClose, onSave }) {
     typeof navigator !== 'undefined' &&
     'contacts' in navigator &&
     'ContactsManager' in window
+
+  const monthOptions = MONTHS.map((m, i) => ({ label: m, value: i + 1 }))
 
 
   function showInlineMsg(text, ok = true) {
@@ -432,21 +451,57 @@ export function AddCustomerModal({ isOpen, onClose, onSave }) {
                 <div className={styles.inputGroup}>
                   <label className={styles.inputLabel}>Birthday (Day & Month)</label>
                   <div className={styles.inputRow}>
-                    <select className={styles.formInput} value={bdayDay} onChange={e => setBdayDay(e.target.value)}>
-                      <option value="">Day</option>
-                      {DAYS.map(d => <option key={d} value={d}>{d}</option>)}
-                    </select>
-                    <select className={styles.formInput} value={bdayMonth} onChange={e => setBdayMonth(e.target.value)}>
-                      <option value="">Month</option>
-                      {MONTHS.map((m, i) => <option key={m} value={i + 1}>{m}</option>)}
-                    </select>
+                    <Dropdown
+                      options={DAYS}
+                      value={bdayDay}
+                      onChange={setBdayDay}
+                      placeholder="Day"
+                    />
+                    <Dropdown
+                      options={monthOptions}
+                      value={bdayMonth}
+                      onChange={setBdayMonth}
+                      placeholder="Month"
+                    />
                   </div>
                 </div>
 
                 <div className={styles.inputGroup}>
                   <label className={styles.inputLabel}>Phone Number *</label>
                   <div className={styles.phoneRow}>
-                    <CountryCodePicker selected={selectedCountry} onSelect={setSelectedCountry} />
+                    <Dropdown
+                      options={COUNTRIES}
+                      value={selectedCountry}
+                      onChange={(_, country) => setSelectedCountry(country)}
+                      searchable
+                      searchPlaceholder="Search country or code…"
+                      className={styles.phoneCountryDropdown}
+                      menuStyle={{ width: 280, maxWidth: 'calc(100vw - 40px)', left: 0, right: 'auto' }}
+                      getOptionLabel={c => c.name}
+                      getOptionValue={c => c}
+                      isOptionSelected={c => c.cca2 === selectedCountry.cca2 && c.dial_code === selectedCountry.dial_code}
+                      filterOption={(c, query) =>
+                        c.name.toLowerCase().includes(query.toLowerCase()) ||
+                        c.dial_code.includes(query)
+                      }
+                      renderTrigger={() => (
+                        <span style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                          <span className={styles.ccFlag}>
+                            <FlagIcon cca2={selectedCountry.cca2} />
+                          </span>
+                          <span className={styles.ccCode}>{selectedCountry.dial_code}</span>
+                        </span>
+                      )}
+                      renderOption={c => (
+                        <span style={{ display: 'flex', alignItems: 'center', gap: 8, width: '100%' }}>
+                          <span className={styles.ccFlag}>
+                            <FlagIcon cca2={c.cca2} />
+                          </span>
+                          <span className={styles.ccOptionName}>{c.name}</span>
+                          <span className={styles.ccOptionCode}>{c.dial_code}</span>
+                        </span>
+                      )}
+                    />
                     <input
                       type="tel"
                       className={`${styles.formInput} ${styles.phoneInput}`}
@@ -477,11 +532,11 @@ export function AddCustomerModal({ isOpen, onClose, onSave }) {
 
                 <div className={styles.inputGroup}>
                   <label className={styles.inputLabel}>Phone Type</label>
-                  <select className={styles.formInput} value={phoneType} onChange={e => setPhoneType(e.target.value)}>
-                    <option>Mobile</option>
-                    <option>Home</option>
-                    <option>Work</option>
-                  </select>
+                  <Dropdown
+                    options={PHONE_TYPES}
+                    value={phoneType}
+                    onChange={setPhoneType}
+                  />
                 </div>
 
                 <div className={styles.inputGroup}>

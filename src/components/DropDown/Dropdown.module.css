@@ -1,0 +1,152 @@
+.ddWrap {
+  position: relative;
+  width: 100%;
+}
+
+.ddTrigger {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 14px 16px;
+  background: var(--surface);
+  border: 1px solid var(--border2);
+  border-radius: 12px;
+  cursor: pointer;
+  font-family: 'Manrope', sans-serif;
+  font-size: 0.9rem;
+  color: var(--text);
+  transition: border-color 0.2s;
+}
+
+.ddTrigger:active {
+  border-color: var(--text2);
+}
+
+.ddTriggerDisabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.ddTriggerText {
+  flex: 1;
+  text-align: left;
+  color: var(--text);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ddArrow {
+  font-size: 1.1rem;
+  color: var(--text3);
+  transition: transform 0.2s;
+  flex-shrink: 0;
+}
+
+.ddArrowOpen {
+  transform: rotate(180deg);
+}
+
+.ddMenu {
+  z-index: 3000;
+  background: var(--surface);
+  border: 1px solid var(--border2);
+  border-radius: 14px;
+  box-shadow: 0 10px 32px rgba(0, 0, 0, 0.18);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.ddMenuDown {
+  animation: ddDropInDown 0.18s ease;
+  transform-origin: top;
+}
+
+.ddMenuUp {
+  animation: ddDropInUp 0.18s ease;
+  transform-origin: bottom;
+}
+
+@keyframes ddDropInDown {
+  from { opacity: 0; transform: translateY(-6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes ddDropInUp {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.ddSearchWrap {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 14px;
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+
+.ddSearchInput {
+  flex: 1;
+  background: transparent;
+  border: none;
+  outline: none;
+  color: var(--text);
+  font-family: 'Manrope', sans-serif;
+  font-size: 0.88rem;
+}
+
+.ddSearchInput::placeholder {
+  color: var(--text3);
+}
+
+.ddList {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  padding: 6px;
+}
+
+.ddListEmpty {
+  text-align: center;
+  padding: 20px;
+  font-size: 0.82rem;
+  color: var(--text3);
+}
+
+.ddOption {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 10px;
+  border-radius: 10px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  text-align: left;
+  transition: background 0.12s;
+}
+
+.ddOption:active {
+  background: var(--surface2);
+}
+
+.ddOptionActive {
+  background: var(--surface2);
+}
+
+.ddOptionLabel {
+  flex: 1;
+  font-family: 'Manrope', sans-serif;
+  font-size: 0.84rem;
+  font-weight: 500;
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}

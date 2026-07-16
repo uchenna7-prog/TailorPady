@@ -10,7 +10,7 @@ const NAV_SECTIONS = [
     key: 'workspace',
     label: 'Workspace',
     items: [
-      { path: '/',          label: 'Dashboard', icon: 'dashboard'                            },
+      { path: '/dashboard',          label: 'Dashboard', icon: 'dashboard'                            },
       { path: '/customers', label: 'Customers', icon: 'groups'                               },
       { path: '/orders',    label: 'Orders',    icon: 'shopping_cart', badgeKey: 'orders'    },
       { path: '/inventory', label: 'Inventory', icon: 'inventory_2'                          },
@@ -64,7 +64,7 @@ const NAV_SECTIONS = [
     label: 'Account',
     items: [
       { path: '/settings', label: 'Settings', icon: 'settings'              },
-      { path: '/profile',  label: 'Account',  icon: 'person'                },
+      { path: '/account',  label: 'Account',  icon: 'person'                },
       { path: '/login',    label: 'Log out',  icon: 'logout', danger: true  },
     ],
   },

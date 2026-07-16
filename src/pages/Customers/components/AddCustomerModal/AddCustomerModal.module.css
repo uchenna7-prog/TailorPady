@@ -58,6 +58,7 @@
 
 .formBody {
   overflow-y: auto;
+  overflow-x: hidden;
   padding: 24px 20px calc(40px + var(--sb));
   -webkit-overflow-scrolling: touch;
   display: flex;
@@ -150,6 +151,18 @@
 .formInput option {
   background: var(--surface);
   color: var(--text);
+}
+
+select.formInput {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  padding-right: 40px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8' fill='none'%3E%3Cpath d='M1 1.5L6 6.5L11 1.5' stroke='%239a9a9a' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 16px center;
+  background-size: 12px 8px;
+  cursor: pointer;
 }
 
 .inputRow {
@@ -309,10 +322,61 @@
   display: flex;
   align-items: stretch;
   gap: 8px;
+  min-width: 0;
+  width: 100%;
+}
+
+.phoneRow .phoneCountryDropdown {
+  flex: 0 0 auto !important;
+  width: auto !important;
+  min-width: 0;
+  max-width: 130px;
+}
+
+.ccFlag {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.flagImg {
+  border-radius: 2px;
+  object-fit: cover;
+  display: block;
+}
+
+.flagFallback {
+  font-size: 1rem;
+  line-height: 1;
+}
+
+.ccCode {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--text);
+  white-space: nowrap;
+}
+
+.ccOptionName {
+  flex: 1;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.ccOptionCode {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--text3);
+  flex-shrink: 0;
 }
 
 .phoneInput {
-  flex: 1;
+  flex: 1 1 auto;
+  min-width: 0;
 }
 
 .phoneHint {

@@ -29,11 +29,11 @@ import BottomNav from '../../components/BottomNav/BottomNav'
 import Header from '../../components/Header/Header'
 import Toast from '../../components/Toast/Toast'
 import ConfirmSheet from '../../components/ConfirmSheet/ConfirmSheet'
-import styles from './Profile.module.css'
+import styles from './Account.module.css'
 import { db } from '../../firebase'
 
 
-export default function Profile({ onMenuClick, isPremium = false, onUpgrade = () => {} }) {
+export default function Account({ onMenuClick, isPremium = false, onUpgrade = () => {} }) {
 
   const { profileSettings } = useProfileSettings()
   const { updateManyGeneralSettings } = useGeneralSettings()

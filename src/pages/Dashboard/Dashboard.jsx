@@ -44,7 +44,7 @@ import BottomNav from '../../components/BottomNav/BottomNav'
 import OrderDetailModal from '../../components/OrderDetailModal/OrderDetailModal'
 import ConfirmSheet from '../../components/ConfirmSheet/ConfirmSheet'
 import Toast from '../../components/Toast/Toast'
-import styles from './Home.module.css'
+import styles from './Dashboard.module.css'
 import Skeleton from 'react-loading-skeleton'
 import 'react-loading-skeleton/dist/skeleton.css'
 
@@ -98,7 +98,7 @@ const STATUS_LABELS = {
   cancelled: 'Cancelled',
 }
 
-function Home({ onMenuClick, onGoToCustomer }) {
+function Dashboard({ onMenuClick, onGoToCustomer }) {
   const navigate = useNavigate()
 
   const { user }                                                          = useAuth()
@@ -365,7 +365,7 @@ function Home({ onMenuClick, onGoToCustomer }) {
 
   return (
     <div className={styles.pageWrapper}>
-      <Header onMenuClick={onMenuClick} />
+      <Header title="Dashboard" onMenuClick={onMenuClick} />
 
       <main className={styles.main}>
         <SkeletonTheme baseColor="var(--surface2)" highlightColor="var(--surface)">
@@ -553,4 +553,4 @@ function Home({ onMenuClick, onGoToCustomer }) {
   )
 }
 
-export default Home
+export default Dashboard

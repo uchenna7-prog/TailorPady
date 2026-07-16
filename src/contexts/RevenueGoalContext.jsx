@@ -2,7 +2,7 @@ import { createContext, useContext, useEffect, useState, useMemo, useCallback } 
 import { useAuth } from './AuthContext'
 import { usePayments } from './PaymentContext'
 import { fetchRevenueGoal, saveRevenueGoal, deleteRevenueGoal } from '../services/revenueGoalService'
-import { getWindowStart, getPrevWindowStart } from '../pages/Home/utils'
+import { getWindowStart, getPrevWindowStart } from '../pages/Dashboard/utils'
 
 const RevenueGoalContext = createContext(null)
 

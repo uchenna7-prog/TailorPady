@@ -5,7 +5,7 @@ import { useOrders }    from '../../contexts/OrdersContext'
 import Header           from '../../components/Header/Header'
 import Toast            from '../../components/Toast/Toast'
 import OrderMosaic      from '../../components/OrderMosaic/OrderMosaic'
-import styles from './AllPayments.module.css'
+import styles from './Payments.module.css'
 import BottomNav from '../../components/BottomNav/BottomNav'
 
 const DONUT_CIRCUMFERENCE = 2 * Math.PI * 26
@@ -435,7 +435,7 @@ function PaymentDetail({ row, onClose, onNavigateToCustomer, orderItems }) {
   )
 }
 
-export default function AllPayments({ onMenuClick }) {
+export default function Payments({ onMenuClick }) {
   const navigate         = useNavigate()
   const { allPayments }  = usePayments()
   const { allOrders }    = useOrders()
