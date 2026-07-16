@@ -38,8 +38,8 @@ export function Dropdown({
     const viewportH = window.innerHeight
     const margin = 8
 
-    const requestedWidth = menuStyle?.width ? parseFloat(menuStyle.width) : rect.width
-    const width = Math.min(requestedWidth || rect.width, viewportW - margin * 2)
+    const naturalWidth = menuMinWidth ? Math.max(rect.width, menuMinWidth) : rect.width
+    const width = Math.min(naturalWidth, viewportW - margin * 2)
 
     let left = rect.left
     if (left + width > viewportW - margin) left = viewportW - margin - width
@@ -62,7 +62,7 @@ export function Dropdown({
     }
 
     setMenuPos({ top, left, width, maxHeight, placement })
-  }, [menuStyle])
+  }, [menuMinWidth])
 
   useLayoutEffect(() => {
     if (!open) return

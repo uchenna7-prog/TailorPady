@@ -10,6 +10,7 @@ import {
 import Header       from '../../components/Header/Header'
 import ConfirmSheet from '../../components/ConfirmSheet/ConfirmSheet'
 import Toast        from '../../components/Toast/Toast'
+import { Dropdown } from '../../components/Dropdown/Dropdown'
 import styles from './Inventory.module.css'
 import BottomNav from '../../components/BottomNav/BottomNav'
 
@@ -30,6 +31,8 @@ const CATEGORIES = [
 ]
 
 const CAT_MAP = Object.fromEntries(CATEGORIES.map(c => [c.id, c]))
+
+const CATEGORY_FILTER_OPTIONS = [{ id: 'all', label: 'All Categories', icon: 'apps' }, ...CATEGORIES]
 
 const UNITS = ['yards', 'metres', 'pcs', 'rolls', 'kg', 'g', 'packets', 'boxes', 'pairs']
 
@@ -155,6 +158,7 @@ function ItemModal({ isOpen, editItem, onClose, onSave }) {
   return (
     <div className={styles.backdrop} onClick={handleClose}>
       <div className={styles.modalOverlay} onClick={e => e.stopPropagation()}>
+
         <div className={styles.modalHeader}>
           <div className={styles.modalHeaderLeft}>
             <button className={styles.modalBack} onClick={handleClose}>
@@ -171,6 +175,18 @@ function ItemModal({ isOpen, editItem, onClose, onSave }) {
           >
             {editItem ? 'Update' : 'Add'}
           </button>
+        </div>
+
+        <div className={styles.desktopHeaderWrap}>
+          <Header
+            type="back"
+            title={editItem ? 'Edit Item' : 'New Item'}
+            onBackClick={handleClose}
+            backIcon="arrow_back_ios"
+            customActions={[
+              { label: editItem ? 'Update' : 'Add', onClick: handleSave, color: 'var(--accent)', disabled: !name.trim() }
+            ]}
+          />
         </div>
 
         <div className={styles.modalBody}>
@@ -233,15 +249,11 @@ function ItemModal({ isOpen, editItem, onClose, onSave }) {
             </div>
             <div className={styles.fieldGroup} style={{ flex: 1 }}>
               <label className={styles.fieldLabel}>Unit</label>
-              <select
-                className={styles.input}
+              <Dropdown
+                options={UNITS}
                 value={unit}
-                onChange={e => setUnit(e.target.value)}
-              >
-                {UNITS.map(u => (
-                  <option key={u} value={u}>{u}</option>
-                ))}
-              </select>
+                onChange={setUnit}
+              />
             </div>
           </div>
 
@@ -536,7 +548,6 @@ export default function Inventory({ onMenuClick }) {
   const [confirmDel,  setConfirmDel]  = useState(null)
   const [toastMsg,    setToastMsg]    = useState('')
   const [filterCat,   setFilterCat]   = useState('all')
-  const [catDropOpen, setCatDropOpen] = useState(false)
   const toastTimer = useRef(null)
 
   // Subscribe to Firestore
@@ -660,42 +671,35 @@ export default function Inventory({ onMenuClick }) {
               </button>
             )}
           </div>
-          <button
-            className={`${styles.filterBtn} ${filterCat !== 'all' ? styles.filterBtnActive : ''}`}
-            onClick={() => setCatDropOpen(p => !p)}
-          >
-            <span className="mi" style={{ fontSize: '1.2rem' }}>tune</span>
-          </button>
-        </div>
 
-        {catDropOpen && (
-          <div className={styles.filterDropdown}>
-            <div className={styles.filterDropdownTitle}>Filter by Category</div>
-            <button
-              className={`${styles.filterOption} ${filterCat === 'all' ? styles.filterOptionActive : ''}`}
-              onClick={() => { setFilterCat('all'); setCatDropOpen(false) }}
-            >
-              <span className="mi" style={{ fontSize: '1.1rem' }}>apps</span>
-              All Categories
-              {filterCat === 'all' && <span className="mi" style={{ fontSize: '1rem', marginLeft: 'auto', color: 'var(--accent)' }}>check</span>}
-            </button>
-            {CATEGORIES.map(cat => (
-              <button
-                key={cat.id}
-                className={`${styles.filterOption} ${filterCat === cat.id ? styles.filterOptionActive : ''}`}
-                onClick={() => { setFilterCat(cat.id); setCatDropOpen(false) }}
-              >
-                <span className="mi" style={{ fontSize: '1.1rem' }}>{cat.icon}</span>
-                {cat.label}
-                {filterCat === cat.id && <span className="mi" style={{ fontSize: '1rem', marginLeft: 'auto', color: 'var(--accent)' }}>check</span>}
-              </button>
-            ))}
+          <div className={`${styles.categoryFilterWrap} ${filterCat !== 'all' ? styles.categoryFilterWrapActive : ''}`}>
+            <Dropdown
+              options={CATEGORY_FILTER_OPTIONS}
+              value={filterCat}
+              onChange={setFilterCat}
+              getOptionLabel={c => c.label}
+              getOptionValue={c => c.id}
+              isOptionSelected={c => c.id === filterCat}
+              className={styles.categoryFilterDropdown}
+              menuMinWidth={220}
+              menuHeader="Filter by Category"
+              renderTrigger={() => (
+                <span className="mi" style={{ fontSize: '1.2rem' }}>tune</span>
+              )}
+              renderOption={(c, active) => (
+                <span style={{ display: 'flex', alignItems: 'center', gap: 10, width: '100%' }}>
+                  <span className="mi" style={{ fontSize: '1.1rem' }}>{c.icon}</span>
+                  <span style={{ flex: 1 }}>{c.label}</span>
+                  {active && <span className="mi" style={{ fontSize: '1rem', color: 'var(--accent)' }}>check</span>}
+                </span>
+              )}
+            />
           </div>
-        )}
+        </div>
       </div>
 
       {/* ── Tabs ── */}
-      <div className={styles.tabs} onClick={() => catDropOpen && setCatDropOpen(false)}>
+      <div className={styles.tabs}>
         {TABS.map(tab => (
           <div
             key={tab.id}
@@ -713,7 +717,7 @@ export default function Inventory({ onMenuClick }) {
       </div>
 
       {/* ── List ── */}
-      <div className={styles.listArea} onClick={() => catDropOpen && setCatDropOpen(false)}>
+      <div className={styles.listArea}>
 
         {items.length === 0 && (
           <div className={styles.emptyState}>

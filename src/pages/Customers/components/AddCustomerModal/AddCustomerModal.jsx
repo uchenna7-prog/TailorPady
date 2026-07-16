@@ -476,7 +476,7 @@ export function AddCustomerModal({ isOpen, onClose, onSave }) {
                       searchable
                       searchPlaceholder="Search country or code…"
                       className={styles.phoneCountryDropdown}
-                      menuStyle={{ width: 280, maxWidth: 'calc(100vw - 40px)', left: 0, right: 'auto' }}
+                      menuMinWidth={280}
                       getOptionLabel={c => c.name}
                       getOptionValue={c => c}
                       isOptionSelected={c => c.cca2 === selectedCountry.cca2 && c.dial_code === selectedCountry.dial_code}

@@ -2,30 +2,41 @@
   display: flex;
   gap: 8px;
   align-items: stretch;
+  min-width: 0;
+  width: 100%;
 }
+
 .countryDropdown {
-  flex-shrink: 0;
-  min-width: 92px;
+  flex: 0 0 auto !important;
+  width: auto !important;
+  min-width: 0;
+  max-width: 130px;
 }
+
 .ccFlag {
   display: flex;
   align-items: center;
   flex-shrink: 0;
 }
+
 .flagImg {
   border-radius: 2px;
   object-fit: cover;
   display: block;
 }
+
 .flagFallback {
   font-size: 1rem;
   line-height: 1;
 }
+
 .ccCode {
   font-size: 0.85rem;
   font-weight: 700;
   color: var(--text);
+  white-space: nowrap;
 }
+
 .ccOptionName {
   flex: 1;
   font-size: 0.85rem;
@@ -35,32 +46,36 @@
   overflow: hidden;
   text-overflow: ellipsis;
 }
+
 .ccOptionCode {
   font-size: 0.8rem;
   font-weight: 700;
   color: var(--text3);
   flex-shrink: 0;
 }
+
 .phoneHint {
   font-size: 0.72rem;
   margin-top: 6px;
   font-weight: 600;
 }
+
 .textInput {
-  width: 100%; 
-  background: var(--surface2); 
+  width: 100%;
+  background: var(--surface2);
   border: 1px solid var(--border);
-  border-radius: 10px; 
-  padding: 12px; 
-  font-size: 0.95rem; 
+  border-radius: 10px;
+  padding: 12px;
+  font-size: 0.95rem;
   color: var(--text);
-  font-family: inherit; 
-  box-sizing: border-box; 
-  outline: none; 
+  font-family: inherit;
+  box-sizing: border-box;
+  outline: none;
   transition: border-color 0.15s;
   display: block;
 }
-.textInput:focus { 
-    border-color: var(--accent); 
-    background: var(--bg); 
+
+.textInput:focus {
+  border-color: var(--accent);
+  background: var(--bg);
 }

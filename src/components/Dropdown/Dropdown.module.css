@@ -50,7 +50,7 @@
 }
 
 .ddMenu {
-  z-index: 3000;
+  z-index: 999999;
   background: var(--surface);
   border: 1px solid var(--border2);
   border-radius: 14px;

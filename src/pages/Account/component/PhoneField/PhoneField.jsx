@@ -1,7 +1,7 @@
 import { getPhoneHint } from "../../utils"
 import { Field } from "../Field/Field"
 import { Dropdown } from "../../../../components/Dropdown/Dropdown"
-import { COUNTRIES } from "../../../../datas/dialCodes"
+import { COUNTRIES, DEFAULT_COUNTRY } from "../../../../datas/dialCodes"
 import styles from "./PhoneField.module.css"
 
 
@@ -23,20 +23,23 @@ function FlagIcon({ cca2 }) {
 
 export function PhoneField({ label, hint, localValue, onLocalChange, country, onCountryChange }) {
 
+  const safeCountry = country && country.cca2 ? country : DEFAULT_COUNTRY
   const phoneHint = getPhoneHint(localValue)
+
   return (
     <Field label={label} hint={hint}>
       <div className={styles.phoneRow}>
         <Dropdown
           options={COUNTRIES}
-          value={country}
+          value={safeCountry}
           onChange={(_, c) => onCountryChange(c)}
           searchable
           searchPlaceholder="Search country or code…"
           className={styles.countryDropdown}
+          menuMinWidth={280}
           getOptionLabel={c => c.name}
           getOptionValue={c => c}
-          isOptionSelected={c => c.cca2 === country.cca2 && c.dial_code === country.dial_code}
+          isOptionSelected={c => c.cca2 === safeCountry.cca2 && c.dial_code === safeCountry.dial_code}
           filterOption={(c, query) =>
             c.name.toLowerCase().includes(query.toLowerCase()) ||
             c.dial_code.includes(query)
@@ -44,9 +47,9 @@ export function PhoneField({ label, hint, localValue, onLocalChange, country, on
           renderTrigger={() => (
             <span style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
               <span className={styles.ccFlag}>
-                <FlagIcon cca2={country.cca2} />
+                <FlagIcon cca2={safeCountry.cca2} />
               </span>
-              <span className={styles.ccCode}>{country.dial_code}</span>
+              <span className={styles.ccCode}>{safeCountry.dial_code}</span>
             </span>
           )}
           renderOption={c => (
