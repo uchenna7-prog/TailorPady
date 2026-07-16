@@ -1,5 +1,3 @@
-// src/pages/Inventory/Inventory.jsx
-
 import { useState, useRef, useCallback, useEffect } from 'react'
 import { useAuth } from '../../contexts/AuthContext'
 import {
@@ -160,7 +158,7 @@ function ItemModal({ isOpen, editItem, onClose, onSave }) {
         <div className={styles.modalHeader}>
           <div className={styles.modalHeaderLeft}>
             <button className={styles.modalBack} onClick={handleClose}>
-              <span className="mi" style={{ fontSize: '1.6rem' }}>arrow_back</span>
+              <span className="mi" style={{ fontSize: '1.5rem' }}>arrow_back_ios</span>
             </button>
             <span className={styles.modalTitle}>
               {editItem ? 'Edit Item' : 'New Item'}
