@@ -1,90 +1,51 @@
 import { Link, useNavigate } from 'react-router-dom'
 import styles from './LandingPage.module.css'
 
-const TICKS = Array.from({ length: 25 }, (_, i) => i)
-
-function Ruler({ label }) {
-  return (
-    <div className={styles.ruler} role="separator" aria-hidden="true">
-      <div className={styles.rulerLine}>
-        {TICKS.map(i => (
-          <span
-            key={i}
-            className={i % 5 === 0 ? styles.tickMajor : styles.tickMinor}
-          >
-            {i % 5 === 0 ? <em>{i * 4}</em> : null}
-          </span>
-        ))}
-      </div>
-      {label ? <span className={styles.rulerLabel}>{label}</span> : null}
-    </div>
-  )
-}
-
-function DressFormMark() {
-  return (
-    <svg
-      className={styles.heroMark}
-      viewBox="0 0 320 420"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
-    >
-      <path
-        d="M160 24C186 24 206 44 206 70C206 92 192 110 172 116V132C230 140 268 176 268 232V360C268 372 258 382 246 382H74C62 382 52 372 52 360V232C52 176 90 140 148 132V116C128 110 114 92 114 70C114 44 134 24 160 24Z"
-        stroke="currentColor"
-        strokeWidth="1.5"
-      />
-      <path d="M52 232H268" stroke="currentColor" strokeWidth="1" strokeDasharray="2 6" />
-      <path d="M96 132C96 172 104 210 96 382" stroke="currentColor" strokeWidth="1" strokeDasharray="2 6" />
-      <path d="M224 132C224 172 216 210 224 382" stroke="currentColor" strokeWidth="1" strokeDasharray="2 6" />
-      <path d="M20 208H52M268 208H300" stroke="currentColor" strokeWidth="1.5" />
-      <circle cx="20" cy="208" r="3" fill="currentColor" />
-      <circle cx="300" cy="208" r="3" fill="currentColor" />
-      <text x="160" y="410" textAnchor="middle" className={styles.heroMarkLabel}>
-        36&Prime; CHEST
-      </text>
-    </svg>
-  )
-}
+const MEASUREMENTS = [
+  { label: 'Chest', value: '38 in' },
+  { label: 'Waist', value: '32 in' },
+  { label: 'Sleeve', value: '24.5 in' },
+  { label: 'Shoulder', value: '17.5 in' },
+]
 
 const FEATURES = [
   {
-    n: '01',
+    tag: 'Records',
     title: 'Customers & measurements',
     body: 'Keep every client, body measurement, and fit note in one record you can pull up in seconds, on any device.',
   },
   {
-    n: '02',
+    tag: 'Workflow',
     title: 'Orders & tasks',
     body: 'Break an order into cutting, stitching, embroidery, and finishing, assign each step, and watch it move.',
   },
   {
-    n: '03',
+    tag: 'Money',
     title: 'Invoices, receipts & payments',
     body: 'Bill in your own currency, track what is paid and what is due, and hand over a clean receipt at pickup.',
   },
   {
-    n: '04',
+    tag: 'Stock',
     title: 'Inventory',
     body: 'Know what fabric and trims are on the shelf before you promise a delivery date you cannot keep.',
   },
   {
-    n: '05',
+    tag: 'Schedule',
     title: 'Appointments',
     body: 'Book fittings and collections against real shop hours, with reminders that reach the customer on time.',
   },
   {
-    n: '06',
+    tag: 'Numbers',
     title: 'Reports',
     body: 'See today\u2019s orders, today\u2019s payments, and the monthly numbers that tell you how the shop is really doing.',
   },
   {
-    n: '07',
+    tag: 'Showcase',
     title: 'Gallery',
     body: 'Photograph finished pieces and build a lookbook clients can browse before they choose a style.',
   },
   {
-    n: '08',
+    tag: 'Assistant',
     title: 'Agent',
     body: 'Ask in plain language for anything above: this week\u2019s dues, a customer\u2019s last measurements, a stock count.',
   },
@@ -128,6 +89,50 @@ const TESTIMONIALS = [
     role: 'Fashion designer, Enugu',
   },
 ]
+
+function StitchDivider({ label }) {
+  return (
+    <div className={styles.divider} role="separator" aria-hidden="true">
+      <div className={styles.dividerLine} />
+      {label ? <span className={styles.dividerLabel}>{label}</span> : null}
+    </div>
+  )
+}
+
+function OrderDocket() {
+  return (
+    <div className={styles.docketWrap}>
+      <span className={styles.docketEyebrow}>Live on the shop floor</span>
+      <div className={styles.docket}>
+        <div className={styles.docketTop}>
+          <span className={styles.docketNumber}>Order № 0231</span>
+          <span className={styles.docketStatus}>In progress</span>
+        </div>
+        <div className={styles.docketRow}>
+          <span className={styles.docketRowLabel}>Customer</span>
+          <span className={styles.docketRowValue}>A. Chukwu</span>
+        </div>
+        <div className={styles.docketRow}>
+          <span className={styles.docketRowLabel}>Item</span>
+          <span className={styles.docketRowValue}>Agbada, 2 piece</span>
+        </div>
+        <div className={styles.docketMeasure}>
+          {MEASUREMENTS.map(m => (
+            <div key={m.label} className={styles.docketMeasureCell}>
+              <span className={styles.docketMeasureLabel}>{m.label}</span>
+              <span className={styles.docketMeasureValue}>{m.value}</span>
+            </div>
+          ))}
+        </div>
+        <div className={styles.docketFoot}>
+          <span>Balance due</span>
+          <span className={styles.docketFootValue}>₦4,500</span>
+        </div>
+        <span className={styles.docketStamp}>Ready 18 Jul</span>
+      </div>
+    </div>
+  )
+}
 
 export default function LandingPage() {
   const navigate = useNavigate()
@@ -185,10 +190,10 @@ export default function LandingPage() {
               </a>
             </div>
           </div>
-          <DressFormMark />
+          <OrderDocket />
         </section>
 
-        <Ruler label="Built for the whole shop floor" />
+        <StitchDivider label="Built for the whole shop floor" />
 
         <section className={styles.stats}>
           <div className={styles.stat}>
@@ -212,8 +217,8 @@ export default function LandingPage() {
           </h2>
           <div className={styles.featureGrid}>
             {FEATURES.map(f => (
-              <div key={f.n} className={styles.featureCard}>
-                <span className={styles.featureNumber}>{f.n}</span>
+              <div key={f.title} className={styles.featureCard}>
+                <span className={styles.featureTag}>{f.tag}</span>
                 <h3 className={styles.featureTitle}>{f.title}</h3>
                 <p className={styles.featureBody}>{f.body}</p>
               </div>
@@ -221,7 +226,7 @@ export default function LandingPage() {
           </div>
         </section>
 
-        <Ruler label="From first fitting to final delivery" />
+        <StitchDivider label="From first fitting to final delivery" />
 
         <section id="how" className={styles.how}>
           <span className={styles.sectionEyebrow}>How it works</span>
@@ -260,7 +265,7 @@ export default function LandingPage() {
           </p>
           <button
             type="button"
-            className={styles.primaryButton}
+            className={styles.ctaButton}
             onClick={() => navigate('/signup')}
           >
             Start free
