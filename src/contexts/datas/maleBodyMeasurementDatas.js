@@ -34,7 +34,8 @@ import thighs from '../../assets/maleBodyMeasurementImages/thighs.jpg'
 import waist from '../../assets/maleBodyMeasurementImages/waist.jpg'
 import waistToAnkle from '../../assets/maleBodyMeasurementImages/waistToAnkle.jpg'
 import wrist from '../../assets/maleBodyMeasurementImages/wrist.jpg'
-
+import shoulderToHemLength from "../../assets/maleBodyMeasurementImages/shoulderToHemLength.jpg"
+import fullHeight from "../../assets/maleBodyMeasurementImages/fullHeight.jpg"
 
 export const MALE_BODY_MEASUREMENT_SECTIONS = {
   'Upper Body': [
@@ -53,6 +54,7 @@ export const MALE_BODY_MEASUREMENT_SECTIONS = {
     'Thighs', 'Crotch To Knee', 'Above Knee', 'Below Knee',
     'Knee To Calf', 'Calf', 'Calf To Ankle', 'Ankle',
     'Waist To Ankle', 'Pants Length', 'Shorts Length',
+    'Shoulder To Hem Length','Full Height'
   ],
 }
 
@@ -99,4 +101,6 @@ export const MALE_BODY_MEASUREMENT_IMAGES = {
   'Waist To Ankle': waistToAnkle,
   'Pants Length': pantsLength,
   'Shorts Length': shortsLength,
+  'Shoulder To Hem Length': shoulderToHemLength,
+  'Full Height': fullHeight
 }

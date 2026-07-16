@@ -44,7 +44,7 @@ import calfToAnkle from '../../assets/femaleBodyMeasurementImages/calfToAnkle.jp
 import ankle from '../../assets/femaleBodyMeasurementImages/ankle.jpg'
 import wristToAnkle from '../../assets/femaleBodyMeasurementImages/wristToAnkle.jpg'
 import fullHeight from '../../assets/femaleBodyMeasurementImages/fullHeight.jpg'
-import kurthiHeight from '../../assets/femaleBodyMeasurementImages/kurthiHeight.jpg'
+import shoulderToHemLength from '../../assets/femaleBodyMeasurementImages/shoulderToHemLength.jpg'
 
 
 export const FEMALE_BODY_MEASUREMENT_SECTIONS = {
@@ -70,7 +70,7 @@ export const FEMALE_BODY_MEASUREMENT_SECTIONS = {
     'Crotch',
     'Thigh', 'Thigh Length', 'Knee Length',
     'Calf', 'Calf To Ankle', 'Ankle',
-    'Wrist To Ankle', 'Full Height', 'Kurthi Height',
+    'Wrist To Ankle', 'Shoulder To Hem Length','Full Height', 
   ],
 }
 
@@ -126,6 +126,7 @@ export const FEMALE_BODY_MEASUREMENT_IMAGES = {
   'Calf To Ankle': calfToAnkle,
   'Ankle': ankle,
   'Wrist To Ankle': wristToAnkle,
+  'Shoulder To Hem Length': shoulderToHemLength,
   'Full Height': fullHeight,
-  'Kurthi Height': kurthiHeight,
+  
 }
