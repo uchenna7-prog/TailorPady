@@ -1,7 +1,6 @@
 import { useState, useRef } from 'react'
 import { FullModal } from '../../../../components/FullModal/FullModal'
 import { CurrencyPickerSheet } from '../CurrencyPickerSheet/CurrencyPickerSheet'
-import { SegmentControl } from '../../components/SegmentControl/SegmentControl'
 import { Field } from '../Field/Field'
 import { FieldGroup } from '../FieldGroup/FieldGroup'
 import { DEFAULT_CURRENCY } from '../../../../datas/currencies'
@@ -42,6 +41,23 @@ function FlagIcon({ countryCode }) {
       className={styles.flagImg}
       loading="lazy"
     />
+  )
+}
+
+function OptionChips({ options, value, onChange }) {
+  return (
+    <div className={styles.optionRow}>
+      {options.map(opt => (
+        <button
+          key={opt.value}
+          type="button"
+          className={`${styles.optionChip} ${value === opt.value ? styles.optionChipActive : ''}`}
+          onClick={() => onChange(opt.value)}
+        >
+          {opt.label}
+        </button>
+      ))}
+    </div>
   )
 }
 
@@ -103,7 +119,7 @@ export function CurrencyModal({ currentSettings, onBack, onSave }) {
 
           <FieldGroup>
             <Field label="Symbol position" hint="Where the currency symbol appears next to amounts.">
-              <SegmentControl
+              <OptionChips
                 options={[
                   { label: `${currency?.symbol ?? '₦'} Prefix`, value: 'prefix' },
                   { label: `Suffix ${currency?.symbol ?? '₦'}`, value: 'suffix' },
@@ -114,7 +130,7 @@ export function CurrencyModal({ currentSettings, onBack, onSave }) {
             </Field>
 
             <Field label="Decimal places" hint="How many decimal places to show on amounts.">
-              <SegmentControl
+              <OptionChips
                 options={[
                   { label: 'None',     value: 0 },
                   { label: '2 places', value: 2 },
@@ -125,7 +141,7 @@ export function CurrencyModal({ currentSettings, onBack, onSave }) {
             </Field>
 
             <Field label="Number format" hint="Anglophone uses commas and periods. Francophone uses spaces and commas.">
-              <SegmentControl
+              <OptionChips
                 options={[
                   { label: '1,234.50', value: 'anglophone' },
                   { label: '1 234,50', value: 'francophone' },

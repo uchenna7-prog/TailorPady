@@ -79,6 +79,32 @@
   color: var(--text-sub);
 }
 
+.optionRow {
+  display: flex;
+  gap: 10px;
+}
+
+.optionChip {
+  flex: 1;
+  padding: 12px;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  background: none;
+  color: var(--text-sub);
+  font-family: 'Manrope', sans-serif;
+  font-size: 0.88rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+
+.optionChipActive {
+  background: var(--accent);
+  color: var(--bg);
+  border-color: var(--accent);
+}
+
 .preview {
   display: flex;
   align-items: center;
@@ -95,7 +121,6 @@
   color: var(--text);
   letter-spacing: -0.02em;
 }
-
 
 .flagImg {
   border-radius: 2px;

@@ -3,6 +3,8 @@ import { useLocation, useNavigate } from 'react-router-dom'
 import { useGeneralSettings } from '../../contexts/GeneralSettingsContext'
 import { useInstall }         from '../../contexts/InstallContext'
 import { useBadges }          from '../../contexts/BadgeContext'
+import { useAuth }            from '../../contexts/AuthContext'
+import ConfirmSheet           from '../ConfirmSheet/ConfirmSheet'
 import styles                 from './SideBar.module.css'
 
 const NAV_SECTIONS = [
@@ -65,7 +67,7 @@ const NAV_SECTIONS = [
     items: [
       { path: '/settings', label: 'Settings', icon: 'settings'              },
       { path: '/account',  label: 'Account',  icon: 'person'                },
-      { path: '/login',    label: 'Log out',  icon: 'logout', danger: true  },
+      { action: 'logout',  label: 'Log out',  icon: 'logout', danger: true  },
     ],
   },
 ]
@@ -85,8 +87,10 @@ function SideBar({ isOpen, onClose }) {
   const { generalSettings } = useGeneralSettings()
   const { triggerInstall, isInstalled } = useInstall()
   const badges              = useBadges()
+  const { logout }          = useAuth()
 
-  const [scrolled, setScrolled] = useState(false)
+  const [scrolled, setScrolled]         = useState(false)
+  const [logoutConfirm, setLogoutConfirm] = useState(false)
   const scrollRef = useRef(null)
 
   const badgeMap = {
@@ -116,12 +120,20 @@ function SideBar({ isOpen, onClose }) {
   const handleAction = (action) => {
     if (action === 'share')   handleShare()
     if (action === 'install') triggerInstall()
+    if (action === 'logout')  { setLogoutConfirm(true); return }
     onClose()
   }
 
   const handleNav = (path) => {
     navigate(path)
     onClose()
+  }
+
+  const handleLogout = async () => {
+    setLogoutConfirm(false)
+    onClose()
+    await logout()
+    navigate('/login', { replace: true })
   }
 
   return (
@@ -196,6 +208,14 @@ function SideBar({ isOpen, onClose }) {
         </div>
 
       </nav>
+
+      <ConfirmSheet
+        open={logoutConfirm}
+        title="Log Out?"
+        confirmText="Log Out"
+        onConfirm={handleLogout}
+        onCancel={() => setLogoutConfirm(false)}
+      />
     </>
   )
 }
