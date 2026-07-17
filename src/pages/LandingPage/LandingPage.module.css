@@ -656,15 +656,16 @@
   display: flex;
   justify-content: center;
   gap: 8px;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   margin-bottom: 44px;
+  scroll-behavior: smooth;
 }
 
 .showcaseTab {
   background: var(--surface);
   border: 1px solid var(--line-strong);
-  border-radius: 100px;
-  padding: 10px 20px;
+  border-radius: 10px;
+  padding: 8px 20px;
   font-family: var(--body);
   font-size: 13px;
   font-weight: 600;
