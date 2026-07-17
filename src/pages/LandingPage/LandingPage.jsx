@@ -1,7 +1,9 @@
-import { useState } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useInstall } from '../../contexts/InstallContext'
 import styles from './LandingPage.module.css'
+
+const THEME_STORAGE_KEY = 'tailorpady-theme'
 
 const NAV_LINKS = [
   { href: '#features', label: 'Features' },
@@ -11,18 +13,10 @@ const NAV_LINKS = [
   { href: '#faq', label: 'FAQ' },
 ]
 
-const MEASUREMENTS = [
-  { label: 'Chest', value: '38', unit: 'in' },
-  { label: 'Waist', value: '32', unit: 'in' },
-  { label: 'Sleeve', value: '24.5', unit: 'in' },
-  { label: 'Shoulder', value: '17.5', unit: 'in' },
-]
-
 const TRUST_STATS = [
   { value: '9,400+', label: 'Orders tracked' },
   { value: '430+', label: 'Shops onboard' },
   { value: '₦180M+', label: 'Invoiced through the app' },
-  { value: '4.9/5', label: 'Average shop rating' },
 ]
 
 const FEATURES = [
@@ -228,6 +222,120 @@ function isIOSDevice() {
   return isAppleHandheld || isIPadOnMac
 }
 
+function useInView(threshold = 0.15) {
+  const ref = useRef(null)
+  const [inView, setInView] = useState(false)
+
+  useEffect(() => {
+    const el = ref.current
+    if (!el) return
+    if (typeof IntersectionObserver === 'undefined') {
+      setInView(true)
+      return
+    }
+    const observer = new IntersectionObserver(
+      entries => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            setInView(true)
+            observer.unobserve(entry.target)
+          }
+        })
+      },
+      { threshold, rootMargin: '0px 0px -80px 0px' }
+    )
+    observer.observe(el)
+    return () => observer.disconnect()
+  }, [threshold])
+
+  return [ref, inView]
+}
+
+function useTheme() {
+  const [theme, setTheme] = useState('light')
+
+  useEffect(() => {
+    const stored = typeof window !== 'undefined' ? localStorage.getItem(THEME_STORAGE_KEY) : null
+    if (stored === 'light' || stored === 'dark') {
+      setTheme(stored)
+      return
+    }
+    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches
+    setTheme(prefersDark ? 'dark' : 'light')
+  }, [])
+
+  const toggleTheme = () => {
+    setTheme(prev => {
+      const next = prev === 'dark' ? 'light' : 'dark'
+      localStorage.setItem(THEME_STORAGE_KEY, next)
+      return next
+    })
+  }
+
+  return [theme, toggleTheme]
+}
+
+function Reveal({ as: Tag = 'div', children, className = '', delay = 0, ...rest }) {
+  const [ref, inView] = useInView()
+  const combined = `${styles.reveal} ${inView ? styles.revealVisible : ''} ${className}`.trim()
+  return (
+    <Tag ref={ref} className={combined} style={{ '--reveal-delay': `${delay}ms` }} {...rest}>
+      {children}
+    </Tag>
+  )
+}
+
+function formatStatic(value) {
+  return value.replace(/[\d.,]+/, m => (m.includes('.') ? '0.0' : '0'))
+}
+
+function useCountUp(value, inView, duration = 1400) {
+  const [display, setDisplay] = useState(() => formatStatic(value))
+  const startedRef = useRef(false)
+
+  useEffect(() => {
+    if (!inView || startedRef.current) return
+    startedRef.current = true
+
+    const match = value.match(/[\d.,]+/)
+    if (!match) {
+      setDisplay(value)
+      return
+    }
+
+    const raw = match[0]
+    const prefix = value.slice(0, match.index)
+    const suffix = value.slice(match.index + raw.length)
+    const decimals = raw.includes('.') ? raw.split('.')[1].length : 0
+    const target = parseFloat(raw.replace(/,/g, ''))
+    const start = performance.now()
+
+    const tick = now => {
+      const progress = Math.min((now - start) / duration, 1)
+      const eased = 1 - Math.pow(1 - progress, 3)
+      const current = target * eased
+      const formatted =
+        decimals > 0 ? current.toFixed(decimals) : Math.round(current).toLocaleString()
+      setDisplay(`${prefix}${formatted}${suffix}`)
+      if (progress < 1) requestAnimationFrame(tick)
+    }
+
+    requestAnimationFrame(tick)
+  }, [inView, value, duration])
+
+  return display
+}
+
+function TrustValue({ value }) {
+  const [ref, inView] = useInView(0.5)
+  const display = useCountUp(value, inView)
+  return (
+    <span ref={ref} className={styles.trustValue}>
+      {display}
+    </span>
+  )
+}
+
 function MonoLabel({ children }) {
   return <span className={styles.monoLabel}>{children}</span>
 }
@@ -272,11 +380,33 @@ function InstallButton() {
   )
 }
 
-function SiteNav({ onNavigate }) {
+function ThemeToggle({ theme, onToggle }) {
+  const isDark = theme === 'dark'
+  return (
+    <button
+      type="button"
+      className={styles.themeToggle}
+      onClick={onToggle}
+      aria-label={isDark ? 'Switch to light mode' : 'Switch to dark mode'}
+    >
+      <span className="mi">{isDark ? 'light_mode' : 'dark_mode'}</span>
+    </button>
+  )
+}
+
+function SiteNav({ onNavigate, theme, onToggleTheme }) {
   const [open, setOpen] = useState(false)
+  const [scrolled, setScrolled] = useState(false)
+
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 12)
+    onScroll()
+    window.addEventListener('scroll', onScroll, { passive: true })
+    return () => window.removeEventListener('scroll', onScroll)
+  }, [])
 
   return (
-    <header className={styles.nav}>
+    <header className={`${styles.nav} ${scrolled ? styles.navScrolled : ''}`}>
       <div className={styles.navInner}>
         <Link to="/" className={styles.logo}>
           TailorPady
@@ -291,10 +421,11 @@ function SiteNav({ onNavigate }) {
         </nav>
 
         <div className={styles.navActions}>
-          <InstallButton />
+          <ThemeToggle theme={theme} onToggle={onToggleTheme} />
           <Link to="/login" className={styles.navLogin}>
             Log in
           </Link>
+          <InstallButton />
           <button type="button" className={styles.navCta} onClick={() => onNavigate('/signup')}>
             Start free
           </button>
@@ -318,6 +449,7 @@ function SiteNav({ onNavigate }) {
             </a>
           ))}
           <div className={styles.navMobileActions}>
+            <ThemeToggle theme={theme} onToggle={onToggleTheme} />
             <InstallButton />
             <Link to="/login" className={styles.navLogin}>
               Log in
@@ -329,40 +461,6 @@ function SiteNav({ onNavigate }) {
         </div>
       )}
     </header>
-  )
-}
-
-function SpecCard() {
-  return (
-    <div className={styles.specCard}>
-      <div className={styles.specCardHead}>
-        <MonoLabel>Order N0231</MonoLabel>
-        <span className={styles.specCardStatus}>In progress</span>
-      </div>
-      <div className={styles.specCardRow}>
-        <span>Customer</span>
-        <span>A. Chukwu</span>
-      </div>
-      <div className={styles.specCardRow}>
-        <span>Item</span>
-        <span>Agbada, 2 piece</span>
-      </div>
-      <div className={styles.specGrid}>
-        {MEASUREMENTS.map(m => (
-          <div key={m.label} className={styles.specCell}>
-            <span className={styles.specCellLabel}>{m.label}</span>
-            <span className={styles.specCellValue}>
-              {m.value}
-              <span className={styles.specCellUnit}>{m.unit}</span>
-            </span>
-          </div>
-        ))}
-      </div>
-      <div className={styles.specCardFoot}>
-        <span>Balance due</span>
-        <span className={styles.specCardFootValue}>₦4,500</span>
-      </div>
-    </div>
   )
 }
 
@@ -404,12 +502,10 @@ function Hero({ onNavigate }) {
             See the app
           </a>
         </div>
-        <p className={styles.heroFinePrint}>No card required. Works fully offline.</p>
       </div>
 
       <div className={styles.heroVisual}>
         <PhoneMockup />
-        <SpecCard />
       </div>
     </section>
   )
@@ -418,11 +514,11 @@ function Hero({ onNavigate }) {
 function TrustBar() {
   return (
     <section className={styles.trustBar}>
-      {TRUST_STATS.map(stat => (
-        <div key={stat.label} className={styles.trustStat}>
-          <span className={styles.trustValue}>{stat.value}</span>
+      {TRUST_STATS.map((stat, i) => (
+        <Reveal key={stat.label} as="div" className={styles.trustStat} delay={i * 90}>
+          <TrustValue value={stat.value} />
           <span className={styles.trustLabel}>{stat.label}</span>
-        </div>
+        </Reveal>
       ))}
     </section>
   )
@@ -430,10 +526,13 @@ function TrustBar() {
 
 function SectionHeading({ eyebrow, title, align = 'left' }) {
   return (
-    <div className={`${styles.sectionHeading} ${align === 'center' ? styles.sectionHeadingCenter : ''}`}>
+    <Reveal
+      as="div"
+      className={`${styles.sectionHeading} ${align === 'center' ? styles.sectionHeadingCenter : ''}`}
+    >
       <MonoLabel>{eyebrow}</MonoLabel>
       <h2 className={styles.sectionTitle}>{title}</h2>
-    </div>
+    </Reveal>
   )
 }
 
@@ -442,15 +541,15 @@ function Features() {
     <section id="features" className={styles.features}>
       <SectionHeading eyebrow="What it does" title="Everything the counter, the workshop, and the books need" />
       <div className={styles.featureGrid}>
-        {FEATURES.map(f => (
-          <div key={f.title} className={styles.featureCard}>
+        {FEATURES.map((f, i) => (
+          <Reveal key={f.title} as="div" className={styles.featureCard} delay={(i % 4) * 60}>
             <div className={styles.featureCardTop}>
               <span className={`mi ${styles.featureIcon}`}>{f.icon}</span>
               <span className={styles.featureTag}>{f.tag}</span>
             </div>
             <h3 className={styles.featureTitle}>{f.title}</h3>
             <p className={styles.featureBody}>{f.body}</p>
-          </div>
+          </Reveal>
         ))}
       </div>
     </section>
@@ -479,11 +578,11 @@ function ProductShowcase() {
       </div>
 
       <div className={styles.showcaseStage}>
-        <div className={styles.showcaseCopy}>
+        <div className={styles.showcaseCopy} key={`copy-${current.key}`}>
           <h3 className={styles.showcaseTitle}>{current.title}</h3>
           <p className={styles.showcaseBody}>{current.body}</p>
         </div>
-        <div className={styles.showcaseFrame}>
+        <div className={styles.showcaseFrame} key={`frame-${current.key}`}>
           <div className={styles.browserBar}>
             <span className={styles.browserDot} />
             <span className={styles.browserDot} />
@@ -506,12 +605,12 @@ function HowItWorks() {
     <section id="how" className={styles.how}>
       <SectionHeading eyebrow="How it works" title="Three steps to run your shop on TailorPady" />
       <div className={styles.stepGrid}>
-        {STEPS.map(s => (
-          <div key={s.n} className={styles.step}>
+        {STEPS.map((s, i) => (
+          <Reveal key={s.n} as="div" className={styles.step} delay={i * 100}>
             <span className={styles.stepNumber}>{s.n}</span>
             <h3 className={styles.stepTitle}>{s.title}</h3>
             <p className={styles.stepBody}>{s.body}</p>
-          </div>
+          </Reveal>
         ))}
       </div>
     </section>
@@ -523,14 +622,14 @@ function Testimonials() {
     <section id="reviews" className={styles.reviews}>
       <SectionHeading eyebrow="Shops using TailorPady" title="What shop owners say" align="center" />
       <div className={styles.reviewGrid}>
-        {TESTIMONIALS.map(t => (
-          <figure key={t.name} className={styles.reviewCard}>
+        {TESTIMONIALS.map((t, i) => (
+          <Reveal key={t.name} as="figure" className={styles.reviewCard} delay={i * 100}>
             <blockquote className={styles.reviewQuote}>{t.quote}</blockquote>
             <figcaption className={styles.reviewMeta}>
               <span className={styles.reviewName}>{t.name}</span>
               <span className={styles.reviewRole}>{t.role}</span>
             </figcaption>
-          </figure>
+          </Reveal>
         ))}
       </div>
     </section>
@@ -542,10 +641,12 @@ function PricingTeaser({ onNavigate }) {
     <section id="pricing" className={styles.pricing}>
       <SectionHeading eyebrow="Pricing" title="Start free, upgrade when the shop grows" align="center" />
       <div className={styles.pricingGrid}>
-        {PLANS.map(plan => (
-          <div
+        {PLANS.map((plan, i) => (
+          <Reveal
             key={plan.name}
+            as="div"
             className={`${styles.pricingCard} ${plan.highlighted ? styles.pricingCardHighlighted : ''}`}
+            delay={i * 100}
           >
             <div className={styles.pricingCardHead}>
               <span className={styles.pricingName}>{plan.name}</span>
@@ -570,7 +671,7 @@ function PricingTeaser({ onNavigate }) {
             >
               {plan.cta}
             </button>
-          </div>
+          </Reveal>
         ))}
       </div>
     </section>
@@ -582,11 +683,11 @@ function FAQPreview() {
     <section id="faq" className={styles.faq}>
       <SectionHeading eyebrow="Questions" title="Answers before you ask" />
       <div className={styles.faqGrid}>
-        {FAQ_PREVIEW.map(item => (
-          <div key={item.q} className={styles.faqCard}>
+        {FAQ_PREVIEW.map((item, i) => (
+          <Reveal key={item.q} as="div" className={styles.faqCard} delay={(i % 2) * 80}>
             <h3 className={styles.faqQ}>{item.q}</h3>
             <p className={styles.faqA}>{item.a}</p>
-          </div>
+          </Reveal>
         ))}
       </div>
       <Link to="/faq" className={styles.faqMore}>
@@ -600,12 +701,14 @@ function FAQPreview() {
 function FinalCTA({ onNavigate }) {
   return (
     <section className={styles.cta}>
-      <MonoLabel>Ready when you are</MonoLabel>
-      <h2 className={styles.ctaTitle}>Run your shop from one screen</h2>
-      <p className={styles.ctaBody}>Set up your shop in minutes. No card required to start.</p>
-      <button type="button" className={styles.ctaButton} onClick={() => onNavigate('/signup')}>
-        Start free
-      </button>
+      <Reveal as="div" className={styles.ctaInner}>
+        <MonoLabel>Ready when you are</MonoLabel>
+        <h2 className={styles.ctaTitle}>Run your shop from one screen</h2>
+        <p className={styles.ctaBody}>Set up your shop in minutes. No card required to start.</p>
+        <button type="button" className={styles.ctaButton} onClick={() => onNavigate('/signup')}>
+          Start free
+        </button>
+      </Reveal>
     </section>
   )
 }
@@ -613,34 +716,36 @@ function FinalCTA({ onNavigate }) {
 function SiteFooter() {
   return (
     <footer className={styles.footer}>
-      <div className={styles.footerTop}>
-        <div className={styles.footerBrand}>
-          <span className={styles.logo}>TailorPady</span>
-          <p className={styles.footerTagline}>
-            Order, measurement, and payment tracking for tailoring shops and boutiques.
-          </p>
+      <div className={styles.footerInner}>
+        <div className={styles.footerTop}>
+          <div className={styles.footerBrand}>
+            <span className={styles.footerLogo}>TailorPady</span>
+            <p className={styles.footerTagline}>
+              Order, measurement, and payment tracking for tailoring shops and boutiques.
+            </p>
+          </div>
+          <div className={styles.footerColumns}>
+            {FOOTER_COLUMNS.map(col => (
+              <div key={col.heading} className={styles.footerColumn}>
+                <span className={styles.footerColumnHeading}>{col.heading}</span>
+                {col.links.map(link =>
+                  link.to ? (
+                    <Link key={link.label} to={link.to}>
+                      {link.label}
+                    </Link>
+                  ) : (
+                    <a key={link.label} href={link.href}>
+                      {link.label}
+                    </a>
+                  )
+                )}
+              </div>
+            ))}
+          </div>
         </div>
-        <div className={styles.footerColumns}>
-          {FOOTER_COLUMNS.map(col => (
-            <div key={col.heading} className={styles.footerColumn}>
-              <span className={styles.footerColumnHeading}>{col.heading}</span>
-              {col.links.map(link =>
-                link.to ? (
-                  <Link key={link.label} to={link.to}>
-                    {link.label}
-                  </Link>
-                ) : (
-                  <a key={link.label} href={link.href}>
-                    {link.label}
-                  </a>
-                )
-              )}
-            </div>
-          ))}
+        <div className={styles.footerBottom}>
+          <span>© {new Date().getFullYear()} TailorPady. All rights reserved.</span>
         </div>
-      </div>
-      <div className={styles.footerBottom}>
-        <span>© {new Date().getFullYear()} TailorPady. All rights reserved.</span>
       </div>
     </footer>
   )
@@ -649,10 +754,21 @@ function SiteFooter() {
 export default function LandingPage() {
   const navigate = useNavigate()
   const goTo = path => navigate(path)
+  const [theme, toggleTheme] = useTheme()
+
+  useEffect(() => {
+    const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    if (!prefersReduced) {
+      document.documentElement.style.scrollBehavior = 'smooth'
+    }
+    return () => {
+      document.documentElement.style.scrollBehavior = ''
+    }
+  }, [])
 
   return (
-    <div className={styles.page}>
-      <SiteNav onNavigate={goTo} />
+    <div className={styles.page} data-theme={theme}>
+      <SiteNav onNavigate={goTo} theme={theme} onToggleTheme={toggleTheme} />
       <main className={styles.mainContent}>
         <Hero onNavigate={goTo} />
         <TrustBar />
