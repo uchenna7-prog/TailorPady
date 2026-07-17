@@ -1,53 +1,109 @@
+import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
+import { useInstall } from '../../contexts/InstallContext'
 import styles from './LandingPage.module.css'
 
+const NAV_LINKS = [
+  { href: '#features', label: 'Features' },
+  { href: '#product', label: 'Product' },
+  { href: '#how', label: 'How it works' },
+  { href: '#pricing', label: 'Pricing' },
+  { href: '#faq', label: 'FAQ' },
+]
+
 const MEASUREMENTS = [
-  { label: 'Chest', value: '38 in' },
-  { label: 'Waist', value: '32 in' },
-  { label: 'Sleeve', value: '24.5 in' },
-  { label: 'Shoulder', value: '17.5 in' },
+  { label: 'Chest', value: '38', unit: 'in' },
+  { label: 'Waist', value: '32', unit: 'in' },
+  { label: 'Sleeve', value: '24.5', unit: 'in' },
+  { label: 'Shoulder', value: '17.5', unit: 'in' },
+]
+
+const TRUST_STATS = [
+  { value: '9,400+', label: 'Orders tracked' },
+  { value: '430+', label: 'Shops onboard' },
+  { value: '₦180M+', label: 'Invoiced through the app' },
+  { value: '4.9/5', label: 'Average shop rating' },
 ]
 
 const FEATURES = [
   {
-    tag: 'Records',
+    icon: 'people',
+    tag: '01',
     title: 'Customers & measurements',
-    body: 'Keep every client, body measurement, and fit note in one record you can pull up in seconds, on any device.',
+    body: 'Every client, every body measurement, every fit note, saved once and pulled up in seconds from any device in the shop.',
   },
   {
-    tag: 'Workflow',
+    icon: 'shopping_bag',
+    tag: '02',
     title: 'Orders & tasks',
-    body: 'Break an order into cutting, stitching, embroidery, and finishing, assign each step, and watch it move.',
+    body: 'Split an order into cutting, stitching, embroidery, and finishing. Assign each step to a worker and watch it move across the board.',
   },
   {
-    tag: 'Money',
+    icon: 'receipt_long',
+    tag: '03',
     title: 'Invoices, receipts & payments',
-    body: 'Bill in your own currency, track what is paid and what is due, and hand over a clean receipt at pickup.',
+    body: 'Bill in naira or any currency you choose, track what is paid against what is owed, and hand over a clean receipt at pickup.',
   },
   {
-    tag: 'Stock',
+    icon: 'inventory_2',
+    tag: '04',
     title: 'Inventory',
-    body: 'Know what fabric and trims are on the shelf before you promise a delivery date you cannot keep.',
+    body: 'Know what fabric and trims are on the shelf, with low-stock alerts, before you promise a delivery date you cannot keep.',
   },
   {
-    tag: 'Schedule',
+    icon: 'event',
+    tag: '05',
     title: 'Appointments',
-    body: 'Book fittings and collections against real shop hours, with reminders that reach the customer on time.',
+    body: 'Book fittings and collections against your real shop hours, with reminders that reach the customer before they forget.',
   },
   {
-    tag: 'Numbers',
+    icon: 'bar_chart',
+    tag: '06',
     title: 'Reports',
-    body: 'See today\u2019s orders, today\u2019s payments, and the monthly numbers that tell you how the shop is really doing.',
+    body: 'See today\u2019s orders, today\u2019s payments, and the monthly numbers that tell you how the shop is actually doing.',
   },
   {
-    tag: 'Showcase',
-    title: 'Gallery',
-    body: 'Photograph finished pieces and build a lookbook clients can browse before they choose a style.',
+    icon: 'photo_library',
+    tag: '07',
+    title: 'Gallery & portfolio',
+    body: 'Photograph finished pieces and publish a branded portfolio link clients can browse before they choose a style.',
   },
   {
-    tag: 'Assistant',
-    title: 'Agent',
-    body: 'Ask in plain language for anything above: this week\u2019s dues, a customer\u2019s last measurements, a stock count.',
+    icon: 'smart_toy',
+    tag: '08',
+    title: 'Pady, the AI agent',
+    body: 'Ask in plain language for anything above: this week\u2019s dues, a customer\u2019s last measurements, or a stock count.',
+  },
+]
+
+const SHOWCASE_TABS = [
+  {
+    key: 'dashboard',
+    label: 'Dashboard',
+    title: 'The whole shop, on one screen',
+    body: 'Open the app and see what is due today, what is overdue, and what just came in. No more carrying it all in your head.',
+    image: '/images/landing/screen-dashboard.png',
+  },
+  {
+    key: 'orders',
+    label: 'Orders',
+    title: 'Track every order from cut to collection',
+    body: 'Move an order through cutting, stitching, and finishing. Everyone on your team knows exactly what stage it is at.',
+    image: '/images/landing/screen-orders.png',
+  },
+  {
+    key: 'invoices',
+    label: 'Invoices',
+    title: 'Bill and get paid without the back and forth',
+    body: 'Generate a branded invoice in your currency, share it on WhatsApp, and mark it paid the moment money lands.',
+    image: '/images/landing/screen-invoices.png',
+  },
+  {
+    key: 'portfolio',
+    label: 'Portfolio',
+    title: 'A lookbook clients can find on their own',
+    body: 'Every finished piece you photograph becomes part of a public portfolio page, complete with approved reviews.',
+    image: '/images/landing/screen-portfolio.png',
   },
 ]
 
@@ -55,16 +111,16 @@ const STEPS = [
   {
     n: '01',
     title: 'Set up your shop',
-    body: 'Add your shop name, address, currency, and workers. Ready in a few minutes, no training required.',
+    body: 'Add your shop name, address, currency, and workers. It takes a few minutes and there is nothing to install.',
   },
   {
     n: '02',
     title: 'Bring in your customers',
-    body: 'Import or enter your existing clients and their measurements once, and never re-measure from scratch again.',
+    body: 'Enter your existing clients and their measurements once. You will never re-measure from scratch again.',
   },
   {
     n: '03',
-    title: 'Run the shop from Tailorpady',
+    title: 'Run the shop from TailorPady',
     body: 'Take orders, assign tasks, bill, and report from one place, on the counter tablet or your phone in the back room.',
   },
 ]
@@ -90,208 +146,525 @@ const TESTIMONIALS = [
   },
 ]
 
-function StitchDivider({ label }) {
+const PLANS = [
+  {
+    name: 'Free',
+    price: '₦0',
+    period: 'forever',
+    tagline: 'Everything a one-person shop needs to get off paper.',
+    features: [
+      'Up to 15 customers',
+      'Full body & cloth measurements',
+      '20 active orders per month',
+      '10 invoices & 10 receipts per month',
+      'Basic branding',
+      '3 AI assistant actions per month',
+    ],
+    cta: 'Start free',
+    highlighted: false,
+  },
+  {
+    name: 'Pro',
+    price: '₦4,500',
+    period: 'per month',
+    tagline: 'For shops that have outgrown the free limits.',
+    features: [
+      'Unlimited customers & orders',
+      'Unlimited invoices & receipts',
+      'Full branding: logo, colours, signature',
+      'Unlimited portfolio uploads',
+      'Advanced payment tracking & reports',
+      'Unlimited AI assistant actions',
+    ],
+    cta: 'Go Pro',
+    highlighted: true,
+  },
+]
+
+const FAQ_PREVIEW = [
+  {
+    q: 'Does TailorPady work without internet?',
+    a: 'Yes. It runs fully offline and syncs to the cloud automatically the moment you are back online.',
+  },
+  {
+    q: 'Can I customise my invoices and receipts?',
+    a: 'Yes, for everyone, for free. Choose a template and set your bank details and footer message in Settings.',
+  },
+  {
+    q: 'What does the AI assistant actually do?',
+    a: 'Pady can draft receipts, invoices, and birthday messages, and remind you before an order slips.',
+  },
+  {
+    q: 'How many invoices can I send on the free plan?',
+    a: 'Up to 10 invoices and 10 receipts a month, alongside 20 active orders. Pro removes every limit.',
+  },
+]
+
+const FOOTER_COLUMNS = [
+  {
+    heading: 'Product',
+    links: [
+      { label: 'Features', href: '#features' },
+      { label: 'Pricing', href: '#pricing' },
+      { label: 'FAQ', to: '/faq' },
+    ],
+  },
+  {
+    heading: 'Company',
+    links: [
+      { label: 'Contact', to: '/contact' },
+      { label: 'Privacy policy', to: '/privacy' },
+      { label: 'Terms & conditions', to: '/terms' },
+      { label: 'Refund policy', to: '/refund' },
+    ],
+  },
+]
+
+function isIOSDevice() {
+  if (typeof navigator === 'undefined') return false
+  const ua = navigator.userAgent || navigator.vendor || ''
+  const isAppleHandheld = /iPad|iPhone|iPod/.test(ua)
+  const isIPadOnMac = navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1
+  return isAppleHandheld || isIPadOnMac
+}
+
+function MonoLabel({ children }) {
+  return <span className={styles.monoLabel}>{children}</span>
+}
+
+function InstallButton() {
+  const install = useInstall()
+  const [showIOSHint, setShowIOSHint] = useState(false)
+
+  if (!install || install.isInstalled) return null
+
+  const iOS = isIOSDevice()
+  if (!install.installPrompt && !iOS) return null
+
+  const handleClick = async () => {
+    if (install.installPrompt) {
+      await install.triggerInstall()
+      return
+    }
+    setShowIOSHint(prev => !prev)
+  }
+
   return (
-    <div className={styles.divider} role="separator" aria-hidden="true">
-      <div className={styles.dividerLine} />
-      {label ? <span className={styles.dividerLabel}>{label}</span> : null}
+    <div className={styles.installWrap}>
+      <button type="button" className={styles.installButton} onClick={handleClick}>
+        <span className="mi" style={{ fontSize: '1.05rem' }}>install_mobile</span>
+        Install app
+      </button>
+      {showIOSHint && (
+        <div className={styles.installHint}>
+          <span className={styles.installHintTitle}>Install on iPhone or iPad</span>
+          <ol className={styles.installHintList}>
+            <li>Tap the Share icon in Safari</li>
+            <li>Scroll down and tap Add to Home Screen</li>
+            <li>Tap Add to confirm</li>
+          </ol>
+          <button type="button" className={styles.installHintClose} onClick={() => setShowIOSHint(false)}>
+            Got it
+          </button>
+        </div>
+      )}
     </div>
   )
 }
 
-function OrderDocket() {
+function SiteNav({ onNavigate }) {
+  const [open, setOpen] = useState(false)
+
   return (
-    <div className={styles.docketWrap}>
-      <span className={styles.docketEyebrow}>Live on the shop floor</span>
-      <div className={styles.docket}>
-        <div className={styles.docketTop}>
-          <span className={styles.docketNumber}>Order № 0231</span>
-          <span className={styles.docketStatus}>In progress</span>
-        </div>
-        <div className={styles.docketRow}>
-          <span className={styles.docketRowLabel}>Customer</span>
-          <span className={styles.docketRowValue}>A. Chukwu</span>
-        </div>
-        <div className={styles.docketRow}>
-          <span className={styles.docketRowLabel}>Item</span>
-          <span className={styles.docketRowValue}>Agbada, 2 piece</span>
-        </div>
-        <div className={styles.docketMeasure}>
-          {MEASUREMENTS.map(m => (
-            <div key={m.label} className={styles.docketMeasureCell}>
-              <span className={styles.docketMeasureLabel}>{m.label}</span>
-              <span className={styles.docketMeasureValue}>{m.value}</span>
-            </div>
+    <header className={styles.nav}>
+      <div className={styles.navInner}>
+        <Link to="/" className={styles.logo}>
+          TailorPady
+        </Link>
+
+        <nav className={styles.navLinks}>
+          {NAV_LINKS.map(link => (
+            <a key={link.href} href={link.href}>
+              {link.label}
+            </a>
           ))}
+        </nav>
+
+        <div className={styles.navActions}>
+          <InstallButton />
+          <Link to="/login" className={styles.navLogin}>
+            Log in
+          </Link>
+          <button type="button" className={styles.navCta} onClick={() => onNavigate('/signup')}>
+            Start free
+          </button>
         </div>
-        <div className={styles.docketFoot}>
-          <span>Balance due</span>
-          <span className={styles.docketFootValue}>₦4,500</span>
+
+        <button
+          type="button"
+          className={styles.navMenuButton}
+          onClick={() => setOpen(prev => !prev)}
+          aria-label="Toggle menu"
+        >
+          <span className="mi">{open ? 'close' : 'menu'}</span>
+        </button>
+      </div>
+
+      {open && (
+        <div className={styles.navMobilePanel}>
+          {NAV_LINKS.map(link => (
+            <a key={link.href} href={link.href} onClick={() => setOpen(false)}>
+              {link.label}
+            </a>
+          ))}
+          <div className={styles.navMobileActions}>
+            <InstallButton />
+            <Link to="/login" className={styles.navLogin}>
+              Log in
+            </Link>
+            <button type="button" className={styles.navCta} onClick={() => onNavigate('/signup')}>
+              Start free
+            </button>
+          </div>
         </div>
-        <span className={styles.docketStamp}>Ready 18 Jul</span>
+      )}
+    </header>
+  )
+}
+
+function SpecCard() {
+  return (
+    <div className={styles.specCard}>
+      <div className={styles.specCardHead}>
+        <MonoLabel>Order N0231</MonoLabel>
+        <span className={styles.specCardStatus}>In progress</span>
+      </div>
+      <div className={styles.specCardRow}>
+        <span>Customer</span>
+        <span>A. Chukwu</span>
+      </div>
+      <div className={styles.specCardRow}>
+        <span>Item</span>
+        <span>Agbada, 2 piece</span>
+      </div>
+      <div className={styles.specGrid}>
+        {MEASUREMENTS.map(m => (
+          <div key={m.label} className={styles.specCell}>
+            <span className={styles.specCellLabel}>{m.label}</span>
+            <span className={styles.specCellValue}>
+              {m.value}
+              <span className={styles.specCellUnit}>{m.unit}</span>
+            </span>
+          </div>
+        ))}
+      </div>
+      <div className={styles.specCardFoot}>
+        <span>Balance due</span>
+        <span className={styles.specCardFootValue}>₦4,500</span>
       </div>
     </div>
   )
 }
 
+function PhoneMockup() {
+  return (
+    <div className={styles.phone}>
+      <div className={styles.phoneNotch} />
+      <div className={styles.phoneScreen}>
+        <img
+          src="/images/landing/hero-dashboard.png"
+          alt="TailorPady dashboard on a phone"
+          className={styles.phoneImage}
+          loading="lazy"
+        />
+      </div>
+    </div>
+  )
+}
+
+function Hero({ onNavigate }) {
+  return (
+    <section className={styles.hero}>
+      <div className={styles.heroCopy}>
+        <MonoLabel>Tailoring shop management</MonoLabel>
+        <h1 className={styles.heroTitle}>
+          The operating system
+          <br />
+          for your tailoring shop.
+        </h1>
+        <p className={styles.heroBody}>
+          TailorPady replaces the notebook on your counter with customer records, order
+          tracking, invoicing, and reports built for how a tailoring shop actually runs.
+        </p>
+        <div className={styles.heroActions}>
+          <button type="button" className={styles.primaryButton} onClick={() => onNavigate('/signup')}>
+            Start free
+          </button>
+          <a href="#product" className={styles.secondaryButton}>
+            See the app
+          </a>
+        </div>
+        <p className={styles.heroFinePrint}>No card required. Works fully offline.</p>
+      </div>
+
+      <div className={styles.heroVisual}>
+        <PhoneMockup />
+        <SpecCard />
+      </div>
+    </section>
+  )
+}
+
+function TrustBar() {
+  return (
+    <section className={styles.trustBar}>
+      {TRUST_STATS.map(stat => (
+        <div key={stat.label} className={styles.trustStat}>
+          <span className={styles.trustValue}>{stat.value}</span>
+          <span className={styles.trustLabel}>{stat.label}</span>
+        </div>
+      ))}
+    </section>
+  )
+}
+
+function SectionHeading({ eyebrow, title, align = 'left' }) {
+  return (
+    <div className={`${styles.sectionHeading} ${align === 'center' ? styles.sectionHeadingCenter : ''}`}>
+      <MonoLabel>{eyebrow}</MonoLabel>
+      <h2 className={styles.sectionTitle}>{title}</h2>
+    </div>
+  )
+}
+
+function Features() {
+  return (
+    <section id="features" className={styles.features}>
+      <SectionHeading eyebrow="What it does" title="Everything the counter, the workshop, and the books need" />
+      <div className={styles.featureGrid}>
+        {FEATURES.map(f => (
+          <div key={f.title} className={styles.featureCard}>
+            <div className={styles.featureCardTop}>
+              <span className={`mi ${styles.featureIcon}`}>{f.icon}</span>
+              <span className={styles.featureTag}>{f.tag}</span>
+            </div>
+            <h3 className={styles.featureTitle}>{f.title}</h3>
+            <p className={styles.featureBody}>{f.body}</p>
+          </div>
+        ))}
+      </div>
+    </section>
+  )
+}
+
+function ProductShowcase() {
+  const [active, setActive] = useState(SHOWCASE_TABS[0].key)
+  const current = SHOWCASE_TABS.find(tab => tab.key === active)
+
+  return (
+    <section id="product" className={styles.showcase}>
+      <SectionHeading eyebrow="Inside the app" title="A closer look at TailorPady" align="center" />
+
+      <div className={styles.showcaseTabs}>
+        {SHOWCASE_TABS.map(tab => (
+          <button
+            key={tab.key}
+            type="button"
+            className={`${styles.showcaseTab} ${tab.key === active ? styles.showcaseTabActive : ''}`}
+            onClick={() => setActive(tab.key)}
+          >
+            {tab.label}
+          </button>
+        ))}
+      </div>
+
+      <div className={styles.showcaseStage}>
+        <div className={styles.showcaseCopy}>
+          <h3 className={styles.showcaseTitle}>{current.title}</h3>
+          <p className={styles.showcaseBody}>{current.body}</p>
+        </div>
+        <div className={styles.showcaseFrame}>
+          <div className={styles.browserBar}>
+            <span className={styles.browserDot} />
+            <span className={styles.browserDot} />
+            <span className={styles.browserDot} />
+          </div>
+          <img
+            src={current.image}
+            alt={`${current.label} screen in TailorPady`}
+            className={styles.showcaseImage}
+            loading="lazy"
+          />
+        </div>
+      </div>
+    </section>
+  )
+}
+
+function HowItWorks() {
+  return (
+    <section id="how" className={styles.how}>
+      <SectionHeading eyebrow="How it works" title="Three steps to run your shop on TailorPady" />
+      <div className={styles.stepGrid}>
+        {STEPS.map(s => (
+          <div key={s.n} className={styles.step}>
+            <span className={styles.stepNumber}>{s.n}</span>
+            <h3 className={styles.stepTitle}>{s.title}</h3>
+            <p className={styles.stepBody}>{s.body}</p>
+          </div>
+        ))}
+      </div>
+    </section>
+  )
+}
+
+function Testimonials() {
+  return (
+    <section id="reviews" className={styles.reviews}>
+      <SectionHeading eyebrow="Shops using TailorPady" title="What shop owners say" align="center" />
+      <div className={styles.reviewGrid}>
+        {TESTIMONIALS.map(t => (
+          <figure key={t.name} className={styles.reviewCard}>
+            <blockquote className={styles.reviewQuote}>{t.quote}</blockquote>
+            <figcaption className={styles.reviewMeta}>
+              <span className={styles.reviewName}>{t.name}</span>
+              <span className={styles.reviewRole}>{t.role}</span>
+            </figcaption>
+          </figure>
+        ))}
+      </div>
+    </section>
+  )
+}
+
+function PricingTeaser({ onNavigate }) {
+  return (
+    <section id="pricing" className={styles.pricing}>
+      <SectionHeading eyebrow="Pricing" title="Start free, upgrade when the shop grows" align="center" />
+      <div className={styles.pricingGrid}>
+        {PLANS.map(plan => (
+          <div
+            key={plan.name}
+            className={`${styles.pricingCard} ${plan.highlighted ? styles.pricingCardHighlighted : ''}`}
+          >
+            <div className={styles.pricingCardHead}>
+              <span className={styles.pricingName}>{plan.name}</span>
+              <div className={styles.pricingPriceRow}>
+                <span className={styles.pricingPrice}>{plan.price}</span>
+                <span className={styles.pricingPeriod}>{plan.period}</span>
+              </div>
+              <p className={styles.pricingTagline}>{plan.tagline}</p>
+            </div>
+            <ul className={styles.pricingList}>
+              {plan.features.map(feature => (
+                <li key={feature} className={styles.pricingListItem}>
+                  <span className={`mi ${styles.pricingCheck}`}>check</span>
+                  {feature}
+                </li>
+              ))}
+            </ul>
+            <button
+              type="button"
+              className={plan.highlighted ? styles.primaryButton : styles.outlineButton}
+              onClick={() => onNavigate('/signup')}
+            >
+              {plan.cta}
+            </button>
+          </div>
+        ))}
+      </div>
+    </section>
+  )
+}
+
+function FAQPreview() {
+  return (
+    <section id="faq" className={styles.faq}>
+      <SectionHeading eyebrow="Questions" title="Answers before you ask" />
+      <div className={styles.faqGrid}>
+        {FAQ_PREVIEW.map(item => (
+          <div key={item.q} className={styles.faqCard}>
+            <h3 className={styles.faqQ}>{item.q}</h3>
+            <p className={styles.faqA}>{item.a}</p>
+          </div>
+        ))}
+      </div>
+      <Link to="/faq" className={styles.faqMore}>
+        See all questions
+        <span className="mi" style={{ fontSize: '1.1rem' }}>arrow_forward</span>
+      </Link>
+    </section>
+  )
+}
+
+function FinalCTA({ onNavigate }) {
+  return (
+    <section className={styles.cta}>
+      <MonoLabel>Ready when you are</MonoLabel>
+      <h2 className={styles.ctaTitle}>Run your shop from one screen</h2>
+      <p className={styles.ctaBody}>Set up your shop in minutes. No card required to start.</p>
+      <button type="button" className={styles.ctaButton} onClick={() => onNavigate('/signup')}>
+        Start free
+      </button>
+    </section>
+  )
+}
+
+function SiteFooter() {
+  return (
+    <footer className={styles.footer}>
+      <div className={styles.footerTop}>
+        <div className={styles.footerBrand}>
+          <span className={styles.logo}>TailorPady</span>
+          <p className={styles.footerTagline}>
+            Order, measurement, and payment tracking for tailoring shops and boutiques.
+          </p>
+        </div>
+        <div className={styles.footerColumns}>
+          {FOOTER_COLUMNS.map(col => (
+            <div key={col.heading} className={styles.footerColumn}>
+              <span className={styles.footerColumnHeading}>{col.heading}</span>
+              {col.links.map(link =>
+                link.to ? (
+                  <Link key={link.label} to={link.to}>
+                    {link.label}
+                  </Link>
+                ) : (
+                  <a key={link.label} href={link.href}>
+                    {link.label}
+                  </a>
+                )
+              )}
+            </div>
+          ))}
+        </div>
+      </div>
+      <div className={styles.footerBottom}>
+        <span>© {new Date().getFullYear()} TailorPady. All rights reserved.</span>
+      </div>
+    </footer>
+  )
+}
+
 export default function LandingPage() {
   const navigate = useNavigate()
+  const goTo = path => navigate(path)
 
   return (
     <div className={styles.page}>
-      <header className={styles.nav}>
-        <span className={styles.logo}>Tailorpady</span>
-        <nav className={styles.navLinks}>
-          <a href="#features">Features</a>
-          <a href="#how">How it works</a>
-          <a href="#reviews">Reviews</a>
-          <Link to="/contact">Contact</Link>
-        </nav>
-        <div className={styles.navActions}>
-          <Link to="/login" className={styles.navLogin}>
-            Log in
-          </Link>
-          <button
-            type="button"
-            className={styles.navCta}
-            onClick={() => navigate('/signup')}
-          >
-            Start free
-          </button>
-        </div>
-      </header>
-
-      <main>
-        <section className={styles.hero}>
-          <div className={styles.heroCopy}>
-            <span className={styles.eyebrow}>Tailoring shop management</span>
-            <h1 className={styles.heroTitle}>
-              Every measurement,
-              <br />
-              order, and naira,
-              <br />
-              in one place.
-            </h1>
-            <p className={styles.heroBody}>
-              Tailorpady replaces the notebook on your counter with customer
-              records, order tracking, invoicing, and reports built for how a
-              tailoring shop actually runs.
-            </p>
-            <div className={styles.heroActions}>
-              <button
-                type="button"
-                className={styles.primaryButton}
-                onClick={() => navigate('/signup')}
-              >
-                Start free
-              </button>
-              <a href="#features" className={styles.secondaryButton}>
-                See what it does
-              </a>
-            </div>
-          </div>
-          <OrderDocket />
-        </section>
-
-        <StitchDivider label="Built for the whole shop floor" />
-
-        <section className={styles.stats}>
-          <div className={styles.stat}>
-            <span className={styles.statValue}>9,400+</span>
-            <span className={styles.statLabel}>Orders tracked</span>
-          </div>
-          <div className={styles.stat}>
-            <span className={styles.statValue}>430+</span>
-            <span className={styles.statLabel}>Shops onboard</span>
-          </div>
-          <div className={styles.stat}>
-            <span className={styles.statValue}>1</span>
-            <span className={styles.statLabel}>Place for the whole shop</span>
-          </div>
-        </section>
-
-        <section id="features" className={styles.features}>
-          <span className={styles.sectionEyebrow}>What it does</span>
-          <h2 className={styles.sectionTitle}>
-            Everything the counter, the workshop, and the books need
-          </h2>
-          <div className={styles.featureGrid}>
-            {FEATURES.map(f => (
-              <div key={f.title} className={styles.featureCard}>
-                <span className={styles.featureTag}>{f.tag}</span>
-                <h3 className={styles.featureTitle}>{f.title}</h3>
-                <p className={styles.featureBody}>{f.body}</p>
-              </div>
-            ))}
-          </div>
-        </section>
-
-        <StitchDivider label="From first fitting to final delivery" />
-
-        <section id="how" className={styles.how}>
-          <span className={styles.sectionEyebrow}>How it works</span>
-          <h2 className={styles.sectionTitle}>Three steps to run your shop on Tailorpady</h2>
-          <div className={styles.stepGrid}>
-            {STEPS.map(s => (
-              <div key={s.n} className={styles.step}>
-                <span className={styles.stepNumber}>{s.n}</span>
-                <h3 className={styles.stepTitle}>{s.title}</h3>
-                <p className={styles.stepBody}>{s.body}</p>
-              </div>
-            ))}
-          </div>
-        </section>
-
-        <section id="reviews" className={styles.reviews}>
-          <span className={styles.sectionEyebrow}>Shops using Tailorpady</span>
-          <h2 className={styles.sectionTitle}>What shop owners say</h2>
-          <div className={styles.reviewGrid}>
-            {TESTIMONIALS.map(t => (
-              <figure key={t.name} className={styles.reviewCard}>
-                <blockquote className={styles.reviewQuote}>{t.quote}</blockquote>
-                <figcaption className={styles.reviewMeta}>
-                  <span className={styles.reviewName}>{t.name}</span>
-                  <span className={styles.reviewRole}>{t.role}</span>
-                </figcaption>
-              </figure>
-            ))}
-          </div>
-        </section>
-
-        <section className={styles.cta}>
-          <h2 className={styles.ctaTitle}>Run your shop from one screen</h2>
-          <p className={styles.ctaBody}>
-            Set up your shop in minutes. No card required to start.
-          </p>
-          <button
-            type="button"
-            className={styles.ctaButton}
-            onClick={() => navigate('/signup')}
-          >
-            Start free
-          </button>
-        </section>
+      <SiteNav onNavigate={goTo} />
+      <main className={styles.mainContent}>
+        <Hero onNavigate={goTo} />
+        <TrustBar />
+        <Features />
+        <ProductShowcase />
+        <HowItWorks />
+        <Testimonials />
+        <PricingTeaser onNavigate={goTo} />
+        <FAQPreview />
+        <FinalCTA onNavigate={goTo} />
       </main>
-
-      <footer className={styles.footer}>
-        <div className={styles.footerTop}>
-          <span className={styles.logo}>Tailorpady</span>
-          <p className={styles.footerTagline}>
-            Order, measurement, and payment tracking for tailoring shops and
-            boutiques.
-          </p>
-        </div>
-        <div className={styles.footerLinks}>
-          <Link to="/faq">FAQ</Link>
-          <Link to="/contact">Contact</Link>
-          <Link to="/privacy">Privacy policy</Link>
-          <Link to="/terms">Terms & conditions</Link>
-          <Link to="/refund">Refund policy</Link>
-        </div>
-        <div className={styles.footerBottom}>
-          <span>© {new Date().getFullYear()} Tailorpady. All rights reserved.</span>
-        </div>
-      </footer>
+      <SiteFooter />
     </div>
   )
 }
