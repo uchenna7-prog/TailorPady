@@ -16,59 +16,60 @@ const NAV_LINKS = [
 const SECTION_IDS = NAV_LINKS.map(link => link.href.slice(1))
 
 const TRUST_STATS = [
-  { value: '9,400+', label: 'Orders tracked' },
-  { value: '430+', label: 'Shops onboard' },
-  { value: '₦180M+', label: 'Invoiced through the app' },
+  { value: '<10 min', label: 'To set up your shop' },
+  { value: '0', label: 'Measurements lost to paper' },
+  { value: '24/7', label: 'Offline access, always synced' },
 ]
 
 const FEATURES = [
   {
     icon: 'people',
-    tag: '01',
     title: 'Customers & measurements',
-    body: 'Save every customer\u2019s measurements once. Find them again in seconds, on any device.',
+    body: 'Every client, every body measurement, every fit note, saved once and pulled up in seconds from any device in the shop.',
+    span: 5,
   },
   {
     icon: 'shopping_bag',
-    tag: '02',
     title: 'Orders & tasks',
-    body: 'Break an order into steps like cutting, sewing, and finishing. Assign each step to a worker and watch it move along.',
+    body: 'Split an order into cutting, stitching, embroidery, and finishing. Assign each step to a worker and watch it move across the board.',
+    span: 7,
   },
   {
     icon: 'receipt_long',
-    tag: '03',
     title: 'Invoices, receipts & payments',
-    body: 'Bill in any currency you like. See what is paid and what is still owed. Hand over a clean receipt when the customer picks up.',
+    body: 'Bill in naira or any currency you choose, track what is paid against what is owed, and hand over a clean receipt at pickup.',
+    span: 4,
   },
   {
     icon: 'inventory_2',
-    tag: '04',
     title: 'Inventory',
-    body: 'Know what fabric and trims you have left, with a warning before you run out.',
+    body: 'Know what fabric and trims are on the shelf, with low-stock alerts, before you promise a delivery date you cannot keep.',
+    span: 4,
   },
   {
     icon: 'event',
-    tag: '05',
     title: 'Appointments',
-    body: 'Book fittings and pickups around your real shop hours. Customers get a reminder so they do not forget.',
+    body: 'Book fittings and collections against your real shop hours, with reminders that reach the customer before they forget.',
+    span: 4,
   },
   {
     icon: 'bar_chart',
-    tag: '06',
     title: 'Reports',
-    body: 'See today\u2019s orders and payments at a glance, plus how the whole month is going.',
+    body: 'See today\u2019s orders, today\u2019s payments, and the monthly numbers that tell you how the shop is actually doing.',
+    span: 6,
   },
   {
     icon: 'photo_library',
-    tag: '07',
     title: 'Gallery & portfolio',
-    body: 'Take photos of finished work and share a link customers can browse before they choose a style.',
+    body: 'Photograph finished pieces and publish a branded portfolio link clients can browse before they choose a style.',
+    span: 6,
   },
   {
     icon: 'smart_toy',
-    tag: '08',
     title: 'Pady, the AI agent',
-    body: 'Just ask, in plain language — like who owes you money this week, or when you last measured a customer.',
+    body: 'Ask in plain language for anything above: this week\u2019s dues, a customer\u2019s last measurements, or a stock count.',
+    span: 12,
+    featured: true,
   },
 ]
 
@@ -77,47 +78,49 @@ const SHOWCASE_TABS = [
     key: 'dashboard',
     label: 'Dashboard',
     title: 'The whole shop, on one screen',
-    body: 'Open the app and see what is due today, what is late, and what just came in. No more keeping it all in your head.',
-    image: '/images/landing/screen-dashboard.png',
+    body: 'Open the app and see what is due today, what is overdue, and what just came in. No more carrying it all in your head.',
+    image: '/landingPageImages/screen-dashboard.png',
   },
   {
     key: 'orders',
     label: 'Orders',
     title: 'Track every order from cut to collection',
-    body: 'Move an order step by step: cutting, sewing, finishing. Everyone on your team knows exactly where it is at.',
-    image: '/images/landing/screen-orders.png',
+    body: 'Move an order through cutting, stitching, and finishing. Everyone on your team knows exactly what stage it is at.',
+    image: '/landingPageImages/screen-orders.png',
   },
   {
     key: 'invoices',
     label: 'Invoices',
     title: 'Bill and get paid without the back and forth',
-    body: 'Create a bill in your own currency, send it on WhatsApp, and mark it paid the moment the money lands.',
-    image: '/images/landing/screen-invoices.png',
+    body: 'Generate a branded invoice in your currency, share it on WhatsApp, and mark it paid the moment money lands.',
+    image: '/landingPageImages/screen-invoices.png',
   },
   {
     key: 'portfolio',
     label: 'Portfolio',
     title: 'A lookbook clients can find on their own',
-    body: 'Snap a photo of every finished outfit. Customers can browse your work before they order.',
-    image: '/images/landing/screen-portfolio.png',
+    body: 'Every finished piece you photograph becomes part of a public portfolio page, complete with approved reviews.',
+    image: '/landingPageImages/screen-portfolio.png',
   },
 ]
+
+const HERO_SCREENS = SHOWCASE_TABS.map(tab => tab.image)
 
 const STEPS = [
   {
     n: '01',
     title: 'Set up your shop',
-    body: 'Add your shop name, address, and workers. Takes a few minutes. Nothing to install.',
+    body: 'Add your shop name, address, currency, and workers. It takes a few minutes and there is nothing to install.',
   },
   {
     n: '02',
     title: 'Bring in your customers',
-    body: 'Enter your customers and their measurements once. You will never measure from scratch again.',
+    body: 'Enter your existing clients and their measurements once. You will never re-measure from scratch again.',
   },
   {
     n: '03',
-    title: 'Run your shop from TailorPady',
-    body: 'Take orders, assign work, send bills, and check reports, all from one place, on your phone or tablet.',
+    title: 'Run the shop from TailorPady',
+    body: 'Take orders, assign tasks, bill, and report from one place, on the counter tablet or your phone in the back room.',
   },
 ]
 
@@ -140,6 +143,18 @@ const TESTIMONIALS = [
     name: 'Ifeoma K.',
     role: 'Fashion designer, Enugu',
   },
+  {
+    quote:
+      'My workers know exactly what stage every order is at without asking me. That alone was worth switching.',
+    name: 'Chinedu M.',
+    role: 'Shop owner, Aba',
+  },
+  {
+    quote:
+      'Clients love that I can pull up their measurements from two years ago in seconds. It makes us look serious.',
+    name: 'Blessing U.',
+    role: 'Fashion designer, Abuja',
+  },
 ]
 
 const PLANS = [
@@ -147,7 +162,7 @@ const PLANS = [
     name: 'Free',
     price: '₦0',
     period: 'forever',
-    tagline: 'Everything a small shop needs to get off paper.',
+    tagline: 'Everything a one-person shop needs to get off paper.',
     features: [
       'Up to 15 customers',
       'Full body & cloth measurements',
@@ -180,19 +195,19 @@ const PLANS = [
 const FAQ_PREVIEW = [
   {
     q: 'Does TailorPady work without internet?',
-    a: 'Yes. It works fully offline and updates itself the moment you are back online.',
+    a: 'Yes. It runs fully offline and syncs to the cloud automatically the moment you are back online.',
   },
   {
     q: 'Can I customise my invoices and receipts?',
-    a: 'Yes, for everyone, for free. Pick a template and add your bank details in Settings.',
+    a: 'Yes, for everyone, for free. Choose a template and set your bank details and footer message in Settings.',
   },
   {
     q: 'What does the AI assistant actually do?',
-    a: 'Pady can write receipts, invoices, and birthday messages for you, and remind you before an order is late.',
+    a: 'Pady can draft receipts, invoices, and birthday messages, and remind you before an order slips.',
   },
   {
     q: 'How many invoices can I send on the free plan?',
-    a: 'You get 10 invoices, 10 receipts, and 20 active orders a month for free. Pro removes every limit.',
+    a: 'Up to 10 invoices and 10 receipts a month, alongside 20 active orders. Pro removes every limit.',
   },
 ]
 
@@ -302,11 +317,11 @@ function useTheme() {
   return [theme, toggleTheme]
 }
 
-function Reveal({ as: Tag = 'div', children, className = '', delay = 0, ...rest }) {
+function Reveal({ as: Tag = 'div', children, className = '', delay = 0, style, ...rest }) {
   const [ref, inView] = useInView()
   const combined = `${styles.reveal} ${inView ? styles.revealVisible : ''} ${className}`.trim()
   return (
-    <Tag ref={ref} className={combined} style={{ '--reveal-delay': `${delay}ms` }} {...rest}>
+    <Tag ref={ref} className={combined} style={{ '--reveal-delay': `${delay}ms`, ...style }} {...rest}>
       {children}
     </Tag>
   )
@@ -504,17 +519,36 @@ function SiteNav({ onNavigate, theme, onToggleTheme }) {
 }
 
 function PhoneMockup() {
+  const [index, setIndex] = useState(0)
+
+  useEffect(() => {
+    const id = setInterval(() => {
+      setIndex(prev => (prev + 1) % HERO_SCREENS.length)
+    }, 3200)
+    return () => clearInterval(id)
+  }, [])
+
   return (
     <div className={styles.phone}>
-      <div className={styles.phoneNotch} />
       <div className={styles.phoneScreen}>
-        <img
-          src="/images/landing/hero-dashboard.png"
-          alt="TailorPady dashboard on a phone"
-          className={styles.phoneImage}
-          loading="lazy"
-        />
+        <div
+          className={styles.phoneCarouselTrack}
+          style={{ transform: `translateX(-${index * 100}%)` }}
+        >
+          {HERO_SCREENS.map(src => (
+            <img key={src} src={src} alt="TailorPady app screen" className={styles.phoneCarouselSlide} loading="lazy" />
+          ))}
+        </div>
+        <div className={styles.phoneCarouselDots}>
+          {HERO_SCREENS.map((src, i) => (
+            <span
+              key={src}
+              className={`${styles.phoneCarouselDot} ${i === index ? styles.phoneCarouselDotActive : ''}`}
+            />
+          ))}
+        </div>
       </div>
+      <img src="/landingPageImages/phone-frame.png" alt="" className={styles.phoneFrameImage} />
     </div>
   )
 }
@@ -524,9 +558,9 @@ function Hero({ onNavigate }) {
     <section className={styles.hero}>
       <div className={styles.heroCopy}>
         <h1 className={styles.heroTitle}>
-          Run your tailoring shop
+          The operating system
           <br />
-          from your phone.
+          for your tailoring shop.
         </h1>
         <p className={styles.heroBody}>
           Manage your tailoring business without the paperwork.
@@ -577,16 +611,32 @@ function SectionHeading({ eyebrow, title, align = 'left' }) {
 function Features() {
   return (
     <section id="features" className={styles.features}>
-      <SectionHeading eyebrow="Features" title="Everything your shop needs, in one app" />
+      <SectionHeading eyebrow="Features" title="Everything the counter, the workshop, and the books need" />
       <div className={styles.featureGrid}>
         {FEATURES.map((f, i) => (
-          <Reveal key={f.title} as="div" className={styles.featureCard} delay={(i % 4) * 60}>
-            <div className={styles.featureCardTop}>
-              <span className={`mi ${styles.featureIcon}`}>{f.icon}</span>
-              <span className={styles.featureTag}>{f.tag}</span>
-            </div>
-            <h3 className={styles.featureTitle}>{f.title}</h3>
-            <p className={styles.featureBody}>{f.body}</p>
+          <Reveal
+            key={f.title}
+            as="div"
+            className={`${styles.featureCard} ${f.featured ? styles.featureCardFeatured : ''}`}
+            style={{ '--span': f.span }}
+            delay={(i % 3) * 70}
+          >
+            {f.featured ? (
+              <div className={styles.featureFeaturedInner}>
+                <span className={`mi ${styles.featureIcon} ${styles.featureIconFeatured}`}>{f.icon}</span>
+                <div className={styles.featureFeaturedText}>
+                  <h3 className={styles.featureTitle}>{f.title}</h3>
+                  <p className={styles.featureBody}>{f.body}</p>
+                </div>
+                <span className={styles.featuredBadge}>AI</span>
+              </div>
+            ) : (
+              <>
+                <span className={`mi ${styles.featureIcon}`}>{f.icon}</span>
+                <h3 className={styles.featureTitle}>{f.title}</h3>
+                <p className={styles.featureBody}>{f.body}</p>
+              </>
+            )}
           </Reveal>
         ))}
       </div>
@@ -641,7 +691,7 @@ function ProductShowcase() {
 function HowItWorks() {
   return (
     <section id="how" className={styles.how}>
-      <SectionHeading eyebrow="How it works" title="Three simple steps to get started" />
+      <SectionHeading eyebrow="How it works" title="Three steps to run your shop on TailorPady" />
       <div className={styles.stepGrid}>
         {STEPS.map((s, i) => (
           <Reveal key={s.n} as="div" className={styles.step} delay={i * 100}>
@@ -656,19 +706,28 @@ function HowItWorks() {
 }
 
 function Testimonials() {
+  const loop = [...TESTIMONIALS, ...TESTIMONIALS]
+
   return (
     <section id="reviews" className={styles.reviews}>
-      <SectionHeading eyebrow="Shops using TailorPady" title="What shop owners say" align="center" />
-      <div className={styles.reviewGrid}>
-        {TESTIMONIALS.map((t, i) => (
-          <Reveal key={t.name} as="figure" className={styles.reviewCard} delay={i * 100}>
-            <blockquote className={styles.reviewQuote}>{t.quote}</blockquote>
-            <figcaption className={styles.reviewMeta}>
-              <span className={styles.reviewName}>{t.name}</span>
-              <span className={styles.reviewRole}>{t.role}</span>
-            </figcaption>
-          </Reveal>
-        ))}
+      <div className={styles.reviewsInner}>
+        <SectionHeading eyebrow="Shops using TailorPady" title="What shop owners say" align="center" />
+      </div>
+      <div className={styles.marqueeViewport}>
+        <div className={styles.marqueeTrack}>
+          {loop.map((t, i) => (
+            <figure className={styles.reviewCard} key={`${t.name}-${i}`}>
+              <blockquote className={styles.reviewQuote}>{t.quote}</blockquote>
+              <figcaption className={styles.reviewMeta}>
+                <span className={styles.reviewAvatar}>{t.name.charAt(0)}</span>
+                <span className={styles.reviewMetaText}>
+                  <span className={styles.reviewName}>{t.name}</span>
+                  <span className={styles.reviewRole}>{t.role}</span>
+                </span>
+              </figcaption>
+            </figure>
+          ))}
+        </div>
       </div>
     </section>
   )
@@ -717,16 +776,33 @@ function PricingTeaser({ onNavigate }) {
 }
 
 function FAQPreview() {
+  const [openIndex, setOpenIndex] = useState(0)
+
   return (
     <section id="faq" className={styles.faq}>
       <SectionHeading eyebrow="Questions" title="Answers before you ask" />
-      <div className={styles.faqGrid}>
-        {FAQ_PREVIEW.map((item, i) => (
-          <Reveal key={item.q} as="div" className={styles.faqCard} delay={(i % 2) * 80}>
-            <h3 className={styles.faqQ}>{item.q}</h3>
-            <p className={styles.faqA}>{item.a}</p>
-          </Reveal>
-        ))}
+      <div className={styles.faqList}>
+        {FAQ_PREVIEW.map((item, i) => {
+          const isOpen = openIndex === i
+          return (
+            <Reveal as="div" key={item.q} className={styles.faqItem} delay={(i % 2) * 60}>
+              <button
+                type="button"
+                className={styles.faqTrigger}
+                aria-expanded={isOpen}
+                onClick={() => setOpenIndex(isOpen ? -1 : i)}
+              >
+                <span className={styles.faqQ}>{item.q}</span>
+                <span className={`mi ${styles.faqIcon} ${isOpen ? styles.faqIconOpen : ''}`}>add</span>
+              </button>
+              <div className={`${styles.faqPanel} ${isOpen ? styles.faqPanelOpen : ''}`}>
+                <div className={styles.faqPanelInner}>
+                  <p className={styles.faqA}>{item.a}</p>
+                </div>
+              </div>
+            </Reveal>
+          )
+        })}
       </div>
       <Link to="/faq" className={styles.faqMore}>
         See all questions
@@ -741,7 +817,7 @@ function FinalCTA({ onNavigate }) {
     <section className={styles.cta}>
       <Reveal as="div" className={styles.ctaInner}>
         <MonoLabel>Ready when you are</MonoLabel>
-        <h2 className={styles.ctaTitle}>Run your whole shop from one app</h2>
+        <h2 className={styles.ctaTitle}>Run your shop from one screen</h2>
         <p className={styles.ctaBody}>Set up your shop in minutes. No card required to start.</p>
         <button type="button" className={styles.ctaButton} onClick={() => onNavigate('/signup')}>
           Start free
@@ -759,7 +835,7 @@ function SiteFooter() {
           <div className={styles.footerBrand}>
             <span className={styles.footerLogo}>TailorPady</span>
             <p className={styles.footerTagline}>
-              Track orders, measurements, and payments for your tailoring shop or boutique.
+              Order, measurement, and payment tracking for tailoring shops and boutiques.
             </p>
           </div>
           <div className={styles.footerColumns}>
