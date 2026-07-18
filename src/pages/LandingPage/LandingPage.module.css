@@ -558,7 +558,7 @@
 .heroTitle {
   font-family: var(--display);
   font-weight: 700;
-  font-size: clamp(1.9rem, 4.4vw + 0.9rem, 3.2rem);
+  font-size: clamp(2.6rem, 4.4vw + 1rem, 3.5rem);
   line-height: 1.12;
   letter-spacing: -0.02em;
   margin: 0 0 20px;
@@ -566,7 +566,7 @@
 }
 
 .heroBody {
-  font-size: clamp(15px, 0.6vw + 13.5px, 17px);
+  font-size: clamp(12px, 0.6vw + 13.5px, 17px);
   line-height: 1.65;
   color: var(--muted);
   max-width: 46ch;
@@ -1501,6 +1501,9 @@
   .footerColumns {
     flex-direction: column;
     gap: 28px;
+  }
+  .heroTitle{
+    padding-top: 55px;
   }
 }
 

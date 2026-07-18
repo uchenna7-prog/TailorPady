@@ -559,7 +559,6 @@ function Hero({ onNavigate }) {
       <div className={styles.heroCopy}>
         <h1 className={styles.heroTitle}>
           The operating system
-          <br />
           for your tailoring shop.
         </h1>
         <p className={styles.heroBody}>
