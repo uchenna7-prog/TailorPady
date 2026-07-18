@@ -16,10 +16,10 @@ const NAV_LINKS = [
 
 const SECTION_IDS = NAV_LINKS.map(link => link.href.slice(1))
 
-const HERO_STATS = [
-  { value: '5+', label: 'Tailors' },
-  { value: '100%', label: 'Offline-first' },
-  { value: '₦0', label: 'To get started' },
+const ABOUT_STATS = [
+  { value: '5+', label: 'Tailors signed up' },
+  { value: '30+', label: 'Orders tracked' },
+  { value: '70+', label: 'Measurements stored' },
 ]
 
 const FEATURES = [
@@ -27,49 +27,41 @@ const FEATURES = [
     icon: 'people',
     title: 'Customers & measurements',
     body: 'Every client, every body measurement, every fit note, saved once and pulled up in seconds from any device in the shop.',
-    span: 5,
   },
   {
     icon: 'shopping_bag',
     title: 'Orders & tasks',
     body: 'Split an order into cutting, stitching, embroidery, and finishing. Assign each step to a worker and watch it move across the board.',
-    span: 7,
   },
   {
     icon: 'receipt_long',
     title: 'Invoices, receipts & payments',
     body: 'Bill in naira or any currency you choose, track what is paid against what is owed, and hand over a clean receipt at pickup.',
-    span: 4,
   },
   {
     icon: 'inventory_2',
     title: 'Inventory',
     body: 'Know what fabric and trims are on the shelf, with low-stock alerts, before you promise a delivery date you cannot keep.',
-    span: 4,
   },
   {
     icon: 'event',
     title: 'Appointments',
     body: 'Book fittings and collections against your real shop hours, with reminders that reach the customer before they forget.',
-    span: 4,
   },
   {
     icon: 'bar_chart',
     title: 'Reports',
     body: 'See today\u2019s orders, today\u2019s payments, and the monthly numbers that tell you how the shop is actually doing.',
-    span: 6,
   },
   {
     icon: 'photo_library',
     title: 'Gallery & portfolio',
     body: 'Photograph finished pieces and publish a branded portfolio link clients can browse before they choose a style.',
-    span: 6,
   },
   {
     icon: 'smart_toy',
     title: 'Pady, the AI agent',
     body: 'Ask in plain language for anything above: this week\u2019s dues, a customer\u2019s last measurements, or a stock count.',
-    span: 12,
     featured: true,
   },
 ]
@@ -80,7 +72,7 @@ const ABOUT_CONTENT = {
   body: 'TailorPady replaces the notebooks, WhatsApp chats, and loose paper slips most tailoring shops run on with a single place to manage customers, orders, payments, and everything in between.',
 }
 
-const ABOUT_POINTS = ['Built for African tailoring shops', 'Works offline first', 'No training required']
+const ABOUT_POINTS = ['Works offline first', 'No training required']
 
 const MISSION_STATEMENT =
   'We believe every tailoring shop deserves the same tools the big fashion houses already have.'
@@ -444,11 +436,11 @@ function useCountUp(value, inView, duration = 1400) {
   return display
 }
 
-function HeroStatValue({ value }) {
+function AboutStatValue({ value }) {
   const [ref, inView] = useInView(0.5)
   const display = useCountUp(value, inView)
   return (
-    <span ref={ref} className={styles.heroStatValue}>
+    <span ref={ref} className={styles.aboutStatValue}>
       {display}
     </span>
   )
@@ -629,19 +621,6 @@ function PhoneMockup() {
   )
 }
 
-function HeroStats() {
-  return (
-    <div className={styles.heroStats}>
-      {HERO_STATS.map((stat, i) => (
-        <Reveal key={stat.label} as="div" className={styles.heroStat} delay={i * 70}>
-          <HeroStatValue value={stat.value} />
-          <span className={styles.heroStatLabel}>{stat.label}</span>
-        </Reveal>
-      ))}
-    </div>
-  )
-}
-
 function Hero({ onNavigate }) {
   return (
     <section className={styles.hero}>
@@ -662,7 +641,6 @@ function Hero({ onNavigate }) {
             See the app
           </a>
         </div>
-        <HeroStats />
       </div>
 
       <div className={styles.heroVisual}>
@@ -687,15 +665,14 @@ function SectionHeading({ eyebrow, title, align = 'left' }) {
 function Features() {
   return (
     <section id="features" className={styles.features}>
-      <SectionHeading eyebrow="Features" title="Everything the counter, the workshop, and the books need" />
+      <SectionHeading eyebrow="Features" title="Every part of the shop, in one app" />
       <div className={styles.featureGrid}>
         {FEATURES.map((f, i) => (
           <Reveal
             key={f.title}
             as="div"
             className={`${styles.featureCard} ${f.featured ? styles.featureCardFeatured : ''}`}
-            style={{ '--span': f.span }}
-            delay={(i % 3) * 70}
+            delay={(i % 4) * 60}
           >
             {f.featured ? (
               <div className={styles.featureFeaturedInner}>
@@ -723,18 +700,28 @@ function Features() {
 function AboutApp() {
   return (
     <section id="about" className={styles.about}>
-      <div className={styles.aboutInner}>
-        <SectionHeading eyebrow={ABOUT_CONTENT.eyebrow} title={ABOUT_CONTENT.title} align="center" />
+      <div className={styles.aboutText}>
+        <SectionHeading eyebrow={ABOUT_CONTENT.eyebrow} title={ABOUT_CONTENT.title} />
         <Reveal as="p" className={styles.aboutBody} delay={60}>
           {ABOUT_CONTENT.body}
         </Reveal>
-        <Reveal as="div" className={styles.aboutPoints} delay={120}>
+        <Reveal as="ul" className={styles.aboutChecklist} delay={120}>
           {ABOUT_POINTS.map(point => (
-            <span key={point} className={styles.aboutPoint}>
+            <li key={point} className={styles.aboutChecklistItem}>
+              <span className={`mi ${styles.aboutCheckIcon}`}>check_circle</span>
               {point}
-            </span>
+            </li>
           ))}
         </Reveal>
+      </div>
+
+      <div className={styles.aboutStats}>
+        {ABOUT_STATS.map((stat, i) => (
+          <Reveal key={stat.label} as="div" className={styles.aboutStat} delay={180 + i * 70}>
+            <AboutStatValue value={stat.value} />
+            <span className={styles.aboutStatLabel}>{stat.label}</span>
+          </Reveal>
+        ))}
       </div>
     </section>
   )
@@ -947,8 +934,10 @@ function FinalCTA({ onNavigate }) {
     <section className={styles.cta}>
       <Reveal as="div" className={styles.ctaInner}>
         <MonoLabel>Ready when you are</MonoLabel>
-        <h2 className={styles.ctaTitle}>Run your shop from one screen</h2>
-        <p className={styles.ctaBody}>Set up your shop in minutes. No card required to start.</p>
+        <h2 className={styles.ctaTitle}>Give your shop the system it deserves</h2>
+        <p className={styles.ctaBody}>
+          Join tailors moving off paper and WhatsApp. Free to start, no card required.
+        </p>
         <button type="button" className={styles.ctaButton} onClick={() => onNavigate('/signup')}>
           Start free
         </button>
