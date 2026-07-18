@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom'
 import { useInstall } from '../../contexts/InstallContext'
 import styles from './LandingPage.module.css'
 
+
 const THEME_STORAGE_KEY = 'tailorpady-theme'
 
 const NAV_LINKS = [
@@ -15,10 +16,10 @@ const NAV_LINKS = [
 
 const SECTION_IDS = NAV_LINKS.map(link => link.href.slice(1))
 
-const TRUST_STATS = [
-  { value: '<10 min', label: 'To set up your shop' },
-  { value: '0', label: 'Measurements lost to paper' },
-  { value: '24/7', label: 'Offline access, always synced' },
+const HERO_STATS = [
+  { value: '5+', label: 'Tailors' },
+  { value: '100%', label: 'Offline-first' },
+  { value: '₦0', label: 'To get started' },
 ]
 
 const FEATURES = [
@@ -93,28 +94,48 @@ const SHOWCASE_TABS = [
     label: 'Dashboard',
     title: 'The whole shop, on one screen',
     body: 'Open the app and see what is due today, what is overdue, and what just came in. No more carrying it all in your head.',
-    image: '/landingPageImages/screen-dashboard.png',
+    image: '/landingPageImages/screen-dashboard.jpg',
+  },
+  {
+    key: 'customers',
+    label: 'Customers',
+    title: 'Manage your customer base',
+    body: 'Add and update customer information, including measurements and preferences. Keep all your client data in one place.',
+    image: '/landingPageImages/screen-customers.jpg',
+  },
+  {
+    key: 'customer details',
+    label: 'Customer details',
+    title: "View and edit customer details",
+    body: "Access a customer's profile to view their measurements, order history, and contact information. Make updates as needed.",
+    image: '/landingPageImages/screen-customer-details.jpg',
+  },
+  {
+    key: 'measurements',
+    label: 'Measurements',
+    title: 'View and edit customer measurements',
+    image: '/landingPageImages/screen-customer-measurements.jpg',
   },
   {
     key: 'orders',
     label: 'Orders',
     title: 'Track every order from cut to collection',
     body: 'Move an order through cutting, stitching, and finishing. Everyone on your team knows exactly what stage it is at.',
-    image: '/landingPageImages/screen-orders.png',
+    image: '/landingPageImages/screen-orders.jpg',
   },
   {
     key: 'invoices',
     label: 'Invoices',
     title: 'Bill and get paid without the back and forth',
     body: 'Generate a branded invoice in your currency, share it on WhatsApp, and mark it paid the moment money lands.',
-    image: '/landingPageImages/screen-invoices.png',
+    image: '/landingPageImages/screen-invoices.jpg',
   },
   {
-    key: 'portfolio',
-    label: 'Portfolio',
-    title: 'A lookbook clients can find on their own',
-    body: 'Every finished piece you photograph becomes part of a public portfolio page, complete with approved reviews.',
-    image: '/landingPageImages/screen-portfolio.png',
+    key: 'receipts',
+    label: 'Receipts',
+    title: 'Generate professional receipts',
+    body: 'Create and manage receipts for all transactions, ensuring transparency and compliance.',
+    image: '/landingPageImages/screen-receipts.jpg',
   },
 ]
 
@@ -423,11 +444,11 @@ function useCountUp(value, inView, duration = 1400) {
   return display
 }
 
-function TrustValue({ value }) {
+function HeroStatValue({ value }) {
   const [ref, inView] = useInView(0.5)
   const display = useCountUp(value, inView)
   return (
-    <span ref={ref} className={styles.trustValue}>
+    <span ref={ref} className={styles.heroStatValue}>
       {display}
     </span>
   )
@@ -608,6 +629,19 @@ function PhoneMockup() {
   )
 }
 
+function HeroStats() {
+  return (
+    <div className={styles.heroStats}>
+      {HERO_STATS.map((stat, i) => (
+        <Reveal key={stat.label} as="div" className={styles.heroStat} delay={i * 70}>
+          <HeroStatValue value={stat.value} />
+          <span className={styles.heroStatLabel}>{stat.label}</span>
+        </Reveal>
+      ))}
+    </div>
+  )
+}
+
 function Hero({ onNavigate }) {
   return (
     <section className={styles.hero}>
@@ -628,24 +662,12 @@ function Hero({ onNavigate }) {
             See the app
           </a>
         </div>
+        <HeroStats />
       </div>
 
       <div className={styles.heroVisual}>
         <PhoneMockup />
       </div>
-    </section>
-  )
-}
-
-function TrustBar() {
-  return (
-    <section className={styles.trustBar}>
-      {TRUST_STATS.map((stat, i) => (
-        <Reveal key={stat.label} as="div" className={styles.trustStat} delay={i * 90}>
-          <TrustValue value={stat.value} />
-          <span className={styles.trustLabel}>{stat.label}</span>
-        </Reveal>
-      ))}
     </section>
   )
 }
@@ -993,7 +1015,6 @@ export default function LandingPage() {
       <SiteNav onNavigate={goTo} theme={theme} onToggleTheme={toggleTheme} />
       <main className={styles.mainContent}>
         <Hero onNavigate={goTo} />
-        <TrustBar />
         <AboutApp />
         <Features />
         <ProductShowcase />
