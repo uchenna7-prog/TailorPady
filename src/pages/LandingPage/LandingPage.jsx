@@ -73,6 +73,20 @@ const FEATURES = [
   },
 ]
 
+const ABOUT_CONTENT = {
+  eyebrow: 'About TailorPady',
+  title: 'One app for the whole shop, from measurement to delivery',
+  body: 'TailorPady replaces the notebooks, WhatsApp chats, and loose paper slips most tailoring shops run on with a single place to manage customers, orders, payments, and everything in between.',
+}
+
+const ABOUT_POINTS = ['Built for African tailoring shops', 'Works offline first', 'No training required']
+
+const MISSION_STATEMENT =
+  'We believe every tailoring shop deserves the same tools the big fashion houses already have.'
+
+const MISSION_SUB =
+  'TailorPady exists to give independent tailors and designers a system that keeps up with their craft, so the business behind the stitches runs as smoothly as the stitches themselves.'
+
 const SHOWCASE_TABS = [
   {
     key: 'dashboard',
@@ -157,39 +171,80 @@ const TESTIMONIALS = [
   },
 ]
 
-const PLANS = [
-  {
-    name: 'Free',
-    price: '₦0',
-    period: 'forever',
-    tagline: 'Everything a one-person shop needs to get off paper.',
-    features: [
-      'Up to 15 customers',
-      'Full body & cloth measurements',
-      '20 active orders per month',
-      '10 invoices & 10 receipts per month',
-      'Basic branding',
-      '3 AI assistant actions per month',
-    ],
-    cta: 'Start free',
-    highlighted: false,
-  },
-  {
-    name: 'Pro',
-    price: '₦4,500',
-    period: 'per month',
-    tagline: 'For shops that have outgrown the free limits.',
-    features: [
-      'Unlimited customers & orders',
-      'Unlimited invoices & receipts',
-      'Full branding: logo, colours, signature',
-      'Unlimited portfolio uploads',
-      'Advanced payment tracking & reports',
-      'Unlimited AI assistant actions',
-    ],
-    cta: 'Go Pro',
-    highlighted: true,
-  },
+const FREE_FEATURES = [
+  { icon: 'group', label: 'Up to 15 customers' },
+  { icon: 'straighten', label: 'Full body & cloth measurements' },
+  { icon: 'receipt_long', label: '20 active orders / month' },
+  { icon: 'description', label: 'All invoice & receipt templates' },
+  { icon: 'print', label: '10 invoice + 10 receipt generations / month' },
+  { icon: 'palette', label: 'Basic branding customisation' },
+  { icon: 'photo_library', label: '15 portfolio uploads / month' },
+  { icon: 'link', label: 'Public portfolio link' },
+  { icon: 'star_rate', label: '5 review links / month' },
+  { icon: 'payments', label: 'Basic payment tracking' },
+  { icon: 'smart_toy', label: '3 AI assistant actions / month' },
+  { icon: 'cake', label: 'Birthday reminders' },
+]
+
+const PRO_FEATURES = [
+  { icon: 'all_inclusive', label: 'Unlimited customers' },
+  { icon: 'all_inclusive', label: 'Unlimited measurements' },
+  { icon: 'all_inclusive', label: 'Unlimited active orders' },
+  { icon: 'all_inclusive', label: 'Unlimited invoice & receipt generations' },
+  { icon: 'palette', label: 'Full branding — logo, colours, signature' },
+  { icon: 'account_balance', label: 'Bank details & T&Cs on every document' },
+  { icon: 'photo_library', label: 'Unlimited portfolio uploads' },
+  { icon: 'auto_awesome', label: 'Fully branded portfolio page' },
+  { icon: 'star', label: 'Unlimited review links' },
+  { icon: 'bar_chart', label: 'Advanced payment tracking & reports' },
+  { icon: 'smart_toy', label: 'Unlimited AI assistant actions' },
+  { icon: 'edit_note', label: 'Smart invoice auto-drafts' },
+  { icon: 'campaign', label: 'Customer re-engagement reminders' },
+  { icon: 'cloud', label: 'Expanded cloud storage' },
+]
+
+const FREE_PLAN = {
+  name: 'Free',
+  price: '₦0',
+  period: 'forever',
+  tagline: 'Everything a one-person shop needs to get off paper.',
+  features: FREE_FEATURES,
+  cta: 'Start free',
+  highlighted: false,
+}
+
+const PLANS_BY_BILLING = {
+  monthly: [
+    FREE_PLAN,
+    {
+      name: 'Pro',
+      price: '₦1,200',
+      period: 'per month',
+      tagline: 'For shops that have outgrown the free limits.',
+      features: PRO_FEATURES,
+      cta: 'Go Pro',
+      highlighted: true,
+    },
+  ],
+  yearly: [
+    FREE_PLAN,
+    {
+      name: 'Pro',
+      price: '₦9,999',
+      period: 'per year',
+      tagline: 'For shops that have outgrown the free limits.',
+      features: PRO_FEATURES,
+      cta: 'Go Pro',
+      highlighted: true,
+      badge: 'Save 31%',
+      subNote: '≈ ₦833 / month',
+    },
+  ],
+}
+
+const BILLING_TABS = [
+  { key: 'monthly', label: 'Monthly' },
+  { key: 'yearly', label: 'Yearly' },
 ]
 
 const FAQ_PREVIEW = [
@@ -452,7 +507,7 @@ function SiteNav({ onNavigate, theme, onToggleTheme }) {
     <header className={`${styles.nav} ${scrolled ? styles.navScrolled : ''}`}>
       <div className={styles.navInner}>
         <Link to="/" className={styles.logo}>
-          TailorPady
+          <span className={styles.logoMark}>TP</span>
         </Link>
 
         <nav className={styles.navLinks}>
@@ -643,6 +698,40 @@ function Features() {
   )
 }
 
+function AboutApp() {
+  return (
+    <section id="about" className={styles.about}>
+      <div className={styles.aboutInner}>
+        <SectionHeading eyebrow={ABOUT_CONTENT.eyebrow} title={ABOUT_CONTENT.title} align="center" />
+        <Reveal as="p" className={styles.aboutBody} delay={60}>
+          {ABOUT_CONTENT.body}
+        </Reveal>
+        <Reveal as="div" className={styles.aboutPoints} delay={120}>
+          {ABOUT_POINTS.map(point => (
+            <span key={point} className={styles.aboutPoint}>
+              {point}
+            </span>
+          ))}
+        </Reveal>
+      </div>
+    </section>
+  )
+}
+
+function Mission() {
+  return (
+    <section id="mission" className={styles.mission}>
+      <div className={styles.missionInner}>
+        <Reveal as="div">
+          <MonoLabel>Our mission</MonoLabel>
+          <p className={styles.missionStatement}>{MISSION_STATEMENT}</p>
+          <p className={styles.missionSub}>{MISSION_SUB}</p>
+        </Reveal>
+      </div>
+    </section>
+  )
+}
+
 function ProductShowcase() {
   const [active, setActive] = useState(SHOWCASE_TABS[0].key)
   const current = SHOWCASE_TABS.find(tab => tab.key === active)
@@ -733,13 +822,31 @@ function Testimonials() {
 }
 
 function PricingTeaser({ onNavigate }) {
+  const [billing, setBilling] = useState('monthly')
+  const plans = PLANS_BY_BILLING[billing]
+
   return (
     <section id="pricing" className={styles.pricing}>
       <SectionHeading eyebrow="Pricing" title="Start free, upgrade when the shop grows" align="center" />
+
+      <div className={styles.billingToggle}>
+        {BILLING_TABS.map(tab => (
+          <button
+            key={tab.key}
+            type="button"
+            className={`${styles.billingToggleBtn} ${billing === tab.key ? styles.billingToggleBtnActive : ''}`}
+            onClick={() => setBilling(tab.key)}
+          >
+            {tab.label}
+            {tab.key === 'yearly' && <span className={styles.billingToggleBadge}>Save 31%</span>}
+          </button>
+        ))}
+      </div>
+
       <div className={styles.pricingGrid}>
-        {PLANS.map((plan, i) => (
+        {plans.map((plan, i) => (
           <Reveal
-            key={plan.name}
+            key={`${plan.name}-${billing}`}
             as="div"
             className={`${styles.pricingCard} ${plan.highlighted ? styles.pricingCardHighlighted : ''}`}
             delay={i * 100}
@@ -749,14 +856,16 @@ function PricingTeaser({ onNavigate }) {
               <div className={styles.pricingPriceRow}>
                 <span className={styles.pricingPrice}>{plan.price}</span>
                 <span className={styles.pricingPeriod}>{plan.period}</span>
+                {plan.badge && <span className={styles.pricingCardBadge}>{plan.badge}</span>}
               </div>
+              {plan.subNote && <span className={styles.pricingSubNote}>{plan.subNote}</span>}
               <p className={styles.pricingTagline}>{plan.tagline}</p>
             </div>
             <ul className={styles.pricingList}>
               {plan.features.map(feature => (
-                <li key={feature} className={styles.pricingListItem}>
-                  <span className={`mi ${styles.pricingCheck}`}>check</span>
-                  {feature}
+                <li key={feature.label} className={styles.pricingListItem}>
+                  <span className={`mi ${styles.pricingCheck}`}>{feature.icon}</span>
+                  {feature.label}
                 </li>
               ))}
             </ul>
@@ -832,7 +941,7 @@ function SiteFooter() {
       <div className={styles.footerInner}>
         <div className={styles.footerTop}>
           <div className={styles.footerBrand}>
-            <span className={styles.footerLogo}>TailorPady</span>
+            <span className={styles.footerLogoMark}>TP</span>
             <p className={styles.footerTagline}>
               Order, measurement, and payment tracking for tailoring shops and boutiques.
             </p>
@@ -885,9 +994,11 @@ export default function LandingPage() {
       <main className={styles.mainContent}>
         <Hero onNavigate={goTo} />
         <TrustBar />
+        <AboutApp />
         <Features />
         <ProductShowcase />
         <HowItWorks />
+        <Mission />
         <Testimonials />
         <PricingTeaser onNavigate={goTo} />
         <FAQPreview />
