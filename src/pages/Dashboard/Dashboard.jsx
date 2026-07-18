@@ -342,10 +342,10 @@ function Dashboard({ onMenuClick, onGoToCustomer }) {
   })()
 
   const STAT_CARDS = [
-    { desktopIcon: 'shopping_bag',  value: activeOrders.length,        label: 'Active Orders',   sub: orderStatSub?.text       ?? null, subColor: orderStatSub?.color       ?? 'var(--text3)', route: '/orders',       tooltip: 'Orders that have not been delivered or completed yet.' },
-    { desktopIcon: 'receipt_long',  value: zeroPaymentInvoices.length, label: 'Unpaid Invoices', sub: invoiceStatSub?.text     ?? null, subColor: invoiceStatSub?.color     ?? 'var(--text3)', route: '/invoices',    tooltip: 'Only invoices with no payment recorded yet.' },
-    { desktopIcon: 'event',         value: todayAppointmentCount,      label: "Today's Appts",   sub: appointmentStatSub?.text ?? null, subColor: appointmentStatSub?.color ?? 'var(--text3)', route: '/appointments', tooltip: 'Appointments scheduled for today.' },
-    { desktopIcon: 'task_alt',      value: pendingTasks.length,        label: 'Pending Tasks',   sub: taskStatSub?.text        ?? null, subColor: taskStatSub?.color        ?? 'var(--text3)', route: '/tasks',        tooltip: 'Tasks that are not yet marked done.' },
+    { desktopIcon: 'shopping_bag',  value: activeOrders.length,        label: 'Active Orders',   sub: orderStatSub?.text       ?? null, subColor: orderStatSub?.color       ?? 'var(--text3)', route: '/orders',       },
+    { desktopIcon: 'receipt_long',  value: zeroPaymentInvoices.length, label: 'Unpaid Invoices', sub: invoiceStatSub?.text     ?? null, subColor: invoiceStatSub?.color     ?? 'var(--text3)', route: '/invoices',     },
+    { desktopIcon: 'event',         value: todayAppointmentCount,      label: "Today's Appts",   sub: appointmentStatSub?.text ?? null, subColor: appointmentStatSub?.color ?? 'var(--text3)', route: '/appointments',  },
+    { desktopIcon: 'task_alt',      value: pendingTasks.length,        label: 'Pending Tasks',   sub: taskStatSub?.text        ?? null, subColor: taskStatSub?.color        ?? 'var(--text3)', route: '/tasks',         },
   ]
 
   const recentActiveOrders   = activeOrders.slice(0, 3)

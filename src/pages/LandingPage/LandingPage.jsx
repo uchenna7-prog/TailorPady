@@ -13,6 +13,8 @@ const NAV_LINKS = [
   { href: '#faq', label: 'FAQ' },
 ]
 
+const SECTION_IDS = NAV_LINKS.map(link => link.href.slice(1))
+
 const TRUST_STATS = [
   { value: '9,400+', label: 'Orders tracked' },
   { value: '430+', label: 'Shops onboard' },
@@ -24,49 +26,49 @@ const FEATURES = [
     icon: 'people',
     tag: '01',
     title: 'Customers & measurements',
-    body: 'Every client, every body measurement, every fit note, saved once and pulled up in seconds from any device in the shop.',
+    body: 'Save every customer\u2019s measurements once. Find them again in seconds, on any device.',
   },
   {
     icon: 'shopping_bag',
     tag: '02',
     title: 'Orders & tasks',
-    body: 'Split an order into cutting, stitching, embroidery, and finishing. Assign each step to a worker and watch it move across the board.',
+    body: 'Break an order into steps like cutting, sewing, and finishing. Assign each step to a worker and watch it move along.',
   },
   {
     icon: 'receipt_long',
     tag: '03',
     title: 'Invoices, receipts & payments',
-    body: 'Bill in naira or any currency you choose, track what is paid against what is owed, and hand over a clean receipt at pickup.',
+    body: 'Bill in any currency you like. See what is paid and what is still owed. Hand over a clean receipt when the customer picks up.',
   },
   {
     icon: 'inventory_2',
     tag: '04',
     title: 'Inventory',
-    body: 'Know what fabric and trims are on the shelf, with low-stock alerts, before you promise a delivery date you cannot keep.',
+    body: 'Know what fabric and trims you have left, with a warning before you run out.',
   },
   {
     icon: 'event',
     tag: '05',
     title: 'Appointments',
-    body: 'Book fittings and collections against your real shop hours, with reminders that reach the customer before they forget.',
+    body: 'Book fittings and pickups around your real shop hours. Customers get a reminder so they do not forget.',
   },
   {
     icon: 'bar_chart',
     tag: '06',
     title: 'Reports',
-    body: 'See today\u2019s orders, today\u2019s payments, and the monthly numbers that tell you how the shop is actually doing.',
+    body: 'See today\u2019s orders and payments at a glance, plus how the whole month is going.',
   },
   {
     icon: 'photo_library',
     tag: '07',
     title: 'Gallery & portfolio',
-    body: 'Photograph finished pieces and publish a branded portfolio link clients can browse before they choose a style.',
+    body: 'Take photos of finished work and share a link customers can browse before they choose a style.',
   },
   {
     icon: 'smart_toy',
     tag: '08',
     title: 'Pady, the AI agent',
-    body: 'Ask in plain language for anything above: this week\u2019s dues, a customer\u2019s last measurements, or a stock count.',
+    body: 'Just ask, in plain language — like who owes you money this week, or when you last measured a customer.',
   },
 ]
 
@@ -75,28 +77,28 @@ const SHOWCASE_TABS = [
     key: 'dashboard',
     label: 'Dashboard',
     title: 'The whole shop, on one screen',
-    body: 'Open the app and see what is due today, what is overdue, and what just came in. No more carrying it all in your head.',
+    body: 'Open the app and see what is due today, what is late, and what just came in. No more keeping it all in your head.',
     image: '/images/landing/screen-dashboard.png',
   },
   {
     key: 'orders',
     label: 'Orders',
     title: 'Track every order from cut to collection',
-    body: 'Move an order through cutting, stitching, and finishing. Everyone on your team knows exactly what stage it is at.',
+    body: 'Move an order step by step: cutting, sewing, finishing. Everyone on your team knows exactly where it is at.',
     image: '/images/landing/screen-orders.png',
   },
   {
     key: 'invoices',
     label: 'Invoices',
     title: 'Bill and get paid without the back and forth',
-    body: 'Generate a branded invoice in your currency, share it on WhatsApp, and mark it paid the moment money lands.',
+    body: 'Create a bill in your own currency, send it on WhatsApp, and mark it paid the moment the money lands.',
     image: '/images/landing/screen-invoices.png',
   },
   {
     key: 'portfolio',
     label: 'Portfolio',
     title: 'A lookbook clients can find on their own',
-    body: 'Every finished piece you photograph becomes part of a public portfolio page, complete with approved reviews.',
+    body: 'Snap a photo of every finished outfit. Customers can browse your work before they order.',
     image: '/images/landing/screen-portfolio.png',
   },
 ]
@@ -105,17 +107,17 @@ const STEPS = [
   {
     n: '01',
     title: 'Set up your shop',
-    body: 'Add your shop name, address, currency, and workers. It takes a few minutes and there is nothing to install.',
+    body: 'Add your shop name, address, and workers. Takes a few minutes. Nothing to install.',
   },
   {
     n: '02',
     title: 'Bring in your customers',
-    body: 'Enter your existing clients and their measurements once. You will never re-measure from scratch again.',
+    body: 'Enter your customers and their measurements once. You will never measure from scratch again.',
   },
   {
     n: '03',
-    title: 'Run the shop from TailorPady',
-    body: 'Take orders, assign tasks, bill, and report from one place, on the counter tablet or your phone in the back room.',
+    title: 'Run your shop from TailorPady',
+    body: 'Take orders, assign work, send bills, and check reports, all from one place, on your phone or tablet.',
   },
 ]
 
@@ -145,7 +147,7 @@ const PLANS = [
     name: 'Free',
     price: '₦0',
     period: 'forever',
-    tagline: 'Everything a one-person shop needs to get off paper.',
+    tagline: 'Everything a small shop needs to get off paper.',
     features: [
       'Up to 15 customers',
       'Full body & cloth measurements',
@@ -178,19 +180,19 @@ const PLANS = [
 const FAQ_PREVIEW = [
   {
     q: 'Does TailorPady work without internet?',
-    a: 'Yes. It runs fully offline and syncs to the cloud automatically the moment you are back online.',
+    a: 'Yes. It works fully offline and updates itself the moment you are back online.',
   },
   {
     q: 'Can I customise my invoices and receipts?',
-    a: 'Yes, for everyone, for free. Choose a template and set your bank details and footer message in Settings.',
+    a: 'Yes, for everyone, for free. Pick a template and add your bank details in Settings.',
   },
   {
     q: 'What does the AI assistant actually do?',
-    a: 'Pady can draft receipts, invoices, and birthday messages, and remind you before an order slips.',
+    a: 'Pady can write receipts, invoices, and birthday messages for you, and remind you before an order is late.',
   },
   {
     q: 'How many invoices can I send on the free plan?',
-    a: 'Up to 10 invoices and 10 receipts a month, alongside 20 active orders. Pro removes every limit.',
+    a: 'You get 10 invoices, 10 receipts, and 20 active orders a month for free. Pro removes every limit.',
   },
 ]
 
@@ -249,6 +251,31 @@ function useInView(threshold = 0.15) {
   }, [threshold])
 
   return [ref, inView]
+}
+
+function useActiveSection(ids) {
+  const [active, setActive] = useState(null)
+
+  useEffect(() => {
+    const elements = ids.map(id => document.getElementById(id)).filter(Boolean)
+    if (!elements.length) return
+
+    const observer = new IntersectionObserver(
+      entries => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            setActive(entry.target.id)
+          }
+        })
+      },
+      { rootMargin: '-45% 0px -50% 0px', threshold: 0 }
+    )
+
+    elements.forEach(el => observer.observe(el))
+    return () => observer.disconnect()
+  }, [ids])
+
+  return active
 }
 
 function useTheme() {
@@ -340,7 +367,7 @@ function MonoLabel({ children }) {
   return <span className={styles.monoLabel}>{children}</span>
 }
 
-function InstallButton() {
+function InstallButton({ className, fullWidth }) {
   const install = useInstall()
   const [showIOSHint, setShowIOSHint] = useState(false)
 
@@ -358,8 +385,8 @@ function InstallButton() {
   }
 
   return (
-    <div className={styles.installWrap}>
-      <button type="button" className={styles.installButton} onClick={handleClick}>
+    <div className={`${styles.installWrap} ${fullWidth ? styles.installWrapFull : ''}`}>
+      <button type="button" className={`${styles.installButton} ${className || ''}`} onClick={handleClick}>
         <span className="mi" style={{ fontSize: '1.05rem' }}>install_mobile</span>
         Install app
       </button>
@@ -397,6 +424,7 @@ function ThemeToggle({ theme, onToggle }) {
 function SiteNav({ onNavigate, theme, onToggleTheme }) {
   const [open, setOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
+  const activeSection = useActiveSection(SECTION_IDS)
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 12)
@@ -413,32 +441,44 @@ function SiteNav({ onNavigate, theme, onToggleTheme }) {
         </Link>
 
         <nav className={styles.navLinks}>
-          {NAV_LINKS.map(link => (
-            <a key={link.href} href={link.href}>
-              {link.label}
-            </a>
-          ))}
+          {NAV_LINKS.map(link => {
+            const id = link.href.slice(1)
+            const isActive = id === activeSection
+            return (
+              <a key={link.href} href={link.href} className={isActive ? styles.navLinkActive : ''}>
+                <span className={styles.navLinkIndicator} />
+                {link.label}
+              </a>
+            )
+          })}
         </nav>
 
         <div className={styles.navActions}>
-          <ThemeToggle theme={theme} onToggle={onToggleTheme} />
-          <Link to="/login" className={styles.navLogin}>
-            Log in
-          </Link>
-          <InstallButton />
-          <button type="button" className={styles.navCta} onClick={() => onNavigate('/signup')}>
-            Start free
-          </button>
+          <div className={styles.navUtility}>
+            <ThemeToggle theme={theme} onToggle={onToggleTheme} />
+            <InstallButton />
+          </div>
+          <div className={styles.navButtonGroup}>
+            <Link to="/login" className={styles.navLogin}>
+              Log in
+            </Link>
+            <button type="button" className={styles.navCta} onClick={() => onNavigate('/signup')}>
+              Start free
+            </button>
+          </div>
         </div>
 
-        <button
-          type="button"
-          className={styles.navMenuButton}
-          onClick={() => setOpen(prev => !prev)}
-          aria-label="Toggle menu"
-        >
-          <span className="mi">{open ? 'close' : 'menu'}</span>
-        </button>
+        <div className={styles.navMobileTrigger}>
+          <ThemeToggle theme={theme} onToggle={onToggleTheme} />
+          <button
+            type="button"
+            className={styles.navMenuButton}
+            onClick={() => setOpen(prev => !prev)}
+            aria-label="Toggle menu"
+          >
+            <span className="mi">{open ? 'close' : 'menu'}</span>
+          </button>
+        </div>
       </div>
 
       {open && (
@@ -449,9 +489,8 @@ function SiteNav({ onNavigate, theme, onToggleTheme }) {
             </a>
           ))}
           <div className={styles.navMobileActions}>
-            <ThemeToggle theme={theme} onToggle={onToggleTheme} />
-            <InstallButton />
-            <Link to="/login" className={styles.navLogin}>
+            <InstallButton className={styles.navMobileFullButton} fullWidth />
+            <Link to="/login" className={styles.navLoginMobile}>
               Log in
             </Link>
             <button type="button" className={styles.navCta} onClick={() => onNavigate('/signup')}>
@@ -484,15 +523,14 @@ function Hero({ onNavigate }) {
   return (
     <section className={styles.hero}>
       <div className={styles.heroCopy}>
-        <MonoLabel>Tailoring shop management</MonoLabel>
         <h1 className={styles.heroTitle}>
-          The operating system
+          Run your tailoring shop
           <br />
-          for your tailoring shop.
+          from your phone.
         </h1>
         <p className={styles.heroBody}>
-          TailorPady replaces the notebook on your counter with customer records, order
-          tracking, invoicing, and reports built for how a tailoring shop actually runs.
+          Manage your tailoring business without the paperwork.
+          Spend less time managing and more time sewing.
         </p>
         <div className={styles.heroActions}>
           <button type="button" className={styles.primaryButton} onClick={() => onNavigate('/signup')}>
@@ -539,7 +577,7 @@ function SectionHeading({ eyebrow, title, align = 'left' }) {
 function Features() {
   return (
     <section id="features" className={styles.features}>
-      <SectionHeading eyebrow="What it does" title="Everything the counter, the workshop, and the books need" />
+      <SectionHeading eyebrow="Features" title="Everything your shop needs, in one app" />
       <div className={styles.featureGrid}>
         {FEATURES.map((f, i) => (
           <Reveal key={f.title} as="div" className={styles.featureCard} delay={(i % 4) * 60}>
@@ -603,7 +641,7 @@ function ProductShowcase() {
 function HowItWorks() {
   return (
     <section id="how" className={styles.how}>
-      <SectionHeading eyebrow="How it works" title="Three steps to run your shop on TailorPady" />
+      <SectionHeading eyebrow="How it works" title="Three simple steps to get started" />
       <div className={styles.stepGrid}>
         {STEPS.map((s, i) => (
           <Reveal key={s.n} as="div" className={styles.step} delay={i * 100}>
@@ -703,7 +741,7 @@ function FinalCTA({ onNavigate }) {
     <section className={styles.cta}>
       <Reveal as="div" className={styles.ctaInner}>
         <MonoLabel>Ready when you are</MonoLabel>
-        <h2 className={styles.ctaTitle}>Run your shop from one screen</h2>
+        <h2 className={styles.ctaTitle}>Run your whole shop from one app</h2>
         <p className={styles.ctaBody}>Set up your shop in minutes. No card required to start.</p>
         <button type="button" className={styles.ctaButton} onClick={() => onNavigate('/signup')}>
           Start free
@@ -721,7 +759,7 @@ function SiteFooter() {
           <div className={styles.footerBrand}>
             <span className={styles.footerLogo}>TailorPady</span>
             <p className={styles.footerTagline}>
-              Order, measurement, and payment tracking for tailoring shops and boutiques.
+              Track orders, measurements, and payments for your tailoring shop or boutique.
             </p>
           </div>
           <div className={styles.footerColumns}>
