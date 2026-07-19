@@ -94,6 +94,8 @@ export function BrandModal({ onBack, showToast }) {
   }
 
   const save = async () => {
+    if (logoUploading || sigUploading) return
+
     let signatureUrl      = local.brandSignature
     let signaturePublicId = local.brandSignaturePublicId
     const previousSignaturePublicId = local.brandSignaturePublicId
@@ -149,7 +151,7 @@ export function BrandModal({ onBack, showToast }) {
 
   return (
     <>
-      <FullModal title="Brand Identity" onBack={onBack} onSave={isSaving ? undefined : save}>
+      <FullModal title="Brand Identity" onBack={onBack} onSave={save} saving={isSaving}>
 
         <FieldGroup>
           <Field label="Brand Logo" hint="PNG or JPG. Appears on invoice headers and portfolio. Ideally square.">
