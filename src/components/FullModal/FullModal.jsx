@@ -1,7 +1,7 @@
 import { useEffect } from 'react'
 import styles from './FullModal.module.css'
 
-export function FullModal({ title, onBack, onSave, children }) {
+export function FullModal({ title, onBack, onSave, saving, children }) {
 
   useEffect(() => {
     const handleKey = e => { if (e.key === 'Escape') onBack() }
@@ -23,7 +23,19 @@ export function FullModal({ title, onBack, onSave, children }) {
           </button>
           <div className={styles.headerTitle}>{title}</div>
           {onSave && (
-            <button className={styles.saveBtn} onClick={onSave}>Save</button>
+            <button
+              className={styles.saveBtn}
+              onClick={onSave}
+              disabled={saving}
+              style={saving ? { opacity: 0.7, pointerEvents: 'none', display: 'flex', alignItems: 'center', gap: 6 } : undefined}
+            >
+              {saving ? (
+                <>
+                  <span className="mi" style={{ fontSize: 16, animation: 'spin 0.7s linear infinite' }}>progress_activity</span>
+                  Saving…
+                </>
+              ) : 'Save'}
+            </button>
           )}
         </div>
 
