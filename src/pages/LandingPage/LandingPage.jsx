@@ -3,7 +3,6 @@ import { Link, useNavigate } from 'react-router-dom'
 import { useInstall } from '../../contexts/InstallContext'
 import styles from './LandingPage.module.css'
 
-
 const THEME_STORAGE_KEY = 'tailorpady-theme'
 
 const NAV_LINKS = [
@@ -596,35 +595,54 @@ function SiteNav({ onNavigate, theme, onToggleTheme }) {
 
 function PhoneMockup() {
   const [index, setIndex] = useState(0)
+  const total = HERO_SCREENS.length
 
   useEffect(() => {
     const id = setInterval(() => {
-      setIndex(prev => (prev + 1) % HERO_SCREENS.length)
+      setIndex(prev => (prev + 1) % total)
     }, 3200)
     return () => clearInterval(id)
-  }, [])
+  }, [total])
+
+  const goTo = i => setIndex(((i % total) + total) % total)
+  const goPrev = () => goTo(index - 1)
+  const goNext = () => goTo(index + 1)
 
   return (
-    <div className={styles.phone}>
-      <div className={styles.phoneScreen}>
-        <div
-          className={styles.phoneCarouselTrack}
-          style={{ transform: `translateX(-${index * 100}%)` }}
-        >
-          {HERO_SCREENS.map(src => (
-            <img key={src} src={src} alt="TailorPady app screen" className={styles.phoneCarouselSlide} loading="lazy" />
-          ))}
+    <div className={styles.phoneWrap}>
+      <div className={styles.phone}>
+        <div className={styles.phoneScreen}>
+          <div
+            className={styles.phoneCarouselTrack}
+            style={{ transform: `translateX(-${index * 100}%)` }}
+          >
+            {HERO_SCREENS.map(src => (
+              <img key={src} src={src} alt="TailorPady app screen" className={styles.phoneCarouselSlide} loading="lazy" />
+            ))}
+          </div>
         </div>
-        <div className={styles.phoneCarouselDots}>
+        <img src="/landingPageImages/phone-frame.png" alt="" className={styles.phoneFrameImage} />
+      </div>
+
+      <div className={styles.phoneSideNav}>
+        <button type="button" className={styles.phoneNavArrow} onClick={goPrev} aria-label="Previous screen">
+          <span className="mi">keyboard_arrow_up</span>
+        </button>
+        <div className={styles.phoneDots}>
           {HERO_SCREENS.map((src, i) => (
-            <span
+            <button
               key={src}
-              className={`${styles.phoneCarouselDot} ${i === index ? styles.phoneCarouselDotActive : ''}`}
+              type="button"
+              className={`${styles.phoneDot} ${i === index ? styles.phoneDotActive : ''}`}
+              onClick={() => goTo(i)}
+              aria-label={`Go to screen ${i + 1}`}
             />
           ))}
         </div>
+        <button type="button" className={styles.phoneNavArrow} onClick={goNext} aria-label="Next screen">
+          <span className="mi">keyboard_arrow_down</span>
+        </button>
       </div>
-      <img src="/landingPageImages/phone-frame.png" alt="" className={styles.phoneFrameImage} />
     </div>
   )
 }
@@ -750,20 +768,25 @@ function Mission() {
 }
 
 function ProductShowcase() {
-  const [active, setActive] = useState(SHOWCASE_TABS[0].key)
-  const current = SHOWCASE_TABS.find(tab => tab.key === active)
+  const [index, setIndex] = useState(0)
+  const total = SHOWCASE_TABS.length
+  const current = SHOWCASE_TABS[index]
+
+  const goTo = i => setIndex(((i % total) + total) % total)
+  const goPrev = () => goTo(index - 1)
+  const goNext = () => goTo(index + 1)
 
   return (
     <section id="product" className={styles.showcase}>
       <SectionHeading eyebrow="Inside the app" title="A closer look at TailorPady" align="center" />
 
       <div className={styles.showcaseTabs}>
-        {SHOWCASE_TABS.map(tab => (
+        {SHOWCASE_TABS.map((tab, i) => (
           <button
             key={tab.key}
             type="button"
-            className={`${styles.showcaseTab} ${tab.key === active ? styles.showcaseTabActive : ''}`}
-            onClick={() => setActive(tab.key)}
+            className={`${styles.showcaseTab} ${i === index ? styles.showcaseTabActive : ''}`}
+            onClick={() => goTo(i)}
           >
             {tab.label}
           </button>
@@ -776,16 +799,46 @@ function ProductShowcase() {
           {current.body && <p className={styles.showcaseBody}>{current.body}</p>}
         </div>
 
-        <div className={styles.showcaseVisual}>
-          <div className={styles.showcaseGlow} />
-          <div className={styles.showcaseFrame} key={`frame-${current.key}`}>
-            <div className={styles.showcaseFrameBar} />
-            <img
-              src={current.image}
-              alt={`${current.label} screen in TailorPady`}
-              className={styles.showcaseImage}
-              loading="lazy"
-            />
+        <div className={styles.showcaseVisualWrap}>
+          <div className={styles.showcaseVisual}>
+            <div className={styles.showcaseGlow} />
+            <div className={styles.showcaseFrame} key={`frame-${current.key}`}>
+              <div className={styles.showcaseFrameBar} />
+              <img
+                src={current.image}
+                alt={`${current.label} screen in TailorPady`}
+                className={styles.showcaseImage}
+                loading="lazy"
+              />
+            </div>
+            <button
+              type="button"
+              className={`${styles.showcaseArrow} ${styles.showcaseArrowLeft}`}
+              onClick={goPrev}
+              aria-label="Previous screen"
+            >
+              <span className="mi">chevron_left</span>
+            </button>
+            <button
+              type="button"
+              className={`${styles.showcaseArrow} ${styles.showcaseArrowRight}`}
+              onClick={goNext}
+              aria-label="Next screen"
+            >
+              <span className="mi">chevron_right</span>
+            </button>
+          </div>
+
+          <div className={styles.showcaseDots}>
+            {SHOWCASE_TABS.map((tab, i) => (
+              <button
+                key={tab.key}
+                type="button"
+                className={`${styles.showcaseDot} ${i === index ? styles.showcaseDotActive : ''}`}
+                onClick={() => goTo(i)}
+                aria-label={`Go to ${tab.label}`}
+              />
+            ))}
           </div>
         </div>
       </div>
