@@ -700,23 +700,22 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 30px;
-  height: 30px;
+  width: 28px;
+  height: 28px;
   border-radius: 50%;
-  border: 1px solid var(--line-strong);
-  background: var(--surface);
-  color: var(--ink);
+  border: none;
+  background: transparent;
+  color: var(--muted);
   cursor: pointer;
-  transition: background 0.15s ease, transform 0.15s ease, border-color 0.15s ease;
+  transition: color 0.15s ease, transform 0.15s ease;
 }
 
 .phoneNavArrow span {
-  font-size: 1.15rem;
+  font-size: 1.2rem;
 }
 
 .phoneNavArrow:hover {
-  background: var(--surface-2);
-  border-color: var(--ink);
+  color: var(--ink);
   transform: translateY(-1px);
 }
 
@@ -728,7 +727,7 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 9px;
+  gap: 10px;
   padding: 6px 0;
 }
 
@@ -740,7 +739,7 @@
   border: none;
   padding: 0;
   cursor: pointer;
-  transition: height 0.25s ease, background 0.25s ease;
+  transition: background 0.2s ease, transform 0.2s ease;
 }
 
 .phoneDot:hover {
@@ -748,9 +747,8 @@
 }
 
 .phoneDotActive {
-  height: 22px;
-  border-radius: 4px;
   background: var(--ink);
+  transform: scale(1.35);
 }
 
 .sectionHeading {
@@ -991,13 +989,18 @@
 
 .showcaseTabs {
   display: flex;
-  gap: 6px;
+  gap: 4px;
   overflow-x: auto;
   scroll-behavior: smooth;
+  scroll-padding-inline: 24px;
   flex-wrap: nowrap;
   width: fit-content;
   max-width: 100%;
   margin: 0 auto 48px;
+  padding: 5px;
+  border-radius: 999px;
+  background: var(--surface-2);
+  border: 1px solid var(--line);
   scrollbar-width: none;
   -ms-overflow-style: none;
 }
@@ -1011,14 +1014,14 @@
   white-space: nowrap;
   background: transparent;
   border: none;
-  border-bottom: 2px solid transparent;
-  padding: 6px 14px 8px;
+  border-radius: 999px;
+  padding: 9px 18px;
   font-family: var(--body);
   font-size: 13px;
   font-weight: 600;
   color: var(--muted);
   cursor: pointer;
-  transition: color 0.15s ease, border-color 0.15s ease;
+  transition: background 0.2s ease, color 0.2s ease;
 }
 
 .showcaseTab:hover {
@@ -1026,8 +1029,8 @@
 }
 
 .showcaseTabActive {
-  color: var(--ink);
-  border-bottom-color: var(--ink);
+  color: var(--paper);
+  background: var(--ink);
 }
 
 .showcaseStage {
@@ -1110,53 +1113,46 @@
   background: var(--surface-2);
 }
 
-.showcaseArrow {
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
+.showcaseSideNav {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  flex-shrink: 0;
+}
+
+.showcaseNavArrow {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 40px;
-  height: 40px;
+  width: 32px;
+  height: 32px;
   border-radius: 50%;
-  border: 1px solid var(--line-strong);
-  background: color-mix(in srgb, var(--surface) 85%, transparent);
-  backdrop-filter: blur(6px);
-  color: var(--ink);
+  border: none;
+  background: transparent;
+  color: var(--muted);
   cursor: pointer;
-  z-index: 2;
-  transition: background 0.15s ease, transform 0.15s ease, border-color 0.15s ease;
+  transition: color 0.15s ease, transform 0.15s ease;
 }
 
-.showcaseArrow span {
-  font-size: 1.4rem;
+.showcaseNavArrow span {
+  font-size: 1.3rem;
 }
 
-.showcaseArrowLeft {
-  left: 14px;
+.showcaseNavArrow:hover {
+  color: var(--ink);
+  transform: translateY(-1px);
 }
 
-.showcaseArrowRight {
-  right: 14px;
-}
-
-.showcaseArrow:hover {
-  background: var(--surface);
-  border-color: var(--ink);
-  transform: translateY(-50%) scale(1.06);
-}
-
-.showcaseArrow:active {
-  transform: translateY(-50%) scale(0.94);
+.showcaseNavArrow:active {
+  transform: scale(0.9);
 }
 
 .showcaseDots {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 9px;
-  flex-shrink: 0;
+  gap: 10px;
 }
 
 .showcaseDot {
@@ -1167,7 +1163,7 @@
   border: none;
   padding: 0;
   cursor: pointer;
-  transition: height 0.25s ease, background 0.25s ease;
+  transition: background 0.2s ease, transform 0.2s ease;
 }
 
 .showcaseDot:hover {
@@ -1175,9 +1171,8 @@
 }
 
 .showcaseDotActive {
-  height: 24px;
-  border-radius: 4px;
   background: var(--ink);
+  transform: scale(1.35);
 }
 
 .stepGrid {
@@ -1663,7 +1658,7 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  color: var(--ink);
+  color: var(--paper);
   font-family: var(--display);
   font-size: 2rem;
   font-weight: 700;
@@ -1870,16 +1865,7 @@
     border-radius: 10px;
   }
 
-  .showcaseArrow {
-    width: 34px;
-    height: 34px;
-  }
-
-  .showcaseArrow span {
-    font-size: 1.15rem;
-  }
-
-  .showcaseDots {
+  .showcaseSideNav {
     display: none;
   }
 }
