@@ -34,11 +34,26 @@ import PrivacyPolicy from './pages/PrivacyPolicy/PrivacyPolicy'
 import BugReport from './pages/BugReport/BugReport'
 import './index.css'
 
+function isStandalonePWA() {
+  if (typeof window === 'undefined') return false
+  const isDisplayModeStandalone = window.matchMedia?.('(display-mode: standalone)').matches
+  const isIOSStandalone = window.navigator?.standalone === true
+  return Boolean(isDisplayModeStandalone || isIOSStandalone)
+}
+
 function GuestRoute({ children }) {
   const { user, loading } = useAuth()
   if (loading) return null
   if (user) return <Navigate to="/dashboard" replace />
   return children
+}
+
+function RootRoute() {
+  const { user } = useAuth()
+
+  if (user) return <Navigate to="/dashboard" replace />
+  if (isStandalonePWA()) return <Navigate to="/login" replace />
+  return <LandingPage />
 }
 
 function AppShell() {
@@ -88,7 +103,7 @@ function AppShell() {
 export default function App() {
   return (
     <Routes>
-      <Route path="/"       element={<LandingPage />} />
+      <Route path="/"       element={<RootRoute />} />
       <Route path="/login"  element={<GuestRoute><Login  /></GuestRoute>} />
       <Route path="/signup" element={<GuestRoute><Signup /></GuestRoute>} />
       <Route
