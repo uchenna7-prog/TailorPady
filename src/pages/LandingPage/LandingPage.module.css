@@ -634,6 +634,13 @@
   animation: fadeIn 0.9s cubic-bezier(0.16, 1, 0.3, 1) 0.2s both;
 }
 
+.phoneWrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
 .phone {
   position: relative;
   width: 280px;
@@ -670,30 +677,6 @@
   display: block;
 }
 
-.phoneCarouselDots {
-  position: absolute;
-  bottom: 14px;
-  left: 0;
-  right: 0;
-  display: flex;
-  justify-content: center;
-  gap: 5px;
-  z-index: 2;
-}
-
-.phoneCarouselDot {
-  width: 5px;
-  height: 5px;
-  border-radius: 3px;
-  background: rgba(255, 255, 255, 0.45);
-  transition: width 0.2s ease, background 0.2s ease;
-}
-
-.phoneCarouselDotActive {
-  width: 14px;
-  background: #ffffff;
-}
-
 .phoneFrameImage {
   position: absolute;
   inset: 0;
@@ -702,6 +685,72 @@
   z-index: 2;
   pointer-events: none;
   display: block;
+}
+
+.phoneSideNav {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  flex-shrink: 0;
+  z-index: 2;
+}
+
+.phoneNavArrow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  border: 1px solid var(--line-strong);
+  background: var(--surface);
+  color: var(--ink);
+  cursor: pointer;
+  transition: background 0.15s ease, transform 0.15s ease, border-color 0.15s ease;
+}
+
+.phoneNavArrow span {
+  font-size: 1.15rem;
+}
+
+.phoneNavArrow:hover {
+  background: var(--surface-2);
+  border-color: var(--ink);
+  transform: translateY(-1px);
+}
+
+.phoneNavArrow:active {
+  transform: scale(0.9);
+}
+
+.phoneDots {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 9px;
+  padding: 6px 0;
+}
+
+.phoneDot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--line-strong);
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  transition: height 0.25s ease, background 0.25s ease;
+}
+
+.phoneDot:hover {
+  background: var(--muted);
+}
+
+.phoneDotActive {
+  height: 22px;
+  border-radius: 4px;
+  background: var(--ink);
 }
 
 .sectionHeading {
@@ -1011,8 +1060,16 @@
   margin: 0;
 }
 
+.showcaseVisualWrap {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
+
 .showcaseVisual {
   position: relative;
+  flex: 1;
+  min-width: 0;
 }
 
 .showcaseGlow {
@@ -1051,6 +1108,76 @@
   width: 100%;
   height: auto;
   background: var(--surface-2);
+}
+
+.showcaseArrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 1px solid var(--line-strong);
+  background: color-mix(in srgb, var(--surface) 85%, transparent);
+  backdrop-filter: blur(6px);
+  color: var(--ink);
+  cursor: pointer;
+  z-index: 2;
+  transition: background 0.15s ease, transform 0.15s ease, border-color 0.15s ease;
+}
+
+.showcaseArrow span {
+  font-size: 1.4rem;
+}
+
+.showcaseArrowLeft {
+  left: 14px;
+}
+
+.showcaseArrowRight {
+  right: 14px;
+}
+
+.showcaseArrow:hover {
+  background: var(--surface);
+  border-color: var(--ink);
+  transform: translateY(-50%) scale(1.06);
+}
+
+.showcaseArrow:active {
+  transform: translateY(-50%) scale(0.94);
+}
+
+.showcaseDots {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 9px;
+  flex-shrink: 0;
+}
+
+.showcaseDot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--line-strong);
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  transition: height 0.25s ease, background 0.25s ease;
+}
+
+.showcaseDot:hover {
+  background: var(--muted);
+}
+
+.showcaseDotActive {
+  height: 24px;
+  border-radius: 4px;
+  background: var(--ink);
 }
 
 .stepGrid {
@@ -1675,6 +1802,10 @@
     text-align: center;
     align-items: center;
   }
+
+  .showcaseVisualWrap {
+    justify-content: center;
+  }
 }
 
 @media (max-width: 768px) {
@@ -1690,11 +1821,24 @@
 
 @media (max-width: 640px) {
   .phone {
-    width: min(76vw, 320px);
+    width: min(70vw, 300px);
   }
 
   .heroVisual {
     min-height: 460px;
+  }
+
+  .phoneWrap {
+    gap: 12px;
+  }
+
+  .phoneNavArrow {
+    width: 26px;
+    height: 26px;
+  }
+
+  .phoneNavArrow span {
+    font-size: 1rem;
   }
 
   .aboutStats {
@@ -1725,11 +1869,24 @@
   .showcaseFrame {
     border-radius: 10px;
   }
+
+  .showcaseArrow {
+    width: 34px;
+    height: 34px;
+  }
+
+  .showcaseArrow span {
+    font-size: 1.15rem;
+  }
+
+  .showcaseDots {
+    display: none;
+  }
 }
 
 @media (max-width: 420px) {
   .phone {
-    width: min(80vw, 280px);
+    width: min(76vw, 260px);
     height: auto;
   }
 
@@ -1749,6 +1906,10 @@
 
   .aboutStats {
     gap: 8px;
+  }
+
+  .phoneSideNav {
+    gap: 10px;
   }
 }
 
