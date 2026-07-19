@@ -1,4 +1,4 @@
-import { useState, useRef, useLayoutEffect, useEffect, useCallback } from "react"
+import { useState, useRef, useLayoutEffect, useEffect, useCallback, useMemo } from "react"
 import { createPortal } from "react-dom"
 import styles from "./Dropdown.module.css"
 
@@ -24,10 +24,16 @@ export function Dropdown({
   const [open, setOpen] = useState(false)
   const [search, setSearch] = useState("")
   const [menuPos, setMenuPos] = useState(null)
+  const [highlightedIndex, setHighlightedIndex] = useState(-1)
+  const [closing, setClosing] = useState(false)
 
   const wrapRef = useRef(null)
   const triggerRef = useRef(null)
   const menuRef = useRef(null)
+  const listRef = useRef(null)
+  const searchInputRef = useRef(null)
+  const optionRefs = useRef([])
+  const closeTimerRef = useRef(null)
 
   const computePosition = useCallback(() => {
     const trigger = triggerRef.current
@@ -47,21 +53,21 @@ export function Dropdown({
 
     const spaceBelow = viewportH - rect.bottom - margin
     const spaceAbove = rect.top - margin
-    const preferredMaxHeight = 280
+    const preferredMaxHeight = 300
     const minUsableHeight = 160
 
     let top, maxHeight, placement
     if (spaceBelow >= minUsableHeight || spaceBelow >= spaceAbove) {
       placement = "down"
       maxHeight = Math.max(Math.min(preferredMaxHeight, spaceBelow - 6), minUsableHeight)
-      top = rect.bottom + 6
+      top = rect.bottom + 8
     } else {
       placement = "up"
       maxHeight = Math.max(Math.min(preferredMaxHeight, spaceAbove - 6), minUsableHeight)
-      top = rect.top - 6 - maxHeight
+      top = rect.top - 8 - maxHeight
     }
 
-    setMenuPos({ top, left, width, maxHeight, placement })
+    setMenuPos({ top, left, width, maxHeight, placement, triggerHeight: rect.height })
   }, [menuMinWidth])
 
   useLayoutEffect(() => {
@@ -80,31 +86,29 @@ export function Dropdown({
     }
   }, [open, computePosition])
 
+  const closeMenu = useCallback(() => {
+    setClosing(true)
+    clearTimeout(closeTimerRef.current)
+    closeTimerRef.current = setTimeout(() => {
+      setOpen(false)
+      setClosing(false)
+      setSearch("")
+      setHighlightedIndex(-1)
+    }, 140)
+  }, [])
+
+  useEffect(() => () => clearTimeout(closeTimerRef.current), [])
+
   useEffect(() => {
     if (!open) return
     const handler = (e) => {
       const clickedWrap = wrapRef.current && wrapRef.current.contains(e.target)
       const clickedMenu = menuRef.current && menuRef.current.contains(e.target)
-      if (!clickedWrap && !clickedMenu) {
-        setOpen(false)
-        setSearch("")
-      }
+      if (!clickedWrap && !clickedMenu) closeMenu()
     }
     document.addEventListener("mousedown", handler)
     return () => document.removeEventListener("mousedown", handler)
-  }, [open])
-
-  useEffect(() => {
-    if (!open) return
-    const handler = (e) => {
-      if (e.key === "Escape") {
-        setOpen(false)
-        setSearch("")
-      }
-    }
-    document.addEventListener("keydown", handler)
-    return () => document.removeEventListener("keydown", handler)
-  }, [open])
+  }, [open, closeMenu])
 
   const defaultIsSelected = (option) => getOptionValue(option) === value
   const checkSelected = isOptionSelected || defaultIsSelected
@@ -113,21 +117,78 @@ export function Dropdown({
     getOptionLabel(option).toLowerCase().includes(query.toLowerCase())
   const checkFilter = filterOption || defaultFilter
 
-  const filtered = searchable && search.trim()
-    ? options.filter((option) => checkFilter(option, search))
-    : options
+  const filtered = useMemo(() => {
+    return searchable && search.trim()
+      ? options.filter((option) => checkFilter(option, search))
+      : options
+  }, [options, search, searchable])
 
   const selectedOption = options.find((option) => checkSelected(option))
 
+  useEffect(() => {
+    optionRefs.current = optionRefs.current.slice(0, filtered.length)
+  }, [filtered.length])
+
+  useEffect(() => {
+    if (!open) return
+    const selectedIdx = filtered.findIndex((option) => checkSelected(option))
+    setHighlightedIndex(selectedIdx >= 0 ? selectedIdx : filtered.length > 0 ? 0 : -1)
+    if (searchable) {
+      requestAnimationFrame(() => searchInputRef.current?.focus())
+    }
+  }, [open])
+
+  useEffect(() => {
+    if (highlightedIndex < 0) return
+    const el = optionRefs.current[highlightedIndex]
+    if (el) el.scrollIntoView({ block: "nearest" })
+  }, [highlightedIndex])
+
   function handleSelect(option) {
     onChange(getOptionValue(option), option)
-    setOpen(false)
-    setSearch("")
+    closeMenu()
   }
 
   function toggleOpen() {
     if (disabled) return
-    setOpen((v) => !v)
+    if (open) closeMenu()
+    else setOpen(true)
+  }
+
+  function handleTriggerKeyDown(e) {
+    if (disabled) return
+    if (e.key === "Enter" || e.key === " " || e.key === "ArrowDown") {
+      e.preventDefault()
+      setOpen(true)
+    }
+  }
+
+  function handleMenuKeyDown(e) {
+    if (e.key === "Escape") {
+      e.preventDefault()
+      closeMenu()
+      triggerRef.current?.focus()
+      return
+    }
+    if (e.key === "ArrowDown") {
+      e.preventDefault()
+      setHighlightedIndex((prev) => (prev + 1 >= filtered.length ? 0 : prev + 1))
+      return
+    }
+    if (e.key === "ArrowUp") {
+      e.preventDefault()
+      setHighlightedIndex((prev) => (prev - 1 < 0 ? filtered.length - 1 : prev - 1))
+      return
+    }
+    if (e.key === "Enter") {
+      e.preventDefault()
+      const option = filtered[highlightedIndex]
+      if (option) handleSelect(option)
+      return
+    }
+    if (e.key === "Tab") {
+      closeMenu()
+    }
   }
 
   return (
@@ -135,14 +196,17 @@ export function Dropdown({
       <button
         type="button"
         ref={triggerRef}
-        className={`${styles.ddTrigger} ${disabled ? styles.ddTriggerDisabled : ""}`}
+        className={`${styles.ddTrigger} ${disabled ? styles.ddTriggerDisabled : ""} ${open ? styles.ddTriggerOpen : ""}`}
         onClick={toggleOpen}
+        onKeyDown={handleTriggerKeyDown}
         disabled={disabled}
+        aria-haspopup="listbox"
+        aria-expanded={open}
       >
         {renderTrigger ? (
           renderTrigger(selectedOption)
         ) : (
-          <span className={styles.ddTriggerText}>
+          <span className={`${styles.ddTriggerText} ${!selectedOption ? styles.ddTriggerPlaceholder : ""}`}>
             {selectedOption ? getOptionLabel(selectedOption) : placeholder}
           </span>
         )}
@@ -152,7 +216,10 @@ export function Dropdown({
       {open && menuPos && createPortal(
         <div
           ref={menuRef}
-          className={`${styles.ddMenu} ${menuPos.placement === "up" ? styles.ddMenuUp : styles.ddMenuDown}`}
+          role="listbox"
+          tabIndex={-1}
+          onKeyDown={handleMenuKeyDown}
+          className={`${styles.ddMenu} ${menuPos.placement === "up" ? styles.ddMenuUp : styles.ddMenuDown} ${closing ? styles.ddMenuClosing : ""}`}
           style={{
             ...menuStyle,
             position: "fixed",
@@ -164,34 +231,61 @@ export function Dropdown({
         >
           {searchable && (
             <div className={styles.ddSearchWrap}>
-              <span className="mi" style={{ fontSize: "1rem", color: "var(--text3)" }}>search</span>
+              <span className={`mi ${styles.ddSearchIcon}`}>search</span>
               <input
+                ref={searchInputRef}
                 type="text"
                 placeholder={searchPlaceholder}
                 value={search}
-                onChange={(e) => setSearch(e.target.value)}
+                onChange={(e) => {
+                  setSearch(e.target.value)
+                  setHighlightedIndex(0)
+                }}
                 className={styles.ddSearchInput}
-                autoFocus
               />
+              {search && (
+                <button
+                  type="button"
+                  className={styles.ddSearchClear}
+                  onClick={() => {
+                    setSearch("")
+                    searchInputRef.current?.focus()
+                  }}
+                  aria-label="Clear search"
+                >
+                  <span className="mi">close</span>
+                </button>
+              )}
             </div>
           )}
-          <div className={styles.ddList}>
+          <div className={styles.ddList} ref={listRef}>
             {filtered.length === 0 && (
-              <div className={styles.ddListEmpty}>No results</div>
+              <div className={styles.ddListEmpty}>
+                <span className={`mi ${styles.ddListEmptyIcon}`}>search_off</span>
+                <span>No results found</span>
+              </div>
             )}
             {filtered.map((option, i) => {
               const active = checkSelected(option)
+              const highlighted = i === highlightedIndex
               return (
                 <button
                   key={i}
+                  ref={(el) => (optionRefs.current[i] = el)}
                   type="button"
-                  className={`${styles.ddOption} ${active ? styles.ddOptionActive : ""}`}
+                  role="option"
+                  aria-selected={active}
+                  className={`${styles.ddOption} ${active ? styles.ddOptionActive : ""} ${highlighted ? styles.ddOptionHighlighted : ""}`}
                   onClick={() => handleSelect(option)}
+                  onMouseEnter={() => setHighlightedIndex(i)}
                 >
                   {renderOption ? (
                     renderOption(option, active)
                   ) : (
-                    <span className={styles.ddOptionLabel}>{getOptionLabel(option)}</span>
+                    <>
+                      <span className={styles.ddOptionLabel}>{getOptionLabel(option)}</span>
+                      {active && <span className={`mi ${styles.ddOptionCheck}`}>check</span>}
+                    </>
                   )}
                 </button>
               )
