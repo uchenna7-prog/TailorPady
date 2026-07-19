@@ -56,7 +56,7 @@ export function Dropdown({
     const preferredMaxHeight = 300
     const minUsableHeight = 160
 
-    let top, maxHeight, placement
+    let top, bottom, maxHeight, placement
     if (spaceBelow >= minUsableHeight || spaceBelow >= spaceAbove) {
       placement = "down"
       maxHeight = Math.max(Math.min(preferredMaxHeight, spaceBelow - 6), minUsableHeight)
@@ -64,10 +64,10 @@ export function Dropdown({
     } else {
       placement = "up"
       maxHeight = Math.max(Math.min(preferredMaxHeight, spaceAbove - 6), minUsableHeight)
-      top = rect.top - 8 - maxHeight
+      bottom = viewportH - rect.top + 8
     }
 
-    setMenuPos({ top, left, width, maxHeight, placement, triggerHeight: rect.height })
+    setMenuPos({ top, bottom, left, width, maxHeight, placement, triggerHeight: rect.height })
   }, [menuMinWidth])
 
   useLayoutEffect(() => {
@@ -223,7 +223,7 @@ export function Dropdown({
           style={{
             ...menuStyle,
             position: "fixed",
-            top: menuPos.top,
+            ...(menuPos.placement === "down" ? { top: menuPos.top } : { bottom: menuPos.bottom }),
             left: menuPos.left,
             width: menuPos.width,
             maxHeight: menuPos.maxHeight,
