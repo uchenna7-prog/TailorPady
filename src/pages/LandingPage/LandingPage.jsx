@@ -771,10 +771,18 @@ function ProductShowcase() {
   const [index, setIndex] = useState(0)
   const total = SHOWCASE_TABS.length
   const current = SHOWCASE_TABS[index]
+  const tabRefs = useRef([])
 
   const goTo = i => setIndex(((i % total) + total) % total)
   const goPrev = () => goTo(index - 1)
   const goNext = () => goTo(index + 1)
+
+  useEffect(() => {
+    const el = tabRefs.current[index]
+    if (el) {
+      el.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' })
+    }
+  }, [index])
 
   return (
     <section id="product" className={styles.showcase}>
@@ -784,6 +792,7 @@ function ProductShowcase() {
         {SHOWCASE_TABS.map((tab, i) => (
           <button
             key={tab.key}
+            ref={el => (tabRefs.current[i] = el)}
             type="button"
             className={`${styles.showcaseTab} ${i === index ? styles.showcaseTabActive : ''}`}
             onClick={() => goTo(i)}
@@ -811,34 +820,26 @@ function ProductShowcase() {
                 loading="lazy"
               />
             </div>
-            <button
-              type="button"
-              className={`${styles.showcaseArrow} ${styles.showcaseArrowLeft}`}
-              onClick={goPrev}
-              aria-label="Previous screen"
-            >
-              <span className="mi">chevron_left</span>
-            </button>
-            <button
-              type="button"
-              className={`${styles.showcaseArrow} ${styles.showcaseArrowRight}`}
-              onClick={goNext}
-              aria-label="Next screen"
-            >
-              <span className="mi">chevron_right</span>
-            </button>
           </div>
 
-          <div className={styles.showcaseDots}>
-            {SHOWCASE_TABS.map((tab, i) => (
-              <button
-                key={tab.key}
-                type="button"
-                className={`${styles.showcaseDot} ${i === index ? styles.showcaseDotActive : ''}`}
-                onClick={() => goTo(i)}
-                aria-label={`Go to ${tab.label}`}
-              />
-            ))}
+          <div className={styles.showcaseSideNav}>
+            <button type="button" className={styles.showcaseNavArrow} onClick={goPrev} aria-label="Previous screen">
+              <span className="mi">keyboard_arrow_up</span>
+            </button>
+            <div className={styles.showcaseDots}>
+              {SHOWCASE_TABS.map((tab, i) => (
+                <button
+                  key={tab.key}
+                  type="button"
+                  className={`${styles.showcaseDot} ${i === index ? styles.showcaseDotActive : ''}`}
+                  onClick={() => goTo(i)}
+                  aria-label={`Go to ${tab.label}`}
+                />
+              ))}
+            </div>
+            <button type="button" className={styles.showcaseNavArrow} onClick={goNext} aria-label="Next screen">
+              <span className="mi">keyboard_arrow_down</span>
+            </button>
           </div>
         </div>
       </div>
@@ -1015,7 +1016,7 @@ function SiteFooter() {
           <div className={styles.footerBrand}>
             <span className={styles.footerLogoMark}>TP</span>
             <p className={styles.footerTagline}>
-              Order, measurement, and payment tracking for tailoring shops and boutiques.
+              From first measurement to final stitch, everything your tailoring shop needs, in one place.
             </p>
           </div>
           <div className={styles.footerColumns}>
