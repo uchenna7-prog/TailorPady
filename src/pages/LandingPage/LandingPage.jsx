@@ -772,23 +772,25 @@ function ProductShowcase() {
   const total = SHOWCASE_TABS.length
   const current = SHOWCASE_TABS[index]
   const tabRefs = useRef([])
+  const tabsContainerRef = useRef(null)
 
   const goTo = i => setIndex(((i % total) + total) % total)
   const goPrev = () => goTo(index - 1)
   const goNext = () => goTo(index + 1)
 
   useEffect(() => {
+    const container = tabsContainerRef.current
     const el = tabRefs.current[index]
-    if (el) {
-      el.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' })
-    }
+    if (!container || !el) return
+    const target = el.offsetLeft - (container.clientWidth - el.clientWidth) / 2
+    container.scrollTo({ left: target, behavior: 'smooth' })
   }, [index])
 
   return (
     <section id="product" className={styles.showcase}>
       <SectionHeading eyebrow="Inside the app" title="A closer look at TailorPady" align="center" />
 
-      <div className={styles.showcaseTabs}>
+      <div className={styles.showcaseTabs} ref={tabsContainerRef}>
         {SHOWCASE_TABS.map((tab, i) => (
           <button
             key={tab.key}
@@ -1015,9 +1017,6 @@ function SiteFooter() {
         <div className={styles.footerTop}>
           <div className={styles.footerBrand}>
             <span className={styles.footerLogoMark}>TP</span>
-            <p className={styles.footerTagline}>
-              From first measurement to final stitch, everything your tailoring shop needs, in one place.
-            </p>
           </div>
           <div className={styles.footerColumns}>
             {FOOTER_COLUMNS.map(col => (
