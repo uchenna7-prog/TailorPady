@@ -86,52 +86,60 @@ const SHOWCASE_TABS = [
     label: 'Dashboard',
     title: 'The whole shop, on one screen',
     body: 'Open the app and see what is due today, what is overdue, and what just came in. No more carrying it all in your head.',
-    image: '/landingPageImages/screen-dashboard.jpg',
+    image: '/landingPageImages/screen-dashboard-desktop.png',
   },
   {
     key: 'customers',
     label: 'Customers',
     title: 'Manage your customer base',
     body: 'Add and update customer information, including measurements and preferences. Keep all your client data in one place.',
-    image: '/landingPageImages/screen-customers.jpg',
+    image: '/landingPageImages/screen-customers-desktop.png',
   },
   {
     key: 'customer details',
     label: 'Customer details',
     title: "View and edit customer details",
     body: "Access a customer's profile to view their measurements, order history, and contact information. Make updates as needed.",
-    image: '/landingPageImages/screen-customer-details.jpg',
+    image: '/landingPageImages/screen-customer-details-desktop.png',
   },
   {
     key: 'measurements',
     label: 'Measurements',
     title: 'View and edit customer measurements',
-    image: '/landingPageImages/screen-customer-measurements.jpg',
+    image: '/landingPageImages/screen-customer-measurements-desktop.png',
   },
   {
     key: 'orders',
     label: 'Orders',
     title: 'Track every order from cut to collection',
     body: 'Move an order through cutting, stitching, and finishing. Everyone on your team knows exactly what stage it is at.',
-    image: '/landingPageImages/screen-orders.jpg',
+    image: '/landingPageImages/screen-orders-desktop.png',
   },
   {
     key: 'invoices',
     label: 'Invoices',
     title: 'Bill and get paid without the back and forth',
     body: 'Generate a branded invoice in your currency, share it on WhatsApp, and mark it paid the moment money lands.',
-    image: '/landingPageImages/screen-invoices.jpg',
+    image: '/landingPageImages/screen-invoices-desktop.png',
   },
   {
     key: 'receipts',
     label: 'Receipts',
     title: 'Generate professional receipts',
     body: 'Create and manage receipts for all transactions, ensuring transparency and compliance.',
-    image: '/landingPageImages/screen-receipts.jpg',
+    image: '/landingPageImages/screen-receipts-desktop.png',
   },
 ]
 
-const HERO_SCREENS = SHOWCASE_TABS.map(tab => tab.image)
+const HERO_SCREENS = [
+  '/landingPageImages/screen-dashboard.jpg',
+  '/landingPageImages/screen-customers.jpg',
+  '/landingPageImages/screen-customer-details.jpg',
+  '/landingPageImages/screen-customer-measurements.jpg',
+  '/landingPageImages/screen-orders.jpg',
+  '/landingPageImages/screen-invoices.jpg',
+  '/landingPageImages/screen-receipts.jpg',
+]
 
 const STEPS = [
   {
@@ -765,20 +773,20 @@ function ProductShowcase() {
       <div className={styles.showcaseStage}>
         <div className={styles.showcaseCopy} key={`copy-${current.key}`}>
           <h3 className={styles.showcaseTitle}>{current.title}</h3>
-          <p className={styles.showcaseBody}>{current.body}</p>
+          {current.body && <p className={styles.showcaseBody}>{current.body}</p>}
         </div>
-        <div className={styles.showcaseFrame} key={`frame-${current.key}`}>
-          <div className={styles.browserBar}>
-            <span className={styles.browserDot} />
-            <span className={styles.browserDot} />
-            <span className={styles.browserDot} />
+
+        <div className={styles.showcaseVisual}>
+          <div className={styles.showcaseGlow} />
+          <div className={styles.showcaseFrame} key={`frame-${current.key}`}>
+            <div className={styles.showcaseFrameBar} />
+            <img
+              src={current.image}
+              alt={`${current.label} screen in TailorPady`}
+              className={styles.showcaseImage}
+              loading="lazy"
+            />
           </div>
-          <img
-            src={current.image}
-            alt={`${current.label} screen in TailorPady`}
-            className={styles.showcaseImage}
-            loading="lazy"
-          />
         </div>
       </div>
     </section>
