@@ -140,12 +140,6 @@ const HERO_SCREENS = [
   '/landingPageImages/screen-receipts.jpg',
 ]
 
-const HERO_PHONES = [
-  { key: 'dashboard', image: HERO_SCREENS[0], alt: 'TailorPady dashboard screen', variant: 'phoneLeft' },
-  { key: 'orders', image: HERO_SCREENS[4], alt: 'TailorPady orders screen', variant: 'phoneRight' },
-  { key: 'customers', image: HERO_SCREENS[1], alt: 'TailorPady customers screen', variant: 'phoneFront' },
-]
-
 const STEPS = [
   {
     n: '01',
@@ -600,16 +594,31 @@ function SiteNav({ onNavigate, theme, onToggleTheme }) {
 }
 
 function PhoneMockup() {
+  const [index, setIndex] = useState(0)
+  const total = HERO_SCREENS.length
+
+  useEffect(() => {
+    const id = setInterval(() => {
+      setIndex(prev => (prev + 1) % total)
+    }, 3200)
+    return () => clearInterval(id)
+  }, [total])
+
   return (
-    <div className={styles.phoneStack}>
-      {HERO_PHONES.map(phone => (
-        <div key={phone.key} className={`${styles.phone} ${styles[phone.variant]}`}>
-          <div className={styles.phoneScreen}>
-            <img src={phone.image} alt={phone.alt} className={styles.phoneStaticImage} loading="lazy" />
+    <div className={styles.phoneWrap}>
+      <div className={styles.phone}>
+        <div className={styles.phoneScreen}>
+          <div
+            className={styles.phoneCarouselTrack}
+            style={{ transform: `translateX(-${index * 100}%)` }}
+          >
+            {HERO_SCREENS.map(src => (
+              <img key={src} src={src} alt="TailorPady app screen" className={styles.phoneCarouselSlide} loading="lazy" />
+            ))}
           </div>
-          <img src="/landingPageImages/phone-frame.png" alt="" className={styles.phoneFrameImage} />
         </div>
-      ))}
+        <img src="/landingPageImages/phone-frame.png" alt="" className={styles.phoneFrameImage} />
+      </div>
     </div>
   )
 }
