@@ -140,6 +140,12 @@ const HERO_SCREENS = [
   '/landingPageImages/screen-receipts.jpg',
 ]
 
+const HERO_PHONES = [
+  { key: 'dashboard', image: HERO_SCREENS[0], alt: 'TailorPady dashboard screen', variant: 'phoneLeft' },
+  { key: 'orders', image: HERO_SCREENS[4], alt: 'TailorPady orders screen', variant: 'phoneRight' },
+  { key: 'customers', image: HERO_SCREENS[1], alt: 'TailorPady customers screen', variant: 'phoneFront' },
+]
+
 const STEPS = [
   {
     n: '01',
@@ -594,55 +600,16 @@ function SiteNav({ onNavigate, theme, onToggleTheme }) {
 }
 
 function PhoneMockup() {
-  const [index, setIndex] = useState(0)
-  const total = HERO_SCREENS.length
-
-  useEffect(() => {
-    const id = setInterval(() => {
-      setIndex(prev => (prev + 1) % total)
-    }, 3200)
-    return () => clearInterval(id)
-  }, [total])
-
-  const goTo = i => setIndex(((i % total) + total) % total)
-  const goPrev = () => goTo(index - 1)
-  const goNext = () => goTo(index + 1)
-
   return (
-    <div className={styles.phoneWrap}>
-      <div className={styles.phone}>
-        <div className={styles.phoneScreen}>
-          <div
-            className={styles.phoneCarouselTrack}
-            style={{ transform: `translateX(-${index * 100}%)` }}
-          >
-            {HERO_SCREENS.map(src => (
-              <img key={src} src={src} alt="TailorPady app screen" className={styles.phoneCarouselSlide} loading="lazy" />
-            ))}
+    <div className={styles.phoneStack}>
+      {HERO_PHONES.map(phone => (
+        <div key={phone.key} className={`${styles.phone} ${styles[phone.variant]}`}>
+          <div className={styles.phoneScreen}>
+            <img src={phone.image} alt={phone.alt} className={styles.phoneStaticImage} loading="lazy" />
           </div>
+          <img src="/landingPageImages/phone-frame.png" alt="" className={styles.phoneFrameImage} />
         </div>
-        <img src="/landingPageImages/phone-frame.png" alt="" className={styles.phoneFrameImage} />
-      </div>
-
-      <div className={styles.phoneSideNav}>
-        <button type="button" className={styles.phoneNavArrow} onClick={goPrev} aria-label="Previous screen">
-          <span className="mi">keyboard_arrow_up</span>
-        </button>
-        <div className={styles.phoneDots}>
-          {HERO_SCREENS.map((src, i) => (
-            <button
-              key={src}
-              type="button"
-              className={`${styles.phoneDot} ${i === index ? styles.phoneDotActive : ''}`}
-              onClick={() => goTo(i)}
-              aria-label={`Go to screen ${i + 1}`}
-            />
-          ))}
-        </div>
-        <button type="button" className={styles.phoneNavArrow} onClick={goNext} aria-label="Next screen">
-          <span className="mi">keyboard_arrow_down</span>
-        </button>
-      </div>
+      ))}
     </div>
   )
 }
@@ -775,8 +742,6 @@ function ProductShowcase() {
   const tabsContainerRef = useRef(null)
 
   const goTo = i => setIndex(((i % total) + total) % total)
-  const goPrev = () => goTo(index - 1)
-  const goNext = () => goTo(index + 1)
 
   useEffect(() => {
     const container = tabsContainerRef.current
@@ -810,38 +775,16 @@ function ProductShowcase() {
           {current.body && <p className={styles.showcaseBody}>{current.body}</p>}
         </div>
 
-        <div className={styles.showcaseVisualWrap}>
-          <div className={styles.showcaseVisual}>
-            <div className={styles.showcaseGlow} />
-            <div className={styles.showcaseFrame} key={`frame-${current.key}`}>
-              <div className={styles.showcaseFrameBar} />
-              <img
-                src={current.image}
-                alt={`${current.label} screen in TailorPady`}
-                className={styles.showcaseImage}
-                loading="lazy"
-              />
-            </div>
-          </div>
-
-          <div className={styles.showcaseSideNav}>
-            <button type="button" className={styles.showcaseNavArrow} onClick={goPrev} aria-label="Previous screen">
-              <span className="mi">keyboard_arrow_up</span>
-            </button>
-            <div className={styles.showcaseDots}>
-              {SHOWCASE_TABS.map((tab, i) => (
-                <button
-                  key={tab.key}
-                  type="button"
-                  className={`${styles.showcaseDot} ${i === index ? styles.showcaseDotActive : ''}`}
-                  onClick={() => goTo(i)}
-                  aria-label={`Go to ${tab.label}`}
-                />
-              ))}
-            </div>
-            <button type="button" className={styles.showcaseNavArrow} onClick={goNext} aria-label="Next screen">
-              <span className="mi">keyboard_arrow_down</span>
-            </button>
+        <div className={styles.showcaseVisual}>
+          <div className={styles.showcaseGlow} />
+          <div className={styles.showcaseFrame} key={`frame-${current.key}`}>
+            <div className={styles.showcaseFrameBar} />
+            <img
+              src={current.image}
+              alt={`${current.label} screen in TailorPady`}
+              className={styles.showcaseImage}
+              loading="lazy"
+            />
           </div>
         </div>
       </div>
