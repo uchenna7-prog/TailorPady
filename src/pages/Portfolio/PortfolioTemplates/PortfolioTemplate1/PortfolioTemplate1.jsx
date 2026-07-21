@@ -2,6 +2,9 @@ import { useState, useEffect, useRef } from 'react'
 import { useBrandTokens } from '../../../../hooks/useBrandTokens'
 import styles from './PortfolioTemplate1.module.css'
 
+const THEME_STORAGE_KEY = 'tailorpady-portfolio-theme'
+const SECTION_IDS = ['hero', 'about', 'work', 'contact']
+
 function initials(name = '') {
   return name.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase()
 }
@@ -49,6 +52,106 @@ const STAR_SVG = (
     <path d="M12 0l2.4 9.6L24 12l-9.6 2.4L12 24l-2.4-9.6L0 12l9.6-2.4z"/>
   </svg>
 )
+
+function useTheme() {
+  const [theme, setTheme] = useState('light')
+
+  useEffect(() => {
+    const stored = typeof window !== 'undefined' ? localStorage.getItem(THEME_STORAGE_KEY) : null
+    if (stored === 'light' || stored === 'dark') {
+      setTheme(stored)
+      return
+    }
+    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches
+    setTheme(prefersDark ? 'dark' : 'light')
+  }, [])
+
+  const toggleTheme = () => {
+    setTheme(prev => {
+      const next = prev === 'dark' ? 'light' : 'dark'
+      localStorage.setItem(THEME_STORAGE_KEY, next)
+      return next
+    })
+  }
+
+  return [theme, toggleTheme]
+}
+
+function useActiveSection(ids) {
+  const [active, setActive] = useState(null)
+
+  useEffect(() => {
+    const elements = ids.map(id => document.getElementById(id)).filter(Boolean)
+    if (!elements.length) return
+
+    const observer = new IntersectionObserver(
+      entries => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) setActive(entry.target.id)
+        })
+      },
+      { rootMargin: '-45% 0px -50% 0px', threshold: 0 }
+    )
+
+    elements.forEach(el => observer.observe(el))
+    return () => observer.disconnect()
+  }, [ids])
+
+  return active
+}
+
+function useInView(threshold = 0.15) {
+  const ref = useRef(null)
+  const [inView, setInView] = useState(false)
+
+  useEffect(() => {
+    const el = ref.current
+    if (!el) return
+    if (typeof IntersectionObserver === 'undefined') {
+      setInView(true)
+      return
+    }
+    const observer = new IntersectionObserver(
+      entries => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            setInView(true)
+            observer.unobserve(entry.target)
+          }
+        })
+      },
+      { threshold, rootMargin: '0px 0px -80px 0px' }
+    )
+    observer.observe(el)
+    return () => observer.disconnect()
+  }, [threshold])
+
+  return [ref, inView]
+}
+
+function Reveal({ as: Tag = 'div', children, className = '', delay = 0, style, ...rest }) {
+  const [ref, inView] = useInView()
+  const combined = `${styles.reveal} ${inView ? styles.revealVisible : ''} ${className}`.trim()
+  return (
+    <Tag ref={ref} className={combined} style={{ '--reveal-delay': `${delay}ms`, ...style }} {...rest}>
+      {children}
+    </Tag>
+  )
+}
+
+function ThemeToggle({ theme, onToggle }) {
+  const isDark = theme === 'dark'
+  return (
+    <button
+      type="button"
+      className={styles.themeToggle}
+      onClick={onToggle}
+      aria-label={isDark ? 'Switch to light mode' : 'Switch to dark mode'}
+    >
+      <span className="mi">{isDark ? 'light_mode' : 'dark_mode'}</span>
+    </button>
+  )
+}
 
 function BookingSheet({ isOpen, onClose, brandName, brandEmail, brandPhone }) {
   const [name,     setName]     = useState('')
@@ -126,7 +229,7 @@ function BookingSheet({ isOpen, onClose, brandName, brandEmail, brandPhone }) {
               </div>
               <div className={styles.fieldGroup}>
                 <label className={styles.fieldLabel}>Occasion / deadline date</label>
-                <input className={styles.fieldInput} type="date" value={deadline} onChange={e => setDeadline(e.target.value)} style={{ colorScheme: 'light' }} />
+                <input className={styles.fieldInput} type="date" value={deadline} onChange={e => setDeadline(e.target.value)} />
               </div>
               <div className={styles.fieldGroup}>
                 <label className={styles.fieldLabel}>Additional details</label>
@@ -195,6 +298,8 @@ export function PortfolioTemplate1({ brand, photos, garmentTypes, reviews }) {
   const [bookingOpen, setBookingOpen] = useState(false)
   const [navScrolled, setNavScrolled] = useState(false)
   const [navOpen,     setNavOpen]     = useState(false)
+  const [theme, toggleTheme]          = useTheme()
+  const activeSection                 = useActiveSection(SECTION_IDS)
 
   const heroRef         = useRef(null)
   const aboutRef        = useRef(null)
@@ -248,22 +353,38 @@ export function PortfolioTemplate1({ brand, photos, garmentTypes, reviews }) {
   ]
 
   return (
-    <div className={styles.page}>
+    <div className={styles.page} data-theme={theme}>
 
       <nav className={`${styles.nav} ${navScrolled ? styles.navScrolled : ''}`}>
         <div className={styles.navInner}>
-          <button className={styles.navLogo} onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>
+          <button id="hero" className={styles.navLogo} onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>
             {brandName}
           </button>
 
           <div className={`${styles.navLinks} ${navOpen ? styles.navLinksOpen : ''}`}>
-            <button onClick={() => { setNavOpen(false); window.scrollTo({ top: 0, behavior: 'smooth' }) }} className={styles.navLink}>Home</button>
-            <button onClick={() => scrollTo(aboutRef)} className={styles.navLink}>About</button>
-            <button onClick={() => scrollTo(worksRef)} className={styles.navLink}>Work</button>
-            <button onClick={() => scrollTo(bookRef)}  className={styles.navLink}>Contact</button>
+            <button
+              onClick={() => { setNavOpen(false); window.scrollTo({ top: 0, behavior: 'smooth' }) }}
+              className={`${styles.navLink} ${activeSection === 'hero' ? styles.navLinkActive : ''}`}
+            >
+              <span className={styles.navLinkIndicator} />
+              Home
+            </button>
+            <button onClick={() => scrollTo(aboutRef)} className={`${styles.navLink} ${activeSection === 'about' ? styles.navLinkActive : ''}`}>
+              <span className={styles.navLinkIndicator} />
+              About
+            </button>
+            <button onClick={() => scrollTo(worksRef)} className={`${styles.navLink} ${activeSection === 'work' ? styles.navLinkActive : ''}`}>
+              <span className={styles.navLinkIndicator} />
+              Work
+            </button>
+            <button onClick={() => scrollTo(bookRef)} className={`${styles.navLink} ${activeSection === 'contact' ? styles.navLinkActive : ''}`}>
+              <span className={styles.navLinkIndicator} />
+              Contact
+            </button>
           </div>
 
           <div className={styles.navRight}>
+            <ThemeToggle theme={theme} onToggle={toggleTheme} />
             <button className={styles.navCta} onClick={() => { setNavOpen(false); setBookingOpen(true) }}>
               Place an order
             </button>
@@ -372,15 +493,15 @@ export function PortfolioTemplate1({ brand, photos, garmentTypes, reviews }) {
         )}
       </section>
 
-      <section className={styles.about} ref={aboutRef}>
+      <section id="about" className={styles.about} ref={aboutRef}>
         <div className={styles.aboutInner}>
-          <div className={styles.aboutHeader}>
+          <Reveal as="div" className={styles.aboutHeader}>
             <span className={styles.eyebrow}>About</span>
             <h2 className={styles.sectionTitle}>The craft behind<br />{brandName}</h2>
-          </div>
+          </Reveal>
 
           <div className={styles.aboutBody}>
-            <div className={styles.aboutBioCol}>
+            <Reveal as="div" className={styles.aboutBioCol} delay={80}>
               <p className={styles.aboutBio}>
                 {brandBio || 'Every piece starts with a conversation — about the occasion, the fabric, and the fit you have in mind. From there, it is measured, cut, and finished by hand.'}
               </p>
@@ -395,9 +516,9 @@ export function PortfolioTemplate1({ brand, photos, garmentTypes, reviews }) {
                   </div>
                 </div>
               )}
-            </div>
+            </Reveal>
 
-            <div className={styles.aboutFactsCol}>
+            <Reveal as="div" className={styles.aboutFactsCol} delay={140}>
               {(foundedYear || serviceArea || turnaround || featuredTechnique) && (
                 <div className={styles.aboutFacts}>
                   {foundedYear && (
@@ -471,13 +592,13 @@ export function PortfolioTemplate1({ brand, photos, garmentTypes, reviews }) {
                   </div>
                 )}
               </div>
-            </div>
+            </Reveal>
           </div>
         </div>
       </section>
 
-      <section className={styles.works} ref={worksRef}>
-        <div className={styles.worksHeader}>
+      <section id="work" className={styles.works} ref={worksRef}>
+        <Reveal as="div" className={styles.worksHeader}>
           <div className={styles.worksHeaderLeft}>
             <span className={styles.eyebrow}>Collection</span>
             <h2 className={styles.sectionTitle}>Selected<br />work</h2>
@@ -498,7 +619,7 @@ export function PortfolioTemplate1({ brand, photos, garmentTypes, reviews }) {
               </div>
             )}
           </div>
-        </div>
+        </Reveal>
 
         {filteredPhotos.length === 0 ? (
           <div className={styles.worksEmpty}>Nothing in this category yet — check back soon.</div>
@@ -525,19 +646,19 @@ export function PortfolioTemplate1({ brand, photos, garmentTypes, reviews }) {
 
       <section className={styles.process}>
         <div className={styles.processInner}>
-          <div className={styles.processHeader}>
+          <Reveal as="div" className={styles.processHeader}>
             <span className={styles.eyebrow}>Craftsmanship</span>
             <h2 className={styles.sectionTitle}>How it comes<br />together</h2>
-          </div>
+          </Reveal>
           <div className={styles.processSteps}>
             {processSteps.map((step, i) => (
-              <div key={step.title} className={styles.processStep}>
+              <Reveal as="div" key={step.title} className={styles.processStep} delay={i * 80}>
                 <span className={styles.processIdx}>{String(i + 1).padStart(2, '0')}</span>
                 <div className={styles.processContent}>
                   <span className={styles.processTitle}>{step.title}</span>
                   <p className={styles.processDesc}>{step.desc}</p>
                 </div>
-              </div>
+              </Reveal>
             ))}
           </div>
         </div>
@@ -546,13 +667,13 @@ export function PortfolioTemplate1({ brand, photos, garmentTypes, reviews }) {
       {reviews.length > 0 && (
         <section className={styles.reviews}>
           <div className={styles.reviewsInner}>
-            <div className={styles.reviewsHeader}>
+            <Reveal as="div" className={styles.reviewsHeader}>
               <span className={styles.eyebrow}>Testimonials</span>
               <h2 className={styles.sectionTitle}>What clients say</h2>
-            </div>
+            </Reveal>
             <div className={styles.reviewGrid}>
-              {reviews.map(r => (
-                <div key={r.id} className={styles.reviewCard}>
+              {reviews.map((r, i) => (
+                <Reveal as="div" key={r.id} className={styles.reviewCard} delay={(i % 3) * 80}>
                   <div className={styles.reviewStars}>
                     {'★'.repeat(r.rating)}{'☆'.repeat(Math.max(0, 5 - r.rating))}
                   </div>
@@ -561,14 +682,14 @@ export function PortfolioTemplate1({ brand, photos, garmentTypes, reviews }) {
                     <span className={styles.reviewAvatar}>{(r.customerName || '?').charAt(0).toUpperCase()}</span>
                     <span className={styles.reviewName}>{r.customerName}</span>
                   </div>
-                </div>
+                </Reveal>
               ))}
             </div>
           </div>
         </section>
       )}
 
-      <section className={styles.cta} ref={bookRef}>
+      <section id="contact" className={styles.cta} ref={bookRef}>
         <div className={styles.ctaMedia}>
           {brand.footerBgImage
             ? <img src={brand.footerBgImage} alt="" className={styles.ctaImg} />

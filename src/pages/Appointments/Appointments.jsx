@@ -8,6 +8,7 @@ import Header from '../../components/Header/Header'
 import ConfirmSheet from '../../components/ConfirmSheet/ConfirmSheet'
 import Toast from '../../components/Toast/Toast'
 import BottomNav from '../../components/BottomNav/BottomNav'
+import OrderMosaic from '../../components/OrderMosaic/OrderMosaic'
 import styles from './Appointments.module.css'
 
 
@@ -198,7 +199,11 @@ function AddAppointmentModal({ isOpen, onClose, onSave, customers, allOrders }) 
             <label className={styles.fieldLabel}>Client *</label>
             {selectedCust ? (
               <div className={`${styles.selectedChip} ${errors.cust ? styles.selectedChipError : ''}`}>
-                <div className={styles.chipAvatar}>{getInitials(selectedCust.name)}</div>
+                <div className={styles.chipAvatar}>
+                  {selectedCust.photo
+                    ? <img src={selectedCust.photo} alt="" className={styles.chipAvatarImg} />
+                    : getInitials(selectedCust.name)}
+                </div>
                 <div style={{ flex: 1 }}>
                   <div className={styles.chipName}>{selectedCust.name}</div>
                   {selectedCust.phone && <div className={styles.chipSub}>{selectedCust.phone}</div>}
@@ -240,7 +245,11 @@ function AddAppointmentModal({ isOpen, onClose, onSave, customers, allOrders }) 
                             clearError('cust')
                           }}
                         >
-                          <div className={styles.dropAvatar}>{getInitials(c.name)}</div>
+                          <div className={styles.dropAvatar}>
+                            {c.photo
+                              ? <img src={c.photo} alt="" className={styles.dropAvatarImg} />
+                              : getInitials(c.name)}
+                          </div>
                           <div>
                             <div className={styles.dropName}>{c.name}</div>
                             <div className={styles.dropMeta}>{c.phone}</div>
@@ -262,7 +271,7 @@ function AddAppointmentModal({ isOpen, onClose, onSave, customers, allOrders }) 
               </label>
               {selectedOrder ? (
                 <div className={styles.selectedChip}>
-                  <span className="mi" style={{ fontSize: '1rem', color: 'var(--accent)' }}>content_cut</span>
+                  <OrderMosaic items={selectedOrder.items} size="sm" />
                   <span className={styles.chipName}>{selectedOrder.desc}</span>
                   <button className={styles.chipRemove} onClick={() => setSelectedOrder(null)}>
                     <span className="mi" style={{ fontSize: '1rem' }}>close</span>
@@ -283,7 +292,7 @@ function AddAppointmentModal({ isOpen, onClose, onSave, customers, allOrders }) 
                           className={styles.dropItem}
                           onClick={() => { setSelectedOrder(o); setOrderDropOpen(false) }}
                         >
-                          <span className="mi" style={{ fontSize: '1.1rem' }}>content_cut</span>
+                          <OrderMosaic items={o.items} size="sm" />
                           <div>
                             <div className={styles.dropName}>{o.desc}</div>
                             <div className={styles.dropMeta}>{o.due ? `Due ${o.due}` : o.status}</div>
@@ -439,6 +448,14 @@ export default function Appointments({ onMenuClick }) {
     return acc
   }, {})
 
+  const linkedCustomer = detailAppt?.customerId
+    ? customers.find(c => String(c.id) === String(detailAppt.customerId))
+    : null
+
+  const linkedOrder = detailAppt?.orderId
+    ? allOrders.find(o => String(o.id) === String(detailAppt.orderId))
+    : null
+
   return (
     <div className={styles.page}>
       <Header title="Appointments" onMenuClick={onMenuClick} />
@@ -570,6 +587,8 @@ export default function Appointments({ onMenuClick }) {
       {detailAppt && (
         <AppointmentDetail
           appt={detailAppt}
+          customer={linkedCustomer}
+          order={linkedOrder}
           onClose={() => setDetailAppt(null)}
           onStatusChange={handleStatusChange}
           onDelete={(a) => { setDetailAppt(null); setConfirmDel(a) }}

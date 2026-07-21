@@ -1,14 +1,11 @@
 import { useState } from 'react'
 import { collection, addDoc, serverTimestamp } from 'firebase/firestore'
-import { db } from '../../firebase' // adjust path to match your firebase init file
+import { db } from '../../firebase'
 import { useAuth } from '../../contexts/AuthContext'
+import { uploadToCloudinary } from '../../services/cloudinaryService'
 import Header from '../../components/Header/Header'
 import BottomNav from '../../components/BottomNav/BottomNav'
 import styles from './BugReport.module.css'
-
-// ─────────────────────────────────────────────────────────────
-// Static options
-// ─────────────────────────────────────────────────────────────
 
 const SECTIONS = [
   'Dashboard',
@@ -35,25 +32,17 @@ const SEVERITIES = [
   { value: 'critical', label: 'Critical', hint: 'App crashes or data is lost'            },
 ]
 
-// ─────────────────────────────────────────────────────────────
-// Helpers
-// ─────────────────────────────────────────────────────────────
-
 function getDeviceMeta() {
   return {
-    userAgent:      navigator.userAgent,
-    platform:       navigator.platform,
-    language:       navigator.language,
-    screen:         `${window.screen.width}x${window.screen.height}`,
-    viewport:       `${window.innerWidth}x${window.innerHeight}`,
-    url:            window.location.href,
-    standalone:     window.matchMedia('(display-mode: standalone)').matches,
+    userAgent:  navigator.userAgent,
+    platform:   navigator.platform,
+    language:   navigator.language,
+    screen:     `${window.screen.width}x${window.screen.height}`,
+    viewport:   `${window.innerWidth}x${window.innerHeight}`,
+    url:        window.location.href,
+    standalone: window.matchMedia('(display-mode: standalone)').matches,
   }
 }
-
-// ─────────────────────────────────────────────────────────────
-// Main page
-// ─────────────────────────────────────────────────────────────
 
 export default function BugReport({ onMenuClick }) {
   const { user } = useAuth()
@@ -62,12 +51,13 @@ export default function BugReport({ onMenuClick }) {
   const [severity, setSeverity] = useState('medium')
   const [title, setTitle]       = useState('')
   const [description, setDescription] = useState('')
-  const [screenshot, setScreenshot]   = useState(null)
+  const [screenshotFile, setScreenshotFile] = useState(null)
   const [screenshotPreview, setScreenshotPreview] = useState(null)
 
-  const [submitting, setSubmitting] = useState(false)
-  const [submitted, setSubmitted]   = useState(false)
-  const [error, setError]           = useState(null)
+  const [submitting, setSubmitting]         = useState(false)
+  const [uploadProgress, setUploadProgress] = useState(0)
+  const [submitted, setSubmitted]           = useState(false)
+  const [error, setError]                   = useState(null)
 
   const canSubmit = title.trim().length > 2 && description.trim().length > 4 && !submitting
 
@@ -79,14 +69,14 @@ export default function BugReport({ onMenuClick }) {
       return
     }
     setError(null)
-    setScreenshot(file)
+    setScreenshotFile(file)
     const reader = new FileReader()
     reader.onload = () => setScreenshotPreview(reader.result)
     reader.readAsDataURL(file)
   }
 
   const removeScreenshot = () => {
-    setScreenshot(null)
+    setScreenshotFile(null)
     setScreenshotPreview(null)
   }
 
@@ -95,23 +85,31 @@ export default function BugReport({ onMenuClick }) {
     if (!canSubmit) return
 
     setSubmitting(true)
+    setUploadProgress(0)
     setError(null)
 
     try {
-      // Screenshot is stored as a base64 data URL directly on the Firestore doc.
-      // Fine for small images; swap for Firebase Storage + a URL field if you
-      // expect larger files or want to keep documents lean.
+      let screenshotUrl      = null
+      let screenshotPublicId = null
+
+      if (screenshotFile) {
+        const uploaded = await uploadToCloudinary(screenshotFile, 'bug-reports', setUploadProgress)
+        screenshotUrl      = uploaded.url
+        screenshotPublicId = uploaded.publicId
+      }
+
       await addDoc(collection(db, 'bugReports'), {
-        title:       title.trim(),
-        description: description.trim(),
-        section:     section || 'Not specified',
+        title:              title.trim(),
+        description:        description.trim(),
+        section:            section || 'Not specified',
         severity,
-        screenshot:  screenshotPreview || null,
-        status:      'new',
-        userId:      user?.uid ?? null,
-        userEmail:   user?.email ?? null,
-        device:      getDeviceMeta(),
-        createdAt:   serverTimestamp(),
+        screenshotUrl,
+        screenshotPublicId,
+        status:             'new',
+        userId:              user?.uid ?? null,
+        userEmail:           user?.email ?? null,
+        device:              getDeviceMeta(),
+        createdAt:           serverTimestamp(),
       })
 
       setSubmitted(true)
@@ -120,6 +118,7 @@ export default function BugReport({ onMenuClick }) {
       setError('Something went wrong sending your report. Please try again.')
     } finally {
       setSubmitting(false)
+      setUploadProgress(0)
     }
   }
 
@@ -132,7 +131,6 @@ export default function BugReport({ onMenuClick }) {
     setSubmitted(false)
   }
 
-  // ── SUCCESS STATE ──
   if (submitted) {
     return (
       <div className={styles.page}>
@@ -157,7 +155,6 @@ export default function BugReport({ onMenuClick }) {
     )
   }
 
-  // ── FORM STATE ──
   return (
     <div className={styles.page}>
       <Header onMenuClick={onMenuClick} title="Report a Bug" showNotifications={false} />
@@ -168,7 +165,6 @@ export default function BugReport({ onMenuClick }) {
           Spot something broken? Let us know what happened and we'll get it fixed.
         </p>
 
-        {/* ── WHAT HAPPENED ── */}
         <div className={styles.sectionHeader}>
           <div className={styles.sectionIconWrap}>
             <span className="mi" style={{ fontSize: '1rem' }}>edit_note</span>
@@ -203,7 +199,6 @@ export default function BugReport({ onMenuClick }) {
           <div className={styles.charCount}>{description.length}/1000</div>
         </div>
 
-        {/* ── DETAILS ── */}
         <div className={styles.sectionHeader}>
           <div className={styles.sectionIconWrap}>
             <span className="mi" style={{ fontSize: '1rem' }}>tune</span>
@@ -244,7 +239,6 @@ export default function BugReport({ onMenuClick }) {
           </div>
         </div>
 
-        {/* ── SCREENSHOT ── */}
         <div className={styles.sectionHeader}>
           <div className={styles.sectionIconWrap}>
             <span className="mi" style={{ fontSize: '1rem' }}>image</span>
@@ -285,10 +279,13 @@ export default function BugReport({ onMenuClick }) {
           </div>
         )}
 
-        {/* ── SUBMIT ── */}
         <div className={styles.submitPadding}>
           <button className={styles.submitBtn} type="submit" disabled={!canSubmit}>
-            {submitting ? 'Sending…' : 'Send report'}
+            {submitting
+              ? screenshotFile
+                ? `Uploading… ${uploadProgress}%`
+                : 'Sending…'
+              : 'Send report'}
           </button>
           <p className={styles.submitHint}>
             We'll automatically include your device and app version to help us debug faster.

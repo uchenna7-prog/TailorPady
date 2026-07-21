@@ -1,6 +1,8 @@
 import { useState, useRef, useEffect } from 'react'
 import { getEffectiveStatus, parseApptDate } from '../../contexts/AppointmentContext'
 import ConfirmSheet from '../ConfirmSheet/ConfirmSheet'
+import OrderMosaic from '../OrderMosaic/OrderMosaic'
+import { getInitials } from '../../utils/nameUtils'
 import styles from './AppointmentDetail.module.css'
 
 
@@ -54,8 +56,28 @@ function isChipLocked(key, appt) {
   return false
 }
 
+function CustomerLinkIcon({ customer }) {
+  if (!customer) {
+    return <span className="mi" style={{ fontSize: '1rem', color: 'var(--text3)' }}>person</span>
+  }
+  return (
+    <div className={styles.linkedAvatar}>
+      {customer.photo
+        ? <img src={customer.photo} alt="" className={styles.linkedAvatarImg} />
+        : <span className={styles.linkedAvatarInitials}>{getInitials(customer.name)}</span>}
+    </div>
+  )
+}
 
-export function AppointmentDetail({ appt, onClose, onStatusChange, onDelete, onGoToCustomer }) {
+function OrderLinkIcon({ order }) {
+  if (!order) {
+    return <span className="mi" style={{ fontSize: '1rem', color: 'var(--text3)' }}>content_cut</span>
+  }
+  return <OrderMosaic items={order.items} size="sm" />
+}
+
+
+export function AppointmentDetail({ appt, customer, order, onClose, onStatusChange, onDelete, onGoToCustomer }) {
   const [showStatusMenu, setShowStatusMenu] = useState(false)
   const [confirmDelete, setConfirmDelete] = useState(false)
   const statusRef = useRef(null)
@@ -209,7 +231,7 @@ export function AppointmentDetail({ appt, onClose, onStatusChange, onDelete, onG
             )}
           </div>
 
-          {(appt.customerName || appt.orderDesc) && (
+          {appt.customerName && (
             onGoToCustomer && appt.customerId ? (
               <button
                 type="button"
@@ -217,58 +239,52 @@ export function AppointmentDetail({ appt, onClose, onStatusChange, onDelete, onG
                 onClick={() => { onClose(); onGoToCustomer(appt.customerId) }}
               >
                 <div className={styles.cardHeader}>
-                  <span className={styles.sectionCardLabel}>Linked To</span>
+                  <span className={styles.sectionCardLabel}>Customer</span>
                   <span className={`mi ${styles.chevronIcon}`} style={{ fontSize: '1.05rem', color: 'var(--text3)' }}>chevron_right</span>
                 </div>
-                {appt.customerName && (
-                  <div className={styles.detailLinkedRow}>
-                    <span className="mi" style={{ fontSize: '1rem', color: 'var(--text3)' }}>person</span>
-                    <div style={{ flex: 1, textAlign: 'left' }}>
-                      <div style={{ fontWeight: 700, fontSize: '0.88rem', color: 'var(--text)' }}>{appt.customerName}</div>
-                      {appt.customerPhone && (
-                        <div style={{ fontSize: '0.75rem', color: 'var(--text3)' }}>{appt.customerPhone}</div>
-                      )}
-                    </div>
+                <div className={styles.detailLinkedRow}>
+                  <CustomerLinkIcon customer={customer} />
+                  <div style={{ flex: 1, textAlign: 'left' }}>
+                    <div style={{ fontWeight: 700, fontSize: '0.88rem', color: 'var(--text)' }}>{appt.customerName}</div>
+                    {appt.customerPhone && (
+                      <div style={{ fontSize: '0.75rem', color: 'var(--text3)' }}>{appt.customerPhone}</div>
+                    )}
                   </div>
-                )}
-                {appt.orderDesc && (
-                  <div className={styles.detailLinkedRow}>
-                    <span className="mi" style={{ fontSize: '1rem', color: 'var(--text3)' }}>content_cut</span>
-                    <span style={{ fontWeight: 600, fontSize: '0.88rem', color: 'var(--text)' }}>{appt.orderDesc}</span>
-                  </div>
-                )}
+                </div>
               </button>
             ) : (
               <div className={styles.detailSectionCard}>
-                <div className={styles.detailSectionLabel}>Linked To</div>
-                {appt.customerName && (
-                  <div className={styles.detailLinkedRow}>
-                    <span className="mi" style={{ fontSize: '1rem', color: 'var(--text3)' }}>person</span>
-                    <div style={{ flex: 1 }}>
-                      <div style={{ fontWeight: 700, fontSize: '0.88rem', color: 'var(--text)' }}>{appt.customerName}</div>
-                      {appt.customerPhone && (
-                        <div style={{ fontSize: '0.75rem', color: 'var(--text3)' }}>{appt.customerPhone}</div>
-                      )}
-                    </div>
+                <div className={styles.detailSectionLabel}>Customer</div>
+                <div className={styles.detailLinkedRow}>
+                  <CustomerLinkIcon customer={customer} />
+                  <div style={{ flex: 1 }}>
+                    <div style={{ fontWeight: 700, fontSize: '0.88rem', color: 'var(--text)' }}>{appt.customerName}</div>
                     {appt.customerPhone && (
-                      <a
-                        href={`tel:${appt.customerPhone}`}
-                        className={styles.callBtn}
-                        onClick={e => e.stopPropagation()}
-                      >
-                        <span className="mi" style={{ fontSize: '1rem' }}>call</span>
-                      </a>
+                      <div style={{ fontSize: '0.75rem', color: 'var(--text3)' }}>{appt.customerPhone}</div>
                     )}
                   </div>
-                )}
-                {appt.orderDesc && (
-                  <div className={styles.detailLinkedRow}>
-                    <span className="mi" style={{ fontSize: '1rem', color: 'var(--text3)' }}>content_cut</span>
-                    <span style={{ fontWeight: 600, fontSize: '0.88rem', color: 'var(--text)' }}>{appt.orderDesc}</span>
-                  </div>
-                )}
+                  {appt.customerPhone && (
+                    <a
+                      href={`tel:${appt.customerPhone}`}
+                      className={styles.callBtn}
+                      onClick={e => e.stopPropagation()}
+                    >
+                      <span className="mi" style={{ fontSize: '1rem' }}>call</span>
+                    </a>
+                  )}
+                </div>
               </div>
             )
+          )}
+
+          {appt.orderDesc && (
+            <div className={styles.detailSectionCard}>
+              <div className={styles.detailSectionLabel}>Order</div>
+              <div className={styles.detailLinkedRow}>
+                <OrderLinkIcon order={order} />
+                <span style={{ fontWeight: 600, fontSize: '0.88rem', color: 'var(--text)' }}>{appt.orderDesc}</span>
+              </div>
+            </div>
           )}
 
           {appt.notes && (

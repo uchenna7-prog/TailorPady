@@ -1,5 +1,7 @@
 import { useState, useRef, useEffect } from 'react'
 import ConfirmSheet from '../ConfirmSheet/ConfirmSheet'
+import OrderMosaic from '../OrderMosaic/OrderMosaic'
+import { getInitials } from '../../utils/nameUtils'
 import styles from './TaskDetail.module.css'
 
 const PRIORITY_LABELS = { low: 'Low', normal: 'Normal', high: 'High', urgent: 'Urgent' }
@@ -50,8 +52,28 @@ function formatDate(dateStr) {
   })
 }
 
+function CustomerLinkIcon({ customer }) {
+  if (!customer) {
+    return <span className="mi" style={{ fontSize: '1rem', color: 'var(--text3)' }}>person</span>
+  }
+  return (
+    <div className={styles.linkedAvatar}>
+      {customer.photo
+        ? <img src={customer.photo} alt="" className={styles.linkedAvatarImg} />
+        : <span className={styles.linkedAvatarInitials}>{getInitials(customer.name)}</span>}
+    </div>
+  )
+}
 
-export default function TaskDetail({ task, onClose, onToggle, onDelete, onGoToCustomer }) {
+function OrderLinkIcon({ order }) {
+  if (!order) {
+    return <span className="mi" style={{ fontSize: '1rem', color: 'var(--text3)' }}>content_cut</span>
+  }
+  return <OrderMosaic items={order.items} size="sm" />
+}
+
+
+export default function TaskDetail({ task, customer, order, onClose, onToggle, onDelete, onGoToCustomer }) {
   const [confirmDelete, setConfirmDelete] = useState(false)
   const [showStatusMenu, setShowStatusMenu] = useState(false)
   const [localDone, setLocalDone] = useState(task?.done ?? false)
@@ -216,7 +238,7 @@ export default function TaskDetail({ task, onClose, onToggle, onDelete, onGoToCu
             )}
           </div>
 
-          {(task.customerName || task.orderDesc) && (
+          {task.customerName && (
             onGoToCustomer && task.customerId ? (
               <button
                 type="button"
@@ -224,39 +246,33 @@ export default function TaskDetail({ task, onClose, onToggle, onDelete, onGoToCu
                 onClick={() => { onClose(); onGoToCustomer(task.customerId) }}
               >
                 <div className={styles.cardHeader}>
-                  <span className={styles.sectionCardLabel}>Linked To</span>
+                  <span className={styles.sectionCardLabel}>Customer</span>
                   <span className={`mi ${styles.chevronIcon}`} style={{ fontSize: '1.05rem', color: 'var(--text3)' }}>chevron_right</span>
                 </div>
-                {task.customerName && (
-                  <div className={styles.detailLinkedRow}>
-                    <span className="mi" style={{ fontSize: '1rem', color: 'var(--text3)' }}>person</span>
-                    <span>{task.customerName}</span>
-                  </div>
-                )}
-                {task.orderDesc && (
-                  <div className={styles.detailLinkedRow}>
-                    <span className="mi" style={{ fontSize: '1rem', color: 'var(--text3)' }}>content_cut</span>
-                    <span>{task.orderDesc}</span>
-                  </div>
-                )}
+                <div className={styles.detailLinkedRow}>
+                  <CustomerLinkIcon customer={customer} />
+                  <span>{task.customerName}</span>
+                </div>
               </button>
             ) : (
               <div className={styles.detailSectionCard}>
-                <div className={styles.detailSectionLabel}>Linked To</div>
-                {task.customerName && (
-                  <div className={styles.detailLinkedRow}>
-                    <span className="mi" style={{ fontSize: '1rem', color: 'var(--text3)' }}>person</span>
-                    <span>{task.customerName}</span>
-                  </div>
-                )}
-                {task.orderDesc && (
-                  <div className={styles.detailLinkedRow}>
-                    <span className="mi" style={{ fontSize: '1rem', color: 'var(--text3)' }}>content_cut</span>
-                    <span>{task.orderDesc}</span>
-                  </div>
-                )}
+                <div className={styles.detailSectionLabel}>Customer</div>
+                <div className={styles.detailLinkedRow}>
+                  <CustomerLinkIcon customer={customer} />
+                  <span>{task.customerName}</span>
+                </div>
               </div>
             )
+          )}
+
+          {task.orderDesc && (
+            <div className={styles.detailSectionCard}>
+              <div className={styles.detailSectionLabel}>Order</div>
+              <div className={styles.detailLinkedRow}>
+                <OrderLinkIcon order={order} />
+                <span>{task.orderDesc}</span>
+              </div>
+            </div>
           )}
 
           {task.notes && (

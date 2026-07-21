@@ -456,22 +456,22 @@ export default function Reports({ onMenuClick }) {
             <PeriodSelector value={perfPeriod} onChange={setPerfPeriod} />
           </div>
           <div className={styles.statsGrid}>
-            <StatCard icon="receipt_long"          label="Orders Placed"      value={perfStats.totalOrders}      info="Number of new orders placed in this period"
+            <StatCard icon="receipt_long"          label="Orders Placed"      value={perfStats.totalOrders}      
               isInfoOpen={openStatInfo === 0}
               onToggleInfo={() => setOpenStatInfo(p => (p === 0 ? null : 0))}
               onCloseInfo={() => setOpenStatInfo(p => (p === 0 ? null : p))}
             />
-            <StatCard icon="sell"                   label="Total Order Value"  value={fmt(perfStats.orderValue)}  info="Full value of all orders placed in this period"
+            <StatCard icon="sell"                   label="Total Order Value"  value={fmt(perfStats.orderValue)} 
               isInfoOpen={openStatInfo === 1}
               onToggleInfo={() => setOpenStatInfo(p => (p === 1 ? null : 1))}
               onCloseInfo={() => setOpenStatInfo(p => (p === 1 ? null : p))}
             />
-            <StatCard icon="account_balance_wallet" label="Amount Collected"   value={fmt(perfStats.payReceived)} info="Payments received from clients so far"
+            <StatCard icon="account_balance_wallet" label="Amount Collected"   value={fmt(perfStats.payReceived)} 
               isInfoOpen={openStatInfo === 2}
               onToggleInfo={() => setOpenStatInfo(p => (p === 2 ? null : 2))}
               onCloseInfo={() => setOpenStatInfo(p => (p === 2 ? null : p))}
             />
-            <StatCard icon="pending_actions"        label="Amount Outstanding" value={fmt(perfStats.outstanding)} info="Amount still owed by clients"
+            <StatCard icon="pending_actions"        label="Amount Outstanding" value={fmt(perfStats.outstanding)} 
               isInfoOpen={openStatInfo === 3}
               onToggleInfo={() => setOpenStatInfo(p => (p === 3 ? null : 3))}
               onCloseInfo={() => setOpenStatInfo(p => (p === 3 ? null : p))}

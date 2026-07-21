@@ -292,11 +292,41 @@
 .detailLinkedRow {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
   font-size: 0.88rem;
   font-weight: 600;
   color: var(--text);
-  margin-bottom: 6px;
+  margin-bottom: 8px;
+}
+
+.detailLinkedRow:last-child {
+  margin-bottom: 0;
+}
+
+.linkedAvatar {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--surface2);
+  border: 1px solid var(--border2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.linkedAvatarImg {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.linkedAvatarInitials {
+  font-size: 0.6rem;
+  font-weight: 800;
+  color: var(--text);
 }
 
 .detailNoteText {

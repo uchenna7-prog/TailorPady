@@ -420,7 +420,7 @@ export function AddCustomerModal({ isOpen, onClose, onSave }) {
                   <input
                     type="text"
                     className={styles.formInput}
-                    placeholder="e.g. Uchendu Daniel"
+                    placeholder="e.g. Chidi Okonkwo"
                     value={name}
                     onChange={e => setName(e.target.value)}
                   />

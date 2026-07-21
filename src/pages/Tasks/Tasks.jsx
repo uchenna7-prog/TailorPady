@@ -7,6 +7,7 @@ import ConfirmSheet from '../../components/ConfirmSheet/ConfirmSheet'
 import Toast        from '../../components/Toast/Toast'
 import BottomNav    from '../../components/BottomNav/BottomNav'
 import TaskDetail   from '../../components/TaskDetail/TaskDetail'
+import OrderMosaic  from '../../components/OrderMosaic/OrderMosaic'
 import { TaskRow, isTaskOverdue } from '../../components/TaskRow/TaskRow'
 import styles from './Tasks.module.css'
 
@@ -246,7 +247,11 @@ function AddTaskModal({ isOpen, onClose, onSave, customers, allOrders }) {
             </label>
             {selectedCust ? (
               <div className={styles.selectedChip}>
-                <div className={styles.chipAvatar}>{getInitials(selectedCust.name)}</div>
+                <div className={styles.chipAvatar}>
+                  {selectedCust.photo
+                    ? <img src={selectedCust.photo} alt="" className={styles.chipAvatarImg} />
+                    : getInitials(selectedCust.name)}
+                </div>
                 <span className={styles.chipName}>{selectedCust.name}</span>
                 <button
                   className={styles.chipRemove}
@@ -284,7 +289,11 @@ function AddTaskModal({ isOpen, onClose, onSave, customers, allOrders }) {
                             setSelectedOrder(null)
                           }}
                         >
-                          <div className={styles.dropAvatar}>{getInitials(c.name)}</div>
+                          <div className={styles.dropAvatar}>
+                            {c.photo
+                              ? <img src={c.photo} alt="" className={styles.dropAvatarImg} />
+                              : getInitials(c.name)}
+                          </div>
                           <div>
                             <div className={styles.dropName}>{c.name}</div>
                             <div className={styles.dropMeta}>{c.phone}</div>
@@ -305,10 +314,8 @@ function AddTaskModal({ isOpen, onClose, onSave, customers, allOrders }) {
               </label>
               {selectedOrder ? (
                 <div className={styles.selectedChip}>
-                  <span className={styles.chipName}>
-                    <span className="mi" style={{ fontSize: '1rem', verticalAlign: 'middle', marginRight: '4px' }}>content_cut</span>
-                    {selectedOrder.desc}
-                  </span>
+                  <OrderMosaic items={selectedOrder.items} size="sm" />
+                  <span className={styles.chipName}>{selectedOrder.desc}</span>
                   <button className={styles.chipRemove} onClick={() => setSelectedOrder(null)}>
                     <span className="mi" style={{ fontSize: '1rem' }}>close</span>
                   </button>
@@ -328,7 +335,7 @@ function AddTaskModal({ isOpen, onClose, onSave, customers, allOrders }) {
                           className={styles.dropItem}
                           onClick={() => { setSelectedOrder(o); setOrderDropOpen(false) }}
                         >
-                          <span className="mi" style={{ fontSize: '1.1rem' }}>content_cut</span>
+                          <OrderMosaic items={o.items} size="sm" />
                           <div>
                             <div className={styles.dropName}>{o.desc}</div>
                             <div className={styles.dropMeta}>{o.due ? `Due ${o.due}` : o.status}</div>
@@ -489,6 +496,14 @@ export default function Tasks({ onMenuClick }) {
     return acc
   }, {})
 
+  const linkedCustomer = detailTask?.customerId
+    ? customers.find(c => String(c.id) === String(detailTask.customerId))
+    : null
+
+  const linkedOrder = detailTask?.orderId
+    ? allOrders.find(o => String(o.id) === String(detailTask.orderId))
+    : null
+
   return (
     <div className={styles.page}>
       <Header onMenuClick={onMenuClick} />
@@ -621,6 +636,8 @@ export default function Tasks({ onMenuClick }) {
       {detailTask && (
         <TaskDetail
           task={detailTask}
+          customer={linkedCustomer}
+          order={linkedOrder}
           onClose={() => setDetailTask(null)}
           onToggle={handleToggle}
           onDelete={(t) => { setDetailTask(null); setConfirmDel(t) }}

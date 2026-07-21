@@ -16,7 +16,7 @@ const NAV_LINKS = [
 const SECTION_IDS = NAV_LINKS.map(link => link.href.slice(1))
 
 const ABOUT_STATS = [
-  { value: '5+', label: 'Tailors' },
+  { value: '5+', label: 'Tailor signups' },
   { value: '30+', label: 'Orders tracked' },
   { value: '70+', label: 'Measurements stored' },
 ]
