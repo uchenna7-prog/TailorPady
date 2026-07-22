@@ -921,127 +921,63 @@
   color: var(--ink);
 }
 
-.showcaseTabs {
-  display: flex;
-  gap: 4px;
-  overflow-x: auto;
-  scroll-behavior: smooth;
-  scroll-padding-inline: 24px;
-  flex-wrap: nowrap;
-  width: fit-content;
-  max-width: 100%;
-  margin: 0 auto 48px;
-  padding: 5px;
-  border-radius: 10px;
+.showcaseBand {
   background: var(--surface-2);
   border: 1px solid var(--line);
-  scrollbar-width: none;
-  -ms-overflow-style: none;
+  border-radius: var(--radius);
+  padding: clamp(32px, 6vw, 56px) clamp(16px, 4vw, 40px);
 }
 
-.showcaseTabs::-webkit-scrollbar {
-  display: none;
+.showcaseGrid {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: flex-start;
+  gap: clamp(20px, 4vw, 44px);
 }
 
-.showcaseTab {
-  flex: 0 0 auto;
-  white-space: nowrap;
-  background: transparent;
-  border: none;
-  border-radius: 10px;
-  padding: 9px 18px;
-  font-family: var(--body);
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--muted);
-  cursor: pointer;
-  transition: background 0.2s ease, color 0.2s ease;
-}
-
-.showcaseTab:hover {
-  color: var(--ink);
-}
-
-.showcaseTabActive {
-  color: var(--paper);
-  background: var(--ink);
-}
-
-.showcaseTab.showcaseTabActive:hover {
-  color: var(--paper);
-}
-
-.showcaseStage {
-  display: grid;
-  grid-template-columns: minmax(220px, 320px) 1fr;
-  gap: clamp(28px, 4vw, 56px);
-  align-items: center;
-}
-
-.showcaseCopy {
+.showcaseItem {
   display: flex;
   flex-direction: column;
-  gap: 12px;
-  animation: swapFade 0.45s cubic-bezier(0.16, 1, 0.3, 1) both;
+  align-items: center;
+  gap: 16px;
+  width: 150px;
 }
 
-.showcaseTitle {
-  font-family: var(--display);
-  font-size: 26px;
-  font-weight: 700;
-  letter-spacing: -0.01em;
-  line-height: 1.2;
-  margin: 0;
-}
-
-.showcaseBody {
-  font-size: 15px;
-  line-height: 1.65;
-  color: var(--muted);
-  margin: 0;
-}
-
-.showcaseVisual {
+.showcasePhone {
   position: relative;
-  min-width: 0;
+  width: 100%;
+  aspect-ratio: 553 / 1158;
+  filter: drop-shadow(0 18px 26px rgba(8, 8, 10, 0.22));
 }
 
-.showcaseGlow {
+.showcasePhoneScreen {
   position: absolute;
-  top: 6%;
-  left: 50%;
-  width: 92%;
-  height: 88%;
-  transform: translateX(-50%);
-  background: radial-gradient(ellipse at center, color-mix(in srgb, var(--ink) 10%, transparent), transparent 70%);
-  filter: blur(40px);
-  pointer-events: none;
-  z-index: 0;
-}
-
-.showcaseFrame {
-  position: relative;
+  top: 2.6%;
+  bottom: 3.6%;
+  left: 5.8%;
+  right: 6.1%;
+  border-radius: 6.2% / 2.8%;
+  object-fit: cover;
   z-index: 1;
+}
+
+.showcasePhoneFrame {
+  position: absolute;
+  inset: 0;
   width: 100%;
-  background: var(--surface);
-  border: 1px solid var(--line-strong);
-  border-radius: var(--radius);
-  box-shadow: 0 60px 90px -40px rgba(8, 8, 10, 0.35);
-  overflow: hidden;
-  animation: frameReveal 0.45s cubic-bezier(0.16, 1, 0.3, 1) both;
-}
-
-.showcaseFrameBar {
-  height: 15px;
-  background: var(--surface);
-  border-bottom: 1px solid var(--line);
-}
-
-.showcaseImage {
+  height: 100%;
+  z-index: 2;
+  pointer-events: none;
   display: block;
-  width: 100%;
-  height: auto;
-  background: var(--surface-2);
+}
+
+.showcaseItemLabel {
+  font-family: var(--display);
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--ink);
+  text-align: center;
 }
 
 .howTimeline {
@@ -1680,21 +1616,6 @@
   }
 }
 
-@media (max-width: 900px) {
-  .showcaseStage {
-    grid-template-columns: 1fr;
-  }
-
-  .showcaseCopy {
-    text-align: center;
-    align-items: center;
-  }
-
-  .showcaseVisual {
-    margin: 0 auto;
-  }
-}
-
 @media (max-width: 768px) {
   .navLinks,
   .navActions {
@@ -1703,6 +1624,10 @@
 
   .navMobileTrigger {
     display: flex;
+  }
+
+  .showcaseItem {
+    width: 120px;
   }
 }
 
@@ -1740,10 +1665,6 @@
     padding-top: 55px;
   }
 
-  .showcaseFrame {
-    border-radius: 10px;
-  }
-
   .howIconWrap {
     width: 68px;
     height: 68px;
@@ -1760,6 +1681,14 @@
 
   .pricingCard {
     padding: 26px 22px;
+  }
+
+  .showcaseItem {
+    width: 100px;
+  }
+
+  .showcaseItemLabel {
+    font-size: 12px;
   }
 }
 
@@ -1785,6 +1714,14 @@
 
   .aboutStats {
     gap: 16px;
+  }
+
+  .showcaseGrid {
+    gap: 16px;
+  }
+
+  .showcaseItem {
+    width: 84px;
   }
 }
 
