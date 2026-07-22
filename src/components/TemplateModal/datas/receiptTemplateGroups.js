@@ -19,8 +19,7 @@ import { ReceiptTemplate18 } from '../../../components/Templates/ReceiptTemplate
 import { ReceiptTemplate19 } from '../../../components/Templates/ReceiptTemplates/Template19'
 import { ReceiptTemplate20 } from '../../../components/Templates/ReceiptTemplates/Template20'
 import { ReceiptTemplate21 } from '../../../components/Templates/ReceiptTemplates/Template21'
-import {ReceiptTemplate22 } from '../../../components/Templates/ReceiptTemplates/Template22'
-
+import { ReceiptTemplate22 } from '../../../components/Templates/ReceiptTemplates/Template22'
 
 export const RECEIPT_TEMPLATE_GROUPS = [
   {
@@ -50,11 +49,10 @@ export const RECEIPT_TEMPLATE_GROUPS = [
           'address',
           'phone',
           'email',
-          'accountName'
+          'accountName',
         ],
         Component: ReceiptTemplate2,
       },
-
       {
         id: 'receiptTemplate3',
         label: 'Spine',
@@ -68,11 +66,9 @@ export const RECEIPT_TEMPLATE_GROUPS = [
           'email',
           'website',
           'accountName',
-   
         ],
         Component: ReceiptTemplate3,
       },
-
       {
         id: 'receiptTemplate4',
         label: 'Info Pair',
@@ -84,12 +80,10 @@ export const RECEIPT_TEMPLATE_GROUPS = [
           'phone',
           'email',
           'website',
-          'accountName'
+          'accountName',
         ],
         Component: ReceiptTemplate4,
       },
-
-
       {
         id: 'receiptTemplate5',
         label: 'Parallel',
@@ -103,36 +97,34 @@ export const RECEIPT_TEMPLATE_GROUPS = [
         ],
         Component: ReceiptTemplate5,
       },
-
-        {
+      {
         id: 'receiptTemplate6',
         label: 'Gradient',
-        tags: ['clean', 'has logo', 'payment terms','has signature'],
+        tags: ['clean', 'has logo', 'payment terms', 'has signature'],
         requires: [
+          'logo',
           'name',
           'address',
           'phone',
           'email',
           'accountName',
-   
         ],
         Component: ReceiptTemplate6,
       },
       {
         id: 'receiptTemplate7',
         label: 'Gradient',
-        tags: ['clean', 'has logo', 'payment terms','has signature'],
+        tags: ['clean', 'has logo', 'payment terms', 'has signature'],
         requires: [
+          'logo',
           'name',
           'address',
           'phone',
           'email',
           'accountName',
-   
         ],
         Component: ReceiptTemplate7,
       },
-
       {
         id: 'receiptTemplate8',
         label: 'Bold Corporate',
@@ -158,7 +150,7 @@ export const RECEIPT_TEMPLATE_GROUPS = [
           'phone',
           'email',
           'website',
-          'accountName'
+          'accountName',
         ],
         Component: ReceiptTemplate9,
       },
@@ -194,7 +186,7 @@ export const RECEIPT_TEMPLATE_GROUPS = [
           'phone',
           'email',
           'website',
-          'accountName'
+          'accountName',
         ],
         Component: ReceiptTemplate11,
       },
@@ -210,7 +202,7 @@ export const RECEIPT_TEMPLATE_GROUPS = [
           'phone',
           'email',
           'website',
-          'accountName'
+          'accountName',
         ],
         Component: ReceiptTemplate12,
       },
@@ -226,7 +218,7 @@ export const RECEIPT_TEMPLATE_GROUPS = [
           'phone',
           'email',
           'signature',
-          'accountName'
+          'accountName',
         ],
         Component: ReceiptTemplate13,
       },
@@ -271,7 +263,7 @@ export const RECEIPT_TEMPLATE_GROUPS = [
           'address',
           'phone',
           'email',
-          'accountName'
+          'accountName',
         ],
         Component: ReceiptTemplate16,
       },
@@ -302,7 +294,6 @@ export const RECEIPT_TEMPLATE_GROUPS = [
           'email',
           'website',
           'accountName',
-   
         ],
         Component: ReceiptTemplate18,
       },
@@ -339,7 +330,6 @@ export const RECEIPT_TEMPLATE_GROUPS = [
     ],
   },
 
-
   {
     groupLabel: 'Solid',
     templates: [
@@ -353,7 +343,6 @@ export const RECEIPT_TEMPLATE_GROUPS = [
           'phone',
           'email',
           'accountName',
-   
         ],
         Component: ReceiptTemplate21,
       },
@@ -368,11 +357,9 @@ export const RECEIPT_TEMPLATE_GROUPS = [
           'email',
           'website',
           'accountName',
-   
         ],
         Component: ReceiptTemplate22,
       },
     ],
   },
-
 ]
