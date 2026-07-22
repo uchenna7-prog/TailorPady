@@ -832,17 +832,20 @@
 .featureGrid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-  gap: 16px;
+  gap: 20px;
 }
 
 .featureCard {
+  position: relative;
   background: var(--surface);
   border: 1px solid var(--line);
   border-radius: var(--radius);
-  padding: 28px;
+  padding: 40px 28px 32px;
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  align-items: center;
+  text-align: center;
+  gap: 14px;
   transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.35s ease, border-color 0.2s ease;
 }
 
@@ -852,20 +855,22 @@
   border-color: var(--line-strong);
 }
 
-.featureIcon {
+.featureIconRoundel {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 44px;
-  height: 44px;
-  border-radius: 12px;
-  background: var(--surface-2);
-  color: var(--ink);
-  font-size: 22px !important;
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--ink), color-mix(in srgb, var(--ink) 70%, var(--muted-2)));
+  color: var(--paper);
+  font-size: 28px !important;
+  margin-bottom: 6px;
+  box-shadow: 0 16px 28px -14px rgba(8, 8, 10, 0.45);
   transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-.featureCard:hover .featureIcon {
+.featureCard:hover .featureIconRoundel {
   transform: rotate(-6deg) scale(1.06);
 }
 
@@ -885,37 +890,23 @@
 
 .featureCardFeatured {
   border-color: var(--line-strong);
-}
-
-.featureFeaturedInner {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
-.featureFeaturedText {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.featureIconFeatured {
-  flex-shrink: 0;
+  background: var(--surface-2);
 }
 
 .featuredBadge {
-  align-self: flex-start;
+  position: absolute;
+  top: 20px;
+  right: 20px;
   font-family: var(--mono);
   font-size: 11px;
   font-weight: 700;
   letter-spacing: 0.1em;
   text-transform: uppercase;
-  padding: 7px 14px;
+  padding: 6px 12px;
   border-radius: 10px;
   border: 1px solid var(--line-strong);
-  background: var(--surface-2);
+  background: var(--surface);
   color: var(--ink);
-  flex-shrink: 0;
 }
 
 .showcaseTabs {
@@ -1041,30 +1032,79 @@
   background: var(--surface-2);
 }
 
-.stepGrid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 48px;
+.howTimeline {
+  position: relative;
+  max-width: 620px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
 }
 
-.step {
+.howTimeline::before {
+  content: '';
+  position: absolute;
+  top: 42px;
+  bottom: 42px;
+  left: 50%;
+  width: 2px;
+  background: var(--line-strong);
+  transform: translateX(-50%);
+  z-index: 0;
+}
+
+.howItem {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding-bottom: 56px;
+}
+
+.howItem:last-child {
+  padding-bottom: 0;
+}
+
+.howIconWrap {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 84px;
+  height: 84px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--ink), color-mix(in srgb, var(--ink) 70%, var(--muted-2)));
+  color: var(--paper);
+  font-size: 34px !important;
+  margin-bottom: 24px;
+  box-shadow: 0 22px 38px -16px rgba(8, 8, 10, 0.45);
+}
+
+.howCard {
+  width: 100%;
+  max-width: 440px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 28px 32px;
+  box-shadow: var(--shadow-sm);
   transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-.step:hover {
+.howItem:hover .howCard {
   transform: translateY(-4px);
 }
 
-.stepNumber {
+.howNumber {
   display: block;
   font-family: var(--mono);
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
   color: var(--muted);
-  padding-bottom: 16px;
-  margin-bottom: 20px;
-  border-bottom: 1px solid var(--ink);
-  transition: border-color 0.2s ease;
+  margin-bottom: 10px;
 }
 
 .stepTitle {
@@ -1631,7 +1671,6 @@
     margin-right: auto;
   }
 
-  .stepGrid,
   .pricingGrid {
     grid-template-columns: 1fr;
   }
@@ -1707,6 +1746,22 @@
 
   .showcaseFrame {
     border-radius: 10px;
+  }
+
+  .howIconWrap {
+    width: 68px;
+    height: 68px;
+    font-size: 28px !important;
+    margin-bottom: 18px;
+  }
+
+  .howCard {
+    padding: 22px 24px;
+  }
+
+  .howTimeline::before {
+    top: 34px;
+    bottom: 34px;
   }
 }
 
