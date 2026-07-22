@@ -16,9 +16,9 @@ const NAV_LINKS = [
 const SECTION_IDS = NAV_LINKS.map(link => link.href.slice(1))
 
 const ABOUT_STATS = [
-  { value: '5+', label: 'Active tailors' },
-  { value: '30+', label: 'Orders tracked' },
-  { value: '70+', label: 'Measurements stored' },
+  { icon: 'storefront', value: '5+', label: 'Active tailors' },
+  { icon: 'shopping_bag', value: '30+', label: 'Orders tracked' },
+  { icon: 'straighten', value: '70+', label: 'Measurements stored' },
 ]
 
 const FEATURES = [
@@ -711,8 +711,11 @@ function AboutApp() {
       <div className={styles.aboutStats}>
         {ABOUT_STATS.map((stat, i) => (
           <Reveal key={stat.label} as="div" className={styles.aboutStat} delay={180 + i * 70}>
-            <AboutStatValue value={stat.value} />
-            <span className={styles.aboutStatLabel}>{stat.label}</span>
+            <span className={`mi ${styles.aboutStatIcon}`}>{stat.icon}</span>
+            <div className={styles.aboutStatText}>
+              <AboutStatValue value={stat.value} />
+              <span className={styles.aboutStatLabel}>{stat.label}</span>
+            </div>
           </Reveal>
         ))}
       </div>
