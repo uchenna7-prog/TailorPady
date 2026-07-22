@@ -780,18 +780,10 @@
   gap: 14px;
 }
 
-.aboutStatIconRoundel {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 56px;
-  height: 56px;
+.aboutStatIcon {
+  font-size: 42px !important;
+  color: var(--ink);
   flex-shrink: 0;
-  border-radius: 16px;
-  background: linear-gradient(135deg, var(--ink), color-mix(in srgb, var(--ink) 70%, var(--muted-2)));
-  color: var(--paper);
-  font-size: 26px !important;
-  box-shadow: 0 16px 28px -14px rgba(8, 8, 10, 0.45);
 }
 
 .aboutStatText {
