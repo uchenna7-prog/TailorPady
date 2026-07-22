@@ -766,9 +766,12 @@
 
 .aboutStats {
   display: flex;
-  justify-content: space-between;
-  max-width: 780px;
+  justify-content: flex-start;
+  flex-wrap: wrap;
+  gap: clamp(32px, 5vw, 64px);
   margin-top: 56px;
+  margin-left: 0;
+  padding-left: 0;
 }
 
 .aboutStat {
@@ -777,10 +780,18 @@
   gap: 14px;
 }
 
-.aboutStatIcon {
-  font-size: 28px !important;
-  color: var(--ink);
+.aboutStatIconRoundel {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 56px;
+  height: 56px;
   flex-shrink: 0;
+  border-radius: 16px;
+  background: linear-gradient(135deg, var(--ink), color-mix(in srgb, var(--ink) 70%, var(--muted-2)));
+  color: var(--paper);
+  font-size: 26px !important;
+  box-shadow: 0 16px 28px -14px rgba(8, 8, 10, 0.45);
 }
 
 .aboutStatText {
@@ -1565,6 +1576,24 @@
   opacity: 0.45;
 }
 
+@media (min-width: 961px) {
+  .howTimeline {
+    max-width: none;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    align-items: start;
+    gap: 28px;
+  }
+
+  .howItem {
+    padding-top: 42px;
+  }
+
+  .howCard {
+    max-width: none;
+  }
+}
+
 @media (max-width: 960px) {
   .hero {
     grid-template-columns: 1fr;
@@ -1607,9 +1636,9 @@
     flex-direction: column;
     align-items: flex-start;
     gap: 24px;
-    margin-left: auto;
-    margin-right: auto;
-    width: fit-content;
+    margin-left: 0;
+    margin-right: 0;
+    width: 100%;
   }
 
   .pricingGrid {
