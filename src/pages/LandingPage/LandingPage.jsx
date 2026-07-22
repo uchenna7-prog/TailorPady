@@ -672,7 +672,7 @@ function AboutApp() {
       <div className={styles.aboutStats}>
         {ABOUT_STATS.map((stat, i) => (
           <Reveal key={stat.label} as="div" className={styles.aboutStat} delay={180 + i * 70}>
-            <span className={`mi ${styles.aboutStatIcon}`}>{stat.icon}</span>
+            <span className={`mi ${styles.aboutStatIconRoundel}`}>{stat.icon}</span>
             <div className={styles.aboutStatText}>
               <AboutStatValue value={stat.value} />
               <span className={styles.aboutStatLabel}>{stat.label}</span>
