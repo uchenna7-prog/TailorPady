@@ -143,16 +143,19 @@ const HERO_SCREENS = [
 const STEPS = [
   {
     n: '01',
+    icon: 'storefront',
     title: 'Set up your shop',
     body: 'Add your shop name, address, currency, and workers. It takes a few minutes and there is nothing to install.',
   },
   {
     n: '02',
+    icon: 'group_add',
     title: 'Bring in your customers',
     body: 'Enter your existing clients and their measurements once. You will never re-measure from scratch again.',
   },
   {
     n: '03',
+    icon: 'insights',
     title: 'Run the shop from TailorPady',
     body: 'Take orders, assign tasks, bill, and report from one place, on the counter tablet or your phone in the back room.',
   },
@@ -676,22 +679,10 @@ function Features() {
             className={`${styles.featureCard} ${f.featured ? styles.featureCardFeatured : ''}`}
             delay={(i % 4) * 60}
           >
-            {f.featured ? (
-              <div className={styles.featureFeaturedInner}>
-                <span className={`mi ${styles.featureIcon} ${styles.featureIconFeatured}`}>{f.icon}</span>
-                <div className={styles.featureFeaturedText}>
-                  <h3 className={styles.featureTitle}>{f.title}</h3>
-                  <p className={styles.featureBody}>{f.body}</p>
-                </div>
-                <span className={styles.featuredBadge}>AI</span>
-              </div>
-            ) : (
-              <>
-                <span className={`mi ${styles.featureIcon}`}>{f.icon}</span>
-                <h3 className={styles.featureTitle}>{f.title}</h3>
-                <p className={styles.featureBody}>{f.body}</p>
-              </>
-            )}
+            {f.featured && <span className={styles.featuredBadge}>AI</span>}
+            <span className={`mi ${styles.featureIconRoundel}`}>{f.icon}</span>
+            <h3 className={styles.featureTitle}>{f.title}</h3>
+            <p className={styles.featureBody}>{f.body}</p>
           </Reveal>
         ))}
       </div>
@@ -804,13 +795,16 @@ function ProductShowcase() {
 function HowItWorks() {
   return (
     <section id="how" className={styles.how}>
-      <SectionHeading eyebrow="How it works" title="Three steps to run your shop on TailorPady" />
-      <div className={styles.stepGrid}>
+      <SectionHeading eyebrow="How it works" title="Three steps to run your shop on TailorPady" align="center" />
+      <div className={styles.howTimeline}>
         {STEPS.map((s, i) => (
-          <Reveal key={s.n} as="div" className={styles.step} delay={i * 100}>
-            <span className={styles.stepNumber}>{s.n}</span>
-            <h3 className={styles.stepTitle}>{s.title}</h3>
-            <p className={styles.stepBody}>{s.body}</p>
+          <Reveal key={s.n} as="div" className={styles.howItem} delay={i * 120}>
+            <span className={`mi ${styles.howIconWrap}`}>{s.icon}</span>
+            <div className={styles.howCard}>
+              <span className={styles.howNumber}>Step {s.n}</span>
+              <h3 className={styles.stepTitle}>{s.title}</h3>
+              <p className={styles.stepBody}>{s.body}</p>
+            </div>
           </Reveal>
         ))}
       </div>
