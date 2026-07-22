@@ -19,8 +19,7 @@ import { InvoiceTemplate18 } from '../../../components/Templates/InvoiceTemplate
 import { InvoiceTemplate19 } from '../../../components/Templates/InvoiceTemplates/Template19'
 import { InvoiceTemplate20 } from '../../../components/Templates/InvoiceTemplates/Template20'
 import { InvoiceTemplate21 } from '../../../components/Templates/InvoiceTemplates/Template21'
-import {InvoiceTemplate22 } from '../../../components/Templates/InvoiceTemplates/Template22'
-
+import { InvoiceTemplate22 } from '../../../components/Templates/InvoiceTemplates/Template22'
 
 export const INVOICE_TEMPLATE_GROUPS = [
   {
@@ -54,11 +53,10 @@ export const INVOICE_TEMPLATE_GROUPS = [
           'email',
           'accountBank',
           'accountNumber',
-          'accountName'
+          'accountName',
         ],
         Component: InvoiceTemplate2,
       },
-
       {
         id: 'invoiceTemplate3',
         label: 'Spine',
@@ -78,7 +76,6 @@ export const INVOICE_TEMPLATE_GROUPS = [
         ],
         Component: InvoiceTemplate3,
       },
-
       {
         id: 'invoiceTemplate4',
         label: 'Info Pair',
@@ -92,12 +89,10 @@ export const INVOICE_TEMPLATE_GROUPS = [
           'website',
           'accountBank',
           'accountNumber',
-          'accountName'
+          'accountName',
         ],
         Component: InvoiceTemplate4,
       },
-
-
       {
         id: 'invoiceTemplate5',
         label: 'Parallel',
@@ -113,12 +108,12 @@ export const INVOICE_TEMPLATE_GROUPS = [
         ],
         Component: InvoiceTemplate5,
       },
-
-        {
+      {
         id: 'invoiceTemplate6',
         label: 'Gradient',
-        tags: ['clean', 'has logo', 'payment terms','has signature'],
+        tags: ['clean', 'has logo', 'payment terms', 'has signature'],
         requires: [
+          'logo',
           'name',
           'address',
           'phone',
@@ -133,8 +128,9 @@ export const INVOICE_TEMPLATE_GROUPS = [
       {
         id: 'invoiceTemplate7',
         label: 'Gradient',
-        tags: ['clean', 'has logo','has signature'],
+        tags: ['clean', 'has logo', 'has signature'],
         requires: [
+          'logo',
           'name',
           'address',
           'phone',
@@ -146,7 +142,6 @@ export const INVOICE_TEMPLATE_GROUPS = [
         ],
         Component: InvoiceTemplate7,
       },
-
       {
         id: 'invoiceTemplate8',
         label: 'Bold Corporate',
@@ -176,7 +171,7 @@ export const INVOICE_TEMPLATE_GROUPS = [
           'website',
           'accountBank',
           'accountNumber',
-          'accountName'
+          'accountName',
         ],
         Component: InvoiceTemplate9,
       },
@@ -216,7 +211,7 @@ export const INVOICE_TEMPLATE_GROUPS = [
           'website',
           'accountBank',
           'accountNumber',
-          'accountName'
+          'accountName',
         ],
         Component: InvoiceTemplate11,
       },
@@ -234,7 +229,7 @@ export const INVOICE_TEMPLATE_GROUPS = [
           'website',
           'accountBank',
           'accountNumber',
-          'accountName'
+          'accountName',
         ],
         Component: InvoiceTemplate12,
       },
@@ -252,7 +247,7 @@ export const INVOICE_TEMPLATE_GROUPS = [
           'signature',
           'accountBank',
           'accountNumber',
-          'accountName'
+          'accountName',
         ],
         Component: InvoiceTemplate13,
       },
@@ -303,7 +298,7 @@ export const INVOICE_TEMPLATE_GROUPS = [
           'email',
           'accountBank',
           'accountNumber',
-          'accountName'
+          'accountName',
         ],
         Component: InvoiceTemplate16,
       },
@@ -379,7 +374,6 @@ export const INVOICE_TEMPLATE_GROUPS = [
     ],
   },
 
-
   {
     groupLabel: 'Solid',
     templates: [
@@ -418,5 +412,4 @@ export const INVOICE_TEMPLATE_GROUPS = [
       },
     ],
   },
-
 ]
