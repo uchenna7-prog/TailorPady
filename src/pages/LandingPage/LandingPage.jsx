@@ -79,11 +79,13 @@ const MISSION_STATEMENT =
 const MISSION_SUB =
   'TailorPady exists to give independent tailors and designers a system that keeps up with their craft, so the business behind the stitches runs as smoothly as the stitches themselves.'
 
-const SHOWCASE_ITEMS = [
+const APP_STRIP_ONE = [
   { label: 'Manage Dashboard', image: '/landingPageImages/screen-dashboard.jpg' },
   { label: 'Manage Customers', image: '/landingPageImages/screen-customers.jpg' },
-  { label: 'Customer Details', image: '/landingPageImages/screen-customer-details.jpg' },
   { label: 'Manage Measurements', image: '/landingPageImages/screen-customer-measurements.jpg' },
+]
+
+const APP_STRIP_TWO = [
   { label: 'Manage Orders', image: '/landingPageImages/screen-orders.jpg' },
   { label: 'Manage Invoices', image: '/landingPageImages/screen-invoices.jpg' },
   { label: 'Manage Receipts', image: '/landingPageImages/screen-receipts.jpg' },
@@ -696,13 +698,13 @@ function Mission() {
   )
 }
 
-function ProductShowcase() {
+function AppStrip({ id, eyebrow, title, items }) {
   return (
-    <section id="product" className={styles.showcase}>
-      <SectionHeading eyebrow="Inside the app" title="A closer look at TailorPady" align="center" />
+    <section id={id} className={styles.showcase}>
+      <SectionHeading eyebrow={eyebrow} title={title} align="center" />
       <div className={styles.showcaseBand}>
         <div className={styles.showcaseGrid}>
-          {SHOWCASE_ITEMS.map((item, i) => (
+          {items.map((item, i) => (
             <Reveal key={item.label} as="div" className={styles.showcaseItem} delay={i * 70}>
               <div className={styles.showcasePhone}>
                 <img src={item.image} alt={item.label} className={styles.showcasePhoneScreen} loading="lazy" />
@@ -937,9 +939,19 @@ export default function LandingPage() {
       <main className={styles.mainContent}>
         <Hero onNavigate={goTo} />
         <AboutApp />
+        <AppStrip
+          id="product"
+          eyebrow="Inside the app"
+          title="Manage your shop end to end"
+          items={APP_STRIP_ONE}
+        />
         <Features />
-        <ProductShowcase />
         <HowItWorks />
+        <AppStrip
+          eyebrow="Built for the workflow"
+          title="From order to delivery"
+          items={APP_STRIP_TWO}
+        />
         <Mission />
         <Testimonials />
         <PricingTeaser onNavigate={goTo} />
