@@ -115,6 +115,7 @@ export const INVOICE_TEMPLATE_GROUPS = [
         requires: [
           'logo',
           'name',
+          'tagline',
           'address',
           'phone',
           'email',
@@ -132,6 +133,7 @@ export const INVOICE_TEMPLATE_GROUPS = [
         requires: [
           'logo',
           'name',
+          'tagline',
           'address',
           'phone',
           'email',
