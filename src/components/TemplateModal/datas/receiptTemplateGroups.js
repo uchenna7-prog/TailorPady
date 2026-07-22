@@ -104,6 +104,7 @@ export const RECEIPT_TEMPLATE_GROUPS = [
         requires: [
           'logo',
           'name',
+          'tagline',
           'address',
           'phone',
           'email',
@@ -118,6 +119,7 @@ export const RECEIPT_TEMPLATE_GROUPS = [
         requires: [
           'logo',
           'name',
+          'tagline',
           'address',
           'phone',
           'email',
