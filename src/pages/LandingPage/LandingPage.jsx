@@ -79,55 +79,14 @@ const MISSION_STATEMENT =
 const MISSION_SUB =
   'TailorPady exists to give independent tailors and designers a system that keeps up with their craft, so the business behind the stitches runs as smoothly as the stitches themselves.'
 
-const SHOWCASE_TABS = [
-  {
-    key: 'dashboard',
-    label: 'Dashboard',
-    title: 'The whole shop, on one screen',
-    body: 'Open the app and see what is due today, what is overdue, and what just came in. No more carrying it all in your head.',
-    image: '/landingPageImages/screen-dashboard-desktop.png',
-  },
-  {
-    key: 'customers',
-    label: 'Customers',
-    title: 'Manage your customer base',
-    body: 'Add and update customer information, including measurements and preferences. Keep all your client data in one place.',
-    image: '/landingPageImages/screen-customers-desktop.png',
-  },
-  {
-    key: 'customer details',
-    label: 'Customer details',
-    title: "View and edit customer details",
-    body: "Access a customer's profile to view their measurements, order history, and contact information. Make updates as needed.",
-    image: '/landingPageImages/screen-customer-details-desktop.png',
-  },
-  {
-    key: 'measurements',
-    label: 'Measurements',
-    title: 'View and edit customer measurements',
-    image: '/landingPageImages/screen-customer-measurements-desktop.png',
-  },
-  {
-    key: 'orders',
-    label: 'Orders',
-    title: 'Track every order from cut to collection',
-    body: 'Move an order through cutting, stitching, and finishing. Everyone on your team knows exactly what stage it is at.',
-    image: '/landingPageImages/screen-orders-desktop.png',
-  },
-  {
-    key: 'invoices',
-    label: 'Invoices',
-    title: 'Bill and get paid without the back and forth',
-    body: 'Generate a branded invoice in your currency, share it on WhatsApp, and mark it paid the moment money lands.',
-    image: '/landingPageImages/screen-invoices-desktop.png',
-  },
-  {
-    key: 'receipts',
-    label: 'Receipts',
-    title: 'Generate professional receipts',
-    body: 'Create and manage receipts for all transactions, ensuring transparency and compliance.',
-    image: '/landingPageImages/screen-receipts-desktop.png',
-  },
+const SHOWCASE_ITEMS = [
+  { label: 'Manage Dashboard', image: '/landingPageImages/screen-dashboard.jpg' },
+  { label: 'Manage Customers', image: '/landingPageImages/screen-customers.jpg' },
+  { label: 'Customer Details', image: '/landingPageImages/screen-customer-details.jpg' },
+  { label: 'Manage Measurements', image: '/landingPageImages/screen-customer-measurements.jpg' },
+  { label: 'Manage Orders', image: '/landingPageImages/screen-orders.jpg' },
+  { label: 'Manage Invoices', image: '/landingPageImages/screen-invoices.jpg' },
+  { label: 'Manage Receipts', image: '/landingPageImages/screen-receipts.jpg' },
 ]
 
 const HERO_SCREENS = [
@@ -738,57 +697,20 @@ function Mission() {
 }
 
 function ProductShowcase() {
-  const [index, setIndex] = useState(0)
-  const total = SHOWCASE_TABS.length
-  const current = SHOWCASE_TABS[index]
-  const tabRefs = useRef([])
-  const tabsContainerRef = useRef(null)
-
-  const goTo = i => setIndex(((i % total) + total) % total)
-
-  useEffect(() => {
-    const container = tabsContainerRef.current
-    const el = tabRefs.current[index]
-    if (!container || !el) return
-    const target = el.offsetLeft - (container.clientWidth - el.clientWidth) / 2
-    container.scrollTo({ left: target, behavior: 'smooth' })
-  }, [index])
-
   return (
     <section id="product" className={styles.showcase}>
       <SectionHeading eyebrow="Inside the app" title="A closer look at TailorPady" align="center" />
-
-      <div className={styles.showcaseTabs} ref={tabsContainerRef}>
-        {SHOWCASE_TABS.map((tab, i) => (
-          <button
-            key={tab.key}
-            ref={el => (tabRefs.current[i] = el)}
-            type="button"
-            className={`${styles.showcaseTab} ${i === index ? styles.showcaseTabActive : ''}`}
-            onClick={() => goTo(i)}
-          >
-            {tab.label}
-          </button>
-        ))}
-      </div>
-
-      <div className={styles.showcaseStage}>
-        <div className={styles.showcaseCopy} key={`copy-${current.key}`}>
-          <h3 className={styles.showcaseTitle}>{current.title}</h3>
-          {current.body && <p className={styles.showcaseBody}>{current.body}</p>}
-        </div>
-
-        <div className={styles.showcaseVisual}>
-          <div className={styles.showcaseGlow} />
-          <div className={styles.showcaseFrame} key={`frame-${current.key}`}>
-            <div className={styles.showcaseFrameBar} />
-            <img
-              src={current.image}
-              alt={`${current.label} screen in TailorPady`}
-              className={styles.showcaseImage}
-              loading="lazy"
-            />
-          </div>
+      <div className={styles.showcaseBand}>
+        <div className={styles.showcaseGrid}>
+          {SHOWCASE_ITEMS.map((item, i) => (
+            <Reveal key={item.label} as="div" className={styles.showcaseItem} delay={i * 70}>
+              <div className={styles.showcasePhone}>
+                <img src={item.image} alt={item.label} className={styles.showcasePhoneScreen} loading="lazy" />
+                <img src="/landingPageImages/phone-frame.png" alt="" className={styles.showcasePhoneFrame} />
+              </div>
+              <span className={styles.showcaseItemLabel}>{item.label}</span>
+            </Reveal>
+          ))}
         </div>
       </div>
     </section>
