@@ -707,7 +707,9 @@ function AppStrip({ id, eyebrow, title, items }) {
           {items.map((item, i) => (
             <Reveal key={item.label} as="div" className={styles.showcaseItem} delay={i * 70}>
               <div className={styles.showcasePhone}>
-                <img src={item.image} alt={item.label} className={styles.showcasePhoneScreen} loading="lazy" />
+                <div className={styles.showcasePhoneScreen}>
+                  <img src={item.image} alt={item.label} className={styles.showcasePhoneScreenImg} loading="lazy" />
+                </div>
                 <img src="/landingPageImages/phone-frame.png" alt="" className={styles.showcasePhoneFrame} />
               </div>
               <span className={styles.showcaseItemLabel}>{item.label}</span>
