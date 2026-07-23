@@ -18,7 +18,6 @@ const SECTION_IDS = NAV_LINKS.map(link => link.href.slice(1))
 const ABOUT_STATS = [
   { icon: 'group', value: '5+', label: 'Active tailors' },
   { icon: 'shopping_cart', value: '30+', label: 'Orders tracked' },
-  { icon: 'straighten', value: '70+', label: 'Measurements stored' },
 ]
 
 const FEATURES = [
@@ -128,30 +127,35 @@ const TESTIMONIALS = [
       'I stopped keeping measurements on paper the week I started using this. Nothing gets lost between the counter and the tailor now.',
     name: 'Amara O.',
     role: 'Boutique owner, Port Harcourt',
+    rating: 5,
   },
   {
     quote:
       'The task board is what sold me. I can see exactly which order is stuck on embroidery without calling anyone.',
     name: 'Segun A.',
     role: 'Tailoring shop owner, Lagos',
+    rating: 5,
   },
   {
     quote:
       'Payments and dues used to live in my head. Now they live in the app, and my head is a lot quieter.',
     name: 'Ifeoma K.',
     role: 'Fashion designer, Enugu',
+    rating: 4,
   },
   {
     quote:
       'My workers know exactly what stage every order is at without asking me. That alone was worth switching.',
     name: 'Chinedu M.',
     role: 'Shop owner, Aba',
+    rating: 5,
   },
   {
     quote:
       'Clients love that I can pull up their measurements from two years ago in seconds. It makes us look serious.',
     name: 'Blessing U.',
     role: 'Fashion designer, Abuja',
+    rating: 5,
   },
 ]
 
@@ -247,6 +251,39 @@ const FAQ_PREVIEW = [
   {
     q: 'How many invoices can I send on the free plan?',
     a: 'Up to 10 invoices and 10 receipts a month, alongside 20 active orders. Pro removes every limit.',
+  },
+]
+
+const CONTACT = {
+  whatsapp: '+234 7079645766',
+  phone: '+234 7079645766',
+  email: 'support@TailorPady.app',
+  website: 'https://tailorpady.web.app',
+}
+
+const CONTACT_LINKS = [
+  {
+    key: 'whatsapp',
+    label: 'WhatsApp',
+    href: `https://wa.me/${CONTACT.whatsapp.replace(/\D/g, '')}`,
+  },
+  {
+    key: 'phone',
+    icon: 'call',
+    label: 'Phone',
+    href: `tel:${CONTACT.phone.replace(/\s/g, '')}`,
+  },
+  {
+    key: 'email',
+    icon: 'mail',
+    label: 'Email',
+    href: `mailto:${CONTACT.email}`,
+  },
+  {
+    key: 'website',
+    icon: 'language',
+    label: 'Website',
+    href: CONTACT.website,
   },
 ]
 
@@ -407,18 +444,56 @@ function useCountUp(value, inView, duration = 1400) {
   return display
 }
 
-function AboutStatValue({ value }) {
+function StatValue({ value, className }) {
   const [ref, inView] = useInView(0.5)
   const display = useCountUp(value, inView)
   return (
-    <span ref={ref} className={styles.aboutStatValue}>
+    <span ref={ref} className={className}>
       {display}
     </span>
   )
 }
 
+function StarRating({ rating, max = 5 }) {
+  return (
+    <div className={styles.reviewStars} role="img" aria-label={`${rating} out of ${max} stars`}>
+      {Array.from({ length: max }).map((_, i) => (
+        <span
+          key={i}
+          className={`mi ${styles.reviewStarIcon} ${i < rating ? styles.reviewStarIconFilled : ''}`}
+        >
+          star
+        </span>
+      ))}
+    </div>
+  )
+}
+
 function MonoLabel({ children }) {
   return <span className={styles.monoLabel}>{children}</span>
+}
+
+function WhatsAppIcon({ size = 18 }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 448 512" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+      <path d="M380.9 97.1C339 55.1 283.2 32 223.9 32c-122.4 0-222 99.6-222 222 0 39.1 10.2 77.3 29.6 111L0 480l117.7-30.9c32.4 17.7 68.9 27 106.1 27h.1c122.3 0 224.1-99.6 224.1-222 0-59.3-25.2-115-67.1-157zm-157 341.6c-33.2 0-65.7-8.9-94-25.7l-6.7-4-69.8 18.3L72 359.5l-4.4-7c-18.5-29.4-28.3-63.3-28.3-98.1 0-101.7 82.8-184.5 184.6-184.5 49.3 0 95.6 19.2 130.4 54.1 34.8 34.9 56.2 81.2 56.1 130.5 0 101.8-84.9 184.6-186.6 184.6zm101.2-138.2c-5.5-2.8-32.8-16.2-37.9-18-5.1-1.9-8.8-2.8-12.5 2.8-3.7 5.6-14.3 18-17.6 21.8-3.2 3.7-6.5 4.2-12 1.4-32.6-16.3-54-29.1-75.5-66-5.7-9.8 5.7-9.1 16.3-30.3 1.8-3.7.9-6.9-.5-9.7-1.4-2.8-12.5-30.1-17.1-41.2-4.5-10.8-9.1-9.3-12.5-9.5-3.2-.2-6.9-.2-10.6-.2-3.7 0-9.7 1.4-14.8 6.9-5.1 5.6-19.4 19-19.4 46.3 0 27.3 19.9 53.7 22.6 57.4 2.8 3.7 39.1 59.7 94.8 83.8 35.2 15.2 49 16.5 66.6 13.9 10.7-1.6 32.8-13.4 37.4-26.4 4.6-13 4.6-24.1 3.2-26.4-1.3-2.5-5-3.9-10.5-6.6z" />
+    </svg>
+  )
+}
+
+function BotIcon({ size = 18, color = 'currentColor', backgroundColor = 'var(--bg)' }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      <rect x="4" y="11" width="16" height="10" rx="4" fill={color} />
+      <rect x="7" y="14.5" width="2.5" height="2.5" rx="0.6" fill={backgroundColor} />
+      <rect x="14.5" y="14.5" width="2.5" height="2.5" rx="0.6" fill={backgroundColor} />
+      <path d="M9.5 18.5h5" stroke={backgroundColor} strokeWidth="1.5" strokeLinecap="round" />
+      <path d="M12 11V8" stroke={color} strokeWidth="2" strokeLinecap="round" />
+      <circle cx="12" cy="6.5" r="1.8" fill={color} />
+      <line x1="4" y1="15" x2="2" y2="15" stroke={color} strokeWidth="1.8" strokeLinecap="round" />
+      <line x1="20" y1="15" x2="22" y2="15" stroke={color} strokeWidth="1.8" strokeLinecap="round" />
+    </svg>
+  )
 }
 
 function InstallButton({ className, fullWidth }) {
@@ -590,27 +665,28 @@ function PhoneMockup() {
 function Hero({ onNavigate }) {
   return (
     <section className={styles.hero}>
-      <div className={styles.heroCopy}>
-        <h1 className={styles.heroTitle}>
-          The operating system
-          for your tailoring shop.
-        </h1>
-        <p className={styles.heroBody}>
-          Manage your tailoring business without the paperwork.
-          Spend less time managing and more time sewing.
-        </p>
-        <div className={styles.heroActions}>
-          <button type="button" className={styles.primaryButton} onClick={() => onNavigate('/signup')}>
-            Start free
-          </button>
-          <a href="#product" className={styles.secondaryButton}>
-            See the app
-          </a>
+      <div className={styles.heroInner}>
+        <div className={styles.heroCopy}>
+          <h1 className={styles.heroTitle}>
+          The business side of tailoring, simplified.
+          </h1>
+          <p className={styles.heroBody}>
+            Manage your tailoring business without the paperwork.
+            Spend less time managing and more time sewing.
+          </p>
+          <div className={styles.heroActions}>
+            <button type="button" className={styles.primaryButton} onClick={() => onNavigate('/signup')}>
+              Start free
+            </button>
+            <a href="#product" className={styles.secondaryButton}>
+              See the app
+            </a>
+          </div>
         </div>
-      </div>
 
-      <div className={styles.heroVisual}>
-        <PhoneMockup />
+        <div className={styles.heroVisual}>
+          <PhoneMockup />
+        </div>
       </div>
     </section>
   )
@@ -641,7 +717,9 @@ function Features() {
             delay={(i % 4) * 60}
           >
             {f.featured && <span className={styles.featuredBadge}>AI</span>}
-            <span className={`mi ${styles.featureIconRoundel}`}>{f.icon}</span>
+            <span className={`${f.featured ? '' : 'mi'} ${styles.featureIconRoundel}`}>
+              {f.featured ? <BotIcon size={22} color="var(--paper)" backgroundColor="var(--ink)" /> : f.icon}
+            </span>
             <h3 className={styles.featureTitle}>{f.title}</h3>
             <p className={styles.featureBody}>{f.body}</p>
           </Reveal>
@@ -651,10 +729,10 @@ function Features() {
   )
 }
 
-function AboutApp() {
+function AboutAndProduct({ items }) {
   return (
-    <section id="about" className={styles.about}>
-      <div className={styles.aboutText}>
+    <section id="about" className={styles.aboutProductRow}>
+      <div className={styles.aboutCol}>
         <SectionHeading eyebrow={ABOUT_CONTENT.eyebrow} title={ABOUT_CONTENT.title} />
         <Reveal as="p" className={styles.aboutBody} delay={60}>
           {ABOUT_CONTENT.body}
@@ -667,18 +745,34 @@ function AboutApp() {
             </li>
           ))}
         </Reveal>
+
+        <div className={styles.aboutStats}>
+          {ABOUT_STATS.map((stat, i) => (
+            <Reveal key={stat.label} as="div" className={styles.aboutStat} delay={180 + i * 70}>
+              <span className={`mi ${styles.aboutStatIcon}`}>{stat.icon}</span>
+              <div className={styles.aboutStatText}>
+                <StatValue value={stat.value} className={styles.aboutStatValue} />
+                <span className={styles.aboutStatLabel}>{stat.label}</span>
+              </div>
+            </Reveal>
+          ))}
+        </div>
       </div>
 
-      <div className={styles.aboutStats}>
-        {ABOUT_STATS.map((stat, i) => (
-          <Reveal key={stat.label} as="div" className={styles.aboutStat} delay={180 + i * 70}>
-            <span className={`mi ${styles.aboutStatIcon}`}>{stat.icon}</span>
-            <div className={styles.aboutStatText}>
-              <AboutStatValue value={stat.value} />
-              <span className={styles.aboutStatLabel}>{stat.label}</span>
-            </div>
-          </Reveal>
-        ))}
+      <div id="product" className={styles.productCol}>
+        <div className={styles.productShowcaseGrid}>
+          {items.map((item, i) => (
+            <Reveal key={item.label} as="div" className={styles.showcaseItem} delay={i * 70}>
+              <div className={styles.showcasePhone}>
+                <div className={styles.showcasePhoneScreen}>
+                  <img src={item.image} alt={item.label} className={styles.showcasePhoneScreenImg} loading="lazy" />
+                </div>
+                <img src="/landingPageImages/phone-frame.png" alt="" className={styles.showcasePhoneFrame} />
+              </div>
+              <span className={styles.showcaseItemLabel}>{item.label}</span>
+            </Reveal>
+          ))}
+        </div>
       </div>
     </section>
   )
@@ -687,8 +781,10 @@ function AboutApp() {
 function Mission() {
   return (
     <section id="mission" className={styles.mission}>
+      <div className={styles.missionGlow} aria-hidden="true" />
       <div className={styles.missionInner}>
-        <Reveal as="div">
+        <Reveal as="div" className={styles.missionCopy}>
+          <span className={styles.missionQuoteMark} aria-hidden="true">"</span>
           <MonoLabel>Our mission</MonoLabel>
           <p className={styles.missionStatement}>{MISSION_STATEMENT}</p>
           <p className={styles.missionSub}>{MISSION_SUB}</p>
@@ -753,6 +849,10 @@ function Testimonials() {
         <div className={styles.marqueeTrack}>
           {loop.map((t, i) => (
             <figure className={styles.reviewCard} key={`${t.name}-${i}`}>
+              <div className={styles.reviewTop}>
+                <StarRating rating={t.rating} />
+                <span className={styles.reviewQuoteMark} aria-hidden="true">"</span>
+              </div>
               <blockquote className={styles.reviewQuote}>{t.quote}</blockquote>
               <figcaption className={styles.reviewMeta}>
                 <span className={styles.reviewAvatar}>{t.name.charAt(0)}</span>
@@ -796,7 +896,7 @@ function PricingTeaser({ onNavigate }) {
           <Reveal
             key={`${plan.name}-${billing}`}
             as="div"
-            className={`${styles.pricingCard} ${plan.highlighted ? styles.pricingCardHighlighted : ''}`}
+            className={`${styles.pricingCard} `}
             delay={i * 100}
           >
             <div className={styles.pricingCardHead}>
@@ -871,6 +971,11 @@ function FAQPreview() {
 function FinalCTA({ onNavigate }) {
   return (
     <section className={styles.cta}>
+      <div className={styles.ctaCurve} aria-hidden="true">
+        <svg viewBox="0 0 1440 100" preserveAspectRatio="none">
+          <path d="M0,100 C480,0 960,0 1440,100 L1440,100 L0,100 Z" />
+        </svg>
+      </div>
       <Reveal as="div" className={styles.ctaInner}>
         <MonoLabel>Ready when you are</MonoLabel>
         <h2 className={styles.ctaTitle}>Give your shop the system it deserves</h2>
@@ -892,6 +997,24 @@ function SiteFooter() {
         <div className={styles.footerTop}>
           <div className={styles.footerBrand}>
             <span className={styles.footerLogoMark}>TP</span>
+            <div className={styles.footerSocial}>
+              {CONTACT_LINKS.map(link => (
+                <a
+                  key={link.key}
+                  href={link.href}
+                  target="_blank"
+                  rel="noreferrer"
+                  className={styles.footerSocialLink}
+                  aria-label={link.label}
+                >
+                  {link.key === 'whatsapp' ? (
+                    <WhatsAppIcon size={16} />
+                  ) : (
+                    <span className="mi" style={{ fontSize: '1rem' }}>{link.icon}</span>
+                  )}
+                </a>
+              ))}
+            </div>
           </div>
           <div className={styles.footerColumns}>
             {FOOTER_COLUMNS.map(col => (
@@ -940,13 +1063,7 @@ export default function LandingPage() {
       <SiteNav onNavigate={goTo} theme={theme} onToggleTheme={toggleTheme} />
       <main className={styles.mainContent}>
         <Hero onNavigate={goTo} />
-        <AboutApp />
-        <AppStrip
-          id="product"
-          eyebrow="Inside the app"
-          title="Manage your shop end to end"
-          items={APP_STRIP_ONE}
-        />
+        <AboutAndProduct items={APP_STRIP_ONE} />
         <Features />
         <HowItWorks />
         <AppStrip

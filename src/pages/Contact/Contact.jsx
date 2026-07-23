@@ -98,7 +98,7 @@ export default function Contact({ onMenuClick }) {
           icon="language"
           label="Website"
           value={CONTACT.website}
-          href={`https://${CONTACT.website}`}
+          href={`${CONTACT.website}`}
           divider={false}
         />
 
