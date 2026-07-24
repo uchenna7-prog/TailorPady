@@ -14,17 +14,11 @@
 
   --success: #16a34a;
 
-  /* Typography */
-
   --display: "Manrope",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
   --body: "Manrope",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
   --mono: "JetBrains Mono","SFMono-Regular",monospace;
 
-  /* Radius */
-
   --radius: 16px;
-
-  /* Shadows */
 
   --shadow-sm:
       0 1px 2px rgba(0,0,0,.04),
@@ -34,7 +28,7 @@
       0 10px 40px rgba(0,0,0,.08),
       0 30px 80px rgba(0,0,0,.10);
 
-  --nav-height: 84px;
+  --nav-height: 72px;
   --control-h: 40px;
 
   color-scheme: light;
@@ -206,7 +200,7 @@
   align-items: center;
   justify-content: space-between;
   gap: 24px;
-  padding: 16px clamp(20px, 5vw, 64px);
+  padding: 12px clamp(20px, 5vw, 64px);
   max-width: 1320px;
   margin: 0 auto;
 }
@@ -301,7 +295,7 @@
 }
 
 .themeToggle span {
-  font-size: 1.05rem;
+  font-size: 1.1rem;
 }
 
 .themeToggle:hover {
@@ -1006,67 +1000,85 @@
 
 .featureGrid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-  gap: 20px;
+  grid-template-columns: repeat(4, 1fr);
+  grid-auto-rows: minmax(180px, auto);
+  grid-auto-flow: dense;
+  border-top: 1px solid var(--line);
+  border-left: 1px solid var(--line);
+  border-radius: var(--radius);
+  overflow: hidden;
 }
 
 .featureCard {
   position: relative;
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.03));
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  border-radius: var(--radius);
-  padding: 28px 24px 24px;
   display: flex;
   flex-direction: column;
+  justify-content: flex-end;
   align-items: flex-start;
   text-align: left;
-  gap: 12px;
-  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.35s ease, border-color 0.2s ease, background 0.2s ease;
+  gap: 10px;
+  padding: 28px 26px;
+  border-right: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+  transition: background 0.3s ease;
 }
 
 .featureCard:hover {
-  transform: translateY(-6px);
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0.05));
-  border-color: rgba(255, 255, 255, 0.24);
-  box-shadow: 0 24px 60px -24px rgba(0, 0, 0, 0.65);
+  background: rgba(255, 255, 255, 0.05);
 }
 
-.featureIconRoundel {
+.featureIconTile {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 44px;
-  height: 44px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, var(--ink), color-mix(in srgb, var(--ink) 70%, var(--muted-2)));
-  color: var(--paper);
-  font-size: 20px !important;
-  margin-bottom: 4px;
-  box-shadow: 0 16px 28px -14px rgba(8, 8, 10, 0.45);
-  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+  width: 40px;
+  height: 40px;
+  flex-shrink: 0;
+  border-radius: 11px;
+  border: 1px solid var(--line-strong);
+  background: var(--surface);
+  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.2s ease;
 }
 
-.featureCard:hover .featureIconRoundel {
+.featureCard:hover .featureIconTile {
   transform: rotate(-6deg) scale(1.06);
+  border-color: var(--muted-2);
+}
+
+.featureIconTile span {
+  font-size: 19px !important;
+  color: var(--ink);
 }
 
 .featureTitle {
   font-family: var(--display);
-  font-size: 18px;
+  font-size: 17px;
   font-weight: 700;
   margin: 0;
 }
 
 .featureBody {
-  font-size: 14px;
+  font-size: 13.5px;
   line-height: 1.6;
   color: var(--muted);
   margin: 0;
 }
 
 .featureCardFeatured {
-  border-color: rgba(224, 122, 63, 0.4);
-  background: linear-gradient(180deg, rgba(224, 122, 63, 0.14), rgba(255, 255, 255, 0.04));
+  padding: 28px 26px;
+  background: linear-gradient(180deg, rgba(224, 122, 63, 0.14), rgba(224, 122, 63, 0.02));
+}
+
+.featureCardFeatured:hover {
+  background: linear-gradient(180deg, rgba(224, 122, 63, 0.2), rgba(224, 122, 63, 0.04));
+}
+
+.featureCardFeatured .featureIconTile {
+  border-color: rgba(224, 122, 63, 0.5);
+}
+
+.featureCardFeatured .featureBody {
+  max-width: none;
 }
 
 .featuredBadge {
@@ -1150,79 +1162,84 @@
   text-align: center;
 }
 
-.howTimeline {
-  max-width: 560px;
+.howGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  max-width: 1100px;
   margin: 0 auto;
-  display: flex;
-  flex-direction: column;
-  gap: 48px;
+  border-top: 1px solid var(--line);
+  border-left: 1px solid var(--line);
+  border-radius: var(--radius);
+  overflow: hidden;
 }
 
-.howItem {
+.howCol {
   position: relative;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  text-align: center;
-  padding-top: 42px;
+  gap: 12px;
+  padding: 40px 36px 44px;
+  border-right: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+  transition: background 0.3s ease;
 }
 
-.howIconWrap {
-  position: absolute;
-  top: 0;
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 2;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 84px;
-  height: 84px;
-  flex-shrink: 0;
-  border-radius: 50%;
-  background: linear-gradient(135deg, var(--ink), color-mix(in srgb, var(--ink) 70%, var(--muted-2)));
-  color: var(--paper);
-  font-size: 34px !important;
-  box-shadow: 0 22px 38px -16px rgba(8, 8, 10, 0.45);
-}
-
-.howCard {
-  width: 100%;
-  max-width: 440px;
+.howCol:hover {
   background: var(--surface-2);
-  border: 1px solid var(--line);
-  border-radius: var(--radius);
-  padding: 56px 32px 32px;
-  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-.howItem:hover .howCard {
-  transform: translateY(-4px);
+.howColHead {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 8px;
 }
 
-.howNumber {
-  display: block;
+.howIndex {
+  display: flex;
+  align-items: baseline;
+  gap: 3px;
+  font-family: var(--display);
+  font-size: 36px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  line-height: 1;
+  color: var(--ink);
+  font-variant-numeric: tabular-nums;
+}
+
+.howIndexTotal {
   font-family: var(--mono);
-  font-size: 12px;
-  font-weight: 700;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: var(--muted);
-  margin-bottom: 10px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--muted-2);
+}
+
+.howIcon {
+  font-size: 20px !important;
+  color: var(--muted-2);
+  margin-top: 6px;
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), color 0.3s ease;
+}
+
+.howCol:hover .howIcon {
+  transform: translateY(-2px) scale(1.05);
+  color: var(--ink);
 }
 
 .stepTitle {
   font-family: var(--display);
-  font-size: 20px;
+  font-size: 19px;
   font-weight: 700;
-  margin: 0 0 10px;
+  margin: 0;
 }
 
 .stepBody {
   font-size: 14px;
-  line-height: 1.6;
+  line-height: 1.65;
   color: var(--muted);
   margin: 0;
+  max-width: 34ch;
 }
 
 .marqueeViewport {
@@ -1808,22 +1825,56 @@
   opacity: 0.45;
 }
 
-@media (min-width: 961px) {
-  .howTimeline {
-    max-width: none;
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    align-items: start;
-    gap: 28px;
-  }
+.floatingWhatsapp {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  z-index: 50;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: #25D366;
+  color: #ffffff;
+  box-shadow: 0 14px 30px -10px rgba(37, 211, 102, 0.55), 0 4px 14px rgba(0, 0, 0, 0.18);
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s ease;
+}
 
-  .howItem {
-    padding-top: 42px;
-  }
+.floatingWhatsapp::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: #25D366;
+  opacity: 0.55;
+  z-index: -1;
+  animation: whatsappPulse 2.6s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
 
-  .howCard {
-    max-width: none;
+@keyframes whatsappPulse {
+  0% {
+    transform: scale(1);
+    opacity: 0.55;
   }
+  70% {
+    transform: scale(1.9);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1.9);
+    opacity: 0;
+  }
+}
+
+.floatingWhatsapp:hover {
+  transform: translateY(-3px) scale(1.05);
+  box-shadow: 0 18px 36px -8px rgba(37, 211, 102, 0.6), 0 4px 14px rgba(0, 0, 0, 0.18);
+}
+
+.floatingWhatsapp:active {
+  transform: scale(0.94);
 }
 
 @media (max-width: 960px) {
@@ -1882,6 +1933,29 @@
     width: 100%;
   }
 
+  .howGrid {
+    grid-template-columns: 1fr;
+    max-width: 480px;
+  }
+
+  .howCol {
+    padding: 32px 28px;
+  }
+
+  .featureGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .productShowcaseGrid {
+    flex-wrap: nowrap;
+    justify-content: center;
+    gap: 16px;
+  }
+
+  .productShowcaseGrid .showcaseItem {
+    width: 120px;
+  }
+
   .pricingGrid {
     grid-template-columns: 1fr;
   }
@@ -1926,6 +2000,14 @@
   .showcaseItem {
     width: 120px;
   }
+
+  .page {
+    --nav-height: 64px;
+  }
+
+  .navInner {
+    padding: 10px clamp(16px, 5vw, 24px);
+  }
 }
 
 @media (max-width: 640px) {
@@ -1957,6 +2039,18 @@
     font-size: 72px;
   }
 
+  .featureGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .productShowcaseGrid {
+    gap: 12px;
+  }
+
+  .productShowcaseGrid .showcaseItem {
+    width: 100px;
+  }
+
   .footerInner {
     padding: 44px clamp(20px, 5vw, 64px) 32px;
   }
@@ -1975,20 +2069,6 @@
     padding-top: 55px;
   }
 
-  .howIconWrap {
-    width: 68px;
-    height: 68px;
-    font-size: 28px !important;
-  }
-
-  .howItem {
-    padding-top: 34px;
-  }
-
-  .howCard {
-    padding: 46px 24px 24px;
-  }
-
   .pricingCard {
     padding: 26px 22px;
   }
@@ -1999,6 +2079,13 @@
 
   .showcaseItemLabel {
     font-size: 12px;
+  }
+
+  .floatingWhatsapp {
+    width: 50px;
+    height: 50px;
+    bottom: 18px;
+    right: 18px;
   }
 }
 
@@ -2031,6 +2118,14 @@
   }
 
   .showcaseItem {
+    width: 84px;
+  }
+
+  .productShowcaseGrid {
+    gap: 10px;
+  }
+
+  .productShowcaseGrid .showcaseItem {
     width: 84px;
   }
 }

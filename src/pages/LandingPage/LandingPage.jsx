@@ -103,7 +103,7 @@ const HERO_SCREENS = [
 const STEPS = [
   {
     n: '01',
-    icon: 'storefront',
+    icon: 'settings',
     title: 'Set up your shop',
     body: 'Add your shop name, address, currency, and workers. It takes a few minutes and there is nothing to install.',
   },
@@ -115,7 +115,7 @@ const STEPS = [
   },
   {
     n: '03',
-    icon: 'insights',
+    icon: 'bolt',
     title: 'Run the shop from TailorPady',
     body: 'Take orders, assign tasks, bill, and report from one place, on the counter tablet or your phone in the back room.',
   },
@@ -258,14 +258,15 @@ const CONTACT = {
   whatsapp: '+234 7079645766',
   phone: '+234 7079645766',
   email: 'support@TailorPady.app',
-  website: 'https://tailorpady.web.app',
 }
+
+const WHATSAPP_HREF = `https://wa.me/${CONTACT.whatsapp.replace(/\D/g, '')}`
 
 const CONTACT_LINKS = [
   {
     key: 'whatsapp',
     label: 'WhatsApp',
-    href: `https://wa.me/${CONTACT.whatsapp.replace(/\D/g, '')}`,
+    href: WHATSAPP_HREF,
   },
   {
     key: 'phone',
@@ -278,12 +279,6 @@ const CONTACT_LINKS = [
     icon: 'mail',
     label: 'Email',
     href: `mailto:${CONTACT.email}`,
-  },
-  {
-    key: 'website',
-    icon: 'language',
-    label: 'Website',
-    href: CONTACT.website,
   },
 ]
 
@@ -545,7 +540,7 @@ function ThemeToggle({ theme, onToggle }) {
       onClick={onToggle}
       aria-label={isDark ? 'Switch to light mode' : 'Switch to dark mode'}
     >
-      <span className="mi">{isDark ? 'light_mode' : 'dark_mode'}</span>
+      <span className="mi-outlined">{isDark ? 'light_mode' : 'dark_mode'}</span>
     </button>
   )
 }
@@ -717,8 +712,12 @@ function Features() {
             delay={(i % 4) * 60}
           >
             {f.featured && <span className={styles.featuredBadge}>AI</span>}
-            <span className={`${f.featured ? '' : 'mi'} ${styles.featureIconRoundel}`}>
-              {f.featured ? <BotIcon size={22} color="var(--paper)" backgroundColor="var(--ink)" /> : f.icon}
+            <span className={styles.featureIconTile}>
+              {f.featured ? (
+                <BotIcon size={20} color="var(--ink)" backgroundColor="var(--surface)" />
+              ) : (
+                <span className="mi">{f.icon}</span>
+              )}
             </span>
             <h3 className={styles.featureTitle}>{f.title}</h3>
             <p className={styles.featureBody}>{f.body}</p>
@@ -821,15 +820,18 @@ function HowItWorks() {
   return (
     <section id="how" className={styles.how}>
       <SectionHeading eyebrow="How it works" title="Three steps to run your shop on TailorPady" align="center" />
-      <div className={styles.howTimeline}>
+      <div className={styles.howGrid}>
         {STEPS.map((s, i) => (
-          <Reveal key={s.n} as="div" className={styles.howItem} delay={i * 120}>
-            <span className={`mi ${styles.howIconWrap}`}>{s.icon}</span>
-            <div className={styles.howCard}>
-              <span className={styles.howNumber}>Step {s.n}</span>
-              <h3 className={styles.stepTitle}>{s.title}</h3>
-              <p className={styles.stepBody}>{s.body}</p>
+          <Reveal key={s.n} as="div" className={styles.howCol} delay={i * 130}>
+            <div className={styles.howColHead}>
+              <span className={styles.howIndex}>
+                {s.n}
+                <span className={styles.howIndexTotal}>/{STEPS.length.toString().padStart(2, '0')}</span>
+              </span>
+              <span className={`mi ${styles.howIcon}`}>{s.icon}</span>
             </div>
+            <h3 className={styles.stepTitle}>{s.title}</h3>
+            <p className={styles.stepBody}>{s.body}</p>
           </Reveal>
         ))}
       </div>
@@ -1043,6 +1045,20 @@ function SiteFooter() {
   )
 }
 
+function FloatingWhatsApp() {
+  return (
+    <a
+      href={WHATSAPP_HREF}
+      target="_blank"
+      rel="noreferrer"
+      className={styles.floatingWhatsapp}
+      aria-label="Chat with us on WhatsApp"
+    >
+      <WhatsAppIcon size={26} />
+    </a>
+  )
+}
+
 export default function LandingPage() {
   const navigate = useNavigate()
   const goTo = path => navigate(path)
@@ -1078,6 +1094,7 @@ export default function LandingPage() {
         <FinalCTA onNavigate={goTo} />
       </main>
       <SiteFooter />
+      <FloatingWhatsApp />
     </div>
   )
 }
