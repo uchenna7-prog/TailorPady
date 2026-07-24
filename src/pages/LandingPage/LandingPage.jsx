@@ -561,7 +561,7 @@ function SiteNav({ onNavigate, theme, onToggleTheme }) {
     <header className={`${styles.nav} ${scrolled ? styles.navScrolled : ''}`}>
       <div className={styles.navInner}>
         <Link to="/" className={styles.logo}>
-          <span className={styles.logoMark}>TP</span>
+          <span className={styles.logoMark}>TailorPady</span>
         </Link>
 
         <nav className={styles.navLinks}>
@@ -998,7 +998,7 @@ function SiteFooter() {
       <div className={styles.footerInner}>
         <div className={styles.footerTop}>
           <div className={styles.footerBrand}>
-            <span className={styles.footerLogoMark}>TP</span>
+            <span className={styles.footerLogoMark}>TailorPady</span>
             <div className={styles.footerSocial}>
               {CONTACT_LINKS.map(link => (
                 <a
