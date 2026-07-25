@@ -1043,17 +1043,62 @@ function SiteFooter() {
   )
 }
 
-function FloatingWhatsApp() {
+function WhatsAppWidget() {
+  const [open, setOpen] = useState(false)
+
   return (
-    <a
-      href={WHATSAPP_HREF}
-      target="_blank"
-      rel="noreferrer"
-      className={styles.floatingWhatsapp}
-      aria-label="Chat with us on WhatsApp"
-    >
-      <WhatsAppIcon size={26} />
-    </a>
+    <div className={styles.whatsappWidget}>
+      {open && (
+        <div className={styles.whatsappPanel} role="dialog" aria-label="Chat with TailorPady support">
+          <div className={styles.whatsappPanelHeader}>
+            <span className={styles.whatsappPanelAvatar}>
+              <WhatsAppIcon size={20} />
+            </span>
+            <div className={styles.whatsappPanelHeaderText}>
+              <span className={styles.whatsappPanelTitle}>TailorPady Support</span>
+              <span className={styles.whatsappPanelStatus}>
+                <span className={styles.whatsappStatusDot} />
+                Online
+              </span>
+            </div>
+            <button
+              type="button"
+              className={styles.whatsappPanelClose}
+              onClick={() => setOpen(false)}
+              aria-label="Close chat"
+            >
+              <span className="mi" style={{ fontSize: '1.1rem' }}>close</span>
+            </button>
+          </div>
+          <div className={styles.whatsappPanelBody}>
+            <div className={styles.whatsappBubble}>
+              Hi there! 👋 How can we help you with TailorPady today?
+              <span className={styles.whatsappBubbleTime}>Just now</span>
+            </div>
+          </div>
+          <div className={styles.whatsappPanelFooter}>
+            <a
+              href={WHATSAPP_HREF}
+              target="_blank"
+              rel="noreferrer"
+              className={styles.whatsappStartChatBtn}
+            >
+              <WhatsAppIcon size={18} />
+              Continue on WhatsApp
+            </a>
+          </div>
+        </div>
+      )}
+      <button
+        type="button"
+        className={`${styles.whatsappTrigger} ${open ? styles.whatsappTriggerOpen : ''}`}
+        onClick={() => setOpen(prev => !prev)}
+        aria-label={open ? 'Close chat' : 'Chat with us on WhatsApp'}
+      >
+        <WhatsAppIcon size={24} />
+        {open && <span className={styles.whatsappTriggerLabel}>Close chat</span>}
+      </button>
+    </div>
   )
 }
 
@@ -1093,7 +1138,7 @@ export default function LandingPage() {
         <FinalCTA onNavigate={goTo} />
       </main>
       <SiteFooter />
-      <FloatingWhatsApp />
+      <WhatsAppWidget />
     </div>
   )
 }

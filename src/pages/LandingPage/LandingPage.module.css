@@ -1859,32 +1859,205 @@ a.footerContactLine:hover {
   opacity: 0.45;
 }
 
-.floatingWhatsapp {
+.whatsappWidget {
   position: fixed;
   bottom: 24px;
   right: 24px;
   z-index: 50;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 16px;
+}
+
+.whatsappPanel {
+  width: 320px;
+  max-width: calc(100vw - 48px);
+  background: var(--surface);
+  border: 1px solid var(--line-strong);
+  border-radius: 18px;
+  box-shadow: var(--shadow-lg);
+  overflow: hidden;
+  animation: fadeIn 0.25s cubic-bezier(0.16, 1, 0.3, 1) both;
+  transform-origin: bottom right;
+}
+
+.whatsappPanelHeader {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 18px;
+  background: #25D366;
+  color: #ffffff;
+}
+
+.whatsappPanelAvatar {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 56px;
-  height: 56px;
+  width: 40px;
+  height: 40px;
   border-radius: 50%;
+  background: rgba(255, 255, 255, 0.18);
+  flex-shrink: 0;
+}
+
+.whatsappPanelHeaderText {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1;
+  min-width: 0;
+}
+
+.whatsappPanelTitle {
+  font-family: var(--display);
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.whatsappPanelStatus {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  opacity: 0.9;
+}
+
+.whatsappStatusDot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #ffffff;
+  flex-shrink: 0;
+}
+
+.whatsappPanelClose {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  background: transparent;
+  border: none;
+  color: #ffffff;
+  cursor: pointer;
+  border-radius: 8px;
+  flex-shrink: 0;
+  transition: background 0.15s ease;
+}
+
+.whatsappPanelClose:hover {
+  background: rgba(255, 255, 255, 0.18);
+}
+
+.whatsappPanelBody {
+  padding: 18px;
+  background: #ece5dd;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-height: 130px;
+}
+
+.whatsappBubble {
+  align-self: flex-start;
+  max-width: 85%;
+  background: #ffffff;
+  color: #111b21;
+  padding: 10px 14px;
+  border-radius: 4px 14px 14px 14px;
+  font-size: 13.5px;
+  line-height: 1.5;
+  box-shadow: 0 1px 1px rgba(0, 0, 0, 0.08);
+}
+
+.whatsappBubbleTime {
+  display: block;
+  margin-top: 4px;
+  font-size: 10px;
+  color: #667781;
+}
+
+.whatsappPanelFooter {
+  padding: 14px 18px 18px;
+  background: var(--surface);
+}
+
+.whatsappStartChatBtn {
+  width: 100%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  height: 46px;
+  background: #25D366;
+  color: #ffffff;
+  border: none;
+  border-radius: 12px;
+  font-family: var(--body);
+  font-size: 14px;
+  font-weight: 700;
+  text-decoration: none;
+  cursor: pointer;
+  transition: transform 0.15s ease, opacity 0.15s ease;
+}
+
+.whatsappStartChatBtn:hover {
+  opacity: 0.92;
+  transform: translateY(-1px);
+}
+
+.whatsappStartChatBtn:active {
+  transform: scale(0.98);
+}
+
+.whatsappTrigger {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  height: 56px;
+  padding: 0 16px;
+  border-radius: 28px;
+  border: none;
   background: #25D366;
   color: #ffffff;
   box-shadow: 0 14px 30px -10px rgba(37, 211, 102, 0.55), 0 4px 14px rgba(0, 0, 0, 0.18);
-  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s ease;
+  cursor: pointer;
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s ease, padding 0.25s ease;
 }
 
-.floatingWhatsapp::before {
+.whatsappTrigger::before {
   content: '';
   position: absolute;
   inset: 0;
-  border-radius: 50%;
+  border-radius: 28px;
   background: #25D366;
   opacity: 0.55;
   z-index: -1;
   animation: whatsappPulse 2.6s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+.whatsappTriggerOpen::before {
+  animation: none;
+  opacity: 0;
+}
+
+.whatsappTrigger:hover {
+  transform: translateY(-3px) scale(1.02);
+  box-shadow: 0 18px 36px -8px rgba(37, 211, 102, 0.6), 0 4px 14px rgba(0, 0, 0, 0.18);
+}
+
+.whatsappTrigger:active {
+  transform: scale(0.94);
+}
+
+.whatsappTriggerLabel {
+  font-family: var(--body);
+  font-size: 14px;
+  font-weight: 700;
+  white-space: nowrap;
 }
 
 @keyframes whatsappPulse {
@@ -1900,15 +2073,6 @@ a.footerContactLine:hover {
     transform: scale(1.9);
     opacity: 0;
   }
-}
-
-.floatingWhatsapp:hover {
-  transform: translateY(-3px) scale(1.05);
-  box-shadow: 0 18px 36px -8px rgba(37, 211, 102, 0.6), 0 4px 14px rgba(0, 0, 0, 0.18);
-}
-
-.floatingWhatsapp:active {
-  transform: scale(0.94);
 }
 
 @media (max-width: 960px) {
@@ -2102,7 +2266,7 @@ a.footerContactLine:hover {
 
   .heroTitle {
     padding-top: 55px;
-    font-size: clamp(1.85rem, 7.5vw, 2.35rem);
+    font-size: clamp(2.4rem, 6.2vw + 1rem, 3.4rem);
   }
 
   .pricingCard {
@@ -2117,11 +2281,19 @@ a.footerContactLine:hover {
     font-size: 12px;
   }
 
-  .floatingWhatsapp {
-    width: 50px;
-    height: 50px;
+  .whatsappWidget {
     bottom: 18px;
     right: 18px;
+    gap: 12px;
+  }
+
+  .whatsappTrigger {
+    height: 50px;
+    padding: 0 14px;
+  }
+
+  .whatsappPanel {
+    width: 290px;
   }
 }
 
