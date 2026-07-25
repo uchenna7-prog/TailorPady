@@ -5,7 +5,6 @@ import { usePremium } from './contexts/PremiumContext'
 import RequireAuth from './components/RequireAuth/RequireAuth'
 import ScrollToTop from './components/ScrollToTop/ScrollToTop'
 import SideBar from './components/SideBar/SideBar'
-import LandingPage from './pages/LandingPage/LandingPage'
 import Login from './pages/Login/Login'
 import Signup from './pages/Signup/Signup'
 import Dashboard from './pages/Dashboard/Dashboard'
@@ -34,13 +33,6 @@ import PrivacyPolicy from './pages/PrivacyPolicy/PrivacyPolicy'
 import BugReport from './pages/BugReport/BugReport'
 import './index.css'
 
-function isStandalonePWA() {
-  if (typeof window === 'undefined') return false
-  const isDisplayModeStandalone = window.matchMedia?.('(display-mode: standalone)').matches
-  const isIOSStandalone = window.navigator?.standalone === true
-  return Boolean(isDisplayModeStandalone || isIOSStandalone)
-}
-
 function GuestRoute({ children }) {
   const { user, loading } = useAuth()
   if (loading) return null
@@ -49,11 +41,9 @@ function GuestRoute({ children }) {
 }
 
 function RootRoute() {
-  const { user } = useAuth()
-
-  if (user) return <Navigate to="/dashboard" replace />
-  if (isStandalonePWA()) return <Navigate to="/login" replace />
-  return <LandingPage />
+  const { user, loading } = useAuth()
+  if (loading) return null
+  return <Navigate to={user ? '/dashboard' : '/login'} replace />
 }
 
 function AppShell() {

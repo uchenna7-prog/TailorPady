@@ -7,7 +7,7 @@ const publicPageRewrite = {
   name: 'public-page-rewrite',
   configureServer(server) {
     server.middlewares.use((req, _res, next) => {
-      if (req.url.startsWith('/portfolio/') || req.url.startsWith('/review/')) {
+      if (req.url === '/' || req.url.startsWith('/portfolio/') || req.url.startsWith('/review/')) {
         req.url = '/public.html'
       }
       next()
@@ -19,7 +19,7 @@ export default defineConfig({
   build: {
     rollupOptions: {
       input: {
-        main:   'index.html',
+        main: 'index.html',
         public: 'public.html',
       },
     },

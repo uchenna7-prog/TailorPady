@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 import { useInstall } from '../../contexts/InstallContext'
 import styles from './LandingPage.module.css'
 
@@ -288,16 +288,16 @@ const FOOTER_COLUMNS = [
     links: [
       { label: 'Features', href: '#features' },
       { label: 'Pricing', href: '#pricing' },
-      { label: 'FAQ', to: '/faq' },
+      { label: 'FAQ', href: '/faq' },
     ],
   },
   {
     heading: 'Company',
     links: [
-      { label: 'Contact', to: '/contact' },
-      { label: 'Privacy policy', to: '/privacy' },
-      { label: 'Terms & conditions', to: '/terms' },
-      { label: 'Refund policy', to: '/refund' },
+      { label: 'Contact', href: '/contact' },
+      { label: 'Privacy policy', href: '/privacy' },
+      { label: 'Terms & conditions', href: '/terms' },
+      { label: 'Refund policy', href: '/refund' },
     ],
   },
 ]
@@ -583,9 +583,9 @@ function SiteNav({ onNavigate, theme, onToggleTheme }) {
             <InstallButton />
           </div>
           <div className={styles.navButtonGroup}>
-            <Link to="/login" className={styles.navLogin}>
+            <a href="/login" className={styles.navLogin}>
               Log in
-            </Link>
+            </a>
             <button type="button" className={styles.navCta} onClick={() => onNavigate('/signup')}>
               Start free
             </button>
@@ -614,9 +614,9 @@ function SiteNav({ onNavigate, theme, onToggleTheme }) {
           ))}
           <div className={styles.navMobileActions}>
             <InstallButton className={styles.navMobileFullButton} fullWidth />
-            <Link to="/login" className={styles.navLoginMobile}>
+            <a href="/login" className={styles.navLoginMobile}>
               Log in
-            </Link>
+            </a>
             <button type="button" className={styles.navCta} onClick={() => onNavigate('/signup')}>
               Start free
             </button>
@@ -962,10 +962,10 @@ function FAQPreview() {
           )
         })}
       </div>
-      <Link to="/faq" className={styles.faqMore}>
+      <a href="/faq" className={styles.faqMore}>
         See all questions
         <span className="mi" style={{ fontSize: '1.1rem' }}>arrow_forward</span>
-      </Link>
+      </a>
     </section>
   )
 }
@@ -1022,17 +1022,11 @@ function SiteFooter() {
             {FOOTER_COLUMNS.map(col => (
               <div key={col.heading} className={styles.footerColumn}>
                 <span className={styles.footerColumnHeading}>{col.heading}</span>
-                {col.links.map(link =>
-                  link.to ? (
-                    <Link key={link.label} to={link.to}>
-                      {link.label}
-                    </Link>
-                  ) : (
-                    <a key={link.label} href={link.href}>
-                      {link.label}
-                    </a>
-                  )
-                )}
+                {col.links.map(link => (
+                  <a key={link.label} href={link.href}>
+                    {link.label}
+                  </a>
+                ))}
               </div>
             ))}
           </div>
@@ -1060,8 +1054,9 @@ function FloatingWhatsApp() {
 }
 
 export default function LandingPage() {
-  const navigate = useNavigate()
-  const goTo = path => navigate(path)
+  const goTo = path => {
+    window.location.href = path
+  }
   const [theme, toggleTheme] = useTheme()
 
   useEffect(() => {
