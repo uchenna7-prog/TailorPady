@@ -74,14 +74,14 @@ function AppShell() {
           <Route path="/gallery"                         element={<Gallery                  onMenuClick={menuClick} />} />
           <Route path="/settings"                        element={<Settings                 onMenuClick={menuClick} />} />
           <Route path="/account"                         element={<Account                  onMenuClick={menuClick} isPremium={isPremium} />} />
-          <Route path="/contact"                         element={<Contact                  onMenuClick={menuClick} />} />
-          <Route path="/faq"                             element={<FAQ                      onMenuClick={menuClick} />} />
+          <Route path="/app/contact"                         element={<Contact                  onMenuClick={menuClick} />} />
+          <Route path="/app/faq"                             element={<FAQ                      onMenuClick={menuClick} />} />
           <Route path="/reviews"                         element={<Reviews                  onMenuClick={menuClick} />} />
           <Route path="/agent"                           element={<Agent />} />
           <Route path="/agent/chat"                      element={<AgentChat />} />
-          <Route path="/terms"                           element={<TermsAndConditions       onMenuClick={menuClick} />} />
-          <Route path="/refund"                          element={<RefundPolicy             onMenuClick={menuClick} />} />
-          <Route path="/privacy"                         element={<PrivacyPolicy            onMenuClick={menuClick} />} />
+          <Route path="/app/terms"                           element={<TermsAndConditions       onMenuClick={menuClick} />} />
+          <Route path="/app/refund"                          element={<RefundPolicy             onMenuClick={menuClick} />} />
+          <Route path="/app/privacy"                         element={<PrivacyPolicy            onMenuClick={menuClick} />} />
           <Route path="/report-bug"                      element={<BugReport                onMenuClick={menuClick} />} />
           <Route path="*"                                element={<Navigate to="/dashboard" replace />} />
         </Routes>

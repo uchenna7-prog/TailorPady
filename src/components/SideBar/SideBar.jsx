@@ -48,8 +48,8 @@ const NAV_SECTIONS = [
     key: 'help',
     label: 'Help',
     items: [
-      { path: '/contact',     label: 'Contact Us',   icon: 'call'         },
-      { path: '/faq',         label: 'FAQs',         icon: 'help_outline' },
+      { path: '/app/contact',     label: 'Contact Us',   icon: 'call'         },
+      { path: '/app/faq',         label: 'FAQs',         icon: 'help_outline' },
       { path: '/report-bug',  label: 'Report a Bug', icon: 'bug_report'  },
     ],
   },
@@ -201,9 +201,9 @@ function SideBar({ isOpen, onClose }) {
           </div>
 
           <div className={styles.footer}>
-            <button className={styles.footerLink} onClick={() => handleNav('/terms')}>Terms & Conditions</button>
-            <button className={styles.footerLink} onClick={() => handleNav('/refund')}>Refund / Cancellation Policy</button>
-            <button className={styles.footerLink} onClick={() => handleNav('/privacy')}>Privacy Policy</button>
+            <button className={styles.footerLink} onClick={() => handleNav('/app/terms')}>Terms & Conditions</button>
+            <button className={styles.footerLink} onClick={() => handleNav('/app/refund')}>Refund / Cancellation Policy</button>
+            <button className={styles.footerLink} onClick={() => handleNav('/app/privacy')}>Privacy Policy</button>
           </div>
         </div>
 

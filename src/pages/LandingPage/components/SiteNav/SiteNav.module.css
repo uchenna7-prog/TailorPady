@@ -1,0 +1,413 @@
+.nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 40;
+  background: transparent;
+  border-bottom: 1px solid transparent;
+  transition: background-color 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+}
+
+.navScrolled {
+  background: color-mix(in srgb, var(--paper) 92%, transparent);
+  backdrop-filter: blur(10px);
+  border-bottom-color: var(--line);
+  box-shadow: 0 8px 28px -18px rgba(8, 8, 10, 0.35);
+}
+
+.navInner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  padding: 12px clamp(20px, 5vw, 64px);
+  max-width: 1320px;
+  margin: 0 auto;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.logoMark {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--ink);
+  font-family: "Onest", sans-serif;
+  font-size: 1.5rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.navLinks {
+  display: flex;
+  gap: 32px;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.navLinks a {
+  position: relative;
+  color: var(--muted);
+  text-decoration: none;
+  transition: color 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.navLinks a:hover {
+  color: var(--ink);
+}
+
+.navLinkActive {
+  color: var(--ink);
+}
+
+.navLinkIndicator {
+  position: absolute;
+  top: -18px;
+  left: 50%;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--ink);
+  transform: translate(-50%, 6px) scale(0.4);
+  opacity: 0;
+  transition: opacity 0.45s cubic-bezier(0.16, 1, 0.3, 1), transform 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.navLinkActive .navLinkIndicator {
+  opacity: 1;
+  transform: translate(-50%, 0) scale(1);
+}
+
+.navActions {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-shrink: 0;
+}
+
+.navUtility {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  padding: 4px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--surface);
+}
+
+.themeToggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  flex-shrink: 0;
+  background: transparent;
+  color: var(--ink);
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: background 0.15s ease, transform 0.15s ease;
+}
+
+.themeToggle span {
+  font-size: 1.1rem;
+}
+
+.themeToggle:hover {
+  background: var(--surface-2);
+  transform: translateY(-1px);
+}
+
+.themeToggle:active {
+  transform: scale(0.92);
+}
+
+.installWrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.installWrapFull {
+  width: 100%;
+}
+
+.installButton {
+  display: inline-flex;
+  align-items: center;
+  height: 32px;
+  gap: 7px;
+  background: transparent;
+  color: var(--ink);
+  border: none;
+  border-radius: 10px;
+  padding: 0 14px;
+  font-family: var(--body);
+  font-size: 13px;
+  font-weight: 600;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: background 0.15s ease, transform 0.15s ease;
+}
+
+.installButton span {
+  font-size: 1rem !important;
+}
+
+.installButton:hover {
+  background: var(--surface-2);
+  transform: translateY(-1px);
+}
+
+.installButton:active {
+  transform: scale(0.97);
+}
+
+.installHint {
+  position: absolute;
+  top: calc(100% + 12px);
+  right: 0;
+  width: 260px;
+  background: var(--surface);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-lg);
+  padding: 18px 18px 16px;
+  z-index: 50;
+  animation: fadeIn 0.2s cubic-bezier(0.16, 1, 0.3, 1) both;
+  transform-origin: top right;
+}
+
+.installHintTitle {
+  display: block;
+  font-family: var(--display);
+  font-size: 14px;
+  font-weight: 700;
+  margin-bottom: 12px;
+}
+
+.installHintList {
+  margin: 0 0 16px;
+  padding-left: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--muted);
+}
+
+.installHintClose {
+  width: 100%;
+  background: var(--ink);
+  color: var(--paper);
+  border: none;
+  border-radius: 7px;
+  padding: 9px 0;
+  font-family: var(--body);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.15s ease, transform 0.15s ease;
+}
+
+.installHintClose:active {
+  transform: scale(0.97);
+}
+
+.navButtonGroup {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.navLogin {
+  display: inline-flex;
+  align-items: center;
+  height: var(--control-h, 40px);
+  padding: 0 16px;
+  border: 1px solid var(--line-strong);
+  border-radius: 8px;
+  color: var(--ink);
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 600;
+  white-space: nowrap;
+  transition: background 0.15s ease, border-color 0.15s ease;
+}
+
+.navLogin:hover {
+  background: var(--surface-2);
+  border-color: var(--ink);
+}
+
+.navCta {
+  position: relative;
+  overflow: hidden;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: var(--control-h, 40px);
+  background: var(--ink);
+  color: var(--paper);
+  border: 1px solid var(--line-strong);
+  border-radius: 8px;
+  padding: 0 20px;
+  font-family: var(--body);
+  font-size: 14px;
+  font-weight: 600;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: transform 0.15s ease, opacity 0.15s ease, box-shadow 0.25s ease;
+}
+
+.navCta::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -60%;
+  width: 40%;
+  height: 100%;
+  background: linear-gradient(120deg, transparent, rgba(255, 255, 255, 0.32), transparent);
+  transform: skewX(-20deg);
+  transition: left 0.55s ease;
+  pointer-events: none;
+}
+
+.navCta:hover {
+  opacity: 0.9;
+  box-shadow: var(--shadow-sm);
+  transform: translateY(-1px);
+}
+
+.navCta:hover::before {
+  left: 130%;
+}
+
+.navCta:active {
+  transform: translateY(1px) scale(0.98);
+}
+
+.navMobileTrigger {
+  display: none;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.navMenuButton {
+  display: flex;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  width: 40px;
+  height: 40px;
+  align-items: center;
+  justify-content: center;
+  color: var(--ink);
+  flex-shrink: 0;
+  transition: transform 0.2s ease;
+}
+
+.navMenuButton:active {
+  transform: scale(0.9);
+}
+
+.navMenuButton span {
+  font-size: 1.5rem;
+}
+
+.navMobilePanel {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  padding: 20px clamp(20px, 5vw, 64px) 28px;
+  background: var(--paper);
+  border-top: 1px solid var(--line);
+  box-shadow: var(--shadow-lg);
+  animation: slideDown 0.3s cubic-bezier(0.16, 1, 0.3, 1) both;
+  transform-origin: top;
+}
+
+.navMobilePanel a {
+  color: var(--ink);
+  text-decoration: none;
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.navMobileActions {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 12px;
+  padding-top: 20px;
+}
+
+.navMobileFullButton {
+  width: 100%;
+  justify-content: center;
+  height: 44px;
+  border: 1px solid var(--line-strong);
+  border-radius: 8px;
+  background: transparent;
+  padding: 0 16px;
+}
+
+.navLoginMobile {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 44px;
+  border: 1px solid var(--line-strong);
+  border-radius: 8px;
+  background: transparent;
+  color: var(--ink);
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.navMobileActions .navCta {
+  width: 100%;
+  height: 44px;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(28px) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@media (max-width: 768px) {
+  .navLinks,
+  .navActions {
+    display: none;
+  }
+
+  .navMobileTrigger {
+    display: flex;
+  }
+}
