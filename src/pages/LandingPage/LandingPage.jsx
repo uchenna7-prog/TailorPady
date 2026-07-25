@@ -4,6 +4,7 @@ import { useInstall } from '../../contexts/InstallContext'
 import styles from './LandingPage.module.css'
 
 const THEME_STORAGE_KEY = 'tailorpady-theme'
+const WHATSAPP_PEEK_KEY = 'tailorpady-whatsapp-peek-shown'
 
 const NAV_LINKS = [
   { href: '#features', label: 'Features' },
@@ -1043,11 +1044,94 @@ function SiteFooter() {
   )
 }
 
+function TypingDots() {
+  return (
+    <span className={styles.typingDots}>
+      <span />
+      <span />
+      <span />
+    </span>
+  )
+}
+
 function WhatsAppWidget() {
   const [open, setOpen] = useState(false)
+  const [peekVisible, setPeekVisible] = useState(false)
+  const [peekDismissed, setPeekDismissed] = useState(false)
+  const [showTyping, setShowTyping] = useState(false)
+  const [showMessage, setShowMessage] = useState(false)
+  const hasAnimatedRef = useRef(false)
+
+  useEffect(() => {
+    if (sessionStorage.getItem(WHATSAPP_PEEK_KEY)) return
+    const showTimer = setTimeout(() => {
+      setPeekVisible(true)
+      sessionStorage.setItem(WHATSAPP_PEEK_KEY, '1')
+    }, 5000)
+    return () => clearTimeout(showTimer)
+  }, [])
+
+  useEffect(() => {
+    if (!peekVisible) return
+    const hideTimer = setTimeout(() => setPeekVisible(false), 14000)
+    return () => clearTimeout(hideTimer)
+  }, [peekVisible])
+
+  useEffect(() => {
+    if (!open || hasAnimatedRef.current) return
+    hasAnimatedRef.current = true
+    setShowTyping(true)
+    const typingTimer = setTimeout(() => {
+      setShowTyping(false)
+      setShowMessage(true)
+    }, 1100)
+    return () => clearTimeout(typingTimer)
+  }, [open])
+
+  const handleOpen = () => {
+    setOpen(true)
+    setPeekVisible(false)
+    setPeekDismissed(true)
+  }
+
+  const handlePeekDismiss = event => {
+    event.stopPropagation()
+    setPeekVisible(false)
+    setPeekDismissed(true)
+  }
+
+  const timeNow = () => new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
 
   return (
     <div className={styles.whatsappWidget}>
+      {peekVisible && (
+        <div
+          className={styles.peekBubble}
+          role="button"
+          tabIndex={0}
+          onClick={handleOpen}
+          onKeyDown={event => {
+            if (event.key === 'Enter' || event.key === ' ') handleOpen()
+          }}
+        >
+          <button
+            type="button"
+            className={styles.peekClose}
+            onClick={handlePeekDismiss}
+            aria-label="Dismiss message"
+          >
+            <span className="mi" style={{ fontSize: '0.95rem' }}>close</span>
+          </button>
+          <span className={styles.peekAvatar}>
+            <WhatsAppIcon size={18} />
+          </span>
+          <span className={styles.peekText}>
+            <span className={styles.peekName}>TailorPady Support</span>
+            <span className={styles.peekMessage}>Hi there! 👋 Need help getting your shop set up?</span>
+          </span>
+        </div>
+      )}
+
       {open && (
         <div className={styles.whatsappPanel} role="dialog" aria-label="Chat with TailorPady support">
           <div className={styles.whatsappPanelHeader}>
@@ -1071,10 +1155,18 @@ function WhatsAppWidget() {
             </button>
           </div>
           <div className={styles.whatsappPanelBody}>
-            <div className={styles.whatsappBubble}>
-              Hi there! 👋 How can we help you with TailorPady today?
-              <span className={styles.whatsappBubbleTime}>Just now</span>
-            </div>
+            <span className={styles.whatsappDateChip}>Today</span>
+            {showTyping && (
+              <div className={styles.whatsappTypingBubble}>
+                <TypingDots />
+              </div>
+            )}
+            {showMessage && (
+              <div className={styles.whatsappBubble}>
+                Hi there! 👋 How can we help you with TailorPady today?
+                <span className={styles.whatsappBubbleTime}>{timeNow()}</span>
+              </div>
+            )}
           </div>
           <div className={styles.whatsappPanelFooter}>
             <a
@@ -1089,13 +1181,15 @@ function WhatsAppWidget() {
           </div>
         </div>
       )}
+
       <button
         type="button"
         className={`${styles.whatsappTrigger} ${open ? styles.whatsappTriggerOpen : ''}`}
-        onClick={() => setOpen(prev => !prev)}
+        onClick={() => (open ? setOpen(false) : handleOpen())}
         aria-label={open ? 'Close chat' : 'Chat with us on WhatsApp'}
       >
         <WhatsAppIcon size={24} />
+        {!open && !peekDismissed && <span className={styles.whatsappBadgeDot} />}
         {open && <span className={styles.whatsappTriggerLabel}>Close chat</span>}
       </button>
     </div>
