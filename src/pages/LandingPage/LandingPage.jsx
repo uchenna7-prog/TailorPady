@@ -258,16 +258,12 @@ const CONTACT = {
   whatsapp: '+234 7079645766',
   phone: '+234 7079645766',
   email: 'support@TailorPady.app',
+  address: 'Choba, Uniport, Port Harcourt, Nigeria',
 }
 
 const WHATSAPP_HREF = `https://wa.me/${CONTACT.whatsapp.replace(/\D/g, '')}`
 
 const CONTACT_LINKS = [
-  {
-    key: 'whatsapp',
-    label: 'WhatsApp',
-    href: WHATSAPP_HREF,
-  },
   {
     key: 'phone',
     icon: 'call',
@@ -673,8 +669,8 @@ function Hero({ onNavigate }) {
             <button type="button" className={styles.primaryButton} onClick={() => onNavigate('/signup')}>
               Start free
             </button>
-            <a href="#product" className={styles.secondaryButton}>
-              See the app
+            <a href="#features" className={styles.secondaryButton}>
+              Explore features
             </a>
           </div>
         </div>
@@ -999,21 +995,29 @@ function SiteFooter() {
         <div className={styles.footerTop}>
           <div className={styles.footerBrand}>
             <span className={styles.footerLogoMark}>TailorPady</span>
+            <div className={styles.footerContactDetails}>
+              <a href={`tel:${CONTACT.phone.replace(/\s/g, '')}`} className={styles.footerContactLine}>
+                <span className="mi" style={{ fontSize: '1rem' }}>call</span>
+                {CONTACT.phone}
+              </a>
+              <a href={`mailto:${CONTACT.email}`} className={styles.footerContactLine}>
+                <span className="mi" style={{ fontSize: '1rem' }}>mail</span>
+                {CONTACT.email}
+              </a>
+              <span className={styles.footerContactLine}>
+                <span className="mi" style={{ fontSize: '1rem' }}>location_on</span>
+                {CONTACT.address}
+              </span>
+            </div>
             <div className={styles.footerSocial}>
               {CONTACT_LINKS.map(link => (
                 <a
                   key={link.key}
                   href={link.href}
-                  target="_blank"
-                  rel="noreferrer"
                   className={styles.footerSocialLink}
                   aria-label={link.label}
                 >
-                  {link.key === 'whatsapp' ? (
-                    <WhatsAppIcon size={16} />
-                  ) : (
-                    <span className="mi" style={{ fontSize: '1rem' }}>{link.icon}</span>
-                  )}
+                  <span className="mi" style={{ fontSize: '1rem' }}>{link.icon}</span>
                 </a>
               ))}
             </div>

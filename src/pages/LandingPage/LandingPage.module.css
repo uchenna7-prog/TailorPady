@@ -452,8 +452,7 @@
   height: var(--control-h);
 }
 
-.primaryButton,
-.secondaryButton {
+.primaryButton {
   height: 48px;
   padding: 0 26px;
 }
@@ -637,7 +636,7 @@
 .heroTitle {
   font-family: var(--display);
   font-weight: 700;
-  font-size: clamp(2.6rem, 4.4vw + 1rem, 3.5rem);
+  font-size: clamp(2.8rem, 4.6vw + 1.1rem, 3.75rem);
   line-height: 1.12;
   letter-spacing: -0.02em;
   margin: 0 0 20px;
@@ -664,7 +663,9 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  background: var(--surface-2);
+  height: 48px;
+  padding: 0 26px;
+  background: transparent;
   color: var(--ink);
   border: 1px solid var(--line-strong);
   border-radius: 8px;
@@ -673,11 +674,12 @@
   font-weight: 600;
   text-decoration: none;
   cursor: pointer;
-  transition: background 0.15s ease, transform 0.15s ease;
+  transition: background 0.15s ease, border-color 0.15s ease, transform 0.15s ease;
 }
 
 .secondaryButton:hover {
-  background: var(--line-strong);
+  background: var(--surface-2);
+  border-color: var(--ink);
   transform: translateX(2px);
 }
 
@@ -1257,8 +1259,10 @@
   animation: marquee 42s linear infinite;
 }
 
-.marqueeViewport:hover .marqueeTrack {
-  animation-play-state: paused;
+@media (hover: hover) {
+  .marqueeViewport:hover .marqueeTrack {
+    animation-play-state: paused;
+  }
 }
 
 @keyframes marquee {
@@ -1286,10 +1290,12 @@
   transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.3s ease, box-shadow 0.35s ease;
 }
 
-.reviewCard:hover {
-  transform: translateY(-6px);
-  border-color: var(--line-strong);
-  box-shadow: var(--shadow-lg);
+@media (hover: hover) {
+  .reviewCard:hover {
+    transform: translateY(-6px);
+    border-color: var(--line-strong);
+    box-shadow: var(--shadow-lg);
+  }
 }
 
 .reviewTop {
@@ -1763,6 +1769,33 @@
   gap: 18px;
 }
 
+.footerContactDetails {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.footerContactLine {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--paper);
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 500;
+  opacity: 0.8;
+  transition: opacity 0.15s ease;
+}
+
+.footerContactLine span:first-child {
+  opacity: 0.6;
+  flex-shrink: 0;
+}
+
+a.footerContactLine:hover {
+  opacity: 1;
+}
+
 .footerSocial {
   display: flex;
   gap: 10px;
@@ -1885,7 +1918,6 @@
 
   .heroInner {
     grid-template-columns: 1fr;
-    text-align: center;
   }
 
   .heroCopy {
@@ -1894,17 +1926,12 @@
     padding-bottom: 0;
   }
 
-  .heroBody {
-    margin-left: auto;
-    margin-right: auto;
-  }
-
   .heroActions {
-    justify-content: center;
+    justify-content: flex-start;
   }
 
   .heroCopy .aboutStats {
-    justify-content: center;
+    justify-content: flex-start;
   }
 
   .heroVisual {
@@ -1919,10 +1946,6 @@
 
   .productShowcaseGrid {
     justify-content: center;
-  }
-
-  .aboutChecklist {
-    align-items: center;
   }
 
   .aboutStats {
@@ -2033,7 +2056,18 @@
   }
 
   .reviewCard {
-    flex-basis: 300px;
+    flex-basis: 280px;
+    padding: 22px;
+    gap: 18px;
+  }
+
+  .reviewQuote {
+    font-size: 14.5px;
+    line-height: 1.5;
+  }
+
+  .reviewQuoteMark {
+    font-size: 32px;
   }
 
   .missionQuoteMark {
@@ -2068,6 +2102,7 @@
 
   .heroTitle {
     padding-top: 55px;
+    font-size: clamp(1.85rem, 7.5vw, 2.35rem);
   }
 
   .pricingCard {
@@ -2108,6 +2143,7 @@
   .heroActions .secondaryButton {
     flex: 1 1 0;
     padding: 0 12px;
+    height: 44px;
   }
 
   .aboutStats {
