@@ -1,4 +1,4 @@
-import { useState, useRef, useCallback, useEffect } from 'react'
+import { useState, useRef, useCallback, useEffect, useLayoutEffect } from 'react'
 import { useParams, useNavigate, useLocation }      from 'react-router-dom'
 import { useCustomers }                             from '../../contexts/CustomerContext'
 import { useOrders }                                from '../../contexts/OrdersContext'
@@ -196,30 +196,31 @@ export default function CustomerDetail({ onMenuClick }) {
     })
   }, [activeTab])
 
+  const updateUnderlineRef = useRef(updateUnderline)
   useEffect(() => {
+    updateUnderlineRef.current = updateUnderline
+  }, [updateUnderline])
+
+  useLayoutEffect(() => {
     updateUnderline()
   }, [activeTab, updateUnderline])
 
   useEffect(() => {
-    window.addEventListener('resize', updateUnderline)
-    return () => window.removeEventListener('resize', updateUnderline)
-  }, [updateUnderline])
+    const handleExternalChange = () => updateUnderlineRef.current()
 
-  // Recalculates the underline whenever the tab strip's own layout changes size —
-  // e.g. when item-count badges pop in after data finishes loading (common right
-  // after navigating back here from another page). The underline span itself is
-  // positioned with `transform`, not `left`/`margin`, so updating it never changes
-  // the strip's box size — combined with the no-op guard in updateUnderline above,
-  // this cannot re-trigger itself or loop.
-  useEffect(() => {
-    const stripEl = tabsRef.current
-    if (!stripEl) return
+    const resizeObserver = new ResizeObserver(handleExternalChange)
+    TAB_IDS.forEach(tabId => {
+      const el = tabRefs.current[tabId]
+      if (el) resizeObserver.observe(el)
+    })
 
-    const resizeObserver = new ResizeObserver(updateUnderline)
-    resizeObserver.observe(stripEl)
+    window.addEventListener('resize', handleExternalChange)
 
-    return () => resizeObserver.disconnect()
-  }, [updateUnderline])
+    return () => {
+      resizeObserver.disconnect()
+      window.removeEventListener('resize', handleExternalChange)
+    }
+  }, [])
 
   const handleTabStripTouchStart = useCallback((e) => {
     e.stopPropagation()
