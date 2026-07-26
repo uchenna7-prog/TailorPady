@@ -16,6 +16,11 @@
       { "source": "/",             "destination": "/public.html" },
       { "source": "/portfolio/**", "destination": "/public.html" },
       { "source": "/review/**",    "destination": "/public.html" },
+      { "source": "/faq",          "destination": "/public.html" },
+      { "source": "/contact",      "destination": "/public.html" },
+      { "source": "/privacy",      "destination": "/public.html" },
+      { "source": "/terms",        "destination": "/public.html" },
+      { "source": "/refund",       "destination": "/public.html" },
       { "source": "**",            "destination": "/index.html"  }
     ]
   },

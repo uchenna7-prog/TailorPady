@@ -4,20 +4,26 @@ import { registerRoute, NavigationRoute } from 'workbox-routing'
 precacheAndRoute(self.__WB_MANIFEST, { directoryIndex: null })
 cleanupOutdatedCaches()
 
-const isPublicRoute = ({ url }) =>
-  url.pathname === '/' ||
-  url.pathname.startsWith('/portfolio/') ||
-  url.pathname.startsWith('/review/')
+const PUBLIC_ROUTE_PATTERNS = [
+  /^\/$/,
+  /^\/portfolio\//,
+  /^\/review\//,
+  /^\/faq$/,
+  /^\/contact$/,
+  /^\/privacy$/,
+  /^\/terms$/,
+  /^\/refund$/,
+]
 
 registerRoute(
   new NavigationRoute(createHandlerBoundToURL('/public.html'), {
-    allowlist: [/^\/$/, /^\/portfolio\//, /^\/review\//],
+    allowlist: PUBLIC_ROUTE_PATTERNS,
   })
 )
 
 registerRoute(
   new NavigationRoute(createHandlerBoundToURL('/index.html'), {
-    denylist: [/^\/$/, /^\/portfolio\//, /^\/review\//],
+    denylist: PUBLIC_ROUTE_PATTERNS,
   })
 )
 

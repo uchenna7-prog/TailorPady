@@ -3,11 +3,17 @@ import react, { reactCompilerPreset } from '@vitejs/plugin-react'
 import babel from '@rolldown/plugin-babel'
 import { VitePWA } from 'vite-plugin-pwa'
 
+const PUBLIC_PATHS = ['/', '/faq', '/contact', '/privacy', '/terms', '/refund']
+
 const publicPageRewrite = {
   name: 'public-page-rewrite',
   configureServer(server) {
     server.middlewares.use((req, _res, next) => {
-      if (req.url === '/' || req.url.startsWith('/portfolio/') || req.url.startsWith('/review/')) {
+      if (
+        PUBLIC_PATHS.includes(req.url) ||
+        req.url.startsWith('/portfolio/') ||
+        req.url.startsWith('/review/')
+      ) {
         req.url = '/public.html'
       }
       next()
