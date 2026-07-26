@@ -92,6 +92,7 @@ export function AddCustomerModal({ isOpen, onClose, onSave }) {
   const [sexError,         setSexError]         = useState(false)
   const [whatsAppError,    setWhatsAppError]    = useState(false)
   const [formInlineMsg,    setFormInlineMsg]    = useState(null)
+  const [isSaving,         setIsSaving]         = useState(false)
 
   const formInlineMsgTimer = useRef(null)
   const fileInputRef       = useRef(null)
@@ -108,6 +109,8 @@ export function AddCustomerModal({ isOpen, onClose, onSave }) {
     'ContactsManager' in window
 
   const monthOptions = MONTHS.map((m, i) => ({ label: m, value: i + 1 }))
+
+  const savingLabel = photoUploading ? `Uploading… ${photoProgress}%` : 'Saving…'
 
 
   function showInlineMsg(text, ok = true) {
@@ -215,12 +218,14 @@ export function AddCustomerModal({ isOpen, onClose, onSave }) {
     setWhatsAppError(false)
     setFormInlineMsg(null)
     setContactNumbers(null)
+    setIsSaving(false)
     clearTimeout(formInlineMsgTimer.current)
     if (fileInputRef.current) fileInputRef.current.value = ''
   }
 
 
   function handleClose() {
+    if (isSaving) return
     resetForm()
     onClose()
   }
@@ -274,22 +279,27 @@ export function AddCustomerModal({ isOpen, onClose, onSave }) {
       return
     }
 
-    const photoUpload   = await uploadPhotoIfNeeded()
-    const photoUrl      = photoUpload?.url      || null
-    const photoPublicId = photoUpload?.publicId || null
-    const allBody       = { ...bodyMeasurements }
-    customFields.forEach(f => { if (f.label.trim()) allBody[f.label.trim()] = f.value })
-    const birthday   = bdayMonth && bdayDay ? `${bdayMonth}-${bdayDay}` : ''
-    const builtPhone = buildPhoneNumber(localPhone, selectedCountry.cca2)
+    setIsSaving(true)
+    try {
+      const photoUpload   = await uploadPhotoIfNeeded()
+      const photoUrl      = photoUpload?.url      || null
+      const photoPublicId = photoUpload?.publicId || null
+      const allBody       = { ...bodyMeasurements }
+      customFields.forEach(f => { if (f.label.trim()) allBody[f.label.trim()] = f.value })
+      const birthday   = bdayMonth && bdayDay ? `${bdayMonth}-${bdayDay}` : ''
+      const builtPhone = buildPhoneNumber(localPhone, selectedCountry.cca2)
 
-    if (localPhone.trim() && builtPhone === null) {
-      onSave({ name, phone: '__INVALID_PHONE__', phoneType, onWhatsApp, sex, birthday, email, address, notes, photo: photoUrl, photoPublicId, bodyMeasurements: allBody })
-      return
+      if (localPhone.trim() && builtPhone === null) {
+        onSave({ name, phone: '__INVALID_PHONE__', phoneType, onWhatsApp, sex, birthday, email, address, notes, photo: photoUrl, photoPublicId, bodyMeasurements: allBody })
+        return
+      }
+
+      onSave({ name, phone: builtPhone || '', phoneType, onWhatsApp, sex, birthday, email, address, notes, photo: photoUrl, photoPublicId, bodyMeasurements: allBody })
+      resetForm()
+      onClose()
+    } finally {
+      setIsSaving(false)
     }
-
-    onSave({ name, phone: builtPhone || '', phoneType, onWhatsApp, sex, birthday, email, address, notes, photo: photoUrl, photoPublicId, bodyMeasurements: allBody })
-    resetForm()
-    onClose()
   }
 
 
@@ -301,15 +311,20 @@ export function AddCustomerModal({ isOpen, onClose, onSave }) {
       return
     }
 
-    const photoUpload   = await uploadPhotoIfNeeded()
-    const photoUrl      = photoUpload?.url      || null
-    const photoPublicId = photoUpload?.publicId || null
-    const birthday      = bdayMonth && bdayDay ? `${bdayMonth}-${bdayDay}` : ''
-    const builtPhone    = buildPhoneNumber(localPhone, selectedCountry.cca2)
+    setIsSaving(true)
+    try {
+      const photoUpload   = await uploadPhotoIfNeeded()
+      const photoUrl      = photoUpload?.url      || null
+      const photoPublicId = photoUpload?.publicId || null
+      const birthday      = bdayMonth && bdayDay ? `${bdayMonth}-${bdayDay}` : ''
+      const builtPhone    = buildPhoneNumber(localPhone, selectedCountry.cca2)
 
-    onSave({ name, phone: builtPhone || '', phoneType, onWhatsApp, sex, birthday, email, address, notes, photo: photoUrl, photoPublicId, bodyMeasurements: {} })
-    resetForm()
-    onClose()
+      onSave({ name, phone: builtPhone || '', phoneType, onWhatsApp, sex, birthday, email, address, notes, photo: photoUrl, photoPublicId, bodyMeasurements: {} })
+      resetForm()
+      onClose()
+    } finally {
+      setIsSaving(false)
+    }
   }
 
 
@@ -337,10 +352,10 @@ export function AddCustomerModal({ isOpen, onClose, onSave }) {
             onBackClick={handleClose}
             customActions={[
               formTab === 'personal'
-                ? { label: 'Save', onClick: handleSave, color: 'var(--accent)', disabled: photoUploading }
+                ? { label: 'Save', onClick: handleSave, color: 'var(--accent)', disabled: isSaving }
                 : hasMeasurements
-                  ? { label: 'Save', onClick: handleSave, color: 'var(--accent)', disabled: photoUploading }
-                  : { label: 'Skip', onClick: handleSkip, color: 'var(--text2)', disabled: photoUploading }
+                  ? { label: isSaving ? savingLabel : 'Save', onClick: handleSave, color: 'var(--accent)', disabled: isSaving }
+                  : { label: isSaving ? savingLabel : 'Skip', onClick: handleSkip, color: 'var(--text2)', disabled: isSaving }
             ]}
           />
 
@@ -348,12 +363,14 @@ export function AddCustomerModal({ isOpen, onClose, onSave }) {
             <button
               className={`${styles.formTab} ${formTab === 'personal' ? styles.formTabActive : ''}`}
               onClick={() => setFormTab('personal')}
+              disabled={isSaving}
             >
               Personal Info
             </button>
             <button
               className={`${styles.formTab} ${formTab === 'body' ? styles.formTabActive : ''}`}
               onClick={() => setFormTab('body')}
+              disabled={isSaving}
             >
               Body Measurements
             </button>
@@ -368,7 +385,7 @@ export function AddCustomerModal({ isOpen, onClose, onSave }) {
             </div>
           )}
 
-          <div className={styles.formBody}>
+          <div className={`${styles.formBody} ${isSaving ? styles.formBodySaving : ''}`}>
             {formTab === 'personal' && (
               <>
                 <div style={{ position: 'relative', display: 'inline-block' }}>

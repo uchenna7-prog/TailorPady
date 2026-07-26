@@ -65,6 +65,13 @@
   flex-direction: column;
   flex: 1;
   min-height: 0;
+  opacity: 1;
+  transition: opacity 0.2s ease;
+}
+
+.formBodySaving {
+  opacity: 0.5;
+  pointer-events: none;
 }
 
 .photoPicker {
@@ -190,7 +197,12 @@ select.formInput {
   letter-spacing: 0.8px;
   cursor: pointer;
   position: relative;
-  transition: color 0.2s;
+  transition: color 0.2s, opacity 0.2s;
+}
+
+.formTab:disabled {
+  opacity: 0.5;
+  cursor: default;
 }
 
 .formTabActive {
