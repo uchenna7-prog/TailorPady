@@ -2,7 +2,15 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import styles from './ProfileSetupCard.module.css'
 
-export function ProfileSetupCard({ completedCount, totalCount, nextItem }) {
+const STEP_DESTINATIONS = {
+  brandName:    { route: '/account', modal: 'brand' },
+  brandLogo:    { route: '/account', modal: 'brand' },
+  brandColour:  { route: '/account', modal: 'brand' },
+  contactInfo:  { route: '/account', modal: 'businessContact' },
+  brandAddress: { route: '/account', modal: 'businessContact' },
+}
+
+export function ProfileSetupCard({ completedCount, totalCount, nextItem, nextItemKey }) {
   const navigate  = useNavigate()
   const [hidden, setHidden] = useState(
     () => sessionStorage.getItem('profileSetupDismissed') === 'true'
@@ -18,8 +26,17 @@ export function ProfileSetupCard({ completedCount, totalCount, nextItem }) {
 
   const isDone = completedCount >= totalCount
 
+  function handleClick() {
+    const destination = STEP_DESTINATIONS[nextItemKey]
+    if (destination) {
+      navigate(destination.route, { state: { autoOpenModal: destination.modal } })
+      return
+    }
+    navigate('/account')
+  }
+
   return (
-    <div className={styles.card} onClick={() => navigate('/account')} role="button" tabIndex={0}>
+    <div className={styles.card} onClick={handleClick} role="button" tabIndex={0}>
       <div className={styles.inner}>
 
         <div className={styles.iconWrap}>

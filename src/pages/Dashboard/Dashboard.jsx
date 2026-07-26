@@ -77,7 +77,6 @@ const PROFILE_STEP_LABELS = {
   brandColour:  'Pick a brand colour',
   contactInfo:  'Add a phone or email',
   brandAddress: 'Add your address',
-  bankDetails:  'Add bank details',
 }
 
 function buildProfileSteps(profileSettings) {
@@ -87,7 +86,6 @@ function buildProfileSteps(profileSettings) {
     { key: 'brandColour',  done: !!(profileSettings.brandColour?.trim() && profileSettings.brandColour !== '#1C1814') },
     { key: 'contactInfo',  done: !!(profileSettings.brandPhone?.trim() || profileSettings.brandEmail?.trim()) },
     { key: 'brandAddress', done: !!profileSettings.brandAddress?.trim() },
-    { key: 'bankDetails',  done: !!(profileSettings.accountBank?.trim() && profileSettings.accountNumber?.trim() && profileSettings.accountName?.trim()) },
   ]
 }
 
@@ -394,6 +392,7 @@ function Dashboard({ onMenuClick, onGoToCustomer }) {
               completedCount={profileCompletedCount}
               totalCount={profileSteps.length}
               nextItem={nextProfileItem}
+              nextItemKey={nextProfileStep?.key}
             />
           )}
 

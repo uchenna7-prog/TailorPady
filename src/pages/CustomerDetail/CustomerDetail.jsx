@@ -187,9 +187,12 @@ export default function CustomerDetail({ onMenuClick }) {
     if (!activeEl || !stripEl) return
     const tabRect   = activeEl.getBoundingClientRect()
     const stripRect = stripEl.getBoundingClientRect()
-    setUnderlineStyle({
-      left:  tabRect.left - stripRect.left + stripEl.scrollLeft,
-      width: tabRect.width,
+    const nextLeft  = tabRect.left - stripRect.left + stripEl.scrollLeft
+    const nextWidth = tabRect.width
+
+    setUnderlineStyle(prev => {
+      if (prev.left === nextLeft && prev.width === nextWidth) return prev
+      return { left: nextLeft, width: nextWidth }
     })
   }, [activeTab])
 
@@ -200,6 +203,22 @@ export default function CustomerDetail({ onMenuClick }) {
   useEffect(() => {
     window.addEventListener('resize', updateUnderline)
     return () => window.removeEventListener('resize', updateUnderline)
+  }, [updateUnderline])
+
+  // Recalculates the underline whenever the tab strip's own layout changes size —
+  // e.g. when item-count badges pop in after data finishes loading (common right
+  // after navigating back here from another page). The underline span itself is
+  // positioned with `transform`, not `left`/`margin`, so updating it never changes
+  // the strip's box size — combined with the no-op guard in updateUnderline above,
+  // this cannot re-trigger itself or loop.
+  useEffect(() => {
+    const stripEl = tabsRef.current
+    if (!stripEl) return
+
+    const resizeObserver = new ResizeObserver(updateUnderline)
+    resizeObserver.observe(stripEl)
+
+    return () => resizeObserver.disconnect()
   }, [updateUnderline])
 
   const handleTabStripTouchStart = useCallback((e) => {
