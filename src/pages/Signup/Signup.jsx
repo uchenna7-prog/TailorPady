@@ -233,9 +233,9 @@ export default function Signup() {
 
         <p className={styles.tos}>
           By signing up you agree to our{' '}
-          <Link to="/terms" className={styles.tosLink}>Terms of Service</Link>
+          <a href="/terms" className={styles.tosLink}>Terms of Service</a>
           {' '}and{' '}
-          <Link to="/privacy" className={styles.tosLink}>Privacy Policy</Link>
+          <a href="/privacy" className={styles.tosLink}>Privacy Policy</a>
         </p>
 
         <p className={styles.switchPrompt}>

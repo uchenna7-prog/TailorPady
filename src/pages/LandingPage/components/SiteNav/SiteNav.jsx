@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 import { useInstall } from '../../../../contexts/InstallContext'
 import styles from './SiteNav.module.css'
 
@@ -101,7 +101,6 @@ function InstallButton({ className, fullWidth }) {
 }
 
 export default function SiteNav({ theme, onToggleTheme }) {
-  const navigate = useNavigate()
   const [open, setOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
   const activeSection = useActiveSection(SECTION_IDS)
@@ -113,7 +112,9 @@ export default function SiteNav({ theme, onToggleTheme }) {
     return () => window.removeEventListener('scroll', onScroll)
   }, [])
 
-  const goTo = path => navigate(path)
+  const goTo = path => {
+    window.location.href = path
+  }
 
   return (
     <header className={`${styles.nav} ${scrolled ? styles.navScrolled : ''}`}>
@@ -141,9 +142,9 @@ export default function SiteNav({ theme, onToggleTheme }) {
             <InstallButton />
           </div>
           <div className={styles.navButtonGroup}>
-            <Link to="/login" className={styles.navLogin}>
+            <a href="/login" className={styles.navLogin}>
               Log in
-            </Link>
+            </a>
             <button type="button" className={styles.navCta} onClick={() => goTo('/signup')}>
               Start free
             </button>
@@ -172,9 +173,9 @@ export default function SiteNav({ theme, onToggleTheme }) {
           ))}
           <div className={styles.navMobileActions}>
             <InstallButton className={styles.navMobileFullButton} fullWidth />
-            <Link to="/login" className={styles.navLoginMobile} onClick={() => setOpen(false)}>
+            <a href="/login" className={styles.navLoginMobile} onClick={() => setOpen(false)}>
               Log in
-            </Link>
+            </a>
             <button type="button" className={styles.navCta} onClick={() => goTo('/signup')}>
               Start free
             </button>

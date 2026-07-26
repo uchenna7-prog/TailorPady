@@ -1,5 +1,4 @@
 import { useState, useEffect, useRef } from 'react'
-import { useNavigate } from 'react-router-dom'
 import { useTheme } from './hooks/useTheme'
 import SiteNav from './components/SiteNav/SiteNav'
 import SiteFooter from './components/SiteFooter/SiteFooter'
@@ -898,9 +897,9 @@ function WhatsAppWidget() {
 }
 
 export default function LandingPage() {
-  const navigate = useNavigate()
+
   const goTo = path => {
-    navigate(path)
+    window.location.href = path
   }
   const [theme, toggleTheme] = useTheme()
 
