@@ -45,7 +45,7 @@ export default function PrivacyPolicy({ onMenuClick }) {
           <div className={styles.heroIcon}>
             <span className="mi">shield</span>
           </div>
-          <p className={styles.heroSub}>Last updated: {PRIVACY_LAST_UPDATED}</p>
+          <p className={styles.heroSub}>Last revised {PRIVACY_LAST_UPDATED}</p>
           <div className={styles.heroDivider} />
         </div>
 
@@ -62,29 +62,7 @@ export default function PrivacyPolicy({ onMenuClick }) {
           ))}
         </div>
 
-        <div id={CONTACT.id} className={styles.contactCard}>
-          <div className={styles.contactHeader}>
-            <div className={styles.contactIconWrap}>
-              <span className="mi" style={{ fontSize: '1.1rem' }}>mail_outline</span>
-            </div>
-            <div>
-              <div className={styles.contactTitle}>{CONTACT.title}</div>
-              <div className={styles.contactBody}>{CONTACT.body}</div>
-            </div>
-          </div>
-          <div className={styles.contactLinks}>
-            <a href={`mailto:${CONTACT.email}`} className={styles.contactLink}>
-              <span className="mi" style={{ fontSize: '1rem' }}>email</span>
-              <span>{CONTACT.email}</span>
-            </a>
-            <a href={`tel:${CONTACT.phone.replace(/\s/g, '')}`} className={styles.contactLink}>
-              <span className="mi" style={{ fontSize: '1rem' }}>phone</span>
-              <span>{CONTACT.phone}</span>
-            </a>
-          </div>
-        </div>
-
-        <div style={{ height: 32 }} />
+     
       </div>
     </div>
   )

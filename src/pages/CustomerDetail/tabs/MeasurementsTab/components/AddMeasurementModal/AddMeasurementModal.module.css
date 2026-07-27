@@ -29,6 +29,13 @@
   overflow-y:                 auto;
   padding-bottom:             100px;
   -webkit-overflow-scrolling: touch;
+  opacity:                    1;
+  transition:                 opacity 0.2s ease;
+}
+
+.formScrollBody_saving {
+  opacity:        0.5;
+  pointer-events: none;
 }
 
 .tabSection {
@@ -56,7 +63,12 @@
   letter-spacing: 0.8px;
   cursor:         pointer;
   position:       relative;
-  transition:     color 0.2s;
+  transition:     color 0.2s, opacity 0.2s;
+}
+
+.formTab:disabled {
+  opacity: 0.5;
+  cursor:  default;
 }
 
 .formTab_active {

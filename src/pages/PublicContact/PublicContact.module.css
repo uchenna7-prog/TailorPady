@@ -1,3 +1,39 @@
+.faqCallout {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 16px 18px;
+  margin-bottom: 28px;
+  background: var(--surface-2);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  text-decoration: none;
+  color: var(--ink);
+  transition: border-color 0.2s ease, background 0.2s ease;
+}
+
+.faqCallout:hover {
+  border-color: var(--line-strong);
+  background: var(--surface-3);
+}
+
+.faqCalloutText {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  min-width: 0;
+}
+
+.faqCalloutTitle {
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.faqCalloutSub {
+  font-size: 13px;
+  color: var(--muted);
+}
+
 .list {
   display: flex;
   flex-direction: column;
@@ -29,6 +65,10 @@
 .row:hover .rowArrow {
   opacity: 1;
   transform: translate(2px, -2px);
+}
+
+.row:hover .copyBtn {
+  opacity: 1;
 }
 
 .rowIcon {
@@ -67,9 +107,39 @@
   color: var(--ink);
 }
 
-.rowArrow {
+.rowActions {
   margin-left: auto;
   flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.copyBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  background: transparent;
+  border: none;
+  border-radius: 8px;
+  color: var(--muted-2);
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 0.15s ease, background 0.15s ease, color 0.15s ease;
+}
+
+.copyBtn span {
+  font-size: 1rem;
+}
+
+.copyBtn:hover {
+  background: var(--surface-3);
+  color: var(--ink);
+}
+
+.rowArrow {
   color: var(--muted-2);
   opacity: 0;
   transition: opacity 0.2s ease, transform 0.2s ease;
@@ -88,12 +158,19 @@
 }
 
 .businessCardHeading {
+  display: flex;
+  align-items: center;
+  gap: 8px;
   font-family: var(--mono);
   font-size: 11px;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.1em;
   color: var(--muted-2);
+}
+
+.businessCardHeading span {
+  text-transform: lowercase;
 }
 
 .businessRow {
@@ -123,6 +200,11 @@
 }
 
 @media (max-width: 640px) {
+  .faqCallout {
+    padding: 14px 16px;
+    gap: 12px;
+  }
+
   .row {
     padding: 16px;
     gap: 12px;
@@ -133,8 +215,9 @@
     height: 38px;
   }
 
+  .copyBtn,
   .rowArrow {
-    display: none;
+    opacity: 1;
   }
 
   .businessCard {

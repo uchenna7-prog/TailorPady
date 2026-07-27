@@ -81,7 +81,7 @@ export default function Login() {
           />
           <div className={styles.logoText}>
             <span className={styles.logoName}>TailorPady</span>
-            <span className={styles.logoTagline}>The operating system for tailors</span>
+            <span className={styles.logoTagline}>The business side of tailoring, simplified.</span>
           </div>
         </div>
 

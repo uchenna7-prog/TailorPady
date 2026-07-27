@@ -9,7 +9,8 @@ export default function PublicRefund() {
   return (
     <PublicPageLayout
       title="Refund Policy"
-      subtitle={`Last updated: ${REFUND_LAST_UPDATED}`}
+      revision={`Last revised ${REFUND_LAST_UPDATED}`}
+      navProps={{ showThemeToggle: false, showInstall: false }}
     >
       <LegalSections
         sections={REFUND_SECTIONS}

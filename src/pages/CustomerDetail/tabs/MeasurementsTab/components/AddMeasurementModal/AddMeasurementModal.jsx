@@ -295,6 +295,11 @@ export function AddMeasurementModal({ isOpen, onClose, onSave, gender }) {
     onClose()
   }
 
+  function handleDismiss() {
+    if (isSaving) return
+    resetAndClose()
+  }
+
 
   const isFemaleLoweBody = gender === 'Female' && measurement.category === 'lower_body'
   const isFemaleFullBody = gender === 'Female' && measurement.category === 'full_body'
@@ -326,7 +331,7 @@ export function AddMeasurementModal({ isOpen, onClose, onSave, gender }) {
 
   const headerAction = (() => {
     if (activeTab === 'measurements') {
-      return { label: isSaving ? 'Uploading...' : 'Save', onClick: handleSave, disabled: isSaving }
+      return { label: isSaving ? 'Saving...' : 'Save', onClick: handleSave, disabled: isSaving }
     }
     if (hasFeatures) {
       return { label: isSaving ? 'Saving...' : 'Save', onClick: handleSave, disabled: isSaving }
@@ -337,7 +342,7 @@ export function AddMeasurementModal({ isOpen, onClose, onSave, gender }) {
   return (
     <div
       className={`${styles.formOverlay} ${isOpen ? styles.formOverlay_open : ''}`}
-      onClick={resetAndClose}
+      onClick={handleDismiss}
       onTouchStart={e => e.stopPropagation()}
       onTouchEnd={e => e.stopPropagation()}
     >
@@ -345,7 +350,7 @@ export function AddMeasurementModal({ isOpen, onClose, onSave, gender }) {
         <Header
           type="back"
           title="New Measurement"
-          onBackClick={resetAndClose}
+          onBackClick={handleDismiss}
           customActions={[headerAction]}
         />
 
@@ -353,12 +358,14 @@ export function AddMeasurementModal({ isOpen, onClose, onSave, gender }) {
           <button
             className={`${styles.formTab} ${activeTab === 'measurements' ? styles.formTab_active : ''}`}
             onClick={() => setActiveTab('measurements')}
+            disabled={isSaving}
           >
             Measurements
           </button>
           <button
             className={`${styles.formTab} ${activeTab === 'features' ? styles.formTab_active : ''}`}
             onClick={() => setActiveTab('features')}
+            disabled={isSaving}
           >
             Garment Features
           </button>
@@ -373,7 +380,10 @@ export function AddMeasurementModal({ isOpen, onClose, onSave, gender }) {
           </div>
         )}
 
-        <div className={styles.formScrollBody} ref={scrollBodyRef}>
+        <div
+          className={`${styles.formScrollBody} ${isSaving ? styles.formScrollBody_saving : ''}`}
+          ref={scrollBodyRef}
+        >
 
           {activeTab === 'measurements' && (
             <div className={styles.tabSection}>

@@ -9,7 +9,8 @@ export default function PublicPrivacy() {
   return (
     <PublicPageLayout
       title="Privacy Policy"
-      subtitle={`Last updated: ${PRIVACY_LAST_UPDATED}`}
+      revision={`Last revised ${PRIVACY_LAST_UPDATED}`}
+      navProps={{ showThemeToggle: false, showInstall: false }}
     >
       <LegalSections
         sections={PRIVACY_SECTIONS}

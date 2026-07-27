@@ -55,6 +55,7 @@ export default function Signup() {
   const [email,         setEmail]         = useState('')
   const [password,      setPassword]      = useState('')
   const [showPass,      setShowPass]      = useState(false)
+  const [agreed,        setAgreed]        = useState(false)
   const [touched,       setTouched]       = useState({})
   const [error,         setError]         = useState('')
   const [loading,       setLoading]       = useState(false)
@@ -66,17 +67,19 @@ export default function Signup() {
   const nameError     = touched.fullName && fullName.trim().length === 0
   const emailError    = touched.email    && email.trim().length === 0
   const passwordError = touched.password && password.length < 8
+  const agreedError   = touched.agreed   && !agreed
 
   const handleBlur = (field) => setTouched(prev => ({ ...prev, [field]: true }))
 
   const handleSubmit = async (e) => {
     e.preventDefault()
-    setTouched({ fullName: true, email: true, password: true })
+    setTouched({ fullName: true, email: true, password: true, agreed: true })
     setError('')
 
     if (!fullName.trim())    return
     if (!email.trim())       return
     if (password.length < 8) return
+    if (!agreed)              return
 
     setLoading(true)
     try {
@@ -90,6 +93,10 @@ export default function Signup() {
   }
 
   const handleGoogle = () => {
+    if (!agreed) {
+      setTouched(prev => ({ ...prev, agreed: true }))
+      return
+    }
     setError('')
     setGoogleLoading(true)
     setRedirecting(true)
@@ -114,7 +121,7 @@ export default function Signup() {
           />
           <div className={styles.logoText}>
             <span className={styles.logoName}>TailorPady</span>
-            <span className={styles.logoTagline}>The operating system for tailors</span>
+            <span className={styles.logoTagline}>The business side of tailoring, simplified.</span>
           </div>
         </div>
 
@@ -226,17 +233,40 @@ export default function Signup() {
             )}
           </div>
 
+          <div className={styles.agreeField}>
+            <div className={styles.agreeRow}>
+              <button
+                type="button"
+                role="checkbox"
+                aria-checked={agreed}
+                className={`${styles.checkbox} ${agreed ? styles.checkboxChecked : ''} ${agreedError ? styles.checkboxError : ''}`}
+                onClick={() => {
+                  setAgreed(prev => !prev)
+                  setTouched(prev => ({ ...prev, agreed: true }))
+                }}
+              >
+                <span className={`mi ${styles.checkmark}`}>check</span>
+              </button>
+              <label
+                className={styles.agreeLabel}
+                onClick={() => {
+                  setAgreed(prev => !prev)
+                  setTouched(prev => ({ ...prev, agreed: true }))
+                }}
+              >
+                I agree to the{' '}
+                <a href="/terms" onClick={e => e.stopPropagation()} className={styles.agreeLink}>Terms of Service</a>
+                {' '}and{' '}
+                <a href="/privacy" onClick={e => e.stopPropagation()} className={styles.agreeLink}>Privacy Policy</a>
+              </label>
+            </div>
+            {agreedError && <span className={styles.fieldError}>You must accept the terms to continue</span>}
+          </div>
+
           <button type="submit" className={styles.submitBtn} disabled={isLoading}>
             {loading ? 'Creating account…' : 'Create Account'}
           </button>
         </form>
-
-        <p className={styles.tos}>
-          By signing up you agree to our{' '}
-          <a href="/terms" className={styles.tosLink}>Terms of Service</a>
-          {' '}and{' '}
-          <a href="/privacy" className={styles.tosLink}>Privacy Policy</a>
-        </p>
 
         <p className={styles.switchPrompt}>
           Already have an account?{' '}

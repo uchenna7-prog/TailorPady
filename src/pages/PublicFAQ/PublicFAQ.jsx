@@ -11,6 +11,7 @@ export default function PublicFAQ() {
     <PublicPageLayout
       title="Frequently asked questions"
       subtitle="Answers to the questions people ask before signing up."
+      navProps={{ showThemeToggle: false, showInstall: false }}
     >
       {MARKETING_FAQ.map((cat, ci) => (
         <div key={cat.category} className={styles.categoryBlock}>

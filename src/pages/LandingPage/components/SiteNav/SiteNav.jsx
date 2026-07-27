@@ -21,10 +21,11 @@ function isIOSDevice() {
   return isAppleHandheld || isIPadOnMac
 }
 
-function useActiveSection(ids) {
+function useActiveSection(ids, enabled) {
   const [active, setActive] = useState(null)
 
   useEffect(() => {
+    if (!enabled) return
     const elements = ids.map(id => document.getElementById(id)).filter(Boolean)
     if (!elements.length) return
 
@@ -41,7 +42,7 @@ function useActiveSection(ids) {
 
     elements.forEach(el => observer.observe(el))
     return () => observer.disconnect()
-  }, [ids])
+  }, [ids, enabled])
 
   return active
 }
@@ -100,10 +101,17 @@ function InstallButton({ className, fullWidth }) {
   )
 }
 
-export default function SiteNav({ theme, onToggleTheme }) {
+export default function SiteNav({
+  theme,
+  onToggleTheme,
+  showLinks = true,
+  showInstall = true,
+  showAuth = true,
+  showThemeToggle = true,
+}) {
   const [open, setOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
-  const activeSection = useActiveSection(SECTION_IDS)
+  const activeSection = useActiveSection(SECTION_IDS, showLinks)
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 12)
@@ -116,6 +124,8 @@ export default function SiteNav({ theme, onToggleTheme }) {
     window.location.href = path
   }
 
+  const hasMobilePanel = showLinks || showInstall || showAuth
+
   return (
     <header className={`${styles.nav} ${scrolled ? styles.navScrolled : ''}`}>
       <div className={styles.navInner}>
@@ -123,63 +133,78 @@ export default function SiteNav({ theme, onToggleTheme }) {
           <span className={styles.logoMark}>TailorPady</span>
         </Link>
 
-        <nav className={styles.navLinks}>
-          {NAV_LINKS.map(link => {
-            const id = link.href.split('#')[1]
-            const isActive = id === activeSection
-            return (
-              <a key={link.href} href={link.href} className={isActive ? styles.navLinkActive : ''}>
-                <span className={styles.navLinkIndicator} />
-                {link.label}
-              </a>
-            )
-          })}
-        </nav>
+        {showLinks && (
+          <nav className={styles.navLinks}>
+            {NAV_LINKS.map(link => {
+              const id = link.href.split('#')[1]
+              const isActive = id === activeSection
+              return (
+                <a key={link.href} href={link.href} className={isActive ? styles.navLinkActive : ''}>
+                  <span className={styles.navLinkIndicator} />
+                  {link.label}
+                </a>
+              )
+            })}
+          </nav>
+        )}
 
         <div className={styles.navActions}>
-          <div className={styles.navUtility}>
-            <ThemeToggle theme={theme} onToggle={onToggleTheme} />
-            <InstallButton />
-          </div>
-          <div className={styles.navButtonGroup}>
-            <a href="/login" className={styles.navLogin}>
-              Log in
-            </a>
-            <button type="button" className={styles.navCta} onClick={() => goTo('/signup')}>
-              Start free
-            </button>
-          </div>
+          {(showThemeToggle || showInstall) && (
+            <div className={styles.navUtility}>
+              {showThemeToggle && <ThemeToggle theme={theme} onToggle={onToggleTheme} />}
+              {showInstall && <InstallButton />}
+            </div>
+          )}
+          {showAuth && (
+            <div className={styles.navButtonGroup}>
+              <a href="/login" className={styles.navLogin}>
+                Log in
+              </a>
+              <button type="button" className={styles.navCta} onClick={() => goTo('/signup')}>
+                Start free
+              </button>
+            </div>
+          )}
         </div>
 
         <div className={styles.navMobileTrigger}>
-          <ThemeToggle theme={theme} onToggle={onToggleTheme} />
-          <button
-            type="button"
-            className={styles.navMenuButton}
-            onClick={() => setOpen(prev => !prev)}
-            aria-label="Toggle menu"
-          >
-            <span className="mi">{open ? 'close' : 'menu'}</span>
-          </button>
+          {showThemeToggle && <ThemeToggle theme={theme} onToggle={onToggleTheme} />}
+          {hasMobilePanel ? (
+            <button
+              type="button"
+              className={styles.navMenuButton}
+              onClick={() => setOpen(prev => !prev)}
+              aria-label="Toggle menu"
+            >
+              <span className="mi">{open ? 'close' : 'menu'}</span>
+            </button>
+          ) : null}
         </div>
       </div>
 
-      {open && (
+      {open && hasMobilePanel && (
         <div className={styles.navMobilePanel}>
-          {NAV_LINKS.map(link => (
-            <a key={link.href} href={link.href} onClick={() => setOpen(false)}>
-              {link.label}
-            </a>
-          ))}
-          <div className={styles.navMobileActions}>
-            <InstallButton className={styles.navMobileFullButton} fullWidth />
-            <a href="/login" className={styles.navLoginMobile} onClick={() => setOpen(false)}>
-              Log in
-            </a>
-            <button type="button" className={styles.navCta} onClick={() => goTo('/signup')}>
-              Start free
-            </button>
-          </div>
+          {showLinks &&
+            NAV_LINKS.map(link => (
+              <a key={link.href} href={link.href} onClick={() => setOpen(false)}>
+                {link.label}
+              </a>
+            ))}
+          {(showInstall || showAuth) && (
+            <div className={styles.navMobileActions}>
+              {showInstall && <InstallButton className={styles.navMobileFullButton} fullWidth />}
+              {showAuth && (
+                <>
+                  <a href="/login" className={styles.navLoginMobile} onClick={() => setOpen(false)}>
+                    Log in
+                  </a>
+                  <button type="button" className={styles.navCta} onClick={() => goTo('/signup')}>
+                    Start free
+                  </button>
+                </>
+              )}
+            </div>
+          )}
         </div>
       )}
     </header>

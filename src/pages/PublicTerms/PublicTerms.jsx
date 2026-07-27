@@ -9,7 +9,8 @@ export default function PublicTerms() {
   return (
     <PublicPageLayout
       title="Terms & Conditions"
-      subtitle={`Last updated: ${TERMS_LAST_UPDATED}`}
+      revision={`Last revised ${TERMS_LAST_UPDATED}`}
+      navProps={{ showThemeToggle: false, showInstall: false }}
     >
       <LegalSections
         sections={TERMS_SECTIONS}

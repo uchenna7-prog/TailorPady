@@ -110,7 +110,7 @@ export function AddCustomerModal({ isOpen, onClose, onSave }) {
 
   const monthOptions = MONTHS.map((m, i) => ({ label: m, value: i + 1 }))
 
-  const savingLabel = photoUploading ? `Uploading… ${photoProgress}%` : 'Saving…'
+  const savingLabel = photoUploading ? `Saving… ${photoProgress}%` : 'Saving…'
 
 
   function showInlineMsg(text, ok = true) {
