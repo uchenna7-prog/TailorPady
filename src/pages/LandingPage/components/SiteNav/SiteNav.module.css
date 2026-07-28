@@ -29,6 +29,15 @@
 .logo {
   display: flex;
   align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+  text-decoration: none;
+}
+
+.logoIcon {
+  height: 34px;
+  width: auto;
+  display: block;
   flex-shrink: 0;
 }
 
@@ -38,7 +47,7 @@
   justify-content: center;
   color: var(--ink);
   font-family: "Onest", sans-serif;
-  font-size: 1.5rem;
+  font-size: 1.35rem;
   font-weight: 700;
   letter-spacing: -0.02em;
 }
