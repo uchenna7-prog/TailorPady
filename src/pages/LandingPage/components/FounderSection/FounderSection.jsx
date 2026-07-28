@@ -3,13 +3,6 @@ import styles from './FounderSection.module.css'
 export default function FounderSection() {
   return (
     <div className={styles.wrapper}>
-      <div className={styles.header}>
-        <span className={styles.eyebrow}>Meet the Founder</span>
-        <h2 className={styles.headline}>
-          Built by someone who watched the problem up close.
-        </h2>
-      </div>
-
       <div className={styles.intro}>
         <div className={styles.photoWrap}>
           <img
@@ -20,6 +13,10 @@ export default function FounderSection() {
         </div>
 
         <div className={styles.introText}>
+          <h2 className={styles.headline}>
+            Built by someone who watched the problem up close.
+          </h2>
+
           <p className={styles.bioParagraph}>
             I'm Uchenna Uchendu, the founder of TailorPady. I'm not a tailor. I'm a software engineer. But I grew up around tailors, family and friends who spent their days measuring, cutting, and stitching, and their evenings buried in notebooks trying to remember who ordered what, who still owed money, and whose measurements were whose.
           </p>
