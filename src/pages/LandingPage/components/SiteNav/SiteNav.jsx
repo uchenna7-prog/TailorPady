@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { useInstall } from '../../../../contexts/InstallContext'
+import logoLightMode from '../../assets/logoLightMode.png'
+import logoDarkMode from '../../assets/logoDarkMode.png'
 import styles from './SiteNav.module.css'
 
 const NAV_LINKS = [
@@ -125,11 +127,13 @@ export default function SiteNav({
   }
 
   const hasMobilePanel = showLinks || showInstall || showAuth
+  const logoSrc = theme === 'dark' ? logoDarkMode : logoLightMode
 
   return (
     <header className={`${styles.nav} ${scrolled ? styles.navScrolled : ''}`}>
       <div className={styles.navInner}>
         <Link to="/" className={styles.logo}>
+          <img src={logoSrc} alt="TailorPady" className={styles.logoIcon} />
           <span className={styles.logoMark}>TailorPady</span>
         </Link>
 
