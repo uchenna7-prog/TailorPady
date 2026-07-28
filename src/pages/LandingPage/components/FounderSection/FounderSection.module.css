@@ -1,0 +1,152 @@
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  border-top: 1px solid var(--border);
+  padding-top: 40px;
+}
+
+.header {
+  max-width: 68ch;
+  margin-bottom: 40px;
+}
+
+.eyebrow {
+  display: inline-flex;
+  align-items: center;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text3);
+  margin-bottom: 14px;
+}
+
+.headline {
+  font-family: "Manrope", sans-serif;
+  font-size: clamp(22px, 2.8vw, 28px);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.3;
+  margin: 0;
+  color: var(--text);
+}
+
+.intro {
+  display: flex;
+  gap: clamp(32px, 5vw, 56px);
+  align-items: flex-start;
+  margin-bottom: 40px;
+}
+
+.photoWrap {
+  flex-shrink: 0;
+  width: 220px;
+  aspect-ratio: 4 / 5;
+  border-radius: 16px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+}
+
+.photo {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.introText {
+  min-width: 0;
+  flex: 1;
+}
+
+.bioParagraph {
+  font-size: 15px;
+  line-height: 1.75;
+  color: var(--text2);
+  margin: 0 0 16px;
+  max-width: 68ch;
+}
+
+.signature {
+  margin: 24px 0 20px;
+  padding-top: 16px;
+  border-top: 1px solid var(--border);
+}
+
+.signatureName {
+  font-family: "Manrope", sans-serif;
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text);
+  margin: 0 0 2px;
+}
+
+.signatureRole {
+  font-size: 13px;
+  color: var(--text3);
+  margin: 0;
+}
+
+.badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  color: var(--text2);
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 6px 14px;
+}
+
+.badge .mi-outlined {
+  font-size: 16px;
+  color: var(--text2);
+}
+
+.quoteCard {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 32px clamp(20px, 4vw, 40px);
+  margin-bottom: 80px;
+}
+
+.quoteText {
+  font-family: "Manrope", sans-serif;
+  font-size: clamp(18px, 2.2vw, 21px);
+  font-weight: 600;
+  line-height: 1.5;
+  letter-spacing: -0.01em;
+  color: var(--text);
+  max-width: 60ch;
+  margin: 0;
+}
+
+@media (max-width: 768px) {
+  .intro {
+    flex-direction: column;
+  }
+
+  .photoWrap {
+    width: 160px;
+  }
+}
+
+@media (max-width: 640px) {
+  .quoteCard {
+    padding: 24px 20px;
+  }
+
+  .signature {
+    margin: 20px 0 16px;
+  }
+}
