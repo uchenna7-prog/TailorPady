@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom'
-import logoDarkMode from '../../assets/logoDarkMode.png'
+import logoDarkMode from '../../../../assets/logoDarkMode.png'
 import styles from './SiteFooter.module.css'
 
 const CONTACT = {
