@@ -58,7 +58,7 @@ export default function SiteFooter() {
           <div className={styles.footerBrand}>
             <div className={styles.footerLogo}>
               <img src={logoDarkMode} alt="TailorPady" className={styles.footerLogoIcon} />
-              <span className={styles.footerLogoMark}>TailorPady</span>
+           
             </div>
             <div className={styles.footerContactDetails}>
               <a href={`tel:${CONTACT.phone.replace(/\s/g, '')}`} className={styles.footerContactLine}>

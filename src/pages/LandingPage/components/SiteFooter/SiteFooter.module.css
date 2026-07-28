@@ -41,24 +41,14 @@
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  gap: 0.9rem;
+  gap: 7px;
   margin-bottom: 0.4rem;
 }
 
 .footerLogoIcon {
-  height: clamp(2.5rem, 2rem + 2vw, 3.25rem);
   width: auto;
+  height: 30px;
   display: block;
-}
-
-.footerLogoMark {
-  display: inline-block;
-  color: var(--paper);
-  font-family: "Onest", sans-serif;
-  font-size: clamp(1.5rem, 1.2rem + 1.4vw, 2rem);
-  font-weight: 700;
-  letter-spacing: -0.025em;
-  line-height: 1;
 }
 
 .footerTop {
