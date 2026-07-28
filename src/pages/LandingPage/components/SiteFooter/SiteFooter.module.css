@@ -40,6 +40,7 @@
 .footerLogo {
   display: flex;
   gap: 10px;
+  align-items: center;
 }
 
 .footerLogoIcon {
@@ -55,7 +56,7 @@
   display: inline-block;
   color: var(--paper);
   font-family: "Onest", sans-serif;
-  font-size: clamp(1.05rem, 0.95rem + 0.3vw, 1.3rem);
+  font-size: clamp(1.5rem, 0.95rem + 0.3vw, 1.5rem);
   font-weight: 700;
   letter-spacing: -0.02em;
 }

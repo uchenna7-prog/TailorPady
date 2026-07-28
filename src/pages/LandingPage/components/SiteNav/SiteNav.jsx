@@ -162,7 +162,7 @@ export default function SiteNav({
   }
 
   const hasMobilePanel = showLinks || showInstall || showAuth
-  const logoSrc = theme === 'dark' ? logoDarkMode : logoLightMode
+  const logoSrc = theme === 'dark' ? logoDarkMode :  logoLightMode 
   const isCollapsed = collapsed && !open
 
   return (
