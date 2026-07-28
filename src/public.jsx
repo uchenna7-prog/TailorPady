@@ -12,6 +12,7 @@ import PublicContact from './pages/PublicContact/PublicContact'
 import PublicPrivacy from './pages/PublicPrivacy/PublicPrivacy'
 import PublicTerms from './pages/PublicTerms/PublicTerms'
 import PublicRefund from './pages/PublicRefund/PublicRefund'
+import PublicFounder from './pages/PublicFounder/PublicFounder'
 import './index.css'
 
 function isStandalonePWA() {
@@ -55,6 +56,7 @@ ReactDOM.createRoot(document.getElementById('root')).render(
           <Route path="/privacy" element={<PublicPrivacy />} />
           <Route path="/terms" element={<PublicTerms />} />
           <Route path="/refund" element={<PublicRefund />} />
+          <Route path="/founder" element={<PublicFounder />} />
         </Routes>
       </InstallProvider>
     </BrowserRouter>
