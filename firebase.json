@@ -21,6 +21,7 @@
       { "source": "/privacy",      "destination": "/public.html" },
       { "source": "/terms",        "destination": "/public.html" },
       { "source": "/refund",       "destination": "/public.html" },
+      { "source": "/founder",      "destination": "/public.html" },
       { "source": "**",            "destination": "/index.html"  }
     ]
   },
