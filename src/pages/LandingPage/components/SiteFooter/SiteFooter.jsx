@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom'
+import logoDarkMode from '../../assets/logoDarkMode.png'
 import styles from './SiteFooter.module.css'
 
 const CONTACT = {
@@ -55,7 +56,10 @@ export default function SiteFooter() {
       <div className={styles.footerInner}>
         <div className={styles.footerTop}>
           <div className={styles.footerBrand}>
-            <span className={styles.footerLogoMark}>TailorPady</span>
+            <div className={styles.footerLogo}>
+              <img src={logoDarkMode} alt="TailorPady" className={styles.footerLogoIcon} />
+              <span className={styles.footerLogoMark}>TailorPady</span>
+            </div>
             <div className={styles.footerContactDetails}>
               <a href={`tel:${CONTACT.phone.replace(/\s/g, '')}`} className={styles.footerContactLine}>
                 <span className="mi" style={{ fontSize: '1rem' }}>call</span>
