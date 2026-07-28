@@ -5,6 +5,8 @@ import { useInstall }         from '../../contexts/InstallContext'
 import { useBadges }          from '../../contexts/BadgeContext'
 import { useAuth }            from '../../contexts/AuthContext'
 import ConfirmSheet           from '../ConfirmSheet/ConfirmSheet'
+import logoLightMode          from '../../assets/logoLightMode.png'
+import logoDarkMode           from '../../assets/logoDarkMode.png'
 import styles                 from './SideBar.module.css'
 
 const NAV_SECTIONS = [
@@ -93,6 +95,9 @@ function SideBar({ isOpen, onClose }) {
   const [logoutConfirm, setLogoutConfirm] = useState(false)
   const scrollRef = useRef(null)
 
+  const theme   = generalSettings.theme
+  const logoSrc = theme === 'dark' ? logoLightMode : logoDarkMode
+
   const badgeMap = {
     orders:       { count: badges.orders,       variant: 'pending' },
     appointments: { count: badges.appointments, variant: 'info'    },
@@ -147,7 +152,12 @@ function SideBar({ isOpen, onClose }) {
 
         <div className={`${styles.top} ${scrolled ? styles.topScrolled : ''}`}>
           <div className={styles.brand}>
-
+            <img
+              src={logoSrc}
+              alt="TailorPady"
+              className={styles.brandIcon}
+              style={{ background: theme === 'dark' ? '#ffffff' : '#000000' }}
+            />
             <span className={styles.brandName}>TailorPady</span>
           </div>
         </div>
