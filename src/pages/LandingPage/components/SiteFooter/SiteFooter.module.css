@@ -39,28 +39,26 @@
 
 .footerLogo {
   display: flex;
-  align-items: center;
-  gap: 12px;
-  margin-top: 4px;
-  margin-bottom: 4px;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.9rem;
+  margin-bottom: 0.4rem;
 }
 
 .footerLogoIcon {
-  height: 40px;
+  height: clamp(2.5rem, 2rem + 2vw, 3.25rem);
   width: auto;
   display: block;
-  flex-shrink: 0;
 }
 
 .footerLogoMark {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
+  display: inline-block;
   color: var(--paper);
   font-family: "Onest", sans-serif;
-  font-size: 1.6rem;
-  font-weight: 500;
-  letter-spacing: -0.02em;
+  font-size: clamp(1.5rem, 1.2rem + 1.4vw, 2rem);
+  font-weight: 700;
+  letter-spacing: -0.025em;
+  line-height: 1;
 }
 
 .footerTop {
@@ -206,14 +204,6 @@ a.footerContactLine:hover {
 @media (max-width: 640px) {
   .footerInner {
     padding: 48px clamp(20px, 5vw, 64px) 32px;
-  }
-
-  .footerLogoIcon {
-    height: 34px;
-  }
-
-  .footerLogoMark {
-    font-size: 1.4rem;
   }
 
   .footerBrand {
