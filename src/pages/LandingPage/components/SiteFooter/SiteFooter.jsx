@@ -35,6 +35,7 @@ const FOOTER_COLUMNS = [
   {
     heading: 'Company',
     links: [
+      { label: 'Meet the founder', href: '/founder', internal: true },
       { label: 'Contact', href: '/contact', internal: true },
       { label: 'Privacy policy', href: '/privacy', internal: true },
       { label: 'Terms & conditions', href: '/terms', internal: true },
