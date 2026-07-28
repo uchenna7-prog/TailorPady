@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react'
 import { Link } from 'react-router-dom'
 import { useInstall } from '../../../../contexts/InstallContext'
 import logoLightMode from '../../../../assets/logoLightMode.png'
+import logoDarkMode from '../../../../assets/logoDarkMode.png'
 import styles from './SiteNav.module.css'
 
 const NAV_LINKS = [
@@ -161,7 +162,7 @@ export default function SiteNav({
   }
 
   const hasMobilePanel = showLinks || showInstall || showAuth
-  const logoSrc = logoLightMode
+  const logoSrc = theme === 'dark' ? logoDarkMode : logoLightMode
   const isCollapsed = collapsed && !open
 
   return (

@@ -44,7 +44,7 @@
 
 .footerLogoIcon {
   width: auto;
-  height: 65px;
+  height: 60px;
   display: block;
   border-radius: 50%;
   background: var(--paper);
@@ -53,17 +53,11 @@
 
 .logoMark {
   display: inline-block;
-  color: var(--ink);
+  color: var(--paper);
   font-family: "Onest", sans-serif;
   font-size: clamp(1.05rem, 0.95rem + 0.3vw, 1.3rem);
   font-weight: 700;
   letter-spacing: -0.02em;
-  line-height: 1;
-  white-space: nowrap;
-  max-width: 200px;
-  opacity: 1;
-  overflow: hidden;
-
 }
 
 .footerTop {
