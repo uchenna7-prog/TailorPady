@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { Link } from 'react-router-dom'
 import { useInstall } from '../../../../contexts/InstallContext'
 import logoLightMode from '../../../../assets/logoLightMode.png'
@@ -47,6 +47,48 @@ function useActiveSection(ids, enabled) {
   }, [ids, enabled])
 
   return active
+}
+
+function useScrollCollapse() {
+  const [scrolled, setScrolled] = useState(false)
+  const [collapsed, setCollapsed] = useState(false)
+  const lastY = useRef(0)
+
+  useEffect(() => {
+    lastY.current = window.scrollY
+    let ticking = false
+
+    const update = () => {
+      const y = window.scrollY
+      const delta = y - lastY.current
+
+      setScrolled(y > 12)
+
+      if (y < 80) {
+        setCollapsed(false)
+      } else if (delta > 4) {
+        setCollapsed(true)
+      } else if (delta < -4) {
+        setCollapsed(false)
+      }
+
+      lastY.current = y
+      ticking = false
+    }
+
+    const onScroll = () => {
+      if (!ticking) {
+        window.requestAnimationFrame(update)
+        ticking = true
+      }
+    }
+
+    update()
+    window.addEventListener('scroll', onScroll, { passive: true })
+    return () => window.removeEventListener('scroll', onScroll)
+  }, [])
+
+  return { scrolled, collapsed }
 }
 
 function ThemeToggle({ theme, onToggle }) {
@@ -112,15 +154,8 @@ export default function SiteNav({
   showThemeToggle = true,
 }) {
   const [open, setOpen] = useState(false)
-  const [scrolled, setScrolled] = useState(false)
+  const { scrolled, collapsed } = useScrollCollapse()
   const activeSection = useActiveSection(SECTION_IDS, showLinks)
-
-  useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 12)
-    onScroll()
-    window.addEventListener('scroll', onScroll, { passive: true })
-    return () => window.removeEventListener('scroll', onScroll)
-  }, [])
 
   const goTo = path => {
     window.location.href = path
@@ -128,13 +163,16 @@ export default function SiteNav({
 
   const hasMobilePanel = showLinks || showInstall || showAuth
   const logoSrc = theme === 'dark' ? logoDarkMode : logoLightMode
+  const isCollapsed = collapsed && !open
 
   return (
     <header className={`${styles.nav} ${scrolled ? styles.navScrolled : ''}`}>
       <div className={styles.navInner}>
         <Link to="/" className={styles.logo}>
           <img src={logoSrc} alt="TailorPady" className={styles.logoIcon} />
-          <span className={styles.logoMark}>TailorPady</span>
+          <span className={`${styles.logoMark} ${isCollapsed ? styles.logoMarkCollapsed : ''}`}>
+            TailorPady
+          </span>
         </Link>
 
         {showLinks && (
