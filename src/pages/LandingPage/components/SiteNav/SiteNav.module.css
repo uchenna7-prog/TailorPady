@@ -35,10 +35,11 @@
 }
 
 .logoIcon {
-  height: 40px;
+  height: 45px;
   width: auto;
   display: block;
   flex-shrink: 0;
+  border-radius: 50px;
 }
 
 .logoMark {
