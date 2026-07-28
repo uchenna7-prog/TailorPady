@@ -42,6 +42,9 @@ export default function Login() {
   const [loading,       setLoading]       = useState(false)
   const [googleLoading, setGoogleLoading] = useState(false)
 
+  const theme   = generalSettings.theme
+  const logoSrc = theme === 'dark' ? logoLightMode : logoDarkMode
+
   const handleSubmit = async (e) => {
     e.preventDefault()
     setError('')
@@ -75,9 +78,13 @@ export default function Login() {
 
         <div className={styles.logo}>
           <img
-            src={generalSettings.theme === 'light' ? logoLightMode : logoDarkMode}
+            src={logoSrc}
             alt="TailorPady"
             className={styles.logoIcon}
+            style={{
+              borderRadius: '50%',
+              background: theme === 'dark' ? '#ffffff' : '#000000',
+            }}
           />
           <div className={styles.logoText}>
             <span className={styles.logoName}>TailorPady</span>

@@ -69,6 +69,9 @@ export default function Signup() {
   const passwordError = touched.password && password.length < 8
   const agreedError   = touched.agreed   && !agreed
 
+  const theme    = generalSettings.theme
+  const logoSrc  = theme === 'dark' ? logoLightMode : logoDarkMode
+
   const handleBlur = (field) => setTouched(prev => ({ ...prev, [field]: true }))
 
   const handleSubmit = async (e) => {
@@ -115,9 +118,13 @@ export default function Signup() {
 
         <div className={styles.logo}>
           <img
-            src={generalSettings.theme === 'light' ? logoLightMode : logoDarkMode}
+            src={logoSrc}
             alt="TailorPady"
             className={styles.logoIcon}
+            style={{
+              borderRadius: '50%',
+              background: theme === 'dark' ? '#ffffff' : '#000000',
+            }}
           />
           <div className={styles.logoText}>
             <span className={styles.logoName}>TailorPady</span>
