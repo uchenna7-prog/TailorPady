@@ -3,7 +3,7 @@ import react, { reactCompilerPreset } from '@vitejs/plugin-react'
 import babel from '@rolldown/plugin-babel'
 import { VitePWA } from 'vite-plugin-pwa'
 
-const PUBLIC_PATHS = ['/', '/faq', '/contact', '/privacy', '/terms', '/refund']
+const PUBLIC_PATHS = ['/', '/faq', '/contact', '/privacy', '/terms', '/refund', '/founder']
 
 const publicPageRewrite = {
   name: 'public-page-rewrite',
