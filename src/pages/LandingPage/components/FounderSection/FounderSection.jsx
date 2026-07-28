@@ -4,12 +4,25 @@ export default function FounderSection() {
   return (
     <div className={styles.wrapper}>
       <div className={styles.intro}>
-        <div className={styles.photoWrap}>
-          <img
-            src="/landingPageImages/founder-picture.jpg"
-            alt="Uchenna Uchendu, Founder of TailorPady"
-            className={styles.photo}
-          />
+        <div className={styles.photoColumn}>
+          <div className={styles.photoWrap}>
+            <img
+              src="/landingPageImages/founder-picture.jpg"
+              alt="Uchenna Uchendu, Founder of TailorPady"
+              className={styles.photo}
+            />
+          </div>
+
+          <div className={styles.badges}>
+            <span className={styles.badge}>
+              <span className="mi-outlined" aria-hidden="true">code</span>
+              Software Engineer
+            </span>
+            <span className={styles.badge}>
+              <span className="mi-outlined" aria-hidden="true">location_on</span>
+              Built in Nigeria
+            </span>
+          </div>
         </div>
 
         <div className={styles.introText}>
@@ -37,29 +50,9 @@ export default function FounderSection() {
             <p className={styles.signatureName}>Uchenna Uchendu</p>
             <p className={styles.signatureRole}>Founder, TailorPady</p>
           </div>
-
-          <div className={styles.badges}>
-            <span className={styles.badge}>
-              <span className="mi-outlined" aria-hidden="true">code</span>
-              Software Engineer
-            </span>
-            <span className={styles.badge}>
-              <span className="mi-outlined" aria-hidden="true">location_on</span>
-              Built in Nigeria
-            </span>
-            <span className={styles.badge}>
-              <span className="mi-outlined" aria-hidden="true">rocket_launch</span>
-              Building tools for fashion businesses
-            </span>
-          </div>
         </div>
       </div>
 
-      <div className={styles.quoteCard}>
-        <p className={styles.quoteText}>
-          Technology shouldn't replace craftsmanship. It should give craftsmen more time to create.
-        </p>
-      </div>
     </div>
   )
 }
