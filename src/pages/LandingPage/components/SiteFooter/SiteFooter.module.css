@@ -39,10 +39,6 @@
 
 .footerLogo {
   display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 7px;
-  margin-bottom: 0.4rem;
 }
 
 .footerLogoIcon {
