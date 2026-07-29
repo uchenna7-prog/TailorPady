@@ -1,4 +1,3 @@
-
 import styles from "./NotificationBanner.module.css"
 
 
@@ -18,7 +17,13 @@ export function NotificationBanner({ onEnable, onDismiss }) {
 
       <div className={styles.NotificationBannerActions}>
 
-        <button className={styles.NotificationBannerEnable} onClick={onEnable}>Allow</button>
+        <button
+          className={styles.NotificationBannerEnable}
+          onClick={onEnable}
+          data-tour="enable-notifications-btn"
+        >
+          Allow
+        </button>
         <button className={styles.NotificationBannerDismiss} onClick={onDismiss}>Not now</button>
         
       </div>

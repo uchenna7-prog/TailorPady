@@ -1,7 +1,9 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { getCurrency } from '../../../../utils/moneyUtils'
 import { useProfileSettings } from '../../../../contexts/ProfileSettingsContext'
 import { useTour } from '../../../../contexts/TourContext'
+import { useFirstItemHint } from '../../../../hooks/useFirstItemHint'
+import { FirstItemHint } from '../../../../components/FirstItemHint/FirstItemHint'
 import { buildOrderItemsMap, groupReceiptsByDate } from './utils'
 import { EmptyState } from './components/EmptyState/EmptyState'
 import { AddReceiptModal } from './components/AddReceiptModal/AddReceiptModal'
@@ -29,6 +31,8 @@ export default function ReceiptTab({
 }) {
   const { profileSettings } = useProfileSettings()
   const { completeStep, pauseTour, resumeTour } = useTour()
+  const [hintSeen, markHintSeen] = useFirstItemHint('receipt')
+  const firstRowRef = useRef(null)
 
   const [viewingReceipt,     setViewingReceipt]     = useState(null)
   const [deleteTarget,       setDeleteTarget]       = useState(null)
@@ -89,6 +93,9 @@ export default function ReceiptTab({
     if (viewingReceipt?.id === deleteTarget) setViewingReceipt(null)
   }
 
+  const showFirstItemHint = receipts.length === 1 && !hintSeen
+  let renderedFirstRow = false
+
   return (
     <>
       <div className={styles.tabContent}>
@@ -99,16 +106,21 @@ export default function ReceiptTab({
             <div className={styles.dateGroupLabel}>{date}</div>
             <div className={styles.dateGroupDivider} />
 
-            {dateReceipts.map((receipt, index) => (
-              <ReceiptRow
-                key={receipt.id}
-                receipt={receipt}
-                currency={currency}
-                isLast={index === dateReceipts.length - 1}
-                onTap={() => setViewingReceipt(receipt)}
-                orderItems={orderItemsMap[receipt.orderId] ?? receipt.orderItems ?? []}
-              />
-            ))}
+            {dateReceipts.map((receipt, index) => {
+              const isFirstOverall = showFirstItemHint && !renderedFirstRow
+              if (isFirstOverall) renderedFirstRow = true
+              return (
+                <div key={receipt.id} ref={isFirstOverall ? firstRowRef : undefined}>
+                  <ReceiptRow
+                    receipt={receipt}
+                    currency={currency}
+                    isLast={index === dateReceipts.length - 1}
+                    onTap={() => setViewingReceipt(receipt)}
+                    orderItems={orderItemsMap[receipt.orderId] ?? receipt.orderItems ?? []}
+                  />
+                </div>
+              )
+            })}
           </div>
         ))}
       </div>
@@ -150,6 +162,14 @@ export default function ReceiptTab({
         onConfirm={handleConfirmDelete}
         onCancel={() => setDeleteTarget(null)}
       />
+
+      {showFirstItemHint && (
+        <FirstItemHint
+          targetRef={firstRowRef}
+          message="Tap to view details"
+          onDismiss={markHintSeen}
+        />
+      )}
     </>
   )
 }

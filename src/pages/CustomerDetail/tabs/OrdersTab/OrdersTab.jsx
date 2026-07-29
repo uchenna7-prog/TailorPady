@@ -1,7 +1,9 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useOrders } from '../../../../contexts/OrdersContext'
 import { useGeneralSettings } from '../../../../contexts/GeneralSettingsContext'
 import { useTour } from '../../../../contexts/TourContext'
+import { useFirstItemHint } from '../../../../hooks/useFirstItemHint'
+import { FirstItemHint } from '../../../../components/FirstItemHint/FirstItemHint'
 import { AddOrderModal } from './components/AddOrderModal/AddOrderModal'
 import OrderDetailModal from '../../../../components/OrderDetailModal/OrderDetailModal'
 import { OrderRow } from './components/OrderRow/OrderRow'
@@ -16,6 +18,8 @@ export default function OrdersTab({ customerId, orders, loading, measurements, s
   const { addOrder } = useOrders()
   const { generalSettings } = useGeneralSettings()
   const { completeStep, pauseTour, resumeTour } = useTour()
+  const [hintSeen, markHintSeen] = useFirstItemHint('order')
+  const firstRowRef = useRef(null)
 
   const taxEnabled = generalSettings.invoiceShowTax ?? false
   const taxRate    = generalSettings.invoiceTaxRate ?? 0
@@ -70,6 +74,9 @@ export default function OrdersTab({ customerId, orders, loading, measurements, s
     return groups
   }, {})
 
+  const showFirstItemHint = orders.length === 1 && !hintSeen
+  let renderedFirstRow = false
+
   return (
     <div>
       {orders.length === 0 ? (
@@ -80,15 +87,20 @@ export default function OrdersTab({ customerId, orders, loading, measurements, s
             <div className={styles.orderGroupDate}>{date}</div>
             <div className={styles.orderGroupDivider} />
 
-            {ordersInGroup.map((order, index) => (
-              <OrderRow
-                key={order.id ?? index}
-                order={order}
-                ordersInGroup={ordersInGroup}
-                index={index}
-                onTap={setSelectedOrder}
-              />
-            ))}
+            {ordersInGroup.map((order, index) => {
+              const isFirstOverall = showFirstItemHint && !renderedFirstRow
+              if (isFirstOverall) renderedFirstRow = true
+              return (
+                <div key={order.id ?? index} ref={isFirstOverall ? firstRowRef : undefined}>
+                  <OrderRow
+                    order={order}
+                    ordersInGroup={ordersInGroup}
+                    index={index}
+                    onTap={setSelectedOrder}
+                  />
+                </div>
+              )
+            })}
           </div>
         ))
       )}
@@ -117,6 +129,14 @@ export default function OrdersTab({ customerId, orders, loading, measurements, s
           fullHeight
           hideCustomerName
           showToast={showToast}
+        />
+      )}
+
+      {showFirstItemHint && (
+        <FirstItemHint
+          targetRef={firstRowRef}
+          message="Tap to view details"
+          onDismiss={markHintSeen}
         />
       )}
     </div>

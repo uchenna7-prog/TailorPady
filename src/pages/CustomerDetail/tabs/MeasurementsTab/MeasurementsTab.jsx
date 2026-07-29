@@ -1,5 +1,7 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useTour } from '../../../../contexts/TourContext'
+import { useFirstItemHint } from '../../../../hooks/useFirstItemHint'
+import { FirstItemHint } from '../../../../components/FirstItemHint/FirstItemHint'
 import { EmptyState }                    from './components/EmptyState/EmptyState'
 import { MeasurementRow }                from './components/MeasurementRow/MeasurementRow'
 import { MeasurementDetailsModal }       from './components/MeasurementDetailsModal/MeasurementDetailsModal'
@@ -11,6 +13,8 @@ import styles                            from './MeasurementsTab.module.css'
 
 export default function MeasurementsTab({ measurements, loading, gender, onSave, onUpdate, onDelete, showToast }) {
   const { completeStep, pauseTour, resumeTour } = useTour()
+  const [hintSeen, markHintSeen] = useFirstItemHint('measurement')
+  const firstRowRef = useRef(null)
 
   const [isAddModalOpen,      setIsAddModalOpen]      = useState(false)
   const [selectedMeasurement, setSelectedMeasurement] = useState(null)
@@ -70,6 +74,8 @@ export default function MeasurementsTab({ measurements, loading, gender, onSave,
   }
 
   const measurementsByDate = groupMeasurementsByDate(measurements)
+  const showFirstItemHint  = measurements.length === 1 && !hintSeen
+  let renderedFirstRow = false
 
   return (
     <div>
@@ -80,16 +86,21 @@ export default function MeasurementsTab({ measurements, loading, gender, onSave,
           <div key={date} className={styles.measurementGroup}>
             <div className={styles.measurementGroupDate}>{date}</div>
             <div className={styles.measurementGroupDivider} />
-            {measurementsInGroup.map((measurement, index) => (
-              <MeasurementRow
-                key={measurement.id ?? index}
-                measurement={measurement}
-                measurementsInGroup={measurementsInGroup}
-                index={index}
-                onTap={handleCardTap}
-                onDelete={handleRequestDelete}
-              />
-            ))}
+            {measurementsInGroup.map((measurement, index) => {
+              const isFirstOverall = showFirstItemHint && !renderedFirstRow
+              if (isFirstOverall) renderedFirstRow = true
+              return (
+                <div key={measurement.id ?? index} ref={isFirstOverall ? firstRowRef : undefined}>
+                  <MeasurementRow
+                    measurement={measurement}
+                    measurementsInGroup={measurementsInGroup}
+                    index={index}
+                    onTap={handleCardTap}
+                    onDelete={handleRequestDelete}
+                  />
+                </div>
+              )
+            })}
           </div>
         ))
       )}
@@ -117,6 +128,14 @@ export default function MeasurementsTab({ measurements, loading, gender, onSave,
         onConfirm={handleDeleteConfirm}
         onCancel={handleDeleteCancel}
       />
+
+      {showFirstItemHint && (
+        <FirstItemHint
+          targetRef={firstRowRef}
+          message="Tap to view details"
+          onDismiss={markHintSeen}
+        />
+      )}
     </div>
   )
 }

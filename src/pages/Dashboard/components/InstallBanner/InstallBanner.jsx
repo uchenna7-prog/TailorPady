@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useInstall } from '../../../../contexts/InstallContext'
+import { useTour } from '../../../../contexts/TourContext'
 import styles from './InstallBanner.module.css'
 
 const STORAGE_KEY   = 'TailorPady_install_banner'
@@ -19,22 +20,17 @@ function saveBannerState(state) {
 
 function shouldShowBanner() {
   const state = getBannerState()
-
-  // Permanently dismissed after second dismissal — never show again
   if (state.permanent) return false
-
-  // First dismissal — only show again after 7 days
   if (state.dismissedAt) {
     const elapsed = Date.now() - state.dismissedAt
     return elapsed >= SEVEN_DAYS_MS
   }
-
-  // Never been dismissed — show it
   return true
 }
 
 export function InstallBanner() {
   const { installPrompt, triggerInstall } = useInstall()
+  const { completeStep, currentStep } = useTour()
   const [visible, setVisible] = useState(false)
 
   useEffect(() => {
@@ -43,8 +39,20 @@ export function InstallBanner() {
     }
   }, [installPrompt])
 
+  // If this step is active but the banner will never show (already
+  // installed, no prompt available, or already dismissed), skip immediately
+  // instead of letting the tour wait out its generic timeout.
+  useEffect(() => {
+    if (currentStep?.id !== 'install-app') return
+    if (visible) return
+    if (!installPrompt || !shouldShowBanner()) {
+      completeStep('install-app')
+    }
+  }, [currentStep, visible, installPrompt, completeStep])
+
   const handleInstall = async () => {
     const accepted = await triggerInstall()
+    completeStep('install-app')
     if (accepted) setVisible(false)
   }
 
@@ -52,13 +60,12 @@ export function InstallBanner() {
     const state = getBannerState()
 
     if (state.dismissedAt) {
-      // Second dismissal — permanently hide
       saveBannerState({ permanent: true })
     } else {
-      // First dismissal — hide for 7 days
       saveBannerState({ dismissedAt: Date.now() })
     }
 
+    completeStep('install-app')
     setVisible(false)
   }
 
@@ -76,7 +83,7 @@ export function InstallBanner() {
       </div>
 
       <div className={styles.actions}>
-        <button className={styles.install} onClick={handleInstall}>Install</button>
+        <button className={styles.install} onClick={handleInstall} data-tour="install-app-btn">Install</button>
         <button className={styles.dismiss} onClick={handleDismiss}>Not now</button>
       </div>
     </div>

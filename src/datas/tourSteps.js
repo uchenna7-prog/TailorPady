@@ -1,17 +1,18 @@
-export const TRACKS = [
-  { id: 'permissions',  label: 'Turn on notifications & install the app', available: true  },
-  { id: 'customerFlow', label: 'Add your first customer',                 available: true  },
-  { id: 'portfolio',    label: 'Set up your portfolio',                   available: false },
-  { id: 'firstTask',    label: 'Add your first task',                     available: false },
-]
-
 export const TOURS = {
-  permissions: [
+  onboarding: [
+    {
+      id: 'welcome',
+      target: null,
+      manual: true,
+      ctaLabel: 'Get Started',
+      title: 'Welcome to TailorPady 👋',
+      message: "Let's get you set up — it only takes a minute.",
+    },
     {
       id: 'enable-notifications',
       target: '[data-tour="enable-notifications-btn"]',
       title: 'Turn on notifications',
-      message: "Tap here so you never miss an appointment or due date.",
+      message: 'Tap here so you never miss an order, invoice, or birthday reminder.',
     },
     {
       id: 'install-app',
@@ -27,11 +28,7 @@ export const TOURS = {
       message: "We'll walk through adding a customer, their measurements, an order, invoice, payment and receipt.",
       yesLabel: "Let's go",
       noLabel: 'Maybe later',
-      onYesStartTour: 'customerFlow',
     },
-  ],
-
-  customerFlow: [
     {
       id: 'goto-customers-nav',
       target: '[data-tour="nav-customers"]',
@@ -111,8 +108,4 @@ export const TOURS = {
       message: 'You now know the full flow: Customer → Measurements → Order → Invoice → Payment → Receipt.',
     },
   ],
-
-  // Built later, once Portfolio and Tasks pages are shared.
-  portfolio: [],
-  firstTask: [],
 }

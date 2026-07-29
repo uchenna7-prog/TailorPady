@@ -3,11 +3,12 @@ import { useTour } from '../../contexts/TourContext'
 import styles from './OnboardingTour.module.css'
 
 const PAD = 8
+const TARGET_TIMEOUT_MS = 2500
 
 export default function OnboardingTour() {
   const {
     isActive, currentStep, stepIndex, totalSteps,
-    skipTour, finishTour, advanceManual, resolveConfirm,
+    skipTour, finishTour, advanceManual, resolveConfirm, skipCurrentStep,
   } = useTour()
   const [rect, setRect] = useState(null)
   const rafRef = useRef(null)
@@ -42,6 +43,24 @@ export default function OnboardingTour() {
 
     return () => cancelAnimationFrame(rafRef.current)
   }, [isActive, measure])
+
+  // If a step needs a real target and it never shows up (permission already
+  // granted, install unavailable, etc.), skip past it instead of getting stuck.
+  useEffect(() => {
+    if (!isActive || !currentStep?.target) return
+
+    let cancelled = false
+    const timer = setTimeout(() => {
+      if (cancelled) return
+      const el = document.querySelector(currentStep.target)
+      if (!el) skipCurrentStep()
+    }, TARGET_TIMEOUT_MS)
+
+    return () => {
+      cancelled = true
+      clearTimeout(timer)
+    }
+  }, [currentStep?.id, isActive, skipCurrentStep])
 
   if (!isActive || !currentStep) return null
 

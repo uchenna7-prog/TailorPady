@@ -2,7 +2,7 @@
   "name": "TailorPady",
   "short_name": "TailorPady",
   "description": "Your tailor management app",
-  "start_url": "/",
+  "start_url": "/app?source=pwa",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#ffffff",

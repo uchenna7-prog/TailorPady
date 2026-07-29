@@ -15,20 +15,10 @@ import PublicRefund from './pages/PublicRefund/PublicRefund'
 import PublicFounder from './pages/PublicFounder/PublicFounder'
 import './index.css'
 
-function isStandalonePWA() {
-  const isDisplayModeStandalone = window.matchMedia?.('(display-mode: standalone)').matches
-  const isIOSStandalone = window.navigator?.standalone === true
-  return Boolean(isDisplayModeStandalone || isIOSStandalone)
-}
-
 function LandingGate() {
   const [status, setStatus] = useState('checking')
 
   useEffect(() => {
-    if (isStandalonePWA()) {
-      window.location.replace('/login')
-      return
-    }
     const unsub = onAuthStateChanged(auth, user => {
       if (user) {
         window.location.replace('/dashboard')

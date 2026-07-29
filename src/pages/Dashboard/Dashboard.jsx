@@ -24,7 +24,6 @@ import { NOTIFICATION_DISMISSED_KEY } from './datas'
 import { NotificationBanner } from './components/NotificationBanner/NotificationBanner'
 import { InstallBanner } from './components/InstallBanner/InstallBanner'
 import { ProfileSetupCard } from './components/ProfileSetupCard/ProfileSetupCard'
-import { GettingStartedCard } from './components/GettingStartedCard/GettingStartedCard'
 import { CustomerInsightsCard } from './components/CustomerInsightsCard/CustomerInsightsCard'
 import { RevenueGoalModal } from './components/RevenueGoalModal/RevenueGoalModal'
 import { StatCard } from './components/StatCard/StatCard'
@@ -112,7 +111,7 @@ function Dashboard({ onMenuClick, onGoToCustomer }) {
   const { allPayments }                                                   = usePayments()
   const { profileSettings, isLoading: profileLoading }                   = useProfileSettings()
   const { goal, derived, loading: goalLoading, saveGoal, removeGoal }    = useRevenueGoal()
-  const { startTour, hasCompletedTour, isActive: tourActive }             = useTour()
+  const { startTour, completeStep, currentStep, hasCompletedTour, isActive: tourActive } = useTour()
 
   const [isBannerDismissed, setIsBannerDismissed] = useState(loadNotificationDismissed)
   const [isGoalModalOpen,   setIsGoalModalOpen]   = useState(false)
@@ -166,10 +165,19 @@ function Dashboard({ onMenuClick, onGoToCustomer }) {
 
     autoTourAttemptedRef.current = true
 
-    if (customers.length === 0 && !hasCompletedTour('permissions')) {
-      startTour('permissions')
+    if (customers.length === 0 && !hasCompletedTour('onboarding')) {
+      startTour('onboarding')
     }
   }, [customersReady, customers.length, tourActive, hasCompletedTour, startTour])
+
+  // If notifications are already granted/denied/dismissed by the time the
+  // tour reaches this step, the banner won't render — skip immediately
+  // instead of waiting out the generic target-timeout.
+  useEffect(() => {
+    if (currentStep?.id !== 'enable-notifications') return
+    if (showNotificationBanner) return
+    completeStep('enable-notifications')
+  }, [currentStep, showNotificationBanner, completeStep])
 
   function showToast(msg) {
     setToastMsg(msg)
@@ -369,11 +377,17 @@ function Dashboard({ onMenuClick, onGoToCustomer }) {
   async function handleEnableNotifications() {
     await requestPushPermission()
     dismissNotificationBanner()
+    completeStep('enable-notifications')
   }
 
   function dismissNotificationBanner() {
     setIsBannerDismissed(true)
     localStorage.setItem(NOTIFICATION_DISMISSED_KEY, 'true')
+  }
+
+  function handleDismissNotificationBannerClick() {
+    dismissNotificationBanner()
+    completeStep('enable-notifications')
   }
 
   return (
@@ -396,10 +410,8 @@ function Dashboard({ onMenuClick, onGoToCustomer }) {
             </p>
           </section>
 
-          <GettingStartedCard />
-
           {showNotificationBanner && (
-            <NotificationBanner onEnable={handleEnableNotifications} onDismiss={dismissNotificationBanner} />
+            <NotificationBanner onEnable={handleEnableNotifications} onDismiss={handleDismissNotificationBannerClick} />
           )}
 
           {showInstallBanner && <InstallBanner />}

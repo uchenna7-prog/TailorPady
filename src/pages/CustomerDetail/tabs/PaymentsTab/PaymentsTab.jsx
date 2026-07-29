@@ -1,6 +1,8 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { formatMoney } from '../../../../utils/moneyUtils'
 import { useTour } from '../../../../contexts/TourContext'
+import { useFirstItemHint } from '../../../../hooks/useFirstItemHint'
+import { FirstItemHint } from '../../../../components/FirstItemHint/FirstItemHint'
 import { AddPaymentModal } from './components/AddPaymentModal/AddPaymentModal'
 import { PaymentRow } from './components/PaymentRow/PaymentRow'
 import { EmptyState } from './components/EmptyState/EmptyState'
@@ -24,6 +26,8 @@ export default function PaymentsTab({
 }) {
 
   const { completeStep, pauseTour, resumeTour } = useTour()
+  const [hintSeen, markHintSeen] = useFirstItemHint('payment')
+  const firstRowRef = useRef(null)
 
   const [modalOpen,      setModalOpen]      = useState(false)
   const [viewingPayment, setViewingPayment] = useState(null)
@@ -108,6 +112,9 @@ export default function PaymentsTab({
   }
   }
 
+  const showFirstItemHint = payments.length === 1 && !hintSeen
+  let renderedFirstRow = false
+
   return (
     <>
       <div className={styles.tabContent}>
@@ -119,16 +126,21 @@ export default function PaymentsTab({
               <div className={styles.dateGroupLabel}>{date}</div>
               <div className={styles.dateGroupDivider} />
 
-              {datePayments.map((payment, index) => (
-                <PaymentRow
-                  key={payment.id ?? index}
-                  payment={payment}
-                  index={index}
-                  datePayments={datePayments}
-                  orderItemsMap={orderItemsMap}
-                  onTap={setViewingPayment}
-                />
-              ))}
+              {datePayments.map((payment, index) => {
+                const isFirstOverall = showFirstItemHint && !renderedFirstRow
+                if (isFirstOverall) renderedFirstRow = true
+                return (
+                  <div key={payment.id ?? index} ref={isFirstOverall ? firstRowRef : undefined}>
+                    <PaymentRow
+                      payment={payment}
+                      index={index}
+                      datePayments={datePayments}
+                      orderItemsMap={orderItemsMap}
+                      onTap={setViewingPayment}
+                    />
+                  </div>
+                )
+              })}
             </div>
           ))
         )}
@@ -162,6 +174,14 @@ export default function PaymentsTab({
         onConfirm={handleConfirmDelete}
         onCancel={() => setDeleteTarget(null)}
       />
+
+      {showFirstItemHint && (
+        <FirstItemHint
+          targetRef={firstRowRef}
+          message="Tap to view details"
+          onDismiss={markHintSeen}
+        />
+      )}
     </>
   )
 }
