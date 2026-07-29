@@ -24,10 +24,12 @@ function saveCompletedTours(data) {
 export function TourProvider({ children }) {
   const navigate = useNavigate()
 
-  const [activeTourId, setActiveTourId] = useState(null)
-  const [stepIndex, setStepIndex]       = useState(0)
+  const [activeTourId, setActiveTourId]     = useState(null)
+  const [stepIndex, setStepIndex]           = useState(0)
+  const [pendingCustomerId, setPendingCustomerId] = useState(null)
+  const [paused, setPaused]                 = useState(false)
   const [completedTours, setCompletedTours] = useState(loadCompletedTours)
-  const pendingCustomerIdRef = useRef(null)
+  const pauseCountRef = useRef(0)
 
   const steps       = activeTourId ? TOURS[activeTourId] : null
   const currentStep = steps ? steps[stepIndex] : null
@@ -42,7 +44,9 @@ export function TourProvider({ children }) {
     }
     setActiveTourId(null)
     setStepIndex(0)
-    pendingCustomerIdRef.current = null
+    setPendingCustomerId(null)
+    setPaused(false)
+    pauseCountRef.current = 0
   }, [activeTourId])
 
   const startTour = useCallback((tourId) => {
@@ -50,17 +54,16 @@ export function TourProvider({ children }) {
     if (!tourSteps) return
     setActiveTourId(tourId)
     setStepIndex(0)
-    pendingCustomerIdRef.current = null
-    if (tourSteps[0].route && tourSteps[0].route !== 'CUSTOMER_DETAIL') {
-      navigate(tourSteps[0].route)
-    }
-  }, [navigate])
+    setPendingCustomerId(null)
+    setPaused(false)
+    pauseCountRef.current = 0
+  }, [])
 
   const skipTour = useCallback(() => {
     finishTour()
   }, [finishTour])
 
-  const advanceTo = useCallback((nextIndex, customerId) => {
+  const advanceTo = useCallback((nextIndex) => {
     if (!steps) return
     if (nextIndex >= steps.length) {
       finishTour()
@@ -68,32 +71,48 @@ export function TourProvider({ children }) {
     }
     const nextStep = steps[nextIndex]
     setStepIndex(nextIndex)
-
-    if (nextStep.route === 'CUSTOMER_DETAIL' && customerId) {
-      navigate(`/customers/${customerId}`)
-    } else if (nextStep.route) {
-      navigate(nextStep.route)
-    }
+    if (nextStep.route) navigate(nextStep.route)
   }, [steps, navigate, finishTour])
 
   const completeStep = useCallback((stepId, payload) => {
     if (!steps || !currentStep) return
     if (currentStep.id !== stepId) return
-    if (payload?.customerId) pendingCustomerIdRef.current = payload.customerId
-    advanceTo(stepIndex + 1, pendingCustomerIdRef.current)
+    if (payload?.customerId) setPendingCustomerId(payload.customerId)
+    advanceTo(stepIndex + 1)
   }, [steps, currentStep, stepIndex, advanceTo])
+
+  const advanceManual = useCallback(() => {
+    if (!currentStep?.manual) return
+    advanceTo(stepIndex + 1)
+  }, [currentStep, stepIndex, advanceTo])
+
+  // Any modal can call pauseTour() on open / resumeTour() on close.
+  // Counter-based so overlapping modals don't fight each other.
+  const pauseTour = useCallback(() => {
+    pauseCountRef.current += 1
+    setPaused(true)
+  }, [])
+
+  const resumeTour = useCallback(() => {
+    pauseCountRef.current = Math.max(0, pauseCountRef.current - 1)
+    if (pauseCountRef.current === 0) setPaused(false)
+  }, [])
 
   const value = {
     activeTourId,
     currentStep,
     stepIndex,
     totalSteps: steps?.length ?? 0,
-    isActive: !!activeTourId,
+    isActive: !!activeTourId && !paused,
+    pendingCustomerId,
     hasCompletedTour: (tourId) => !!completedTours[tourId],
     startTour,
     skipTour,
     finishTour,
     completeStep,
+    advanceManual,
+    pauseTour,
+    resumeTour,
   }
 
   return <TourContext.Provider value={value}>{children}</TourContext.Provider>
