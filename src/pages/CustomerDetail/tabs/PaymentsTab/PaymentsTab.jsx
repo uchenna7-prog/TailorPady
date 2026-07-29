@@ -23,7 +23,7 @@ export default function PaymentsTab({
   onViewReceipt,
 }) {
 
-  const { completeStep } = useTour()
+  const { completeStep, pauseTour, resumeTour } = useTour()
 
   const [modalOpen,      setModalOpen]      = useState(false)
   const [viewingPayment, setViewingPayment] = useState(null)
@@ -40,6 +40,12 @@ export default function PaymentsTab({
     document.addEventListener('openAddPaymentModal', handler)
     return () => document.removeEventListener('openAddPaymentModal', handler)
   }, [])
+
+  useEffect(() => {
+    if (!modalOpen) return
+    pauseTour()
+    return () => resumeTour()
+  }, [modalOpen, pauseTour, resumeTour])
 
   const orderItemsMap = buildOrderItemsMap(orders)
   const groupedByDate = groupPaymentsByDate(payments)
