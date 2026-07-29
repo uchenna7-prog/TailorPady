@@ -2,6 +2,7 @@ import { useState, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useCustomers } from '../../contexts/CustomerContext'
 import { usePremium } from '../../contexts/PremiumContext'
+import { useTour } from '../../contexts/TourContext'
 import { DeleteConfirmSheet } from './components/DeleteConfirmSheet/DeleteConfirmSheet'
 import { CustomerRow } from './components/CustomerRow/CustomerRow'
 import { AddCustomerModal } from './components/AddCustomerModal/AddCustomerModal'
@@ -17,6 +18,7 @@ export default function Customers({ onMenuClick }) {
   const navigate = useNavigate()
   const {customers, addCustomer,deleteCustomerAndAllData } = useCustomers()
   const { isPremium } = usePremium()
+  const { completeStep } = useTour()
   const [deleteConfirmModalOpen, setDeleteConfirmModalOpen] = useState(false)
   const [query,        setQuery]        = useState('')
   const [formOpen,     setFormOpen]     = useState(false)
@@ -68,7 +70,7 @@ export default function Customers({ onMenuClick }) {
     const hasMeasurements = Object.keys(bodyMeasurements || {}).length > 0
 
     try {
-      await addCustomer({
+      const created = await addCustomer({
         name,
         phone,
         phoneType,
@@ -83,6 +85,11 @@ export default function Customers({ onMenuClick }) {
         date: today,
       })
       showToast(hasMeasurements ? `${name} saved with measurements ✓` : `${name} added — no measurements saved`)
+
+      const newCustomerId = created?.id ?? created
+      if (newCustomerId) {
+        completeStep('add-customer', { customerId: newCustomerId })
+      }
     } catch (err) {
       showToast(`ERROR: ${err?.code || err?.message || String(err)}`)
     }
@@ -230,7 +237,11 @@ export default function Customers({ onMenuClick }) {
         ))}
       </div>
 
-      <button className={styles.fab} onClick={() => setFormOpen(true)}>
+      <button
+        className={styles.fab}
+        onClick={() => setFormOpen(true)}
+        data-tour="add-customer-fab"
+      >
         <span className="mi">add</span>
       </button>
 
