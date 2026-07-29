@@ -1,3 +1,4 @@
+// OnboardingTour.jsx
 import { useEffect, useRef, useState, useCallback } from 'react'
 import { useTour } from '../../contexts/TourContext'
 import styles from './OnboardingTour.module.css'
@@ -16,20 +17,32 @@ export default function OnboardingTour() {
 
   const measure = useCallback(() => {
     if (!currentStep?.target) {
-      setRect(null)
+      setRect(prev => (prev === null ? prev : null))
       return
     }
     const el = document.querySelector(currentStep.target)
     if (!el) {
-      setRect(null)
+      setRect(prev => (prev === null ? prev : null))
       return
     }
     const r = el.getBoundingClientRect()
-    setRect({
-      top:    r.top - PAD,
-      left:   r.left - PAD,
-      width:  r.width + PAD * 2,
+    const next = {
+      top: r.top - PAD,
+      left: r.left - PAD,
+      width: r.width + PAD * 2,
       height: r.height + PAD * 2,
+    }
+    setRect(prev => {
+      if (
+        prev &&
+        prev.top === next.top &&
+        prev.left === next.left &&
+        prev.width === next.width &&
+        prev.height === next.height
+      ) {
+        return prev
+      }
+      return next
     })
   }, [currentStep])
 
@@ -43,6 +56,8 @@ export default function OnboardingTour() {
     return () => cancelAnimationFrame(rafRef.current)
   }, [isActive, measure])
 
+  // If a step needs a real target and it never shows up (permission already
+  // granted, install unavailable, etc.), skip past it instead of getting stuck.
   useEffect(() => {
     if (!isActive || !currentStep?.target) return
     let cancelled = false
@@ -60,8 +75,8 @@ export default function OnboardingTour() {
   if (!isActive || !currentStep) return null
 
   const isLastStep = stepIndex === totalSteps - 1
-  const hasTarget   = !!rect
-  const isConfirm   = currentStep.type === 'confirm'
+  const hasTarget = !!rect
+  const isConfirm = currentStep.type === 'confirm'
 
   let tooltipPos = null
   let placeBelow = true
@@ -70,11 +85,10 @@ export default function OnboardingTour() {
   if (hasTarget) {
     const spaceBelow = window.innerHeight - (rect.top + rect.height)
     placeBelow = spaceBelow > 170
-    const top  = placeBelow ? rect.top + rect.height + 14 : Math.max(12, rect.top - 162)
+    const top = placeBelow ? rect.top + rect.height + 14 : Math.max(12, rect.top - 162)
     const rawLeft = Math.min(Math.max(12, rect.left), window.innerWidth - CARD_WIDTH - 12)
     tooltipPos = { top, left: rawLeft }
 
-    // Arrow points at the horizontal center of the target, clamped inside the card
     const targetCenter = rect.left + rect.width / 2
     arrowLeft = Math.min(Math.max(targetCenter - rawLeft, 20), CARD_WIDTH - 20)
   }
@@ -89,6 +103,10 @@ export default function OnboardingTour() {
           <div className={styles.blockStrip} style={{ top: rect.top, left: rect.left + rect.width, right: 0, height: rect.height }} />
           <div
             className={styles.spotlightRing}
+            style={{ top: rect.top, left: rect.left, width: rect.width, height: rect.height }}
+          />
+          <div
+            className={styles.pulseRing}
             style={{ top: rect.top, left: rect.left, width: rect.width, height: rect.height }}
           />
         </>
@@ -107,11 +125,7 @@ export default function OnboardingTour() {
           />
         )}
 
-        <div className={styles.progress}>
-          {Array.from({ length: totalSteps }).map((_, i) => (
-            <span key={i} className={`${styles.dot} ${i === stepIndex ? styles.dotActive : ''}`} />
-          ))}
-        </div>
+        <div className={styles.stepCount}>{stepIndex + 1} / {totalSteps}</div>
 
         <h3 className={styles.title}>{currentStep.title}</h3>
         <p className={styles.message}>{currentStep.message}</p>
