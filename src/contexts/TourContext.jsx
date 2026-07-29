@@ -1,6 +1,6 @@
 import { createContext, useContext, useState, useCallback, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { TOURS } from '../data/tourSteps'
+import { TOURS } from '../datas/tourSteps'
 
 const STORAGE_KEY = 'tp_tours_completed'
 
