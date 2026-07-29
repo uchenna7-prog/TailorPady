@@ -28,7 +28,7 @@ export default function ReceiptTab({
   onReopenReceiptHandled,
 }) {
   const { profileSettings } = useProfileSettings()
-  const { completeStep } = useTour()
+  const { completeStep, pauseTour, resumeTour } = useTour()
 
   const [viewingReceipt,     setViewingReceipt]     = useState(null)
   const [deleteTarget,       setDeleteTarget]       = useState(null)
@@ -47,6 +47,12 @@ export default function ReceiptTab({
     document.addEventListener('openAddReceiptModal', openAddReceiptModal)
     return () => document.removeEventListener('openAddReceiptModal', openAddReceiptModal)
   }, [])
+
+  useEffect(() => {
+    if (!addReceiptModalOpen) return
+    pauseTour()
+    return () => resumeTour()
+  }, [addReceiptModalOpen, pauseTour, resumeTour])
 
   useEffect(() => {
     if (!viewingReceipt) return
