@@ -34,6 +34,11 @@ export function TourProvider({ children }) {
   const steps       = activeTourId ? TOURS[activeTourId] : null
   const currentStep = steps ? steps[stepIndex] : null
 
+  const findStepIndex = useCallback((stepId) => {
+    if (!steps) return -1
+    return steps.findIndex(s => s.id === stepId)
+  }, [steps])
+
   const resetTourState = useCallback((tourId, index = 0) => {
     setActiveTourId(tourId)
     setStepIndex(index)
@@ -88,14 +93,22 @@ export function TourProvider({ children }) {
   const resolveConfirm = useCallback((stepId, outcome) => {
     if (!currentStep || currentStep.id !== stepId || currentStep.type !== 'confirm') return
     if (outcome === 'yes') {
-      advanceTo(stepIndex + 1)
+      const target = currentStep.yesTarget ? findStepIndex(currentStep.yesTarget) : stepIndex + 1
+      if (target === -1) {
+        finishTour()
+        return
+      }
+      advanceTo(target)
     } else {
-      finishTour()
+      const target = currentStep.noTarget ? findStepIndex(currentStep.noTarget) : -1
+      if (target === -1) {
+        finishTour()
+        return
+      }
+      advanceTo(target)
     }
-  }, [currentStep, stepIndex, advanceTo, finishTour])
+  }, [currentStep, stepIndex, advanceTo, findStepIndex, finishTour])
 
-  // Called by OnboardingTour when a step's target never appears (permission
-  // already granted, install already done, etc.) — silently move on.
   const skipCurrentStep = useCallback(() => {
     advanceTo(stepIndex + 1)
   }, [stepIndex, advanceTo])
