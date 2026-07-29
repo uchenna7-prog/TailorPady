@@ -24,6 +24,7 @@ import { NOTIFICATION_DISMISSED_KEY } from './datas'
 import { NotificationBanner } from './components/NotificationBanner/NotificationBanner'
 import { InstallBanner } from './components/InstallBanner/InstallBanner'
 import { ProfileSetupCard } from './components/ProfileSetupCard/ProfileSetupCard'
+import { GettingStartedCard } from './components/GettingStartedCard/GettingStartedCard'
 import { CustomerInsightsCard } from './components/CustomerInsightsCard/CustomerInsightsCard'
 import { RevenueGoalModal } from './components/RevenueGoalModal/RevenueGoalModal'
 import { StatCard } from './components/StatCard/StatCard'
@@ -165,8 +166,8 @@ function Dashboard({ onMenuClick, onGoToCustomer }) {
 
     autoTourAttemptedRef.current = true
 
-    if (customers.length === 0 && !hasCompletedTour('onboarding')) {
-      startTour('onboarding')
+    if (customers.length === 0 && !hasCompletedTour('permissions')) {
+      startTour('permissions')
     }
   }, [customersReady, customers.length, tourActive, hasCompletedTour, startTour])
 
@@ -389,21 +390,13 @@ function Dashboard({ onMenuClick, onGoToCustomer }) {
             </p>
             <h1 className={styles.title}>{displayName}</h1>
             <p className={styles.subtitle}>{subtitleTextRef.current}</p>
-            <div className={styles.updatedAtRow}>
-              <p className={styles.updatedAt}>
-                <span className="mi" style={{ fontSize: '0.7rem', verticalAlign: 'middle', marginRight: '3px' }}>update</span>
-                Updated at {formatUpdatedTime(lastUpdatedRef.current)}
-              </p>
-              <button
-                type="button"
-                className={styles.tourLink}
-                onClick={() => startTour('onboarding')}
-              >
-                <span className="mi" style={{ fontSize: '0.85rem', verticalAlign: 'middle', marginRight: '3px' }}>help_outline</span>
-                Take a quick tour
-              </button>
-            </div>
+            <p className={styles.updatedAt}>
+              <span className="mi" style={{ fontSize: '0.7rem', verticalAlign: 'middle', marginRight: '3px' }}>update</span>
+              Updated at {formatUpdatedTime(lastUpdatedRef.current)}
+            </p>
           </section>
+
+          <GettingStartedCard />
 
           {showNotificationBanner && (
             <NotificationBanner onEnable={handleEnableNotifications} onDismiss={dismissNotificationBanner} />
