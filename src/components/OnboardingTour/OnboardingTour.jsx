@@ -5,7 +5,10 @@ import styles from './OnboardingTour.module.css'
 const PAD = 8
 
 export default function OnboardingTour() {
-  const { isActive, currentStep, stepIndex, totalSteps, skipTour, finishTour, advanceManual } = useTour()
+  const {
+    isActive, currentStep, stepIndex, totalSteps,
+    skipTour, finishTour, advanceManual, resolveConfirm,
+  } = useTour()
   const [rect, setRect] = useState(null)
   const rafRef = useRef(null)
 
@@ -42,8 +45,9 @@ export default function OnboardingTour() {
 
   if (!isActive || !currentStep) return null
 
-  const isLastStep = stepIndex === totalSteps - 1
-  const hasTarget  = !!rect
+  const isLastStep  = stepIndex === totalSteps - 1
+  const hasTarget   = !!rect
+  const isConfirm   = currentStep.type === 'confirm'
 
   const tooltipPos = hasTarget
     ? (() => {
@@ -83,7 +87,16 @@ export default function OnboardingTour() {
         <p className={styles.message}>{currentStep.message}</p>
 
         <div className={styles.actions}>
-          {currentStep.manual ? (
+          {isConfirm ? (
+            <>
+              <button className={styles.skipBtn} onClick={() => resolveConfirm(currentStep.id, 'no')}>
+                {currentStep.noLabel || 'Not now'}
+              </button>
+              <button className={styles.doneBtn} onClick={() => resolveConfirm(currentStep.id, 'yes')}>
+                {currentStep.yesLabel || 'Yes'}
+              </button>
+            </>
+          ) : currentStep.manual ? (
             <>
               <button className={styles.skipBtn} onClick={skipTour}>Skip</button>
               <button className={styles.doneBtn} onClick={advanceManual}>{currentStep.ctaLabel || 'Next'}</button>
