@@ -5,7 +5,7 @@ import styles from './OnboardingTour.module.css'
 const PAD = 8
 
 export default function OnboardingTour() {
-  const { isActive, currentStep, stepIndex, totalSteps, skipTour, finishTour } = useTour()
+  const { isActive, currentStep, stepIndex, totalSteps, skipTour, finishTour, advanceManual } = useTour()
   const [rect, setRect] = useState(null)
   const rafRef = useRef(null)
 
@@ -83,10 +83,15 @@ export default function OnboardingTour() {
         <p className={styles.message}>{currentStep.message}</p>
 
         <div className={styles.actions}>
-          {!isLastStep ? (
-            <button className={styles.skipBtn} onClick={skipTour}>Skip tour</button>
-          ) : (
+          {currentStep.manual ? (
+            <>
+              <button className={styles.skipBtn} onClick={skipTour}>Skip</button>
+              <button className={styles.doneBtn} onClick={advanceManual}>{currentStep.ctaLabel || 'Next'}</button>
+            </>
+          ) : isLastStep ? (
             <button className={styles.doneBtn} onClick={finishTour}>Got it</button>
+          ) : (
+            <button className={styles.skipBtn} onClick={skipTour}>Skip tour</button>
           )}
         </div>
       </div>
