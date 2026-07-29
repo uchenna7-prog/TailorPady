@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { formatMoney } from '../../../../utils/moneyUtils'
+import { useTour } from '../../../../contexts/TourContext'
 import { AddPaymentModal } from './components/AddPaymentModal/AddPaymentModal'
 import { PaymentRow } from './components/PaymentRow/PaymentRow'
 import { EmptyState } from './components/EmptyState/EmptyState'
@@ -21,6 +22,8 @@ export default function PaymentsTab({
   onGenerateReceipt,
   onViewReceipt,
 }) {
+
+  const { completeStep } = useTour()
 
   const [modalOpen,      setModalOpen]      = useState(false)
   const [viewingPayment, setViewingPayment] = useState(null)
@@ -45,6 +48,7 @@ export default function PaymentsTab({
   try {
     await onSavePayment(paymentData)
     showToast('Payment recorded ✓')
+    completeStep('add-payment')
     if (paymentData.status === 'paid')      onInvoicePaid?.(paymentData.orderId, 'paid')
     else if (paymentData.status === 'part') onInvoicePaid?.(paymentData.orderId, 'part_paid')
   } catch {
@@ -72,6 +76,7 @@ export default function PaymentsTab({
 
     try {
       await onUpdatePayment(paymentId, { installments: updatedInstallments, status: newStatus })
+      completeStep('add-payment')
       if (newStatus === 'paid') {
         showToast('Payment complete! Marked as Paid ✓')
         onInvoicePaid?.(payment.orderId, 'paid')
