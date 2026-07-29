@@ -5,10 +5,23 @@
   pointer-events: none;
 }
 
-.dimLayer {
+/* Each strip fully blocks clicks and blurs/dims whatever is behind it */
+.blockStrip {
   position: fixed;
-  transition: top 0.25s ease, left 0.25s ease, width 0.25s ease, height 0.25s ease;
+  pointer-events: auto;
+  background: rgba(0, 0, 0, 0.55);
+  backdrop-filter: blur(3px);
+  -webkit-backdrop-filter: blur(3px);
+  transition: all 0.25s ease;
+}
+
+/* Visual ring around the actual clickable target — no pointer-events so clicks pass through to the real element */
+.spotlightRing {
+  position: fixed;
   pointer-events: none;
+  border-radius: 14px;
+  box-shadow: 0 0 0 3px var(--accent), 0 0 18px rgba(0, 0, 0, 0.4);
+  transition: top 0.25s ease, left 0.25s ease, width 0.25s ease, height 0.25s ease;
 }
 
 .card {
@@ -28,6 +41,24 @@
   left: 50%;
   transform: translate(-50%, -50%);
   width: 280px;
+}
+
+/* Speech-bubble tail. arrowUp = card is below target, tail points up. */
+.arrowUp,
+.arrowDown {
+  position: absolute;
+  width: 14px;
+  height: 14px;
+  background: var(--surface);
+  transform: translateX(-50%) rotate(45deg);
+}
+
+.arrowUp {
+  top: -6px;
+}
+
+.arrowDown {
+  bottom: -6px;
 }
 
 .progress {
@@ -80,10 +111,5 @@
   border-radius: 8px;
 }
 
-.skipBtn {
-  color: var(--text3);
-}
-
-.doneBtn {
-  color: var(--accent);
-}
+.skipBtn { color: var(--text3); }
+.doneBtn { color: var(--accent); }
