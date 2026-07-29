@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useOrders } from '../../../../contexts/OrdersContext'
 import { useGeneralSettings } from '../../../../contexts/GeneralSettingsContext'
+import { useTour } from '../../../../contexts/TourContext'
 import { AddOrderModal } from './components/AddOrderModal/AddOrderModal'
 import OrderDetailModal from '../../../../components/OrderDetailModal/OrderDetailModal'
 import { OrderRow } from './components/OrderRow/OrderRow'
@@ -14,6 +15,7 @@ export default function OrdersTab({ customerId, orders, loading, measurements, s
 
   const { addOrder } = useOrders()
   const { generalSettings } = useGeneralSettings()
+  const { completeStep } = useTour()
 
   const taxEnabled = generalSettings.invoiceShowTax ?? false
   const taxRate    = generalSettings.invoiceTaxRate ?? 0
@@ -32,6 +34,7 @@ export default function OrdersTab({ customerId, orders, loading, measurements, s
     try {
       await addOrder(customerId, orderData)
       showToast('Order placed ✓')
+      completeStep('add-order')
     } catch (err) {
       console.error('[OrdersTab] failed to place order:', err)
       const code = err?.code
