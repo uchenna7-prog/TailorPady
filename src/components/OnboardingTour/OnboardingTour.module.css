@@ -1,4 +1,3 @@
-/* OnboardingTour.module.css */
 .overlayRoot {
   position: fixed;
   inset: 0;
@@ -6,17 +5,15 @@
   pointer-events: none;
 }
 
-/* Each strip fully blocks clicks and blurs whatever is behind it */
 .blockStrip {
   position: fixed;
   pointer-events: auto;
-  background: rgba(0, 0, 0, 0.55);
-  backdrop-filter: blur(3px);
-  -webkit-backdrop-filter: blur(3px);
+  background: rgba(0, 0, 0, 0.72);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
   transition: top 0.25s ease, left 0.25s ease, width 0.25s ease, height 0.25s ease, bottom 0.25s ease, right 0.25s ease;
 }
 
-/* Static ring outlining the target — decorative only, clicks pass through to the real element */
 .spotlightRing {
   position: fixed;
   pointer-events: none;
@@ -25,7 +22,6 @@
   transition: top 0.25s ease, left 0.25s ease, width 0.25s ease, height 0.25s ease;
 }
 
-/* Pulsing halo drawing attention to the actual tappable element */
 .pulseRing {
   position: fixed;
   pointer-events: none;
@@ -36,8 +32,8 @@
 }
 
 @keyframes pulse {
-  0%   { box-shadow: 0 0 0 0 rgba(var(--accent-rgb, 59, 130, 246), 0.55); opacity: 1; }
-  70%  { box-shadow: 0 0 0 14px rgba(var(--accent-rgb, 59, 130, 246), 0); opacity: 0.4; }
+  0% { box-shadow: 0 0 0 0 rgba(var(--accent-rgb, 59, 130, 246), 0.55); opacity: 1; }
+  70% { box-shadow: 0 0 0 14px rgba(var(--accent-rgb, 59, 130, 246), 0); opacity: 0.4; }
   100% { box-shadow: 0 0 0 0 rgba(var(--accent-rgb, 59, 130, 246), 0); opacity: 0; }
 }
 
@@ -60,22 +56,21 @@
   width: 280px;
 }
 
-/* Speech-bubble tail. arrowUp = card sits below target, tail points up at it. */
 .arrowUp,
 .arrowDown {
   position: absolute;
-  width: 14px;
-  height: 14px;
+  width: 16px;
+  height: 16px;
   background: var(--surface);
   transform: translateX(-50%) rotate(45deg);
 }
 
 .arrowUp {
-  top: -6px;
+  top: -8px;
 }
 
 .arrowDown {
-  bottom: -6px;
+  bottom: -8px;
 }
 
 .stepCount {
@@ -126,7 +121,7 @@
   .blockStrip {
     backdrop-filter: none;
     -webkit-backdrop-filter: none;
-    background: rgba(0, 0, 0, 0.7);
+    background: rgba(0, 0, 0, 0.8);
   }
   .pulseRing {
     animation: none;
