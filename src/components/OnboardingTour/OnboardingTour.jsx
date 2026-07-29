@@ -135,7 +135,10 @@ export default function OnboardingTour() {
           />
         </>
       ) : (
-        <div className={styles.blockStrip} style={{ top: 0, left: 0, right: 0, bottom: 0 }} />
+        <div
+          className={`${styles.blockStrip} ${styles.blockStripHeavy}`}
+          style={{ top: 0, left: 0, right: 0, bottom: 0 }}
+        />
       )}
 
       <div
