@@ -1,11 +1,12 @@
-// OnboardingTour.jsx
 import { useEffect, useRef, useState, useCallback } from 'react'
 import { useTour } from '../../contexts/TourContext'
 import styles from './OnboardingTour.module.css'
 
 const PAD = 8
-const TARGET_TIMEOUT_MS = 2500
+const CARD_GAP = 22
 const CARD_WIDTH = 260
+const CARD_HEIGHT_ESTIMATE = 170
+const TARGET_TIMEOUT_MS = 2500
 
 export default function OnboardingTour() {
   const {
@@ -56,8 +57,6 @@ export default function OnboardingTour() {
     return () => cancelAnimationFrame(rafRef.current)
   }, [isActive, measure])
 
-  // If a step needs a real target and it never shows up (permission already
-  // granted, install unavailable, etc.), skip past it instead of getting stuck.
   useEffect(() => {
     if (!isActive || !currentStep?.target) return
     let cancelled = false
@@ -84,8 +83,10 @@ export default function OnboardingTour() {
 
   if (hasTarget) {
     const spaceBelow = window.innerHeight - (rect.top + rect.height)
-    placeBelow = spaceBelow > 170
-    const top = placeBelow ? rect.top + rect.height + 14 : Math.max(12, rect.top - 162)
+    placeBelow = spaceBelow > CARD_HEIGHT_ESTIMATE + CARD_GAP
+    const top = placeBelow
+      ? rect.top + rect.height + CARD_GAP
+      : Math.max(12, rect.top - CARD_HEIGHT_ESTIMATE - CARD_GAP)
     const rawLeft = Math.min(Math.max(12, rect.left), window.innerWidth - CARD_WIDTH - 12)
     tooltipPos = { top, left: rawLeft }
 
@@ -125,7 +126,11 @@ export default function OnboardingTour() {
           />
         )}
 
-        <div className={styles.stepCount}>{stepIndex + 1} / {totalSteps}</div>
+        {currentStep.count && (
+          <div className={styles.stepCount}>
+            {currentStep.count.current} / {currentStep.count.total}
+          </div>
+        )}
 
         <h3 className={styles.title}>{currentStep.title}</h3>
         <p className={styles.message}>{currentStep.message}</p>
