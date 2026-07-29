@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
+import { useTour } from '../../contexts/TourContext'
 import styles from './BottomNav.module.css'
 
 const NAV_ITEMS = [
@@ -13,6 +14,7 @@ const NAV_ITEMS = [
 function BottomNav() {
   const navigate = useNavigate()
   const { pathname } = useLocation()
+  const { completeStep } = useTour()
   const [hidden, setHidden] = useState(false)
 
   const lastY     = useRef(0)
@@ -53,6 +55,11 @@ function BottomNav() {
     return () => document.removeEventListener('scroll', onScroll, { capture: true })
   }, [pathname])
 
+  function handleNavClick(item) {
+    if (item.route === '/customers') completeStep('goto-customers-nav')
+    navigate(item.route)
+  }
+
   return (
     <nav className={`${styles.bottomNav} ${hidden ? styles.bottomNavHidden : ''}`}>
       {NAV_ITEMS.map(item => {
@@ -64,9 +71,10 @@ function BottomNav() {
           <button
             key={item.route}
             className={`${styles.navBtn} ${isActive ? styles.navBtnActive : ''}`}
-            onClick={() => navigate(item.route)}
+            onClick={() => handleNavClick(item)}
             aria-label={item.label}
             aria-current={isActive ? 'page' : undefined}
+            data-tour={item.route === '/customers' ? 'nav-customers' : undefined}
           >
             <span className={`mi ${styles.navIcon}`}>{item.icon}</span>
             <span className={styles.navLabel}>{item.label}</span>
