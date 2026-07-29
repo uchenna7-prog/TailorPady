@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { getCurrency } from '../../../../utils/moneyUtils'
 import { useProfileSettings } from '../../../../contexts/ProfileSettingsContext'
+import { useTour } from '../../../../contexts/TourContext'
 import { buildOrderItemsMap, groupReceiptsByDate } from './utils'
 import { EmptyState } from './components/EmptyState/EmptyState'
 import { AddReceiptModal } from './components/AddReceiptModal/AddReceiptModal'
@@ -27,6 +28,7 @@ export default function ReceiptTab({
   onReopenReceiptHandled,
 }) {
   const { profileSettings } = useProfileSettings()
+  const { completeStep } = useTour()
 
   const [viewingReceipt,     setViewingReceipt]     = useState(null)
   const [deleteTarget,       setDeleteTarget]       = useState(null)
@@ -71,6 +73,7 @@ export default function ReceiptTab({
   function handleSelectPayment(payment, installment) {
     onGenerateReceipt(payment, installment)
     setAddReceiptModalOpen(false)
+    completeStep('add-receipt')
   }
 
   function handleConfirmDelete() {
@@ -138,7 +141,6 @@ export default function ReceiptTab({
       <ConfirmSheet
         open={!!deleteTarget}
         title="Delete this receipt?"
-        message="This can't be undone."
         onConfirm={handleConfirmDelete}
         onCancel={() => setDeleteTarget(null)}
       />
