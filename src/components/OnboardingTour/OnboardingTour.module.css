@@ -1,3 +1,4 @@
+/* OnboardingTour.module.css */
 .overlayRoot {
   position: fixed;
   inset: 0;
@@ -5,23 +6,39 @@
   pointer-events: none;
 }
 
-/* Each strip fully blocks clicks and blurs/dims whatever is behind it */
+/* Each strip fully blocks clicks and blurs whatever is behind it */
 .blockStrip {
   position: fixed;
   pointer-events: auto;
   background: rgba(0, 0, 0, 0.55);
   backdrop-filter: blur(3px);
   -webkit-backdrop-filter: blur(3px);
-  transition: all 0.25s ease;
+  transition: top 0.25s ease, left 0.25s ease, width 0.25s ease, height 0.25s ease, bottom 0.25s ease, right 0.25s ease;
 }
 
-/* Visual ring around the actual clickable target — no pointer-events so clicks pass through to the real element */
+/* Static ring outlining the target — decorative only, clicks pass through to the real element */
 .spotlightRing {
   position: fixed;
   pointer-events: none;
   border-radius: 14px;
   box-shadow: 0 0 0 3px var(--accent), 0 0 18px rgba(0, 0, 0, 0.4);
   transition: top 0.25s ease, left 0.25s ease, width 0.25s ease, height 0.25s ease;
+}
+
+/* Pulsing halo drawing attention to the actual tappable element */
+.pulseRing {
+  position: fixed;
+  pointer-events: none;
+  border-radius: 14px;
+  border: 2px solid var(--accent);
+  animation: pulse 1.6s ease-out infinite;
+  transition: top 0.25s ease, left 0.25s ease, width 0.25s ease, height 0.25s ease;
+}
+
+@keyframes pulse {
+  0%   { box-shadow: 0 0 0 0 rgba(var(--accent-rgb, 59, 130, 246), 0.55); opacity: 1; }
+  70%  { box-shadow: 0 0 0 14px rgba(var(--accent-rgb, 59, 130, 246), 0); opacity: 0.4; }
+  100% { box-shadow: 0 0 0 0 rgba(var(--accent-rgb, 59, 130, 246), 0); opacity: 0; }
 }
 
 .card {
@@ -43,7 +60,7 @@
   width: 280px;
 }
 
-/* Speech-bubble tail. arrowUp = card is below target, tail points up. */
+/* Speech-bubble tail. arrowUp = card sits below target, tail points up at it. */
 .arrowUp,
 .arrowDown {
   position: absolute;
@@ -61,23 +78,11 @@
   bottom: -6px;
 }
 
-.progress {
-  display: flex;
-  gap: 4px;
-  margin-bottom: 10px;
-}
-
-.dot {
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: var(--border);
-}
-
-.dotActive {
-  background: var(--accent);
-  width: 16px;
-  border-radius: 3px;
+.stepCount {
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: var(--text3);
+  margin-bottom: 8px;
 }
 
 .title {
@@ -113,3 +118,18 @@
 
 .skipBtn { color: var(--text3); }
 .doneBtn { color: var(--accent); }
+
+@media (prefers-reduced-motion: reduce) {
+  .blockStrip, .spotlightRing, .card {
+    transition: none !important;
+  }
+  .blockStrip {
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    background: rgba(0, 0, 0, 0.7);
+  }
+  .pulseRing {
+    animation: none;
+    box-shadow: 0 0 0 3px var(--accent);
+  }
+}
