@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { SkeletonTheme } from 'react-loading-skeleton'
 import { useAuth } from '../../contexts/AuthContext'
@@ -12,6 +12,7 @@ import { useGeneralSettings } from '../../contexts/GeneralSettingsContext'
 import { usePayments } from '../../contexts/PaymentContext'
 import { useProfileSettings } from '../../contexts/ProfileSettingsContext'
 import { useRevenueGoal } from '../../contexts/RevenueGoalContext'
+import { useTour } from '../../contexts/TourContext'
 import { APPOINTMENT_TYPE_ICONS } from '../../datas/appointmentDatas'
 import {
   getGreeting, getGreetingEmoji, getRandomSubtext, formatUpdatedTime,
@@ -110,6 +111,7 @@ function Dashboard({ onMenuClick, onGoToCustomer }) {
   const { allPayments }                                                   = usePayments()
   const { profileSettings, isLoading: profileLoading }                   = useProfileSettings()
   const { goal, derived, loading: goalLoading, saveGoal, removeGoal }    = useRevenueGoal()
+  const { startTour, hasCompletedTour, isActive: tourActive }             = useTour()
 
   const [isBannerDismissed, setIsBannerDismissed] = useState(loadNotificationDismissed)
   const [isGoalModalOpen,   setIsGoalModalOpen]   = useState(false)
@@ -121,6 +123,7 @@ function Dashboard({ onMenuClick, onGoToCustomer }) {
   const [toastMsg,          setToastMsg]          = useState('')
   const [openStatInfo,      setOpenStatInfo]      = useState(null)
   const toastTimer = useRef(null)
+  const autoTourAttemptedRef = useRef(false)
 
   const greetingTextRef  = useRef(getGreeting())
   const greetingEmojiRef = useRef(getGreetingEmoji())
@@ -155,6 +158,17 @@ function Dashboard({ onMenuClick, onGoToCustomer }) {
 
   const now      = new Date()
   const todayStr = now.toISOString().slice(0, 10)
+
+  useEffect(() => {
+    if (autoTourAttemptedRef.current) return
+    if (!customersReady || tourActive) return
+
+    autoTourAttemptedRef.current = true
+
+    if (customers.length === 0 && !hasCompletedTour('onboarding')) {
+      startTour('onboarding')
+    }
+  }, [customersReady, customers.length, tourActive, hasCompletedTour, startTour])
 
   function showToast(msg) {
     setToastMsg(msg)
@@ -375,10 +389,20 @@ function Dashboard({ onMenuClick, onGoToCustomer }) {
             </p>
             <h1 className={styles.title}>{displayName}</h1>
             <p className={styles.subtitle}>{subtitleTextRef.current}</p>
-            <p className={styles.updatedAt}>
-              <span className="mi" style={{ fontSize: '0.7rem', verticalAlign: 'middle', marginRight: '3px' }}>update</span>
-              Updated at {formatUpdatedTime(lastUpdatedRef.current)}
-            </p>
+            <div className={styles.updatedAtRow}>
+              <p className={styles.updatedAt}>
+                <span className="mi" style={{ fontSize: '0.7rem', verticalAlign: 'middle', marginRight: '3px' }}>update</span>
+                Updated at {formatUpdatedTime(lastUpdatedRef.current)}
+              </p>
+              <button
+                type="button"
+                className={styles.tourLink}
+                onClick={() => startTour('onboarding')}
+              >
+                <span className="mi" style={{ fontSize: '0.85rem', verticalAlign: 'middle', marginRight: '3px' }}>help_outline</span>
+                Take a quick tour
+              </button>
+            </div>
           </section>
 
           {showNotificationBanner && (
