@@ -30,7 +30,7 @@ export default function InvoiceTab({
   onReopenInvoiceHandled,
 }) {
   const { profileSettings } = useProfileSettings()
-  const { completeStep } = useTour()
+  const { completeStep, pauseTour, resumeTour } = useTour()
 
   const [viewingInvoice, setViewingInvoice] = useState(null)
   const [deleteTarget,   setDeleteTarget]   = useState(null)
@@ -50,6 +50,12 @@ export default function InvoiceTab({
     document.addEventListener('openAddInvoiceModal', openAddInvoiceModal)
     return () => document.removeEventListener('openAddInvoiceModal', openAddInvoiceModal)
   }, [])
+
+  useEffect(() => {
+    if (!addInvoiceModalOpen) return
+    pauseTour()
+    return () => resumeTour()
+  }, [addInvoiceModalOpen, pauseTour, resumeTour])
 
   useEffect(() => {
     if (!reopenInvoiceId) return
