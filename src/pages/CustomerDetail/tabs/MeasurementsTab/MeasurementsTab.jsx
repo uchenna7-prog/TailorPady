@@ -1,4 +1,5 @@
-import { useState, useEffect }           from 'react'
+import { useState, useEffect } from 'react'
+import { useTour } from '../../../../contexts/TourContext'
 import { EmptyState }                    from './components/EmptyState/EmptyState'
 import { MeasurementRow }                from './components/MeasurementRow/MeasurementRow'
 import { MeasurementDetailsModal }       from './components/MeasurementDetailsModal/MeasurementDetailsModal'
@@ -9,6 +10,8 @@ import ConfirmSheet                      from '../../../../components/ConfirmShe
 import styles                            from './MeasurementsTab.module.css'
 
 export default function MeasurementsTab({ measurements, loading, gender, onSave, onUpdate, onDelete, showToast }) {
+  const { completeStep, pauseTour, resumeTour } = useTour()
+
   const [isAddModalOpen,      setIsAddModalOpen]      = useState(false)
   const [selectedMeasurement, setSelectedMeasurement] = useState(null)
   const [measurementToDelete, setMeasurementToDelete] = useState(null)
@@ -19,10 +22,17 @@ export default function MeasurementsTab({ measurements, loading, gender, onSave,
     return () => document.removeEventListener('openAddMeasurementModal', handleOpenAddModal)
   }, [])
 
+  useEffect(() => {
+    if (!isAddModalOpen) return
+    pauseTour()
+    return () => resumeTour()
+  }, [isAddModalOpen, pauseTour, resumeTour])
+
   function handleSave(entry) {
     onSave(entry)
     showToast('Measurement saved ✓')
     setIsAddModalOpen(false)
+    completeStep('add-measurement')
   }
 
   function handleUpdate(measurementId, updatedData) {
