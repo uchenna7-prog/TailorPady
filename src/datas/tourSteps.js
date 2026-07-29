@@ -1,6 +1,14 @@
 export const TOURS = {
   onboarding: [
     {
+      id: 'welcome',
+      target: null,
+      manual: true,
+      ctaLabel: 'Start tour',
+      title: 'Welcome to TailorPady 👋',
+      message: "Let's walk through the core flow: Customer → Measurements → Order → Invoice → Payment → Receipt.",
+    },
+    {
       id: 'add-customer',
       route: '/customers',
       target: '[data-tour="add-customer-fab"]',
@@ -8,17 +16,28 @@ export const TOURS = {
       message: 'Every order starts with a customer profile. Tap the + button to add one.',
     },
     {
+      id: 'tap-new-customer',
+      target: '[data-tour="new-customer-row"]',
+      title: 'Open their profile',
+      message: 'Tap on the customer you just added to open their profile.',
+    },
+    {
+      id: 'add-measurement',
+      target: '[data-tour="detail-fab"]',
+      title: 'Add body measurements',
+      message: 'Tap + to record their measurements — this is what orders are built from.',
+    },
+    {
       id: 'goto-orders-tab',
-      route: 'CUSTOMER_DETAIL',
       target: '[data-tour="tab-orders"]',
-      title: 'Nice! Now add an order',
-      message: 'Tap the Orders tab to get started.',
+      title: 'Now place an order',
+      message: 'Tap the Orders tab.',
     },
     {
       id: 'add-order',
       target: '[data-tour="detail-fab"]',
       title: 'Add an order',
-      message: 'Tap the + button to create an order for this customer.',
+      message: 'Tap + to create an order using those measurements.',
     },
     {
       id: 'goto-invoices-tab',
@@ -60,7 +79,7 @@ export const TOURS = {
       id: 'done',
       target: null,
       title: "You're all set!",
-      message: 'You now know the full flow: Customer → Order → Invoice → Payment → Receipt.',
+      message: 'You now know the full flow: Customer → Measurements → Order → Invoice → Payment → Receipt.',
     },
   ],
 }
