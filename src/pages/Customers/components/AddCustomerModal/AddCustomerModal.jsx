@@ -290,11 +290,11 @@ export function AddCustomerModal({ isOpen, onClose, onSave }) {
       const builtPhone = buildPhoneNumber(localPhone, selectedCountry.cca2)
 
       if (localPhone.trim() && builtPhone === null) {
-        onSave({ name, phone: '__INVALID_PHONE__', phoneType, onWhatsApp, sex, birthday, email, address, notes, photo: photoUrl, photoPublicId, bodyMeasurements: allBody })
+        await onSave({ name, phone: '__INVALID_PHONE__', phoneType, onWhatsApp, sex, birthday, email, address, notes, photo: photoUrl, photoPublicId, bodyMeasurements: allBody })
         return
       }
 
-      onSave({ name, phone: builtPhone || '', phoneType, onWhatsApp, sex, birthday, email, address, notes, photo: photoUrl, photoPublicId, bodyMeasurements: allBody })
+      await onSave({ name, phone: builtPhone || '', phoneType, onWhatsApp, sex, birthday, email, address, notes, photo: photoUrl, photoPublicId, bodyMeasurements: allBody })
       resetForm()
       onClose()
     } finally {
@@ -319,7 +319,7 @@ export function AddCustomerModal({ isOpen, onClose, onSave }) {
       const birthday      = bdayMonth && bdayDay ? `${bdayMonth}-${bdayDay}` : ''
       const builtPhone    = buildPhoneNumber(localPhone, selectedCountry.cca2)
 
-      onSave({ name, phone: builtPhone || '', phoneType, onWhatsApp, sex, birthday, email, address, notes, photo: photoUrl, photoPublicId, bodyMeasurements: {} })
+      await onSave({ name, phone: builtPhone || '', phoneType, onWhatsApp, sex, birthday, email, address, notes, photo: photoUrl, photoPublicId, bodyMeasurements: {} })
       resetForm()
       onClose()
     } finally {
