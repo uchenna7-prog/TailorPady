@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { getCurrency } from '../../../../utils/moneyUtils'
 import { useProfileSettings } from '../../../../contexts/ProfileSettingsContext'
+import { useTour } from '../../../../contexts/TourContext'
 import { buildOrderItemsMap, groupInvoicesByDate } from './utils'
 import { EmptyState } from './components/EmptyState/EmptyState'
 import { InvoiceRow } from './components/InvoiceRow/InvoiceRow'
@@ -29,6 +30,7 @@ export default function InvoiceTab({
   onReopenInvoiceHandled,
 }) {
   const { profileSettings } = useProfileSettings()
+  const { completeStep } = useTour()
 
   const [viewingInvoice, setViewingInvoice] = useState(null)
   const [deleteTarget,   setDeleteTarget]   = useState(null)
@@ -92,6 +94,7 @@ export default function InvoiceTab({
         ? `${selectedOrders.length} invoices generated`
         : 'Invoice generated'
       )
+      completeStep('add-invoice')
     }
 
     setaddInvoiceModalOpen(false)
