@@ -15,7 +15,7 @@ export default function OrdersTab({ customerId, orders, loading, measurements, s
 
   const { addOrder } = useOrders()
   const { generalSettings } = useGeneralSettings()
-  const { completeStep } = useTour()
+  const { completeStep, pauseTour, resumeTour } = useTour()
 
   const taxEnabled = generalSettings.invoiceShowTax ?? false
   const taxRate    = generalSettings.invoiceTaxRate ?? 0
@@ -28,6 +28,12 @@ export default function OrdersTab({ customerId, orders, loading, measurements, s
     document.addEventListener('openAddOrderModal', openModal)
     return () => document.removeEventListener('openAddOrderModal', openModal)
   }, [])
+
+  useEffect(() => {
+    if (!isModalOpen) return
+    pauseTour()
+    return () => resumeTour()
+  }, [isModalOpen, pauseTour, resumeTour])
 
 
   async function handleSaveOrder(orderData) {
