@@ -14,6 +14,12 @@
   transition: top 0.25s ease, left 0.25s ease, width 0.25s ease, height 0.25s ease, bottom 0.25s ease, right 0.25s ease;
 }
 
+.blockStripHeavy {
+  background: rgba(0, 0, 0, 0.88);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+}
+
 .spotlightRing {
   position: fixed;
   pointer-events: none;
@@ -121,7 +127,10 @@
   .blockStrip {
     backdrop-filter: none;
     -webkit-backdrop-filter: none;
-    background: rgba(0, 0, 0, 0.8);
+    background: rgba(0, 0, 0, 0.85);
+  }
+  .blockStripHeavy {
+    background: rgba(0, 0, 0, 0.94);
   }
   .pulseRing {
     animation: none;
