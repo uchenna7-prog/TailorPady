@@ -154,7 +154,7 @@ export default function OnboardingTour() {
 
         {currentStep.count && (
           <div className={styles.stepCount}>
-            {currentStep.count.current} / {currentStep.count.total}
+            {currentStep.phase} · Step {currentStep.count.current} of {currentStep.count.total}
           </div>
         )}
 
