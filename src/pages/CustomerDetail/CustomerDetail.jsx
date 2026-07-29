@@ -5,6 +5,7 @@ import { useOrders }                                from '../../contexts/OrdersC
 import { useCustomerData }                          from '../../hooks/useCustomerData'
 import { useInvoiceActions }                        from '../../hooks/useInvoiceActions'
 import { useReceiptActions }                        from '../../hooks/useReceiptActions'
+import { useTour }                                  from '../../contexts/TourContext'
 import { formatMoney }                              from '../../utils/moneyUtils'
 import { getInitials }                              from '../../utils/nameUtils'
 import { getBirthday, formatLastOrderDate }         from './utils'
@@ -23,6 +24,14 @@ import ReceiptsTab                                  from './tabs/ReceiptsTab/Rec
 import styles                                       from './CustomerDetail.module.css'
 
 
+const TAB_TOUR_STEP_IDS = {
+  orders:   'goto-orders-tab',
+  invoices: 'goto-invoices-tab',
+  payments: 'goto-payments-tab',
+  receipts: 'goto-receipts-tab',
+}
+
+
 function prevTabIdToDirection(currentTabId, nextTabId) {
   const currentIdx = TAB_IDS.indexOf(currentTabId)
   const nextIdx    = TAB_IDS.indexOf(nextTabId)
@@ -36,6 +45,7 @@ export default function CustomerDetail({ onMenuClick }) {
   const { id }       = useParams()
   const navigate     = useNavigate()
   const location     = useLocation()
+  const { completeStep } = useTour()
 
   const { getCustomer, updateCustomer, deleteCustomerAndAllData } = useCustomers()
   const { allOrders }  = useOrders()
@@ -222,6 +232,11 @@ export default function CustomerDetail({ onMenuClick }) {
     }
   }, [])
 
+  const goToTab = useCallback((tabId) => {
+    const tourStepId = TAB_TOUR_STEP_IDS[tabId]
+    if (tourStepId) completeStep(tourStepId)
+  }, [completeStep])
+
   const handleTabStripTouchStart = useCallback((e) => {
     e.stopPropagation()
     clearTimeout(tabStripCooldownRef.current)
@@ -258,17 +273,19 @@ export default function CustomerDetail({ onMenuClick }) {
       setSlideDirection(prevTabIdToDirection(activeTab, tabId))
       setActiveTab(tabId)
       scrollTabIntoView(tabId)
+      goToTab(tabId)
       setTimeout(() => setSlideDirection(null), 260)
     }, 60)
-  }, [scrollTabIntoView, activeTab])
+  }, [scrollTabIntoView, activeTab, goToTab])
 
   const handleTabClick = useCallback((tabId) => {
     if (tabStripDragged.current) return
     setSlideDirection(prevTabIdToDirection(activeTab, tabId))
     setActiveTab(tabId)
     scrollTabIntoView(tabId)
+    goToTab(tabId)
     setTimeout(() => setSlideDirection(null), 260)
-  }, [scrollTabIntoView, activeTab])
+  }, [scrollTabIntoView, activeTab, goToTab])
 
   const handleTouchStart = useCallback((e) => {
     touchStartX.current = e.touches[0].clientX
@@ -322,6 +339,7 @@ export default function CustomerDetail({ onMenuClick }) {
         setSlideDirection(isSwipeLeft ? 'left' : 'right')
         setActiveTab(nextTabId)
         scrollTabIntoView(nextTabId)
+        goToTab(nextTabId)
         setTimeout(() => setSlideDirection(null), 260)
       }
     }
@@ -330,7 +348,7 @@ export default function CustomerDetail({ onMenuClick }) {
     isDraggingRef.current = false
     touchStartX.current = null
     touchStartY.current = null
-  }, [activeTab, scrollTabIntoView])
+  }, [activeTab, scrollTabIntoView, goToTab])
 
   const handleFabClick = useCallback(() => {
     const eventName = TAB_MODAL_EVENTS[activeTab]
@@ -620,6 +638,7 @@ export default function CustomerDetail({ onMenuClick }) {
               className={`${styles.tab} ${activeTab === tab.id ? styles.active : ''}`}
               onClick={() => handleTabClick(tab.id)}
               onTouchEnd={e => handleTabTouchEnd(e, tab.id)}
+              data-tour={`tab-${tab.id}`}
             >
               <span>{tab.label}</span>
               {tabItemCounts[tab.id] > 0 && (
@@ -732,7 +751,7 @@ export default function CustomerDetail({ onMenuClick }) {
         )}
       </div>
 
-      <button className={styles.fab} onClick={handleFabClick}>
+      <button className={styles.fab} onClick={handleFabClick} data-tour="detail-fab">
         <span className="mi">add</span>
       </button>
 
