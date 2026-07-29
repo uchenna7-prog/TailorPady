@@ -1,4 +1,5 @@
-import { useState, useRef } from 'react'
+
+import { useState, useRef, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useCustomers } from '../../contexts/CustomerContext'
 import { usePremium } from '../../contexts/PremiumContext'
@@ -18,7 +19,7 @@ export default function Customers({ onMenuClick }) {
   const navigate = useNavigate()
   const {customers, addCustomer,deleteCustomerAndAllData } = useCustomers()
   const { isPremium } = usePremium()
-  const { completeStep } = useTour()
+  const { completeStep, pendingCustomerId, currentStep, pauseTour, resumeTour } = useTour()
   const [deleteConfirmModalOpen, setDeleteConfirmModalOpen] = useState(false)
   const [query,        setQuery]        = useState('')
   const [formOpen,     setFormOpen]     = useState(false)
@@ -27,6 +28,12 @@ export default function Customers({ onMenuClick }) {
   const [sortMode,     setSortMode]     = useState('date')
   const [filterOpen,   setFilterOpen]   = useState(false)
   const toastTimer = useRef(null)
+
+  useEffect(() => {
+    if (!formOpen) return
+    pauseTour()
+    return () => resumeTour()
+  }, [formOpen, pauseTour, resumeTour])
 
   const showToast = (msg) => {
     setToastMsg(msg)
@@ -149,6 +156,13 @@ export default function Customers({ onMenuClick }) {
     setFilterOpen(false)
   }
 
+  function handleOpenCustomer(c) {
+    if (currentStep?.id === 'tap-new-customer' && String(c.id) === String(pendingCustomerId)) {
+      completeStep('tap-new-customer')
+    }
+    navigate(`/customers/${c.id}`)
+  }
+
   return (
     <div className={styles.page}>
       <Header onMenuClick={onMenuClick} />
@@ -222,16 +236,20 @@ export default function Customers({ onMenuClick }) {
             <div className={styles.custGroupDivider} />
 
             {groupCustomers.map((c, idx) => (
-              <CustomerRow
+              <div
                 key={c.id}
-                customer={c}
-                isLast={idx === groupCustomers.length - 1}
-                onOpen={() => navigate(`/customers/${c.id}`)}
-                onDelete={(cust) => {
-                  setDeleteTarget(cust)
-                  setDeleteConfirmModalOpen(true)
-                }}
-              />
+                data-tour={String(c.id) === String(pendingCustomerId) ? 'new-customer-row' : undefined}
+              >
+                <CustomerRow
+                  customer={c}
+                  isLast={idx === groupCustomers.length - 1}
+                  onOpen={() => handleOpenCustomer(c)}
+                  onDelete={(cust) => {
+                    setDeleteTarget(cust)
+                    setDeleteConfirmModalOpen(true)
+                  }}
+                />
+              </div>
             ))}
           </div>
         ))}
