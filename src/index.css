@@ -1,4 +1,3 @@
-
 @font-face {
   font-family: 'Onest';
   src: url('/fonts/Onest-Variable.woff2') format('woff2');
@@ -6,7 +5,6 @@
   font-style: normal;
   font-display: swap;
 }
-
 
 @font-face {
   font-family: 'Material Icons';
@@ -50,6 +48,7 @@
 
   --accent: #09090b;
   --accent-hover: #18181b;
+  --accent-rgb: 9, 9, 11;
 
   --danger: #dc2626;
   --danger-soft: #fef2f2;
@@ -61,8 +60,6 @@
   --alert-soft: #fff7ed;
   --info: #2563eb;
   --info-soft: #eff6ff;
-
-
 
   --sidebar-width: 280px;
 
@@ -95,14 +92,13 @@
   --border: #1f1f1f;
   --border2: #2a2a2a;
   --accent: #ffffff;
+  --accent-rgb: 255, 255, 255;
   --text: #ffffff;
   --text2: #a0a0a0;
   --text3: #555555;
   --danger: #ff4d4d;
   --success: #22c55e;
   --warning: #fb923c;
-
-
 
   --icon-color: #ffffff;
 
