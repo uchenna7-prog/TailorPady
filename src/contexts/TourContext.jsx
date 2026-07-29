@@ -34,30 +34,31 @@ export function TourProvider({ children }) {
   const steps       = activeTourId ? TOURS[activeTourId] : null
   const currentStep = steps ? steps[stepIndex] : null
 
-  const finishTour = useCallback(() => {
-    if (activeTourId) {
-      setCompletedTours(prev => {
-        const next = { ...prev, [activeTourId]: true }
-        saveCompletedTours(next)
-        return next
-      })
-    }
-    setActiveTourId(null)
-    setStepIndex(0)
-    setPendingCustomerId(null)
-    setPaused(false)
-    pauseCountRef.current = 0
-  }, [activeTourId])
+  const markCompleted = useCallback((tourId) => {
+    setCompletedTours(prev => {
+      const next = { ...prev, [tourId]: true }
+      saveCompletedTours(next)
+      return next
+    })
+  }, [])
 
-  const startTour = useCallback((tourId) => {
-    const tourSteps = TOURS[tourId]
-    if (!tourSteps) return
+  const resetTourState = useCallback((tourId, index = 0) => {
     setActiveTourId(tourId)
-    setStepIndex(0)
+    setStepIndex(index)
     setPendingCustomerId(null)
     setPaused(false)
     pauseCountRef.current = 0
   }, [])
+
+  const finishTour = useCallback(() => {
+    if (activeTourId) markCompleted(activeTourId)
+    resetTourState(null)
+  }, [activeTourId, markCompleted, resetTourState])
+
+  const startTour = useCallback((tourId) => {
+    if (!TOURS[tourId]) return
+    resetTourState(tourId, 0)
+  }, [resetTourState])
 
   const skipTour = useCallback(() => {
     finishTour()
@@ -86,8 +87,19 @@ export function TourProvider({ children }) {
     advanceTo(stepIndex + 1)
   }, [currentStep, stepIndex, advanceTo])
 
+  const resolveConfirm = useCallback((stepId, outcome) => {
+    if (!currentStep || currentStep.id !== stepId || currentStep.type !== 'confirm') return
+    const finishedTourId = activeTourId
+    if (finishedTourId) markCompleted(finishedTourId)
+
+    if (outcome === 'yes' && currentStep.onYesStartTour) {
+      resetTourState(currentStep.onYesStartTour, 0)
+    } else {
+      resetTourState(null)
+    }
+  }, [currentStep, activeTourId, markCompleted, resetTourState])
+
   // Any modal can call pauseTour() on open / resumeTour() on close.
-  // Counter-based so overlapping modals don't fight each other.
   const pauseTour = useCallback(() => {
     pauseCountRef.current += 1
     setPaused(true)
@@ -111,6 +123,7 @@ export function TourProvider({ children }) {
     finishTour,
     completeStep,
     advanceManual,
+    resolveConfirm,
     pauseTour,
     resumeTour,
   }
