@@ -4,6 +4,7 @@ import styles from './OnboardingTour.module.css'
 
 const PAD = 8
 const TARGET_TIMEOUT_MS = 2500
+const CARD_WIDTH = 260
 
 export default function OnboardingTour() {
   const {
@@ -34,28 +35,22 @@ export default function OnboardingTour() {
 
   useEffect(() => {
     if (!isActive) return
-
     function loop() {
       measure()
       rafRef.current = requestAnimationFrame(loop)
     }
     loop()
-
     return () => cancelAnimationFrame(rafRef.current)
   }, [isActive, measure])
 
-  // If a step needs a real target and it never shows up (permission already
-  // granted, install unavailable, etc.), skip past it instead of getting stuck.
   useEffect(() => {
     if (!isActive || !currentStep?.target) return
-
     let cancelled = false
     const timer = setTimeout(() => {
       if (cancelled) return
       const el = document.querySelector(currentStep.target)
       if (!el) skipCurrentStep()
     }, TARGET_TIMEOUT_MS)
-
     return () => {
       cancelled = true
       clearTimeout(timer)
@@ -64,38 +59,54 @@ export default function OnboardingTour() {
 
   if (!isActive || !currentStep) return null
 
-  const isLastStep  = stepIndex === totalSteps - 1
+  const isLastStep = stepIndex === totalSteps - 1
   const hasTarget   = !!rect
   const isConfirm   = currentStep.type === 'confirm'
 
-  const tooltipPos = hasTarget
-    ? (() => {
-        const spaceBelow = window.innerHeight - (rect.top + rect.height)
-        const placeBelow = spaceBelow > 170
-        const top  = placeBelow ? rect.top + rect.height + 12 : Math.max(12, rect.top - 160)
-        const left = Math.min(Math.max(12, rect.left), window.innerWidth - 272)
-        return { top, left }
-      })()
-    : null
+  let tooltipPos = null
+  let placeBelow = true
+  let arrowLeft = null
+
+  if (hasTarget) {
+    const spaceBelow = window.innerHeight - (rect.top + rect.height)
+    placeBelow = spaceBelow > 170
+    const top  = placeBelow ? rect.top + rect.height + 14 : Math.max(12, rect.top - 162)
+    const rawLeft = Math.min(Math.max(12, rect.left), window.innerWidth - CARD_WIDTH - 12)
+    tooltipPos = { top, left: rawLeft }
+
+    // Arrow points at the horizontal center of the target, clamped inside the card
+    const targetCenter = rect.left + rect.width / 2
+    arrowLeft = Math.min(Math.max(targetCenter - rawLeft, 20), CARD_WIDTH - 20)
+  }
 
   return (
     <div className={styles.overlayRoot}>
-      <div
-        className={styles.dimLayer}
-        style={hasTarget ? {
-          top: rect.top, left: rect.left, width: rect.width, height: rect.height,
-          borderRadius: 14,
-          boxShadow: '0 0 0 9999px rgba(0,0,0,0.65)',
-        } : {
-          top: 0, left: 0, width: '100%', height: '100%',
-          background: 'rgba(0,0,0,0.65)',
-        }}
-      />
+      {hasTarget ? (
+        <>
+          <div className={styles.blockStrip} style={{ top: 0, left: 0, right: 0, height: rect.top }} />
+          <div className={styles.blockStrip} style={{ top: rect.top + rect.height, left: 0, right: 0, bottom: 0 }} />
+          <div className={styles.blockStrip} style={{ top: rect.top, left: 0, width: rect.left, height: rect.height }} />
+          <div className={styles.blockStrip} style={{ top: rect.top, left: rect.left + rect.width, right: 0, height: rect.height }} />
+          <div
+            className={styles.spotlightRing}
+            style={{ top: rect.top, left: rect.left, width: rect.width, height: rect.height }}
+          />
+        </>
+      ) : (
+        <div className={styles.blockStrip} style={{ top: 0, left: 0, right: 0, bottom: 0 }} />
+      )}
 
       <div
         className={`${styles.card} ${!hasTarget ? styles.cardCentered : ''}`}
         style={hasTarget ? { top: tooltipPos.top, left: tooltipPos.left } : undefined}
       >
+        {hasTarget && (
+          <div
+            className={placeBelow ? styles.arrowUp : styles.arrowDown}
+            style={{ left: arrowLeft }}
+          />
+        )}
+
         <div className={styles.progress}>
           {Array.from({ length: totalSteps }).map((_, i) => (
             <span key={i} className={`${styles.dot} ${i === stepIndex ? styles.dotActive : ''}`} />
