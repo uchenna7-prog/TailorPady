@@ -1,16 +1,45 @@
+export const TRACKS = [
+  { id: 'permissions',  label: 'Turn on notifications & install the app', available: true  },
+  { id: 'customerFlow', label: 'Add your first customer',                 available: true  },
+  { id: 'portfolio',    label: 'Set up your portfolio',                   available: false },
+  { id: 'firstTask',    label: 'Add your first task',                     available: false },
+]
+
 export const TOURS = {
-  onboarding: [
+  permissions: [
     {
-      id: 'welcome',
+      id: 'enable-notifications',
+      target: '[data-tour="enable-notifications-btn"]',
+      title: 'Turn on notifications',
+      message: "Tap here so you never miss an appointment or due date.",
+    },
+    {
+      id: 'install-app',
+      target: '[data-tour="install-app-btn"]',
+      title: 'Install the app',
+      message: 'Tap here to install TailorPady on your device and use it offline.',
+    },
+    {
+      id: 'confirm-start-customer',
+      type: 'confirm',
       target: null,
-      manual: true,
-      ctaLabel: 'Start tour',
-      title: 'Welcome to TailorPady 👋',
-      message: "Let's walk through the core flow: Customer → Measurements → Order → Invoice → Payment → Receipt.",
+      title: 'Ready to add your first customer?',
+      message: "We'll walk through adding a customer, their measurements, an order, invoice, payment and receipt.",
+      yesLabel: "Let's go",
+      noLabel: 'Maybe later',
+      onYesStartTour: 'customerFlow',
+    },
+  ],
+
+  customerFlow: [
+    {
+      id: 'goto-customers-nav',
+      target: '[data-tour="nav-customers"]',
+      title: 'Go to Customers',
+      message: 'Tap Customers in the bottom navigation.',
     },
     {
       id: 'add-customer',
-      route: '/customers',
       target: '[data-tour="add-customer-fab"]',
       title: 'Add your first customer',
       message: 'Every order starts with a customer profile. Tap the + button to add one.',
@@ -82,4 +111,8 @@ export const TOURS = {
       message: 'You now know the full flow: Customer → Measurements → Order → Invoice → Payment → Receipt.',
     },
   ],
+
+  // Built later, once Portfolio and Tasks pages are shared.
+  portfolio: [],
+  firstTask: [],
 }
