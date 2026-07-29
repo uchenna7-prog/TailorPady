@@ -404,10 +404,20 @@ function Dashboard({ onMenuClick, onGoToCustomer }) {
             </p>
             <h1 className={styles.title}>{displayName}</h1>
             <p className={styles.subtitle}>{subtitleTextRef.current}</p>
-            <p className={styles.updatedAt}>
-              <span className="mi" style={{ fontSize: '0.7rem', verticalAlign: 'middle', marginRight: '3px' }}>update</span>
-              Updated at {formatUpdatedTime(lastUpdatedRef.current)}
-            </p>
+            <div className={styles.updatedAtRow}>
+              <p className={styles.updatedAt}>
+                <span className="mi" style={{ fontSize: '0.7rem', verticalAlign: 'middle', marginRight: '3px' }}>update</span>
+                Updated at {formatUpdatedTime(lastUpdatedRef.current)}
+              </p>
+              <button
+                type="button"
+                className={styles.tourLink}
+                onClick={() => startTour('onboarding')}
+              >
+                <span className="mi" style={{ fontSize: '0.85rem', verticalAlign: 'middle', marginRight: '3px' }}>help_outline</span>
+                Take a tour
+              </button>
+            </div>
           </section>
 
           {showNotificationBanner && (
