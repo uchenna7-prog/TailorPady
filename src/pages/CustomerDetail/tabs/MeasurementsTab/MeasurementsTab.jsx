@@ -1,24 +1,22 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect } from 'react'
 import { useTour } from '../../../../contexts/TourContext'
-import { useFirstItemHint } from '../../../../hooks/useFirstItemHint'
-import { FirstItemHint } from '../../../../components/FirstItemHint/FirstItemHint'
-import { EmptyState }                    from './components/EmptyState/EmptyState'
-import { MeasurementRow }                from './components/MeasurementRow/MeasurementRow'
-import { MeasurementDetailsModal }       from './components/MeasurementDetailsModal/MeasurementDetailsModal'
-import { MeasurementRowSkeleton }        from './components/MeasurementRowSkeleton/MeasurementRowSkeleton'
-import { AddMeasurementModal }           from './components/AddMeasurementModal/AddMeasurementModal'
-import { groupMeasurementsByDate }       from './utils'
-import ConfirmSheet                      from '../../../../components/ConfirmSheet/ConfirmSheet'
-import styles                            from './MeasurementsTab.module.css'
+import { EmptyState } from './components/EmptyState/EmptyState'
+import { MeasurementRow } from './components/MeasurementRow/MeasurementRow'
+import { MeasurementDetailsModal } from './components/MeasurementDetailsModal/MeasurementDetailsModal'
+import { MeasurementRowSkeleton } from './components/MeasurementRowSkeleton/MeasurementRowSkeleton'
+import { AddMeasurementModal } from './components/AddMeasurementModal/AddMeasurementModal'
+import { groupMeasurementsByDate } from './utils'
+import ConfirmSheet from '../../../../components/ConfirmSheet/ConfirmSheet'
+import styles from './MeasurementsTab.module.css'
 
 export default function MeasurementsTab({ measurements, loading, gender, onSave, onUpdate, onDelete, showToast }) {
   const { completeStep, pauseTour, resumeTour } = useTour()
-  const [hintSeen, markHintSeen] = useFirstItemHint('measurement')
-  const firstRowRef = useRef(null)
 
   const [isAddModalOpen,      setIsAddModalOpen]      = useState(false)
   const [selectedMeasurement, setSelectedMeasurement] = useState(null)
   const [measurementToDelete, setMeasurementToDelete] = useState(null)
+  const [pendingViewId,       setPendingViewId]       = useState(null)
+  const [awaitingView,        setAwaitingView]        = useState(false)
 
   useEffect(() => {
     const handleOpenAddModal = () => setIsAddModalOpen(true)
@@ -32,11 +30,38 @@ export default function MeasurementsTab({ measurements, loading, gender, onSave,
     return () => resumeTour()
   }, [isAddModalOpen, pauseTour, resumeTour])
 
-  function handleSave(entry) {
-    onSave(entry)
-    showToast('Measurement saved ✓')
-    setIsAddModalOpen(false)
-    completeStep('add-measurement')
+  useEffect(() => {
+    const handler = () => setAwaitingView(true)
+    document.addEventListener('tourViewMeasurement', handler)
+    return () => document.removeEventListener('tourViewMeasurement', handler)
+  }, [])
+
+  useEffect(() => {
+    if (!awaitingView || !pendingViewId) return
+    const match = measurements.find(m => String(m.id) === pendingViewId)
+    if (match) {
+      setSelectedMeasurement(match)
+      setAwaitingView(false)
+      setPendingViewId(null)
+    }
+  }, [awaitingView, pendingViewId, measurements])
+
+  useEffect(() => {
+    if (!selectedMeasurement) return
+    pauseTour()
+    return () => resumeTour()
+  }, [selectedMeasurement, pauseTour, resumeTour])
+
+  async function handleSave(entry) {
+    try {
+      const newId = await onSave(entry)
+      showToast('Measurement saved ✓')
+      setIsAddModalOpen(false)
+      completeStep('add-measurement')
+      if (newId) setPendingViewId(String(newId))
+    } catch {
+      showToast('Failed to save measurement.')
+    }
   }
 
   function handleUpdate(measurementId, updatedData) {
@@ -74,8 +99,6 @@ export default function MeasurementsTab({ measurements, loading, gender, onSave,
   }
 
   const measurementsByDate = groupMeasurementsByDate(measurements)
-  const showFirstItemHint  = measurements.length === 1 && !hintSeen
-  let renderedFirstRow = false
 
   return (
     <div>
@@ -86,21 +109,16 @@ export default function MeasurementsTab({ measurements, loading, gender, onSave,
           <div key={date} className={styles.measurementGroup}>
             <div className={styles.measurementGroupDate}>{date}</div>
             <div className={styles.measurementGroupDivider} />
-            {measurementsInGroup.map((measurement, index) => {
-              const isFirstOverall = showFirstItemHint && !renderedFirstRow
-              if (isFirstOverall) renderedFirstRow = true
-              return (
-                <div key={measurement.id ?? index} ref={isFirstOverall ? firstRowRef : undefined}>
-                  <MeasurementRow
-                    measurement={measurement}
-                    measurementsInGroup={measurementsInGroup}
-                    index={index}
-                    onTap={handleCardTap}
-                    onDelete={handleRequestDelete}
-                  />
-                </div>
-              )
-            })}
+            {measurementsInGroup.map((measurement, index) => (
+              <MeasurementRow
+                key={measurement.id ?? index}
+                measurement={measurement}
+                measurementsInGroup={measurementsInGroup}
+                index={index}
+                onTap={handleCardTap}
+                onDelete={handleRequestDelete}
+              />
+            ))}
           </div>
         ))
       )}
@@ -128,14 +146,6 @@ export default function MeasurementsTab({ measurements, loading, gender, onSave,
         onConfirm={handleDeleteConfirm}
         onCancel={handleDeleteCancel}
       />
-
-      {showFirstItemHint && (
-        <FirstItemHint
-          targetRef={firstRowRef}
-          message="Tap to view details"
-          onDismiss={markHintSeen}
-        />
-      )}
     </div>
   )
 }
