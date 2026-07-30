@@ -2,7 +2,7 @@ import { useEffect, useRef, useState, useCallback } from 'react'
 import { useTour } from '../../contexts/TourContext'
 import styles from './OnboardingTour.module.css'
 
-const PAD = 8
+const PAD = 5
 const CARD_GAP = 22
 const CARD_WIDTH = 260
 const CARD_HEIGHT_ESTIMATE = 170
@@ -26,14 +26,12 @@ export default function OnboardingTour() {
       setRect(prev => (prev === null ? prev : null))
       return
     }
-    const padX = currentStep.padX ?? PAD
-    const padY = currentStep.padY ?? PAD
     const r = el.getBoundingClientRect()
     const next = {
-      top: r.top - padY,
-      left: r.left - padX,
-      width: r.width + padX * 2,
-      height: r.height + padY * 2,
+      top: r.top - PAD,
+      left: r.left - PAD,
+      width: r.width + PAD * 2,
+      height: r.height + PAD * 2,
     }
     setRect(prev => {
       if (
@@ -155,6 +153,18 @@ export default function OnboardingTour() {
           />
         )}
 
+        <button
+          type="button"
+          className={styles.closeBtn}
+          onClick={skipTour}
+          aria-label="Skip tour"
+        >
+          <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round">
+            <line x1="4" y1="4" x2="20" y2="20" />
+            <line x1="20" y1="4" x2="4" y2="20" />
+          </svg>
+        </button>
+
         {currentStep.count && (
           <div className={styles.stepCount}>
             {currentStep.phase} · Step {currentStep.count.current} of {currentStep.count.total}
@@ -165,40 +175,32 @@ export default function OnboardingTour() {
         <p className={styles.message}>{currentStep.message}</p>
 
         {isBranch ? (
-          <div className={styles.actionsBranch}>
-            <button className={styles.skipBtn} onClick={skipTour}>Skip tour</button>
-            <div className={styles.branchButtons}>
-              <button className={styles.skipBtn} onClick={() => resolveBranch(currentStep.id, 'view')}>
-                {currentStep.viewLabel}
-              </button>
-              <button className={styles.doneBtn} onClick={() => resolveBranch(currentStep.id, 'continue')}>
-                {currentStep.continueLabel}
-              </button>
-            </div>
+          <div className={styles.branchButtons}>
+            <button className={styles.skipBtn} onClick={() => resolveBranch(currentStep.id, 'view')}>
+              {currentStep.viewLabel}
+            </button>
+            <button className={styles.doneBtn} onClick={() => resolveBranch(currentStep.id, 'continue')}>
+              {currentStep.continueLabel}
+            </button>
           </div>
-        ) : (
+        ) : isConfirm ? (
           <div className={styles.actions}>
-            {isConfirm ? (
-              <>
-                <button className={styles.skipBtn} onClick={() => resolveConfirm(currentStep.id, 'no')}>
-                  {currentStep.noLabel || 'Not now'}
-                </button>
-                <button className={styles.doneBtn} onClick={() => resolveConfirm(currentStep.id, 'yes')}>
-                  {currentStep.yesLabel || 'Yes'}
-                </button>
-              </>
-            ) : currentStep.manual ? (
-              <>
-                <button className={styles.skipBtn} onClick={skipTour}>Skip</button>
-                <button className={styles.doneBtn} onClick={advanceManual}>{currentStep.ctaLabel || 'Next'}</button>
-              </>
-            ) : isLastStep ? (
-              <button className={styles.doneBtn} onClick={finishTour}>Got it</button>
-            ) : (
-              <button className={styles.skipBtn} onClick={skipTour}>Skip tour</button>
-            )}
+            <button className={styles.skipBtn} onClick={() => resolveConfirm(currentStep.id, 'no')}>
+              {currentStep.noLabel || 'Not now'}
+            </button>
+            <button className={styles.doneBtn} onClick={() => resolveConfirm(currentStep.id, 'yes')}>
+              {currentStep.yesLabel || 'Yes'}
+            </button>
           </div>
-        )}
+        ) : currentStep.manual ? (
+          <div className={styles.actions}>
+            <button className={styles.doneBtn} onClick={advanceManual}>{currentStep.ctaLabel || 'Next'}</button>
+          </div>
+        ) : isLastStep ? (
+          <div className={styles.actions}>
+            <button className={styles.doneBtn} onClick={finishTour}>Got it</button>
+          </div>
+        ) : null}
       </div>
     </div>
   )
