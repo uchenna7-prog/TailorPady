@@ -2,8 +2,6 @@ import { useState, useEffect, useRef } from 'react'
 import { getCurrency } from '../../../../utils/moneyUtils'
 import { useProfileSettings } from '../../../../contexts/ProfileSettingsContext'
 import { useTour } from '../../../../contexts/TourContext'
-import { useFirstItemHint } from '../../../../hooks/useFirstItemHint'
-import { FirstItemHint } from '../../../../components/FirstItemHint/FirstItemHint'
 import { buildOrderItemsMap, groupInvoicesByDate } from './utils'
 import { EmptyState } from './components/EmptyState/EmptyState'
 import { InvoiceRow } from './components/InvoiceRow/InvoiceRow'
@@ -33,8 +31,6 @@ export default function InvoiceTab({
 }) {
   const { profileSettings } = useProfileSettings()
   const { completeStep, pauseTour, resumeTour } = useTour()
-  const [hintSeen, markHintSeen] = useFirstItemHint('invoice')
-  const firstRowRef = useRef(null)
 
   const [viewingInvoice, setViewingInvoice] = useState(null)
   const [deleteTarget,   setDeleteTarget]   = useState(null)
@@ -60,6 +56,12 @@ export default function InvoiceTab({
     pauseTour()
     return () => resumeTour()
   }, [addInvoiceModalOpen, pauseTour, resumeTour])
+
+  useEffect(() => {
+    if (!viewingInvoice) return
+    pauseTour()
+    return () => resumeTour()
+  }, [viewingInvoice, pauseTour, resumeTour])
 
   useEffect(() => {
     if (!reopenInvoiceId) return
@@ -162,9 +164,6 @@ export default function InvoiceTab({
     )
   }
 
-  const showFirstItemHint = invoices.length === 1 && !hintSeen
-  let renderedFirstRow = false
-
   return (
     <div className={styles.tabContent}>
       {Object.entries(groupedByDate).map(([date, dateInvoices]) => (
@@ -172,21 +171,16 @@ export default function InvoiceTab({
           <div className={styles.dateGroupLabel}>{date}</div>
           <div className={styles.dateGroupDivider} />
 
-          {dateInvoices.map((invoice, index) => {
-            const isFirstOverall = showFirstItemHint && !renderedFirstRow
-            if (isFirstOverall) renderedFirstRow = true
-            return (
-              <div key={invoice.id} ref={isFirstOverall ? firstRowRef : undefined}>
-                <InvoiceRow
-                  invoice={invoice}
-                  currency={currency}
-                  isLast={index === dateInvoices.length - 1}
-                  onTap={() => setViewingInvoice(invoice)}
-                  orderItems={orderItemsMap[invoice.orderId] ?? []}
-                />
-              </div>
-            )
-          })}
+          {dateInvoices.map((invoice, index) => (
+            <InvoiceRow
+              key={invoice.id}
+              invoice={invoice}
+              currency={currency}
+              isLast={index === dateInvoices.length - 1}
+              onTap={() => setViewingInvoice(invoice)}
+              orderItems={orderItemsMap[invoice.orderId] ?? []}
+            />
+          ))}
         </div>
       ))}
 
@@ -231,14 +225,6 @@ export default function InvoiceTab({
         onConfirm={handleConfirmDelete}
         onCancel={() => setDeleteTarget(null)}
       />
-
-      {showFirstItemHint && (
-        <FirstItemHint
-          targetRef={firstRowRef}
-          message="Tap to view details"
-          onDismiss={markHintSeen}
-        />
-      )}
     </div>
   )
 }
