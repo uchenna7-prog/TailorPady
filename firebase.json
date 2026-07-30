@@ -13,6 +13,8 @@
       "**/node_modules/**"
     ],
     "rewrites": [
+      { "source": "/sitemap.xml",  "destination": "/sitemap.xml" },
+      { "source": "/robots.txt",   "destination": "/robots.txt" },
       { "source": "/portfolio/**", "destination": "/index.html" },
       { "source": "/review/**",    "destination": "/index.html" },
       { "source": "/faq",          "destination": "/index.html" },
