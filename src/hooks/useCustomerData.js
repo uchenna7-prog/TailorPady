@@ -39,6 +39,11 @@ import {
 } from '../services/receiptService'
 
 
+function makeTempId() {
+  return `temp-${Date.now()}-${Math.random().toString(36).slice(2)}`
+}
+
+
 export function useCustomerData(customerId) {
   const { user } = useAuth()
 
@@ -115,11 +120,18 @@ export function useCustomerData(customerId) {
   }, [user, customerId])
 
 
+  const addMeasurementOptimistic = useCallback((measurement) => {
+    setMeasurements(prev => [measurement, ...prev])
+  }, [])
+
   const saveMeasurement = useCallback(async (entry) => {
-    if (!user || !customerId) return
+    if (!user || !customerId) return null
     const { id: _, ...data } = entry
-    await addMeasurementToDb(user.uid, customerId, data)
-  }, [user, customerId])
+    const tempId = makeTempId()
+    addMeasurementOptimistic({ id: tempId, ...data })
+    addMeasurementToDb(user.uid, customerId, data).catch(() => {})
+    return tempId
+  }, [user, customerId, addMeasurementOptimistic])
 
   const updateMeasurement = useCallback(async (measurementId, data) => {
     if (!user || !customerId) return
@@ -190,10 +202,17 @@ export function useCustomerData(customerId) {
   }, [user])
 
 
+  const addPaymentOptimistic = useCallback((payment) => {
+    setPayments(prev => [payment, ...prev])
+  }, [])
+
   const savePayment = useCallback(async (data) => {
-    if (!user || !customerId) return
-    await fsCreatePayment(user.uid, customerId, data)
-  }, [user, customerId])
+    if (!user || !customerId) return null
+    const tempId = makeTempId()
+    addPaymentOptimistic({ id: tempId, customerId, ...data })
+    fsCreatePayment(user.uid, customerId, data).catch(() => {})
+    return tempId
+  }, [user, customerId, addPaymentOptimistic])
 
   const updatePayment = useCallback(async (paymentId, data) => {
     if (!user) return
@@ -241,6 +260,7 @@ export function useCustomerData(customerId) {
     payments,      paymentsLoading,
     receipts,      receiptsLoading,
 
+    addMeasurementOptimistic,
     saveMeasurement,
     updateMeasurement,
     deleteMeasurement,
@@ -256,6 +276,7 @@ export function useCustomerData(customerId) {
     updateInvoiceColour,
     deleteInvoice,
 
+    addPaymentOptimistic,
     savePayment,
     updatePayment,
     deletePayment,
