@@ -11,7 +11,7 @@ const TARGET_TIMEOUT_MS = 2500
 export default function OnboardingTour() {
   const {
     isActive, currentStep, stepIndex, totalSteps,
-    skipTour, finishTour, advanceManual, resolveConfirm, skipCurrentStep,
+    skipTour, finishTour, advanceManual, resolveConfirm, resolveBranch, skipCurrentStep,
   } = useTour()
   const [rect, setRect] = useState(null)
   const rafRef = useRef(null)
@@ -99,6 +99,7 @@ export default function OnboardingTour() {
   const isLastStep = stepIndex === totalSteps - 1
   const hasTarget = !!rect
   const isConfirm = currentStep.type === 'confirm'
+  const isBranch = currentStep.type === 'branch'
 
   let tooltipPos = null
   let placeBelow = true
@@ -161,27 +162,41 @@ export default function OnboardingTour() {
         <h3 className={styles.title}>{currentStep.title}</h3>
         <p className={styles.message}>{currentStep.message}</p>
 
-        <div className={styles.actions}>
-          {isConfirm ? (
-            <>
-              <button className={styles.skipBtn} onClick={() => resolveConfirm(currentStep.id, 'no')}>
-                {currentStep.noLabel || 'Not now'}
-              </button>
-              <button className={styles.doneBtn} onClick={() => resolveConfirm(currentStep.id, 'yes')}>
-                {currentStep.yesLabel || 'Yes'}
-              </button>
-            </>
-          ) : currentStep.manual ? (
-            <>
-              <button className={styles.skipBtn} onClick={skipTour}>Skip</button>
-              <button className={styles.doneBtn} onClick={advanceManual}>{currentStep.ctaLabel || 'Next'}</button>
-            </>
-          ) : isLastStep ? (
-            <button className={styles.doneBtn} onClick={finishTour}>Got it</button>
-          ) : (
+        {isBranch ? (
+          <div className={styles.actionsBranch}>
             <button className={styles.skipBtn} onClick={skipTour}>Skip tour</button>
-          )}
-        </div>
+            <div className={styles.branchButtons}>
+              <button className={styles.skipBtn} onClick={() => resolveBranch(currentStep.id, 'view')}>
+                {currentStep.viewLabel}
+              </button>
+              <button className={styles.doneBtn} onClick={() => resolveBranch(currentStep.id, 'continue')}>
+                {currentStep.continueLabel}
+              </button>
+            </div>
+          </div>
+        ) : (
+          <div className={styles.actions}>
+            {isConfirm ? (
+              <>
+                <button className={styles.skipBtn} onClick={() => resolveConfirm(currentStep.id, 'no')}>
+                  {currentStep.noLabel || 'Not now'}
+                </button>
+                <button className={styles.doneBtn} onClick={() => resolveConfirm(currentStep.id, 'yes')}>
+                  {currentStep.yesLabel || 'Yes'}
+                </button>
+              </>
+            ) : currentStep.manual ? (
+              <>
+                <button className={styles.skipBtn} onClick={skipTour}>Skip</button>
+                <button className={styles.doneBtn} onClick={advanceManual}>{currentStep.ctaLabel || 'Next'}</button>
+              </>
+            ) : isLastStep ? (
+              <button className={styles.doneBtn} onClick={finishTour}>Got it</button>
+            ) : (
+              <button className={styles.skipBtn} onClick={skipTour}>Skip tour</button>
+            )}
+          </div>
+        )}
       </div>
     </div>
   )
