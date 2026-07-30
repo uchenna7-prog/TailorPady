@@ -1,6 +1,7 @@
 import { useCallback } from 'react'
 import { useProfileSettings } from '../contexts/ProfileSettingsContext'
 import { useGeneralSettings } from '../contexts/GeneralSettingsContext'
+import { useTour } from '../contexts/TourContext'
 
 
 function buildBrandSnapshot(localSnap, profileSettings, overrides = {}) {
@@ -32,11 +33,18 @@ function readLocalStorageSettings() {
   }
 }
 
+const INVOICE_TOUR_PHASE_STEPS = [
+  'branch-after-order',
+  'view-new-order',
+  'goto-invoices-tab',
+  'add-invoice',
+]
 
 export function useInvoiceActions({ customerData, orders, showToast, setActiveTab, setReopenInvoiceId }) {
 
   const { profileSettings } = useProfileSettings()
   const { generalSettings }  = useGeneralSettings()
+  const { resolveShortcut }  = useTour()
 
   const handleGenerateInvoice = useCallback((orderId) => {
 
@@ -131,12 +139,13 @@ export function useInvoiceActions({ customerData, orders, showToast, setActiveTa
     showToast(`${invoiceNumber} generated ✓`)
     setActiveTab('invoices')
     setReopenInvoiceId?.(newInvoice.id)
+    resolveShortcut(INVOICE_TOUR_PHASE_STEPS, 'confirm-add-payment')
 
     customerData.saveInvoice(newInvoice).catch(() => {
       showToast('Invoice saved locally — will sync when online')
     })
 
-  }, [customerData, orders, generalSettings, profileSettings, showToast, setActiveTab, setReopenInvoiceId])
+  }, [customerData, orders, generalSettings, profileSettings, showToast, setActiveTab, setReopenInvoiceId, resolveShortcut])
 
 
   const handleInvoicePaid = useCallback(async (orderId, invoiceStatus) => {

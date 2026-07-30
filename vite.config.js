@@ -3,21 +3,22 @@ import react, { reactCompilerPreset } from '@vitejs/plugin-react'
 import babel from '@rolldown/plugin-babel'
 import { VitePWA } from 'vite-plugin-pwa'
 
-const PUBLIC_PATHS = ['/', '/faq', '/contact', '/privacy', '/terms', '/refund', '/founder']
+const PUBLIC_PATHS = new Set(['/', '/faq', '/contact', '/privacy', '/terms', '/refund', '/founder'])
+
+function isPublicPath(url) {
+  const path = url.split('?')[0]
+  return PUBLIC_PATHS.has(path) || path.startsWith('/portfolio/') || path.startsWith('/review/')
+}
 
 const publicPageRewrite = {
   name: 'public-page-rewrite',
   configureServer(server) {
     server.middlewares.use((req, _res, next) => {
-      if (
-        PUBLIC_PATHS.includes(req.url) ||
-        req.url.startsWith('/portfolio/') ||
-        req.url.startsWith('/review/')
-      ) {
-        req.url = '/index.html'
-      } else {
-        req.url = '/app.html'
+      if (req.method !== 'GET' || !req.headers.accept?.includes('text/html')) {
+        return next()
       }
+
+      req.url = isPublicPath(req.url) ? '/index.html' : '/app.html'
       next()
     })
   },

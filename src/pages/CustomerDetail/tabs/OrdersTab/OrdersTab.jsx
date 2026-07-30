@@ -15,15 +15,13 @@ export default function OrdersTab({ customerId, orders, loading, measurements, s
 
   const { addOrder } = useOrders()
   const { generalSettings } = useGeneralSettings()
-  const { completeStep, pauseTour, resumeTour } = useTour()
+  const { completeStep, currentStep, pendingViewItemId, pauseTour, resumeTour } = useTour()
 
   const taxEnabled = generalSettings.invoiceShowTax ?? false
   const taxRate    = generalSettings.invoiceTaxRate ?? 0
 
-  const [isModalOpen,     setIsModalOpen]     = useState(false)
-  const [selectedOrder,   setSelectedOrder]   = useState(null)
-  const [pendingViewId,   setPendingViewId]   = useState(null)
-  const [awaitingView,    setAwaitingView]    = useState(false)
+  const [isModalOpen,   setIsModalOpen]   = useState(false)
+  const [selectedOrder, setSelectedOrder] = useState(null)
 
   useEffect(() => {
     const openModal = () => setIsModalOpen(true)
@@ -38,22 +36,6 @@ export default function OrdersTab({ customerId, orders, loading, measurements, s
   }, [isModalOpen, pauseTour, resumeTour])
 
   useEffect(() => {
-    const handler = () => setAwaitingView(true)
-    document.addEventListener('tourViewOrder', handler)
-    return () => document.removeEventListener('tourViewOrder', handler)
-  }, [])
-
-  useEffect(() => {
-    if (!awaitingView || !pendingViewId) return
-    const match = orders.find(o => String(o.id) === pendingViewId)
-    if (match) {
-      setSelectedOrder(match)
-      setAwaitingView(false)
-      setPendingViewId(null)
-    }
-  }, [awaitingView, pendingViewId, orders])
-
-  useEffect(() => {
     if (!selectedOrder) return
     pauseTour()
     return () => resumeTour()
@@ -64,8 +46,7 @@ export default function OrdersTab({ customerId, orders, loading, measurements, s
     try {
       const newId = await addOrder(customerId, orderData)
       showToast('Order placed ✓')
-      completeStep('add-order')
-      if (newId) setPendingViewId(String(newId))
+      completeStep('add-order', { itemId: newId ? String(newId) : null })
     } catch (err) {
       console.error('[OrdersTab] failed to place order:', err)
       const code = err?.code
@@ -77,6 +58,16 @@ export default function OrdersTab({ customerId, orders, loading, measurements, s
         showToast('Failed to place order')
       }
     }
+  }
+
+  function handleCardTap(order) {
+    if (
+      currentStep?.id === 'view-new-order' &&
+      String(order.clientId ?? order.id) === pendingViewItemId
+    ) {
+      completeStep('view-new-order')
+    }
+    setSelectedOrder(order)
   }
 
 
@@ -106,13 +97,17 @@ export default function OrdersTab({ customerId, orders, loading, measurements, s
             <div className={styles.orderGroupDivider} />
 
             {ordersInGroup.map((order, index) => (
-              <OrderRow
+              <div
                 key={order.id ?? index}
-                order={order}
-                ordersInGroup={ordersInGroup}
-                index={index}
-                onTap={setSelectedOrder}
-              />
+                data-tour={String(order.clientId ?? order.id) === pendingViewItemId ? 'new-order-row' : undefined}
+              >
+                <OrderRow
+                  order={order}
+                  ordersInGroup={ordersInGroup}
+                  index={index}
+                  onTap={handleCardTap}
+                />
+              </div>
             ))}
           </div>
         ))

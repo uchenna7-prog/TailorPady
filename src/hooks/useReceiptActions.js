@@ -1,6 +1,7 @@
 import { useCallback } from 'react'
 import { useProfileSettings } from '../contexts/ProfileSettingsContext'
 import { useGeneralSettings } from '../contexts/GeneralSettingsContext'
+import { useTour } from '../contexts/TourContext'
 
 
 function buildBrandSnapshot(localSnap, profileSettings, overrides = {}) {
@@ -32,11 +33,18 @@ function readLocalStorageSettings() {
   }
 }
 
+const RECEIPT_TOUR_PHASE_STEPS = [
+  'branch-after-payment',
+  'view-new-payment',
+  'goto-receipts-tab',
+  'add-receipt',
+]
 
 export function useReceiptActions({ customerData, orders, showToast, setActiveTab, setReopenReceiptId }) {
 
   const { profileSettings } = useProfileSettings()
   const { generalSettings }  = useGeneralSettings()
+  const { resolveShortcut }  = useTour()
 
   const handleGenerateReceipt = useCallback((payment, installment) => {
     if (!installment) {
@@ -134,12 +142,13 @@ export function useReceiptActions({ customerData, orders, showToast, setActiveTa
     showToast(`${receiptNumber} receipt generated ✓`)
     setActiveTab('receipts')
     setReopenReceiptId?.(newReceipt.id)
+    resolveShortcut(RECEIPT_TOUR_PHASE_STEPS, 'done')
 
     customerData.saveReceipt(newReceipt).catch(() => {
       showToast('Receipt saved locally — will sync when online')
     })
 
-  }, [customerData, orders, generalSettings, profileSettings, showToast, setActiveTab, setReopenReceiptId])
+  }, [customerData, orders, generalSettings, profileSettings, showToast, setActiveTab, setReopenReceiptId, resolveShortcut])
 
 
   const handleDeleteReceipt = useCallback(async (receiptId) => {

@@ -80,8 +80,14 @@ export const TOURS = {
       message: 'Want to look it over, or move straight to placing an order?',
       viewLabel: 'View details',
       continueLabel: 'Create an order',
-      viewEvent: 'tourViewMeasurement',
+      viewTarget: 'view-new-measurement',
       nextTarget: 'goto-orders-tab',
+    },
+    {
+      id: 'view-new-measurement',
+      target: '[data-tour="new-measurement-row"]',
+      title: 'Tap to view details',
+      message: 'Tap this card to see the measurement you just added.',
     },
     {
       id: 'goto-orders-tab',
@@ -90,6 +96,7 @@ export const TOURS = {
       message: 'Tap the Orders tab.',
       phase: 'Order',
       count: { current: 1, total: 2 },
+      padX: 2,
     },
     {
       id: 'add-order',
@@ -107,8 +114,14 @@ export const TOURS = {
       message: 'Want to look it over, or generate the invoice now?',
       viewLabel: 'View details',
       continueLabel: 'Create an invoice',
-      viewEvent: 'tourViewOrder',
+      viewTarget: 'view-new-order',
       nextTarget: 'goto-invoices-tab',
+    },
+    {
+      id: 'view-new-order',
+      target: '[data-tour="new-order-row"]',
+      title: 'Tap to view details',
+      message: 'Tap this card to see the order you just created.',
     },
     {
       id: 'goto-invoices-tab',
@@ -117,6 +130,7 @@ export const TOURS = {
       message: 'Tap the Invoices tab.',
       phase: 'Invoice',
       count: { current: 1, total: 2 },
+      padX: 2,
     },
     {
       id: 'add-invoice',
@@ -143,6 +157,7 @@ export const TOURS = {
       message: 'Tap the Payments tab.',
       phase: 'Payment',
       count: { current: 1, total: 2 },
+      padX: 2,
     },
     {
       id: 'add-payment',
@@ -160,8 +175,14 @@ export const TOURS = {
       message: 'Want to look it over, or generate the receipt now?',
       viewLabel: 'View details',
       continueLabel: 'Get the receipt',
-      viewEvent: 'tourViewPayment',
+      viewTarget: 'view-new-payment',
       nextTarget: 'goto-receipts-tab',
+    },
+    {
+      id: 'view-new-payment',
+      target: '[data-tour="new-payment-row"]',
+      title: 'Tap to view details',
+      message: 'Tap this card to see the payment you just recorded.',
     },
     {
       id: 'goto-receipts-tab',
@@ -170,6 +191,7 @@ export const TOURS = {
       message: 'Tap the Receipts tab.',
       phase: 'Receipt',
       count: { current: 1, total: 2 },
+      padX: 2,
     },
     {
       id: 'add-receipt',

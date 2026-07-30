@@ -60,11 +60,11 @@ const enrichedOrders = useMemo(() => {
     const tempId = makeTempOrderId()
 
     setAllOrders(prev => [
-      { id: tempId, customerId, orderNumber: nextOrderNumber, status: orderData.status ?? 'pending', createdAt: new Date(), ...orderData },
+      { id: tempId, clientId: tempId, customerId, orderNumber: nextOrderNumber, status: orderData.status ?? 'pending', createdAt: new Date(), ...orderData },
       ...prev,
     ])
 
-    addOrderToDb(user.uid, customerId, { ...orderData, orderNumber: nextOrderNumber }).catch(() => {})
+    addOrderToDb(user.uid, customerId, { ...orderData, orderNumber: nextOrderNumber, clientId: tempId }).catch(() => {})
 
     return tempId
   }, [user, allOrders])

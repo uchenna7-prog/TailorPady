@@ -28,7 +28,7 @@ export default function ReceiptTab({
   onReopenReceiptHandled,
 }) {
   const { profileSettings } = useProfileSettings()
-  const { completeStep, pauseTour, resumeTour } = useTour()
+  const { pauseTour, resumeTour } = useTour()
 
   const [viewingReceipt,     setViewingReceipt]     = useState(null)
   const [deleteTarget,       setDeleteTarget]       = useState(null)
@@ -85,7 +85,6 @@ export default function ReceiptTab({
   function handleSelectPayment(payment, installment) {
     onGenerateReceipt(payment, installment)
     setAddReceiptModalOpen(false)
-    completeStep('add-receipt')
   }
 
   function handleConfirmDelete() {

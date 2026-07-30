@@ -23,13 +23,11 @@ export default function PaymentsTab({
   onViewReceipt,
 }) {
 
-  const { completeStep, pauseTour, resumeTour } = useTour()
+  const { completeStep, currentStep, pendingViewItemId, pauseTour, resumeTour } = useTour()
 
   const [modalOpen,      setModalOpen]      = useState(false)
   const [viewingPayment, setViewingPayment] = useState(null)
   const [deleteTarget,   setDeleteTarget]   = useState(null)
-  const [pendingViewId,  setPendingViewId]  = useState(null)
-  const [awaitingView,   setAwaitingView]   = useState(false)
 
   useEffect(() => {
     if (!viewingPayment) return
@@ -50,22 +48,6 @@ export default function PaymentsTab({
   }, [modalOpen, pauseTour, resumeTour])
 
   useEffect(() => {
-    const handler = () => setAwaitingView(true)
-    document.addEventListener('tourViewPayment', handler)
-    return () => document.removeEventListener('tourViewPayment', handler)
-  }, [])
-
-  useEffect(() => {
-    if (!awaitingView || !pendingViewId) return
-    const match = payments.find(p => String(p.id) === pendingViewId)
-    if (match) {
-      setViewingPayment(match)
-      setAwaitingView(false)
-      setPendingViewId(null)
-    }
-  }, [awaitingView, pendingViewId, payments])
-
-  useEffect(() => {
     if (!viewingPayment) return
     pauseTour()
     return () => resumeTour()
@@ -78,10 +60,9 @@ export default function PaymentsTab({
     try {
       const newId = await onSavePayment(paymentData)
       showToast('Payment recorded ✓')
-      completeStep('add-payment')
+      completeStep('add-payment', { itemId: newId ? String(newId) : null })
       if (paymentData.status === 'paid')      onInvoicePaid?.(paymentData.orderId, 'paid')
       else if (paymentData.status === 'part') onInvoicePaid?.(paymentData.orderId, 'part_paid')
-      if (newId) setPendingViewId(String(newId))
     } catch {
       showToast('Failed to save payment.')
     }
@@ -107,7 +88,6 @@ export default function PaymentsTab({
 
     try {
       await onUpdatePayment(paymentId, { installments: updatedInstallments, status: newStatus })
-      completeStep('add-payment')
       if (newStatus === 'paid') {
         showToast('Payment complete! Marked as Paid ✓')
         onInvoicePaid?.(payment.orderId, 'paid')
@@ -133,6 +113,16 @@ export default function PaymentsTab({
     }
   }
 
+  function handleCardTap(payment) {
+    if (
+      currentStep?.id === 'view-new-payment' &&
+      String(payment.clientId ?? payment.id) === pendingViewItemId
+    ) {
+      completeStep('view-new-payment')
+    }
+    setViewingPayment(payment)
+  }
+
   return (
     <>
       <div className={styles.tabContent}>
@@ -145,14 +135,18 @@ export default function PaymentsTab({
               <div className={styles.dateGroupDivider} />
 
               {datePayments.map((payment, index) => (
-                <PaymentRow
+                <div
                   key={payment.id ?? index}
-                  payment={payment}
-                  index={index}
-                  datePayments={datePayments}
-                  orderItemsMap={orderItemsMap}
-                  onTap={setViewingPayment}
-                />
+                  data-tour={String(payment.clientId ?? payment.id) === pendingViewItemId ? 'new-payment-row' : undefined}
+                >
+                  <PaymentRow
+                    payment={payment}
+                    index={index}
+                    datePayments={datePayments}
+                    orderItemsMap={orderItemsMap}
+                    onTap={handleCardTap}
+                  />
+                </div>
               ))}
             </div>
           ))

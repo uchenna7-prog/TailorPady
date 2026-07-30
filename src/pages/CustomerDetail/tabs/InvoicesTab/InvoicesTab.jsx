@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect } from 'react'
 import { getCurrency } from '../../../../utils/moneyUtils'
 import { useProfileSettings } from '../../../../contexts/ProfileSettingsContext'
 import { useTour } from '../../../../contexts/TourContext'
@@ -30,7 +30,7 @@ export default function InvoiceTab({
   onReopenInvoiceHandled,
 }) {
   const { profileSettings } = useProfileSettings()
-  const { completeStep, pauseTour, resumeTour } = useTour()
+  const { pauseTour, resumeTour } = useTour()
 
   const [viewingInvoice, setViewingInvoice] = useState(null)
   const [deleteTarget,   setDeleteTarget]   = useState(null)
@@ -106,7 +106,6 @@ export default function InvoiceTab({
         ? `${selectedOrders.length} invoices generated`
         : 'Invoice generated'
       )
-      completeStep('add-invoice')
     }
 
     setaddInvoiceModalOpen(false)

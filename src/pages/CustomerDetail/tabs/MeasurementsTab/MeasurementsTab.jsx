@@ -10,13 +10,11 @@ import ConfirmSheet from '../../../../components/ConfirmSheet/ConfirmSheet'
 import styles from './MeasurementsTab.module.css'
 
 export default function MeasurementsTab({ measurements, loading, gender, onSave, onUpdate, onDelete, showToast }) {
-  const { completeStep, pauseTour, resumeTour } = useTour()
+  const { completeStep, currentStep, pendingViewItemId, pauseTour, resumeTour } = useTour()
 
   const [isAddModalOpen,      setIsAddModalOpen]      = useState(false)
   const [selectedMeasurement, setSelectedMeasurement] = useState(null)
   const [measurementToDelete, setMeasurementToDelete] = useState(null)
-  const [pendingViewId,       setPendingViewId]       = useState(null)
-  const [awaitingView,        setAwaitingView]        = useState(false)
 
   useEffect(() => {
     const handleOpenAddModal = () => setIsAddModalOpen(true)
@@ -31,22 +29,6 @@ export default function MeasurementsTab({ measurements, loading, gender, onSave,
   }, [isAddModalOpen, pauseTour, resumeTour])
 
   useEffect(() => {
-    const handler = () => setAwaitingView(true)
-    document.addEventListener('tourViewMeasurement', handler)
-    return () => document.removeEventListener('tourViewMeasurement', handler)
-  }, [])
-
-  useEffect(() => {
-    if (!awaitingView || !pendingViewId) return
-    const match = measurements.find(m => String(m.id) === pendingViewId)
-    if (match) {
-      setSelectedMeasurement(match)
-      setAwaitingView(false)
-      setPendingViewId(null)
-    }
-  }, [awaitingView, pendingViewId, measurements])
-
-  useEffect(() => {
     if (!selectedMeasurement) return
     pauseTour()
     return () => resumeTour()
@@ -57,8 +39,7 @@ export default function MeasurementsTab({ measurements, loading, gender, onSave,
       const newId = await onSave(entry)
       showToast('Measurement saved ✓')
       setIsAddModalOpen(false)
-      completeStep('add-measurement')
-      if (newId) setPendingViewId(String(newId))
+      completeStep('add-measurement', { itemId: newId ? String(newId) : null })
     } catch {
       showToast('Failed to save measurement.')
     }
@@ -70,6 +51,12 @@ export default function MeasurementsTab({ measurements, loading, gender, onSave,
   }
 
   function handleCardTap(measurement) {
+    if (
+      currentStep?.id === 'view-new-measurement' &&
+      String(measurement.clientId ?? measurement.id) === pendingViewItemId
+    ) {
+      completeStep('view-new-measurement')
+    }
     setSelectedMeasurement(measurement)
   }
 
@@ -110,14 +97,18 @@ export default function MeasurementsTab({ measurements, loading, gender, onSave,
             <div className={styles.measurementGroupDate}>{date}</div>
             <div className={styles.measurementGroupDivider} />
             {measurementsInGroup.map((measurement, index) => (
-              <MeasurementRow
+              <div
                 key={measurement.id ?? index}
-                measurement={measurement}
-                measurementsInGroup={measurementsInGroup}
-                index={index}
-                onTap={handleCardTap}
-                onDelete={handleRequestDelete}
-              />
+                data-tour={String(measurement.clientId ?? measurement.id) === pendingViewItemId ? 'new-measurement-row' : undefined}
+              >
+                <MeasurementRow
+                  measurement={measurement}
+                  measurementsInGroup={measurementsInGroup}
+                  index={index}
+                  onTap={handleCardTap}
+                  onDelete={handleRequestDelete}
+                />
+              </div>
             ))}
           </div>
         ))

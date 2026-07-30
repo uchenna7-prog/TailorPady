@@ -128,8 +128,8 @@ export function useCustomerData(customerId) {
     if (!user || !customerId) return null
     const { id: _, ...data } = entry
     const tempId = makeTempId()
-    addMeasurementOptimistic({ id: tempId, ...data })
-    addMeasurementToDb(user.uid, customerId, data).catch(() => {})
+    addMeasurementOptimistic({ id: tempId, clientId: tempId, ...data })
+    addMeasurementToDb(user.uid, customerId, { ...data, clientId: tempId }).catch(() => {})
     return tempId
   }, [user, customerId, addMeasurementOptimistic])
 
@@ -209,8 +209,8 @@ export function useCustomerData(customerId) {
   const savePayment = useCallback(async (data) => {
     if (!user || !customerId) return null
     const tempId = makeTempId()
-    addPaymentOptimistic({ id: tempId, customerId, ...data })
-    fsCreatePayment(user.uid, customerId, data).catch(() => {})
+    addPaymentOptimistic({ id: tempId, clientId: tempId, customerId, ...data })
+    fsCreatePayment(user.uid, customerId, { ...data, clientId: tempId }).catch(() => {})
     return tempId
   }, [user, customerId, addPaymentOptimistic])
 
