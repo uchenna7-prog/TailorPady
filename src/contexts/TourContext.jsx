@@ -30,6 +30,7 @@ export function TourProvider({ children }) {
   const [paused, setPaused]                 = useState(false)
   const [completedTours, setCompletedTours] = useState(loadCompletedTours)
   const pauseCountRef = useRef(0)
+  const queuedAdvanceRef = useRef(null)
 
   const steps       = activeTourId ? TOURS[activeTourId] : null
   const currentStep = steps ? steps[stepIndex] : null
@@ -45,6 +46,7 @@ export function TourProvider({ children }) {
     setPendingCustomerId(null)
     setPaused(false)
     pauseCountRef.current = 0
+    queuedAdvanceRef.current = null
   }, [])
 
   const finishTour = useCallback(() => {
@@ -111,13 +113,17 @@ export function TourProvider({ children }) {
 
   const resolveBranch = useCallback((stepId, choice) => {
     if (!currentStep || currentStep.id !== stepId || currentStep.type !== 'branch') return
+
+    if (choice === 'view' && currentStep.viewEvent) {
+      queuedAdvanceRef.current = currentStep.nextTarget
+      document.dispatchEvent(new CustomEvent(currentStep.viewEvent))
+      return
+    }
+
     const target = findStepIndex(currentStep.nextTarget)
     if (target === -1) {
       finishTour()
       return
-    }
-    if (choice === 'view' && currentStep.viewEvent) {
-      document.dispatchEvent(new CustomEvent(currentStep.viewEvent))
     }
     advanceTo(target)
   }, [currentStep, findStepIndex, advanceTo, finishTour])
@@ -133,8 +139,18 @@ export function TourProvider({ children }) {
 
   const resumeTour = useCallback(() => {
     pauseCountRef.current = Math.max(0, pauseCountRef.current - 1)
-    if (pauseCountRef.current === 0) setPaused(false)
-  }, [])
+    if (pauseCountRef.current !== 0) return
+
+    setPaused(false)
+
+    if (queuedAdvanceRef.current) {
+      const targetId = queuedAdvanceRef.current
+      queuedAdvanceRef.current = null
+      const idx = findStepIndex(targetId)
+      if (idx === -1) finishTour()
+      else advanceTo(idx)
+    }
+  }, [findStepIndex, advanceTo, finishTour])
 
   const value = {
     activeTourId,
