@@ -14,7 +14,9 @@ const publicPageRewrite = {
         req.url.startsWith('/portfolio/') ||
         req.url.startsWith('/review/')
       ) {
-        req.url = '/public.html'
+        req.url = '/index.html'
+      } else {
+        req.url = '/app.html'
       }
       next()
     })
@@ -25,8 +27,8 @@ export default defineConfig({
   build: {
     rollupOptions: {
       input: {
-        main: 'index.html',
-        public: 'public.html',
+        main: 'app.html',
+        public: 'index.html',
       },
     },
   },
