@@ -13,16 +13,15 @@
       "**/node_modules/**"
     ],
     "rewrites": [
-      { "source": "/",             "destination": "/public.html" },
-      { "source": "/portfolio/**", "destination": "/public.html" },
-      { "source": "/review/**",    "destination": "/public.html" },
-      { "source": "/faq",          "destination": "/public.html" },
-      { "source": "/contact",      "destination": "/public.html" },
-      { "source": "/privacy",      "destination": "/public.html" },
-      { "source": "/terms",        "destination": "/public.html" },
-      { "source": "/refund",       "destination": "/public.html" },
-      { "source": "/founder",      "destination": "/public.html" },
-      { "source": "**",            "destination": "/index.html"  }
+      { "source": "/portfolio/**", "destination": "/index.html" },
+      { "source": "/review/**",    "destination": "/index.html" },
+      { "source": "/faq",          "destination": "/index.html" },
+      { "source": "/contact",      "destination": "/index.html" },
+      { "source": "/privacy",      "destination": "/index.html" },
+      { "source": "/terms",        "destination": "/index.html" },
+      { "source": "/refund",       "destination": "/index.html" },
+      { "source": "/founder",      "destination": "/index.html" },
+      { "source": "**",            "destination": "/app.html" }
     ]
   },
   "auth": {
