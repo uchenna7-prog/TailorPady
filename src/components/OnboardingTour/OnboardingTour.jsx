@@ -2,8 +2,8 @@ import { useEffect, useRef, useState, useCallback } from 'react'
 import { useTour } from '../../contexts/TourContext'
 import styles from './OnboardingTour.module.css'
 
-const PAD = 5
-const CARD_GAP = 22
+const PAD = 8
+const CARD_GAP = 30
 const CARD_WIDTH = 260
 const CARD_HEIGHT_ESTIMATE = 170
 const TARGET_TIMEOUT_MS = 2500
@@ -166,9 +166,18 @@ export default function OnboardingTour() {
         </button>
 
         {currentStep.count && (
-          <div className={styles.stepCount}>
-            {currentStep.phase} · Step {currentStep.count.current} of {currentStep.count.total}
+          <div className={styles.dots}>
+            {Array.from({ length: currentStep.count.total }).map((_, i) => (
+              <span
+                key={i}
+                className={`${styles.dot} ${i === currentStep.count.current - 1 ? styles.dotActive : ''}`}
+              />
+            ))}
           </div>
+        )}
+
+        {currentStep.phase && (
+          <div className={styles.phaseLabel}>{currentStep.phase}</div>
         )}
 
         <h3 className={styles.title}>{currentStep.title}</h3>

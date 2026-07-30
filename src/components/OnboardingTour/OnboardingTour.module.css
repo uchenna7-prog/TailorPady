@@ -119,11 +119,34 @@
   }
 }
 
-.stepCount {
+.dots {
+  display: inline-flex;
+  gap: 5px;
+  margin: 0 0 12px;
+}
+
+.dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: rgba(127, 127, 127, 0.3);
+  transition: background 0.2s ease, transform 0.2s ease;
+}
+
+.dotActive {
+  background: var(--accent);
+  transform: scale(1.25);
+}
+
+.phaseLabel {
   font-size: 0.7rem;
   font-weight: 700;
   color: var(--text3);
   letter-spacing: 0.02em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
   margin: 0 28px 14px 0;
 }
 
