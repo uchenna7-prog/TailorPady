@@ -109,6 +109,19 @@ export function TourProvider({ children }) {
     }
   }, [currentStep, stepIndex, advanceTo, findStepIndex, finishTour])
 
+  const resolveBranch = useCallback((stepId, choice) => {
+    if (!currentStep || currentStep.id !== stepId || currentStep.type !== 'branch') return
+    const target = findStepIndex(currentStep.nextTarget)
+    if (target === -1) {
+      finishTour()
+      return
+    }
+    if (choice === 'view' && currentStep.viewEvent) {
+      document.dispatchEvent(new CustomEvent(currentStep.viewEvent))
+    }
+    advanceTo(target)
+  }, [currentStep, findStepIndex, advanceTo, finishTour])
+
   const skipCurrentStep = useCallback(() => {
     advanceTo(stepIndex + 1)
   }, [stepIndex, advanceTo])
@@ -137,6 +150,7 @@ export function TourProvider({ children }) {
     completeStep,
     advanceManual,
     resolveConfirm,
+    resolveBranch,
     skipCurrentStep,
     pauseTour,
     resumeTour,
