@@ -1,8 +1,6 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect } from 'react'
 import { formatMoney } from '../../../../utils/moneyUtils'
 import { useTour } from '../../../../contexts/TourContext'
-import { useFirstItemHint } from '../../../../hooks/useFirstItemHint'
-import { FirstItemHint } from '../../../../components/FirstItemHint/FirstItemHint'
 import { AddPaymentModal } from './components/AddPaymentModal/AddPaymentModal'
 import { PaymentRow } from './components/PaymentRow/PaymentRow'
 import { EmptyState } from './components/EmptyState/EmptyState'
@@ -26,12 +24,12 @@ export default function PaymentsTab({
 }) {
 
   const { completeStep, pauseTour, resumeTour } = useTour()
-  const [hintSeen, markHintSeen] = useFirstItemHint('payment')
-  const firstRowRef = useRef(null)
 
   const [modalOpen,      setModalOpen]      = useState(false)
   const [viewingPayment, setViewingPayment] = useState(null)
   const [deleteTarget,   setDeleteTarget]   = useState(null)
+  const [pendingViewId,  setPendingViewId]  = useState(null)
+  const [awaitingView,   setAwaitingView]   = useState(false)
 
   useEffect(() => {
     if (!viewingPayment) return
@@ -51,19 +49,42 @@ export default function PaymentsTab({
     return () => resumeTour()
   }, [modalOpen, pauseTour, resumeTour])
 
+  useEffect(() => {
+    const handler = () => setAwaitingView(true)
+    document.addEventListener('tourViewPayment', handler)
+    return () => document.removeEventListener('tourViewPayment', handler)
+  }, [])
+
+  useEffect(() => {
+    if (!awaitingView || !pendingViewId) return
+    const match = payments.find(p => String(p.id) === pendingViewId)
+    if (match) {
+      setViewingPayment(match)
+      setAwaitingView(false)
+      setPendingViewId(null)
+    }
+  }, [awaitingView, pendingViewId, payments])
+
+  useEffect(() => {
+    if (!viewingPayment) return
+    pauseTour()
+    return () => resumeTour()
+  }, [viewingPayment, pauseTour, resumeTour])
+
   const orderItemsMap = buildOrderItemsMap(orders)
   const groupedByDate = groupPaymentsByDate(payments)
 
   async function handleSavePayment(paymentData) {
-  try {
-    await onSavePayment(paymentData)
-    showToast('Payment recorded ✓')
-    completeStep('add-payment')
-    if (paymentData.status === 'paid')      onInvoicePaid?.(paymentData.orderId, 'paid')
-    else if (paymentData.status === 'part') onInvoicePaid?.(paymentData.orderId, 'part_paid')
-  } catch {
-    showToast('Failed to save payment.')
-  }
+    try {
+      const newId = await onSavePayment(paymentData)
+      showToast('Payment recorded ✓')
+      completeStep('add-payment')
+      if (paymentData.status === 'paid')      onInvoicePaid?.(paymentData.orderId, 'paid')
+      else if (paymentData.status === 'part') onInvoicePaid?.(paymentData.orderId, 'part_paid')
+      if (newId) setPendingViewId(String(newId))
+    } catch {
+      showToast('Failed to save payment.')
+    }
   }
 
   async function handleStatusChange(paymentId, newStatus) {
@@ -100,20 +121,17 @@ export default function PaymentsTab({
   }
 
   async function handleConfirmDelete() {
-  if (!deleteTarget) return
-  const target = deleteTarget
-  setDeleteTarget(null)
-  setViewingPayment(null)
-  try {
-    await onDeletePayment(target.id)
-    showToast('Payment deleted')
-  } catch {
-    showToast('Failed to delete.')
+    if (!deleteTarget) return
+    const target = deleteTarget
+    setDeleteTarget(null)
+    setViewingPayment(null)
+    try {
+      await onDeletePayment(target.id)
+      showToast('Payment deleted')
+    } catch {
+      showToast('Failed to delete.')
+    }
   }
-  }
-
-  const showFirstItemHint = payments.length === 1 && !hintSeen
-  let renderedFirstRow = false
 
   return (
     <>
@@ -126,21 +144,16 @@ export default function PaymentsTab({
               <div className={styles.dateGroupLabel}>{date}</div>
               <div className={styles.dateGroupDivider} />
 
-              {datePayments.map((payment, index) => {
-                const isFirstOverall = showFirstItemHint && !renderedFirstRow
-                if (isFirstOverall) renderedFirstRow = true
-                return (
-                  <div key={payment.id ?? index} ref={isFirstOverall ? firstRowRef : undefined}>
-                    <PaymentRow
-                      payment={payment}
-                      index={index}
-                      datePayments={datePayments}
-                      orderItemsMap={orderItemsMap}
-                      onTap={setViewingPayment}
-                    />
-                  </div>
-                )
-              })}
+              {datePayments.map((payment, index) => (
+                <PaymentRow
+                  key={payment.id ?? index}
+                  payment={payment}
+                  index={index}
+                  datePayments={datePayments}
+                  orderItemsMap={orderItemsMap}
+                  onTap={setViewingPayment}
+                />
+              ))}
             </div>
           ))
         )}
@@ -174,14 +187,6 @@ export default function PaymentsTab({
         onConfirm={handleConfirmDelete}
         onCancel={() => setDeleteTarget(null)}
       />
-
-      {showFirstItemHint && (
-        <FirstItemHint
-          targetRef={firstRowRef}
-          message="Tap to view details"
-          onDismiss={markHintSeen}
-        />
-      )}
     </>
   )
 }
