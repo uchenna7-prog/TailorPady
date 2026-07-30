@@ -19,6 +19,10 @@ import { useCustomers } from './CustomerContext'
 
 const OrdersContext = createContext(null)
 
+function makeTempOrderId() {
+  return `temp-${Date.now()}-${Math.random().toString(36).slice(2)}`
+}
+
 export function OrdersProvider({ children }) {
   const { user } = useAuth()
   const [allOrders, setAllOrders] = useState([])
@@ -50,10 +54,19 @@ const enrichedOrders = useMemo(() => {
   }, [allOrders, customers])
 
   const addOrder = useCallback(async (customerId, data) => {
-    if (!user) return
+    if (!user) return null
     const { id: _, ...orderData } = data
     const nextOrderNumber = allOrders.reduce((max, o) => Math.max(max, o.orderNumber || 0), 0) + 1
-    return addOrderToDb(user.uid, customerId, { ...orderData, orderNumber: nextOrderNumber })
+    const tempId = makeTempOrderId()
+
+    setAllOrders(prev => [
+      { id: tempId, customerId, orderNumber: nextOrderNumber, status: orderData.status ?? 'pending', createdAt: new Date(), ...orderData },
+      ...prev,
+    ])
+
+    addOrderToDb(user.uid, customerId, { ...orderData, orderNumber: nextOrderNumber }).catch(() => {})
+
+    return tempId
   }, [user, allOrders])
 
   const updateOrder = useCallback(async (customerId, orderId, data) => {
