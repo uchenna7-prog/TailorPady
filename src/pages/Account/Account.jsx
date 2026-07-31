@@ -54,6 +54,7 @@ export default function Account({ onMenuClick, isPremium = false, onUpgrade = ()
   const [pendingTemplate, setPendingTemplate] = useState(null)
   const [returnTo, setReturnTo] = useState(null)
   const [premiumSuccess, setPremiumSuccess] = useState(null)
+  const [pendingTourAdvance, setPendingTourAdvance] = useState(false)
   const toastTimer = useRef(null)
 
   const joinDate = getOrSetJoinDate()
@@ -107,6 +108,20 @@ export default function Account({ onMenuClick, isPremium = false, onUpgrade = ()
     return () => resumeTour()
   }, [activeModal, currentStep, pauseTour, resumeTour])
 
+  const advanceProfileTourAfterModalClose = useCallback(() => {
+    if (!PROFILE_TOUR_STEP_IDS.includes(currentStep?.id)) return
+    if (!hasBrand) goToStep('highlight-edit-brand')
+    else if (!hasBusinessInfo) goToStep('highlight-edit-business-info')
+    else goToStep('confirm-add-customer-after-profile')
+  }, [currentStep, hasBrand, hasBusinessInfo, goToStep])
+
+  useEffect(() => {
+    if (!pendingTourAdvance) return
+    if (activeModal !== null) return
+    advanceProfileTourAfterModalClose()
+    setPendingTourAdvance(false)
+  }, [pendingTourAdvance, activeModal, advanceProfileTourAfterModalClose])
+
   const showToast = useCallback(msg => {
     setToastMsg(msg)
     clearTimeout(toastTimer.current)
@@ -159,26 +174,19 @@ export default function Account({ onMenuClick, isPremium = false, onUpgrade = ()
     setReturnTo(null)
   }, [returnTo, navigate])
 
-  const advanceProfileTourAfterModalClose = useCallback(() => {
-    if (!PROFILE_TOUR_STEP_IDS.includes(currentStep?.id)) return
-    if (!hasBrand) goToStep('highlight-edit-brand')
-    else if (!hasBusinessInfo) goToStep('highlight-edit-business-info')
-    else goToStep('confirm-add-customer-after-profile')
-  }, [currentStep, hasBrand, hasBusinessInfo, goToStep])
-
   const handleBrandModalBack = useCallback(() => {
     setActiveModal(null)
     applyPendingTemplateIfAny('Brand info saved')
     returnToOriginIfAny()
-    advanceProfileTourAfterModalClose()
-  }, [applyPendingTemplateIfAny, returnToOriginIfAny, advanceProfileTourAfterModalClose])
+    setPendingTourAdvance(true)
+  }, [applyPendingTemplateIfAny, returnToOriginIfAny])
 
   const handleBusinessInfoModalBack = useCallback(() => {
     setActiveModal(null)
     applyPendingTemplateIfAny('Business info saved')
     returnToOriginIfAny()
-    advanceProfileTourAfterModalClose()
-  }, [applyPendingTemplateIfAny, returnToOriginIfAny, advanceProfileTourAfterModalClose])
+    setPendingTourAdvance(true)
+  }, [applyPendingTemplateIfAny, returnToOriginIfAny])
 
   const handleUpgradeSuccess = useCallback((info) => {
     setActiveModal(null)

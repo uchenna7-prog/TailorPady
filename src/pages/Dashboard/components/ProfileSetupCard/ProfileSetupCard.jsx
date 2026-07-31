@@ -7,13 +7,21 @@ const STEP_DESTINATIONS = {
   brandName:    { route: '/account', modal: 'brand' },
   brandLogo:    { route: '/account', modal: 'brand' },
   brandColour:  { route: '/account', modal: 'brand' },
-  contactInfo:  { route: '/account', modal: 'businessContact' },
-  brandAddress: { route: '/account', modal: 'businessContact' },
+  contactInfo:  { route: '/account', modal: 'businessInfo' },
+  brandAddress: { route: '/account', modal: 'businessInfo' },
+}
+
+const STEP_TOUR_TARGETS = {
+  brandName:    'highlight-edit-brand',
+  brandLogo:    'highlight-edit-brand',
+  brandColour:  'highlight-edit-brand',
+  contactInfo:  'highlight-edit-business-info',
+  brandAddress: 'highlight-edit-business-info',
 }
 
 export function ProfileSetupCard({ completedCount, totalCount, nextItem, nextItemKey }) {
   const navigate  = useNavigate()
-  const { currentStep, completeStep } = useTour()
+  const { currentStep, goToStep } = useTour()
   const [hidden, setHidden] = useState(
     () => sessionStorage.getItem('profileSetupDismissed') === 'true'
   )
@@ -30,7 +38,8 @@ export function ProfileSetupCard({ completedCount, totalCount, nextItem, nextIte
 
   function handleClick() {
     if (currentStep?.id === 'highlight-profile-card') {
-      completeStep('highlight-profile-card')
+      const target = STEP_TOUR_TARGETS[nextItemKey] ?? 'highlight-edit-brand'
+      goToStep(target)
     }
 
     const destination = STEP_DESTINATIONS[nextItemKey]
