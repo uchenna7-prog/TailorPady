@@ -107,25 +107,26 @@ a.footerContactLine:hover {
 
 .footerSocial {
   display: flex;
-  gap: 10px;
+  gap: clamp(18px, 2vw, 22px);
 }
 
 .footerSocialLink {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  background: color-mix(in srgb, var(--paper) 10%, transparent);
-  border: 1px solid color-mix(in srgb, var(--paper) 18%, transparent);
   color: var(--paper);
-  transition: background 0.15s ease, transform 0.15s ease, border-color 0.15s ease;
+  opacity: 0.7;
+  cursor: pointer;
+  transition: opacity 0.15s ease, transform 0.15s ease;
+}
+
+.footerSocialLink svg {
+  width: clamp(24px, 1.4vw + 18px, 30px);
+  height: clamp(24px, 1.4vw + 18px, 30px);
 }
 
 .footerSocialLink:hover {
-  background: color-mix(in srgb, var(--paper) 20%, transparent);
-  border-color: color-mix(in srgb, var(--paper) 32%, transparent);
+  opacity: 1;
   transform: translateY(-2px);
 }
 
