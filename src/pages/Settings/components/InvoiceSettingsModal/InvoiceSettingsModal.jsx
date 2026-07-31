@@ -2,7 +2,6 @@ import { useState, useRef } from 'react'
 import styles from './InvoiceSettingsModal.module.css'
 import { FullModal } from '../../../../components/FullModal/FullModal'
 import { useGeneralSettings } from '../../../../contexts/GeneralSettingsContext'
-import { useProfileSettings } from '../../../../contexts/ProfileSettingsContext'
 import { Field } from '../Field/Field'
 import { FieldGroup } from '../FieldGroup/FieldGroup'
 import { Textarea } from '../Textarea/Textarea'
@@ -10,29 +9,20 @@ import { TextInput } from '../TextInput/TextInput'
 import { Toggle } from '../../components/Toggle/Toggle'
 import { CurrencyPickerSheet } from '../CurrencyPickerSheet/CurrencyPickerSheet'
 
-
 const DUE_DAY_PRESETS = [3, 7, 14, 21, 30, 45, 60, 90]
-const MAX_TERMS       = 3
-const MAX_TERM_LENGTH = 60
 
 const DEFAULT_CURRENCY = {
-  country:      'Nigeria',
-  countryCode:  'NG',
+  country: 'Nigeria',
+  countryCode: 'NG',
   currencyCode: 'NGN',
   currencyName: 'Nigerian Naira',
-  symbol:       '₦',
+  symbol: '₦',
 }
 
 function normaliseCurrency(raw) {
   if (!raw) return DEFAULT_CURRENCY
   if (typeof raw === 'string') return { ...DEFAULT_CURRENCY, symbol: raw }
   return raw
-}
-
-function parseTerms(raw) {
-  if (Array.isArray(raw)) return raw.length > 0 ? raw : ['', '']
-  if (typeof raw === 'string' && raw.trim()) return raw.split('\n').filter(Boolean)
-  return ['', '']
 }
 
 function FlagIcon({ countryCode }) {
@@ -50,11 +40,10 @@ function FlagIcon({ countryCode }) {
   )
 }
 
-
 function DueDayPicker({ value, onChange }) {
   const isCustom = !DUE_DAY_PRESETS.includes(value)
 
-  const [showCustom, setShowCustom]   = useState(isCustom)
+  const [showCustom, setShowCustom] = useState(isCustom)
   const [customValue, setCustomValue] = useState(isCustom ? String(value) : '')
 
   function selectPreset(days) {
@@ -68,7 +57,7 @@ function DueDayPicker({ value, onChange }) {
   }
 
   function handleCustomChange(e) {
-    const raw  = e.target.value.replace(/\D/g, '')
+    const raw = e.target.value.replace(/\D/g, '')
     setCustomValue(raw)
     const days = parseInt(raw, 10)
     if (days > 0) onChange(days)
@@ -121,65 +110,26 @@ function DueDayPicker({ value, onChange }) {
   )
 }
 
-
 export function InvoiceSettingsModal({ onBack, showToast }) {
 
   const { generalSettings, updateManyGeneralSettings } = useGeneralSettings()
-  const { profileSettings, updateManyProfileSettings } = useProfileSettings()
 
   const [localGeneral, setLocalGeneral] = useState({
-    invoicePrefix:   generalSettings.invoicePrefix,
+    invoicePrefix: generalSettings.invoicePrefix,
     invoiceCurrency: normaliseCurrency(generalSettings.invoiceCurrency),
-    invoiceDueDays:  generalSettings.invoiceDueDays ?? 7,
-    invoiceShowTax:  generalSettings.invoiceShowTax,
-    invoiceTaxRate:  generalSettings.invoiceTaxRate,
-    invoiceFooter:   generalSettings.invoiceFooter,
-  })
-
-  const [localProfile, setLocalProfile] = useState({
-    accountBank:       profileSettings.accountBank       || '',
-    accountNumber:     profileSettings.accountNumber     || '',
-    accountName:       profileSettings.accountName       || '',
-    brandPaymentTerms: parseTerms(profileSettings.brandPaymentTerms),
+    invoiceDueDays: generalSettings.invoiceDueDays ?? 7,
+    invoiceShowTax: generalSettings.invoiceShowTax,
+    invoiceTaxRate: generalSettings.invoiceTaxRate,
+    invoiceFooter: generalSettings.invoiceFooter,
   })
 
   const [currencyPickerOpen, setCurrencyPickerOpen] = useState(false)
-  const currencyTriggerRef                          = useRef(null)
+  const currencyTriggerRef = useRef(null)
 
   const setGeneral = key => val => setLocalGeneral(p => ({ ...p, [key]: val }))
-  const setProfile = key => val => setLocalProfile(p => ({ ...p, [key]: val }))
-
-  const setTerm = (index, value) => {
-    setLocalProfile(p => {
-      const updated = [...p.brandPaymentTerms]
-      updated[index] = value
-      return { ...p, brandPaymentTerms: updated }
-    })
-  }
-
-  const addTerm = () => {
-    if (localProfile.brandPaymentTerms.length >= MAX_TERMS) return
-    setLocalProfile(p => ({ ...p, brandPaymentTerms: [...p.brandPaymentTerms, ''] }))
-  }
-
-  const removeTerm = index => {
-    setLocalProfile(p => {
-      const updated = p.brandPaymentTerms.filter((_, i) => i !== index)
-      const padded  = updated.length >= 2 ? updated : updated.concat(Array(2 - updated.length).fill(''))
-      return { ...p, brandPaymentTerms: padded }
-    })
-  }
-
-  const termPlaceholder = i => {
-    if (i === 0) return 'e.g. 50% deposit required before cutting begins'
-    if (i === 1) return 'e.g. Balance due on pickup'
-    return 'Add another term…'
-  }
 
   function save() {
-    const filledTerms = localProfile.brandPaymentTerms.filter(t => t.trim())
     updateManyGeneralSettings({ ...localGeneral })
-    updateManyProfileSettings({ ...localProfile, brandPaymentTerms: filledTerms })
     showToast('Invoice settings saved')
     onBack()
   }
@@ -258,73 +208,6 @@ export function InvoiceSettingsModal({ onBack, showToast }) {
                 />
               </Field>
             )}
-          </FieldGroup>
-
-          <div style={{ height: 20 }} />
-
-          <div className={styles.sectionLabel}>Payment Details</div>
-          <FieldGroup>
-            <Field label="Bank Name" hint="e.g. GTBank, Access, OPay">
-              <TextInput
-                value={localProfile.accountBank}
-                onChange={setProfile('accountBank')}
-                placeholder="e.g. GTBank"
-              />
-            </Field>
-            <Field label="Account Number">
-              <TextInput
-                value={localProfile.accountNumber}
-                onChange={setProfile('accountNumber')}
-                placeholder="e.g. 0123456789"
-                type="tel"
-              />
-            </Field>
-            <Field label="Account Name" hint="Name registered on the bank account">
-              <TextInput
-                value={localProfile.accountName}
-                onChange={setProfile('accountName')}
-                placeholder="e.g. Amara Okonkwo"
-              />
-            </Field>
-          </FieldGroup>
-
-          <div style={{ height: 20 }} />
-
-          <div className={styles.sectionLabel}>Payment Terms</div>
-          <FieldGroup>
-            <Field hint="Up to 3 short terms printed on invoices. Each appears as a bullet point.">
-              <div className={styles.termsList}>
-                {localProfile.brandPaymentTerms.map((term, i) => (
-                  <div key={i} className={styles.termRow}>
-                    <span className={styles.termBullet}>•</span>
-                    <div className={styles.termInputWrap}>
-                      <input
-                        className={styles.termInput}
-                        type="text"
-                        value={term}
-                        maxLength={MAX_TERM_LENGTH}
-                        onChange={e => setTerm(i, e.target.value)}
-                        placeholder={termPlaceholder(i)}
-                      />
-                      <span className={`${styles.termCounter} ${term.length >= MAX_TERM_LENGTH ? styles.termCounterMax : ''}`}>
-                        {term.length}/{MAX_TERM_LENGTH}
-                      </span>
-                    </div>
-                    {localProfile.brandPaymentTerms.length > 2 && (
-                      <button className={styles.termRemove} onClick={() => removeTerm(i)}>
-                        <span className="mi" style={{ fontSize: 16 }}>close</span>
-                      </button>
-                    )}
-                  </div>
-                ))}
-              </div>
-              {localProfile.brandPaymentTerms.length < MAX_TERMS && (
-                <button className={styles.addTermBtn} onClick={addTerm}>
-                  <span className="mi" style={{ fontSize: 16 }}>add</span>
-                  Add another term
-                </button>
-              )}
-            </Field>
           </FieldGroup>
 
           <div style={{ height: 20 }} />

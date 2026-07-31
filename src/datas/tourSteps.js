@@ -44,10 +44,10 @@ export const TOURS = {
       message: 'Tap here to add your business name, logo, and colours.',
     },
     {
-      id: 'highlight-edit-business-contact',
-      target: '[data-tour="edit-business-contact-row"]',
-      title: 'Add your business contact',
-      message: 'Tap here to add your phone, email, and address.',
+      id: 'highlight-edit-business-info',
+      target: '[data-tour="edit-business-info-row"]',
+      title: 'Add your business info',
+      message: 'Tap here to add your phone, email, address, and payment details.',
     },
     {
       id: 'confirm-add-customer-after-profile',

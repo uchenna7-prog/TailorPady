@@ -16,7 +16,7 @@ import { InfoRow } from './component/InfoRow/InfoRow'
 import { Avatar } from './component/Avatar/Avatar'
 import { PersonalInfoModal } from './component/PersonalInfoModal/PersonalInfoModal'
 import { BrandModal } from './component/BrandModal/BrandModal'
-import { BusinessContactModal } from './component/BusinessContactModal/BusinessContactModal'
+import { BusinessInfoModal } from './component/BusinessInfoModal/BusinessInfoModal'
 import { SocialsModal } from './component/SocialsModal/SocialsModal'
 import { ChangePasswordModal } from './component/ChangePasswordModal/ChangePasswordModal'
 import { ChangeEmailModal } from './component/ChangeEmailModal/ChangeEmailModal'
@@ -33,7 +33,7 @@ import ConfirmSheet from '../../components/ConfirmSheet/ConfirmSheet'
 import styles from './Account.module.css'
 import { db } from '../../firebase'
 
-const PROFILE_TOUR_STEP_IDS = ['highlight-profile-card', 'highlight-edit-brand', 'highlight-edit-business-contact']
+const PROFILE_TOUR_STEP_IDS = ['highlight-profile-card', 'highlight-edit-brand', 'highlight-edit-business-info']
 
 
 export default function Account({ onMenuClick, isPremium = false, onUpgrade = () => {} }) {
@@ -46,11 +46,11 @@ export default function Account({ onMenuClick, isPremium = false, onUpgrade = ()
   const location = useLocation()
   const { currentStep, pauseTour, resumeTour, goToStep } = useTour()
 
-  const [personalInfo,  setPersonalInfo]  = useState(() => loadPersonalInfo(user))
-  const [activeModal,   setActiveModal]   = useState(null)
+  const [personalInfo, setPersonalInfo] = useState(() => loadPersonalInfo(user))
+  const [activeModal, setActiveModal] = useState(null)
   const [logoutConfirm, setLogoutConfirm] = useState(false)
   const [deleteConfirm, setDeleteConfirm] = useState(false)
-  const [toastMsg,      setToastMsg]      = useState('')
+  const [toastMsg, setToastMsg] = useState('')
   const [pendingTemplate, setPendingTemplate] = useState(null)
   const [returnTo, setReturnTo] = useState(null)
   const [premiumSuccess, setPremiumSuccess] = useState(null)
@@ -58,22 +58,22 @@ export default function Account({ onMenuClick, isPremium = false, onUpgrade = ()
 
   const joinDate = getOrSetJoinDate()
 
-  const hasBrand           = !!(profileSettings.brandName || profileSettings.brandLogo)
-  const hasBusinessContact = !!(profileSettings.brandPhone || profileSettings.brandEmail || profileSettings.brandAddress)
+  const hasBrand = !!(profileSettings.brandName || profileSettings.brandLogo)
+  const hasBusinessInfo = !!(profileSettings.brandPhone || profileSettings.brandEmail || profileSettings.brandAddress)
 
   useEffect(() => {
     if (!user?.uid) return
     getPersonalInfosFromFirestore(db, user.uid).then(data => {
       if (!data) return
       const merged = {
-        fullName:   data.personalFullName   || personalInfo.fullName   || '',
-        email:      data.personalEmail      || personalInfo.email      || user?.email || '',
-        phone:      data.personalPhone      || personalInfo.phone      || '',
-        city:       data.personalCity       || personalInfo.city       || '',
-        country:    data.personalCountry    || personalInfo.country    || '',
-        sex:        data.personalSex        || personalInfo.sex        || '',
+        fullName: data.personalFullName || personalInfo.fullName || '',
+        email: data.personalEmail || personalInfo.email || user?.email || '',
+        phone: data.personalPhone || personalInfo.phone || '',
+        city: data.personalCity || personalInfo.city || '',
+        country: data.personalCountry || personalInfo.country || '',
+        sex: data.personalSex || personalInfo.sex || '',
         birthMonth: data.personalBirthMonth || personalInfo.birthMonth || '',
-        birthDay:   data.personalBirthDay   || personalInfo.birthDay   || '',
+        birthDay: data.personalBirthDay || personalInfo.birthDay || '',
       }
       setPersonalInfo(merged)
       savePersonalInfoLocally(merged)
@@ -84,7 +84,7 @@ export default function Account({ onMenuClick, isPremium = false, onUpgrade = ()
     const navState = location.state
     if (!navState?.autoOpenModal) return
 
-    if (navState.autoOpenModal === 'brand' || navState.autoOpenModal === 'businessContact') {
+    if (navState.autoOpenModal === 'brand' || navState.autoOpenModal === 'businessInfo') {
       setActiveModal(navState.autoOpenModal)
     }
 
@@ -100,7 +100,7 @@ export default function Account({ onMenuClick, isPremium = false, onUpgrade = ()
   }, [location.state])
 
   useEffect(() => {
-    const isProfileModal = activeModal === 'brand' || activeModal === 'businessContact'
+    const isProfileModal = activeModal === 'brand' || activeModal === 'businessInfo'
     if (!isProfileModal) return
     if (!PROFILE_TOUR_STEP_IDS.includes(currentStep?.id)) return
     pauseTour()
@@ -132,22 +132,22 @@ export default function Account({ onMenuClick, isPremium = false, onUpgrade = ()
     if (returnTo.customerId) {
       navigate(`/customers/${returnTo.customerId}`, {
         state: {
-          reopenInvoiceId:      returnTo.invoiceId      ?? null,
-          reopenReceiptId:      returnTo.receiptId      ?? null,
-          reopenMissingFields:  returnTo.reopenMissingFields ?? false,
-          completedModal:       returnTo.completedModal  ?? null,
-          completedFields:      returnTo.completedFields ?? [],
-          reopenTemplateModal:  returnTo.reopenTemplateModal ?? false,
+          reopenInvoiceId: returnTo.invoiceId ?? null,
+          reopenReceiptId: returnTo.receiptId ?? null,
+          reopenMissingFields: returnTo.reopenMissingFields ?? false,
+          completedModal: returnTo.completedModal ?? null,
+          completedFields: returnTo.completedFields ?? [],
+          reopenTemplateModal: returnTo.reopenTemplateModal ?? false,
         },
       })
     } else if (returnTo.returnPath) {
       navigate(returnTo.returnPath, {
         state: {
-          reopenInvoiceId:     returnTo.invoiceId ?? null,
-          reopenReceiptId:     returnTo.receiptId ?? null,
+          reopenInvoiceId: returnTo.invoiceId ?? null,
+          reopenReceiptId: returnTo.receiptId ?? null,
           reopenMissingFields: returnTo.reopenMissingFields ?? false,
-          completedModal:      returnTo.completedModal ?? null,
-          completedFields:     returnTo.completedFields ?? [],
+          completedModal: returnTo.completedModal ?? null,
+          completedFields: returnTo.completedFields ?? [],
         },
       })
     } else if (returnTo.reopenTemplateModal) {
@@ -161,10 +161,10 @@ export default function Account({ onMenuClick, isPremium = false, onUpgrade = ()
 
   const advanceProfileTourAfterModalClose = useCallback(() => {
     if (!PROFILE_TOUR_STEP_IDS.includes(currentStep?.id)) return
-    if (!hasBrand)                  goToStep('highlight-edit-brand')
-    else if (!hasBusinessContact)   goToStep('highlight-edit-business-contact')
-    else                            goToStep('confirm-add-customer-after-profile')
-  }, [currentStep, hasBrand, hasBusinessContact, goToStep])
+    if (!hasBrand) goToStep('highlight-edit-brand')
+    else if (!hasBusinessInfo) goToStep('highlight-edit-business-info')
+    else goToStep('confirm-add-customer-after-profile')
+  }, [currentStep, hasBrand, hasBusinessInfo, goToStep])
 
   const handleBrandModalBack = useCallback(() => {
     setActiveModal(null)
@@ -173,9 +173,9 @@ export default function Account({ onMenuClick, isPremium = false, onUpgrade = ()
     advanceProfileTourAfterModalClose()
   }, [applyPendingTemplateIfAny, returnToOriginIfAny, advanceProfileTourAfterModalClose])
 
-  const handleBusinessContactModalBack = useCallback(() => {
+  const handleBusinessInfoModalBack = useCallback(() => {
     setActiveModal(null)
-    applyPendingTemplateIfAny('Business contact saved')
+    applyPendingTemplateIfAny('Business info saved')
     returnToOriginIfAny()
     advanceProfileTourAfterModalClose()
   }, [applyPendingTemplateIfAny, returnToOriginIfAny, advanceProfileTourAfterModalClose])
@@ -259,9 +259,9 @@ export default function Account({ onMenuClick, isPremium = false, onUpgrade = ()
 
         <SectionHeader icon="person" label="Personal Info" />
 
-        <InfoRow icon="badge"  label="Full Name" value={personalInfo.fullName}             placeholder="Not set" />
-        <InfoRow icon="mail"   label="Email"     value={personalInfo.email || user?.email} placeholder="Not set" />
-        <InfoRow icon="call"   label="Phone"     value={personalInfo.phone}                placeholder="Not set" />
+        <InfoRow icon="badge" label="Full Name" value={personalInfo.fullName} placeholder="Not set" />
+        <InfoRow icon="mail" label="Email" value={personalInfo.email || user?.email} placeholder="Not set" />
+        <InfoRow icon="call" label="Phone" value={personalInfo.phone} placeholder="Not set" />
         <InfoRow
           icon="public"
           label="Location"
@@ -300,8 +300,8 @@ export default function Account({ onMenuClick, isPremium = false, onUpgrade = ()
           </div>
         )}
 
-        <InfoRow icon="store"        label="Brand Name" value={profileSettings.brandName}    placeholder="Not set" />
-        <InfoRow icon="format_quote" label="Tagline"    value={profileSettings.brandTagline} placeholder="Not set" />
+        <InfoRow icon="store" label="Brand Name" value={profileSettings.brandName} placeholder="Not set" />
+        <InfoRow icon="format_quote" label="Tagline" value={profileSettings.brandTagline} placeholder="Not set" />
 
         {profileSettings.brandSignature && (
           <div className={styles.row}>
@@ -324,34 +324,34 @@ export default function Account({ onMenuClick, isPremium = false, onUpgrade = ()
           dataTour="edit-brand-row"
         />
 
-        <SectionHeader icon="contact_phone" label="Business Contact" />
+        <SectionHeader icon="contact_phone" label="Business Info" />
 
-        {hasBusinessContact ? (
+        {hasBusinessInfo ? (
           <>
             {profileSettings.brandPhone && (
-              <InfoRow icon="call"        label="Business Phone" value={profileSettings.brandPhone}   placeholder="Not set" />
+              <InfoRow icon="call" label="Business Phone" value={profileSettings.brandPhone} placeholder="Not set" />
             )}
             {profileSettings.brandEmail && (
-              <InfoRow icon="mail"        label="Business Email" value={profileSettings.brandEmail}   placeholder="Not set" />
+              <InfoRow icon="mail" label="Business Email" value={profileSettings.brandEmail} placeholder="Not set" />
             )}
             {profileSettings.brandAddress && (
-              <InfoRow icon="location_on" label="Address"        value={profileSettings.brandAddress} placeholder="Not set" />
+              <InfoRow icon="location_on" label="Address" value={profileSettings.brandAddress} placeholder="Not set" />
             )}
           </>
         ) : (
           <div className={`${styles.row} ${styles.brandEmpty}`}>
             <span className="mi" style={{ fontSize: '1.5rem', color: 'var(--text3)' }}>contact_phone</span>
-            <span className={styles.brandEmptyText}>No business contact set yet</span>
+            <span className={styles.brandEmptyText}>No business info set yet</span>
           </div>
         )}
 
         <TappableRow
           icon="edit"
-          label="Edit Business Contact"
-          sub="Phone, email, address, website used on invoices"
-          onClick={() => setActiveModal('businessContact')}
+          label="Edit Business Info"
+          sub="Phone, email, address, website, bank details & payment terms"
+          onClick={() => setActiveModal('businessInfo')}
           divider={false}
-          dataTour="edit-business-contact-row"
+          dataTour="edit-business-info-row"
         />
 
         <SectionHeader icon="share" label="Social Media" />
@@ -488,9 +488,9 @@ export default function Account({ onMenuClick, isPremium = false, onUpgrade = ()
         />
       )}
 
-      {activeModal === 'businessContact' && (
-        <BusinessContactModal
-          onBack={handleBusinessContactModalBack}
+      {activeModal === 'businessInfo' && (
+        <BusinessInfoModal
+          onBack={handleBusinessInfoModalBack}
           showToast={showToast}
         />
       )}
@@ -544,7 +544,7 @@ export default function Account({ onMenuClick, isPremium = false, onUpgrade = ()
       <ConfirmSheet
         open={logoutConfirm}
         title="Log Out?"
-        confirmText = 'Log Out'
+        confirmText='Log Out'
         onConfirm={handleLogout}
         onCancel={() => setLogoutConfirm(false)}
       />
