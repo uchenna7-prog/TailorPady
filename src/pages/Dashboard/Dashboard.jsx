@@ -111,7 +111,7 @@ function Dashboard({ onMenuClick, onGoToCustomer }) {
   const { allPayments }                                                   = usePayments()
   const { profileSettings, isLoading: profileLoading }                   = useProfileSettings()
   const { goal, derived, loading: goalLoading, saveGoal, removeGoal }    = useRevenueGoal()
-  const { startTour, completeStep, currentStep, hasCompletedTour, isActive: tourActive } = useTour()
+  const { startTour, completeStep, currentStep, hasCompletedTour, isActive: tourActive, goToStep } = useTour()
 
   const [isBannerDismissed, setIsBannerDismissed] = useState(loadNotificationDismissed)
   const [isGoalModalOpen,   setIsGoalModalOpen]   = useState(false)
@@ -178,6 +178,16 @@ function Dashboard({ onMenuClick, onGoToCustomer }) {
     if (showNotificationBanner) return
     completeStep('enable-notifications')
   }, [currentStep, showNotificationBanner, completeStep])
+
+  // If the user picked "Set up business profile" but the profile turns out
+  // to already be complete (card wouldn't even render), skip straight to
+  // the post-profile confirm instead of waiting out the target-timeout.
+  useEffect(() => {
+    if (currentStep?.id !== 'highlight-profile-card') return
+    if (profileLoading) return
+    if (showProfileSetupCard) return
+    goToStep('confirm-add-customer-after-profile')
+  }, [currentStep, profileLoading, showProfileSetupCard, goToStep])
 
   function showToast(msg) {
     setToastMsg(msg)

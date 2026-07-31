@@ -26,12 +26,14 @@ export default function OnboardingTour() {
       setRect(prev => (prev === null ? prev : null))
       return
     }
+    const padX = currentStep.padX ?? PAD
+    const padY = currentStep.padY ?? PAD
     const r = el.getBoundingClientRect()
     const next = {
-      top: r.top - PAD,
-      left: r.left - PAD,
-      width: r.width + PAD * 2,
-      height: r.height + PAD * 2,
+      top: r.top - padY,
+      left: r.left - padX,
+      width: r.width + padX * 2,
+      height: r.height + padY * 2,
     }
     setRect(prev => {
       if (

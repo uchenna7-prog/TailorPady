@@ -9,7 +9,8 @@ export function TappableRow({
     onClick, 
     chevron = true, 
     divider = true, 
-    danger = false 
+    danger = false,
+    dataTour,
 }) {
 
   const isEdit = icon === 'edit'
@@ -18,6 +19,7 @@ export function TappableRow({
     <div
       className={`${styles.row} ${styles.rowTappable} ${!divider ? styles.noDivider : ''}`}
       onClick={onClick}
+      data-tour={dataTour}
     >
       <div className={styles.rowIcon} style={isEdit ? { background: 'var(--text)', color: 'var(--bg)' } : undefined}>
         <span className="mi" style={{ fontSize: '1.15rem', color: danger ? '#ef4444' : undefined }}>{icon}</span>

@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { useTour } from '../../../../contexts/TourContext'
 import styles from './ProfileSetupCard.module.css'
 
 const STEP_DESTINATIONS = {
@@ -12,6 +13,7 @@ const STEP_DESTINATIONS = {
 
 export function ProfileSetupCard({ completedCount, totalCount, nextItem, nextItemKey }) {
   const navigate  = useNavigate()
+  const { currentStep, completeStep } = useTour()
   const [hidden, setHidden] = useState(
     () => sessionStorage.getItem('profileSetupDismissed') === 'true'
   )
@@ -27,6 +29,10 @@ export function ProfileSetupCard({ completedCount, totalCount, nextItem, nextIte
   const isDone = completedCount >= totalCount
 
   function handleClick() {
+    if (currentStep?.id === 'highlight-profile-card') {
+      completeStep('highlight-profile-card')
+    }
+
     const destination = STEP_DESTINATIONS[nextItemKey]
     if (destination) {
       navigate(destination.route, { state: { autoOpenModal: destination.modal } })
@@ -36,7 +42,7 @@ export function ProfileSetupCard({ completedCount, totalCount, nextItem, nextIte
   }
 
   return (
-    <div className={styles.card} onClick={handleClick} role="button" tabIndex={0}>
+    <div className={styles.card} onClick={handleClick} role="button" tabIndex={0} data-tour="profile-setup-card">
       <div className={styles.inner}>
 
         <div className={styles.iconWrap}>

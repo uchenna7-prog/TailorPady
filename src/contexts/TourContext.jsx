@@ -135,6 +135,12 @@ export function TourProvider({ children }) {
     advanceTo(target)
   }, [steps, currentStep, stepIndex, findStepIndex, advanceTo, finishTour])
 
+  const goToStep = useCallback((stepId) => {
+    const idx = findStepIndex(stepId)
+    if (idx === -1) return
+    advanceTo(idx)
+  }, [findStepIndex, advanceTo])
+
   const skipCurrentStep = useCallback(() => {
     advanceTo(stepIndex + 1)
   }, [stepIndex, advanceTo])
@@ -166,6 +172,7 @@ export function TourProvider({ children }) {
     resolveConfirm,
     resolveBranch,
     resolveShortcut,
+    goToStep,
     skipCurrentStep,
     pauseTour,
     resumeTour,

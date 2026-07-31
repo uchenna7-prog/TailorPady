@@ -4,6 +4,7 @@ import { useProfileSettings } from '../../contexts/ProfileSettingsContext'
 import { useGeneralSettings } from '../../contexts/GeneralSettingsContext'
 import { useAuth } from '../../contexts/AuthContext'
 import { usePremium } from '../../contexts/PremiumContext'
+import { useTour } from '../../contexts/TourContext'
 import { getPersonalInfosFromFirestore } from '../../services/profileService'
 import { getPaletteById, DEFAULT_COLOUR_ID } from '../../config/brandPalette'
 import { SOCIAL_PLATFORMS } from './datas'
@@ -32,6 +33,8 @@ import ConfirmSheet from '../../components/ConfirmSheet/ConfirmSheet'
 import styles from './Account.module.css'
 import { db } from '../../firebase'
 
+const PROFILE_TOUR_STEP_IDS = ['highlight-profile-card', 'highlight-edit-brand', 'highlight-edit-business-contact']
+
 
 export default function Account({ onMenuClick, isPremium = false, onUpgrade = () => {} }) {
 
@@ -41,6 +44,7 @@ export default function Account({ onMenuClick, isPremium = false, onUpgrade = ()
   const { plan, nextRenewal } = usePremium()
   const navigate = useNavigate()
   const location = useLocation()
+  const { currentStep, pauseTour, resumeTour, goToStep } = useTour()
 
   const [personalInfo,  setPersonalInfo]  = useState(() => loadPersonalInfo(user))
   const [activeModal,   setActiveModal]   = useState(null)
@@ -53,6 +57,9 @@ export default function Account({ onMenuClick, isPremium = false, onUpgrade = ()
   const toastTimer = useRef(null)
 
   const joinDate = getOrSetJoinDate()
+
+  const hasBrand           = !!(profileSettings.brandName || profileSettings.brandLogo)
+  const hasBusinessContact = !!(profileSettings.brandPhone || profileSettings.brandEmail || profileSettings.brandAddress)
 
   useEffect(() => {
     if (!user?.uid) return
@@ -91,6 +98,14 @@ export default function Account({ onMenuClick, isPremium = false, onUpgrade = ()
 
     navigate(location.pathname, { replace: true, state: null })
   }, [location.state])
+
+  useEffect(() => {
+    const isProfileModal = activeModal === 'brand' || activeModal === 'businessContact'
+    if (!isProfileModal) return
+    if (!PROFILE_TOUR_STEP_IDS.includes(currentStep?.id)) return
+    pauseTour()
+    return () => resumeTour()
+  }, [activeModal, currentStep, pauseTour, resumeTour])
 
   const showToast = useCallback(msg => {
     setToastMsg(msg)
@@ -144,17 +159,26 @@ export default function Account({ onMenuClick, isPremium = false, onUpgrade = ()
     setReturnTo(null)
   }, [returnTo, navigate])
 
+  const advanceProfileTourAfterModalClose = useCallback(() => {
+    if (!PROFILE_TOUR_STEP_IDS.includes(currentStep?.id)) return
+    if (!hasBrand)                  goToStep('highlight-edit-brand')
+    else if (!hasBusinessContact)   goToStep('highlight-edit-business-contact')
+    else                            goToStep('confirm-add-customer-after-profile')
+  }, [currentStep, hasBrand, hasBusinessContact, goToStep])
+
   const handleBrandModalBack = useCallback(() => {
     setActiveModal(null)
     applyPendingTemplateIfAny('Brand info saved')
     returnToOriginIfAny()
-  }, [applyPendingTemplateIfAny, returnToOriginIfAny])
+    advanceProfileTourAfterModalClose()
+  }, [applyPendingTemplateIfAny, returnToOriginIfAny, advanceProfileTourAfterModalClose])
 
   const handleBusinessContactModalBack = useCallback(() => {
     setActiveModal(null)
     applyPendingTemplateIfAny('Business contact saved')
     returnToOriginIfAny()
-  }, [applyPendingTemplateIfAny, returnToOriginIfAny])
+    advanceProfileTourAfterModalClose()
+  }, [applyPendingTemplateIfAny, returnToOriginIfAny, advanceProfileTourAfterModalClose])
 
   const handleUpgradeSuccess = useCallback((info) => {
     setActiveModal(null)
@@ -186,9 +210,6 @@ export default function Account({ onMenuClick, isPremium = false, onUpgrade = ()
       }
     }
   }
-
-  const hasBrand           = !!(profileSettings.brandName || profileSettings.brandLogo)
-  const hasBusinessContact = !!(profileSettings.brandPhone || profileSettings.brandEmail || profileSettings.brandAddress)
 
   const brandColourHex = getPaletteById(profileSettings.brandColourId)?.tokens.primary
     || getPaletteById(DEFAULT_COLOUR_ID)?.tokens.primary
@@ -300,6 +321,7 @@ export default function Account({ onMenuClick, isPremium = false, onUpgrade = ()
           sub="Logo, colours, tagline, signature"
           onClick={() => setActiveModal('brand')}
           divider={false}
+          dataTour="edit-brand-row"
         />
 
         <SectionHeader icon="contact_phone" label="Business Contact" />
@@ -329,6 +351,7 @@ export default function Account({ onMenuClick, isPremium = false, onUpgrade = ()
           sub="Phone, email, address, website used on invoices"
           onClick={() => setActiveModal('businessContact')}
           divider={false}
+          dataTour="edit-business-contact-row"
         />
 
         <SectionHeader icon="share" label="Social Media" />
