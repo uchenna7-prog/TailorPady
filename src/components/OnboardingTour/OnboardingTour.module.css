@@ -233,3 +233,8 @@
     width: 87%;
   }
 }
+
+
+.noTransition {
+  transition: none !important;
+}

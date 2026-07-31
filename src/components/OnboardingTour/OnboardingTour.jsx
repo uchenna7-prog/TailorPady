@@ -3,10 +3,11 @@ import { useTour } from '../../contexts/TourContext'
 import styles from './OnboardingTour.module.css'
 
 const PAD = 8
-const CARD_GAP = 30
+const CARD_GAP = 18
 const CARD_WIDTH = 260
 const CARD_HEIGHT_ESTIMATE = 170
 const TARGET_TIMEOUT_MS = 2500
+const RESIZE_SETTLE_MS = 200
 
 export default function OnboardingTour() {
   const {
@@ -14,7 +15,11 @@ export default function OnboardingTour() {
     skipTour, finishTour, advanceManual, resolveConfirm, resolveBranch, skipCurrentStep,
   } = useTour()
   const [rect, setRect] = useState(null)
+  const [isResizing, setIsResizing] = useState(false)
   const rafRef = useRef(null)
+  const scrolledStepIdRef = useRef(null)
+  const lockScrollYRef = useRef(0)
+  const resizeTimerRef = useRef(null)
 
   const measure = useCallback(() => {
     if (!currentStep?.target) {
@@ -26,6 +31,21 @@ export default function OnboardingTour() {
       setRect(prev => (prev === null ? prev : null))
       return
     }
+
+    const r0 = el.getBoundingClientRect()
+    const hasRealSize = r0.width > 0 && r0.height > 0
+
+    if (hasRealSize && scrolledStepIdRef.current !== currentStep.id) {
+      scrolledStepIdRef.current = currentStep.id
+      const fullyVisible = r0.top >= 0 && r0.bottom <= window.innerHeight
+      if (!fullyVisible) {
+        const desiredOffset = r0.top - (window.innerHeight / 2 - r0.height / 2)
+        const nextScrollY = Math.max(0, lockScrollYRef.current + desiredOffset)
+        lockScrollYRef.current = nextScrollY
+        document.body.style.top = `-${nextScrollY}px`
+      }
+    }
+
     const padX = currentStep.padX ?? PAD
     const padY = currentStep.padY ?? PAD
     const r = el.getBoundingClientRect()
@@ -50,6 +70,12 @@ export default function OnboardingTour() {
   }, [currentStep])
 
   useEffect(() => {
+    if (!isActive) {
+      scrolledStepIdRef.current = null
+    }
+  }, [isActive])
+
+  useEffect(() => {
     if (!isActive) return
     function loop() {
       measure()
@@ -61,24 +87,44 @@ export default function OnboardingTour() {
 
   useEffect(() => {
     if (!isActive) return
+
+    function handleResize() {
+      setIsResizing(true)
+      clearTimeout(resizeTimerRef.current)
+      resizeTimerRef.current = setTimeout(() => setIsResizing(false), RESIZE_SETTLE_MS)
+    }
+
+    window.addEventListener('resize', handleResize)
+    return () => {
+      window.removeEventListener('resize', handleResize)
+      clearTimeout(resizeTimerRef.current)
+    }
+  }, [isActive])
+
+  useEffect(() => {
+    if (!isActive) return
     const scrollY = window.scrollY
+    lockScrollYRef.current = scrollY
     const { body } = document
     const prevPosition = body.style.position
     const prevTop = body.style.top
     const prevWidth = body.style.width
     const prevOverflow = body.style.overflow
+    const prevTransition = body.style.transition
 
     body.style.position = 'fixed'
     body.style.top = `-${scrollY}px`
     body.style.width = '100%'
     body.style.overflow = 'hidden'
+    body.style.transition = 'top 0.3s ease'
 
     return () => {
       body.style.position = prevPosition
       body.style.top = prevTop
       body.style.width = prevWidth
       body.style.overflow = prevOverflow
-      window.scrollTo(0, scrollY)
+      body.style.transition = prevTransition
+      window.scrollTo(0, lockScrollYRef.current)
     }
   }, [isActive])
 
@@ -120,20 +166,22 @@ export default function OnboardingTour() {
     arrowLeft = Math.min(Math.max(targetCenter - rawLeft, 20), CARD_WIDTH - 20)
   }
 
+  const noTransitionClass = isResizing ? styles.noTransition : ''
+
   return (
     <div className={styles.overlayRoot}>
       {hasTarget ? (
         <>
-          <div className={styles.blockStrip} style={{ top: 0, left: 0, right: 0, height: rect.top }} />
-          <div className={styles.blockStrip} style={{ top: rect.top + rect.height, left: 0, right: 0, bottom: 0 }} />
-          <div className={styles.blockStrip} style={{ top: rect.top, left: 0, width: rect.left, height: rect.height }} />
-          <div className={styles.blockStrip} style={{ top: rect.top, left: rect.left + rect.width, right: 0, height: rect.height }} />
+          <div className={`${styles.blockStrip} ${noTransitionClass}`} style={{ top: 0, left: 0, right: 0, height: rect.top }} />
+          <div className={`${styles.blockStrip} ${noTransitionClass}`} style={{ top: rect.top + rect.height, left: 0, right: 0, bottom: 0 }} />
+          <div className={`${styles.blockStrip} ${noTransitionClass}`} style={{ top: rect.top, left: 0, width: rect.left, height: rect.height }} />
+          <div className={`${styles.blockStrip} ${noTransitionClass}`} style={{ top: rect.top, left: rect.left + rect.width, right: 0, height: rect.height }} />
           <div
-            className={styles.spotlightRing}
+            className={`${styles.spotlightRing} ${noTransitionClass}`}
             style={{ top: rect.top, left: rect.left, width: rect.width, height: rect.height }}
           />
           <div
-            className={styles.pulseRing}
+            className={`${styles.pulseRing} ${noTransitionClass}`}
             style={{ top: rect.top, left: rect.left, width: rect.width, height: rect.height }}
           />
         </>
@@ -145,7 +193,7 @@ export default function OnboardingTour() {
       )}
 
       <div
-        className={`${styles.card} ${!hasTarget ? styles.cardCentered : ''}`}
+        className={`${styles.card} ${!hasTarget ? styles.cardCentered : ''} ${noTransitionClass}`}
         style={hasTarget ? { top: tooltipPos.top, left: tooltipPos.left } : undefined}
       >
         {hasTarget && (
