@@ -1,7 +1,7 @@
 {
-  "name": "TailorPady",
+  "name": "TailorPady | Tailoring Business Management App",
   "short_name": "TailorPady",
-  "description": "Your tailor management app",
+  "description": "TailorPady helps tailors manage customers, measurements, orders, invoices, receipts, payments, appointments, and inventory in one simple app.",
   "start_url": "/app?source=pwa",
   "display": "standalone",
   "background_color": "#ffffff",
