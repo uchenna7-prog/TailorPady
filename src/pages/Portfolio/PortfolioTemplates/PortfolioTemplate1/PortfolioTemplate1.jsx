@@ -47,12 +47,6 @@ const WA_SVG = (
   </svg>
 )
 
-const STAR_SVG = (
-  <svg viewBox="0 0 24 24" fill="currentColor" className={styles.starSvg}>
-    <path d="M12 0l2.4 9.6L24 12l-9.6 2.4L12 24l-2.4-9.6L0 12l9.6-2.4z"/>
-  </svg>
-)
-
 function useTheme() {
   const [theme, setTheme] = useState('light')
 
@@ -98,6 +92,48 @@ function useActiveSection(ids) {
   }, [ids])
 
   return active
+}
+
+function useScrollCollapse() {
+  const [scrolled, setScrolled] = useState(false)
+  const [collapsed, setCollapsed] = useState(false)
+  const lastY = useRef(0)
+
+  useEffect(() => {
+    lastY.current = window.scrollY
+    let ticking = false
+
+    const update = () => {
+      const y = window.scrollY
+      const delta = y - lastY.current
+
+      setScrolled(y > 12)
+
+      if (y < 80) {
+        setCollapsed(false)
+      } else if (delta > 4) {
+        setCollapsed(true)
+      } else if (delta < -4) {
+        setCollapsed(false)
+      }
+
+      lastY.current = y
+      ticking = false
+    }
+
+    const onScroll = () => {
+      if (!ticking) {
+        window.requestAnimationFrame(update)
+        ticking = true
+      }
+    }
+
+    update()
+    window.addEventListener('scroll', onScroll, { passive: true })
+    return () => window.removeEventListener('scroll', onScroll)
+  }, [])
+
+  return { scrolled, collapsed }
 }
 
 function useInView(threshold = 0.15) {
@@ -148,7 +184,7 @@ function ThemeToggle({ theme, onToggle }) {
       onClick={onToggle}
       aria-label={isDark ? 'Switch to light mode' : 'Switch to dark mode'}
     >
-      <span className="mi">{isDark ? 'light_mode' : 'dark_mode'}</span>
+      <span className="mi-outlined">{isDark ? 'light_mode' : 'dark_mode'}</span>
     </button>
   )
 }
@@ -296,10 +332,10 @@ export function PortfolioTemplate1({ brand, photos, garmentTypes, reviews }) {
   const [activeTab,   setActiveTab]   = useState(null)
   const [lightbox,    setLightbox]    = useState(null)
   const [bookingOpen, setBookingOpen] = useState(false)
-  const [navScrolled, setNavScrolled] = useState(false)
   const [navOpen,     setNavOpen]     = useState(false)
   const [theme, toggleTheme]          = useTheme()
   const activeSection                 = useActiveSection(SECTION_IDS)
+  const { scrolled: navScrolled, collapsed } = useScrollCollapse()
 
   const heroRef         = useRef(null)
   const aboutRef        = useRef(null)
@@ -308,12 +344,6 @@ export function PortfolioTemplate1({ brand, photos, garmentTypes, reviews }) {
   const filterScrollRef = useRef(null)
 
   useBrandTokens(brand?.brandColourId)
-
-  useEffect(() => {
-    const handler = () => setNavScrolled(window.scrollY > 48)
-    window.addEventListener('scroll', handler, { passive: true })
-    return () => window.removeEventListener('scroll', handler)
-  }, [])
 
   const handleTabChange = tabId => {
     setActiveTab(tabId)
@@ -328,7 +358,12 @@ export function PortfolioTemplate1({ brand, photos, garmentTypes, reviews }) {
     ref?.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
   }
 
-  const brandName          = brand.brandName            || 'The Tailor'
+  const scrollToTop = () => {
+    setNavOpen(false)
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+  }
+
+  const brandName          = brand.brandName            || 'Brand Name'
   const tagline            = brand.brandTagline         || ''
   const brandBio           = brand.brandBio             || ''
   const availability       = brand.brandAvailability    || 'open'
@@ -339,11 +374,20 @@ export function PortfolioTemplate1({ brand, photos, garmentTypes, reviews }) {
   const styleStatement     = brand.brandStyleStatement  || ''
   const featuredTechnique  = brand.brandFeaturedTechnique || ''
   const milestone          = brand.brandMilestone       || ''
+  const brandSocials       = brand.brandSocials         || []
+  const hasFooterSocials   = Boolean(brand.brandPhone) || brandSocials.length > 0
 
   const completedPhotos = photos.filter(p => p.category === 'completed_works')
   const filteredPhotos  = activeTab ? completedPhotos.filter(p => p.clothingType === activeTab) : completedPhotos
   const statGarments    = milestone || (completedPhotos.length ? `${completedPhotos.length}+` : '—')
-  const yearsCrafting   = foundedYear ? new Date().getFullYear() - parseInt(foundedYear) : null
+  const isCollapsed     = collapsed && !navOpen
+
+  const aboutFacts = [
+    foundedYear  && { value: foundedYear,  label: 'Working since' },
+    serviceArea  && { value: serviceArea,  label: 'Based in' },
+    turnaround   && { value: turnaround,   label: 'Turnaround' },
+    { value: statGarments, label: 'Garments made' },
+  ].filter(Boolean)
 
   const processSteps = [
     { title: 'Consultation', desc: 'Share your vision, occasion, and deadline. We talk fabric, fit, and budget — taking time to understand what matters to you.' },
@@ -355,46 +399,68 @@ export function PortfolioTemplate1({ brand, photos, garmentTypes, reviews }) {
   return (
     <div className={styles.page} data-theme={theme}>
 
-      <nav className={`${styles.nav} ${navScrolled ? styles.navScrolled : ''}`}>
+      <header className={`${styles.nav} ${navScrolled ? styles.navScrolled : ''}`}>
         <div className={styles.navInner}>
-          <button id="hero" className={styles.navLogo} onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>
-            {brandName}
+          <button id="hero" className={styles.logo} onClick={scrollToTop}>
+            {brand.brandLogo
+              ? <img src={brand.brandLogo} alt={brandName} className={styles.logoIcon} />
+              : <span className={styles.logoIconFallback}>{initials(brandName)}</span>
+            }
+            <span className={`${styles.logoMark} ${isCollapsed ? styles.logoMarkCollapsed : ''}`}>
+              {brandName}
+            </span>
           </button>
 
-          <div className={`${styles.navLinks} ${navOpen ? styles.navLinksOpen : ''}`}>
-            <button
-              onClick={() => { setNavOpen(false); window.scrollTo({ top: 0, behavior: 'smooth' }) }}
-              className={`${styles.navLink} ${activeSection === 'hero' ? styles.navLinkActive : ''}`}
-            >
+          <nav className={styles.navLinks}>
+            <button onClick={scrollToTop} className={activeSection === 'hero' ? styles.navLinkActive : ''}>
               <span className={styles.navLinkIndicator} />
               Home
             </button>
-            <button onClick={() => scrollTo(aboutRef)} className={`${styles.navLink} ${activeSection === 'about' ? styles.navLinkActive : ''}`}>
+            <button onClick={() => scrollTo(aboutRef)} className={activeSection === 'about' ? styles.navLinkActive : ''}>
               <span className={styles.navLinkIndicator} />
               About
             </button>
-            <button onClick={() => scrollTo(worksRef)} className={`${styles.navLink} ${activeSection === 'work' ? styles.navLinkActive : ''}`}>
+            <button onClick={() => scrollTo(worksRef)} className={activeSection === 'work' ? styles.navLinkActive : ''}>
               <span className={styles.navLinkIndicator} />
               Work
             </button>
-            <button onClick={() => scrollTo(bookRef)} className={`${styles.navLink} ${activeSection === 'contact' ? styles.navLinkActive : ''}`}>
+            <button onClick={() => scrollTo(bookRef)} className={activeSection === 'contact' ? styles.navLinkActive : ''}>
               <span className={styles.navLinkIndicator} />
               Contact
             </button>
-          </div>
+          </nav>
 
-          <div className={styles.navRight}>
-            <ThemeToggle theme={theme} onToggle={toggleTheme} />
-            <button className={styles.navCta} onClick={() => { setNavOpen(false); setBookingOpen(true) }}>
+          <div className={styles.navActions}>
+            <div className={styles.navUtility}>
+              <ThemeToggle theme={theme} onToggle={toggleTheme} />
+            </div>
+            <button className={styles.navCta} onClick={() => setBookingOpen(true)}>
               Place an order
             </button>
-            <button className={styles.navBurger} onClick={() => setNavOpen(o => !o)} aria-label="Menu">
-              <span className={navOpen ? styles.burgerOpen : ''} />
-              <span className={navOpen ? styles.burgerOpen : ''} />
+          </div>
+
+          <div className={styles.navMobileTrigger}>
+            <ThemeToggle theme={theme} onToggle={toggleTheme} />
+            <button className={styles.navMenuButton} onClick={() => setNavOpen(o => !o)} aria-label="Toggle menu">
+              <span className="mi">{navOpen ? 'close' : 'menu'}</span>
             </button>
           </div>
         </div>
-      </nav>
+
+        {navOpen && (
+          <div className={styles.navMobilePanel}>
+            <button onClick={scrollToTop}>Home</button>
+            <button onClick={() => scrollTo(aboutRef)}>About</button>
+            <button onClick={() => scrollTo(worksRef)}>Work</button>
+            <button onClick={() => scrollTo(bookRef)}>Contact</button>
+            <div className={styles.navMobileActions}>
+              <button className={styles.navCta} onClick={() => { setNavOpen(false); setBookingOpen(true) }}>
+                Place an order
+              </button>
+            </div>
+          </div>
+        )}
+      </header>
 
       <section className={styles.hero} ref={heroRef}>
         <div className={styles.heroGrid}>
@@ -402,7 +468,7 @@ export function PortfolioTemplate1({ brand, photos, garmentTypes, reviews }) {
             <span className={styles.heroEyebrow}>
               <span className={`${styles.availDot} ${availability === 'open' ? styles.availDotOpen : ''}`} />
               {availability === 'open'
-                ? 'Available for commissions'
+                ? 'Accepting Orders'
                 : availableUntil
                   ? `Booked until ${new Date(availableUntil).toLocaleDateString('en-GB', { month: 'short', year: 'numeric' })}`
                   : 'Fully booked'
@@ -410,7 +476,7 @@ export function PortfolioTemplate1({ brand, photos, garmentTypes, reviews }) {
             </span>
 
             <h1 className={styles.heroHeadline}>
-              {tagline || 'Bespoke tailoring, made for you.'}
+              {tagline || 'Your brand tagline.'}
             </h1>
 
             <p className={styles.heroSub}>
@@ -419,19 +485,11 @@ export function PortfolioTemplate1({ brand, photos, garmentTypes, reviews }) {
 
             <div className={styles.heroCtas}>
               <button className={styles.ctaPrimary} onClick={() => setBookingOpen(true)}>
-                Explore collections →
+                Place an order
               </button>
-              {brand.brandPhone && (
-                <a href={`https://wa.me/${brand.brandPhone.replace(/\D/g, '')}`} target="_blank" rel="noopener noreferrer" className={styles.ctaWa}>
-                  {WA_SVG} WhatsApp
-                </a>
-              )}
-            </div>
-
-            <div className={styles.heroMeta}>
-              {foundedYear && <span className={styles.heroMetaItem}>Est. {foundedYear}</span>}
-              {serviceArea  && <span className={styles.heroMetaItem}>{serviceArea}</span>}
-              {turnaround   && <span className={styles.heroMetaItem}>{turnaround}</span>}
+              <button className={styles.ctaSecondary} onClick={() => scrollTo(worksRef)}>
+                Explore work
+              </button>
             </div>
           </div>
 
@@ -440,64 +498,18 @@ export function PortfolioTemplate1({ brand, photos, garmentTypes, reviews }) {
               <img src={brand.heroBgImage} alt={brandName} className={styles.heroImg} />
             ) : (
               <div className={styles.heroImgFallback}>
-                <div className={styles.heroStarDecor}>{STAR_SVG}</div>
+                <span className={styles.heroFallbackMonogram}>{initials(brandName)}</span>
               </div>
             )}
-            <div className={styles.heroImgBadge}>
-              {garmentTypes.slice(0, 3).map(t => (
-                <span key={t.id} className={styles.heroImgBadgeItem}>{t.label}</span>
-              ))}
-            </div>
           </div>
         </div>
-
-        <div className={styles.heroBar}>
-          <div className={styles.heroBarStar}>{STAR_SVG}</div>
-          {garmentTypes.map((t, i) => (
-            <span key={t.id} className={styles.heroBarItem}>
-              {t.label}
-              {i < garmentTypes.length - 1 && <span className={styles.heroBarDot}>·</span>}
-            </span>
-          ))}
-          <div className={styles.heroBarStar}>{STAR_SVG}</div>
-        </div>
-      </section>
-
-      <section className={styles.stats}>
-        <div className={styles.statItem}>
-          <span className={styles.statNum}>{statGarments}</span>
-          <span className={styles.statLabel}>Garments made</span>
-        </div>
-        {serviceArea && (
-          <div className={styles.statItem}>
-            <span className={styles.statNum}>{serviceArea}</span>
-            <span className={styles.statLabel}>Service area</span>
-          </div>
-        )}
-        {yearsCrafting !== null ? (
-          <div className={styles.statItem}>
-            <span className={styles.statNum}>{yearsCrafting}+</span>
-            <span className={styles.statLabel}>Years crafting</span>
-          </div>
-        ) : (
-          <div className={styles.statItem}>
-            <span className={styles.statNum}>Bespoke</span>
-            <span className={styles.statLabel}>Every piece, made to order</span>
-          </div>
-        )}
-        {turnaround && (
-          <div className={styles.statItem}>
-            <span className={styles.statNum}>{turnaround}</span>
-            <span className={styles.statLabel}>Turnaround</span>
-          </div>
-        )}
       </section>
 
       <section id="about" className={styles.about} ref={aboutRef}>
         <div className={styles.aboutInner}>
           <Reveal as="div" className={styles.aboutHeader}>
             <span className={styles.eyebrow}>About</span>
-            <h2 className={styles.sectionTitle}>The craft behind<br />{brandName}</h2>
+            <h2 className={styles.sectionTitle}>Meet the Tailor</h2>
           </Reveal>
 
           <div className={styles.aboutBody}>
@@ -506,92 +518,19 @@ export function PortfolioTemplate1({ brand, photos, garmentTypes, reviews }) {
                 {brandBio || 'Every piece starts with a conversation — about the occasion, the fabric, and the fit you have in mind. From there, it is measured, cut, and finished by hand.'}
               </p>
 
-              {garmentTypes.length > 0 && (
-                <div className={styles.specialties}>
-                  <span className={styles.specialtiesLabel}>Specialises in</span>
-                  <div className={styles.chipRow}>
-                    {garmentTypes.map(t => (
-                      <span key={t.id} className={styles.chip}>{t.label}</span>
-                    ))}
-                  </div>
-                </div>
+              {featuredTechnique && (
+                <p className={styles.aboutSignature}>{featuredTechnique}</p>
               )}
+
             </Reveal>
 
-            <Reveal as="div" className={styles.aboutFactsCol} delay={140}>
-              {(foundedYear || serviceArea || turnaround || featuredTechnique) && (
-                <div className={styles.aboutFacts}>
-                  {foundedYear && (
-                    <div className={styles.aboutFact}>
-                      <span className={styles.factLabel}>Working since</span>
-                      <span className={styles.factValue}>{foundedYear}</span>
-                    </div>
-                  )}
-                  {serviceArea && (
-                    <div className={styles.aboutFact}>
-                      <span className={styles.factLabel}>Based in</span>
-                      <span className={styles.factValue}>{serviceArea}</span>
-                    </div>
-                  )}
-                  {turnaround && (
-                    <div className={styles.aboutFact}>
-                      <span className={styles.factLabel}>Turnaround</span>
-                      <span className={styles.factValue}>{turnaround}</span>
-                    </div>
-                  )}
-                  {featuredTechnique && (
-                    <div className={styles.aboutFact}>
-                      <span className={styles.factLabel}>Signature</span>
-                      <span className={styles.factValue}>{featuredTechnique}</span>
-                    </div>
-                  )}
+            <Reveal as="div" className={styles.aboutFacts} delay={140}>
+              {aboutFacts.map(fact => (
+                <div key={fact.label} className={styles.aboutFact}>
+                  <span className={styles.factValue}>{fact.value}</span>
+                  <span className={styles.factLabel}>{fact.label}</span>
                 </div>
-              )}
-
-              <div className={styles.contactCard}>
-                <div className={styles.contactCardTop}>
-                  {brand.brandLogo
-                    ? <img src={brand.brandLogo} alt={brandName} className={styles.contactLogo} />
-                    : <div className={styles.contactMonogram}>{initials(brandName)}</div>
-                  }
-                  <div>
-                    <p className={styles.contactName}>{brandName}</p>
-                    {tagline && <p className={styles.contactTagline}>{tagline}</p>}
-                  </div>
-                </div>
-                <div className={styles.contactList}>
-                  {brand.brandAddress && (
-                    <div className={styles.contactRow}>
-                      <span className="mi">location_on</span>
-                      <span>{brand.brandAddress}</span>
-                    </div>
-                  )}
-                  {brand.brandPhone && (
-                    <a href={`tel:${brand.brandPhone}`} className={styles.contactRow}>
-                      <span className="mi">call</span>
-                      <span>{brand.brandPhone}</span>
-                    </a>
-                  )}
-                  {brand.brandEmail && (
-                    <a href={`mailto:${brand.brandEmail}`} className={styles.contactRow}>
-                      <span className="mi">mail</span>
-                      <span>{brand.brandEmail}</span>
-                    </a>
-                  )}
-                </div>
-                {brand.brandPhone && (
-                  <div className={styles.contactSocials}>
-                    <a href={`https://wa.me/${brand.brandPhone.replace(/\D/g, '')}`} target="_blank" rel="noopener noreferrer" className={styles.socialBtn}>
-                      {WA_SVG}
-                    </a>
-                    {(brand.brandSocials || []).map((s, i) => (
-                      <a key={i} href={buildSocialUrl(s.platform, s.handle)} target="_blank" rel="noopener noreferrer" className={styles.socialBtn}>
-                        <SocialIcon platform={s.platform} />
-                      </a>
-                    ))}
-                  </div>
-                )}
-              </div>
+              ))}
             </Reveal>
           </div>
         </div>
@@ -604,12 +543,6 @@ export function PortfolioTemplate1({ brand, photos, garmentTypes, reviews }) {
             <h2 className={styles.sectionTitle}>Selected<br />work</h2>
           </div>
           <div className={styles.worksHeaderRight}>
-            <p className={styles.worksSub}>
-              {completedPhotos.length > 0
-                ? `${completedPhotos.length} piece${completedPhotos.length === 1 ? '' : 's'} — finished and delivered.`
-                : 'New work added as it leaves the shop.'
-              }
-            </p>
             {garmentTypes.length > 0 && (
               <div className={styles.filterRow} ref={filterScrollRef}>
                 <button data-tab="all" className={`${styles.filterBtn} ${!activeTab ? styles.filterBtnActive : ''}`} onClick={() => handleTabChange(null)}>All</button>
@@ -698,7 +631,6 @@ export function PortfolioTemplate1({ brand, photos, garmentTypes, reviews }) {
           <div className={styles.ctaOverlay} />
         </div>
         <div className={styles.ctaContent}>
-          <div className={styles.ctaStarRow}>{STAR_SVG}</div>
           <h2 className={styles.ctaTitle}>Start your piece.</h2>
           <p className={styles.ctaSub}>Tell us the occasion, the fabric, and the date — we'll take it from there.</p>
           <div className={styles.ctaBtns}>
@@ -721,10 +653,12 @@ export function PortfolioTemplate1({ brand, photos, garmentTypes, reviews }) {
           <div className={styles.footerBrand}>
             <p className={styles.footerName}>{brandName}</p>
             {tagline && <p className={styles.footerTagline}>{tagline}</p>}
-            {brand.brandPhone && (
+            {hasFooterSocials && (
               <div className={styles.footerSocials}>
-                <a href={`https://wa.me/${brand.brandPhone.replace(/\D/g, '')}`} target="_blank" rel="noopener noreferrer" className={styles.footerSocialBtn}>{WA_SVG}</a>
-                {(brand.brandSocials || []).map((s, i) => (
+                {brand.brandPhone && (
+                  <a href={`https://wa.me/${brand.brandPhone.replace(/\D/g, '')}`} target="_blank" rel="noopener noreferrer" className={styles.footerSocialBtn}>{WA_SVG}</a>
+                )}
+                {brandSocials.map((s, i) => (
                   <a key={i} href={buildSocialUrl(s.platform, s.handle)} target="_blank" rel="noopener noreferrer" className={styles.footerSocialBtn}>
                     <SocialIcon platform={s.platform} />
                   </a>
@@ -740,7 +674,7 @@ export function PortfolioTemplate1({ brand, photos, garmentTypes, reviews }) {
           </div>
           <div className={styles.footerNav}>
             <p className={styles.footerColLabel}>Navigate</p>
-            <button onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })} className={styles.footerNavLink}>Home</button>
+            <button onClick={scrollToTop} className={styles.footerNavLink}>Home</button>
             <button onClick={() => scrollTo(aboutRef)} className={styles.footerNavLink}>About</button>
             <button onClick={() => scrollTo(worksRef)} className={styles.footerNavLink}>Work</button>
             <button onClick={() => scrollTo(bookRef)}  className={styles.footerNavLink}>Contact</button>

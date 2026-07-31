@@ -130,7 +130,7 @@ export default function Portfolio() {
 
   const TemplateComponent = TEMPLATE_MAP[activeKey] ?? PortfolioTemplate1
 
-  const mergedBrand = { ...brand, ...portfolioSettings }
+  const mergedBrand = { ...portfolioSettings, ...brand }
 
   return (
     <TemplateComponent
