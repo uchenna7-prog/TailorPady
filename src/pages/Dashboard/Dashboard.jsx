@@ -170,18 +170,12 @@ function Dashboard({ onMenuClick, onGoToCustomer }) {
     }
   }, [customersReady, customers.length, tourActive, hasCompletedTour, startTour])
 
-  // If notifications are already granted/denied/dismissed by the time the
-  // tour reaches this step, the banner won't render — skip immediately
-  // instead of waiting out the generic target-timeout.
   useEffect(() => {
     if (currentStep?.id !== 'enable-notifications') return
     if (showNotificationBanner) return
     completeStep('enable-notifications')
   }, [currentStep, showNotificationBanner, completeStep])
 
-  // If the user picked "Set up business profile" but the profile turns out
-  // to already be complete (card wouldn't even render), skip straight to
-  // the post-profile confirm instead of waiting out the target-timeout.
   useEffect(() => {
     if (currentStep?.id !== 'highlight-profile-card') return
     if (profileLoading) return
@@ -384,8 +378,8 @@ function Dashboard({ onMenuClick, onGoToCustomer }) {
   const upcomingAppointments = upcoming.slice(0, 3)
   const pastAppointments     = recentAppts.slice(0, 3)
 
-  async function handleEnableNotifications() {
-    await requestPushPermission()
+  function handleEnableNotifications() {
+    requestPushPermission().catch(() => {})
     dismissNotificationBanner()
     completeStep('enable-notifications')
   }

@@ -3,11 +3,18 @@ import { useTour } from '../../contexts/TourContext'
 import styles from './OnboardingTour.module.css'
 
 const PAD = 8
-const CARD_GAP = 20
+const CARD_GAP = 16
 const CARD_WIDTH = 280
 const CARD_HEIGHT_FALLBACK = 170
 const TARGET_TIMEOUT_MS = 2500
 const RESIZE_SETTLE_MS = 200
+const DESKTOP_BREAKPOINT = 769
+
+function resolveTarget(step) {
+  if (!step) return null
+  if (step.desktopTarget && window.innerWidth >= DESKTOP_BREAKPOINT) return step.desktopTarget
+  return step.target
+}
 
 export default function OnboardingTour() {
   const {
@@ -24,11 +31,12 @@ export default function OnboardingTour() {
   const cardRef = useRef(null)
 
   const measure = useCallback(() => {
-    if (!currentStep?.target) {
+    const target = resolveTarget(currentStep)
+    if (!target) {
       setRect(prev => (prev === null ? prev : null))
       return
     }
-    const el = document.querySelector(currentStep.target)
+    const el = document.querySelector(target)
     if (!el) {
       setRect(prev => (prev === null ? prev : null))
       return
@@ -131,18 +139,20 @@ export default function OnboardingTour() {
   }, [isActive])
 
   useEffect(() => {
-    if (!isActive || !currentStep?.target) return
+    if (!isActive || !currentStep) return
+    const target = resolveTarget(currentStep)
+    if (!target) return
     let cancelled = false
     const timer = setTimeout(() => {
       if (cancelled) return
-      const el = document.querySelector(currentStep.target)
+      const el = document.querySelector(target)
       if (!el) skipCurrentStep()
     }, TARGET_TIMEOUT_MS)
     return () => {
       cancelled = true
       clearTimeout(timer)
     }
-  }, [currentStep?.id, isActive, skipCurrentStep])
+  }, [currentStep, isActive, skipCurrentStep])
 
   useLayoutEffect(() => {
     if (!isActive || !cardRef.current) return
@@ -172,6 +182,9 @@ export default function OnboardingTour() {
   const hasTarget = !!rect
   const isConfirm = currentStep.type === 'confirm'
   const isBranch = currentStep.type === 'branch'
+  const isDesktopViewport = window.innerWidth >= DESKTOP_BREAKPOINT
+  const displayTitle = (isDesktopViewport && currentStep.desktopTitle) || currentStep.title
+  const displayMessage = (isDesktopViewport && currentStep.desktopMessage) || currentStep.message
 
   let tooltipPos = null
   let placeBelow = true
@@ -255,8 +268,8 @@ export default function OnboardingTour() {
           <div className={styles.phaseLabel}>{currentStep.phase}</div>
         )}
 
-        <h3 className={styles.title}>{currentStep.title}</h3>
-        <p className={styles.message}>{currentStep.message}</p>
+        <h3 className={styles.title}>{displayTitle}</h3>
+        <p className={styles.message}>{displayMessage}</p>
 
         {isBranch ? (
           <div className={styles.branchButtons}>

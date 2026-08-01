@@ -39,9 +39,6 @@ export function InstallBanner() {
     }
   }, [installPrompt])
 
-  // If this step is active but the banner will never show (already
-  // installed, no prompt available, or already dismissed), skip immediately
-  // instead of letting the tour wait out its generic timeout.
   useEffect(() => {
     if (currentStep?.id !== 'install-app') return
     if (visible) return
@@ -50,10 +47,10 @@ export function InstallBanner() {
     }
   }, [currentStep, visible, installPrompt, completeStep])
 
-  const handleInstall = async () => {
-    const accepted = await triggerInstall()
+  const handleInstall = () => {
+    triggerInstall().catch(() => {})
     completeStep('install-app')
-    if (accepted) setVisible(false)
+    setVisible(false)
   }
 
   const handleDismiss = () => {

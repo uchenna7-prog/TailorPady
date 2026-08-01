@@ -16,9 +16,8 @@ export const SUBTEXTS = [
 ]
 
 
-
 export const QUICK_ACTIONS = [
-  { icon: 'person_add', label: 'Add Customer',     route: '/customers'    },
+  { icon: 'person_add', label: 'Add Customer',     route: '/customers',    tourId: 'add-customer-quick-action' },
   { icon: 'event',      label: 'Book Appointment', route: '/appointments' },
   { icon: 'assignment', label: 'New Task',         route: '/tasks'        },
   { icon: 'receipt',    label: 'New Invoice',      route: '/invoices'     },

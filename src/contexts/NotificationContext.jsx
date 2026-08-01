@@ -10,6 +10,9 @@ const STORAGE_KEY = 'TailorPady_read_notifs'
 const PUSHED_KEY  = 'TailorPady_pushed_notifs'
 const VAPID_KEY   = 'BAe8t_ReMQne5iBlUJyfwd3HQ8N-TcLJoSH2ai0QSWOQhrSLrbJeQnGENUm01yBoRkynmlnRE-86S_9dFOVaRdM'
 
+const SW_READY_TIMEOUT_MS   = 6000
+const PERMISSION_TIMEOUT_MS = 15000
+
 const ICONS = {
   order:       { name: 'content_cut',        outlined: false },
   invoice:     { name: 'receipt_long',        outlined: true  },
@@ -70,14 +73,31 @@ function urlBase64ToUint8Array(base64String) {
   return Uint8Array.from([...raw].map(c => c.charCodeAt(0)))
 }
 
+function withTimeout(promise, ms) {
+  return new Promise((resolve) => {
+    const timer = setTimeout(() => resolve(null), ms)
+    promise
+      .then((value) => {
+        clearTimeout(timer)
+        resolve(value)
+      })
+      .catch(() => {
+        clearTimeout(timer)
+        resolve(null)
+      })
+  })
+}
+
 async function subscribeToPush() {
   try {
     if (!('serviceWorker' in navigator) || !('PushManager' in window)) return null
 
-    const permission = await Notification.requestPermission()
+    const permission = await withTimeout(Notification.requestPermission(), PERMISSION_TIMEOUT_MS)
     if (permission !== 'granted') return null
 
-    const reg      = await navigator.serviceWorker.ready
+    const reg = await withTimeout(navigator.serviceWorker.ready, SW_READY_TIMEOUT_MS)
+    if (!reg) return null
+
     const existing = await reg.pushManager.getSubscription()
     if (existing) return existing
 
