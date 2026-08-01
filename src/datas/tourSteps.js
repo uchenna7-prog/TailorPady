@@ -232,6 +232,17 @@ export const TOURS = {
       count: { current: 2, total: 2 },
     },
     {
+      id: 'confirm-setup-profile-after-tour',
+      type: 'confirm',
+      target: null,
+      title: 'One more thing 🎉',
+      message: 'Want to set up your business profile now, so your invoices and receipts look properly branded?',
+      yesLabel: 'Set it up',
+      noLabel: 'Maybe later',
+      yesTarget: 'highlight-profile-card',
+      noTarget: 'done',
+    },
+    {
       id: 'done',
       target: null,
       title: "You're all set!",

@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState, useCallback } from 'react'
+import { useLocation } from 'react-router-dom'
 import { useTour } from '../../contexts/TourContext'
 import styles from './OnboardingTour.module.css'
 
@@ -14,12 +15,34 @@ export default function OnboardingTour() {
     isActive, currentStep, stepIndex, totalSteps,
     skipTour, finishTour, advanceManual, resolveConfirm, resolveBranch, skipCurrentStep,
   } = useTour()
+  const location = useLocation()
   const [rect, setRect] = useState(null)
   const [isResizing, setIsResizing] = useState(false)
+  const [cardHeight, setCardHeight] = useState(CARD_HEIGHT_ESTIMATE)
   const rafRef = useRef(null)
   const scrolledStepIdRef = useRef(null)
   const lockScrollYRef = useRef(0)
   const resizeTimerRef = useRef(null)
+  const resizeObserverRef = useRef(null)
+
+  const setCardRef = useCallback((node) => {
+    if (resizeObserverRef.current) {
+      resizeObserverRef.current.disconnect()
+      resizeObserverRef.current = null
+    }
+    if (node) {
+      const ro = new ResizeObserver((entries) => {
+        const h = entries[0]?.contentRect?.height
+        if (h) setCardHeight(h)
+      })
+      ro.observe(node)
+      resizeObserverRef.current = ro
+    }
+  }, [])
+
+  useEffect(() => {
+    setCardHeight(CARD_HEIGHT_ESTIMATE)
+  }, [currentStep?.id])
 
   const measure = useCallback(() => {
     if (!currentStep?.target) {
@@ -128,6 +151,16 @@ export default function OnboardingTour() {
     }
   }, [isActive])
 
+  // A route change means a fresh page just mounted — it should always be
+  // viewed from its own top, regardless of how far the previous page had
+  // scrolled. Without this, leftover scroll offset from one page bleeds
+  // into the next and can hide its content entirely.
+  useEffect(() => {
+    if (!isActive) return
+    lockScrollYRef.current = 0
+    document.body.style.top = '0px'
+  }, [location.pathname, isActive])
+
   useEffect(() => {
     if (!isActive || !currentStep?.target) return
     let cancelled = false
@@ -155,10 +188,10 @@ export default function OnboardingTour() {
 
   if (hasTarget) {
     const spaceBelow = window.innerHeight - (rect.top + rect.height)
-    placeBelow = spaceBelow > CARD_HEIGHT_ESTIMATE + CARD_GAP
+    placeBelow = spaceBelow > cardHeight + CARD_GAP
     const top = placeBelow
       ? rect.top + rect.height + CARD_GAP
-      : Math.max(12, rect.top - CARD_HEIGHT_ESTIMATE - CARD_GAP)
+      : Math.max(12, rect.top - cardHeight - CARD_GAP)
     const rawLeft = Math.min(Math.max(12, rect.left), window.innerWidth - CARD_WIDTH - 12)
     tooltipPos = { top, left: rawLeft }
 
@@ -193,6 +226,7 @@ export default function OnboardingTour() {
       )}
 
       <div
+        ref={setCardRef}
         className={`${styles.card} ${!hasTarget ? styles.cardCentered : ''} ${noTransitionClass}`}
         style={hasTarget ? { top: tooltipPos.top, left: tooltipPos.left } : undefined}
       >
