@@ -46,7 +46,7 @@
 .card {
   position: fixed;
   z-index: 1000;
-  width: 30%;
+  width: fit-content;
   background: var(--surface);
   border-radius: 14px;
   padding: 22px 20px 18px;
@@ -211,14 +211,15 @@
 }
 
 
-@media (max-width: 600px) {
-
+@media (max-width: 900px) {
 
   .card {
-    width: 60%;
+    width: 90%;
   }
 
   .cardCentered {
     width: 90%;
   }
+
+  
 }
