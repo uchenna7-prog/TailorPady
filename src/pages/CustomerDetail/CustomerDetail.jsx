@@ -464,7 +464,7 @@ export default function CustomerDetail({ onMenuClick }) {
         />
       </div>
 
-      <div className={styles.profileContainer}>
+      <div className={styles.profileContainer} data-tour="customer-profile-block">
         <div className={styles.profileSection}>
 
           <div className={styles.topRow}>

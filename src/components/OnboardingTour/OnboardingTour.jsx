@@ -3,12 +3,13 @@ import { useTour } from '../../contexts/TourContext'
 import styles from './OnboardingTour.module.css'
 
 const PAD = 8
-const CARD_GAP = 16
+const CARD_GAP = 20
 const CARD_WIDTH = 280
 const CARD_HEIGHT_FALLBACK = 170
 const TARGET_TIMEOUT_MS = 2500
 const RESIZE_SETTLE_MS = 200
 const DESKTOP_BREAKPOINT = 769
+const KEEP_VISIBLE_OFFSET = 60
 
 function resolveTarget(step) {
   if (!step) return null
@@ -50,7 +51,18 @@ export default function OnboardingTour() {
       const fullyVisible = r0.top >= 0 && r0.bottom <= window.innerHeight
       if (!fullyVisible) {
         const desiredOffset = r0.top - (window.innerHeight / 2 - r0.height / 2)
-        const nextScrollY = Math.max(0, lockScrollYRef.current + desiredOffset)
+        let nextScrollY = Math.max(0, lockScrollYRef.current + desiredOffset)
+
+        if (currentStep.keepVisible) {
+          const keepEl = document.querySelector(currentStep.keepVisible)
+          if (keepEl) {
+            const keepRect = keepEl.getBoundingClientRect()
+            const maxDelta = keepRect.top - KEEP_VISIBLE_OFFSET
+            const maxScrollY = Math.max(0, lockScrollYRef.current + maxDelta)
+            nextScrollY = Math.min(nextScrollY, maxScrollY)
+          }
+        }
+
         lockScrollYRef.current = nextScrollY
         document.body.style.top = `-${nextScrollY}px`
       }
