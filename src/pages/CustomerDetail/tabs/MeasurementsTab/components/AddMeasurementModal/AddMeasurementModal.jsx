@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect }  from 'react'
+import { createPortal } from 'react-dom'
 import { MultiImageUploader }  from '../MultiImageUploader/MultiImageUploader'
 import { uploadToCloudinary } from '../../../../../../services/cloudinaryService'
 import { useNetworkStatus }  from '../../../../../../hooks/useNetworkStatus'
@@ -339,7 +340,7 @@ export function AddMeasurementModal({ isOpen, onClose, onSave, gender }) {
     return { label: isSaving ? 'Saving...' : 'Skip', onClick: handleSkip, color: 'var(--text2)', disabled: isSaving }
   })()
 
-  return (
+  return createPortal(
     <div
       className={`${styles.formOverlay} ${isOpen ? styles.formOverlay_open : ''}`}
       onClick={handleDismiss}
@@ -646,6 +647,7 @@ export function AddMeasurementModal({ isOpen, onClose, onSave, gender }) {
 
         </div>
       </div>
-    </div>
+    </div>,
+    document.body
   )
 }

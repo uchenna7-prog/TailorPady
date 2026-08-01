@@ -1,4 +1,5 @@
 import { useState, useRef } from "react"
+import { createPortal } from "react-dom"
 import { getTodayReadable } from "../../utils"
 import Header from "../../../../../../components/Header/Header"
 import styles from "./AddOrderModal.module.css"
@@ -218,7 +219,7 @@ export function AddOrderModal({ isOpen, onClose, measurements, onSave, taxRate, 
     onClose()
   }
 
-  return (
+  return createPortal(
     <div
       className={`${styles.backdrop} ${isOpen ? styles.backdrop_open : ''}`}
       onClick={handleClose}
@@ -593,6 +594,7 @@ export function AddOrderModal({ isOpen, onClose, measurements, onSave, taxRate, 
           </div>
         </div>
       </div>
-    </div>
+    </div>,
+    document.body
   )
 }

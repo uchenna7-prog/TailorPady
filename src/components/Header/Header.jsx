@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
 import { useNotifications } from '../../contexts/NotificationContext'
 import { useAutonomousAgent } from '../../contexts/AutonomousAgentContext'
+import { useTour } from '../../contexts/TourContext'
 import { BotIcon } from '../BotIcon/BotIcon'
 import styles from './Header.module.css'
 
@@ -100,6 +101,7 @@ function Header({
 
   const navigate = useNavigate()
   const location = useLocation()
+  const { currentStep, goToStep, completeStep } = useTour()
 
   const { notifications, unreadCount, markRead, markAllRead } = useNotifications()
   const { drafts } = useAutonomousAgent()
@@ -128,8 +130,21 @@ function Header({
   const openNotif  = () => { setNotifTab('all'); setNotifOpen(true) }
   const closeNotif = () => setNotifOpen(false)
 
-  const handleBack     = () => onBackClick ? onBackClick() : navigate(-1)
+  const handleBack = () => {
+    if (currentStep?.id === 'highlight-back-button') {
+      completeStep('highlight-back-button')
+    }
+    onBackClick ? onBackClick() : navigate(-1)
+  }
+
   const handleBotClick = () => navigate('/agent')
+
+  const handleMenuClick = () => {
+    if (currentStep?.id === 'highlight-hamburger') {
+      goToStep('highlight-sidebar-account')
+    }
+    onMenuClick?.()
+  }
 
   const visibleNotifs = (() => {
     if (notifTab === 'unread') return notifications.filter(n => n.unread)
@@ -156,13 +171,23 @@ function Header({
         <div className={styles.left}>
 
           {type === 'default' && (
-            <button className={styles.iconBtn} onClick={onMenuClick} aria-label="Open menu">
+            <button
+              className={styles.iconBtn}
+              onClick={handleMenuClick}
+              aria-label="Open menu"
+              data-tour="tour-hamburger-btn"
+            >
               <span className={styles.hamburger}><span /><span /><span /></span>
             </button>
           )}
 
           {type === 'back' && (
-            <button className={styles.iconBtn} onClick={handleBack} aria-label="Go back">
+            <button
+              className={styles.iconBtn}
+              onClick={handleBack}
+              aria-label="Go back"
+              data-tour="tour-back-btn"
+            >
               <span className="mi" style={{ fontSize: '1.4rem' }}>{backIcon}</span>
             </button>
           )}

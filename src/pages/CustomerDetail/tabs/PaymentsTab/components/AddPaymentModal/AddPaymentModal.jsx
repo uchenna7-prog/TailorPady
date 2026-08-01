@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react"
+import { createPortal } from "react-dom"
 import { InlinePaymentForm } from "../InlinePaymentForm/InlinePaymentForm"
 import OrderMosaic from "../../../../../../components/OrderMosaic/OrderMosaic"
 import styles from "./AddPaymentModal.module.css"
@@ -61,7 +62,7 @@ export function AddPaymentModal({ isOpen, onClose, orders, payments, onSave }) {
   const showNoSearchMatch   = eligibleOrders.length > 0 && filteredOrders.length === 0
 
 
-  return (
+  return createPortal(
     <div
       className={`${styles.backdrop} ${isOpen ? styles.backdrop_open : ''}`}
       onClick={onClose}
@@ -163,6 +164,7 @@ export function AddPaymentModal({ isOpen, onClose, orders, payments, onSave }) {
           </div>
         )}
       </div>
-    </div>
+    </div>,
+    document.body
   )
 }

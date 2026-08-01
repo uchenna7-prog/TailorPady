@@ -4,6 +4,7 @@ import { useGeneralSettings } from '../../contexts/GeneralSettingsContext'
 import { useInstall }         from '../../contexts/InstallContext'
 import { useBadges }          from '../../contexts/BadgeContext'
 import { useAuth }            from '../../contexts/AuthContext'
+import { useTour }            from '../../contexts/TourContext'
 import ConfirmSheet           from '../ConfirmSheet/ConfirmSheet'
 import logoLightMode          from '../../assets/logoLightMode.png'
 import logoDarkMode           from '../../assets/logoDarkMode.png'
@@ -90,6 +91,7 @@ function SideBar({ isOpen, onClose }) {
   const { triggerInstall, isInstalled } = useInstall()
   const badges              = useBadges()
   const { logout }          = useAuth()
+  const { currentStep, goToStep } = useTour()
 
   const [scrolled, setScrolled]         = useState(false)
   const [logoutConfirm, setLogoutConfirm] = useState(false)
@@ -130,6 +132,9 @@ function SideBar({ isOpen, onClose }) {
   }
 
   const handleNav = (path) => {
+    if (path === '/account' && currentStep?.id === 'highlight-sidebar-account') {
+      goToStep('highlight-edit-brand')
+    }
     navigate(path)
     onClose()
   }
@@ -198,6 +203,7 @@ function SideBar({ isOpen, onClose }) {
                         onClick={() =>
                           item.action ? handleAction(item.action) : handleNav(item.path)
                         }
+                        data-tour={item.path === '/account' ? 'sidebar-account-nav' : undefined}
                       >
                         <span className="mi">{item.icon}</span>
                         <span className={styles.navLabel}>{item.label}</span>

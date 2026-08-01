@@ -450,7 +450,7 @@ export default function CustomerDetail({ onMenuClick }) {
     >
       <div ref={topSentinelRef} className={styles.sentinel} />
 
-      <div className={styles.navHeader}>
+      <div className={styles.navHeader} data-tour="page-header">
         <Header
           type="back"
           title={isScrolled ? customer.name : 'Customer Details'}

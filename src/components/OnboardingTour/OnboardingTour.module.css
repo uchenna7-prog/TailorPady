@@ -15,9 +15,15 @@
 }
 
 .blockStripHeavy {
-  background: rgba(0, 0, 0, 0.88);
-  backdrop-filter: blur(18px);
-  -webkit-backdrop-filter: blur(18px);
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  animation: backdropFadeIn 0.3s ease;
+}
+
+@keyframes backdropFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 
 .spotlightRing {
@@ -60,7 +66,16 @@
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  width: 35%;
+  width: 420px;
+  max-width: 90vw;
+  padding: 34px 28px 26px;
+  text-align: center;
+  animation: cardCenteredIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes cardCenteredIn {
+  from { opacity: 0; transform: translate(-50%, -50%) scale(0.9); }
+  to { opacity: 1; transform: translate(-50%, -50%) scale(1); }
 }
 
 .noTransition {
@@ -100,6 +115,10 @@
   padding: 0;
 }
 
+.sheetHandle {
+  display: none;
+}
+
 .dots {
   display: inline-flex;
   gap: 5px;
@@ -131,6 +150,12 @@
   margin: 0 28px 14px 0;
 }
 
+.cardCentered .phaseLabel {
+  margin: 0 0 14px;
+  white-space: normal;
+  text-overflow: clip;
+}
+
 .title {
   font-size: 0.95rem;
   font-weight: 800;
@@ -139,11 +164,22 @@
   margin: 0 28px 10px 0;
 }
 
+.cardCentered .title {
+  font-size: 1.3rem;
+  margin: 0 0 12px;
+}
+
 .message {
   font-size: 0.8rem;
   color: var(--text2);
   margin: 0 0 20px;
   line-height: 1.5;
+}
+
+.cardCentered .message {
+  font-size: 0.92rem;
+  line-height: 1.6;
+  margin: 0 0 28px;
 }
 
 .actions {
@@ -158,6 +194,13 @@
   gap: 10px;
 }
 
+.actionsCentered,
+.branchButtonsCentered {
+  flex-direction: column-reverse;
+  align-items: center;
+  gap: 12px;
+}
+
 .skipBtn,
 .doneBtn {
   font-size: 0.78rem;
@@ -165,7 +208,7 @@
   cursor: pointer;
   padding: 8px 14px;
   border-radius: 8px;
-  transition: background 0.15s ease, opacity 0.15s ease;
+  transition: background 0.15s ease, opacity 0.15s ease, transform 0.1s ease;
 }
 
 .skipBtn {
@@ -180,6 +223,19 @@
   color: var(--surface);
 }
 
+.actionsCentered .doneBtn,
+.branchButtonsCentered .doneBtn {
+  width: 100%;
+  padding: 14px 20px;
+  font-size: 0.85rem;
+  border-radius: 12px;
+}
+
+.actionsCentered .skipBtn,
+.branchButtonsCentered .skipBtn {
+  padding: 6px 10px;
+}
+
 @media (hover: hover) {
   .doneBtn:hover {
     opacity: 0.9;
@@ -188,11 +244,17 @@
 
 .doneBtn:active {
   opacity: 0.85;
+  transform: scale(0.97);
+}
+
+.skipBtn:active {
+  opacity: 0.6;
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .blockStrip, .spotlightRing, .card {
+  .blockStrip, .spotlightRing, .card, .cardCentered, .blockStripHeavy {
     transition: none !important;
+    animation: none !important;
   }
   .blockStrip {
     backdrop-filter: none;
@@ -208,8 +270,48 @@
   }
 }
 
-@media (max-width: 900px) {
+@media (max-width: 768px) {
   .cardCentered {
-    width: 90%;
+    top: auto;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    width: 100%;
+    max-width: 100%;
+    transform: none;
+    border-radius: 24px 24px 0 0;
+    padding: 12px 22px calc(24px + env(safe-area-inset-bottom, 0px));
+    animation: cardCenteredSheetIn 0.36s cubic-bezier(0.32, 0.72, 0, 1);
+  }
+
+  @keyframes cardCenteredSheetIn {
+    from { transform: translateY(100%); }
+    to { transform: translateY(0); }
+  }
+
+  .sheetHandle {
+    display: block;
+    width: 36px;
+    height: 4px;
+    border-radius: 2px;
+    background: var(--border);
+    margin: 0 auto 18px;
+  }
+
+  .cardCentered .closeBtn {
+    top: 16px;
+    right: 16px;
+  }
+
+  .cardCentered .title {
+    font-size: 1.2rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .blockStripHeavy {
+    background: rgba(0, 0, 0, 0.52);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
   }
 }

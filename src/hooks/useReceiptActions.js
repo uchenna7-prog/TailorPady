@@ -142,7 +142,11 @@ export function useReceiptActions({ customerData, orders, showToast, setActiveTa
     showToast(`${receiptNumber} receipt generated ✓`)
     setActiveTab('receipts')
     setReopenReceiptId?.(newReceipt.id)
-    resolveShortcut(RECEIPT_TOUR_PHASE_STEPS, 'done')
+
+    const hasBrand = !!(profileSettings.brandName || profileSettings.brandLogo)
+    const hasBusinessInfo = !!(profileSettings.brandPhone || profileSettings.brandEmail || profileSettings.brandAddress)
+    const shortcutTarget = (hasBrand && hasBusinessInfo) ? 'done' : 'confirm-setup-profile-after-tour'
+    resolveShortcut(RECEIPT_TOUR_PHASE_STEPS, shortcutTarget)
 
     customerData.saveReceipt(newReceipt).catch(() => {
       showToast('Receipt saved locally — will sync when online')

@@ -9,7 +9,7 @@ const CARD_HEIGHT_FALLBACK = 170
 const TARGET_TIMEOUT_MS = 2500
 const RESIZE_SETTLE_MS = 200
 const DESKTOP_BREAKPOINT = 769
-const KEEP_VISIBLE_OFFSET = 60
+const KEEP_VISIBLE_FALLBACK_OFFSET = 60
 
 function resolveTarget(step) {
   if (!step) return null
@@ -57,7 +57,9 @@ export default function OnboardingTour() {
           const keepEl = document.querySelector(currentStep.keepVisible)
           if (keepEl) {
             const keepRect = keepEl.getBoundingClientRect()
-            const maxDelta = keepRect.top - KEEP_VISIBLE_OFFSET
+            const headerEl = document.querySelector('[data-tour="page-header"]')
+            const headerOffset = headerEl ? headerEl.getBoundingClientRect().height : KEEP_VISIBLE_FALLBACK_OFFSET
+            const maxDelta = keepRect.top - headerOffset
             const maxScrollY = Math.max(0, lockScrollYRef.current + maxDelta)
             nextScrollY = Math.min(nextScrollY, maxScrollY)
           }
@@ -216,6 +218,8 @@ export default function OnboardingTour() {
   }
 
   const noTransitionClass = isResizing ? styles.noTransition : ''
+  const centeredActionsClass = !hasTarget ? styles.actionsCentered : ''
+  const centeredBranchClass = !hasTarget ? styles.branchButtonsCentered : ''
 
   return (
     <div className={styles.overlayRoot}>
@@ -246,6 +250,8 @@ export default function OnboardingTour() {
         className={`${styles.card} ${!hasTarget ? styles.cardCentered : ''} ${noTransitionClass}`}
         style={hasTarget ? { top: tooltipPos.top, left: tooltipPos.left } : undefined}
       >
+        {!hasTarget && <div className={styles.sheetHandle} />}
+
         {hasTarget && (
           <div
             className={placeBelow ? styles.arrowUp : styles.arrowDown}
@@ -284,7 +290,7 @@ export default function OnboardingTour() {
         <p className={styles.message}>{displayMessage}</p>
 
         {isBranch ? (
-          <div className={styles.branchButtons}>
+          <div className={`${styles.branchButtons} ${centeredBranchClass}`}>
             <button className={styles.skipBtn} onClick={() => resolveBranch(currentStep.id, 'view')}>
               {currentStep.viewLabel}
             </button>
@@ -293,7 +299,7 @@ export default function OnboardingTour() {
             </button>
           </div>
         ) : isConfirm ? (
-          <div className={styles.actions}>
+          <div className={`${styles.actions} ${centeredActionsClass}`}>
             <button className={styles.skipBtn} onClick={() => resolveConfirm(currentStep.id, 'no')}>
               {currentStep.noLabel || 'Not now'}
             </button>
@@ -302,11 +308,11 @@ export default function OnboardingTour() {
             </button>
           </div>
         ) : currentStep.manual ? (
-          <div className={styles.actions}>
+          <div className={`${styles.actions} ${centeredActionsClass}`}>
             <button className={styles.doneBtn} onClick={advanceManual}>{currentStep.ctaLabel || 'Next'}</button>
           </div>
         ) : isLastStep ? (
-          <div className={styles.actions}>
+          <div className={`${styles.actions} ${centeredActionsClass}`}>
             <button className={styles.doneBtn} onClick={finishTour}>Got it</button>
           </div>
         ) : null}

@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react'
+import { createPortal } from 'react-dom'
 import { ORDER_STATUS_STYLES, ORDER_STATUS_LABELS } from '../../../../../../datas/orderDatas'
 import { getCurrency,formatMoney } from '../../../../../../utils/moneyUtils'
 import OrderMosaic from '../../../../../../components/OrderMosaic/OrderMosaic'
@@ -70,7 +71,7 @@ export function AddInvoiceModal({
   }
 
 
-  return (
+  return createPortal(
     <div
       className={`${styles.backdrop} ${isOpen ? styles.backdrop_open : ''}`}
       onClick={onClose}
@@ -237,6 +238,7 @@ export function AddInvoiceModal({
           </div>
         )}
       </div>
-    </div>
+    </div>,
+    document.body
   )
 }

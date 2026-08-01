@@ -116,6 +116,17 @@ export default function Account({ onMenuClick, isPremium = false, onUpgrade = ()
     else goToStep('confirm-add-customer-after-profile')
   }, [awaitingProfileTourAdvance, hasBrand, hasBusinessInfo, goToStep])
 
+  // If the tour brought the user here via the sidebar shortcut (after
+  // finishing the customer-first path), self-correct to whichever profile
+  // section is actually still missing, or move on if both are already done.
+  useEffect(() => {
+    if (!['highlight-sidebar-account', 'highlight-edit-brand', 'highlight-edit-business-info'].includes(currentStep?.id)) return
+    if (!hasBrand) goToStep('highlight-edit-brand')
+    else if (!hasBusinessInfo) goToStep('highlight-edit-business-info')
+    else goToStep('confirm-add-customer-after-profile')
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
   const showToast = useCallback(msg => {
     setToastMsg(msg)
     clearTimeout(toastTimer.current)

@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
+import { createPortal } from 'react-dom'
 import { InlineInstallmentList } from '../InlineInstallmentList/InlineInstallmentList'
 import { getTotalPaid, isPaymentFullyReceipted } from '../../utils'
 import OrderMosaic from '../../../../../../components/OrderMosaic/OrderMosaic'
@@ -51,7 +52,7 @@ export function AddReceiptModal({ isOpen, onClose, orders, payments, receipts, o
   const showAllReceiptsGenerated = ordersNeedingReceipt.length === 0
   const showNoSearchMatch        = ordersNeedingReceipt.length > 0 && filteredOrders.length === 0
 
-  return (
+  return createPortal(
     <div
       className={`${styles.backdrop} ${isOpen ? styles.backdrop_open : ''}`}
       onClick={onClose}
@@ -174,6 +175,7 @@ export function AddReceiptModal({ isOpen, onClose, orders, payments, receipts, o
           </div>
         )}
       </div>
-    </div>
+    </div>,
+    document.body
   )
 }
