@@ -1,6 +1,7 @@
 import { useRef, useState, useEffect } from 'react'
 import { useGeneralSettings } from '../../../contexts/GeneralSettingsContext'
 import { useProfileSettings } from '../../../contexts/ProfileSettingsContext'
+import { useNetworkStatus } from '../../../hooks/useNetworkStatus'
 import { TEMPLATE_MAPPINGS } from '../../Templates/datas/receiptTemplateMappings'
 import {
   resolveCumulativePaid,
@@ -55,6 +56,19 @@ function buildSnapshotedBrandSettings(receiptBrandSettings, brandSnapshot) {
   }
 }
 
+function getUpdateErrorMessage(err, isOnline, label) {
+  if (!isOnline) {
+    return `You're offline — ${label} wasn't saved. Reconnect and try again.`
+  }
+  if (err?.status === 401 || err?.status === 403) {
+    return `Session expired — please log in again to save your ${label}.`
+  }
+  if (err?.status >= 500) {
+    return `Server error — couldn't save your ${label}. Please try again shortly.`
+  }
+  return `Couldn't save your ${label} — reverted to previous. Please try again.`
+}
+
 export default function ReceiptViewer({
   receipt: snapshotedReceipt,
   customer,
@@ -78,6 +92,7 @@ export default function ReceiptViewer({
   const { profileSettings, updateManyProfileSettings } = useProfileSettings()
 
   const RECEIPT_BRAND_SETTINGS = useReceiptBrandSettings()
+  const isOnline = useNetworkStatus()
 
   const paperRef = useRef(null)
   const pendingFieldsRef = useRef(new Set())
@@ -230,10 +245,10 @@ export default function ReceiptViewer({
 
       customerData.updateReceiptTemplate(receipt.id, change.receiptTemplate)
         .then(() => { pendingFieldsRef.current.delete('template') })
-        .catch(() => {
+        .catch((err) => {
           pendingFieldsRef.current.delete('template')
           setReceipt(prev => ({ ...prev, template: prevTemplate }))
-          showToast?.('Could not update template.')
+          showToast?.(getUpdateErrorMessage(err, isOnline, 'template'))
         })
     } else {
       const prevSnapshot = receipt.brandSnapshot
@@ -246,10 +261,10 @@ export default function ReceiptViewer({
 
       customerData.updateReceiptColour(receipt.id, change.colourId, change.colour)
         .then(() => { pendingFieldsRef.current.delete('brandSnapshot') })
-        .catch(() => {
+        .catch((err) => {
           pendingFieldsRef.current.delete('brandSnapshot')
           setReceipt(prev => ({ ...prev, brandSnapshot: prevSnapshot }))
-          showToast?.('Could not update colour.')
+          showToast?.(getUpdateErrorMessage(err, isOnline, 'colour'))
         })
     }
   }
@@ -269,10 +284,10 @@ export default function ReceiptViewer({
 
       customerData.updateReceiptTemplate(receipt.id, change.receiptTemplate)
         .then(() => { pendingFieldsRef.current.delete('template') })
-        .catch(() => {
+        .catch((err) => {
           pendingFieldsRef.current.delete('template')
           setReceipt(prev => ({ ...prev, template: prevTemplate }))
-          showToast?.('Could not update template.')
+          showToast?.(getUpdateErrorMessage(err, isOnline, 'template'))
         })
     } else {
       const prevSnapshot = receipt.brandSnapshot
@@ -286,10 +301,10 @@ export default function ReceiptViewer({
 
       customerData.updateReceiptColour(receipt.id, change.colourId, change.colour)
         .then(() => { pendingFieldsRef.current.delete('brandSnapshot') })
-        .catch(() => {
+        .catch((err) => {
           pendingFieldsRef.current.delete('brandSnapshot')
           setReceipt(prev => ({ ...prev, brandSnapshot: prevSnapshot }))
-          showToast?.('Could not update colour.')
+          showToast?.(getUpdateErrorMessage(err, isOnline, 'colour'))
         })
     }
   }

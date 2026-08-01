@@ -1,6 +1,7 @@
 import { useRef, useState, useEffect } from 'react'
 import { useGeneralSettings } from '../../../contexts/GeneralSettingsContext'
 import { useProfileSettings } from '../../../contexts/ProfileSettingsContext'
+import { useNetworkStatus } from '../../../hooks/useNetworkStatus'
 import { TEMPLATE_MAPPINGS } from '../../Templates/datas/invoiceTemplateMappings'
 import { buildInvoiceWhatsAppMessage } from './utils'
 import { sharePDF, downloadPDF } from '../../../utils/pdfUtils'
@@ -59,6 +60,19 @@ function buildSnapshotedBrandSettings(invoiceBrandSettings, brandSnapshot) {
   }
 }
 
+function getUpdateErrorMessage(err, isOnline, label) {
+  if (!isOnline) {
+    return `You're offline — ${label} wasn't saved. Reconnect and try again.`
+  }
+  if (err?.status === 401 || err?.status === 403) {
+    return `Session expired — please log in again to save your ${label}.`
+  }
+  if (err?.status >= 500) {
+    return `Server error — couldn't save your ${label}. Please try again shortly.`
+  }
+  return `Couldn't save your ${label} — reverted to previous. Please try again.`
+}
+
 export default function InvoiceViewer({
   invoice: snapShotedInvoice,
   customer,
@@ -82,6 +96,7 @@ export default function InvoiceViewer({
   const { profileSettings, updateManyProfileSettings } = useProfileSettings()
 
   const INVOICE_BRAND_SETTINGS = useInvoiceBrandSettings()
+  const isOnline = useNetworkStatus()
 
   const paperRef = useRef(null)
   const pendingFieldsRef = useRef(new Set())
@@ -231,10 +246,10 @@ export default function InvoiceViewer({
 
       customerData.updateInvoiceTemplate(invoice.id, change.invoiceTemplate)
         .then(() => { pendingFieldsRef.current.delete('template') })
-        .catch(() => {
+        .catch((err) => {
           pendingFieldsRef.current.delete('template')
           setInvoice(prev => ({ ...prev, template: prevTemplate }))
-          showToast?.('Could not update template.')
+          showToast?.(getUpdateErrorMessage(err, isOnline, 'template'))
         })
     } else {
       const prevSnapshot = invoice.brandSnapshot
@@ -247,10 +262,10 @@ export default function InvoiceViewer({
 
       customerData.updateInvoiceColour(invoice.id, change.colourId, change.colour)
         .then(() => { pendingFieldsRef.current.delete('brandSnapshot') })
-        .catch(() => {
+        .catch((err) => {
           pendingFieldsRef.current.delete('brandSnapshot')
           setInvoice(prev => ({ ...prev, brandSnapshot: prevSnapshot }))
-          showToast?.('Could not update colour.')
+          showToast?.(getUpdateErrorMessage(err, isOnline, 'colour'))
         })
     }
   }
@@ -270,10 +285,10 @@ export default function InvoiceViewer({
 
       customerData.updateInvoiceTemplate(invoice.id, change.invoiceTemplate)
         .then(() => { pendingFieldsRef.current.delete('template') })
-        .catch(() => {
+        .catch((err) => {
           pendingFieldsRef.current.delete('template')
           setInvoice(prev => ({ ...prev, template: prevTemplate }))
-          showToast?.('Could not update template.')
+          showToast?.(getUpdateErrorMessage(err, isOnline, 'template'))
         })
     } else {
       const prevSnapshot = invoice.brandSnapshot
@@ -287,10 +302,10 @@ export default function InvoiceViewer({
 
       customerData.updateInvoiceColour(invoice.id, change.colourId, change.colour)
         .then(() => { pendingFieldsRef.current.delete('brandSnapshot') })
-        .catch(() => {
+        .catch((err) => {
           pendingFieldsRef.current.delete('brandSnapshot')
           setInvoice(prev => ({ ...prev, brandSnapshot: prevSnapshot }))
-          showToast?.('Could not update colour.')
+          showToast?.(getUpdateErrorMessage(err, isOnline, 'colour'))
         })
     }
   }
