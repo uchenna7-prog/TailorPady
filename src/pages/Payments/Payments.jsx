@@ -144,6 +144,8 @@ function PaymentRow({ row, isLast, onTap, orderItems }) {
           size="md"
           overdue={false}
           className={styles.mosaicOverride}
+          emptyIcon="payments"
+          iconColor={isPending ? null : sm.color}
         />
       </div>
 
@@ -245,6 +247,8 @@ function PaymentDetail({ row, onClose, onNavigateToCustomer, orderItems }) {
                 size="sm"
                 overdue={false}
                 className={styles.mosaicOverride}
+                emptyIcon="payments"
+                iconColor={sm.color}
               />
             </div>
             <div className={styles.detailTitle}>{row.orderDesc || 'Payment'}</div>
@@ -697,7 +701,6 @@ export default function Payments({ onMenuClick }) {
             </div>
           )
         })}
-
 
         <div
           className={styles.tabUnderlineTrack}

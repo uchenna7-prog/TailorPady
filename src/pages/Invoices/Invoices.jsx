@@ -12,7 +12,6 @@ import styles from './Invoices.module.css'
 import BottomNav from '../../components/BottomNav/BottomNav'
 import OrderMosaic from '../../components/OrderMosaic/OrderMosaic'
 
-
 function isOverdue(invoice) {
   if (invoice.status === 'paid') return false
   if (!invoice.due) return false
@@ -42,7 +41,6 @@ function computeInvoiceTotal(invoice) {
   return itemsSubtotal - discountAmount + shippingFee + taxAmount
 }
 
-
 const TABS = [
   { id: 'all',       label: 'All'          },
   { id: 'unpaid',    label: 'Unpaid'       },
@@ -52,7 +50,6 @@ const TABS = [
 ]
 
 const TAB_IDS = TABS.map(t => t.id)
-
 
 function InvoiceRow({ invoice, currency, onTap, isLast, orderItems }) {
   const total = computeInvoiceTotal(invoice)
@@ -66,7 +63,11 @@ function InvoiceRow({ invoice, currency, onTap, isLast, orderItems }) {
       className={`${styles.invoiceListItem} ${isLast ? styles.invoiceListItemLast : ''} ${overdue ? styles.invoiceListItemOverdue : ''}`}
       onClick={onTap}
     >
-      <OrderMosaic items={orderItems} overdue={overdue} />
+      <OrderMosaic
+        items={orderItems}
+        overdue={overdue}
+        emptyIcon="receipt_long"
+      />
 
       <div className={styles.invoiceListInfo}>
         <div className={styles.invoiceListDesc}>{invoice.orderDesc || 'Order'}</div>
@@ -93,7 +94,6 @@ function InvoiceRow({ invoice, currency, onTap, isLast, orderItems }) {
     </div>
   )
 }
-
 
 export default function Invoices({ onMenuClick }) {
   const { generalSettings }                                                                              = useGeneralSettings()

@@ -2,7 +2,6 @@ import { getEffectiveStatus } from '../../contexts/AppointmentContext'
 import OrderMosaic from '../OrderMosaic/OrderMosaic'
 import styles from './AppointmentRow.module.css'
 
-
 const TYPE_ICONS = {
   fitting:      'checkroom',
   consultation: 'forum',
@@ -54,7 +53,6 @@ function timeUntil(dateStr, timeStr) {
   return `In ${days}d`
 }
 
-
 export function AppointmentRow({ appt, isLast, allOrders, onOpen }) {
   const effectiveStatus = getEffectiveStatus(appt)
   const isMissed        = effectiveStatus === 'missed'
@@ -71,7 +69,13 @@ export function AppointmentRow({ appt, isLast, allOrders, onOpen }) {
       onClick={onOpen}
     >
       {linkedOrder ? (
-        <OrderMosaic items={linkedOrderItems} size="md" overdue={isMissed} />
+        <OrderMosaic
+          items={linkedOrderItems}
+          size="md"
+          overdue={isMissed}
+          emptyIcon={icon}
+          iconColor={sc.color}
+        />
       ) : (
         <div className={styles.apptRowIcon}>
           <div className={styles.apptRowIconInner}>

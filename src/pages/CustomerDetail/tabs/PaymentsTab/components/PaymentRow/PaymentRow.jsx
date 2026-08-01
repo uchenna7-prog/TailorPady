@@ -4,24 +4,28 @@ import { useGeneralSettings } from '../../../../../../contexts/GeneralSettingsCo
 import OrderMosaic from '../../../../../../components/OrderMosaic/OrderMosaic'
 import styles from './PaymentRow.module.css'
 
-
 export function PaymentRow({ payment, index, datePayments, orderItemsMap, onTap }) {
 
   const { generalSettings } = useGeneralSettings()
-  const statusMeta   = getStatusMeta(payment.status)
-  const isLast       = index === datePayments.length - 1
+  const statusMeta = getStatusMeta(payment.status)
+  const isLast = index === datePayments.length - 1
   const installments = payment.installments || []
-  const totalPaid    = getTotalPaid(installments)
-  const fullPrice    = parseFloat(payment.orderPrice) || 0
-  const progressPct  = getProgressPercent(totalPaid, fullPrice, payment.status)
-  const orderItems   = orderItemsMap[payment.orderId] ?? []
+  const totalPaid = getTotalPaid(installments)
+  const fullPrice = parseFloat(payment.orderPrice) || 0
+  const progressPct = getProgressPercent(totalPaid, fullPrice, payment.status)
+  const orderItems = orderItemsMap[payment.orderId] ?? []
 
   return (
     <div
       className={`${styles.paymentRow} ${isLast ? styles.paymentRowLast : ''}`}
       onClick={() => onTap(payment)}
     >
-      <OrderMosaic items={orderItems} size="md" fallbackIcon="payments" fallbackColor={statusMeta.color} />
+      <OrderMosaic
+        items={orderItems}
+        size="md"
+        emptyIcon="payments"
+        iconColor={statusMeta.color}
+      />
 
       <div className={styles.paymentRowInfo}>
         <div className={styles.paymentRowTitle}>{payment.orderDesc || 'Payment'}</div>

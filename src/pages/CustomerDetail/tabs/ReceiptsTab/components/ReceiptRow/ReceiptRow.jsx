@@ -1,9 +1,7 @@
-
 import { formatMoney } from "../../../../../../utils/moneyUtils"
 import { getPaymentStatus } from "../../utils"
 import OrderMosaic from "../../../../../../components/OrderMosaic/OrderMosaic"
 import styles from "./ReceiptRow.module.css"
-
 
 export function ReceiptRow({ receipt, currency, onTap, isLast, orderItems }) {
   const { thisPayment, isPaidInFull, label, badgeStyle } = getPaymentStatus(receipt)
@@ -14,7 +12,7 @@ export function ReceiptRow({ receipt, currency, onTap, isLast, orderItems }) {
       className={`${styles.receiptRow} ${isLast ? styles.receiptRowLast : ''}`}
       onClick={onTap}
     >
-      <OrderMosaic items={orderItems} size="md" />
+      <OrderMosaic items={orderItems} size="md" emptyIcon="receipt_long" />
 
       <div className={styles.receiptRowInfo}>
         <div className={styles.receiptRowTitle}>{receipt.orderDesc || 'Payment'}</div>

@@ -1,11 +1,15 @@
 import styles from './OrderMosaic.module.css'
 
+export default function OrderMosaic({
+  items = [],
+  size = 'md',
+  overdue = false,
+  className = '',
+  emptyIcon = 'content_cut',    
+  overdueIcon = 'alarm_on',        
+  slotIcon = 'checkroom',          
+}) {
 
-
-export default function OrderMosaic({ items = [], size = 'md', overdue = false, className = '' }) {
-
-
-  
   const covers = items.map(i => i.imgSrc ?? null).filter(Boolean)
   const total = items.length
   const hasImages = covers.length > 0
@@ -27,7 +31,7 @@ export default function OrderMosaic({ items = [], size = 'md', overdue = false, 
       <div className={outerCls}>
         <div className={innerCls}>
           <span className="mi" style={{ fontSize: size === 'sm' ? '1rem' : '1.3rem', color: overdue ? '#ef4444' : 'var(--text3)' }}>
-            {overdue ? 'alarm_on' : 'content_cut'}
+            {overdue ? overdueIcon : emptyIcon}
           </span>
         </div>
       </div>
@@ -56,7 +60,7 @@ export default function OrderMosaic({ items = [], size = 'md', overdue = false, 
             <div className={styles.cell}>
               {covers[1]
                 ? <img src={covers[1]} alt="" className={styles.panelImg} />
-                : <span className="mi" style={{ fontSize: '0.7rem', color: 'var(--text3)' }}>checkroom</span>
+                : <span className="mi" style={{ fontSize: '0.7rem', color: 'var(--text3)' }}>{slotIcon}</span>
               }
             </div>
           </div>
@@ -72,7 +76,7 @@ export default function OrderMosaic({ items = [], size = 'md', overdue = false, 
         <div className={styles.left}>
           {covers[0]
             ? <img src={covers[0]} alt="" className={styles.panelImg} />
-            : <span className="mi" style={{ fontSize: '0.8rem', color: 'var(--text3)' }}>checkroom</span>
+            : <span className="mi" style={{ fontSize: '0.8rem', color: 'var(--text3)' }}>{slotIcon}</span>
           }
         </div>
         <div className={styles.dividerV} />
@@ -80,14 +84,14 @@ export default function OrderMosaic({ items = [], size = 'md', overdue = false, 
           <div className={styles.cell}>
             {covers[1]
               ? <img src={covers[1]} alt="" className={styles.panelImg} />
-              : <span className="mi" style={{ fontSize: '0.7rem', color: 'var(--text3)' }}>checkroom</span>
+              : <span className="mi" style={{ fontSize: '0.7rem', color: 'var(--text3)' }}>{slotIcon}</span>
             }
           </div>
           <div className={styles.dividerH} />
           <div className={`${styles.cell} ${extra > 0 ? styles.cellOverlay : ''}`}>
             {covers[2]
               ? <img src={covers[2]} alt="" className={styles.panelImg} />
-              : <span className="mi" style={{ fontSize: '0.7rem', color: 'var(--text3)' }}>checkroom</span>
+              : <span className="mi" style={{ fontSize: '0.7rem', color: 'var(--text3)' }}>{slotIcon}</span>
             }
             {extra > 0 && <div className={styles.overlay}>+{extra}</div>}
           </div>

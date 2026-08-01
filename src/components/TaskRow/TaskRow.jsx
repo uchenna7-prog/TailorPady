@@ -72,7 +72,6 @@ function timeUntil(dateStr, timeStr) {
   return `In ${days}d`
 }
 
-
 export function TaskRow({ task, isLast, allOrders, onOpen }) {
   const effectiveStatus = getEffectiveStatus(task)
   const isOverdue       = effectiveStatus === 'overdue'
@@ -80,6 +79,7 @@ export function TaskRow({ task, isLast, allOrders, onOpen }) {
   const catIcon         = CATEGORY_ICONS[task.category] || 'assignment'
   const pc              = PRIORITY_COLORS[task.priority] ?? PRIORITY_COLORS.normal
   const until           = timeUntil(task.dueDate, task.dueTime)
+  const iconColor       = isOverdue ? '#ef4444' : task.done ? '#22c55e' : pc.text
 
   const linkedOrder      = task.orderId ? allOrders.find(o => String(o.id) === String(task.orderId)) : null
   const linkedOrderItems = linkedOrder?.items ?? []
@@ -90,7 +90,13 @@ export function TaskRow({ task, isLast, allOrders, onOpen }) {
       onClick={onOpen}
     >
       {linkedOrder ? (
-        <OrderMosaic items={linkedOrderItems} size="md" overdue={isOverdue} />
+        <OrderMosaic
+          items={linkedOrderItems}
+          size="md"
+          overdue={isOverdue}
+          emptyIcon={catIcon}
+          iconColor={iconColor}
+        />
       ) : (
         <div className={styles.taskRowIcon}>
           <div className={styles.taskRowIconInner}>
@@ -98,7 +104,7 @@ export function TaskRow({ task, isLast, allOrders, onOpen }) {
               className="mi"
               style={{
                 fontSize: '1.3rem',
-                color: isOverdue ? '#ef4444' : task.done ? '#22c55e' : pc.text,
+                color: iconColor,
               }}
             >
               {catIcon}

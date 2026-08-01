@@ -11,7 +11,6 @@ import Toast from '../../components/Toast/Toast'
 import BottomNav from '../../components/BottomNav/BottomNav'
 import styles from './Receipts.module.css'
 
-
 function getReceiptTotal(receipt) {
   return parseFloat(receipt.totalAmount ?? receipt.orderPrice) || 0
 }
@@ -56,7 +55,10 @@ function ReceiptCard({ receipt, currency, onTap, isLast, orderItems }) {
       className={`${styles.receiptListItem} ${isLast ? styles.receiptListItemLast : ''}`}
       onClick={onTap}
     >
-      <OrderMosaic items={orderItems} />
+      <OrderMosaic
+        items={orderItems}
+        emptyIcon="receipt_long"
+      />
 
       <div className={styles.receiptListInfo}>
         <div className={styles.receiptListDesc}>{receipt.orderDesc || 'Order'}</div>
@@ -80,7 +82,6 @@ function ReceiptCard({ receipt, currency, onTap, isLast, orderItems }) {
     </div>
   )
 }
-
 
 export default function Receipts({ onMenuClick }) {
   const { generalSettings }                                                          = useGeneralSettings()
