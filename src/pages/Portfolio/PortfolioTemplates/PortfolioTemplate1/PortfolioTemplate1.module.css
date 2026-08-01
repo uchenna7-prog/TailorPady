@@ -82,9 +82,7 @@
 }
 
 
-/* ============================================================
-   NAV
-============================================================ */
+/* NAV */
 .nav {
   position: fixed;
   top: 0;
@@ -132,7 +130,7 @@
   object-fit: contain;
   display: block;
   flex-shrink: 0;
-  border-radius: 10px;
+  border-radius: 50%;
   background: var(--ink);
   border: 1px solid var(--brand-primary, var(--line-strong));
   box-shadow: 0 0 0 3px var(--brand-surface, transparent);
@@ -145,7 +143,7 @@
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  border-radius: 10px;
+  border-radius: 50%;
   background: var(--brand-gradient, var(--ink));
   color: var(--brand-on-primary, var(--paper));
   box-shadow: 0 0 0 3px var(--brand-surface, transparent);
@@ -393,35 +391,30 @@
 }
 
 
-/* ============================================================
-   HERO
-============================================================ */
+/* HERO */
 .hero {
   padding-top: 68px;
-  min-height: 100dvh;
   display: flex;
   flex-direction: column;
 }
 
 .heroGrid {
   flex: 1;
-  display: grid;
-  grid-template-columns: 1fr;
+  display: flex;
+  flex-direction: column;
   max-width: 1400px;
   margin: 0 auto;
   width: 100%;
-  padding: 0;
-  gap: 40px;
-  padding-top: 24px;
-  padding-bottom: 0;
+  min-height: 0;
 }
 
 .heroLeft {
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  justify-content: flex-end;
+  min-height: calc(100dvh - 68px);
   max-width: 600px;
-  padding: 0 24px;
+  padding: 0 24px calc(28px + env(safe-area-inset-bottom));
 }
 
 .heroEyebrow {
@@ -459,7 +452,7 @@
 .heroHeadline {
   font-family: var(--font-display);
   font-weight: 700;
-  font-size: clamp(2.8rem, 4.6vw + 1.1rem, 3.75rem);
+  font-size: clamp(2.4rem, 4.6vw + 1.1rem, 3.75rem);
   line-height: 1.08;
   letter-spacing: -0.02em;
   color: var(--ink);
@@ -471,7 +464,7 @@
   font-size: clamp(13px, 0.6vw + 12px, 16px);
   line-height: 1.7;
   color: var(--muted);
-  margin: 0 0 36px;
+  margin: 0 0 32px;
   max-width: 440px;
 }
 
@@ -550,7 +543,7 @@
   position: relative;
   overflow: hidden;
   background: var(--surface-2);
-  min-height: 420px;
+  min-height: 100dvh;
 }
 
 .heroImg {
@@ -561,28 +554,66 @@
   display: block;
 }
 
-.heroImgFallback {
-  width: 100%;
-  height: 100%;
-  min-height: 420px;
+
+/* MEDIA PLACEHOLDER (shared between hero and cta cover) */
+.mediaPlaceholder {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  padding: 32px;
+  text-align: center;
   background: linear-gradient(135deg, var(--surface-2) 0%, var(--surface) 100%);
+}
+
+.mediaPlaceholderIconWrap {
   display: flex;
   align-items: center;
   justify-content: center;
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: var(--surface);
+  border: 1px solid var(--line-strong);
+  flex-shrink: 0;
 }
 
-.heroFallbackMonogram {
+.mediaPlaceholderIcon {
+  font-size: 1.7rem;
+  line-height: 1;
+  color: var(--brand-muted, var(--muted-2));
+}
+
+.mediaPlaceholderLabel {
   font-family: var(--font-display);
+  font-size: 16px;
   font-weight: 700;
-  font-size: 4.5rem;
-  letter-spacing: -0.02em;
-  color: var(--brand-muted, var(--line-strong));
+  letter-spacing: -0.01em;
+  color: var(--ink);
+}
+
+.mediaPlaceholderDark {
+  background: var(--ink);
+}
+
+.mediaPlaceholderDark .mediaPlaceholderIconWrap {
+  background: rgba(255, 255, 255, 0.06);
+  border-color: rgba(255, 255, 255, 0.14);
+}
+
+.mediaPlaceholderDark .mediaPlaceholderIcon {
+  color: rgba(255, 255, 255, 0.42);
+}
+
+.mediaPlaceholderDark .mediaPlaceholderLabel {
+  color: rgba(255, 255, 255, 0.72);
 }
 
 
-/* ============================================================
-   ABOUT
-============================================================ */
+/* ABOUT */
 .about {
   max-width: 1400px;
   margin: 0 auto;
@@ -628,76 +659,71 @@
   font-style: italic;
 }
 
-.specialties {
+.aboutInfoList {
+  list-style: none;
   display: flex;
   flex-direction: column;
-  gap: 12px;
-  margin-top: 4px;
+  gap: 14px;
+  margin: 4px 0 0;
+  padding: 0;
 }
 
-.specialtiesLabel {
-  font-family: var(--font-mono);
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: var(--muted);
-}
-
-.chipRow {
+.aboutInfoItem {
   display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-}
-
-.chip {
-  font-size: 13px;
+  align-items: center;
+  gap: 12px;
+  font-size: 15px;
   font-weight: 600;
   color: var(--ink);
-  border: 1px solid var(--line-strong);
-  padding: 7px 16px;
-  border-radius: 100px;
-  background: var(--surface);
 }
 
-.aboutFacts {
+.aboutInfoIcon {
+  font-size: 20px !important;
+  color: var(--brand-primary, var(--muted-2));
+  flex-shrink: 0;
+}
+
+.aboutStats {
   display: flex;
   flex-wrap: wrap;
   gap: 40px;
-  background: var(--brand-gradient-card, transparent);
-  border-radius: var(--radius);
-  padding: 28px;
 }
 
-.aboutFact {
+.aboutStat {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.aboutStatIcon {
+  font-size: 40px !important;
+  color: var(--brand-primary, var(--ink));
+  flex-shrink: 0;
+}
+
+.aboutStatText {
   display: flex;
   flex-direction: column;
-  gap: 6px;
-  min-width: 120px;
+  gap: 4px;
 }
 
-.factLabel {
+.aboutStatValue {
   font-family: var(--font-mono);
-  font-size: 11px;
-  font-weight: 600;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
+  font-size: clamp(22px, 2.2vw, 30px);
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  color: var(--ink);
+  font-variant-numeric: tabular-nums;
+}
+
+.aboutStatLabel {
+  font-size: 13px;
+  font-weight: 500;
   color: var(--muted-2);
 }
 
-.factValue {
-  font-family: var(--font-display);
-  font-size: 22px;
-  font-weight: 700;
-  color: var(--ink);
-  line-height: 1.3;
-  letter-spacing: -0.01em;
-}
 
-
-/* ============================================================
-   WORKS
-============================================================ */
+/* WORKS */
 .works {
   padding: 80px 0;
   border-bottom: 1px solid var(--line);
@@ -878,9 +904,7 @@
 }
 
 
-/* ============================================================
-   PROCESS
-============================================================ */
+/* PROCESS */
 .process {
   padding: 80px 24px;
   border-bottom: 1px solid var(--line);
@@ -945,9 +969,7 @@
 }
 
 
-/* ============================================================
-   REVIEWS
-============================================================ */
+/* REVIEWS */
 .reviews {
   padding: 80px 24px;
   border-bottom: 1px solid var(--line);
@@ -1031,9 +1053,7 @@
 }
 
 
-/* ============================================================
-   CTA / BOOK
-============================================================ */
+/* CTA / BOOK */
 .cta {
   position: relative;
   min-height: 70vh;
@@ -1051,12 +1071,6 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
-}
-
-.ctaFallback {
-  position: absolute;
-  inset: 0;
-  background: var(--ink);
 }
 
 .ctaOverlay {
@@ -1189,9 +1203,7 @@
 }
 
 
-/* ============================================================
-   FOOTER
-============================================================ */
+/* FOOTER */
 .footer {
   background: var(--ink);
 }
@@ -1326,9 +1338,7 @@
 }
 
 
-/* ============================================================
-   BOOKING SHEET
-============================================================ */
+/* BOOKING SHEET */
 .bookingOverlay {
   position: fixed;
   inset: 0;
@@ -1540,9 +1550,7 @@
 }
 
 
-/* ============================================================
-   LIGHTBOX
-============================================================ */
+/* LIGHTBOX */
 .lbOverlay {
   position: fixed;
   inset: 0;
@@ -1646,9 +1654,7 @@
 }
 
 
-/* ============================================================
-   RESPONSIVE — tablet
-============================================================ */
+/* RESPONSIVE — tablet */
 @media (min-width: 640px) {
   .navLinks {
     display: flex;
@@ -1707,23 +1713,41 @@
 }
 
 
-/* ============================================================
-   RESPONSIVE — desktop
-============================================================ */
+/* RESPONSIVE — desktop */
 @media (min-width: 860px) {
+  .hero {
+    height: 100dvh;
+    overflow: hidden;
+  }
+
   .heroGrid {
+    display: grid;
     grid-template-columns: 1fr 1fr;
     align-items: stretch;
-    padding-top: 0;
     gap: 0;
   }
 
   .heroLeft {
-    padding: 0 48px;
+    min-height: 0;
+    max-width: none;
+    padding: 0 48px calc(40px + env(safe-area-inset-bottom));
   }
 
   .heroRight {
     min-height: unset;
+  }
+
+  .mediaPlaceholderIconWrap {
+    width: 72px;
+    height: 72px;
+  }
+
+  .mediaPlaceholderIcon {
+    font-size: 1.9rem;
+  }
+
+  .mediaPlaceholderLabel {
+    font-size: 17px;
   }
 
   .aboutBody {
@@ -1736,10 +1760,10 @@
     flex: 1;
   }
 
-  .aboutFacts {
+  .aboutStats {
     flex: 0 0 320px;
     flex-direction: column;
-    gap: 32px;
+    gap: 36px;
   }
 
   .worksHeader {
@@ -1818,9 +1842,7 @@
 }
 
 
-/* ============================================================
-   RESPONSIVE — large desktop
-============================================================ */
+/* RESPONSIVE — large desktop */
 @media (min-width: 1100px) {
   .about { padding: 120px 64px; }
   .process { padding: 110px 64px; }
@@ -1839,7 +1861,7 @@
     scroll-margin-inline: 64px;
   }
 
-  .heroLeft { padding: 0 64px; }
+  .heroLeft { padding-left: 64px; padding-right: 64px; }
 
   .heroHeadline { font-size: clamp(2.8rem, 4.6vw + 1.1rem, 3.75rem);}
 
@@ -1853,9 +1875,7 @@
 }
 
 
-/* ============================================================
-   REDUCED MOTION
-============================================================ */
+/* REDUCED MOTION */
 @media (prefers-reduced-motion: reduce) {
   * {
     animation: none !important;

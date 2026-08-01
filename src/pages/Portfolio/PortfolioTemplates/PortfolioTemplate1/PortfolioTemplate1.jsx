@@ -47,6 +47,68 @@ const WA_SVG = (
   </svg>
 )
 
+function MediaPlaceholder({ label, dark = false }) {
+  return (
+    <div className={`${styles.mediaPlaceholder} ${dark ? styles.mediaPlaceholderDark : ''}`}>
+      <div className={styles.mediaPlaceholderIconWrap}>
+        <span className={`mi-outlined ${styles.mediaPlaceholderIcon}`}>image</span>
+      </div>
+      <span className={styles.mediaPlaceholderLabel}>{label}</span>
+    </div>
+  )
+}
+
+function formatStatic(value) {
+  return value.replace(/[\d.,]+/, m => (m.includes('.') ? '0.0' : '0'))
+}
+
+function useCountUp(value, inView, duration = 1400) {
+  const [display, setDisplay] = useState(() => formatStatic(value))
+  const startedRef = useRef(false)
+
+  useEffect(() => {
+    if (!inView || startedRef.current) return
+    startedRef.current = true
+
+    const match = value.match(/[\d.,]+/)
+    if (!match) {
+      setDisplay(value)
+      return
+    }
+
+    const raw = match[0]
+    const prefix = value.slice(0, match.index)
+    const suffix = value.slice(match.index + raw.length)
+    const decimals = raw.includes('.') ? raw.split('.')[1].length : 0
+    const target = parseFloat(raw.replace(/,/g, ''))
+    const start = performance.now()
+
+    const tick = now => {
+      const progress = Math.min((now - start) / duration, 1)
+      const eased = 1 - Math.pow(1 - progress, 3)
+      const current = target * eased
+      const formatted =
+        decimals > 0 ? current.toFixed(decimals) : Math.round(current).toLocaleString()
+      setDisplay(`${prefix}${formatted}${suffix}`)
+      if (progress < 1) requestAnimationFrame(tick)
+    }
+
+    requestAnimationFrame(tick)
+  }, [inView, value, duration])
+
+  return display
+}
+
+function StatValue({ value, className }) {
+  const [ref, inView] = useInView(0.5)
+  const display = useCountUp(value, inView)
+  return (
+    <span ref={ref} className={className}>
+      {display}
+    </span>
+  )
+}
+
 function useTheme() {
   const [theme, setTheme] = useState('light')
 
@@ -379,14 +441,17 @@ export function PortfolioTemplate1({ brand, photos, garmentTypes, reviews }) {
 
   const completedPhotos = photos.filter(p => p.category === 'completed_works')
   const filteredPhotos  = activeTab ? completedPhotos.filter(p => p.clothingType === activeTab) : completedPhotos
-  const statGarments    = milestone || (completedPhotos.length ? `${completedPhotos.length}+` : '—')
+  const statGarments    = milestone || (completedPhotos.length ? `${completedPhotos.length}+` : '0')
   const isCollapsed     = collapsed && !navOpen
 
-  const aboutFacts = [
-    foundedYear  && { value: foundedYear,  label: 'Working since' },
-    serviceArea  && { value: serviceArea,  label: 'Based in' },
-    turnaround   && { value: turnaround,   label: 'Turnaround' },
-    { value: statGarments, label: 'Garments made' },
+  const aboutStatsData = [
+    { icon: 'shopping_cart', value: statGarments, label: 'Orders completed' },
+    foundedYear && { icon: 'calendar_month', value: foundedYear, label: 'Working since' },
+  ].filter(Boolean).slice(0, 2)
+
+  const aboutInfoItems = [
+    serviceArea && { icon: 'location_on', text: serviceArea },
+    turnaround  && { icon: 'schedule',    text: turnaround },
   ].filter(Boolean)
 
   const processSteps = [
@@ -497,9 +562,7 @@ export function PortfolioTemplate1({ brand, photos, garmentTypes, reviews }) {
             {brand.heroBgImage ? (
               <img src={brand.heroBgImage} alt={brandName} className={styles.heroImg} />
             ) : (
-              <div className={styles.heroImgFallback}>
-                <span className={styles.heroFallbackMonogram}>{initials(brandName)}</span>
-              </div>
+              <MediaPlaceholder label="Hero image" />
             )}
           </div>
         </div>
@@ -522,13 +585,26 @@ export function PortfolioTemplate1({ brand, photos, garmentTypes, reviews }) {
                 <p className={styles.aboutSignature}>{featuredTechnique}</p>
               )}
 
+              {aboutInfoItems.length > 0 && (
+                <ul className={styles.aboutInfoList}>
+                  {aboutInfoItems.map(item => (
+                    <li key={item.label} className={styles.aboutInfoItem}>
+                      <span className={`mi ${styles.aboutInfoIcon}`}>{item.icon}</span>
+                      {item.text}
+                    </li>
+                  ))}
+                </ul>
+              )}
             </Reveal>
 
-            <Reveal as="div" className={styles.aboutFacts} delay={140}>
-              {aboutFacts.map(fact => (
-                <div key={fact.label} className={styles.aboutFact}>
-                  <span className={styles.factValue}>{fact.value}</span>
-                  <span className={styles.factLabel}>{fact.label}</span>
+            <Reveal as="div" className={styles.aboutStats} delay={140}>
+              {aboutStatsData.map((stat, i) => (
+                <div key={stat.label} className={styles.aboutStat}>
+                  <span className={`mi ${styles.aboutStatIcon}`}>{stat.icon}</span>
+                  <div className={styles.aboutStatText}>
+                    <StatValue value={String(stat.value)} className={styles.aboutStatValue} />
+                    <span className={styles.aboutStatLabel}>{stat.label}</span>
+                  </div>
                 </div>
               ))}
             </Reveal>
@@ -626,7 +702,7 @@ export function PortfolioTemplate1({ brand, photos, garmentTypes, reviews }) {
         <div className={styles.ctaMedia}>
           {brand.footerBgImage
             ? <img src={brand.footerBgImage} alt="" className={styles.ctaImg} />
-            : <div className={styles.ctaFallback} />
+            : <MediaPlaceholder label="Cover image" dark />
           }
           <div className={styles.ctaOverlay} />
         </div>
