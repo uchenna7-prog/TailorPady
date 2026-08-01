@@ -250,7 +250,6 @@ export default function OnboardingTour() {
         className={`${styles.card} ${!hasTarget ? styles.cardCentered : ''} ${noTransitionClass}`}
         style={hasTarget ? { top: tooltipPos.top, left: tooltipPos.left } : undefined}
       >
-        {!hasTarget && <div className={styles.sheetHandle} />}
 
         {hasTarget && (
           <div

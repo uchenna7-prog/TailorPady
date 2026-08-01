@@ -115,9 +115,6 @@
   padding: 0;
 }
 
-.sheetHandle {
-  display: none;
-}
 
 .dots {
   display: inline-flex;
@@ -271,16 +268,6 @@
 }
 
 @media (max-width: 768px) {
-
-
-  .sheetHandle {
-    display: block;
-    width: 36px;
-    height: 4px;
-    border-radius: 2px;
-    background: var(--border);
-    margin: 0 auto 18px;
-  }
 
   .cardCentered .closeBtn {
     top: 16px;
