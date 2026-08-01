@@ -26,9 +26,9 @@ export const TOURS = {
       target: null,
       title: 'What would you like to do first?',
       message: "Add your first customer or set up your business profile. Start wherever you prefer.",
-      continueLabel: 'Add a customer',
+      continueLabel: 'Add customer',
       nextTarget: 'goto-customers-nav',
-      viewLabel: 'Set up business profile',
+      viewLabel: 'Set up profile',
       viewTarget: 'highlight-profile-card',
     },
     {

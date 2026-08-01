@@ -46,7 +46,7 @@
 .card {
   position: fixed;
   z-index: 1000;
-  width: 260px;
+  width: 30%;
   background: var(--surface);
   border-radius: 14px;
   padding: 22px 20px 18px;
@@ -59,7 +59,7 @@
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  width: 280px;
+  width: 35%;
 }
 
 .noTransition {
@@ -207,5 +207,16 @@
   .pulseRing {
     animation: none;
     box-shadow: 0 0 0 3px var(--accent);
+  }
+}
+
+
+@media (max-width: 600px) {
+  .cardCentered {
+    width: 90%;
+  }
+
+  .card {
+    width: 60%;
   }
 }
