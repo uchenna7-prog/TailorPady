@@ -46,7 +46,8 @@
 .card {
   position: fixed;
   z-index: 1000;
-  width: fit-content;
+  width: 280px;
+  max-width: 90vw;
   background: var(--surface);
   border-radius: 14px;
   padding: 22px 20px 18px;
@@ -97,10 +98,7 @@
   cursor: pointer;
   border: none;
   padding: 0;
-
 }
-
-
 
 .dots {
   display: inline-flex;
@@ -210,16 +208,8 @@
   }
 }
 
-
 @media (max-width: 900px) {
-
-  .card {
-    width: 90%;
-  }
-
   .cardCentered {
     width: 90%;
   }
-
-  
 }

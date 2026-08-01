@@ -1,11 +1,11 @@
-import { useEffect, useRef, useState, useCallback } from 'react'
+import { useEffect, useRef, useState, useCallback, useLayoutEffect } from 'react'
 import { useTour } from '../../contexts/TourContext'
 import styles from './OnboardingTour.module.css'
 
 const PAD = 8
-const CARD_GAP = 18
-const CARD_WIDTH = 260
-const CARD_HEIGHT_ESTIMATE = 170
+const CARD_GAP = 20
+const CARD_WIDTH = 280
+const CARD_HEIGHT_FALLBACK = 170
 const TARGET_TIMEOUT_MS = 2500
 const RESIZE_SETTLE_MS = 200
 
@@ -16,10 +16,12 @@ export default function OnboardingTour() {
   } = useTour()
   const [rect, setRect] = useState(null)
   const [isResizing, setIsResizing] = useState(false)
+  const [cardSize, setCardSize] = useState({ width: CARD_WIDTH, height: CARD_HEIGHT_FALLBACK })
   const rafRef = useRef(null)
   const scrolledStepIdRef = useRef(null)
   const lockScrollYRef = useRef(0)
   const resizeTimerRef = useRef(null)
+  const cardRef = useRef(null)
 
   const measure = useCallback(() => {
     if (!currentStep?.target) {
@@ -142,6 +144,28 @@ export default function OnboardingTour() {
     }
   }, [currentStep?.id, isActive, skipCurrentStep])
 
+  useLayoutEffect(() => {
+    if (!isActive || !cardRef.current) return
+
+    const measureCard = () => {
+      if (!cardRef.current) return
+      const box = cardRef.current.getBoundingClientRect()
+      if (box.width > 0 && box.height > 0) {
+        setCardSize(prev => (
+          Math.abs(prev.width - box.width) < 0.5 && Math.abs(prev.height - box.height) < 0.5
+            ? prev
+            : { width: box.width, height: box.height }
+        ))
+      }
+    }
+
+    measureCard()
+
+    const observer = new ResizeObserver(measureCard)
+    observer.observe(cardRef.current)
+    return () => observer.disconnect()
+  }, [isActive, currentStep])
+
   if (!isActive || !currentStep) return null
 
   const isLastStep = stepIndex === totalSteps - 1
@@ -155,15 +179,15 @@ export default function OnboardingTour() {
 
   if (hasTarget) {
     const spaceBelow = window.innerHeight - (rect.top + rect.height)
-    placeBelow = spaceBelow > CARD_HEIGHT_ESTIMATE + CARD_GAP
+    placeBelow = spaceBelow > cardSize.height + CARD_GAP
     const top = placeBelow
       ? rect.top + rect.height + CARD_GAP
-      : Math.max(12, rect.top - CARD_HEIGHT_ESTIMATE - CARD_GAP)
-    const rawLeft = Math.min(Math.max(12, rect.left), window.innerWidth - CARD_WIDTH - 12)
-    tooltipPos = { top, left: rawLeft }
-
+      : Math.max(12, rect.top - cardSize.height - CARD_GAP)
     const targetCenter = rect.left + rect.width / 2
-    arrowLeft = Math.min(Math.max(targetCenter - rawLeft, 20), CARD_WIDTH - 20)
+    const idealLeft = targetCenter - cardSize.width / 2
+    const rawLeft = Math.min(Math.max(12, idealLeft), window.innerWidth - cardSize.width - 12)
+    tooltipPos = { top, left: rawLeft }
+    arrowLeft = Math.min(Math.max(targetCenter - rawLeft, 20), cardSize.width - 20)
   }
 
   const noTransitionClass = isResizing ? styles.noTransition : ''
@@ -193,6 +217,7 @@ export default function OnboardingTour() {
       )}
 
       <div
+        ref={cardRef}
         className={`${styles.card} ${!hasTarget ? styles.cardCentered : ''} ${noTransitionClass}`}
         style={hasTarget ? { top: tooltipPos.top, left: tooltipPos.left } : undefined}
       >
