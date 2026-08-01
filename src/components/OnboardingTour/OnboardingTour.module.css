@@ -271,23 +271,7 @@
 }
 
 @media (max-width: 768px) {
-  .cardCentered {
-    top: auto;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    width: 100%;
-    max-width: 100%;
-    transform: none;
-    border-radius: 24px 24px 0 0;
-    padding: 12px 22px calc(24px + env(safe-area-inset-bottom, 0px));
-    animation: cardCenteredSheetIn 0.36s cubic-bezier(0.32, 0.72, 0, 1);
-  }
 
-  @keyframes cardCenteredSheetIn {
-    from { transform: translateY(100%); }
-    to { transform: translateY(0); }
-  }
 
   .sheetHandle {
     display: block;
