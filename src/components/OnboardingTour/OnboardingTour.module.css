@@ -212,11 +212,13 @@
 
 
 @media (max-width: 600px) {
-  .cardCentered {
-    width: 90%;
-  }
+
 
   .card {
     width: 60%;
+  }
+
+  .cardCentered {
+    width: 90%;
   }
 }
