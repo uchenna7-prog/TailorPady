@@ -271,17 +271,21 @@
   color: var(--text2);
   margin-bottom: 3px;
 }
-
 .receiptListMeta {
   display: flex;
   align-items: center;
   gap: 5px;
+  min-width: 0;
 }
 
 .receiptListMetaText {
   font-size: 0.78rem;
   font-weight: 400;
   color: var(--text2);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0;
 }
 
 .receiptListRight {
