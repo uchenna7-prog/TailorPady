@@ -66,10 +66,10 @@ export const TOURS = {
     {
     id: 'goto-customers-nav',
     target: '[data-tour="nav-customers"]',
-    desktopTarget: '[data-tour="add-customer-quick-action"]',
+    desktopTarget: '[data-tour="sidebar-customers-nav"]',
     title: 'Go to Customers',
     message: 'Tap Customers in the bottom navigation.',
-    desktopMessage: 'Tap Add Customer to get started.',
+    desktopMessage: 'Tap Customers in the sidebar.',
     phase: 'Add Customer',
     count: { current: 1, total: 2 },
     },
@@ -90,7 +90,7 @@ export const TOURS = {
       yesLabel: 'Add measurements',
       noLabel: 'Not now',
       noTarget: 'done',
-      pages: ['/customers/'],
+      pages: ['/customers'],
     },
     {
       id: 'tap-new-customer',

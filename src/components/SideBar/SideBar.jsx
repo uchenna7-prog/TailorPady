@@ -91,7 +91,7 @@ function SideBar({ isOpen, onClose }) {
   const { triggerInstall, isInstalled } = useInstall()
   const badges              = useBadges()
   const { logout }          = useAuth()
-  const { currentStep, goToStep } = useTour()
+  const { currentStep, goToStep, completeStep } = useTour()
 
   const [scrolled, setScrolled]         = useState(false)
   const [logoutConfirm, setLogoutConfirm] = useState(false)
@@ -134,6 +134,9 @@ function SideBar({ isOpen, onClose }) {
   const handleNav = (path) => {
     if (path === '/account' && currentStep?.id === 'highlight-sidebar-account') {
       goToStep('highlight-edit-brand')
+    }
+    if (path === '/customers' && currentStep?.id === 'goto-customers-nav') {
+      completeStep('goto-customers-nav')
     }
     navigate(path)
     onClose()
@@ -203,7 +206,11 @@ function SideBar({ isOpen, onClose }) {
                         onClick={() =>
                           item.action ? handleAction(item.action) : handleNav(item.path)
                         }
-                        data-tour={item.path === '/account' ? 'sidebar-account-nav' : undefined}
+                        data-tour={
+                          item.path === '/account'   ? 'sidebar-account-nav'   :
+                          item.path === '/customers' ? 'sidebar-customers-nav' :
+                          undefined
+                        }
                       >
                         <span className="mi">{item.icon}</span>
                         <span className={styles.navLabel}>{item.label}</span>
