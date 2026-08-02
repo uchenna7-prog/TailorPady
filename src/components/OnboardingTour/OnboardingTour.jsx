@@ -136,8 +136,14 @@ export default function OnboardingTour() {
     if (knownPathRef.current === location.pathname) return
     knownPathRef.current = location.pathname
 
+    const { body } = document
+    const prevTransition = body.style.transition
+    body.style.transition = 'none'
     lockScrollYRef.current = 0
-    document.body.style.top = '0px'
+    body.style.top = '0px'
+    void body.offsetHeight
+    body.style.transition = prevTransition
+
     scrolledStepIdRef.current = null
   }, [isActive, location.pathname])
 
