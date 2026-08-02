@@ -44,7 +44,7 @@ export default function Account({ onMenuClick, isPremium = false, onUpgrade = ()
   const { plan, nextRenewal } = usePremium()
   const navigate = useNavigate()
   const location = useLocation()
-  const { currentStep, pauseTour, resumeTour, goToStep } = useTour()
+  const { currentStep, pauseTour, resumeTour, goToStep, pendingCustomerId } = useTour()
 
   const [personalInfo, setPersonalInfo] = useState(() => loadPersonalInfo(user))
   const [activeModal, setActiveModal] = useState(null)
@@ -113,17 +113,20 @@ export default function Account({ onMenuClick, isPremium = false, onUpgrade = ()
     setAwaitingProfileTourAdvance(false)
     if (!hasBrand) goToStep('highlight-edit-brand')
     else if (!hasBusinessInfo) goToStep('highlight-edit-business-info')
-    else goToStep('confirm-add-customer-after-profile')
-  }, [awaitingProfileTourAdvance, hasBrand, hasBusinessInfo, goToStep])
+    else goToStep(pendingCustomerId ? 'done' : 'confirm-add-customer-after-profile')
+  }, [awaitingProfileTourAdvance, hasBrand, hasBusinessInfo, goToStep, pendingCustomerId])
 
   // If the tour brought the user here via the sidebar shortcut (after
   // finishing the customer-first path), self-correct to whichever profile
   // section is actually still missing, or move on if both are already done.
+  // If a customer was already added earlier in this tour session, both
+  // sections being done means the whole flow is finished, not that it's
+  // time to prompt for a first customer again.
   useEffect(() => {
     if (!['highlight-sidebar-account', 'highlight-edit-brand', 'highlight-edit-business-info'].includes(currentStep?.id)) return
     if (!hasBrand) goToStep('highlight-edit-brand')
     else if (!hasBusinessInfo) goToStep('highlight-edit-business-info')
-    else goToStep('confirm-add-customer-after-profile')
+    else goToStep(pendingCustomerId ? 'done' : 'confirm-add-customer-after-profile')
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 

@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState, useCallback, useLayoutEffect } from 'react'
+import { useLocation } from 'react-router-dom'
 import { useTour } from '../../contexts/TourContext'
 import styles from './OnboardingTour.module.css'
 
@@ -17,11 +18,24 @@ function resolveTarget(step) {
   return step.target
 }
 
+function findScrollableAncestor(el) {
+  let node = el.parentElement
+  while (node && node !== document.body && node !== document.documentElement) {
+    const style = window.getComputedStyle(node)
+    const canScrollY = (style.overflowY === 'auto' || style.overflowY === 'scroll') && node.scrollHeight > node.clientHeight
+    if (canScrollY) return node
+    node = node.parentElement
+  }
+  return null
+}
+
 export default function OnboardingTour() {
   const {
-    isActive, currentStep, stepIndex, totalSteps,
+    isActive, activeTourId, currentStep, stepIndex, totalSteps,
     skipTour, finishTour, advanceManual, resolveConfirm, resolveBranch, skipCurrentStep,
+    pauseTour, resumeTour,
   } = useTour()
+  const location = useLocation()
   const [rect, setRect] = useState(null)
   const [isResizing, setIsResizing] = useState(false)
   const [cardSize, setCardSize] = useState({ width: CARD_WIDTH, height: CARD_HEIGHT_FALLBACK })
@@ -30,6 +44,8 @@ export default function OnboardingTour() {
   const lockScrollYRef = useRef(0)
   const resizeTimerRef = useRef(null)
   const cardRef = useRef(null)
+  const knownPathRef = useRef(null)
+  const pausedForStepIdRef = useRef(null)
 
   const measure = useCallback(() => {
     const target = resolveTarget(currentStep)
@@ -48,25 +64,34 @@ export default function OnboardingTour() {
 
     if (hasRealSize && scrolledStepIdRef.current !== currentStep.id) {
       scrolledStepIdRef.current = currentStep.id
-      const fullyVisible = r0.top >= 0 && r0.bottom <= window.innerHeight
-      if (!fullyVisible) {
-        const desiredOffset = r0.top - (window.innerHeight / 2 - r0.height / 2)
-        let nextScrollY = Math.max(0, lockScrollYRef.current + desiredOffset)
 
-        if (currentStep.keepVisible) {
-          const keepEl = document.querySelector(currentStep.keepVisible)
-          if (keepEl) {
-            const keepRect = keepEl.getBoundingClientRect()
-            const headerEl = document.querySelector('[data-tour="page-header"]')
-            const headerOffset = headerEl ? headerEl.getBoundingClientRect().height : KEEP_VISIBLE_FALLBACK_OFFSET
-            const maxDelta = keepRect.top - headerOffset
-            const maxScrollY = Math.max(0, lockScrollYRef.current + maxDelta)
-            nextScrollY = Math.min(nextScrollY, maxScrollY)
+      const scrollableAncestor = findScrollableAncestor(el)
+      if (scrollableAncestor) {
+        const containerRect = scrollableAncestor.getBoundingClientRect()
+        const elTopWithinContainer = r0.top - containerRect.top + scrollableAncestor.scrollTop
+        const desiredScrollTop = elTopWithinContainer - (containerRect.height / 2 - r0.height / 2)
+        scrollableAncestor.scrollTop = Math.max(0, desiredScrollTop)
+      } else {
+        const fullyVisible = r0.top >= 0 && r0.bottom <= window.innerHeight
+        if (!fullyVisible) {
+          const desiredOffset = r0.top - (window.innerHeight / 2 - r0.height / 2)
+          let nextScrollY = Math.max(0, lockScrollYRef.current + desiredOffset)
+
+          if (currentStep.keepVisible) {
+            const keepEl = document.querySelector(currentStep.keepVisible)
+            if (keepEl) {
+              const keepRect = keepEl.getBoundingClientRect()
+              const headerEl = document.querySelector('[data-tour="page-header"]')
+              const headerOffset = headerEl ? headerEl.getBoundingClientRect().height : KEEP_VISIBLE_FALLBACK_OFFSET
+              const maxDelta = keepRect.top - headerOffset
+              const maxScrollY = Math.max(0, lockScrollYRef.current + maxDelta)
+              nextScrollY = Math.min(nextScrollY, maxScrollY)
+            }
           }
-        }
 
-        lockScrollYRef.current = nextScrollY
-        document.body.style.top = `-${nextScrollY}px`
+          lockScrollYRef.current = nextScrollY
+          document.body.style.top = `-${nextScrollY}px`
+        }
       }
     }
 
@@ -100,6 +125,50 @@ export default function OnboardingTour() {
   }, [isActive])
 
   useEffect(() => {
+    if (!isActive) {
+      knownPathRef.current = null
+      return
+    }
+    if (knownPathRef.current === null) {
+      knownPathRef.current = location.pathname
+      return
+    }
+    if (knownPathRef.current === location.pathname) return
+    knownPathRef.current = location.pathname
+
+    lockScrollYRef.current = 0
+    document.body.style.top = '0px'
+    scrolledStepIdRef.current = null
+  }, [isActive, location.pathname])
+
+  useEffect(() => {
+    if (!isActive) {
+      pausedForStepIdRef.current = null
+      return
+    }
+    if (!currentStep) return
+
+    if (pausedForStepIdRef.current && pausedForStepIdRef.current !== currentStep.id) {
+      pausedForStepIdRef.current = null
+      resumeTour()
+    }
+
+    if (currentStep.target) return
+    const pages = currentStep.pages
+    if (!pages) return
+
+    const matches = pages.some(p => location.pathname.startsWith(p))
+
+    if (!matches && pausedForStepIdRef.current !== currentStep.id) {
+      pausedForStepIdRef.current = currentStep.id
+      pauseTour()
+    } else if (matches && pausedForStepIdRef.current === currentStep.id) {
+      pausedForStepIdRef.current = null
+      resumeTour()
+    }
+  }, [location.pathname, currentStep, isActive, pauseTour, resumeTour])
+
+  useEffect(() => {
     if (!isActive) return
     function loop() {
       measure()
@@ -126,7 +195,7 @@ export default function OnboardingTour() {
   }, [isActive])
 
   useEffect(() => {
-    if (!isActive) return
+    if (!activeTourId) return
     const scrollY = window.scrollY
     lockScrollYRef.current = scrollY
     const { body } = document
@@ -150,7 +219,7 @@ export default function OnboardingTour() {
       body.style.transition = prevTransition
       window.scrollTo(0, lockScrollYRef.current)
     }
-  }, [isActive])
+  }, [activeTourId])
 
   useEffect(() => {
     if (!isActive || !currentStep) return
@@ -250,6 +319,7 @@ export default function OnboardingTour() {
         className={`${styles.card} ${!hasTarget ? styles.cardCentered : ''} ${noTransitionClass}`}
         style={hasTarget ? { top: tooltipPos.top, left: tooltipPos.left } : undefined}
       >
+        {!hasTarget && <div className={styles.sheetHandle} />}
 
         {hasTarget && (
           <div

@@ -7,6 +7,7 @@ export const TOURS = {
       ctaLabel: 'Get Started',
       title: 'Welcome to TailorPady 👋',
       message: "Let's get you set up. It only takes a minute.",
+      pages: ['/dashboard'],
     },
     {
       id: 'enable-notifications',
@@ -30,6 +31,7 @@ export const TOURS = {
       nextTarget: 'goto-customers-nav',
       viewLabel: 'Set up profile',
       viewTarget: 'highlight-profile-card',
+      pages: ['/dashboard'],
     },
     {
       id: 'highlight-profile-card',
@@ -59,6 +61,7 @@ export const TOURS = {
       noLabel: 'Not now',
       yesTarget: 'goto-customers-nav',
       noTarget: 'done',
+      pages: ['/account'],
     },
     {
     id: 'goto-customers-nav',
@@ -87,6 +90,7 @@ export const TOURS = {
       yesLabel: 'Add measurements',
       noLabel: 'Not now',
       noTarget: 'done',
+      pages: ['/customers/'],
     },
     {
       id: 'tap-new-customer',
@@ -103,6 +107,7 @@ export const TOURS = {
       message: 'Tap + to record their measurements.',
       phase: 'Add Measurement',
       count: { current: 2, total: 2 },
+      keepVisible: '[data-tour="customer-profile-block"]',
     },
     {
       id: 'branch-after-measurement',
@@ -114,12 +119,14 @@ export const TOURS = {
       continueLabel: 'Create an order',
       viewTarget: 'view-new-measurement',
       nextTarget: 'goto-orders-tab',
+      pages: ['/customers/'],
     },
     {
       id: 'view-new-measurement',
       target: '[data-tour="new-measurement-row"]',
       title: 'Tap to view details',
       message: 'Tap this card to see the measurement you just added.',
+      keepVisible: '[data-tour="customer-profile-block"]',
     },
     {
       id: 'goto-orders-tab',
@@ -129,6 +136,7 @@ export const TOURS = {
       phase: 'Add Order',
       count: { current: 1, total: 2 },
       padX: 2,
+      keepVisible: '[data-tour="customer-profile-block"]',
     },
     {
       id: 'add-order',
@@ -137,6 +145,7 @@ export const TOURS = {
       message: 'Tap + to create an order using those measurements.',
       phase: 'Add Order',
       count: { current: 2, total: 2 },
+      keepVisible: '[data-tour="customer-profile-block"]',
     },
     {
       id: 'branch-after-order',
@@ -148,12 +157,14 @@ export const TOURS = {
       continueLabel: 'Create an invoice',
       viewTarget: 'view-new-order',
       nextTarget: 'goto-invoices-tab',
+      pages: ['/customers/'],
     },
     {
       id: 'view-new-order',
       target: '[data-tour="new-order-row"]',
       title: 'Tap to view details',
       message: 'Tap this card to see the order you just created.',
+      keepVisible: '[data-tour="customer-profile-block"]',
     },
     {
       id: 'goto-invoices-tab',
@@ -163,6 +174,7 @@ export const TOURS = {
       phase: 'Generate Invoice',
       count: { current: 1, total: 2 },
       padX: 2,
+      keepVisible: '[data-tour="customer-profile-block"]',
     },
     {
       id: 'add-invoice',
@@ -171,6 +183,7 @@ export const TOURS = {
       message: 'Tap + and select the order you want to create an invoice for.',
       phase: 'Generate Invoice',
       count: { current: 2, total: 2 },
+      keepVisible: '[data-tour="customer-profile-block"]',
     },
     {
       id: 'confirm-add-payment',
@@ -181,6 +194,7 @@ export const TOURS = {
       yesLabel: 'Record payment',
       noLabel: 'Not now',
       noTarget: 'done',
+      pages: ['/customers/'],
     },
     {
       id: 'goto-payments-tab',
@@ -190,6 +204,7 @@ export const TOURS = {
       phase: 'Record Payment',
       count: { current: 1, total: 2 },
       padX: 2,
+      keepVisible: '[data-tour="customer-profile-block"]',
     },
     {
       id: 'add-payment',
@@ -198,6 +213,7 @@ export const TOURS = {
       message: 'Tap + to record a payment for this order.',
       phase: 'Record Payment',
       count: { current: 2, total: 2 },
+      keepVisible: '[data-tour="customer-profile-block"]',
     },
     {
       id: 'branch-after-payment',
@@ -209,12 +225,14 @@ export const TOURS = {
       continueLabel: 'Get the receipt',
       viewTarget: 'view-new-payment',
       nextTarget: 'goto-receipts-tab',
+      pages: ['/customers/'],
     },
     {
       id: 'view-new-payment',
       target: '[data-tour="new-payment-row"]',
       title: 'Tap to view details',
       message: 'Tap this card to see the payment you just recorded.',
+      keepVisible: '[data-tour="customer-profile-block"]',
     },
     {
       id: 'goto-receipts-tab',
@@ -224,6 +242,7 @@ export const TOURS = {
       phase: 'Generate Receipt',
       count: { current: 1, total: 2 },
       padX: 2,
+      keepVisible: '[data-tour="customer-profile-block"]',
     },
     {
       id: 'add-receipt',
@@ -232,6 +251,7 @@ export const TOURS = {
       message: 'Tap + to generate a receipt from that payment.',
       phase: 'Generate Receipt',
       count: { current: 2, total: 2 },
+      keepVisible: '[data-tour="customer-profile-block"]',
     },
     {
       id: 'confirm-setup-profile-after-tour',
@@ -243,12 +263,14 @@ export const TOURS = {
       noLabel: 'Maybe later',
       yesTarget: 'highlight-back-button',
       noTarget: 'done',
+      pages: ['/customers/'],
     },
     {
       id: 'highlight-back-button',
       target: '[data-tour="tour-back-btn"]',
       title: 'Go back to Customers',
       message: 'Tap the back arrow to return to your customer list.',
+      keepVisible: '[data-tour="customer-profile-block"]',
     },
     {
       id: 'highlight-hamburger',
