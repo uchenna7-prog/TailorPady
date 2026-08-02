@@ -411,7 +411,7 @@
 .heroLeft {
   display: flex;
   flex-direction: column;
-  justify-content: flex-end;
+  justify-content: center;
   min-height: calc(100dvh - 68px);
   max-width: 600px;
   padding: 0 24px calc(28px + env(safe-area-inset-bottom));
@@ -1728,6 +1728,7 @@
   }
 
   .heroLeft {
+    justify-content: flex-end;
     min-height: 0;
     max-width: none;
     padding: 0 48px calc(40px + env(safe-area-inset-bottom));
