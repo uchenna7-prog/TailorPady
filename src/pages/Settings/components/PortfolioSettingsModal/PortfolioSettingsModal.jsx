@@ -15,7 +15,7 @@ import { ImageSourceMenu } from './ImageSourceMenu/ImageSourceMenu'
 import { GalleryImagePickerSheet } from './GalleryImagePickerSheet/GalleryImagePickerSheet'
 import { ImagePreview } from './ImagePreview/ImagePreview'
 import { uploadToCloudinary } from '../../../../services/cloudinaryService'
-import { AVAILABILITY_OPTIONS } from './datas'
+import { AVAILABILITY_OPTIONS, MAX_LOCATION_LENGTH, MAX_FOOTER_TEXT_LENGTH } from './datas'
 
 
 function BackgroundImageField({ label, hint, value, onChange, showToast }) {
@@ -176,6 +176,14 @@ export function PortfolioSettingsModal({ onBack, showToast }) {
           <Field label="Milestones" hint="Two proud achievements shown as stats on your portfolio. e.g. 500+ Happy Clients">
             <MilestonesField value={local.brandMilestones} onChange={set('brandMilestones')} />
           </Field>
+          <Field label="Location" hint="Where you're based. Shown on your portfolio.">
+            <TextInput
+              value={local.brandLocation}
+              onChange={set('brandLocation')}
+              placeholder="e.g. Lekki, Lagos"
+              maxLength={MAX_LOCATION_LENGTH}
+            />
+          </Field>
         </FieldGroup>
 
         <div style={{ height: 20 }} />
@@ -220,27 +228,7 @@ export function PortfolioSettingsModal({ onBack, showToast }) {
               rows={3}
             />
           </Field>
-        </FieldGroup>
-
-        <div style={{ height: 20 }} />
-
-        <div className={styles.sectionLabel}>Contact & Social</div>
-        <FieldGroup>
-          <Field label="Instagram Handle" hint="Shown as a link on your portfolio.">
-            <TextInput
-              value={local.brandInstagram}
-              onChange={set('brandInstagram')}
-              placeholder="e.g. @yourbrand"
-            />
-          </Field>
-          <Field label="WhatsApp Number" hint="Clients can reach you directly from your portfolio.">
-            <TextInput
-              value={local.brandWhatsapp}
-              onChange={set('brandWhatsapp')}
-              placeholder="e.g. 08012345678"
-            />
-          </Field>
-          <Field label="Business Hours" hint="e.g. Mon–Sat, 9am–6pm">
+          <Field label="Business Hours" hint="When clients can expect a response or a visit.">
             <TextInput
               value={local.brandBusinessHours}
               onChange={set('brandBusinessHours')}
@@ -273,6 +261,14 @@ export function PortfolioSettingsModal({ onBack, showToast }) {
             onChange={set('footerBgImage')}
             showToast={showToast}
           />
+          <Field label="Footer Text" hint="A short closing line shown before your contact details.">
+            <TextInput
+              value={local.brandFooterText}
+              onChange={set('brandFooterText')}
+              placeholder="e.g. Let's create something beautiful together."
+              maxLength={MAX_FOOTER_TEXT_LENGTH}
+            />
+          </Field>
         </FieldGroup>
 
         <div style={{ height: 8 }} />
