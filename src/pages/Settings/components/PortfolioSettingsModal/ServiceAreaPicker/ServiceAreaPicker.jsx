@@ -1,11 +1,10 @@
-import { useState } from "react"
 import { NIGERIAN_STATES } from "../datas"
+import { Dropdown } from "../../../../../components/Dropdown/Dropdown"
 import styles from "./ServiceAreaPicker.module.css"
 
 export function ServiceAreaPicker({ value, onChange }) {
 
   const selected = Array.isArray(value) ? value : []
-  const [dropdownValue, setDropdownValue] = useState('')
 
   const hasNationwide    = selected.includes('Nationwide')
   const hasInternational = selected.includes('International')
@@ -14,6 +13,7 @@ export function ServiceAreaPicker({ value, onChange }) {
   const isStatesDisabled     = hasNationwide
 
   const availableStates = NIGERIAN_STATES.filter(s => !selected.includes(s))
+  const selectedStates = selected.filter(s => NIGERIAN_STATES.includes(s))
 
   const toggleSpecial = opt => {
     if (opt === 'Nationwide') {
@@ -30,11 +30,14 @@ export function ServiceAreaPicker({ value, onChange }) {
     }
   }
 
-  const handleDropdownChange = e => {
-    const state = e.target.value
+  const handleAddState = state => {
     if (!state || isStatesDisabled) return
-    setDropdownValue('')
     onChange([...selected, state])
+  }
+
+  const removeSpecial = (e, opt) => {
+    e.stopPropagation()
+    toggleSpecial(opt)
   }
 
   const removeChip = item => onChange(selected.filter(s => s !== item))
@@ -42,12 +45,24 @@ export function ServiceAreaPicker({ value, onChange }) {
   return (
     <div className={styles.wrap}>
 
-      {(isNationwideDisabled || isStatesDisabled) && (
-        <div className={styles.hint}>
-          <span className="mi" style={{ fontSize: '0.85rem' }}>info</span>
-          {isStatesDisabled
-            ? 'Remove Nationwide to select specific states'
-            : 'Remove your selected states to choose Nationwide'}
+      <Dropdown
+        options={availableStates}
+        value={null}
+        onChange={handleAddState}
+        placeholder={isStatesDisabled ? 'Nationwide selected — states unavailable' : 'Add a state…'}
+        searchable
+        searchPlaceholder="Search states…"
+        disabled={isStatesDisabled}
+      />
+
+      {selectedStates.length > 0 && (
+        <div className={styles.chips}>
+          {selectedStates.map(s => (
+            <button key={s} type="button" className={styles.chip} onClick={() => removeChip(s)}>
+              {s}
+              <span className="mi" style={{ fontSize: '0.75rem' }}>close</span>
+            </button>
+          ))}
         </div>
       )}
 
@@ -56,48 +71,37 @@ export function ServiceAreaPicker({ value, onChange }) {
           type="button"
           disabled={isNationwideDisabled}
           className={`${styles.specialBtn} ${hasNationwide ? styles.specialBtnActive : ''} ${isNationwideDisabled ? styles.specialBtnDisabled : ''}`}
-          onClick={() => toggleSpecial('Nationwide')}
+          onClick={() => !hasNationwide && toggleSpecial('Nationwide')}
         >
           <span className="mi" style={{ fontSize: '0.9rem' }}>flag</span>
           Nationwide
-          {hasNationwide && <span className="mi" style={{ fontSize: '0.85rem', marginLeft: 2 }}>check</span>}
+          {hasNationwide && (
+            <span className={`mi ${styles.specialBtnRemove}`} onClick={e => removeSpecial(e, 'Nationwide')}>
+              close
+            </span>
+          )}
         </button>
         <button
           type="button"
           className={`${styles.specialBtn} ${hasInternational ? styles.specialBtnActive : ''}`}
-          onClick={() => toggleSpecial('International')}
+          onClick={() => !hasInternational && toggleSpecial('International')}
         >
           <span className="mi" style={{ fontSize: '0.9rem' }}>public</span>
           International
-          {hasInternational && <span className="mi" style={{ fontSize: '0.85rem', marginLeft: 2 }}>check</span>}
+          {hasInternational && (
+            <span className={`mi ${styles.specialBtnRemove}`} onClick={e => removeSpecial(e, 'International')}>
+              close
+            </span>
+          )}
         </button>
       </div>
 
-      <div className={`${styles.selectWrap} ${isStatesDisabled ? styles.selectWrapDisabled : ''}`}>
-        <select
-          className={styles.select}
-          value={dropdownValue}
-          onChange={handleDropdownChange}
-          disabled={isStatesDisabled}
-        >
-          <option value="">
-            {isStatesDisabled ? 'Nationwide selected — states unavailable' : 'Add a state…'}
-          </option>
-          {availableStates.map(state => (
-            <option key={state} value={state}>{state}</option>
-          ))}
-        </select>
-        <span className={`mi ${styles.selectIcon}`}>expand_more</span>
-      </div>
-
-      {selected.filter(s => NIGERIAN_STATES.includes(s)).length > 0 && (
-        <div className={styles.chips}>
-          {selected.filter(s => NIGERIAN_STATES.includes(s)).map(s => (
-            <button key={s} type="button" className={styles.chip} onClick={() => removeChip(s)}>
-              {s}
-              <span className="mi" style={{ fontSize: '0.75rem' }}>close</span>
-            </button>
-          ))}
+      {(isNationwideDisabled || isStatesDisabled) && (
+        <div className={styles.hint}>
+          <span className="mi" style={{ fontSize: '0.85rem' }}>info</span>
+          {isStatesDisabled
+            ? 'Remove Nationwide to select specific states'
+            : 'Remove your selected states to choose Nationwide'}
         </div>
       )}
 
