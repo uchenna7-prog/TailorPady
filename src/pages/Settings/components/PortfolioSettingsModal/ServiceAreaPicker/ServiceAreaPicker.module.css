@@ -10,12 +10,16 @@
   gap:           6px;
   padding:       8px 12px;
   border-radius: 10px;
-  background:    color-mix(in srgb, var(--accent) 8%, transparent);
-  border:        1px solid color-mix(in srgb, var(--accent) 25%, transparent);
-  color:         var(--text3);
+  background:    color-mix(in srgb, #F59E0B 14%, transparent);
+  border:        1px solid color-mix(in srgb, #F59E0B 35%, transparent);
+  color:         #B45309;
   font-size:     0.75rem;
   font-weight:   600;
   line-height:   1.4;
+}
+
+.hint .mi {
+  color: #D97706;
 }
 
 .special {
@@ -45,8 +49,10 @@
 
 .specialBtnActive {
   border-color: var(--accent);
-  background:   color-mix(in srgb, var(--accent) 10%, transparent);
+  background:   color-mix(in srgb, var(--accent) 12%, transparent);
   color:        var(--accent);
+  box-shadow:   0 2px 10px color-mix(in srgb, var(--accent) 22%, transparent);
+  cursor:       default;
 }
 
 .specialBtnDisabled {
@@ -55,42 +61,24 @@
   pointer-events: none;
 }
 
-.selectWrap {
-  position: relative;
-  display:  flex;
-  align-items: center;
-  transition: opacity 0.15s;
+.specialBtnRemove {
+  display:         flex;
+  align-items:     center;
+  justify-content: center;
+  width:           18px;
+  height:          18px;
+  margin-left:     2px;
+  border-radius:   50%;
+  font-size:       0.75rem !important;
+  color:           var(--accent);
+  background:      color-mix(in srgb, var(--accent) 18%, transparent);
+  cursor:          pointer;
+  transition:      background 0.15s ease, color 0.15s ease;
 }
 
-.selectWrapDisabled {
-  opacity:        0.4;
-  pointer-events: none;
-}
-
-.select {
-  width:        100%;
-  padding:      12px 40px 12px 14px;
-  border-radius: 12px;
-  border:       1.5px solid var(--border);
-  background:   var(--surface2);
-  color:        var(--text);
-  font-family:  inherit;
-  font-size:    0.875rem;
-  font-weight:  500;
-  cursor:       pointer;
-  appearance:   none;
-  outline:      none;
-  transition:   border-color 0.15s;
-}
-
-.select:focus { border-color: var(--accent); }
-
-.selectIcon {
-  position:       absolute;
-  right:          12px;
-  font-size:      1.1rem;
-  color:          var(--text3);
-  pointer-events: none;
+.specialBtnRemove:hover {
+  background: var(--accent);
+  color:      var(--surface);
 }
 
 .chips {
