@@ -21,8 +21,8 @@ const DEFAULTS = {
   brandServiceArea:    [],
   brandBookingNote:    '',
   brandBusinessHours:  '',
-  brandProcessSteps:   [],
-  brandFaqs:           [],
+  brandProcessSteps:   [{ title: '', description: '' }],
+  brandFaqs:           [{ question: '', answer: '' }],
   brandFooterText:     '',
   portfolioTemplate:   'template1',
 }
