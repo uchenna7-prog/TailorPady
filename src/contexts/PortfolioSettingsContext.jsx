@@ -12,6 +12,7 @@ const DEFAULTS = {
   heroBgImage:         null,
   footerBgImage:       null,
   brandStyleStatement: '',
+  brandAbout:          '',
   brandYearFounded:    '',
   brandMilestones:     [{ number: '', label: '' }, { number: '', label: '' }],
   brandLocation:       '',

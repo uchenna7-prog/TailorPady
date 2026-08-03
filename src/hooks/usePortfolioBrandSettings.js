@@ -1,5 +1,6 @@
 const PLACEHOLDERS = {
   styleStatement: 'Bespoke fashion designed to complement your shape, style, and personality.',
+  about:          "I'm a tailor dedicated to crafting pieces that fit your shape, style, and story.",
   yearFounded:    '2020',
   location:       'Lagos, Nigeria',
   availableUntil: 'Next Month',
@@ -68,6 +69,7 @@ export function usePortfolioBrandSettings(portfolioSettings = {}) {
   const PORTFOLIO_BRAND_SETTINGS = {
 
     styleStatement: portfolioSettings.brandStyleStatement || PLACEHOLDERS.styleStatement,
+    about:          portfolioSettings.brandAbout || PLACEHOLDERS.about,
     yearFounded:    portfolioSettings.brandYearFounded || PLACEHOLDERS.yearFounded,
     milestones:     fillMilestones(portfolioSettings.brandMilestones),
     location:       portfolioSettings.brandLocation || PLACEHOLDERS.location,

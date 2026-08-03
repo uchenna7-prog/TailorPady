@@ -17,7 +17,13 @@ import { ImageSourceMenu } from './ImageSourceMenu/ImageSourceMenu'
 import { GalleryImagePickerSheet } from './GalleryImagePickerSheet/GalleryImagePickerSheet'
 import { ImagePreview } from './ImagePreview/ImagePreview'
 import { uploadToCloudinary } from '../../../../services/cloudinaryService'
-import { AVAILABILITY_OPTIONS, MAX_LOCATION_LENGTH, MAX_FOOTER_TEXT_LENGTH } from './datas'
+import {
+  AVAILABILITY_OPTIONS,
+  MAX_LOCATION_LENGTH,
+  MAX_FOOTER_TEXT_LENGTH,
+  MIN_ABOUT_LENGTH,
+  MAX_ABOUT_LENGTH,
+} from './datas'
 
 function normalizeAvailableUntil(v) {
   if (v && typeof v === 'object') {
@@ -41,6 +47,7 @@ function normalizeBusinessHours(v) {
 function buildLocal(ps) {
   return {
     ...ps,
+    brandAbout: ps.brandAbout || '',
     brandMilestones: Array.isArray(ps.brandMilestones) && ps.brandMilestones.length === 2
       ? ps.brandMilestones
       : [{ number: '', label: '' }, { number: '', label: '' }],
@@ -128,6 +135,31 @@ function BackgroundImageField({ label, hint, value, onChange, showToast }) {
   )
 }
 
+function AboutField({ value, onChange }) {
+  const length = value?.length || 0
+  const belowMin = length > 0 && length < MIN_ABOUT_LENGTH
+
+  return (
+    <Field
+      label="About"
+      hint={`Tell clients who you are and what your brand stands for. At least ${MIN_ABOUT_LENGTH} characters.`}
+    >
+      <Textarea
+        value={value}
+        onChange={onChange}
+        placeholder="e.g. I'm a tailor based in Lagos with over 8 years of experience crafting bespoke suits, agbadas, and formal wear for clients who value fit and finishing."
+        rows={5}
+        maxLength={MAX_ABOUT_LENGTH}
+      />
+      <div className={`${styles.charCount} ${belowMin ? styles.charCountWarn : ''}`}>
+        {belowMin
+          ? `${MIN_ABOUT_LENGTH - length} more characters needed`
+          : `${length}/${MAX_ABOUT_LENGTH}`}
+      </div>
+    </Field>
+  )
+}
+
 export function PortfolioSettingsModal({ onBack, showToast }) {
   const { portfolioSettings, updateManyPortfolioSettings } = usePortfolioSettings()
 
@@ -136,6 +168,10 @@ export function PortfolioSettingsModal({ onBack, showToast }) {
   const set = key => val => setLocal(p => ({ ...p, [key]: val }))
 
   const save = () => {
+    if (local.brandAbout && local.brandAbout.length < MIN_ABOUT_LENGTH) {
+      showToast(`About must be at least ${MIN_ABOUT_LENGTH} characters`)
+      return
+    }
     updateManyPortfolioSettings(local)
     showToast('Portfolio settings saved')
     onBack()
@@ -187,7 +223,7 @@ export function PortfolioSettingsModal({ onBack, showToast }) {
           onChange={set('heroBgImage')}
           showToast={showToast}
         />
-        <Field label="Style Statement" hint="STell clients what kind of clothing you make and what makes your work special.">
+        <Field label="Style Statement" hint="Tell clients what kind of clothing you make and what makes your work special.">
           <Textarea
             value={local.brandStyleStatement}
             onChange={set('brandStyleStatement')}
@@ -201,6 +237,7 @@ export function PortfolioSettingsModal({ onBack, showToast }) {
 
       <div className={styles.sectionLabel}>About Section</div>
       <FieldGroup>
+        <AboutField value={local.brandAbout} onChange={set('brandAbout')} />
         <Field label="Year Founded" hint="When did you start your business? Shown as one of your stats.">
           <TextInput
             value={local.brandYearFounded}
@@ -225,7 +262,7 @@ export function PortfolioSettingsModal({ onBack, showToast }) {
 
       <div className={styles.sectionLabel}>Process</div>
       <FieldGroup>
-        <Field label="How You Work" hint="Up to 5 steps.">
+        <Field label="How You Work" hint="Tell clients what happens from the moment they place an order to when they receive it, one step at a time. Up to 5 steps.">
           <ProcessStepsField value={local.brandProcessSteps} onChange={set('brandProcessSteps')} />
         </Field>
       </FieldGroup>
