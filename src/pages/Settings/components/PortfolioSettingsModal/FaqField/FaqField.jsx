@@ -2,7 +2,7 @@ import { MAX_FAQS, FAQ_QUESTION_MAX, FAQ_ANSWER_MAX } from '../datas'
 import styles from './FaqField.module.css'
 
 export function FaqField({ value, onChange }) {
-  const faqs = Array.isArray(value) ? value : []
+  const faqs = Array.isArray(value) && value.length > 0 ? value : [{ question: '', answer: '' }]
 
   function updateFaq(index, key, val) {
     const next = faqs.map((f, i) => i === index ? { ...f, [key]: val } : f)
@@ -24,7 +24,12 @@ export function FaqField({ value, onChange }) {
         <div key={i} className={styles.card}>
           <div className={styles.cardHeader}>
             <span className={styles.faqNumber}>Q{i + 1}</span>
-            <button type="button" className={styles.removeBtn} onClick={() => removeFaq(i)}>
+            <button
+              type="button"
+              className={styles.removeBtn}
+              disabled={faqs.length === 1}
+              onClick={() => removeFaq(i)}
+            >
               <span className="mi" style={{ fontSize: '1rem' }}>close</span>
             </button>
           </div>
