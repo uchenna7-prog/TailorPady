@@ -46,7 +46,6 @@ export default function OnboardingTour() {
   const cardRef = useRef(null)
   const knownPathRef = useRef(null)
   const pausedForStepIdRef = useRef(null)
-  const scrollContainerRef = useRef(null)
 
   const measure = useCallback(() => {
     const target = resolveTarget(currentStep)
@@ -67,8 +66,6 @@ export default function OnboardingTour() {
       scrolledStepIdRef.current = currentStep.id
 
       const scrollableAncestor = findScrollableAncestor(el)
-      scrollContainerRef.current = scrollableAncestor || null
-
       if (scrollableAncestor) {
         const containerRect = scrollableAncestor.getBoundingClientRect()
         const elTopWithinContainer = r0.top - containerRect.top + scrollableAncestor.scrollTop
@@ -149,24 +146,6 @@ export default function OnboardingTour() {
 
     scrolledStepIdRef.current = null
   }, [isActive, location.pathname])
-
-  useEffect(() => {
-    if (!isActive || !currentStep) return
-
-    const container = scrollContainerRef.current
-    if (container) {
-      container.scrollTop = 0
-    } else if (lockScrollYRef.current !== 0) {
-      const { body } = document
-      const prevTransition = body.style.transition
-      body.style.transition = 'none'
-      lockScrollYRef.current = 0
-      body.style.top = '0px'
-      void body.offsetHeight
-      body.style.transition = prevTransition
-    }
-    scrollContainerRef.current = null
-  }, [currentStep?.id, isActive])
 
   useEffect(() => {
     if (!isActive) {
