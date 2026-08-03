@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, Component } from 'react'
 import { useBrandTokens } from '../../../../hooks/useBrandTokens'
 import { usePortfolioBrandSettings } from '../../../../hooks/usePortfolioBrandSettings'
 import styles from './PortfolioTemplate2.module.css'
@@ -8,6 +8,50 @@ const SECTION_IDS = ['about', 'work', 'faq', 'contact']
 const WHATSAPP_PEEK_KEY = 'tailorpady-portfolio-whatsapp-peek-shown'
 
 const ROMAN_NUMERALS = ['I', 'II', 'III', 'IV', 'V']
+
+class PortfolioErrorBoundary extends Component {
+  constructor(props) {
+    super(props)
+    this.state = { error: null }
+  }
+
+  static getDerivedStateFromError(error) {
+    return { error }
+  }
+
+  render() {
+    if (this.state.error) {
+      return (
+        <div style={{
+          minHeight: '100dvh',
+          padding: '24px',
+          background: '#1a1a1a',
+          color: '#ff6b6b',
+          fontFamily: 'monospace',
+          fontSize: '13px',
+          lineHeight: 1.6,
+          whiteSpace: 'pre-wrap',
+          wordBreak: 'break-word',
+          overflowY: 'auto',
+        }}>
+          <div style={{ color: '#fff', fontWeight: 700, fontSize: '15px', marginBottom: '12px' }}>
+            Portfolio failed to render
+          </div>
+          <div style={{ marginBottom: '16px' }}>
+            {this.state.error?.toString()}
+          </div>
+          {this.state.error?.stack && (
+            <div style={{ color: '#999', fontSize: '11px' }}>
+              {this.state.error.stack}
+            </div>
+          )}
+        </div>
+      )
+    }
+
+    return this.props.children
+  }
+}
 
 function initials(name = '') {
   return name.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase()
@@ -557,7 +601,7 @@ function FaqItem({ index, item, openIndex, onToggle }) {
   )
 }
 
-export function PortfolioTemplate2({ brand, photos, garmentTypes, reviews }) {
+function PortfolioTemplate2Inner({ brand, photos, garmentTypes, reviews }) {
   const settings = usePortfolioBrandSettings()
 
   const [lightboxPhoto,  setLightboxPhoto]  = useState(null)
@@ -884,5 +928,13 @@ export function PortfolioTemplate2({ brand, photos, garmentTypes, reviews }) {
         <WhatsAppWidget brandName={brandName} brandPhone={brand.brandPhone} brandLogo={brand.brandLogo} />
       )}
     </div>
+  )
+}
+
+export function PortfolioTemplate2(props) {
+  return (
+    <PortfolioErrorBoundary>
+      <PortfolioTemplate2Inner {...props} />
+    </PortfolioErrorBoundary>
   )
 }
