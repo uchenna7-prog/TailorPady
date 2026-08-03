@@ -602,7 +602,7 @@ function FaqItem({ index, item, openIndex, onToggle }) {
 }
 
 function PortfolioTemplate2Inner({ brand, photos, garmentTypes, reviews }) {
-  const settings = usePortfolioBrandSettings()
+  const settings = usePortfolioBrandSettings(brand)
 
   const [lightboxPhoto,  setLightboxPhoto]  = useState(null)
   const [lightboxPhotos, setLightboxPhotos] = useState([])
