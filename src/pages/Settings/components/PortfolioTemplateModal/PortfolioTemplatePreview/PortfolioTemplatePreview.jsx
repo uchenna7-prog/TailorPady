@@ -19,7 +19,7 @@ export function PortfolioTemplatePreview({ template, slug, onClose, onSelect }) 
         <p>Set up your portfolio slug in Profile to enable live preview.</p>
       </div>
     )
-  } else if (import.meta.env.DEV) {
+  } else {
     previewContent = (
       <div className={styles.previewNoSlug}>
         <span className="mi" style={{ fontSize: '2rem' }}>open_in_new</span>
@@ -28,14 +28,6 @@ export function PortfolioTemplatePreview({ template, slug, onClose, onSelect }) 
           Open preview in new tab
         </button>
       </div>
-    )
-  } else {
-    previewContent = (
-      <iframe
-        className={styles.previewFrame}
-        src={previewUrl}
-        title="Portfolio preview"
-      />
     )
   }
 
