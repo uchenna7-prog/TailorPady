@@ -1,10 +1,13 @@
 import { useState, useEffect, useRef } from 'react'
 import { useBrandTokens } from '../../../../hooks/useBrandTokens'
+import { usePortfolioBrandSettings } from '../../../../hooks/usePortfolioBrandSettings'
 import styles from './PortfolioTemplate2.module.css'
 
 const SECTION_IDS = ['about', 'work', 'faq', 'contact']
 
 const WHATSAPP_PEEK_KEY = 'tailorpady-portfolio-whatsapp-peek-shown'
+
+const ROMAN_NUMERALS = ['I', 'II', 'III', 'IV', 'V']
 
 function initials(name = '') {
   return name.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase()
@@ -22,29 +25,6 @@ function buildSocialUrl(platform, handle) {
     case 'threads':   return `https://threads.net/@${h}`
     default:          return `https://${h}`
   }
-}
-
-function buildFaqItems(turnaround, serviceArea) {
-  return [
-    {
-      q: 'How long does an order take?',
-      a: turnaround
-        ? `Most pieces are completed within ${turnaround}, depending on the complexity of the design.`
-        : 'Turnaround varies by garment and season — we will confirm a timeline once we understand your order.',
-    },
-    {
-      q: serviceArea ? `Do you take orders outside ${serviceArea}?` : 'Do you take orders outside your base?',
-      a: 'Yes, we work with clients across Nigeria and can arrange remote measurement guidance or courier delivery.',
-    },
-    {
-      q: 'How do I pay for my order?',
-      a: 'A deposit secures your order, with the balance due before or on collection. Payment details are shared once your order is confirmed.',
-    },
-    {
-      q: 'Can I request changes after measurements are taken?',
-      a: 'Minor adjustments are always possible at the fitting stage. Significant design changes may affect timeline and cost.',
-    },
-  ]
 }
 
 const SOCIAL_ICONS = {
@@ -334,6 +314,7 @@ function Reveal({ as: Tag = 'div', children, className = '', delay = 0, style, .
 }
 
 function formatStatic(value) {
+  if (!value) return ''
   return value.replace(/[\d.,]+/, m => (m.includes('.') ? '0.0' : '0'))
 }
 
@@ -342,7 +323,7 @@ function useCountUp(value, inView, duration = 1400) {
   const startedRef = useRef(false)
 
   useEffect(() => {
-    if (!inView || startedRef.current) return
+    if (!inView || startedRef.current || !value) return
     startedRef.current = true
 
     const match = value.match(/[\d.,]+/)
@@ -384,7 +365,7 @@ function StatValue({ value, className }) {
   )
 }
 
-function BookingSheet({ isOpen, onClose, brandName, brandEmail, brandPhone }) {
+function BookingSheet({ isOpen, onClose, brandName, brandEmail, brandPhone, bookingNote }) {
   const [name,     setName]     = useState('')
   const [phone,    setPhone]    = useState('')
   const [garment,  setGarment]  = useState('')
@@ -446,6 +427,7 @@ function BookingSheet({ isOpen, onClose, brandName, brandEmail, brandPhone }) {
                 <span className={styles.closeMark} />
               </button>
             </div>
+            {bookingNote && <p className={styles.drawerNote}>{bookingNote}</p>}
             <div className={styles.drawerBody}>
               <div className={styles.fieldGroup}>
                 <label className={styles.fieldLabel}>Full name *</label>
@@ -565,17 +547,19 @@ function FaqItem({ index, item, openIndex, onToggle }) {
   return (
     <div className={styles.faqRow}>
       <button className={styles.faqQuestion} onClick={() => onToggle(isOpen ? null : index)} aria-expanded={isOpen}>
-        <span>{item.q}</span>
+        <span>{item.question}</span>
         <span className={`${styles.faqIcon} ${isOpen ? styles.faqIconOpen : ''}`}>{CHEV_SVG}</span>
       </button>
       <div className={`${styles.faqAnswerWrap} ${isOpen ? styles.faqAnswerWrapOpen : ''}`}>
-        <p className={styles.faqAnswer}>{item.a}</p>
+        <p className={styles.faqAnswer}>{item.answer}</p>
       </div>
     </div>
   )
 }
 
 export function PortfolioTemplate2({ brand, photos, garmentTypes, reviews }) {
+  const settings = usePortfolioBrandSettings()
+
   const [lightboxPhoto,  setLightboxPhoto]  = useState(null)
   const [lightboxPhotos, setLightboxPhotos] = useState([])
   const [bookingOpen,    setBookingOpen]    = useState(false)
@@ -606,22 +590,13 @@ export function PortfolioTemplate2({ brand, photos, garmentTypes, reviews }) {
     window.scrollTo({ top: 0, behavior: 'smooth' })
   }
 
-  const brandName          = brand.brandName            || 'Brand Name'
-  const tagline            = brand.brandTagline         || ''
-  const brandBio           = brand.brandBio             || ''
-  const availability       = brand.brandAvailability    || 'open'
-  const availableUntil     = brand.brandAvailableUntil  || ''
-  const foundedYear        = brand.brandFoundedYear     || ''
-  const turnaround         = brand.brandTurnaround      || ''
-  const serviceArea        = brand.brandServiceArea     || ''
-  const styleStatement     = brand.brandStyleStatement  || ''
-  const featuredTechnique  = brand.brandFeaturedTechnique || ''
-  const milestone          = brand.brandMilestone       || ''
-  const brandSocials       = brand.brandSocials         || []
-  const hasFooterSocials   = Boolean(brand.brandPhone) || brandSocials.length > 0
+  const brandName        = brand.brandName    || 'Brand Name'
+  const tagline          = brand.brandTagline || ''
+  const brandBio         = brand.brandBio     || ''
+  const brandSocials     = brand.brandSocials || []
+  const hasFooterSocials = Boolean(brand.brandPhone) || brandSocials.length > 0
 
   const completedPhotos = photos.filter(p => p.category === 'completed_works')
-  const statGarments     = milestone || (completedPhotos.length ? `${completedPhotos.length}+` : '0')
 
   const categorizedIds = new Set(garmentTypes.map(t => t.id))
   const categoryGroups = garmentTypes
@@ -633,21 +608,18 @@ export function PortfolioTemplate2({ brand, photos, garmentTypes, reviews }) {
     categoryGroups.push({ id: '__other', label: 'Other pieces', items: uncategorized })
   }
 
-  const facts = [
-    { label: 'Pieces crafted', value: String(statGarments), animate: true },
-    foundedYear  && { label: 'Working since', value: String(foundedYear) },
-    serviceArea  && { label: 'Based in', value: serviceArea },
-    turnaround   && { label: 'Turnaround', value: turnaround },
-  ].filter(Boolean)
-
-  const processSteps = [
-    { numeral: 'I',   title: 'Consultation', desc: 'Share your vision, occasion, and deadline. We talk fabric, fit, and budget.' },
-    { numeral: 'II',  title: 'Measure',      desc: 'Precise measurements, taken by hand, so the garment fits from the first wear.' },
-    { numeral: 'III', title: 'Cut & sew',    desc: 'Every piece is cut and stitched with intention, on the workroom floor.' },
-    { numeral: 'IV',  title: 'Delivery',     desc: turnaround ? `${turnaround}. A final fitting before it leaves the shop.` : 'A final fitting, then your piece is ready to wear.' },
+  const stats = [
+    { label: settings.milestones[0].label, value: settings.milestones[0].number },
+    { label: settings.milestones[1].label, value: settings.milestones[1].number },
+    { label: 'Since', value: settings.yearFounded },
   ]
 
-  const faqItems = buildFaqItems(turnaround, serviceArea)
+  const facts = [
+    { label: 'Based in',    value: settings.location },
+    { label: 'Delivers to', value: settings.serviceArea.join(', ') },
+    { label: 'Turnaround',  value: settings.turnaround },
+    { label: 'Hours',       value: settings.businessHours },
+  ]
 
   return (
     <div className={styles.page}>
@@ -697,8 +669,8 @@ export function PortfolioTemplate2({ brand, photos, garmentTypes, reviews }) {
       </header>
 
       <section className={styles.hero}>
-        {brand.heroBgImage
-          ? <img src={brand.heroBgImage} alt="" className={styles.heroImg} />
+        {settings.heroBgImage
+          ? <img src={settings.heroBgImage} alt="" className={styles.heroImg} />
           : <MediaPlaceholder label="Hero image" />
         }
         <div className={styles.heroScrim} />
@@ -721,30 +693,33 @@ export function PortfolioTemplate2({ brand, photos, garmentTypes, reviews }) {
         <section id="about" className={styles.about} ref={aboutRef}>
           <Reveal as="div" className={styles.aboutIntro}>
             <span className={styles.eyebrow}>About</span>
-            <p className={styles.aboutBio}>
-              {brandBio || `Every piece starts with a conversation — about the occasion, the fabric, and the fit you have in mind. From there, it is measured, cut, and finished by hand.`}
-            </p>
-            {featuredTechnique && <p className={styles.aboutSignature}>{featuredTechnique}</p>}
+            <p className={styles.aboutBio}>{brandBio || settings.styleStatement}</p>
           </Reveal>
 
-          <Reveal as="div" className={styles.aboutFacts} delay={90}>
+          <Reveal as="div" className={styles.aboutStats} delay={70}>
+            {stats.map(stat => (
+              <div key={stat.label} className={styles.statBox}>
+                <StatValue value={stat.value} className={styles.statValue} />
+                <span className={styles.statLabel}>{stat.label}</span>
+              </div>
+            ))}
+          </Reveal>
+
+          <Reveal as="div" className={styles.aboutFacts} delay={140}>
             {facts.map(fact => (
               <div key={fact.label} className={styles.factRow}>
                 <span className={styles.factLabel}>{fact.label}</span>
-                {fact.animate
-                  ? <StatValue value={fact.value} className={styles.factValue} />
-                  : <span className={styles.factValue}>{fact.value}</span>
-                }
+                <span className={styles.factValue}>{fact.value}</span>
               </div>
             ))}
             <div className={styles.factRow}>
               <span className={styles.factLabel}>Availability</span>
               <span className={styles.factValue}>
-                <span className={`${styles.availDot} ${availability === 'open' ? styles.availDotOpen : ''}`} />
-                {availability === 'open'
+                <span className={`${styles.availDot} ${settings.availability === 'open' ? styles.availDotOpen : ''}`} />
+                {settings.availability === 'open'
                   ? 'Accepting orders'
-                  : availableUntil
-                    ? `Booked until ${new Date(availableUntil).toLocaleDateString('en-GB', { month: 'short', year: 'numeric' })}`
+                  : settings.availableUntil
+                    ? `Booked until ${settings.availableUntil}`
                     : 'Fully booked'}
               </span>
             </div>
@@ -754,7 +729,7 @@ export function PortfolioTemplate2({ brand, photos, garmentTypes, reviews }) {
         <section id="work" className={styles.works} ref={worksRef}>
           <Reveal as="div" className={styles.worksHeader}>
             <h2 className={styles.sectionTitle}>Collection</h2>
-            {styleStatement && <p className={styles.worksSub}>{styleStatement}</p>}
+            {settings.styleStatement && <p className={styles.worksSub}>{settings.styleStatement}</p>}
           </Reveal>
 
           {categoryGroups.length === 0 ? (
@@ -779,11 +754,11 @@ export function PortfolioTemplate2({ brand, photos, garmentTypes, reviews }) {
             <span className={styles.eyebrow}>Process</span>
           </Reveal>
           <div className={styles.processSteps}>
-            {processSteps.map((step, i) => (
-              <Reveal as="div" key={step.title} className={styles.processStep} delay={i * 70}>
-                <span className={styles.processNumeral}>{step.numeral}</span>
+            {settings.processSteps.map((step, i) => (
+              <Reveal as="div" key={i} className={styles.processStep} delay={i * 70}>
+                <span className={styles.processNumeral}>{ROMAN_NUMERALS[i] || i + 1}</span>
                 <span className={styles.processTitle}>{step.title}</span>
-                <p className={styles.processDesc}>{step.desc}</p>
+                <p className={styles.processDesc}>{step.description}</p>
               </Reveal>
             ))}
           </div>
@@ -813,16 +788,16 @@ export function PortfolioTemplate2({ brand, photos, garmentTypes, reviews }) {
             <span className={styles.eyebrow}>FAQ</span>
           </Reveal>
           <Reveal as="div" className={styles.faqList} delay={80}>
-            {faqItems.map((item, i) => (
-              <FaqItem key={item.q} index={i} item={item} openIndex={openFaqIndex} onToggle={setOpenFaqIndex} />
+            {settings.faqs.map((item, i) => (
+              <FaqItem key={i} index={i} item={item} openIndex={openFaqIndex} onToggle={setOpenFaqIndex} />
             ))}
           </Reveal>
         </section>
 
         <section id="contact" className={styles.cta} ref={bookRef}>
           <div className={styles.ctaMedia}>
-            {brand.footerBgImage
-              ? <img src={brand.footerBgImage} alt="" className={styles.ctaImg} />
+            {settings.footerBgImage
+              ? <img src={settings.footerBgImage} alt="" className={styles.ctaImg} />
               : <MediaPlaceholder label="Cover image" dark />
             }
             <div className={styles.ctaOverlay} />
@@ -847,6 +822,9 @@ export function PortfolioTemplate2({ brand, photos, garmentTypes, reviews }) {
         </section>
 
         <footer className={styles.footer}>
+          {settings.footerText && (
+            <Reveal as="p" className={styles.footerStatement}>{settings.footerText}</Reveal>
+          )}
           <div className={styles.footerTop}>
             <div className={styles.footerBrand}>
               <p className={styles.footerName}>{brandName}</p>
@@ -854,9 +832,10 @@ export function PortfolioTemplate2({ brand, photos, garmentTypes, reviews }) {
             </div>
             <div className={styles.footerCol}>
               <p className={styles.footerColLabel}>Contact</p>
-              {brand.brandAddress && <span className={styles.footerRow}>{brand.brandAddress}</span>}
-              {brand.brandEmail   && <a href={`mailto:${brand.brandEmail}`} className={styles.footerRow}>{brand.brandEmail}</a>}
-              {brand.brandPhone   && <a href={`tel:${brand.brandPhone}`}    className={styles.footerRow}>{brand.brandPhone}</a>}
+              {brand.brandAddress      && <span className={styles.footerRow}>{brand.brandAddress}</span>}
+              {brand.brandEmail        && <a href={`mailto:${brand.brandEmail}`} className={styles.footerRow}>{brand.brandEmail}</a>}
+              {brand.brandPhone        && <a href={`tel:${brand.brandPhone}`}    className={styles.footerRow}>{brand.brandPhone}</a>}
+              {settings.businessHours  && <span className={styles.footerRow}>{settings.businessHours}</span>}
             </div>
             <div className={styles.footerCol}>
               <p className={styles.footerColLabel}>Navigate</p>
@@ -899,6 +878,7 @@ export function PortfolioTemplate2({ brand, photos, garmentTypes, reviews }) {
         brandName={brandName}
         brandEmail={brand.brandEmail}
         brandPhone={brand.brandPhone}
+        bookingNote={settings.bookingNote}
       />
       {brand.brandPhone && (
         <WhatsAppWidget brandName={brandName} brandPhone={brand.brandPhone} brandLogo={brand.brandLogo} />
