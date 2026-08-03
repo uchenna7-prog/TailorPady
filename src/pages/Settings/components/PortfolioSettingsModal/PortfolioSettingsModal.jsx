@@ -11,11 +11,32 @@ import { ServiceAreaPicker } from './ServiceAreaPicker/ServiceAreaPicker'
 import { MilestonesField } from './MilestonesField/MilestonesField'
 import { ProcessStepsField } from './ProcessStepsField/ProcessStepsField'
 import { FaqField } from './FaqField/FaqField'
+import { AvailableFromField } from './AvailableFromField/AvailableFromField'
+import { BusinessHoursField } from './BusinessHoursField/BusinessHoursField'
 import { ImageSourceMenu } from './ImageSourceMenu/ImageSourceMenu'
 import { GalleryImagePickerSheet } from './GalleryImagePickerSheet/GalleryImagePickerSheet'
 import { ImagePreview } from './ImagePreview/ImagePreview'
 import { uploadToCloudinary } from '../../../../services/cloudinaryService'
 import { AVAILABILITY_OPTIONS, MAX_LOCATION_LENGTH, MAX_FOOTER_TEXT_LENGTH } from './datas'
+
+function normalizeAvailableUntil(v) {
+  if (v && typeof v === 'object') {
+    return { month: v.month || null, year: v.year || null }
+  }
+  return { month: null, year: null }
+}
+
+function normalizeBusinessHours(v) {
+  if (v && typeof v === 'object') {
+    return {
+      startDay: v.startDay || null,
+      endDay: v.endDay || null,
+      openMinutes: typeof v.openMinutes === 'number' ? v.openMinutes : null,
+      closeMinutes: typeof v.closeMinutes === 'number' ? v.closeMinutes : null,
+    }
+  }
+  return { startDay: null, endDay: null, openMinutes: null, closeMinutes: null }
+}
 
 function buildLocal(ps) {
   return {
@@ -30,6 +51,8 @@ function buildLocal(ps) {
     brandFaqs: Array.isArray(ps.brandFaqs) && ps.brandFaqs.length > 0
       ? ps.brandFaqs
       : [{ question: '', answer: '' }],
+    brandAvailableUntil: normalizeAvailableUntil(ps.brandAvailableUntil),
+    brandBusinessHours: normalizeBusinessHours(ps.brandBusinessHours),
   }
 }
 
@@ -145,10 +168,9 @@ export function PortfolioSettingsModal({ onBack, showToast }) {
         </Field>
         {local.brandAvailability === 'booked' && (
           <Field label="Available From" hint="When will you start accepting orders again?">
-            <TextInput
+            <AvailableFromField
               value={local.brandAvailableUntil}
               onChange={set('brandAvailableUntil')}
-              placeholder="e.g. January 2025"
             />
           </Field>
         )}
@@ -165,11 +187,11 @@ export function PortfolioSettingsModal({ onBack, showToast }) {
           onChange={set('heroBgImage')}
           showToast={showToast}
         />
-        <Field label="Hero Subtext" hint="A short line shown beneath your name. Describe your craft in one sentence.">
+        <Field label="Style Statement" hint="STell clients what kind of clothing you make and what makes your work special.">
           <Textarea
             value={local.brandStyleStatement}
             onChange={set('brandStyleStatement')}
-            placeholder="e.g. Bespoke fashion designed to complement your shape, style, and personality."
+            placeholder="e.g. Specializes in bespoke suits, traditional wear, and formal menswear. "
             rows={3}
           />
         </Field>
@@ -177,7 +199,7 @@ export function PortfolioSettingsModal({ onBack, showToast }) {
 
       <div style={{ height: 20 }} />
 
-      <div className={styles.sectionLabel}>Brand Story</div>
+      <div className={styles.sectionLabel}>About Section</div>
       <FieldGroup>
         <Field label="Year Founded" hint="When did you start your business? Shown as one of your stats.">
           <TextInput
@@ -242,10 +264,9 @@ export function PortfolioSettingsModal({ onBack, showToast }) {
           />
         </Field>
         <Field label="Business Hours" hint="When clients can expect a response or a visit.">
-          <TextInput
+          <BusinessHoursField
             value={local.brandBusinessHours}
             onChange={set('brandBusinessHours')}
-            placeholder="e.g. Mon–Sat, 9am–6pm"
           />
         </Field>
       </FieldGroup>

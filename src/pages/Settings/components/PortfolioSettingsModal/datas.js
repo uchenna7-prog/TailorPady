@@ -35,3 +35,25 @@ export const DAYS_IN_MONTH = {
   January: 31, February: 29, March: 31, April: 30, May: 31, June: 30,
   July: 31, August: 31, September: 30, October: 31, November: 30, December: 31,
 }
+
+export const WEEKDAYS = [
+  'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday',
+]
+
+const CURRENT_YEAR = new Date().getFullYear()
+
+export const YEARS = Array.from({ length: 6 }, (_, i) => CURRENT_YEAR + i)
+
+function buildTimeOptions() {
+  const options = []
+  for (let minutes = 0; minutes < 1440; minutes += 30) {
+    const hour24 = Math.floor(minutes / 60)
+    const minute = minutes % 60
+    const period = hour24 < 12 ? 'AM' : 'PM'
+    const hour12 = hour24 % 12 === 0 ? 12 : hour24 % 12
+    options.push({ value: minutes, label: `${hour12}:${String(minute).padStart(2, '0')} ${period}` })
+  }
+  return options
+}
+
+export const TIME_OPTIONS = buildTimeOptions()
