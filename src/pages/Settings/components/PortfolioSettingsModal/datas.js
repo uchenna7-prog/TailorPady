@@ -12,6 +12,7 @@ export const AVAILABILITY_OPTIONS = [
 ]
 
 export const MAX_MILESTONE_LABEL_LENGTH = 24
+export const MAX_LOCATION_LENGTH        = 40
 
 export const MAX_PROCESS_STEPS       = 5
 export const PROCESS_STEP_TITLE_MAX  = 30
@@ -20,6 +21,8 @@ export const PROCESS_STEP_DESC_MAX   = 120
 export const MAX_FAQS         = 6
 export const FAQ_QUESTION_MAX = 80
 export const FAQ_ANSWER_MAX   = 300
+
+export const MAX_FOOTER_TEXT_LENGTH = 80
 
 export const PROFILE_SETTINGS_STORAGE_KEY = 'TailorPady_profile_settings'
 
