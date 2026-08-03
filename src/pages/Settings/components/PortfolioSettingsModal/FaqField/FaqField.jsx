@@ -40,6 +40,7 @@ export function FaqField({ value, onChange }) {
             value={faq.question}
             maxLength={FAQ_QUESTION_MAX}
             onChange={e => updateFaq(i, 'question', e.target.value)}
+            className={styles.input}
           />
           <textarea
             className={styles.answerInput}
@@ -48,6 +49,7 @@ export function FaqField({ value, onChange }) {
             maxLength={FAQ_ANSWER_MAX}
             rows={3}
             onChange={e => updateFaq(i, 'answer', e.target.value)}
+            className={styles.textarea}
           />
         </div>
       ))}

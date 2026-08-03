@@ -228,14 +228,7 @@ export default function Settings({ onMenuClick }) {
     return portfolioSettings.portfolioTemplate ?? 'Choose a layout for your public page'
   }
 
-  function getPortfolioSettingsSub() {
-    const parts = []
-    if (portfolioSettings.heroBgImage)     parts.push('Hero bg')
-    if (portfolioSettings.heroAvatarImage) parts.push('Avatar')
-    if (portfolioSettings.footerBgImage)   parts.push('Footer bg')
-    if (portfolioSettings.footerLogoImage) parts.push('Logo')
-    return parts.length > 0 ? parts.join(' · ') : 'Hero and footer images'
-  }
+ 
 
   function getCurrency() {
     const c = resolveCurrencyObject(generalSettings.currency)
@@ -327,7 +320,7 @@ export default function Settings({ onMenuClick }) {
         <SettingRow
           icon="image"
           label="Portfolio Settings"
-          sub={getPortfolioSettingsSub()}
+          sub={"Configure your portfolio setting preferences"}
           onClick={() => setIsPortfolioModalOpen(true)}
           chevron
         />

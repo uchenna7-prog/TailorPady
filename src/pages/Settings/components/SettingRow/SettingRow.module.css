@@ -2,7 +2,8 @@
 .row { 
     display:flex;
     align-items:center;
-    gap:16px;padding:16px;
+    gap:16px;
+    padding:16px;
     background:var(--bg);
     border-bottom: 1px solid var(--border); 
 }

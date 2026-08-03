@@ -56,6 +56,7 @@ export function ProcessStepsField({ value, onChange }) {
             value={step.title}
             maxLength={PROCESS_STEP_TITLE_MAX}
             onChange={e => updateStep(i, 'title', e.target.value)}
+            className={styles.input}
           />
           <textarea
             className={styles.descInput}
@@ -64,6 +65,7 @@ export function ProcessStepsField({ value, onChange }) {
             maxLength={PROCESS_STEP_DESC_MAX}
             rows={2}
             onChange={e => updateStep(i, 'description', e.target.value)}
+            className={styles.textarea}
           />
         </div>
       ))}

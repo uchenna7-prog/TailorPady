@@ -39,10 +39,10 @@ export function ServiceAreaPicker({ value, onChange }) {
   return (
     <div className={styles.wrap}>
 
-      <div className={styles.segmented}>
+      <div className={styles.optionRow}>
         <button
           type="button"
-          className={`${styles.segmentBtn} ${mode === 'states' ? styles.segmentBtnActive : ''}`}
+          className={`${styles.optionChip} ${mode === 'states' ? styles.optionChipActive : ''}`}
           onClick={() => setMode('states')}
         >
           <span className="mi" style={{ fontSize: '0.9rem' }}>map</span>
@@ -50,7 +50,7 @@ export function ServiceAreaPicker({ value, onChange }) {
         </button>
         <button
           type="button"
-          className={`${styles.segmentBtn} ${mode === 'nationwide' ? styles.segmentBtnActive : ''}`}
+          className={`${styles.optionChip} ${mode === 'nationwide' ? styles.optionChipActive : ''}`}
           onClick={() => setMode('nationwide')}
         >
           <span className="mi" style={{ fontSize: '0.9rem' }}>flag</span>

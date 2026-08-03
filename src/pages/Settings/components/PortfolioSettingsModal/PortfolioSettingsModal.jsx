@@ -1,4 +1,3 @@
-
 import { useState, useRef } from 'react'
 import styles from './PortfolioSettingsModal.module.css'
 import { FullModal } from '../../../../components/FullModal/FullModal'
@@ -18,16 +17,21 @@ import { ImagePreview } from './ImagePreview/ImagePreview'
 import { uploadToCloudinary } from '../../../../services/cloudinaryService'
 import { AVAILABILITY_OPTIONS, MAX_LOCATION_LENGTH, MAX_FOOTER_TEXT_LENGTH } from './datas'
 
-
-function SectionCardLabel({ icon, children }) {
-  return (
-    <div className={styles.sectionCardLabel}>
-      <span className={`mi ${styles.sectionIcon}`}>{icon}</span>
-      {children}
-    </div>
-  )
+function buildLocal(ps) {
+  return {
+    ...ps,
+    brandMilestones: Array.isArray(ps.brandMilestones) && ps.brandMilestones.length === 2
+      ? ps.brandMilestones
+      : [{ number: '', label: '' }, { number: '', label: '' }],
+    brandServiceArea: Array.isArray(ps.brandServiceArea) ? ps.brandServiceArea : [],
+    brandProcessSteps: Array.isArray(ps.brandProcessSteps) && ps.brandProcessSteps.length > 0
+      ? ps.brandProcessSteps
+      : [{ title: '', description: '' }],
+    brandFaqs: Array.isArray(ps.brandFaqs) && ps.brandFaqs.length > 0
+      ? ps.brandFaqs
+      : [{ question: '', answer: '' }],
+  }
 }
-
 
 function BackgroundImageField({ label, hint, value, onChange, showToast }) {
   const inputRef = useRef(null)
@@ -66,7 +70,7 @@ function BackgroundImageField({ label, hint, value, onChange, showToast }) {
   return (
     <Field label={label} hint={hint}>
       {uploading ? (
-        <div className={styles.uploadBtn} style={{ flexDirection: 'column', gap: 8, opacity: 0.7, pointerEvents: 'none' }}>
+        <div className={styles.uploadProgress}>
           <div className={styles.progressTrack}>
             <div className={styles.progressFill} style={{ width: `${progress}%` }} />
           </div>
@@ -105,27 +109,14 @@ function BackgroundImageField({ label, hint, value, onChange, showToast }) {
   )
 }
 
-
 export function PortfolioSettingsModal({ onBack, showToast }) {
   const { portfolioSettings, updateManyPortfolioSettings } = usePortfolioSettings()
 
-  const [local, setLocal] = useState({
-    ...portfolioSettings,
-    brandMilestones: Array.isArray(portfolioSettings.brandMilestones) && portfolioSettings.brandMilestones.length === 2
-      ? portfolioSettings.brandMilestones
-      : [{ number: '', label: '' }, { number: '', label: '' }],
-    brandServiceArea: Array.isArray(portfolioSettings.brandServiceArea) ? portfolioSettings.brandServiceArea : [],
-    brandProcessSteps: Array.isArray(portfolioSettings.brandProcessSteps) && portfolioSettings.brandProcessSteps.length > 0
-      ? portfolioSettings.brandProcessSteps
-      : [{ title: '', description: '' }],
-    brandFaqs: Array.isArray(portfolioSettings.brandFaqs) && portfolioSettings.brandFaqs.length > 0
-      ? portfolioSettings.brandFaqs
-      : [{ question: '', answer: '' }],
-  })
+  const [local, setLocal] = useState(() => buildLocal(portfolioSettings))
 
   const set = key => val => setLocal(p => ({ ...p, [key]: val }))
 
-  function save() {
+  const save = () => {
     updateManyPortfolioSettings(local)
     showToast('Portfolio settings saved')
     onBack()
@@ -133,162 +124,158 @@ export function PortfolioSettingsModal({ onBack, showToast }) {
 
   return (
     <FullModal title="Portfolio Settings" onBack={onBack} onSave={save}>
-      <div className={styles.body}>
 
-        <div className={styles.sectionCard}>
-          <SectionCardLabel icon="toggle_on">Availability</SectionCardLabel>
-          <FieldGroup>
-            <Field label="Status">
-              <div className={styles.availabilityRow}>
-                {AVAILABILITY_OPTIONS.map(opt => (
-                  <button
-                    key={opt.value}
-                    type="button"
-                    className={`${styles.availBtn} ${
-                      local.brandAvailability === opt.value
-                        ? opt.value === 'open'
-                          ? styles.availBtnOpen
-                          : styles.availBtnBooked
-                        : ''
-                    }`}
-                    onClick={() => set('brandAvailability')(opt.value)}
-                  >
-                    <span className="mi" style={{ fontSize: '1rem' }}>{opt.icon}</span>
-                    {opt.label}
-                  </button>
-                ))}
-              </div>
-            </Field>
-            {local.brandAvailability === 'booked' && (
-              <Field label="Available From" hint="When will you start accepting orders again?">
-                <TextInput
-                  value={local.brandAvailableUntil}
-                  onChange={set('brandAvailableUntil')}
-                  placeholder="e.g. January 2025"
-                />
-              </Field>
-            )}
-          </FieldGroup>
-        </div>
-
-        <div className={styles.sectionCard}>
-          <SectionCardLabel icon="panorama">Hero Section</SectionCardLabel>
-          <FieldGroup>
-            <BackgroundImageField
-              label="Background Image"
-              hint="Full-width hero banner background. Recommended: 1920×1080px."
-              value={local.heroBgImage}
-              onChange={set('heroBgImage')}
-              showToast={showToast}
+      <div className={styles.sectionLabel}>Availability</div>
+      <FieldGroup>
+        <Field label="Status">
+          <div className={styles.availabilityRow}>
+            {AVAILABILITY_OPTIONS.map(opt => (
+              <button
+                key={opt.value}
+                type="button"
+                className={`${styles.availBtn} ${
+                  local.brandAvailability === opt.value
+                    ? opt.value === 'open'
+                      ? styles.availBtnOpen
+                      : styles.availBtnBooked
+                    : ''
+                }`}
+                onClick={() => set('brandAvailability')(opt.value)}
+              >
+                <span className="mi" style={{ fontSize: '1rem' }}>{opt.icon}</span>
+                {opt.label}
+              </button>
+            ))}
+          </div>
+        </Field>
+        {local.brandAvailability === 'booked' && (
+          <Field label="Available From" hint="When will you start accepting orders again?">
+            <TextInput
+              value={local.brandAvailableUntil}
+              onChange={set('brandAvailableUntil')}
+              placeholder="e.g. January 2025"
             />
-            <Field label="Hero Subtext" hint="A short line shown beneath your name. Describe your craft in one sentence.">
-              <Textarea
-                value={local.brandStyleStatement}
-                onChange={set('brandStyleStatement')}
-                placeholder="e.g. Bespoke fashion designed to complement your shape, style, and personality."
-                rows={3}
-              />
-            </Field>
-          </FieldGroup>
-        </div>
+          </Field>
+        )}
+      </FieldGroup>
 
-        <div className={styles.sectionCard}>
-          <SectionCardLabel icon="auto_stories">Brand Story</SectionCardLabel>
-          <FieldGroup>
-            <Field label="Year Founded" hint="When did you start your business? Shown as one of your stats.">
-              <TextInput
-                value={local.brandYearFounded}
-                onChange={set('brandYearFounded')}
-                placeholder="e.g. 2018"
-              />
-            </Field>
-            <Field label="Milestones" hint="Two proud achievements shown as stats on your portfolio. e.g. 500+ Happy Clients">
-              <MilestonesField value={local.brandMilestones} onChange={set('brandMilestones')} />
-            </Field>
-            <Field label="Location" hint="Where you're based. Shown on your portfolio.">
-              <TextInput
-                value={local.brandLocation}
-                onChange={set('brandLocation')}
-                placeholder="e.g. Lekki, Lagos"
-                maxLength={MAX_LOCATION_LENGTH}
-              />
-            </Field>
-          </FieldGroup>
-        </div>
+      <div style={{ height: 20 }} />
 
-        <div className={styles.sectionCard}>
-          <SectionCardLabel icon="timeline">Process</SectionCardLabel>
-          <FieldGroup>
-            <Field label="How You Work" hint="Up to 5 steps.">
-              <ProcessStepsField value={local.brandProcessSteps} onChange={set('brandProcessSteps')} />
-            </Field>
-          </FieldGroup>
-        </div>
+      <div className={styles.sectionLabel}>Hero Section</div>
+      <FieldGroup>
+        <BackgroundImageField
+          label="Background Image"
+          hint="Full-width hero banner background. Recommended: 1920×1080px."
+          value={local.heroBgImage}
+          onChange={set('heroBgImage')}
+          showToast={showToast}
+        />
+        <Field label="Hero Subtext" hint="A short line shown beneath your name. Describe your craft in one sentence.">
+          <Textarea
+            value={local.brandStyleStatement}
+            onChange={set('brandStyleStatement')}
+            placeholder="e.g. Bespoke fashion designed to complement your shape, style, and personality."
+            rows={3}
+          />
+        </Field>
+      </FieldGroup>
 
-        <div className={styles.sectionCard}>
-          <SectionCardLabel icon="design_services">Services</SectionCardLabel>
-          <FieldGroup>
-            <Field label="Standard Turnaround Time" hint="How long does it typically take to complete an order?">
-              <TurnaroundPicker value={local.brandTurnaround} onChange={set('brandTurnaround')} />
-            </Field>
-            <Field label="Service Area" hint="Select all states you deliver or offer services to.">
-              <ServiceAreaPicker value={local.brandServiceArea} onChange={set('brandServiceArea')} />
-            </Field>
-          </FieldGroup>
-        </div>
+      <div style={{ height: 20 }} />
 
-        <div className={styles.sectionCard}>
-          <SectionCardLabel icon="quiz">FAQ</SectionCardLabel>
-          <FieldGroup>
-            <Field label="Frequently Asked Questions" hint="Up to 6 questions.">
-              <FaqField value={local.brandFaqs} onChange={set('brandFaqs')} />
-            </Field>
-          </FieldGroup>
-        </div>
+      <div className={styles.sectionLabel}>Brand Story</div>
+      <FieldGroup>
+        <Field label="Year Founded" hint="When did you start your business? Shown as one of your stats.">
+          <TextInput
+            value={local.brandYearFounded}
+            onChange={set('brandYearFounded')}
+            placeholder="e.g. 2018"
+          />
+        </Field>
+        <Field label="Milestones" hint="Two proud achievements shown as stats on your portfolio. e.g. 500+ Happy Clients">
+          <MilestonesField value={local.brandMilestones} onChange={set('brandMilestones')} />
+        </Field>
+        <Field label="Location" hint="Where you're based. Shown on your portfolio.">
+          <TextInput
+            value={local.brandLocation}
+            onChange={set('brandLocation')}
+            placeholder="e.g. Lekki, Lagos"
+            maxLength={MAX_LOCATION_LENGTH}
+          />
+        </Field>
+      </FieldGroup>
 
-        <div className={styles.sectionCard}>
-          <SectionCardLabel icon="event_available">Booking</SectionCardLabel>
-          <FieldGroup>
-            <Field label="Booking Note" hint="A short note shown to clients on your booking form. e.g. Include your measurements when booking.">
-              <Textarea
-                value={local.brandBookingNote}
-                onChange={set('brandBookingNote')}
-                placeholder="e.g. Please include your measurement chart and fabric preference when reaching out."
-                rows={3}
-              />
-            </Field>
-            <Field label="Business Hours" hint="When clients can expect a response or a visit.">
-              <TextInput
-                value={local.brandBusinessHours}
-                onChange={set('brandBusinessHours')}
-                placeholder="e.g. Mon–Sat, 9am–6pm"
-              />
-            </Field>
-          </FieldGroup>
-        </div>
+      <div style={{ height: 20 }} />
 
-        <div className={styles.sectionCard}>
-          <SectionCardLabel icon="dashboard_customize">Footer Section</SectionCardLabel>
-          <FieldGroup>
-            <BackgroundImageField
-              label="Footer Background Image"
-              hint="Optional background behind footer content. Leave empty for a solid color."
-              value={local.footerBgImage}
-              onChange={set('footerBgImage')}
-              showToast={showToast}
-            />
-            <Field label="Footer Text" hint="A short closing line shown before your contact details.">
-              <TextInput
-                value={local.brandFooterText}
-                onChange={set('brandFooterText')}
-                placeholder="e.g. Let's create something beautiful together."
-                maxLength={MAX_FOOTER_TEXT_LENGTH}
-              />
-            </Field>
-          </FieldGroup>
-        </div>
+      <div className={styles.sectionLabel}>Process</div>
+      <FieldGroup>
+        <Field label="How You Work" hint="Up to 5 steps.">
+          <ProcessStepsField value={local.brandProcessSteps} onChange={set('brandProcessSteps')} />
+        </Field>
+      </FieldGroup>
 
-      </div>
+      <div style={{ height: 20 }} />
+
+      <div className={styles.sectionLabel}>Services</div>
+      <FieldGroup>
+        <Field label="Standard Turnaround Time" hint="How long does it typically take to complete an order?">
+          <TurnaroundPicker value={local.brandTurnaround} onChange={set('brandTurnaround')} />
+        </Field>
+        <Field label="Service Area" hint="Select all states you deliver or offer services to.">
+          <ServiceAreaPicker value={local.brandServiceArea} onChange={set('brandServiceArea')} />
+        </Field>
+      </FieldGroup>
+
+      <div style={{ height: 20 }} />
+
+      <div className={styles.sectionLabel}>FAQ</div>
+      <FieldGroup>
+        <Field label="Frequently Asked Questions" hint="Up to 6 questions.">
+          <FaqField value={local.brandFaqs} onChange={set('brandFaqs')} />
+        </Field>
+      </FieldGroup>
+
+      <div style={{ height: 20 }} />
+
+      <div className={styles.sectionLabel}>Booking</div>
+      <FieldGroup>
+        <Field label="Booking Note" hint="A short note shown to clients on your booking form. e.g. Include your measurements when booking.">
+          <Textarea
+            value={local.brandBookingNote}
+            onChange={set('brandBookingNote')}
+            placeholder="e.g. Please include your measurement chart and fabric preference when reaching out."
+            rows={3}
+          />
+        </Field>
+        <Field label="Business Hours" hint="When clients can expect a response or a visit.">
+          <TextInput
+            value={local.brandBusinessHours}
+            onChange={set('brandBusinessHours')}
+            placeholder="e.g. Mon–Sat, 9am–6pm"
+          />
+        </Field>
+      </FieldGroup>
+
+      <div style={{ height: 20 }} />
+
+      <div className={styles.sectionLabel}>Footer Section</div>
+      <FieldGroup>
+        <BackgroundImageField
+          label="Footer Background Image"
+          hint="Optional background behind footer content. Leave empty for a solid color."
+          value={local.footerBgImage}
+          onChange={set('footerBgImage')}
+          showToast={showToast}
+        />
+        <Field label="Footer Text" hint="A short closing line shown before your contact details.">
+          <TextInput
+            value={local.brandFooterText}
+            onChange={set('brandFooterText')}
+            placeholder="e.g. Let's create something beautiful together."
+            maxLength={MAX_FOOTER_TEXT_LENGTH}
+          />
+        </Field>
+      </FieldGroup>
+
     </FullModal>
   )
 }
