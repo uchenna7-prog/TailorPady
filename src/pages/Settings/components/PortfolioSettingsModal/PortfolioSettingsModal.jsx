@@ -103,9 +103,13 @@ export function PortfolioSettingsModal({ onBack, showToast }) {
     brandMilestones: Array.isArray(portfolioSettings.brandMilestones) && portfolioSettings.brandMilestones.length === 2
       ? portfolioSettings.brandMilestones
       : [{ number: '', label: '' }, { number: '', label: '' }],
-    brandServiceArea:  Array.isArray(portfolioSettings.brandServiceArea) ? portfolioSettings.brandServiceArea : [],
-    brandProcessSteps: Array.isArray(portfolioSettings.brandProcessSteps) ? portfolioSettings.brandProcessSteps : [],
-    brandFaqs:         Array.isArray(portfolioSettings.brandFaqs) ? portfolioSettings.brandFaqs : [],
+    brandServiceArea: Array.isArray(portfolioSettings.brandServiceArea) ? portfolioSettings.brandServiceArea : [],
+    brandProcessSteps: Array.isArray(portfolioSettings.brandProcessSteps) && portfolioSettings.brandProcessSteps.length > 0
+      ? portfolioSettings.brandProcessSteps
+      : [{ title: '', description: '' }],
+    brandFaqs: Array.isArray(portfolioSettings.brandFaqs) && portfolioSettings.brandFaqs.length > 0
+      ? portfolioSettings.brandFaqs
+      : [{ question: '', answer: '' }],
   })
 
   const set = key => val => setLocal(p => ({ ...p, [key]: val }))
