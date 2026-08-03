@@ -4,6 +4,7 @@ import { FullModal } from '../../../../components/FullModal/FullModal'
 import { usePortfolioSettings } from '../../../../contexts/PortfolioSettingsContext'
 import { Field } from '../Field/Field'
 import { FieldGroup } from '../FieldGroup/FieldGroup'
+import { SectionHeader } from './SectionHeader/SectionHeader'
 import { TextInput } from '../TextInput/TextInput'
 import { Textarea } from '../Textarea/Textarea'
 import { TurnaroundPicker } from './TurnaroundPicker/TurnaroundPicker'
@@ -124,7 +125,11 @@ export function PortfolioSettingsModal({ onBack, showToast }) {
     <FullModal title="Portfolio Settings" onBack={onBack} onSave={save}>
       <div>
 
-        <div className={styles.sectionLabel}>Availability</div>
+        <SectionHeader
+          icon="toggle_on"
+          title="Availability"
+          description="Let clients know if you're currently accepting new orders."
+        />
         <FieldGroup>
           <Field label="Status">
             <div className={styles.availabilityRow}>
@@ -158,19 +163,40 @@ export function PortfolioSettingsModal({ onBack, showToast }) {
           )}
         </FieldGroup>
 
-        <div style={{ height: 20 }} />
+        <div style={{ height: 28 }} />
 
-        <div className={styles.sectionLabel}>About You</div>
+        <SectionHeader
+          icon="panorama"
+          title="Hero Section"
+          description="The first thing visitors see when they land on your portfolio."
+        />
         <FieldGroup>
-          <Field label="Style Statement" hint="Describe your craft. Shown on your portfolio.">
+          <BackgroundImageField
+            label="Background Image"
+            hint="Full-width hero banner background. Recommended: 1920×1080px."
+            value={local.heroBgImage}
+            onChange={set('heroBgImage')}
+            showToast={showToast}
+          />
+          <Field label="Hero Subtext" hint="A short line shown beneath your name. Describe your craft in one sentence.">
             <Textarea
               value={local.brandStyleStatement}
               onChange={set('brandStyleStatement')}
-              placeholder="e.g. I specialise in bold Ankara fusion pieces that blend traditional Yoruba aesthetics with modern silhouettes..."
-              rows={5}
+              placeholder="e.g. Bespoke fashion designed to complement your shape, style, and personality."
+              rows={3}
             />
           </Field>
-          <Field label="Year Founded" hint="When did you start your business? Shown as your third stat.">
+        </FieldGroup>
+
+        <div style={{ height: 28 }} />
+
+        <SectionHeader
+          icon="auto_stories"
+          title="Brand Story"
+          description="Tell clients who you are and how long you've been perfecting your craft."
+        />
+        <FieldGroup>
+          <Field label="Year Founded" hint="When did you start your business? Shown as one of your stats.">
             <TextInput
               value={local.brandYearFounded}
               onChange={set('brandYearFounded')}
@@ -190,18 +216,26 @@ export function PortfolioSettingsModal({ onBack, showToast }) {
           </Field>
         </FieldGroup>
 
-        <div style={{ height: 20 }} />
+        <div style={{ height: 28 }} />
 
-        <div className={styles.sectionLabel}>Process</div>
+        <SectionHeader
+          icon="timeline"
+          title="Process"
+          description="Walk clients through how you work, from first contact to delivery."
+        />
         <FieldGroup>
-          <Field label="How You Work" hint="Walk clients through your process, from consultation to delivery. Up to 5 steps.">
+          <Field label="How You Work" hint="Up to 5 steps.">
             <ProcessStepsField value={local.brandProcessSteps} onChange={set('brandProcessSteps')} />
           </Field>
         </FieldGroup>
 
-        <div style={{ height: 20 }} />
+        <div style={{ height: 28 }} />
 
-        <div className={styles.sectionLabel}>Services</div>
+        <SectionHeader
+          icon="design_services"
+          title="Services"
+          description="Set expectations on timelines and where you deliver."
+        />
         <FieldGroup>
           <Field label="Standard Turnaround Time" hint="How long does it typically take to complete an order?">
             <TurnaroundPicker value={local.brandTurnaround} onChange={set('brandTurnaround')} />
@@ -211,18 +245,26 @@ export function PortfolioSettingsModal({ onBack, showToast }) {
           </Field>
         </FieldGroup>
 
-        <div style={{ height: 20 }} />
+        <div style={{ height: 28 }} />
 
-        <div className={styles.sectionLabel}>FAQ</div>
+        <SectionHeader
+          icon="quiz"
+          title="FAQ"
+          description="Answer the questions clients ask most, before they have to ask."
+        />
         <FieldGroup>
-          <Field label="Frequently Asked Questions" hint="Answer the questions clients ask most. Up to 6 questions.">
+          <Field label="Frequently Asked Questions" hint="Up to 6 questions.">
             <FaqField value={local.brandFaqs} onChange={set('brandFaqs')} />
           </Field>
         </FieldGroup>
 
-        <div style={{ height: 20 }} />
+        <div style={{ height: 28 }} />
 
-        <div className={styles.sectionLabel}>Booking</div>
+        <SectionHeader
+          icon="event_available"
+          title="Booking"
+          description="Set the tone for how clients reach out and what to expect."
+        />
         <FieldGroup>
           <Field label="Booking Note" hint="A short note shown to clients on your booking form. e.g. Include your measurements when booking.">
             <Textarea
@@ -241,22 +283,13 @@ export function PortfolioSettingsModal({ onBack, showToast }) {
           </Field>
         </FieldGroup>
 
-        <div style={{ height: 20 }} />
+        <div style={{ height: 28 }} />
 
-        <div className={styles.sectionLabel}>Hero Section</div>
-        <FieldGroup>
-          <BackgroundImageField
-            label="Background Image"
-            hint="Full-width hero banner background. Recommended: 1920×1080px."
-            value={local.heroBgImage}
-            onChange={set('heroBgImage')}
-            showToast={showToast}
-          />
-        </FieldGroup>
-
-        <div style={{ height: 20 }} />
-
-        <div className={styles.sectionLabel}>Footer Section</div>
+        <SectionHeader
+          icon="dashboard_customize"
+          title="Footer Section"
+          description="Round off your portfolio with a closing note and cover image."
+        />
         <FieldGroup>
           <BackgroundImageField
             label="Footer Background Image"
