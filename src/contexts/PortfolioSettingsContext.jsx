@@ -10,17 +10,20 @@ const PortfolioSettingsContext = createContext(null)
 
 const DEFAULTS = {
   heroBgImage:         null,
-  heroAvatarImage:     null,
   footerBgImage:       null,
-  footerLogoImage:     null,
-  brandMilestone:      '',
-  brandSignatureStyle: '',
   brandStyleStatement: '',
+  brandYearFounded:    '',
+  brandMilestones:     [{ number: '', label: '' }, { number: '', label: '' }],
   brandAvailability:   'open',
   brandAvailableUntil: '',
   brandTurnaround:     '1 weeks',
   brandServiceArea:    [],
   brandBookingNote:    '',
+  brandProcessSteps:   [],
+  brandFaqs:           [],
+  brandInstagram:      '',
+  brandWhatsapp:       '',
+  brandBusinessHours:  '',
   portfolioTemplate:   'template1',
 }
 
