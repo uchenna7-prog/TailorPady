@@ -9,6 +9,8 @@ import { Textarea } from '../Textarea/Textarea'
 import { TurnaroundPicker } from './TurnaroundPicker/TurnaroundPicker'
 import { ServiceAreaPicker } from './ServiceAreaPicker/ServiceAreaPicker'
 import { MilestonesField } from './MilestonesField/MilestonesField'
+import { ProcessStepsField } from './ProcessStepsField/ProcessStepsField'
+import { FaqField } from './FaqField/FaqField'
 import { ImageSourceMenu } from './ImageSourceMenu/ImageSourceMenu'
 import { GalleryImagePickerSheet } from './GalleryImagePickerSheet/GalleryImagePickerSheet'
 import { ImagePreview } from './ImagePreview/ImagePreview'
@@ -101,7 +103,9 @@ export function PortfolioSettingsModal({ onBack, showToast }) {
     brandMilestones: Array.isArray(portfolioSettings.brandMilestones) && portfolioSettings.brandMilestones.length === 2
       ? portfolioSettings.brandMilestones
       : [{ number: '', label: '' }, { number: '', label: '' }],
-    brandServiceArea: Array.isArray(portfolioSettings.brandServiceArea) ? portfolioSettings.brandServiceArea : [],
+    brandServiceArea:  Array.isArray(portfolioSettings.brandServiceArea) ? portfolioSettings.brandServiceArea : [],
+    brandProcessSteps: Array.isArray(portfolioSettings.brandProcessSteps) ? portfolioSettings.brandProcessSteps : [],
+    brandFaqs:         Array.isArray(portfolioSettings.brandFaqs) ? portfolioSettings.brandFaqs : [],
   })
 
   const set = key => val => setLocal(p => ({ ...p, [key]: val }))
@@ -154,8 +158,13 @@ export function PortfolioSettingsModal({ onBack, showToast }) {
 
         <div className={styles.sectionLabel}>About You</div>
         <FieldGroup>
-          <Field label="Milestones" hint="Two proud achievements shown as stats on your portfolio. e.g. 500+ Happy Clients">
-            <MilestonesField value={local.brandMilestones} onChange={set('brandMilestones')} />
+          <Field label="Style Statement" hint="Describe your craft. Shown on your portfolio.">
+            <Textarea
+              value={local.brandStyleStatement}
+              onChange={set('brandStyleStatement')}
+              placeholder="e.g. I specialise in bold Ankara fusion pieces that blend traditional Yoruba aesthetics with modern silhouettes..."
+              rows={5}
+            />
           </Field>
           <Field label="Year Founded" hint="When did you start your business? Shown as your third stat.">
             <TextInput
@@ -164,13 +173,17 @@ export function PortfolioSettingsModal({ onBack, showToast }) {
               placeholder="e.g. 2018"
             />
           </Field>
-          <Field label="Style Statement" hint="Describe your craft. Shown on your portfolio.">
-            <Textarea
-              value={local.brandStyleStatement}
-              onChange={set('brandStyleStatement')}
-              placeholder="e.g. I specialise in bold Ankara fusion pieces that blend traditional Yoruba aesthetics with modern silhouettes..."
-              rows={5}
-            />
+          <Field label="Milestones" hint="Two proud achievements shown as stats on your portfolio. e.g. 500+ Happy Clients">
+            <MilestonesField value={local.brandMilestones} onChange={set('brandMilestones')} />
+          </Field>
+        </FieldGroup>
+
+        <div style={{ height: 20 }} />
+
+        <div className={styles.sectionLabel}>Process</div>
+        <FieldGroup>
+          <Field label="How You Work" hint="Walk clients through your process, from consultation to delivery. Up to 5 steps.">
+            <ProcessStepsField value={local.brandProcessSteps} onChange={set('brandProcessSteps')} />
           </Field>
         </FieldGroup>
 
@@ -188,6 +201,15 @@ export function PortfolioSettingsModal({ onBack, showToast }) {
 
         <div style={{ height: 20 }} />
 
+        <div className={styles.sectionLabel}>FAQ</div>
+        <FieldGroup>
+          <Field label="Frequently Asked Questions" hint="Answer the questions clients ask most. Up to 6 questions.">
+            <FaqField value={local.brandFaqs} onChange={set('brandFaqs')} />
+          </Field>
+        </FieldGroup>
+
+        <div style={{ height: 20 }} />
+
         <div className={styles.sectionLabel}>Booking</div>
         <FieldGroup>
           <Field label="Booking Note" hint="A short note shown to clients on your booking form. e.g. Include your measurements when booking.">
@@ -196,6 +218,33 @@ export function PortfolioSettingsModal({ onBack, showToast }) {
               onChange={set('brandBookingNote')}
               placeholder="e.g. Please include your measurement chart and fabric preference when reaching out."
               rows={3}
+            />
+          </Field>
+        </FieldGroup>
+
+        <div style={{ height: 20 }} />
+
+        <div className={styles.sectionLabel}>Contact & Social</div>
+        <FieldGroup>
+          <Field label="Instagram Handle" hint="Shown as a link on your portfolio.">
+            <TextInput
+              value={local.brandInstagram}
+              onChange={set('brandInstagram')}
+              placeholder="e.g. @yourbrand"
+            />
+          </Field>
+          <Field label="WhatsApp Number" hint="Clients can reach you directly from your portfolio.">
+            <TextInput
+              value={local.brandWhatsapp}
+              onChange={set('brandWhatsapp')}
+              placeholder="e.g. 08012345678"
+            />
+          </Field>
+          <Field label="Business Hours" hint="e.g. Mon–Sat, 9am–6pm">
+            <TextInput
+              value={local.brandBusinessHours}
+              onChange={set('brandBusinessHours')}
+              placeholder="e.g. Mon–Sat, 9am–6pm"
             />
           </Field>
         </FieldGroup>
