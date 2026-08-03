@@ -14,7 +14,7 @@ const NAV_ITEMS = [
 function BottomNav() {
   const navigate = useNavigate()
   const { pathname } = useLocation()
-  const { completeStep } = useTour()
+  const { completeStep, isActive: tourActive } = useTour()
   const [hidden, setHidden] = useState(false)
 
   const lastY     = useRef(0)
@@ -23,6 +23,8 @@ function BottomNav() {
 
   useEffect(() => {
     const onScroll = (e) => {
+      if (tourActive) return
+
       const target = e.target.scrollingElement ?? e.target
 
       if (ticking.current) return
@@ -54,6 +56,12 @@ function BottomNav() {
     document.addEventListener('scroll', onScroll, { capture: true, passive: true })
     return () => document.removeEventListener('scroll', onScroll, { capture: true })
   }, [pathname])
+
+  useEffect(() => {
+    if (!tourActive) return
+    setHidden(false)
+    hiddenRef.current = false
+  }, [tourActive])
 
   function handleNavClick(item) {
     if (item.route === '/customers') completeStep('goto-customers-nav')
