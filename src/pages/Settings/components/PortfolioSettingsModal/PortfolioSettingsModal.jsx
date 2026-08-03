@@ -8,6 +8,7 @@ import { TextInput } from '../TextInput/TextInput'
 import { Textarea } from '../Textarea/Textarea'
 import { TurnaroundPicker } from './TurnaroundPicker/TurnaroundPicker'
 import { ServiceAreaPicker } from './ServiceAreaPicker/ServiceAreaPicker'
+import { MilestonesField } from './MilestonesField/MilestonesField'
 import { ImageSourceMenu } from './ImageSourceMenu/ImageSourceMenu'
 import { GalleryImagePickerSheet } from './GalleryImagePickerSheet/GalleryImagePickerSheet'
 import { ImagePreview } from './ImagePreview/ImagePreview'
@@ -92,60 +93,16 @@ function BackgroundImageField({ label, hint, value, onChange, showToast }) {
 }
 
 
-function ImageUploadField({ label, hint, value, onChange, showToast }) {
-  const inputRef = useRef(null)
-  const [uploading, setUploading] = useState(false)
-  const [progress, setProgress] = useState(0)
-
-  async function handleFileChange(e) {
-    const file = e.target.files?.[0]
-    if (!file) return
-    if (!file.type.startsWith('image/')) { showToast('Please select an image file'); return }
-    if (file.size > 10 * 1024 * 1024) { showToast('Image must be under 10MB'); return }
-
-    setUploading(true)
-    setProgress(0)
-
-    try {
-      const url = await uploadToCloudinary(file, 'portfolio', setProgress)
-      onChange(url)
-      showToast('Image uploaded')
-    } catch {
-      showToast('Upload failed — please try again')
-    } finally {
-      setUploading(false)
-      setProgress(0)
-      if (inputRef.current) inputRef.current.value = ''
-    }
-  }
-
-  return (
-    <Field label={label} hint={hint}>
-      {uploading ? (
-        <div className={styles.uploadBtn} style={{ flexDirection: 'column', gap: 8, opacity: 0.7, pointerEvents: 'none' }}>
-          <div className={styles.progressTrack}>
-            <div className={styles.progressFill} style={{ width: `${progress}%` }} />
-          </div>
-          <span className={styles.progressLabel}>Uploading… {progress}%</span>
-        </div>
-      ) : value ? (
-        <ImagePreview src={value} alt={label} onRemove={() => onChange(null)} />
-      ) : (
-        <button className={styles.uploadBtn} onClick={() => inputRef.current?.click()}>
-          <span className="mi">add_photo_alternate</span>
-          Upload image
-        </button>
-      )}
-      <input ref={inputRef} type="file" accept="image/*" style={{ display: 'none' }} onChange={handleFileChange} />
-    </Field>
-  )
-}
-
-
 export function PortfolioSettingsModal({ onBack, showToast }) {
   const { portfolioSettings, updateManyPortfolioSettings } = usePortfolioSettings()
 
-  const [local, setLocal] = useState({ ...portfolioSettings })
+  const [local, setLocal] = useState({
+    ...portfolioSettings,
+    brandMilestones: Array.isArray(portfolioSettings.brandMilestones) && portfolioSettings.brandMilestones.length === 2
+      ? portfolioSettings.brandMilestones
+      : [{ number: '', label: '' }, { number: '', label: '' }],
+    brandServiceArea: Array.isArray(portfolioSettings.brandServiceArea) ? portfolioSettings.brandServiceArea : [],
+  })
 
   const set = key => val => setLocal(p => ({ ...p, [key]: val }))
 
@@ -197,18 +154,14 @@ export function PortfolioSettingsModal({ onBack, showToast }) {
 
         <div className={styles.sectionLabel}>About You</div>
         <FieldGroup>
-          <Field label="Milestone" hint="A proud achievement shown on your portfolio. e.g. 500+ happy clients">
-            <TextInput
-              value={local.brandMilestone}
-              onChange={set('brandMilestone')}
-              placeholder="e.g. 500+ happy clients"
-            />
+          <Field label="Milestones" hint="Two proud achievements shown as stats on your portfolio. e.g. 500+ Happy Clients">
+            <MilestonesField value={local.brandMilestones} onChange={set('brandMilestones')} />
           </Field>
-          <Field label="Signature Style" hint="What you're known for. e.g. Hand-embroidered agbada">
+          <Field label="Year Founded" hint="When did you start your business? Shown as your third stat.">
             <TextInput
-              value={local.brandSignatureStyle}
-              onChange={set('brandSignatureStyle')}
-              placeholder="e.g. Hand-embroidered agbada"
+              value={local.brandYearFounded}
+              onChange={set('brandYearFounded')}
+              placeholder="e.g. 2018"
             />
           </Field>
           <Field label="Style Statement" hint="Describe your craft. Shown on your portfolio.">
@@ -258,13 +211,6 @@ export function PortfolioSettingsModal({ onBack, showToast }) {
             onChange={set('heroBgImage')}
             showToast={showToast}
           />
-          <ImageUploadField
-            label="Profile / Avatar"
-            hint="Your photo shown on the hero. Recommended: 400×400px square."
-            value={local.heroAvatarImage}
-            onChange={set('heroAvatarImage')}
-            showToast={showToast}
-          />
         </FieldGroup>
 
         <div style={{ height: 20 }} />
@@ -276,13 +222,6 @@ export function PortfolioSettingsModal({ onBack, showToast }) {
             hint="Optional background behind footer content. Leave empty for a solid color."
             value={local.footerBgImage}
             onChange={set('footerBgImage')}
-            showToast={showToast}
-          />
-          <ImageUploadField
-            label="Footer Logo"
-            hint="Brand mark shown in the footer. PNG with transparency works best."
-            value={local.footerLogoImage}
-            onChange={set('footerLogoImage')}
             showToast={showToast}
           />
         </FieldGroup>
