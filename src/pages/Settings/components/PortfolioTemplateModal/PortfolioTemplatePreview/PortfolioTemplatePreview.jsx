@@ -8,8 +8,6 @@ export function PortfolioTemplatePreview({ template, slug, onClose, onSelect }) 
 
   const handleSelect = () => onSelect(template.id)
 
-  const handleOpenInNewTab = () => window.open(previewUrl, '_blank')
-
   let previewContent
 
   if (!previewUrl) {
@@ -21,13 +19,11 @@ export function PortfolioTemplatePreview({ template, slug, onClose, onSelect }) 
     )
   } else {
     previewContent = (
-      <div className={styles.previewNoSlug}>
-        <span className="mi" style={{ fontSize: '2rem' }}>open_in_new</span>
-        <p>{template.label} preview</p>
-        <button onClick={handleOpenInNewTab} className={styles.previewLink}>
-          Open preview in new tab
-        </button>
-      </div>
+      <iframe
+        className={styles.previewFrame}
+        src={previewUrl}
+        title="Portfolio preview"
+      />
     )
   }
 
