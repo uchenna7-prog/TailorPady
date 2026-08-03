@@ -8,36 +8,30 @@ export function ServiceAreaPicker({ value, onChange }) {
 
   const hasNationwide    = selected.includes('Nationwide')
   const hasInternational = selected.includes('International')
-  const hasStates        = selected.some(s => NIGERIAN_STATES.includes(s))
-  const isNationwideDisabled = hasStates
-  const isStatesDisabled     = hasNationwide
+  const mode = hasNationwide ? 'nationwide' : 'states'
 
   const availableStates = NIGERIAN_STATES.filter(s => !selected.includes(s))
   const selectedStates = selected.filter(s => NIGERIAN_STATES.includes(s))
 
-  const toggleSpecial = opt => {
-    if (opt === 'Nationwide') {
-      if (isNationwideDisabled) return
-      const next = hasNationwide
-        ? selected.filter(s => s !== 'Nationwide')
-        : [...selected, 'Nationwide']
-      onChange(next)
+  const setMode = next => {
+    if (next === mode) return
+    if (next === 'nationwide') {
+      onChange(hasInternational ? ['Nationwide', 'International'] : ['Nationwide'])
     } else {
-      const next = hasInternational
-        ? selected.filter(s => s !== 'International')
-        : [...selected, 'International']
-      onChange(next)
+      onChange(selected.filter(s => s !== 'Nationwide'))
     }
   }
 
-  const handleAddState = state => {
-    if (!state || isStatesDisabled) return
-    onChange([...selected, state])
+  const toggleInternational = () => {
+    const next = hasInternational
+      ? selected.filter(s => s !== 'International')
+      : [...selected, 'International']
+    onChange(next)
   }
 
-  const removeSpecial = (e, opt) => {
-    e.stopPropagation()
-    toggleSpecial(opt)
+  const handleAddState = state => {
+    if (!state) return
+    onChange([...selected, state])
   }
 
   const removeChip = item => onChange(selected.filter(s => s !== item))
@@ -45,65 +39,67 @@ export function ServiceAreaPicker({ value, onChange }) {
   return (
     <div className={styles.wrap}>
 
-      <Dropdown
-        options={availableStates}
-        value={null}
-        onChange={handleAddState}
-        placeholder={isStatesDisabled ? 'Nationwide selected — states unavailable' : 'Add a state…'}
-        searchable
-        searchPlaceholder="Search states…"
-        disabled={isStatesDisabled}
-      />
-
-      {selectedStates.length > 0 && (
-        <div className={styles.chips}>
-          {selectedStates.map(s => (
-            <button key={s} type="button" className={styles.chip} onClick={() => removeChip(s)}>
-              {s}
-              <span className="mi" style={{ fontSize: '0.75rem' }}>close</span>
-            </button>
-          ))}
-        </div>
-      )}
-
-      <div className={styles.special}>
+      <div className={styles.segmented}>
         <button
           type="button"
-          disabled={isNationwideDisabled}
-          className={`${styles.specialBtn} ${hasNationwide ? styles.specialBtnActive : ''} ${isNationwideDisabled ? styles.specialBtnDisabled : ''}`}
-          onClick={() => !hasNationwide && toggleSpecial('Nationwide')}
+          className={`${styles.segmentBtn} ${mode === 'states' ? styles.segmentBtnActive : ''}`}
+          onClick={() => setMode('states')}
+        >
+          <span className="mi" style={{ fontSize: '0.9rem' }}>map</span>
+          Specific states
+        </button>
+        <button
+          type="button"
+          className={`${styles.segmentBtn} ${mode === 'nationwide' ? styles.segmentBtnActive : ''}`}
+          onClick={() => setMode('nationwide')}
         >
           <span className="mi" style={{ fontSize: '0.9rem' }}>flag</span>
           Nationwide
-          {hasNationwide && (
-            <span className={`mi ${styles.specialBtnRemove}`} onClick={e => removeSpecial(e, 'Nationwide')}>
-              close
-            </span>
-          )}
-        </button>
-        <button
-          type="button"
-          className={`${styles.specialBtn} ${hasInternational ? styles.specialBtnActive : ''}`}
-          onClick={() => !hasInternational && toggleSpecial('International')}
-        >
-          <span className="mi" style={{ fontSize: '0.9rem' }}>public</span>
-          International
-          {hasInternational && (
-            <span className={`mi ${styles.specialBtnRemove}`} onClick={e => removeSpecial(e, 'International')}>
-              close
-            </span>
-          )}
         </button>
       </div>
 
-      {(isNationwideDisabled || isStatesDisabled) && (
-        <div className={styles.hint}>
-          <span className="mi" style={{ fontSize: '0.85rem' }}>info</span>
-          {isStatesDisabled
-            ? 'Remove Nationwide to select specific states'
-            : 'Remove your selected states to choose Nationwide'}
-        </div>
+      {mode === 'states' && (
+        <>
+          <Dropdown
+            options={availableStates}
+            value={null}
+            onChange={handleAddState}
+            placeholder="Add a state"
+            searchable
+            searchPlaceholder="Search states"
+          />
+
+          {selectedStates.length > 0 && (
+            <div className={styles.chips}>
+              {selectedStates.map(s => (
+                <button key={s} type="button" className={styles.chip} onClick={() => removeChip(s)}>
+                  {s}
+                  <span className="mi" style={{ fontSize: '0.75rem' }}>close</span>
+                </button>
+              ))}
+            </div>
+          )}
+        </>
       )}
+
+      <div className={styles.toggleRow}>
+        <div className={styles.toggleLabel}>
+          <span className={`mi ${styles.toggleIcon}`}>public</span>
+          <div className={styles.toggleText}>
+            <span className={styles.toggleTitle}>International clients</span>
+            <span className={styles.toggleSub}>Also show your services to clients outside Nigeria</span>
+          </div>
+        </div>
+        <button
+          type="button"
+          role="switch"
+          aria-checked={hasInternational}
+          className={`${styles.switch} ${hasInternational ? styles.switchOn : ''}`}
+          onClick={toggleInternational}
+        >
+          <span className={styles.switchThumb} />
+        </button>
+      </div>
 
     </div>
   )
