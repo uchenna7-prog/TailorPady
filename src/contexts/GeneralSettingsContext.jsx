@@ -28,7 +28,7 @@ export const DEFAULTS = {
 
   invoicePrefix:   'INV',
   invoiceCurrency: DEFAULT_CURRENCY,
-  invoiceTemplate: 'invoiceTemplate1',
+  invoiceTemplate: 'invoiceTemplate5',
   invoiceDueDays:  7,
   invoiceShowTax:  false,
   invoiceTaxRate:  0,
@@ -36,7 +36,7 @@ export const DEFAULTS = {
 
   receiptPrefix:   'RCP',
   receiptCurrency: DEFAULT_CURRENCY,
-  receiptTemplate: 'receiptTemplate1',
+  receiptTemplate: 'receiptTemplate5',
   receiptShowTax:  false,
   receiptTaxRate:  0,
   receiptFooter:   'Thank you for your patronage 🙏',
