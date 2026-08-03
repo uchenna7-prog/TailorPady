@@ -2,7 +2,7 @@ import { MAX_PROCESS_STEPS, PROCESS_STEP_TITLE_MAX, PROCESS_STEP_DESC_MAX } from
 import styles from './ProcessStepsField.module.css'
 
 export function ProcessStepsField({ value, onChange }) {
-  const steps = Array.isArray(value) ? value : []
+  const steps = Array.isArray(value) && value.length > 0 ? value : [{ title: '', description: '' }]
 
   function updateStep(index, key, val) {
     const next = steps.map((s, i) => i === index ? { ...s, [key]: val } : s)
@@ -39,7 +39,12 @@ export function ProcessStepsField({ value, onChange }) {
               <button type="button" className={styles.iconBtn} disabled={i === steps.length - 1} onClick={() => moveStep(i, 1)}>
                 <span className="mi" style={{ fontSize: '1rem' }}>arrow_downward</span>
               </button>
-              <button type="button" className={styles.removeBtn} onClick={() => removeStep(i)}>
+              <button
+                type="button"
+                className={styles.removeBtn}
+                disabled={steps.length === 1}
+                onClick={() => removeStep(i)}
+              >
                 <span className="mi" style={{ fontSize: '1rem' }}>close</span>
               </button>
             </div>
