@@ -1,7 +1,5 @@
-import { usePortfolioSettings } from "../contexts/PortfolioSettingsContext"
-
 const PLACEHOLDERS = {
-    styleStatement: 'Describe the style and craft that make your work stand out.',
+    styleStatement: 'Bespoke fashion designed to complement your shape, style, and personality.',
     yearFounded:    '2020',
     location:       'Lagos, Nigeria',
     availableUntil: 'Next Month',
@@ -35,9 +33,7 @@ function fillFaqs(faqs) {
     }))
 }
 
-export function usePortfolioBrandSettings() {
-
-    const { portfolioSettings } = usePortfolioSettings()
+export function usePortfolioBrandSettings(portfolioSettings = {}) {
 
     const PORTFOLIO_BRAND_SETTINGS = {
 
