@@ -79,10 +79,6 @@ function BackgroundImageField({ label, hint, value, onChange, showToast }) {
       ) : value ? (
         <div className={styles.previewActions}>
           <ImagePreview src={value} alt={label} onRemove={() => onChange(null)} />
-          <button type="button" className={styles.changeBtn} onClick={() => setSourceMenuOpen(true)}>
-            <span className="mi-outlined" style={{ fontSize: 16 }}>swap_horiz</span>
-            Change Image
-          </button>
         </div>
       ) : (
         <button className={styles.uploadBtn} onClick={() => setSourceMenuOpen(true)}>
@@ -142,7 +138,6 @@ export function PortfolioSettingsModal({ onBack, showToast }) {
                 }`}
                 onClick={() => set('brandAvailability')(opt.value)}
               >
-                <span className="mi" style={{ fontSize: '1rem' }}>{opt.icon}</span>
                 {opt.label}
               </button>
             ))}

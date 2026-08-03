@@ -7,8 +7,8 @@ export const NIGERIAN_STATES = [
 ]
 
 export const AVAILABILITY_OPTIONS = [
-  { value: 'open',   label: 'Accepting Orders', icon: 'check_circle' },
-  { value: 'booked', label: 'Fully Booked',     icon: 'block'        },
+  { value: 'open',   label: 'Taking Orders' },
+  { value: 'booked', label: 'Fully Booked'},
 ]
 
 export const MAX_MILESTONE_LABEL_LENGTH = 24

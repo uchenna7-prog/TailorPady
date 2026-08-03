@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from "react"
 import { uploadToCloudinary } from "../../../../services/cloudinaryService"
+import { Dropdown } from "../../../../components/Dropdown/Dropdown"
 import styles from './AddPhotoModal.module.css'
 
 
@@ -260,19 +261,15 @@ export function AddPhotoModal({ isOpen, onClose, onSave, GarmentTypes, activeMai
                             No dress types for this section. Add them via the edit icon on the gallery page.
                           </p>
                         ) : (
-                          <div className={styles.selectWrap}>
-                            <select
-                              className={`${styles.select} ${typeErrors[i] ? styles.inputError : ''}`}
-                              value={p.clothingType}
-                              onChange={e => updatePhoto(i, 'clothingType', e.target.value)}
-                            >
-                              <option value="" disabled>Select dress type…</option>
-                              {typeOptions.map(t => (
-                                <option key={t.id} value={t.id}>{t.label}</option>
-                              ))}
-                            </select>
-                            <span className={`mi ${styles.selectChevron}`}>expand_more</span>
-                          </div>
+                          <Dropdown
+                            options={typeOptions}
+                            value={p.clothingType}
+                            onChange={(val) => updatePhoto(i, 'clothingType', val)}
+                            placeholder="Select dress type…"
+                            getOptionLabel={(t) => t.label}
+                            getOptionValue={(t) => t.id}
+                            className={typeErrors[i] ? styles.dropdownError : ''}
+                          />
                         )}
                         {typeErrors[i] && <span className={styles.errorMsg}>Dress type is required</span>}
                       </div>

@@ -86,13 +86,13 @@
 
 .optionChip {
   flex: 1;
-  padding: 12px;
+  padding: 10px 7px;
   border-radius: 12px;
   border: 1px solid var(--border);
   background: none;
   color: var(--text-sub);
   font-family: 'Manrope', sans-serif;
-  font-size: 0.88rem;
+  font-size: 0.75rem;
   font-weight: 700;
   cursor: pointer;
   transition: all 0.2s;

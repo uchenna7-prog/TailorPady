@@ -80,7 +80,7 @@
 
 .titleInput {
   padding: 10px 12px;
-  background: var(--surface);
+  background: var(--surface2);
   border: 1px solid var(--border);
   border-radius: 8px;
   color: var(--text);
@@ -91,7 +91,7 @@
 
 .descInput {
   padding: 10px 12px;
-  background: var(--surface);
+  background: var(--surface2);
   border: 1px solid var(--border);
   border-radius: 8px;
   color: var(--text);
@@ -112,7 +112,7 @@
   justify-content: center;
   gap: 8px;
   padding: 12px;
-  background: var(--surface2);
+  background: transparent;
   border: 1.5px dashed var(--border);
   border-radius: 12px;
   color: var(--text2);

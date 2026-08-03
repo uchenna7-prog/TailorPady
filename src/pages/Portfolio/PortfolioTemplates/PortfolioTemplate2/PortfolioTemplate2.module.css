@@ -86,8 +86,6 @@
 .closeMark::before { transform: rotate(45deg); }
 .closeMark::after { transform: rotate(-45deg); }
 
-
-/* NAV — visible in full from the start; switches contrast on scroll */
 .nav {
   --nav-ink: #ffffff;
   --nav-muted: rgba(255, 255, 255, 0.72);
@@ -327,8 +325,6 @@
   to { opacity: 1; transform: none; }
 }
 
-
-/* HERO — full bleed image only, pinned while the page content covers it on scroll */
 .hero {
   position: sticky;
   top: 0;
@@ -404,15 +400,12 @@
   }
 }
 
-/* everything after the hero sits above it and slides up to cover it */
 .mainBody {
   position: relative;
   z-index: 1;
   background: var(--paper);
 }
 
-
-/* MEDIA PLACEHOLDER */
 .mediaPlaceholder {
   position: absolute;
   inset: 0;
@@ -435,8 +428,6 @@
   color: rgba(255, 255, 255, 0.4);
 }
 
-
-/* ABOUT — text only, no repeated imagery */
 .about {
   padding: 88px 24px 72px;
   display: flex;
@@ -458,63 +449,50 @@
   margin: 0 0 14px;
 }
 
-.aboutSignature {
-  font-size: 14px;
-  line-height: 1.7;
-  color: var(--muted);
-  margin: 0;
-}
-
 .aboutStats {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 12px;
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: clamp(36px, 7vw, 68px);
 }
 
-.statBox {
+.statItem {
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 6px;
-  padding: 22px 12px;
-  background: var(--surface);
-  border: 1px solid var(--line);
-  border-radius: 12px;
   text-align: center;
 }
 
 .statValue {
   font-family: var(--font-display);
-  font-size: clamp(22px, 3.2vw, 30px);
+  font-size: clamp(24px, 3.4vw, 32px);
   font-weight: 700;
   letter-spacing: -0.01em;
-  color: var(--brand-primary, var(--oxblood));
+  color: var(--ink);
 }
 
 .statLabel {
   font-size: 11px;
   font-weight: 700;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
   color: var(--muted-2);
 }
 
 .aboutFacts {
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 16px;
+  background: var(--surface);
+  border-radius: 18px;
+  padding: 26px;
 }
 
 .factRow {
   display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: 16px;
-  padding: 14px 0;
-  border-top: 1px solid var(--line);
-}
-
-.factRow:last-child {
-  border-bottom: 1px solid var(--line);
+  flex-direction: column;
+  gap: 8px;
 }
 
 .factLabel {
@@ -523,7 +501,6 @@
   letter-spacing: 0.08em;
   text-transform: uppercase;
   color: var(--muted-2);
-  flex-shrink: 0;
 }
 
 .factValue {
@@ -533,7 +510,6 @@
   font-size: 15px;
   font-weight: 700;
   color: var(--ink);
-  text-align: right;
 }
 
 .availDot {
@@ -548,11 +524,8 @@
   background: var(--success);
 }
 
-
-/* WORKS — header stays centered at every breakpoint, like About */
 .works {
   padding: 64px 0 88px;
-  border-top: 1px solid var(--line);
 }
 
 .worksHeader {
@@ -694,13 +667,9 @@
   color: var(--muted);
 }
 
-
-/* PROCESS */
 .process {
   padding: 64px 24px;
   background: var(--surface);
-  border-top: 1px solid var(--line);
-  border-bottom: 1px solid var(--line);
 }
 
 .processHeader {
@@ -709,22 +678,21 @@
 }
 
 .processSteps {
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 20px;
   max-width: 1100px;
   margin: 0 auto;
 }
 
 .processStep {
-  display: grid;
-  grid-template-columns: 32px 1fr;
-  gap: 4px 18px;
-  padding: 24px 0;
-  border-top: 1px solid var(--line);
-}
-
-.processStep:last-child {
-  border-bottom: 1px solid var(--line);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 30px 28px;
+  background: var(--paper);
+  border-radius: 18px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04), 0 8px 24px rgba(0, 0, 0, 0.05);
 }
 
 .processNumeral {
@@ -737,20 +705,16 @@
   font-size: 17px;
   font-weight: 700;
   color: var(--ink);
-  grid-column: 2;
 }
 
 .processDesc {
-  grid-column: 2;
   font-size: 14px;
   line-height: 1.7;
   color: var(--muted);
-  margin: 6px 0 0;
+  margin: 0;
   max-width: 52ch;
 }
 
-
-/* REVIEWS */
 .reviews {
   padding: 64px 24px;
 }
@@ -761,19 +725,17 @@
 }
 
 .reviewStack {
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 20px;
   max-width: 900px;
   margin: 0 auto;
 }
 
 .reviewRow {
-  padding: 28px 0;
-  border-top: 1px solid var(--line);
-}
-
-.reviewRow:last-child {
-  border-bottom: 1px solid var(--line);
+  padding: 30px 28px;
+  background: var(--surface);
+  border-radius: 18px;
 }
 
 .reviewQuote {
@@ -804,11 +766,8 @@
   letter-spacing: 2px;
 }
 
-
-/* FAQ */
 .faq {
   padding: 64px 24px;
-  border-top: 1px solid var(--line);
 }
 
 .faqHeader {
@@ -821,14 +780,13 @@
   margin: 0 auto;
   display: flex;
   flex-direction: column;
+  gap: 12px;
 }
 
 .faqRow {
-  border-top: 1px solid var(--line);
-}
-
-.faqRow:last-child {
-  border-bottom: 1px solid var(--line);
+  background: var(--surface);
+  border-radius: 16px;
+  overflow: hidden;
 }
 
 .faqQuestion {
@@ -839,7 +797,7 @@
   gap: 16px;
   background: none;
   border: none;
-  padding: 20px 4px;
+  padding: 20px 22px;
   text-align: left;
   font-size: 15px;
   font-weight: 700;
@@ -876,11 +834,9 @@
   line-height: 1.7;
   color: var(--muted);
   margin: 0;
-  padding: 0 30px 20px 4px;
+  padding: 0 46px 20px 22px;
 }
 
-
-/* CTA / CONTACT — centered content over full-bleed cover image */
 .cta {
   position: relative;
   min-height: 74vh;
@@ -1002,8 +958,6 @@
   color: rgba(255, 255, 255, 0.85);
 }
 
-
-/* FOOTER */
 .footer {
   background: var(--ink);
 }
@@ -1132,8 +1086,6 @@
   font-weight: 700;
 }
 
-
-/* BOOKING SHEET */
 .bookingOverlay {
   position: fixed;
   inset: 0;
@@ -1367,8 +1319,6 @@
   margin: 0;
 }
 
-
-/* LIGHTBOX */
 .lbOverlay {
   position: fixed;
   inset: 0;
@@ -1465,8 +1415,6 @@
   margin: 0;
 }
 
-
-/* WHATSAPP FLOATING WIDGET */
 .whatsappWidget {
   position: fixed;
   bottom: 24px;
@@ -1949,8 +1897,6 @@
   }
 }
 
-
-/* RESPONSIVE — tablet */
 @media (min-width: 640px) {
   .stripItem {
     width: 200px;
@@ -1980,22 +1926,12 @@
   }
 }
 
-
-/* RESPONSIVE — desktop */
 @media (min-width: 860px) {
   .navLinks { display: flex; }
   .navActions { display: flex; }
   .navMobileTrigger { display: none; }
 
   .about { padding: 110px 24px 88px; }
-
-  .aboutStats {
-    gap: 20px;
-  }
-
-  .statBox {
-    padding: 28px 16px;
-  }
 
   .works { padding: 88px 0 120px; }
 
@@ -2025,24 +1961,14 @@
   .process { padding: 100px 64px; }
 
   .processSteps {
-    flex-direction: row;
+    grid-template-columns: repeat(3, 1fr);
   }
-
-  .processStep {
-    flex: 1;
-    grid-template-columns: 1fr;
-    padding: 0 26px;
-    border-top: none;
-    border-left: 1px solid var(--line);
-  }
-
-  .processStep:first-child { padding-left: 0; border-left: none; }
-  .processStep:last-child { border-bottom: none; padding-right: 0; }
-
-  .processTitle,
-  .processDesc { grid-column: 1; }
 
   .reviews { padding: 100px 64px; }
+
+  .reviewStack {
+    grid-template-columns: repeat(2, 1fr);
+  }
 
   .faq { padding: 100px 64px; }
 
@@ -2063,8 +1989,6 @@
   .footerBottom { padding-left: 64px; padding-right: 64px; }
 }
 
-
-/* REDUCED MOTION */
 @media (prefers-reduced-motion: reduce) {
   * {
     animation: none !important;
