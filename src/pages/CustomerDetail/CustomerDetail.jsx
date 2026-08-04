@@ -51,8 +51,11 @@ export default function CustomerDetail({ onMenuClick }) {
   const { allOrders }  = useOrders()
   const isDeletingRef  = useRef(false)
 
-  const customerData = useCustomerData(id)
-  const orders       = allOrders.filter(o => o.customerId === id)
+  const customer   = getCustomer(id)
+  const resolvedId = customer?.id ?? id
+
+  const customerData = useCustomerData(resolvedId)
+  const orders       = allOrders.filter(o => o.customerId === resolvedId)
 
   const [activeTab,       setActiveTab]       = useState('measurements')
   const [isScrolled,      setIsScrolled]      = useState(false)
@@ -115,6 +118,17 @@ export default function CustomerDetail({ onMenuClick }) {
     setActiveTab('receipts')
     setReopenReceiptId(receiptId)
   }, [])
+
+  // The URL may briefly hold a client-generated temp id if the customer
+  // was just created and Firestore hasn't confirmed the real document id
+  // yet. Once the real id is known, redirect so every write from this
+  // point on (measurements, orders, etc.) uses the permanent id rather
+  // than a temp id that will never match once the sync settles.
+  useEffect(() => {
+    if (!customer) return
+    if (customer.id === id) return
+    navigate(`/customers/${customer.id}`, { replace: true, state: location.state })
+  }, [customer, id, navigate, location.state])
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -357,26 +371,25 @@ export default function CustomerDetail({ onMenuClick }) {
 
   const handleEditSave = useCallback(async (updates) => {
     try {
-      await updateCustomer(id, updates)
+      await updateCustomer(resolvedId, updates)
       showToast('Customer updated ✓')
     } catch {
       showToast('Failed to update customer. Try again.')
     }
-  }, [id, updateCustomer, showToast])
+  }, [resolvedId, updateCustomer, showToast])
 
   const handleDeleteConfirm = useCallback(async () => {
     try {
       isDeletingRef.current = true
       setDeleteModalOpen(false)
       navigate('/customers', { replace: true })
-      await deleteCustomerAndAllData(id)
+      await deleteCustomerAndAllData(resolvedId)
     } catch {
       isDeletingRef.current = false
       showToast('Failed to delete customer. Try again.')
     }
-  }, [id, deleteCustomerAndAllData, navigate, showToast])
+  }, [resolvedId, deleteCustomerAndAllData, navigate, showToast])
 
-  const customer = getCustomer(id)
   if (!customer && !isDeletingRef.current) return null
 
   const initials     = getInitials(customer.name)
@@ -616,7 +629,7 @@ export default function CustomerDetail({ onMenuClick }) {
 
           <button
             className={`${styles.btn} ${styles.primary}`}
-            onClick={() => navigate(`/customers/${id}/body-measurements`)}
+            onClick={() => navigate(`/customers/${resolvedId}/body-measurements`)}
           >
             <span className="mi">straighten</span>
             Body Measurements
@@ -675,7 +688,7 @@ export default function CustomerDetail({ onMenuClick }) {
         )}
         {activeTab === 'orders' && (
           <OrdersTab
-            customerId={id}
+            customerId={resolvedId}
             orders={orders}
             loading={customerData.ordersLoading}
             measurements={customerData.measurements}
