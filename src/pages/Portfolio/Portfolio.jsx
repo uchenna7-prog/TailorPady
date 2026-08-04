@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { useParams, useSearchParams } from 'react-router-dom'
 import { collection, query, orderBy, onSnapshot, doc, where } from 'firebase/firestore'
 import { db } from '../../firebasePublic'
-import { getPublicBrandDataFromFirestore } from '../../services/profileService'
+import { subscribeToPublicBrandData } from '../../services/profileService'
 import { subscribeToPortfolioSettings } from '../../services/portfolioSettingsService'
 import { resolveSlug } from '../../services/slugService'
 import { PortfolioTemplate1 } from './PortfolioTemplates/PortfolioTemplate1/PortfolioTemplate1'
@@ -56,10 +56,20 @@ export default function Portfolio() {
 
   useEffect(() => {
     if (!resolvedUid) return
-    getPublicBrandDataFromFirestore(db, resolvedUid)
-      .then(data => { if (!data || Object.keys(data).length === 0) setNotFound(true); else setBrand(data) })
-      .catch(() => setNotFound(true))
-      .finally(() => setLoading(false))
+    let receivedFirst = false
+    return subscribeToPublicBrandData(
+      db,
+      resolvedUid,
+      data => {
+        if (!receivedFirst) {
+          receivedFirst = true
+          if (!data || Object.keys(data).length === 0) setNotFound(true)
+          setLoading(false)
+        }
+        setBrand(data)
+      },
+      () => { setNotFound(true); setLoading(false) }
+    )
   }, [resolvedUid])
 
   useEffect(() => {
