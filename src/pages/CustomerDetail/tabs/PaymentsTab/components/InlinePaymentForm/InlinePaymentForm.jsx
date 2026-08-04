@@ -11,7 +11,11 @@ export function InlinePaymentForm({ order, onSave, saving }) {
   const [notes,       setNotes]       = useState('')
   const currency = getCurrency()
 
-  const fullPrice = parseFloat(order?.totalAmount ?? order?.price) || 0
+  const fullPrice     = parseFloat(order?.totalAmount ?? order?.price) || 0
+  const numericAmount  = parseFloat(amount) || 0
+  const exceedsTotal   = fullPrice > 0 && numericAmount > fullPrice
+  const overBy         = numericAmount - fullPrice
+  const isValid        = numericAmount > 0 && !exceedsTotal
 
   function handleAmountChange(value) {
     setAmount(value)
@@ -22,7 +26,7 @@ export function InlinePaymentForm({ order, onSave, saving }) {
   }
 
   function handleSave() {
-    if (!amount || saving) return
+    if (!isValid || saving) return
     const finalStatus = resolvePaymentStatus(amount, fullPrice, paymentType)
     onSave({
       orderId:      order.id,
@@ -32,7 +36,7 @@ export function InlinePaymentForm({ order, onSave, saving }) {
       status:       finalStatus,
       notes:        notes.trim(),
       installments: [{
-        amount:      parseFloat(amount),
+        amount:      numericAmount,
         method,
         date:        getTodayLabel(),
         time:        getTimeLabel(),
@@ -76,13 +80,18 @@ export function InlinePaymentForm({ order, onSave, saving }) {
       </label>
       <input
         type="number"
-        className={styles.textInput}
+        className={`${styles.textInput} ${exceedsTotal ? styles.textInputError : ''}`}
         placeholder={fullPrice > 0 ? `of ${formatMoney(currency, fullPrice)}` : '0.00'}
         inputMode="decimal"
         value={amount}
         onChange={e => handleAmountChange(e.target.value)}
-        style={{ marginBottom: 20 }}
       />
+      {exceedsTotal && (
+        <p className={styles.fieldHint}>
+          Exceeds order value by {formatMoney(currency, overBy)}
+        </p>
+      )}
+      <div style={{ marginBottom: 20 }} />
 
       <label className={styles.fieldLabel}>Payment Method</label>
       <div className={styles.methodChipRow} style={{ marginBottom: 20 }}>
@@ -114,7 +123,7 @@ export function InlinePaymentForm({ order, onSave, saving }) {
       <button
         className={styles.inlineSaveButton}
         onClick={handleSave}
-        disabled={!amount || saving}
+        disabled={!isValid || saving}
       >
         {saving
           ? <><div className={styles.inlineSpinner} />Saving…</>
