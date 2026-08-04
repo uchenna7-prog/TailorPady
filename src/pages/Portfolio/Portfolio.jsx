@@ -1,9 +1,10 @@
 import { useState, useEffect } from 'react'
 import { useParams, useSearchParams } from 'react-router-dom'
-import { collection, query, orderBy, onSnapshot, doc, where } from 'firebase/firestore'
+import { collection, query, orderBy, onSnapshot, doc } from 'firebase/firestore'
 import { db } from '../../firebasePublic'
 import { getPublicBrandDataFromServer } from '../../services/profileService'
 import { getPortfolioSettingsFromServer } from '../../services/portfolioSettingsService'
+import { getApprovedReviews } from '../../services/reviewService'
 import { resolveSlug } from '../../services/slugService'
 import { PortfolioTemplate1 } from './PortfolioTemplates/PortfolioTemplate1/PortfolioTemplate1'
 import { PortfolioTemplate2 } from './PortfolioTemplates/PortfolioTemplate2/PortfolioTemplate2'
@@ -96,14 +97,9 @@ export default function Portfolio() {
 
   useEffect(() => {
     if (!resolvedUid) return
-    const q = query(
-      collection(db, 'users', resolvedUid, 'reviews'),
-      where('status', '==', 'approved'),
-      orderBy('approvedAt', 'desc')
-    )
-    return onSnapshot(q, snap =>
-      setReviews(snap.docs.map(d => ({ id: d.id, ...d.data() }))), () => {}
-    )
+    getApprovedReviews(db, resolvedUid)
+      .then(setReviews)
+      .catch(() => {})
   }, [resolvedUid])
 
   if (loading) {
