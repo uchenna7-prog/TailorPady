@@ -1,13 +1,24 @@
 import { useState, useEffect, useRef } from 'react'
 import { useBrandTokens } from '../../../../hooks/useBrandTokens'
+import { usePortfolioBrandSettings } from '../../../../hooks/usePortfolioBrandSettings'
 import styles from './PortfolioTemplate1.module.css'
 
 const THEME_STORAGE_KEY = 'tailorpady-portfolio-theme'
-const SECTION_IDS = ['hero', 'about', 'work', 'contact']
+const SECTION_IDS = ['hero', 'about', 'work', 'faq', 'contact']
 const WHATSAPP_PEEK_KEY = 'tailorpady-portfolio-whatsapp-peek-shown'
 
 function initials(name = '') {
   return name.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase()
+}
+
+function withPlus(value) {
+  return /^\d+$/.test(String(value)) ? `${value}+` : value
+}
+
+function yearsCrafting(yearFounded) {
+  const founded = Number(yearFounded)
+  if (!founded) return 1
+  return Math.max(new Date().getFullYear() - founded, 1)
 }
 
 function buildSocialUrl(platform, handle) {
@@ -228,7 +239,8 @@ function MediaPlaceholder({ label, dark = false }) {
 }
 
 function formatStatic(value) {
-  return value.replace(/[\d.,]+/, m => (m.includes('.') ? '0.0' : '0'))
+  if (!value) return ''
+  return String(value).replace(/[\d.,]+/, m => (m.includes('.') ? '0.0' : '0'))
 }
 
 function useCountUp(value, inView, duration = 1400) {
@@ -236,18 +248,19 @@ function useCountUp(value, inView, duration = 1400) {
   const startedRef = useRef(false)
 
   useEffect(() => {
-    if (!inView || startedRef.current) return
+    if (!inView || startedRef.current || !value) return
     startedRef.current = true
 
-    const match = value.match(/[\d.,]+/)
+    const strValue = String(value)
+    const match = strValue.match(/[\d.,]+/)
     if (!match) {
-      setDisplay(value)
+      setDisplay(strValue)
       return
     }
 
     const raw = match[0]
-    const prefix = value.slice(0, match.index)
-    const suffix = value.slice(match.index + raw.length)
+    const prefix = strValue.slice(0, match.index)
+    const suffix = strValue.slice(match.index + raw.length)
     const decimals = raw.includes('.') ? raw.split('.')[1].length : 0
     const target = parseFloat(raw.replace(/,/g, ''))
     const start = performance.now()
@@ -420,7 +433,7 @@ function ThemeToggle({ theme, onToggle }) {
   )
 }
 
-function BookingSheet({ isOpen, onClose, brandName, brandEmail, brandPhone }) {
+function BookingSheet({ isOpen, onClose, brandName, brandEmail, brandPhone, bookingNote }) {
   const [name,     setName]     = useState('')
   const [phone,    setPhone]    = useState('')
   const [garment,  setGarment]  = useState('')
@@ -481,6 +494,7 @@ function BookingSheet({ isOpen, onClose, brandName, brandEmail, brandPhone }) {
                 <span className="mi">close</span>
               </button>
             </div>
+            {bookingNote && <p className={styles.drawerNote}>{bookingNote}</p>}
             <div className={styles.drawerBody}>
               <div className={styles.fieldGroup}>
                 <label className={styles.fieldLabel}>Full name *</label>
@@ -559,11 +573,40 @@ function Lightbox({ photo, photos, onClose }) {
   )
 }
 
+function FaqItem({ index, item, openIndex, onToggle, delay = 0 }) {
+  const isOpen = openIndex === index
+  const answerRef = useRef(null)
+  const [maxHeight, setMaxHeight] = useState(0)
+
+  useEffect(() => {
+    if (isOpen && answerRef.current) {
+      setMaxHeight(answerRef.current.scrollHeight)
+    } else {
+      setMaxHeight(0)
+    }
+  }, [isOpen, item.answer])
+
+  return (
+    <Reveal as="div" className={styles.faqRow} delay={delay}>
+      <button className={styles.faqQuestion} onClick={() => onToggle(isOpen ? null : index)} aria-expanded={isOpen}>
+        <span>{item.question}</span>
+        <span className={`mi ${styles.faqIcon} ${isOpen ? styles.faqIconOpen : ''}`}>add</span>
+      </button>
+      <div className={styles.faqAnswerWrap} style={{ maxHeight }}>
+        <p className={styles.faqAnswer} ref={answerRef}>{item.answer}</p>
+      </div>
+    </Reveal>
+  )
+}
+
 export function PortfolioTemplate1({ brand, photos, garmentTypes, reviews }) {
+  const settings = usePortfolioBrandSettings(brand)
+
   const [activeTab,   setActiveTab]   = useState(null)
   const [lightbox,    setLightbox]    = useState(null)
   const [bookingOpen, setBookingOpen] = useState(false)
   const [navOpen,     setNavOpen]     = useState(false)
+  const [openFaqIndex, setOpenFaqIndex] = useState(null)
   const [theme, toggleTheme]          = useTheme()
   const activeSection                 = useActiveSection(SECTION_IDS)
   const { scrolled: navScrolled, collapsed } = useScrollCollapse()
@@ -571,6 +614,7 @@ export function PortfolioTemplate1({ brand, photos, garmentTypes, reviews }) {
   const heroRef         = useRef(null)
   const aboutRef        = useRef(null)
   const worksRef        = useRef(null)
+  const faqRef          = useRef(null)
   const bookRef         = useRef(null)
   const filterScrollRef = useRef(null)
 
@@ -594,41 +638,37 @@ export function PortfolioTemplate1({ brand, photos, garmentTypes, reviews }) {
     window.scrollTo({ top: 0, behavior: 'smooth' })
   }
 
-  const brandName          = brand.brandName            || 'Brand Name'
-  const tagline            = brand.brandTagline         || ''
-  const brandBio           = brand.brandBio             || ''
-  const availability       = brand.brandAvailability    || 'open'
-  const availableUntil     = brand.brandAvailableUntil  || ''
-  const foundedYear        = brand.brandFoundedYear     || ''
-  const turnaround         = brand.brandTurnaround      || ''
-  const serviceArea        = brand.brandServiceArea     || ''
-  const styleStatement     = brand.brandStyleStatement  || ''
-  const featuredTechnique  = brand.brandFeaturedTechnique || ''
-  const milestone          = brand.brandMilestone       || ''
-  const brandSocials       = brand.brandSocials         || []
-  const hasFooterSocials   = Boolean(brand.brandPhone) || brandSocials.length > 0
+  const brandName        = brand.brandName    || 'Brand Name'
+  const tagline          = brand.brandTagline || ''
+  const brandBio         = brand.brandBio     || settings.about
+  const brandSocials     = brand.brandSocials || []
+  const hasFooterSocials = Boolean(brand.brandPhone) || brandSocials.length > 0
 
   const completedPhotos = photos.filter(p => p.category === 'completed_works')
   const filteredPhotos  = activeTab ? completedPhotos.filter(p => p.clothingType === activeTab) : completedPhotos
-  const statGarments    = milestone || (completedPhotos.length ? `${completedPhotos.length}+` : '0')
   const isCollapsed     = collapsed && !navOpen
 
   const aboutStatsData = [
-    { icon: 'shopping_cart', value: statGarments, label: 'Orders completed' },
-    foundedYear && { icon: 'calendar_month', value: foundedYear, label: 'Working since' },
-  ].filter(Boolean).slice(0, 2)
-
-  const aboutInfoItems = [
-    serviceArea && { icon: 'location_on', text: serviceArea },
-    turnaround  && { icon: 'schedule',    text: turnaround },
+    settings.milestones[0] && {
+      icon: 'shopping_cart',
+      value: withPlus(settings.milestones[0].number),
+      label: settings.milestones[0].label,
+    },
+    { icon: 'calendar_month', value: withPlus(yearsCrafting(settings.yearFounded)), label: 'Years crafting' },
   ].filter(Boolean)
 
-  const processSteps = [
-    { title: 'Consultation', desc: 'Share your vision, occasion, and deadline. We talk fabric, fit, and budget — taking time to understand what matters to you.' },
-    { title: 'Measurements', desc: 'Precise measurements ensure your garment fits exactly as it should, the very first time you wear it.' },
-    { title: 'Crafting',     desc: 'Every piece is cut and stitched with intention, using techniques refined over years on the workroom floor.' },
-    { title: 'Delivery',     desc: turnaround ? `${turnaround}. A final fitting before the piece leaves the shop.` : 'A final fitting, then your bespoke piece is ready to wear.' },
-  ]
+  const aboutInfoItems = [
+    settings.location && { icon: 'location_on', text: settings.location },
+    settings.serviceArea.length > 0 && { icon: 'local_shipping', text: `Delivers to ${settings.serviceArea.join(', ')}` },
+    settings.turnaround && { icon: 'schedule', text: settings.turnaround },
+    settings.businessHours && { icon: 'calendar_month', text: settings.businessHours },
+  ].filter(Boolean)
+
+  const availabilityLabel = settings.availability === 'open'
+    ? 'Accepting Orders'
+    : settings.availableUntil
+      ? `Booked until ${new Date(settings.availableUntil).toLocaleDateString('en-GB', { month: 'short', year: 'numeric' })}`
+      : 'Fully booked'
 
   return (
     <div className={styles.page} data-theme={theme}>
@@ -658,6 +698,10 @@ export function PortfolioTemplate1({ brand, photos, garmentTypes, reviews }) {
               <span className={styles.navLinkIndicator} />
               Work
             </button>
+            <button onClick={() => scrollTo(faqRef)} className={activeSection === 'faq' ? styles.navLinkActive : ''}>
+              <span className={styles.navLinkIndicator} />
+              FAQ
+            </button>
             <button onClick={() => scrollTo(bookRef)} className={activeSection === 'contact' ? styles.navLinkActive : ''}>
               <span className={styles.navLinkIndicator} />
               Contact
@@ -686,6 +730,7 @@ export function PortfolioTemplate1({ brand, photos, garmentTypes, reviews }) {
             <button onClick={scrollToTop}>Home</button>
             <button onClick={() => scrollTo(aboutRef)}>About</button>
             <button onClick={() => scrollTo(worksRef)}>Work</button>
+            <button onClick={() => scrollTo(faqRef)}>FAQ</button>
             <button onClick={() => scrollTo(bookRef)}>Contact</button>
             <div className={styles.navMobileActions}>
               <button className={styles.navCta} onClick={() => { setNavOpen(false); setBookingOpen(true) }}>
@@ -700,13 +745,8 @@ export function PortfolioTemplate1({ brand, photos, garmentTypes, reviews }) {
         <div className={styles.heroGrid}>
           <div className={styles.heroLeft}>
             <span className={styles.heroEyebrow}>
-              <span className={`${styles.availDot} ${availability === 'open' ? styles.availDotOpen : ''}`} />
-              {availability === 'open'
-                ? 'Accepting Orders'
-                : availableUntil
-                  ? `Booked until ${new Date(availableUntil).toLocaleDateString('en-GB', { month: 'short', year: 'numeric' })}`
-                  : 'Fully booked'
-              }
+              <span className={`${styles.availDot} ${settings.availability === 'open' ? styles.availDotOpen : ''}`} />
+              {availabilityLabel}
             </span>
 
             <h1 className={styles.heroHeadline}>
@@ -714,7 +754,7 @@ export function PortfolioTemplate1({ brand, photos, garmentTypes, reviews }) {
             </h1>
 
             <p className={styles.heroSub}>
-              {styleStatement || `${brandName} crafts premium garments by hand — measured, cut, and finished to fit the person wearing them.`}
+              {settings.styleStatement || `${brandName} crafts premium garments by hand — measured, cut, and finished to fit the person wearing them.`}
             </p>
 
             <div className={styles.heroCtas}>
@@ -728,8 +768,8 @@ export function PortfolioTemplate1({ brand, photos, garmentTypes, reviews }) {
           </div>
 
           <div className={styles.heroRight}>
-            {brand.heroBgImage ? (
-              <img src={brand.heroBgImage} alt={brandName} className={styles.heroImg} />
+            {settings.heroBgImage ? (
+              <img src={settings.heroBgImage} alt={brandName} className={styles.heroImg} />
             ) : (
               <MediaPlaceholder label="Hero image" />
             )}
@@ -750,14 +790,10 @@ export function PortfolioTemplate1({ brand, photos, garmentTypes, reviews }) {
                 {brandBio || 'Every piece starts with a conversation — about the occasion, the fabric, and the fit you have in mind. From there, it is measured, cut, and finished by hand.'}
               </p>
 
-              {featuredTechnique && (
-                <p className={styles.aboutSignature}>{featuredTechnique}</p>
-              )}
-
               {aboutInfoItems.length > 0 && (
                 <ul className={styles.aboutInfoList}>
                   {aboutInfoItems.map(item => (
-                    <li key={item.label} className={styles.aboutInfoItem}>
+                    <li key={item.text} className={styles.aboutInfoItem}>
                       <span className={`mi ${styles.aboutInfoIcon}`}>{item.icon}</span>
                       {item.text}
                     </li>
@@ -767,7 +803,7 @@ export function PortfolioTemplate1({ brand, photos, garmentTypes, reviews }) {
             </Reveal>
 
             <Reveal as="div" className={styles.aboutStats} delay={140}>
-              {aboutStatsData.map((stat, i) => (
+              {aboutStatsData.map(stat => (
                 <div key={stat.label} className={styles.aboutStat}>
                   <span className={`mi ${styles.aboutStatIcon}`}>{stat.icon}</span>
                   <div className={styles.aboutStatText}>
@@ -829,12 +865,12 @@ export function PortfolioTemplate1({ brand, photos, garmentTypes, reviews }) {
             <h2 className={styles.sectionTitle}>How it comes<br />together</h2>
           </Reveal>
           <div className={styles.processSteps}>
-            {processSteps.map((step, i) => (
-              <Reveal as="div" key={step.title} className={styles.processStep} delay={i * 80}>
+            {settings.processSteps.map((step, i) => (
+              <Reveal as="div" key={i} className={styles.processStep} delay={i * 80}>
                 <span className={styles.processIdx}>{String(i + 1).padStart(2, '0')}</span>
                 <div className={styles.processContent}>
                   <span className={styles.processTitle}>{step.title}</span>
-                  <p className={styles.processDesc}>{step.desc}</p>
+                  <p className={styles.processDesc}>{step.description}</p>
                 </div>
               </Reveal>
             ))}
@@ -867,29 +903,35 @@ export function PortfolioTemplate1({ brand, photos, garmentTypes, reviews }) {
         </section>
       )}
 
+      <section id="faq" className={styles.faq} ref={faqRef}>
+        <div className={styles.faqInner}>
+          <Reveal as="div" className={styles.faqHeader}>
+            <span className={styles.eyebrow}>FAQ</span>
+            <h2 className={styles.sectionTitle}>Answers before<br />you ask</h2>
+          </Reveal>
+          <div className={styles.faqList}>
+            {settings.faqs.map((item, i) => (
+              <FaqItem key={i} index={i} item={item} openIndex={openFaqIndex} onToggle={setOpenFaqIndex} delay={(i % 2) * 60} />
+            ))}
+          </div>
+        </div>
+      </section>
+
       <section id="contact" className={styles.cta} ref={bookRef}>
         <div className={styles.ctaMedia}>
-          {brand.footerBgImage
-            ? <img src={brand.footerBgImage} alt="" className={styles.ctaImg} />
+          {settings.footerBgImage
+            ? <img src={settings.footerBgImage} alt="" className={styles.ctaImg} />
             : <MediaPlaceholder label="Cover image" dark />
           }
           <div className={styles.ctaOverlay} />
         </div>
         <div className={styles.ctaContent}>
-          <h2 className={styles.ctaTitle}>Start your piece.</h2>
-          <p className={styles.ctaSub}>Tell us the occasion, the fabric, and the date — we'll take it from there.</p>
+          <h2 className={styles.ctaTitle}>{settings.footerText}</h2>
           <div className={styles.ctaBtns}>
             <button className={styles.ctaBtnPrimary} onClick={() => setBookingOpen(true)}>Place your order →</button>
-            {brand.brandPhone && (
-              <a href={`https://wa.me/${brand.brandPhone.replace(/\D/g, '')}`} target="_blank" rel="noopener noreferrer" className={styles.ctaBtnGhost}>
-                {WA_SVG} WhatsApp
-              </a>
-            )}
+
           </div>
-          <div className={styles.ctaContacts}>
-            {brand.brandPhone && <a href={`tel:${brand.brandPhone}`}    className={styles.ctaContact}><span className="mi">call</span>{brand.brandPhone}</a>}
-            {brand.brandEmail && <a href={`mailto:${brand.brandEmail}`} className={styles.ctaContact}><span className="mi">mail</span>{brand.brandEmail}</a>}
-          </div>
+
         </div>
       </section>
 
@@ -922,6 +964,7 @@ export function PortfolioTemplate1({ brand, photos, garmentTypes, reviews }) {
             <button onClick={scrollToTop} className={styles.footerNavLink}>Home</button>
             <button onClick={() => scrollTo(aboutRef)} className={styles.footerNavLink}>About</button>
             <button onClick={() => scrollTo(worksRef)} className={styles.footerNavLink}>Work</button>
+            <button onClick={() => scrollTo(faqRef)}   className={styles.footerNavLink}>FAQ</button>
             <button onClick={() => scrollTo(bookRef)}  className={styles.footerNavLink}>Contact</button>
           </div>
         </div>
@@ -940,6 +983,7 @@ export function PortfolioTemplate1({ brand, photos, garmentTypes, reviews }) {
         brandName={brandName}
         brandEmail={brand.brandEmail}
         brandPhone={brand.brandPhone}
+        bookingNote={settings.bookingNote}
       />
       {brand.brandPhone && (
         <WhatsAppWidget brandName={brandName} brandPhone={brand.brandPhone} brandLogo={brand.brandLogo} />
