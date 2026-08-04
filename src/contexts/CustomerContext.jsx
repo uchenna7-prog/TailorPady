@@ -17,6 +17,10 @@ import {
 
 const CustomerContext = createContext(null)
 
+function makeTempId() {
+  return `temp-${Date.now()}-${Math.random().toString(36).slice(2)}`
+}
+
 export function CustomerProvider({ children }) {
   const { user } = useAuth()
   const [customers, setCustomers] = useState([])
@@ -40,13 +44,20 @@ export function CustomerProvider({ children }) {
   }, [user])
 
   const addCustomer = useCallback(async (customer) => {
-    if (!user) return
-    try {
-      const { id, ...data } = customer
-      return await addCustomerToDb(user.uid, data)
-    } catch (err) {
+    if (!user) return null
+    const { id, ...data } = customer
+    const tempId = makeTempId()
+
+    setCustomers(prev => [
+      { id: tempId, clientId: tempId, ...data },
+      ...prev,
+    ])
+
+    addCustomerToDb(user.uid, { ...data, clientId: tempId }).catch(err => {
       setError(err.message)
-    }
+    })
+
+    return tempId
   }, [user])
 
   const updateCustomer = useCallback(async (id, updates) => {
