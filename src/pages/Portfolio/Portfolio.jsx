@@ -2,8 +2,8 @@ import { useState, useEffect } from 'react'
 import { useParams, useSearchParams } from 'react-router-dom'
 import { collection, query, orderBy, onSnapshot, doc, where } from 'firebase/firestore'
 import { db } from '../../firebasePublic'
-import { subscribeToPublicBrandData } from '../../services/profileService'
-import { subscribeToPortfolioSettings } from '../../services/portfolioSettingsService'
+import { getPublicBrandDataFromServer } from '../../services/profileService'
+import { getPortfolioSettingsFromServer } from '../../services/portfolioSettingsService'
 import { resolveSlug } from '../../services/slugService'
 import { PortfolioTemplate1 } from './PortfolioTemplates/PortfolioTemplate1/PortfolioTemplate1'
 import { PortfolioTemplate2 } from './PortfolioTemplates/PortfolioTemplate2/PortfolioTemplate2'
@@ -56,20 +56,10 @@ export default function Portfolio() {
 
   useEffect(() => {
     if (!resolvedUid) return
-    let receivedFirst = false
-    return subscribeToPublicBrandData(
-      db,
-      resolvedUid,
-      data => {
-        if (!receivedFirst) {
-          receivedFirst = true
-          if (!data || Object.keys(data).length === 0) setNotFound(true)
-          setLoading(false)
-        }
-        setBrand(data)
-      },
-      () => { setNotFound(true); setLoading(false) }
-    )
+    getPublicBrandDataFromServer(db, resolvedUid)
+      .then(data => { if (!data || Object.keys(data).length === 0) setNotFound(true); else setBrand(data) })
+      .catch(() => setNotFound(true))
+      .finally(() => setLoading(false))
   }, [resolvedUid])
 
   useEffect(() => {
@@ -94,17 +84,14 @@ export default function Portfolio() {
 
   useEffect(() => {
     if (!resolvedUid) return
-    return subscribeToPortfolioSettings(
-      db,
-      resolvedUid,
-      settings => {
+    getPortfolioSettingsFromServer(db, resolvedUid)
+      .then(settings => {
         setPortfolioSettings(settings)
         if (settings.portfolioTemplate && TEMPLATE_MAP[settings.portfolioTemplate]) {
           setTemplateKey(settings.portfolioTemplate)
         }
-      },
-      () => {}
-    )
+      })
+      .catch(() => {})
   }, [resolvedUid])
 
   useEffect(() => {
