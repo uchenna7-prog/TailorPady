@@ -149,3 +149,13 @@
   color: var(--text3); 
 }
 
+.textInputError {
+  border-bottom-color: #ef4444;
+}
+
+.fieldHint {
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: #ef4444;
+  margin-top: 8px;
+}
