@@ -1,109 +1,91 @@
-// src/services/reviewService.js
-// ─────────────────────────────────────────────────────────────
-// Data path: users/{uid}/reviews/{reviewId}
-//
-// Each review doc stores:
-//   customerName  — string
-//   customerPhone — string (for WhatsApp link generation)
-//   customerId    — string | null
-//   review        — string  (the review text)
-//   rating        — number  (1–5)
-//   status        — 'pending' | 'approved' | 'rejected'
-//   token         — string  (unique UUID used in the public review link)
-//   createdAt     — serverTimestamp
-//   updatedAt     — serverTimestamp
-//   approvedAt    — serverTimestamp | null
-// ─────────────────────────────────────────────────────────────
-
 import {
   collection,
   doc,
   addDoc,
+  setDoc,
+  getDoc,
   updateDoc,
   deleteDoc,
   onSnapshot,
   query,
+  where,
   orderBy,
   serverTimestamp,
+  getDocsFromServer,
 } from 'firebase/firestore'
-import { db } from '../firebase'
 
-// ── Path helpers ──────────────────────────────────────────────
-
-function reviewsRef(uid) {
+function reviewsRef(db, uid) {
   return collection(db, 'users', uid, 'reviews')
 }
 
-function reviewDoc(uid, reviewId) {
+function reviewDoc(db, uid, reviewId) {
   return doc(db, 'users', uid, 'reviews', reviewId)
 }
 
-// ── CRUD ──────────────────────────────────────────────────────
+function reviewContactDoc(db, uid, reviewId) {
+  return doc(db, 'users', uid, 'reviewContacts', reviewId)
+}
 
-/**
- * Add a new pending review (called when customer submits via link).
- * @param {string} uid
- * @param {object} data - { customerName, customerPhone, customerId, review, rating, token }
- * @returns {string} new Firestore doc ID
- */
-export async function addReview(uid, data) {
-  const ref = await addDoc(reviewsRef(uid), {
-    ...data,
+export async function addReview(db, uid, data) {
+  const { customerPhone, ...reviewData } = data
+  const ref = await addDoc(reviewsRef(db, uid), {
+    ...reviewData,
     status:     'pending',
     approvedAt: null,
     createdAt:  serverTimestamp(),
     updatedAt:  serverTimestamp(),
   })
+  if (customerPhone) {
+    await setDoc(reviewContactDoc(db, uid, ref.id), {
+      customerPhone,
+      updatedAt: serverTimestamp(),
+    })
+  }
   return ref.id
 }
 
-/**
- * Update a review — used for approve / reject / edit.
- */
-export async function updateReview(uid, reviewId, data) {
-  await updateDoc(reviewDoc(uid, reviewId), {
-    ...data,
+export async function updateReview(db, uid, reviewId, data) {
+  const { customerPhone, ...reviewData } = data
+  await updateDoc(reviewDoc(db, uid, reviewId), {
+    ...reviewData,
     updatedAt: serverTimestamp(),
   })
+  if (customerPhone !== undefined) {
+    await setDoc(reviewContactDoc(db, uid, reviewId), {
+      customerPhone,
+      updatedAt: serverTimestamp(),
+    }, { merge: true })
+  }
 }
 
-/**
- * Approve a review — sets status to 'approved' and stamps approvedAt.
- */
-export async function approveReview(uid, reviewId) {
-  await updateDoc(reviewDoc(uid, reviewId), {
+export async function approveReview(db, uid, reviewId) {
+  await updateDoc(reviewDoc(db, uid, reviewId), {
     status:     'approved',
     approvedAt: serverTimestamp(),
     updatedAt:  serverTimestamp(),
   })
 }
 
-/**
- * Reject a review — sets status to 'rejected'.
- */
-export async function rejectReview(uid, reviewId) {
-  await updateDoc(reviewDoc(uid, reviewId), {
+export async function rejectReview(db, uid, reviewId) {
+  await updateDoc(reviewDoc(db, uid, reviewId), {
     status:     'rejected',
     approvedAt: null,
     updatedAt:  serverTimestamp(),
   })
 }
 
-/**
- * Delete a review permanently.
- */
-export async function deleteReview(uid, reviewId) {
-  await deleteDoc(reviewDoc(uid, reviewId))
+export async function deleteReview(db, uid, reviewId) {
+  await deleteDoc(reviewDoc(db, uid, reviewId))
+  await deleteDoc(reviewContactDoc(db, uid, reviewId))
 }
 
-// ── Real-time listener ────────────────────────────────────────
+export async function getReviewContactPhone(db, uid, reviewId) {
+  const snap = await getDoc(reviewContactDoc(db, uid, reviewId))
+  return snap.exists() ? snap.data().customerPhone ?? null : null
+}
 
-/**
- * Subscribe to all reviews for this tailor, sorted newest first.
- * Sorting is done client-side to avoid composite index requirement.
- */
-export function subscribeToReviews(uid, callback, onError) {
-  const q = query(reviewsRef(uid))
+export function subscribeToReviews(db, uid, callback, onError) {
+  const q = query(reviewsRef(db, uid))
 
   return onSnapshot(
     q,
@@ -118,8 +100,20 @@ export function subscribeToReviews(uid, callback, onError) {
       callback(reviews)
     },
     (err) => {
-      console.error('[reviewService] snapshot error:', err)
       onError?.(err)
     }
   )
+}
+
+export async function getApprovedReviews(db, uid) {
+  const q = query(
+    reviewsRef(db, uid),
+    where('status', '==', 'approved'),
+    orderBy('approvedAt', 'desc')
+  )
+  const snap = await getDocsFromServer(q)
+  return snap.docs.map(d => {
+    const { customerId, ...safe } = d.data()
+    return { id: d.id, ...safe }
+  })
 }
