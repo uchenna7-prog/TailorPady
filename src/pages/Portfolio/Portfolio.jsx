@@ -3,7 +3,7 @@ import { useParams, useSearchParams } from 'react-router-dom'
 import { collection, query, orderBy, onSnapshot, doc, where } from 'firebase/firestore'
 import { db } from '../../firebasePublic'
 import { getPublicBrandDataFromFirestore } from '../../services/profileService'
-import { getPortfolioSettings } from '../../services/portfolioSettingsService'
+import { subscribeToPortfolioSettings } from '../../services/portfolioSettingsService'
 import { resolveSlug } from '../../services/slugService'
 import { PortfolioTemplate1 } from './PortfolioTemplates/PortfolioTemplate1/PortfolioTemplate1'
 import { PortfolioTemplate2 } from './PortfolioTemplates/PortfolioTemplate2/PortfolioTemplate2'
@@ -84,14 +84,17 @@ export default function Portfolio() {
 
   useEffect(() => {
     if (!resolvedUid) return
-    getPortfolioSettings(db, resolvedUid)
-      .then(settings => {
+    return subscribeToPortfolioSettings(
+      db,
+      resolvedUid,
+      settings => {
         setPortfolioSettings(settings)
         if (settings.portfolioTemplate && TEMPLATE_MAP[settings.portfolioTemplate]) {
           setTemplateKey(settings.portfolioTemplate)
         }
-      })
-      .catch(() => {})
+      },
+      () => {}
+    )
   }, [resolvedUid])
 
   useEffect(() => {
