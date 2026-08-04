@@ -1,6 +1,6 @@
-import { useState } from "react"
-import { getTotalPaid,capitalise } from "../../utils"
-import { formatMoney,getCurrency } from "../../../../../../utils/moneyUtils"
+import { useMemo, useState } from "react"
+import { getTotalPaid, capitalise } from "../../utils"
+import { formatMoney, getCurrency } from "../../../../../../utils/moneyUtils"
 import styles from "./AddInstallmentModal.module.css"
 
 
@@ -8,12 +8,23 @@ export function AddInstallmentModal({ payment, onClose, onSave }) {
   const [amount, setAmount] = useState('')
   const [method, setMethod] = useState('cash')
   const currency = getCurrency()
+
   const totalPaid = getTotalPaid(payment.installments)
-  const remaining = (parseFloat(payment.orderPrice) || 0) - totalPaid
+  const remaining = Math.max((parseFloat(payment.orderPrice) || 0) - totalPaid, 0)
+
+  const numericAmount = parseFloat(amount) || 0
+  const exceedsRemaining = numericAmount > remaining
+  const isValid = numericAmount > 0 && !exceedsRemaining
+
+  const overBy = useMemo(() => numericAmount - remaining, [numericAmount, remaining])
+
+  function handleAmountChange(e) {
+    setAmount(e.target.value)
+  }
 
   function handleSave() {
-    if (!amount || parseFloat(amount) <= 0) return
-    onSave(parseFloat(amount), method)
+    if (!isValid) return
+    onSave(numericAmount, method)
     onClose()
   }
 
@@ -37,13 +48,18 @@ export function AddInstallmentModal({ payment, onClose, onSave }) {
             <label className={styles.fieldLabel}>Amount Received (₦)</label>
             <input
               type="number"
-              className={styles.textInput}
+              className={`${styles.textInput} ${exceedsRemaining ? styles.textInputError : ''}`}
               placeholder="0.00"
               inputMode="decimal"
               value={amount}
-              onChange={e => setAmount(e.target.value)}
+              onChange={handleAmountChange}
               autoFocus
             />
+            {exceedsRemaining && (
+              <p className={styles.fieldHint}>
+                Exceeds remaining balance by {formatMoney(currency, overBy)}
+              </p>
+            )}
           </div>
           <div className={styles.fieldGroup}>
             <label className={styles.fieldLabel}>Payment Method</label>
@@ -62,7 +78,7 @@ export function AddInstallmentModal({ payment, onClose, onSave }) {
           <button
             className={styles.confirmActionBtn}
             onClick={handleSave}
-            disabled={!amount || parseFloat(amount) <= 0}
+            disabled={!isValid}
           >
             Record Payment
           </button>
