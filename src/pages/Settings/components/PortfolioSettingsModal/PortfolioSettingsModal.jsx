@@ -255,6 +255,9 @@ export function PortfolioSettingsModal({ onBack, showToast }) {
             placeholder="e.g. Lekki, Lagos"
             maxLength={MAX_LOCATION_LENGTH}
           />
+          <div className={styles.charCount}>
+            {(local.brandLocation || '').length}/{MAX_LOCATION_LENGTH}
+          </div>
         </Field>
       </FieldGroup>
 
@@ -326,6 +329,9 @@ export function PortfolioSettingsModal({ onBack, showToast }) {
             placeholder="e.g. Let's create something beautiful together."
             maxLength={MAX_FOOTER_TEXT_LENGTH}
           />
+          <div className={styles.charCount}>
+            {(local.brandFooterText || '').length}/{MAX_FOOTER_TEXT_LENGTH}
+          </div>
         </Field>
       </FieldGroup>
 
