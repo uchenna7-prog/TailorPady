@@ -21,6 +21,8 @@ import {
   AVAILABILITY_OPTIONS,
   MAX_LOCATION_LENGTH,
   MAX_FOOTER_TEXT_LENGTH,
+  MAX_STYLE_STATEMENT_LENGTH,
+  MAX_BOOKING_NOTE_LENGTH,
   MIN_ABOUT_LENGTH,
   MAX_ABOUT_LENGTH,
 } from './datas'
@@ -229,7 +231,11 @@ export function PortfolioSettingsModal({ onBack, showToast }) {
             onChange={set('brandStyleStatement')}
             placeholder="e.g. Specializes in bespoke suits, traditional wear, and formal menswear. "
             rows={3}
+            maxLength={MAX_STYLE_STATEMENT_LENGTH}
           />
+          <div className={styles.charCount}>
+            {(local.brandStyleStatement || '').length}/{MAX_STYLE_STATEMENT_LENGTH}
+          </div>
         </Field>
       </FieldGroup>
 
@@ -301,7 +307,11 @@ export function PortfolioSettingsModal({ onBack, showToast }) {
             onChange={set('brandBookingNote')}
             placeholder="e.g. Please include your measurement chart and fabric preference when reaching out."
             rows={3}
+            maxLength={MAX_BOOKING_NOTE_LENGTH}
           />
+          <div className={styles.charCount}>
+            {(local.brandBookingNote || '').length}/{MAX_BOOKING_NOTE_LENGTH}
+          </div>
         </Field>
         <Field label="Business Hours" hint="When clients can expect a response or a visit.">
           <BusinessHoursField
