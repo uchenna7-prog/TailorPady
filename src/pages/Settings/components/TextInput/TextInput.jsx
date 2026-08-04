@@ -1,7 +1,7 @@
 import { useRef, useEffect } from "react"
 import styles from "./TextInput.module.css"
 
-export function TextInput({ value, onChange, placeholder, maxLength }) {
+export function TextInput({ value, onChange, placeholder, maxLength = 100 }) {
   const ref = useRef(null)
 
   useEffect(() => {
