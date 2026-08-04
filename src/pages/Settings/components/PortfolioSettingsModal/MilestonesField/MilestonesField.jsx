@@ -23,14 +23,19 @@ export function MilestonesField({ value, onChange }) {
             value={m.number}
             onChange={e => updateRow(i, 'number', e.target.value)}
           />
-          <input
-            type="text"
-            className={styles.labelInput}
-            placeholder="e.g. Happy Clients"
-            value={m.label}
-            maxLength={MAX_MILESTONE_LABEL_LENGTH}
-            onChange={e => updateRow(i, 'label', e.target.value)}
-          />
+          <div className={styles.labelCol}>
+            <input
+              type="text"
+              className={styles.labelInput}
+              placeholder="e.g. Happy Clients"
+              value={m.label}
+              maxLength={MAX_MILESTONE_LABEL_LENGTH}
+              onChange={e => updateRow(i, 'label', e.target.value)}
+            />
+            <div className={styles.charCount}>
+              {m.label.length}/{MAX_MILESTONE_LABEL_LENGTH}
+            </div>
+          </div>
         </div>
       ))}
     </div>
