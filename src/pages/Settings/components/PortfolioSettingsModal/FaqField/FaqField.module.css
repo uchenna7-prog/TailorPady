@@ -1,3 +1,4 @@
+
 .wrap {
   display: flex;
   flex-direction: column;
@@ -7,29 +8,17 @@
 .card {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 4px;
   padding: 12px;
   border: 1px solid var(--border);
   border-radius: 12px;
-  
-}
-
-.input,.textarea {
-  width: 100%;
-  background: var(--surface2);
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  padding: 10px 12px;
-  color: var(--text);
-  font-family: inherit;
-  font-size: 0.88rem;
-  font-weight: 700;
 }
 
 .cardHeader {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  margin-bottom: 4px;
 }
 
 .faqNumber {
@@ -58,7 +47,8 @@
   color: #ef4444;
 }
 
-.questionInput {
+.input {
+  width: 100%;
   padding: 10px 12px;
   background: var(--surface2);
   border: 1px solid var(--border);
@@ -69,7 +59,8 @@
   font-weight: 700;
 }
 
-.answerInput {
+.textarea {
+  width: 100%;
   padding: 10px 12px;
   background: var(--surface2);
   border: 1px solid var(--border);
@@ -80,10 +71,18 @@
   resize: vertical;
 }
 
-.questionInput:focus,
-.answerInput:focus {
+.input:focus,
+.textarea:focus {
   outline: none;
   border-color: var(--accent);
+}
+
+.charCount {
+  text-align: right;
+  font-size: 0.7rem;
+  color: var(--text3);
+  padding: 0 4px;
+  margin-bottom: 2px;
 }
 
 .addBtn {
@@ -100,4 +99,3 @@
   font-size: 0.85rem;
   cursor: pointer;
 }
-
