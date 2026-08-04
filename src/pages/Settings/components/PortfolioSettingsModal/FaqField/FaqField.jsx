@@ -35,22 +35,26 @@ export function FaqField({ value, onChange }) {
           </div>
           <input
             type="text"
-            className={styles.questionInput}
+            className={styles.input}
             placeholder="e.g. Can I bring my own fabric?"
             value={faq.question}
             maxLength={FAQ_QUESTION_MAX}
             onChange={e => updateFaq(i, 'question', e.target.value)}
-            className={styles.input}
           />
+          <div className={styles.charCount}>
+            {faq.question.length}/{FAQ_QUESTION_MAX}
+          </div>
           <textarea
-            className={styles.answerInput}
+            className={styles.textarea}
             placeholder="e.g. Yes, you're welcome to bring your own fabric or we can help you source one."
             value={faq.answer}
             maxLength={FAQ_ANSWER_MAX}
             rows={3}
             onChange={e => updateFaq(i, 'answer', e.target.value)}
-            className={styles.textarea}
           />
+          <div className={styles.charCount}>
+            {faq.answer.length}/{FAQ_ANSWER_MAX}
+          </div>
         </div>
       ))}
 
