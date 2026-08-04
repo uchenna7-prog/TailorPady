@@ -1,26 +1,14 @@
-// src/contexts/ReviewContext.jsx
-// ─────────────────────────────────────────────────────────────
-// Provides:
-//   reviews        — all reviews, real-time from Firestore
-//   pendingCount   — number of reviews awaiting approval
-//   loading        — true while first fetch is in flight
-//   error          — last error string or null
-//   addReview      — async (data) => firestoreId
-//   approveReview  — async (id)
-//   rejectReview   — async (id)
-//   deleteReview   — async (id)
-//   updateReview   — async (id, data)
-// ─────────────────────────────────────────────────────────────
-
 import { createContext, useContext, useState, useEffect, useCallback } from 'react'
 import { useAuth } from './AuthContext'
+import { db } from '../firebase'
 import {
   subscribeToReviews,
-  addReview     as fsAddReview,
-  approveReview as fsApproveReview,
-  rejectReview  as fsRejectReview,
-  deleteReview  as fsDeleteReview,
-  updateReview  as fsUpdateReview,
+  addReview            as fsAddReview,
+  approveReview         as fsApproveReview,
+  rejectReview          as fsRejectReview,
+  deleteReview          as fsDeleteReview,
+  updateReview          as fsUpdateReview,
+  getReviewContactPhone as fsGetReviewContactPhone,
 } from '../services/reviewService'
 
 const ReviewContext = createContext(null)
@@ -31,8 +19,6 @@ export function ReviewProvider({ children }) {
   const [reviews,  setReviews]  = useState([])
   const [loading,  setLoading]  = useState(true)
   const [error,    setError]    = useState(null)
-
-  // ── Real-time listener ───────────────────────────────────
 
   useEffect(() => {
     if (!user) {
@@ -45,6 +31,7 @@ export function ReviewProvider({ children }) {
     setError(null)
 
     const unsub = subscribeToReviews(
+      db,
       user.uid,
       (data) => { setReviews(data); setLoading(false) },
       (err)  => { setError(err.message); setLoading(false) }
@@ -53,17 +40,13 @@ export function ReviewProvider({ children }) {
     return unsub
   }, [user])
 
-  // ── Derived ──────────────────────────────────────────────
-
   const pendingCount = reviews.filter(r => r.status === 'pending').length
-
-  // ── CRUD ─────────────────────────────────────────────────
 
   const addReview = useCallback(async (data) => {
     if (!user) return
     try {
       const { id: _localId, ...reviewData } = data
-      return await fsAddReview(user.uid, reviewData)
+      return await fsAddReview(db, user.uid, reviewData)
     } catch (err) {
       setError(err.message)
       throw err
@@ -73,7 +56,7 @@ export function ReviewProvider({ children }) {
   const approveReview = useCallback(async (id) => {
     if (!user) return
     try {
-      await fsApproveReview(user.uid, String(id))
+      await fsApproveReview(db, user.uid, String(id))
     } catch (err) {
       setError(err.message)
       throw err
@@ -83,7 +66,7 @@ export function ReviewProvider({ children }) {
   const rejectReview = useCallback(async (id) => {
     if (!user) return
     try {
-      await fsRejectReview(user.uid, String(id))
+      await fsRejectReview(db, user.uid, String(id))
     } catch (err) {
       setError(err.message)
       throw err
@@ -93,7 +76,7 @@ export function ReviewProvider({ children }) {
   const deleteReview = useCallback(async (id) => {
     if (!user) return
     try {
-      await fsDeleteReview(user.uid, String(id))
+      await fsDeleteReview(db, user.uid, String(id))
     } catch (err) {
       setError(err.message)
       throw err
@@ -103,7 +86,17 @@ export function ReviewProvider({ children }) {
   const updateReview = useCallback(async (id, data) => {
     if (!user) return
     try {
-      await fsUpdateReview(user.uid, String(id), data)
+      await fsUpdateReview(db, user.uid, String(id), data)
+    } catch (err) {
+      setError(err.message)
+      throw err
+    }
+  }, [user])
+
+  const getContactPhone = useCallback(async (id) => {
+    if (!user) return null
+    try {
+      return await fsGetReviewContactPhone(db, user.uid, String(id))
     } catch (err) {
       setError(err.message)
       throw err
@@ -121,6 +114,7 @@ export function ReviewProvider({ children }) {
       rejectReview,
       deleteReview,
       updateReview,
+      getContactPhone,
     }}>
       {children}
     </ReviewContext.Provider>
