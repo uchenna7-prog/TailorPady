@@ -1,4 +1,3 @@
-
 import { useState, useRef, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useCustomers } from '../../contexts/CustomerContext'
@@ -157,7 +156,7 @@ export default function Customers({ onMenuClick }) {
   }
 
   function handleOpenCustomer(c) {
-    if (currentStep?.id === 'tap-new-customer' && String(c.id) === String(pendingCustomerId)) {
+    if (currentStep?.id === 'tap-new-customer' && String(c.clientId ?? c.id) === String(pendingCustomerId)) {
       completeStep('tap-new-customer')
     }
     navigate(`/customers/${c.id}`)
@@ -238,7 +237,7 @@ export default function Customers({ onMenuClick }) {
             {groupCustomers.map((c, idx) => (
               <div
                 key={c.id}
-                data-tour={String(c.id) === String(pendingCustomerId) ? 'new-customer-row' : undefined}
+                data-tour={String(c.clientId ?? c.id) === String(pendingCustomerId) ? 'new-customer-row' : undefined}
               >
                 <CustomerRow
                   customer={c}
