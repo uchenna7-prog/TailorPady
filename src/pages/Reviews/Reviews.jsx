@@ -1,4 +1,4 @@
-import { useState, useCallback, useRef } from 'react'
+import { useState, useCallback, useRef, useEffect } from 'react'
 import { getInitials } from '../../utils/nameUtils'
 import Header from '../../components/Header/Header'
 import Toast from '../../components/Toast/Toast'
@@ -173,7 +173,7 @@ function AddReviewSheet({ isOpen, onClose, onSave }) {
   )
 }
 
-function ReviewDetailSheet({ review, onClose, onApprove, onReject, onDelete }) {
+function ReviewDetailSheet({ review, phone, phoneLoading, onClose, onApprove, onReject, onDelete }) {
   if (!review) return null
   const sc = STATUS_CONFIG[review.status] ?? STATUS_CONFIG.pending
 
@@ -195,12 +195,17 @@ function ReviewDetailSheet({ review, onClose, onApprove, onReject, onDelete }) {
             </div>
             <div>
               <div className={styles.detailCustomerName}>{review.customerName}</div>
-              {review.customerPhone && (
+              {phoneLoading ? (
                 <div className={styles.detailCustomerPhone}>
                   <span className="mi" style={{ fontSize: '0.85rem', color: 'var(--text3)' }}>phone</span>
-                  {review.customerPhone}
+                  …
                 </div>
-              )}
+              ) : phone ? (
+                <div className={styles.detailCustomerPhone}>
+                  <span className="mi" style={{ fontSize: '0.85rem', color: 'var(--text3)' }}>phone</span>
+                  {phone}
+                </div>
+              ) : null}
             </div>
             <span
               className={styles.statusPill}
@@ -295,14 +300,16 @@ function ReviewCard({ review, onTap, isLast }) {
 }
 
 export default function Reviews({ onMenuClick }) {
-  const { reviews, loading, addReview, approveReview, rejectReview, deleteReview } = useReviews()
+  const { reviews, loading, addReview, approveReview, rejectReview, deleteReview, getContactPhone } = useReviews()
 
-  const [activeTab,    setActiveTab]    = useState('all')
-  const [searchQuery,  setSearchQuery]  = useState('')
-  const [addSheetOpen, setAddSheetOpen] = useState(false)
-  const [detailReview, setDetailReview] = useState(null)
-  const [confirmDel,   setConfirmDel]   = useState(null)
-  const [toastMsg,     setToastMsg]     = useState('')
+  const [activeTab,      setActiveTab]      = useState('all')
+  const [searchQuery,    setSearchQuery]    = useState('')
+  const [addSheetOpen,   setAddSheetOpen]   = useState(false)
+  const [detailReview,   setDetailReview]   = useState(null)
+  const [detailPhone,    setDetailPhone]    = useState(null)
+  const [phoneLoading,   setPhoneLoading]   = useState(false)
+  const [confirmDel,     setConfirmDel]     = useState(null)
+  const [toastMsg,       setToastMsg]       = useState('')
   const toastTimer = useRef(null)
   const tabRefs    = useRef({})
 
@@ -311,6 +318,17 @@ export default function Reviews({ onMenuClick }) {
     clearTimeout(toastTimer.current)
     toastTimer.current = setTimeout(() => setToastMsg(''), 2400)
   }, [])
+
+  useEffect(() => {
+    if (!detailReview) { setDetailPhone(null); return }
+    let cancelled = false
+    setPhoneLoading(true)
+    getContactPhone(detailReview.id)
+      .then(phone => { if (!cancelled) setDetailPhone(phone) })
+      .catch(() => { if (!cancelled) setDetailPhone(null) })
+      .finally(() => { if (!cancelled) setPhoneLoading(false) })
+    return () => { cancelled = true }
+  }, [detailReview, getContactPhone])
 
   const tabFiltered = activeTab === 'all'
     ? reviews
@@ -465,6 +483,8 @@ export default function Reviews({ onMenuClick }) {
       {detailReview && (
         <ReviewDetailSheet
           review={detailReview}
+          phone={detailPhone}
+          phoneLoading={phoneLoading}
           onClose={() => setDetailReview(null)}
           onApprove={id => handleApprove(id)}
           onReject={id => handleReject(id)}
