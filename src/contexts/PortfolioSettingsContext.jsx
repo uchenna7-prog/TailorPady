@@ -3,30 +3,11 @@ import { useAuth } from './AuthContext'
 import {
   savePortfolioSettings,
   subscribeToPortfolioSettings,
+  DEFAULTS,
 } from '../services/portfolioSettingsService'
 import { db } from '../firebase'
 
 const PortfolioSettingsContext = createContext(null)
-
-const DEFAULTS = {
-  heroBgImage:         null,
-  footerBgImage:       null,
-  brandStyleStatement: '',
-  brandAbout:          '',
-  brandYearFounded:    '',
-  brandMilestones:     [{ number: '', label: '' }, { number: '', label: '' }],
-  brandLocation:       '',
-  brandAvailability:   'open',
-  brandAvailableUntil: { month: null, year: null },
-  brandBusinessHours:  { startDay: null, endDay: null, openMinutes: null, closeMinutes: null },
-  brandTurnaround:     '1 weeks',
-  brandServiceArea:    [],
-  brandBookingNote:    '',
-  brandProcessSteps:   [{ title: '', description: '' }],
-  brandFaqs:           [{ question: '', answer: '' }],
-  brandFooterText:     '',
-  portfolioTemplate:   'template1',
-}
 
 export function PortfolioSettingsProvider({ children }) {
   const { user } = useAuth()
@@ -49,7 +30,7 @@ export function PortfolioSettingsProvider({ children }) {
   const updateManyPortfolioSettings = useCallback(async (patch) => {
     if (!user?.uid) return
     setPortfolioSettings(prev => ({ ...prev, ...patch }))
-    await savePortfolioSettings(db,user.uid, patch)
+    await savePortfolioSettings(db, user.uid, patch)
   }, [user?.uid])
 
   return (
