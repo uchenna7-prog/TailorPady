@@ -17,6 +17,9 @@ export const MAX_LOCATION_LENGTH        = 40
 export const MIN_ABOUT_LENGTH = 80
 export const MAX_ABOUT_LENGTH = 500
 
+export const MAX_STYLE_STATEMENT_LENGTH = 140
+export const MAX_BOOKING_NOTE_LENGTH    = 160
+
 export const MAX_PROCESS_STEPS       = 5
 export const PROCESS_STEP_TITLE_MAX  = 30
 export const PROCESS_STEP_DESC_MAX   = 120
