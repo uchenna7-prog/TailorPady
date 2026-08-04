@@ -7,10 +7,12 @@ const SECTION_IDS = ['about', 'work', 'faq', 'contact']
 
 const WHATSAPP_PEEK_KEY = 'tailorpady-portfolio-whatsapp-peek-shown'
 
-const ROMAN_NUMERALS = ['I', 'II', 'III', 'IV', 'V']
-
 function initials(name = '') {
   return name.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase()
+}
+
+function withPlus(value) {
+  return /^\d+$/.test(String(value)) ? `${value}+` : value
 }
 
 function buildSocialUrl(platform, handle) {
@@ -315,7 +317,7 @@ function Reveal({ as: Tag = 'div', children, className = '', delay = 0, style, .
 
 function formatStatic(value) {
   if (!value) return ''
-  return value.replace(/[\d.,]+/, m => (m.includes('.') ? '0.0' : '0'))
+  return String(value).replace(/[\d.,]+/, m => (m.includes('.') ? '0.0' : '0'))
 }
 
 function useCountUp(value, inView, duration = 1400) {
@@ -326,15 +328,16 @@ function useCountUp(value, inView, duration = 1400) {
     if (!inView || startedRef.current || !value) return
     startedRef.current = true
 
-    const match = value.match(/[\d.,]+/)
+    const strValue = String(value)
+    const match = strValue.match(/[\d.,]+/)
     if (!match) {
-      setDisplay(value)
+      setDisplay(strValue)
       return
     }
 
     const raw = match[0]
-    const prefix = value.slice(0, match.index)
-    const suffix = value.slice(match.index + raw.length)
+    const prefix = strValue.slice(0, match.index)
+    const suffix = strValue.slice(match.index + raw.length)
     const decimals = raw.includes('.') ? raw.split('.')[1].length : 0
     const target = parseFloat(raw.replace(/,/g, ''))
     const start = performance.now()
@@ -542,18 +545,18 @@ function CategoryRow({ label, items, delay = 0, onSelect }) {
   )
 }
 
-function FaqItem({ index, item, openIndex, onToggle }) {
+function FaqItem({ index, item, openIndex, onToggle, delay = 0 }) {
   const isOpen = openIndex === index
   return (
-    <div className={styles.faqRow}>
+    <Reveal as="div" className={styles.faqRow} delay={delay}>
       <button className={styles.faqQuestion} onClick={() => onToggle(isOpen ? null : index)} aria-expanded={isOpen}>
         <span>{item.question}</span>
-        <span className={`${styles.faqIcon} ${isOpen ? styles.faqIconOpen : ''}`}>{CHEV_SVG}</span>
+        <span className={`${styles.faqIcon} ${isOpen ? styles.faqIconOpen : ''}`}>+</span>
       </button>
       <div className={`${styles.faqAnswerWrap} ${isOpen ? styles.faqAnswerWrapOpen : ''}`}>
         <p className={styles.faqAnswer}>{item.answer}</p>
       </div>
-    </div>
+    </Reveal>
   )
 }
 
@@ -609,9 +612,9 @@ export function PortfolioTemplate2({ brand, photos, garmentTypes, reviews }) {
   }
 
   const stats = [
-    { label: settings.milestones[0].label, value: settings.milestones[0].number },
-    { label: settings.milestones[1].label, value: settings.milestones[1].number },
-    { label: 'Since', value: settings.yearFounded },
+    { label: settings.milestones[0].label, value: withPlus(settings.milestones[0].number) },
+    { label: settings.milestones[1].label, value: withPlus(settings.milestones[1].number) },
+    { label: 'Since', value: String(settings.yearFounded) },
   ]
 
   const facts = [
@@ -620,6 +623,14 @@ export function PortfolioTemplate2({ brand, photos, garmentTypes, reviews }) {
     { label: 'Turnaround',  value: settings.turnaround },
     { label: 'Hours',       value: settings.businessHours },
   ]
+
+  const availabilityLabel = settings.availability === 'open'
+    ? 'Accepting orders'
+    : settings.availableUntil
+      ? `Booked until ${settings.availableUntil}`
+      : 'Fully booked'
+
+  const reviewLoop = reviews.length > 0 ? [...reviews, ...reviews] : []
 
   return (
     <div className={styles.page}>
@@ -674,6 +685,12 @@ export function PortfolioTemplate2({ brand, photos, garmentTypes, reviews }) {
           : <MediaPlaceholder label="Hero image" />
         }
         <div className={styles.heroScrim} />
+
+        <div className={styles.heroAvailability}>
+          <span className={`${styles.availDot} ${settings.availability === 'open' ? styles.availDotOpen : ''}`} />
+          {availabilityLabel}
+        </div>
+
         <button
           type="button"
           className={`${styles.scrollCue} ${scrolled ? styles.scrollCueHidden : ''}`}
@@ -691,39 +708,34 @@ export function PortfolioTemplate2({ brand, photos, garmentTypes, reviews }) {
       <div className={styles.mainBody}>
 
         <section id="about" className={styles.about} ref={aboutRef}>
-          <Reveal as="div" className={styles.aboutIntro}>
-            <span className={styles.eyebrow}>About</span>
-            <p className={styles.aboutBio}>{brandBio || settings.styleStatement}</p>
-          </Reveal>
+          <div className={styles.aboutGrid}>
+            <div className={styles.aboutLeft}>
+              <Reveal as="div" className={styles.aboutIntro}>
+                <span className={styles.eyebrow}>About</span>
+                <p className={styles.aboutBio}>{brandBio || settings.styleStatement}</p>
+              </Reveal>
 
-          <Reveal as="div" className={styles.aboutStats} delay={70}>
-            {stats.map(stat => (
-              <div key={stat.label} className={styles.statItem}>
-                <StatValue value={stat.value} className={styles.statValue} />
-                <span className={styles.statLabel}>{stat.label}</span>
-              </div>
-            ))}
-          </Reveal>
-
-          <Reveal as="div" className={styles.aboutFacts} delay={140}>
-            {facts.map(fact => (
-              <div key={fact.label} className={styles.factRow}>
-                <span className={styles.factLabel}>{fact.label}</span>
-                <span className={styles.factValue}>{fact.value}</span>
-              </div>
-            ))}
-            <div className={styles.factRow}>
-              <span className={styles.factLabel}>Availability</span>
-              <span className={styles.factValue}>
-                <span className={`${styles.availDot} ${settings.availability === 'open' ? styles.availDotOpen : ''}`} />
-                {settings.availability === 'open'
-                  ? 'Accepting orders'
-                  : settings.availableUntil
-                    ? `Booked until ${settings.availableUntil}`
-                    : 'Fully booked'}
-              </span>
+              <Reveal as="div" className={styles.statList} delay={80}>
+                {stats.map(stat => (
+                  <div key={stat.label} className={styles.statRow}>
+                    <StatValue value={stat.value} className={styles.statValue} />
+                    <span className={styles.statLabel}>{stat.label}</span>
+                  </div>
+                ))}
+              </Reveal>
             </div>
-          </Reveal>
+
+            <Reveal as="div" className={styles.aboutRight} delay={160}>
+              <div className={styles.factsCard}>
+                {facts.map(fact => (
+                  <div key={fact.label} className={styles.factRow}>
+                    <span className={styles.factLabel}>{fact.label}</span>
+                    <span className={styles.factValue}>{fact.value}</span>
+                  </div>
+                ))}
+              </div>
+            </Reveal>
+          </div>
         </section>
 
         <section id="work" className={styles.works} ref={worksRef}>
@@ -752,33 +764,50 @@ export function PortfolioTemplate2({ brand, photos, garmentTypes, reviews }) {
         <section className={styles.process}>
           <Reveal as="div" className={styles.processHeader}>
             <span className={styles.eyebrow}>Process</span>
+            <h2 className={styles.sectionTitle}>How a piece comes together</h2>
           </Reveal>
-          <div className={styles.processSteps}>
+          <div className={styles.processGrid}>
             {settings.processSteps.map((step, i) => (
-              <Reveal as="div" key={i} className={styles.processStep} delay={i * 70}>
-                <span className={styles.processNumeral}>{ROMAN_NUMERALS[i] || i + 1}</span>
-                <span className={styles.processTitle}>{step.title}</span>
+              <Reveal as="div" key={i} className={styles.processCol} delay={i * 80}>
+                <div className={styles.processColHead}>
+                  <span className={styles.processIndex}>
+                    {String(i + 1).padStart(2, '0')}
+                    <span className={styles.processIndexTotal}>/{String(settings.processSteps.length).padStart(2, '0')}</span>
+                  </span>
+                </div>
+                <h3 className={styles.processTitle}>{step.title}</h3>
                 <p className={styles.processDesc}>{step.description}</p>
               </Reveal>
             ))}
           </div>
         </section>
 
-        {reviews.length > 0 && (
+        {reviewLoop.length > 0 && (
           <section className={styles.reviews}>
             <Reveal as="div" className={styles.reviewsHeader}>
               <span className={styles.eyebrow}>In their words</span>
+              <h2 className={styles.sectionTitle}>What clients say</h2>
             </Reveal>
-            <div className={styles.reviewStack}>
-              {reviews.map((r, i) => (
-                <Reveal as="div" key={r.id} className={styles.reviewRow} delay={(i % 3) * 70}>
-                  <p className={styles.reviewQuote}>&ldquo;{r.review}&rdquo;</p>
-                  <div className={styles.reviewMeta}>
-                    <span className={styles.reviewName}>{r.customerName}</span>
-                    <span className={styles.reviewStars}>{'★'.repeat(r.rating)}{'☆'.repeat(Math.max(0, 5 - r.rating))}</span>
-                  </div>
-                </Reveal>
-              ))}
+            <div className={styles.marqueeViewport}>
+              <div className={styles.marqueeTrack}>
+                {reviewLoop.map((r, i) => (
+                  <figure className={styles.reviewCard} key={`${r.id}-${i}`}>
+                    <div className={styles.reviewTop}>
+                      <div className={styles.reviewStars}>
+                        {Array.from({ length: 5 }).map((_, s) => (
+                          <span key={s} className={`${styles.starIcon} ${s < r.rating ? styles.starIconFilled : ''}`}>★</span>
+                        ))}
+                      </div>
+                      <span className={styles.reviewQuoteMark} aria-hidden="true">&rdquo;</span>
+                    </div>
+                    <blockquote className={styles.reviewQuote}>{r.review}</blockquote>
+                    <figcaption className={styles.reviewMeta}>
+                      <span className={styles.reviewAvatar}>{initials(r.customerName)}</span>
+                      <span className={styles.reviewName}>{r.customerName}</span>
+                    </figcaption>
+                  </figure>
+                ))}
+              </div>
             </div>
           </section>
         )}
@@ -786,12 +815,13 @@ export function PortfolioTemplate2({ brand, photos, garmentTypes, reviews }) {
         <section id="faq" className={styles.faq} ref={faqRef}>
           <Reveal as="div" className={styles.faqHeader}>
             <span className={styles.eyebrow}>FAQ</span>
+            <h2 className={styles.sectionTitle}>Answers before you ask</h2>
           </Reveal>
-          <Reveal as="div" className={styles.faqList} delay={80}>
+          <div className={styles.faqList}>
             {settings.faqs.map((item, i) => (
-              <FaqItem key={i} index={i} item={item} openIndex={openFaqIndex} onToggle={setOpenFaqIndex} />
+              <FaqItem key={i} index={i} item={item} openIndex={openFaqIndex} onToggle={setOpenFaqIndex} delay={(i % 2) * 60} />
             ))}
-          </Reveal>
+          </div>
         </section>
 
         <section id="contact" className={styles.cta} ref={bookRef}>
@@ -804,27 +834,21 @@ export function PortfolioTemplate2({ brand, photos, garmentTypes, reviews }) {
           </div>
           <div className={styles.ctaContent}>
             <span className={styles.eyebrowLight}>Bespoke enquiries</span>
-            <h2 className={styles.ctaTitle}>Begin your commission.</h2>
-            <p className={styles.ctaSub}>Tell us the occasion, the fabric, and the date — we&rsquo;ll take it from there.</p>
+            <h2 className={styles.ctaTitle}>{settings.footerText}</h2>
+
             <div className={styles.ctaBtns}>
               <button className={styles.ctaBtnPrimary} onClick={() => setBookingOpen(true)}>Place an enquiry</button>
-              {brand.brandPhone && (
-                <a href={`https://wa.me/${brand.brandPhone.replace(/\D/g, '')}`} target="_blank" rel="noopener noreferrer" className={styles.ctaBtnGhost}>
-                  {WA_SVG} WhatsApp
-                </a>
-              )}
             </div>
-            <div className={styles.ctaContacts}>
-              {brand.brandPhone && <a href={`tel:${brand.brandPhone}`}    className={styles.ctaContact}>{brand.brandPhone}</a>}
-              {brand.brandEmail && <a href={`mailto:${brand.brandEmail}`} className={styles.ctaContact}>{brand.brandEmail}</a>}
-            </div>
+
           </div>
         </section>
 
         <footer className={styles.footer}>
-          {settings.footerText && (
-            <Reveal as="p" className={styles.footerStatement}>{settings.footerText}</Reveal>
+
+          {(tagline || settings.styleStatement) && (
+            <p className={styles.footerStatement}>{tagline || settings.styleStatement}</p>
           )}
+
           <div className={styles.footerTop}>
             <div className={styles.footerBrand}>
               <p className={styles.footerName}>{brandName}</p>
