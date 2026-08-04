@@ -9,6 +9,9 @@
   font-family: inherit;
   box-sizing: border-box;
   outline: none;
+  resize: none;
+  overflow: hidden;
+  line-height: 1.4;
   transition: border-color 0.15s;
 }
 
