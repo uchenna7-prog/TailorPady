@@ -13,16 +13,17 @@ const PUBLIC_ROUTE_PATTERNS = [
   /^\/privacy$/,
   /^\/terms$/,
   /^\/refund$/,
+  /^\/founder$/,
 ]
 
 registerRoute(
-  new NavigationRoute(createHandlerBoundToURL('/public.html'), {
+  new NavigationRoute(createHandlerBoundToURL('/index.html'), {
     allowlist: PUBLIC_ROUTE_PATTERNS,
   })
 )
 
 registerRoute(
-  new NavigationRoute(createHandlerBoundToURL('/index.html'), {
+  new NavigationRoute(createHandlerBoundToURL('/app.html'), {
     denylist: PUBLIC_ROUTE_PATTERNS,
   })
 )
