@@ -1,15 +1,30 @@
+import { useRef, useEffect } from "react"
 import styles from "./TextInput.module.css"
 
+export function TextInput({ value, onChange, placeholder, maxLength }) {
+  const ref = useRef(null)
 
-export function TextInput({ value, onChange, placeholder, type = 'text' }) {
+  useEffect(() => {
+    const el = ref.current
+    if (!el) return
+    el.style.height = 'auto'
+    el.style.height = `${el.scrollHeight}px`
+  }, [value])
+
+  function handleKeyDown(e) {
+    if (e.key === 'Enter') e.preventDefault()
+  }
 
   return (
-    <input
+    <textarea
+      ref={ref}
       className={styles.textInput}
-      type={type}
       value={value}
+      maxLength={maxLength}
       onChange={e => onChange(e.target.value)}
+      onKeyDown={handleKeyDown}
       placeholder={placeholder}
+      rows={1}
     />
   )
 }
