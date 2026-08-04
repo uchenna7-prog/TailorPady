@@ -1,4 +1,4 @@
-import { doc, setDoc, getDoc, onSnapshot } from 'firebase/firestore'
+import { doc, setDoc, getDoc, getDocFromServer } from 'firebase/firestore'
 
 function brandDoc(db, uid) {
   return doc(db, 'users', uid, 'tailorProfile', 'brand')
@@ -66,19 +66,11 @@ export async function getPublicBrandDataFromFirestore(db, uid) {
   return rest
 }
 
-export function subscribeToPublicBrandData(db, uid, callback, onError) {
-  return onSnapshot(
-    publicBrandDoc(db, uid),
-    { includeMetadataChanges: true },
-    snap => {
-      if (snap.metadata.hasPendingWrites || !snap.metadata.fromCache) {
-        if (!snap.exists()) { callback({}); return }
-        const { updatedAt, ...rest } = snap.data()
-        callback(rest)
-      }
-    },
-    err => { onError?.(err) }
-  )
+export async function getPublicBrandDataFromServer(db, uid) {
+  const snap = await getDocFromServer(publicBrandDoc(db, uid))
+  if (!snap.exists()) return {}
+  const { updatedAt, ...rest } = snap.data()
+  return rest
 }
 
 export async function savePersonalInfosToFirestore(db, uid, settings) {
