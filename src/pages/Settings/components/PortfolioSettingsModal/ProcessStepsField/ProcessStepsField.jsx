@@ -51,22 +51,26 @@ export function ProcessStepsField({ value, onChange }) {
           </div>
           <input
             type="text"
-            className={styles.titleInput}
+            className={styles.input}
             placeholder="e.g. Consultation"
             value={step.title}
             maxLength={PROCESS_STEP_TITLE_MAX}
             onChange={e => updateStep(i, 'title', e.target.value)}
-            className={styles.input}
           />
+          <div className={styles.charCount}>
+            {step.title.length}/{PROCESS_STEP_TITLE_MAX}
+          </div>
           <textarea
-            className={styles.descInput}
+            className={styles.textarea}
             placeholder="e.g. We discuss your style, fabric, and timeline."
             value={step.description}
             maxLength={PROCESS_STEP_DESC_MAX}
             rows={2}
             onChange={e => updateStep(i, 'description', e.target.value)}
-            className={styles.textarea}
           />
+          <div className={styles.charCount}>
+            {step.description.length}/{PROCESS_STEP_DESC_MAX}
+          </div>
         </div>
       ))}
 
