@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react'
 import { useParams } from 'react-router-dom'
-import { collection, addDoc, getDocs, query, where, serverTimestamp } from 'firebase/firestore'
+import { collection, getDocs, query, where } from 'firebase/firestore'
 import { db } from '../../firebasePublic'
-import { getPublicBrandDataFromFirestore } from '../../services/profileService'
+import { getPublicBrandDataFromServer } from '../../services/profileService'
+import { addReview } from '../../services/reviewService'
 import styles from './ReviewPage.module.css'
 
 function StarPicker({ value, onChange, disabled }) {
@@ -64,7 +65,7 @@ export default function ReviewPage() {
 
     async function init() {
       try {
-        const brand = await getPublicBrandDataFromFirestore(db, uid)
+        const brand = await getPublicBrandDataFromServer(db, uid)
         setTailorName(brand?.brandName || brand?.name || 'Your tailor')
 
         const q = query(
@@ -94,17 +95,13 @@ export default function ReviewPage() {
     setError('')
 
     try {
-      await addDoc(collection(db, 'users', uid, 'reviews'), {
+      await addReview(db, uid, {
         customerName:  customerName.trim(),
         customerPhone: '',
         customerId:    null,
         review:        reviewText.trim(),
         rating,
         token,
-        status:        'pending',
-        approvedAt:    null,
-        createdAt:     serverTimestamp(),
-        updatedAt:     serverTimestamp(),
       })
       setSubmitted(true)
     } catch (err) {
