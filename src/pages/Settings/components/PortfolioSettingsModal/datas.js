@@ -11,7 +11,7 @@ export const AVAILABILITY_OPTIONS = [
   { value: 'booked', label: 'Fully Booked'},
 ]
 
-export const MAX_MILESTONE_LABEL_LENGTH = 24
+export const MAX_MILESTONE_LABEL_LENGTH = 20
 export const MAX_LOCATION_LENGTH        = 40
 
 export const MIN_ABOUT_LENGTH = 80
