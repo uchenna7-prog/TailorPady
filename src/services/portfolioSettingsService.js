@@ -1,4 +1,4 @@
-import { doc, setDoc, onSnapshot, getDoc, deleteField } from 'firebase/firestore'
+import { doc, setDoc, getDoc, getDocFromServer, onSnapshot } from 'firebase/firestore'
 
 function settingsDoc(db, uid) {
   return doc(db, 'users', uid, 'portfolioSettings', 'main')
@@ -54,6 +54,12 @@ export function subscribeToPortfolioSettings(db, uid, callback, onError) {
 
 export async function getPortfolioSettings(db, uid) {
   const snap = await getDoc(settingsDoc(db, uid))
+  if (!snap.exists()) return { ...DEFAULTS }
+  return { ...DEFAULTS, ...snap.data() }
+}
+
+export async function getPortfolioSettingsFromServer(db, uid) {
+  const snap = await getDocFromServer(settingsDoc(db, uid))
   if (!snap.exists()) return { ...DEFAULTS }
   return { ...DEFAULTS, ...snap.data() }
 }
