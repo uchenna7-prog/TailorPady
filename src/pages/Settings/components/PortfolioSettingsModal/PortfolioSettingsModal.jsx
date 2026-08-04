@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import styles from './PortfolioSettingsModal.module.css'
 import { FullModal } from '../../../../components/FullModal/FullModal'
 import { usePortfolioSettings } from '../../../../contexts/PortfolioSettingsContext'
@@ -163,9 +163,17 @@ function AboutField({ value, onChange }) {
 }
 
 export function PortfolioSettingsModal({ onBack, showToast }) {
-  const { portfolioSettings, updateManyPortfolioSettings } = usePortfolioSettings()
+  const { portfolioSettings, updateManyPortfolioSettings, portfolioSettingsSettled } = usePortfolioSettings()
 
   const [local, setLocal] = useState(() => buildLocal(portfolioSettings))
+  const syncedRef = useRef(false)
+
+  useEffect(() => {
+    if (portfolioSettingsSettled && !syncedRef.current) {
+      setLocal(buildLocal(portfolioSettings))
+      syncedRef.current = true
+    }
+  }, [portfolioSettingsSettled, portfolioSettings])
 
   const set = key => val => setLocal(p => ({ ...p, [key]: val }))
 
