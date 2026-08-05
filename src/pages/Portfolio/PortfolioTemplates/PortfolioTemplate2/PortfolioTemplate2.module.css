@@ -687,7 +687,7 @@ body::-webkit-scrollbar-thumb:hover {
   overflow-x: auto;
   scroll-snap-type: x mandatory;
   -webkit-overflow-scrolling: touch;
-  touch-action: pan-x;
+  touch-action: pan-x pan-y;
   overscroll-behavior-x: contain;
   scrollbar-width: none;
   padding: 0 24px;
