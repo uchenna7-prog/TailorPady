@@ -857,8 +857,8 @@ export function PortfolioTemplate2({ brand, photos, garmentTypes, reviews }) {
         {reviewLoop.length > 0 && (
           <section className={styles.reviews}>
             <Reveal as="div" className={styles.reviewsHeader}>
-              <span className={styles.eyebrow}>In their words</span>
-              <h2 className={styles.sectionTitle}>What clients say</h2>
+              <span className={styles.eyebrow}>Client Stories</span>
+              <h2 className={styles.worksSub}>Hear from clients who have experienced our craftsmanship firsthand.</h2>
             </Reveal>
             <div className={styles.marqueeViewport}>
               <div className={styles.marqueeTrack}>

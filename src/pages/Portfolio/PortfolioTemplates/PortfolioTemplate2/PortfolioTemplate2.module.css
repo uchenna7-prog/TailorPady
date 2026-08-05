@@ -382,7 +382,7 @@ body::-webkit-scrollbar-thumb:hover {
 .heroAvailability {
   position: absolute;
   left: 24px;
-  top: calc(88px + env(safe-area-inset-top));
+  top: calc(100px + env(safe-area-inset-top));
   z-index: 1;
   display: inline-flex;
   align-items: center;
@@ -906,12 +906,12 @@ body::-webkit-scrollbar-thumb:hover {
 }
 
 .starIcon {
-  font-size: 14px;
+  font-size: 2rem;
   color: var(--line-strong);
 }
 
 .starIconFilled {
-  color: var(--brand-primary, var(--oxblood));
+  color: #FBBF24;
 }
 
 .reviewQuoteMark {

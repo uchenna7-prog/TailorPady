@@ -558,7 +558,7 @@
 }
 
 
-/* MEDIA PLACEHOLDER (shared between hero and cta cover) */
+/* MEDIA PLACEHOLDER */
 .mediaPlaceholder {
   position: absolute;
   inset: 0;
@@ -623,27 +623,20 @@
   padding: 88px 24px;
 }
 
-.aboutInner {
-  max-width: 100%;
-}
-
-.aboutHeader {
-  margin-bottom: 56px;
-  display: flex;
-  flex-direction: column;
-}
-
-.aboutBody {
-  display: flex;
-  flex-direction: column;
+.aboutGrid {
+  display: grid;
+  grid-template-columns: 1fr;
   gap: 48px;
 }
 
-.aboutBioCol {
+.aboutLeft {
   display: flex;
   flex-direction: column;
-  gap: 24px;
-  max-width: 640px;
+  gap: 40px;
+}
+
+.aboutHeader {
+  text-align: left;
 }
 
 .aboutBio {
@@ -651,60 +644,26 @@
   line-height: 1.8;
   color: var(--muted);
   margin: 0;
-  max-width: 58ch;
-}
-
-.aboutInfoList {
-  list-style: none;
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
-  margin: 4px 0 0;
-  padding: 0;
-}
-
-.aboutInfoItem {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  font-size: 15px;
-  font-weight: 600;
-  color: var(--ink);
-}
-
-.aboutInfoIcon {
-  font-size: 20px !important;
-  color: var(--brand-primary, var(--muted-2));
-  flex-shrink: 0;
+  max-width: 560px;
+  text-align: left;
 }
 
 .aboutStats {
   display: flex;
   flex-wrap: wrap;
-  gap: 40px;
+  gap: 32px;
 }
 
 .aboutStat {
   display: flex;
-  align-items: center;
-  gap: 14px;
-}
-
-.aboutStatIcon {
-  font-size: 40px !important;
-  color: var(--brand-primary, var(--ink));
-  flex-shrink: 0;
-}
-
-.aboutStatText {
-  display: flex;
   flex-direction: column;
-  gap: 4px;
+  align-items: flex-start;
+  gap: 6px;
 }
 
 .aboutStatValue {
   font-family: var(--font-mono);
-  font-size: clamp(22px, 2.2vw, 30px);
+  font-size: clamp(26px, 2.8vw, 36px);
   font-weight: 700;
   letter-spacing: -0.01em;
   color: var(--ink);
@@ -712,9 +671,63 @@
 }
 
 .aboutStatLabel {
-  font-size: 13px;
-  font-weight: 500;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
   color: var(--muted-2);
+}
+
+.aboutRight {
+  display: flex;
+  align-items: flex-start;
+}
+
+.factsList {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  width: 100%;
+}
+
+.factRow {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.factIcon {
+  flex-shrink: 0;
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  border: 1px solid var(--line-strong);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 19px !important;
+  color: var(--brand-primary, var(--ink));
+}
+
+.factText {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.factLabel {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted-2);
+}
+
+.factValue {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--ink);
 }
 
 
@@ -914,7 +927,9 @@
 .processHeader {
   display: flex;
   flex-direction: column;
-  margin-bottom: 52px;
+  align-items: center;
+  text-align: center;
+  margin: 0 auto 52px;
 }
 
 .processSteps {
@@ -979,7 +994,9 @@
 .reviewsHeader {
   display: flex;
   flex-direction: column;
-  margin-bottom: 48px;
+  align-items: center;
+  text-align: center;
+  margin: 0 auto 48px;
 }
 
 .reviewGrid {
@@ -1006,9 +1023,13 @@
 }
 
 .reviewStars {
-  font-size: 13px;
+  font-size: 2rem;
   color: var(--brand-primary, var(--ink));
   letter-spacing: 3px;
+}
+
+.starIconFilled {
+  color: #FBBF24;
 }
 
 .reviewText {
@@ -1048,7 +1069,6 @@
 }
 
 
-/* FAQ */
 .faq {
   padding: 80px 24px;
   border-bottom: 1px solid var(--line);
@@ -1063,13 +1083,17 @@
 .faqHeader {
   display: flex;
   flex-direction: column;
-  margin-bottom: 48px;
+  align-items: center;
+  text-align: center;
+  margin: 0 auto 48px;
 }
 
 .faqList {
   display: flex;
   flex-direction: column;
   border-top: 1px solid var(--line);
+  max-width: 860px;
+  margin: 0 auto;
 }
 
 .faqRow {
@@ -1149,6 +1173,7 @@
   inset: 0;
   background: rgba(8, 8, 10, 0.86);
 }
+
 .ctaContent {
   position: relative;
   z-index: 1;
@@ -1173,20 +1198,11 @@
   margin: 0 0 20px;
 }
 
-.ctaSub {
-  font-size: 15px;
-  line-height: 1.75;
-  color: rgba(255, 255, 255, 0.5);
-  max-width: 480px;
-  margin: 0 auto 32px;
-}
-
 .ctaBtns {
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
+  align-items: center;
   gap: 12px;
-  margin-bottom: 28px;
 }
 
 .ctaBtnPrimary {
@@ -1225,52 +1241,6 @@
 
 .ctaBtnPrimary:hover::before {
   left: 130%;
-}
-
-.ctaBtnGhost {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  background: transparent;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  color: rgba(255, 255, 255, 0.65);
-  font-family: var(--font-body);
-  font-size: 14px;
-  font-weight: 500;
-  padding: 14px 24px;
-  border-radius: 8px;
-  text-decoration: none;
-  transition: background 0.2s ease, border-color 0.2s ease, color 0.2s ease;
-}
-
-.ctaBtnGhost:hover {
-  background: rgba(255, 255, 255, 0.08);
-  border-color: rgba(255, 255, 255, 0.38);
-  color: rgba(255, 255, 255, 0.9);
-}
-
-.ctaContacts {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-.ctaContact {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  color: rgba(255, 255, 255, 0.32);
-  text-decoration: none;
-  font-size: 13px;
-  transition: color 0.2s ease;
-}
-
-.ctaContact:hover {
-  color: rgba(255, 255, 255, 0.72);
-}
-
-.ctaContact .mi {
-  font-size: 0.9rem;
 }
 
 
@@ -2251,7 +2221,6 @@
 
   .ctaBtns {
     flex-direction: row;
-    align-items: center;
   }
 
   .bookingOverlay {
@@ -2335,20 +2304,10 @@
     font-size: 17px;
   }
 
-  .aboutBody {
-    flex-direction: row;
-    gap: 80px;
-    align-items: flex-start;
-  }
-
-  .aboutBioCol {
-    flex: 1;
-  }
-
-  .aboutStats {
-    flex: 0 0 320px;
-    flex-direction: column;
-    gap: 36px;
+  .aboutGrid {
+    grid-template-columns: 1.3fr 1fr;
+    gap: 64px;
+    align-items: start;
   }
 
   .worksHeader {
@@ -2403,10 +2362,6 @@
 
   .reviewGrid {
     grid-template-columns: repeat(3, 1fr);
-  }
-
-  .faqList {
-    max-width: 860px;
   }
 
   .footerTop {
