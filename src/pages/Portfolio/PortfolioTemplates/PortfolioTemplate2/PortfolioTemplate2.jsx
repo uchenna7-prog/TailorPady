@@ -21,6 +21,10 @@ function yearsCrafting(yearFounded) {
   return Math.max(new Date().getFullYear() - founded, 1)
 }
 
+function currencyLabel(photo) {
+  return photo.currencySymbol || photo.currency || '₦'
+}
+
 function buildSocialUrl(platform, handle) {
   const h = handle.replace(/^@/, '')
   switch (platform) {
@@ -545,7 +549,7 @@ function Lightbox({ photo, photos, onClose }) {
         )}
         {(current.caption || current.price) && (
           <div className={styles.lbMeta}>
-            <span className={styles.lbType}>N deg {String(idx + 1).padStart(2, '0')} - {current.clothingTypeLabel || 'Piece'}{current.price ? ` - From N${current.price}` : ''}</span>
+            <span className={styles.lbType}>N deg {String(idx + 1).padStart(2, '0')} - {current.clothingTypeLabel || 'Piece'}{current.price ? ` - From ${currencyLabel(current)}${current.price}` : ''}</span>
             {current.caption && <p className={styles.lbCaption}>{current.caption}</p>}
           </div>
         )}
@@ -574,9 +578,14 @@ function CategoryRow({ label, items, delay = 0, onSelect }) {
             <div className={styles.stripImgWrap}>
               <img src={photo.src || photo.storageUrl} alt={photo.caption || label} className={styles.stripImg} loading="lazy" />
             </div>
-            {photo.price && (
+            {(photo.caption || photo.price) && (
               <div className={styles.stripCaption}>
-                <span className={styles.stripPrice}>From N{photo.price}</span>
+                {photo.caption && <span className={styles.stripName}>{photo.caption}</span>}
+                {photo.price && (
+                  <span className={styles.stripPrice}>
+                    <span className={styles.stripPriceFrom}>From</span> {currencyLabel(photo)}{photo.price}
+                  </span>
+                )}
               </div>
             )}
           </button>
@@ -805,7 +814,7 @@ export function PortfolioTemplate2({ brand, photos, garmentTypes, reviews }) {
         <section id="work" className={styles.works} ref={worksRef}>
           <Reveal as="div" className={styles.worksHeader}>
             <h2 className={styles.eyebrow}>Gallery</h2>
-            {settings.styleStatement && <p className={styles.worksSub}>{settings.styleStatement}</p>}
+             <p className={styles.worksSub}>A collection of recent work showcasing craftsmanship, quality, and attention to detail</p>
           </Reveal>
 
           {categoryGroups.length === 0 ? (
@@ -828,7 +837,7 @@ export function PortfolioTemplate2({ brand, photos, garmentTypes, reviews }) {
         <section className={styles.process}>
           <Reveal as="div" className={styles.processHeader}>
             <span className={styles.eyebrow}>Process</span>
-            <h2 className={styles.sectionTitle}>How a piece comes together</h2>
+            <h2 className={styles.worksSub}>See how each piece comes to life, from the first conversation to the final finishing touches.</h2>
           </Reveal>
           <div className={styles.processRail}>
             {settings.processSteps.map((step, i) => (
@@ -878,7 +887,7 @@ export function PortfolioTemplate2({ brand, photos, garmentTypes, reviews }) {
         <section id="faq" className={styles.faq} ref={faqRef}>
           <Reveal as="div" className={styles.faqHeader}>
             <span className={styles.eyebrow}>FAQ</span>
-            <h2 className={styles.sectionTitle}>Answers before you ask</h2>
+            <h2 className={styles.worksSub}>Find answers to the questions we’re asked most often.</h2>
           </Reveal>
           <div className={styles.faqList}>
             {settings.faqs.map((item, i) => (
@@ -896,7 +905,7 @@ export function PortfolioTemplate2({ brand, photos, garmentTypes, reviews }) {
             <div className={styles.ctaOverlay} />
           </div>
           <div className={styles.ctaContent}>
-            <span className={styles.eyebrowLight}>Bespoke enquiries</span>
+            <span className={styles.eyebrowLight}>Get in touch</span>
             <h2 className={styles.ctaTitle}>{settings.footerText}</h2>
 
             <div className={styles.ctaBtns}>
