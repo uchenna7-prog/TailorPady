@@ -223,7 +223,7 @@ function detectCandidates({
           tag:       'Invoice',
           title:     'Generate invoice',
           desc:      `Invoice for ${order.customerName || 'Customer'}'s order of ${orderName}, priced at ${amount}`,
-          detail:    `An invoice will be generated for ${order.customerName || 'a customer'}'s order: ${orderName} (${amount})${order.due ? `, due on ${order.due}` : ''}.`,
+          detail:    `An invoice will be generated for ${order.customerName || 'a customer'}'s order of ${orderName} (${amount})${order.due ? `, due on ${order.due}` : ''}.`,
           detectedAt,
           fireAt,
           visibleAt,
