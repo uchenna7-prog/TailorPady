@@ -1,6 +1,9 @@
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600;700&display=swap');
+
 .page {
   --font-display: 'Manrope', -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
   --font-body: 'Manrope', -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+  --font-headings: 'Playfair Display', Georgia, 'Times New Roman', serif;
 
   --ink: #131313;
   --paper: #ffffff;
@@ -62,9 +65,10 @@ body::-webkit-scrollbar-thumb:hover {
 
 .eyebrow {
   display: block;
-  font-size: 1.2rem;
-  font-weight: 700;
-  letter-spacing: 0.18em;
+  font-family: var(--font-headings);
+  font-size: clamp(26px, 4vw, 38px);
+  font-weight: 600;
+  letter-spacing: 0.01em;
   text-transform: uppercase;
   color: var(--brand-primary, var(--oxblood));
   margin-bottom: 16px;
@@ -72,17 +76,18 @@ body::-webkit-scrollbar-thumb:hover {
 
 .eyebrowLight {
   display: block;
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 0.18em;
+  font-family: var(--font-headings);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
   text-transform: uppercase;
   color: rgba(255, 255, 255, 0.65);
   margin-bottom: 18px;
 }
 
 .sectionTitle {
-  font-family: var(--font-display);
-  font-weight: 700;
+  font-family: var(--font-headings);
+  font-weight: 600;
   font-size: clamp(28px, 3.6vw, 40px);
   line-height: 1.15;
   letter-spacing: -0.01em;
@@ -176,9 +181,10 @@ body::-webkit-scrollbar-thumb:hover {
 }
 
 .logoMark {
+  font-family: var(--font-headings);
   color: var(--nav-ink);
-  font-size: 1.05rem;
-  font-weight: 700;
+  font-size: 1.15rem;
+  font-weight: 600;
   letter-spacing: -0.01em;
   white-space: nowrap;
   transition: color 0.2s ease;
@@ -631,10 +637,10 @@ body::-webkit-scrollbar-thumb:hover {
 }
 
 .categoryTitle {
-  font-family: var(--font-display);
-  font-size: clamp(22px, 3vw, 30px);
-  font-weight: 700;
-  letter-spacing: -0.01em;
+  font-family: var(--font-headings);
+  font-size: clamp(24px, 3.4vw, 32px);
+  font-weight: 600;
+  letter-spacing: 0.01em;
   text-transform: uppercase;
   color: var(--ink);
   text-align: center;
@@ -675,7 +681,7 @@ body::-webkit-scrollbar-thumb:hover {
   display: flex;
   gap: 16px;
   overflow-x: auto;
-  scroll-snap-type: x proximity;
+  scroll-snap-type: x mandatory;
   -webkit-overflow-scrolling: touch;
   touch-action: pan-x;
   overscroll-behavior-x: contain;
@@ -689,7 +695,7 @@ body::-webkit-scrollbar-thumb:hover {
 
 .stripItem {
   flex: 0 0 auto;
-  width: 158px;
+  width: 232px;
   display: flex;
   flex-direction: column;
   gap: 10px;
@@ -907,7 +913,7 @@ body::-webkit-scrollbar-thumb:hover {
 }
 
 .reviewQuoteMark {
-  font-family: var(--font-display);
+  font-family: var(--font-headings);
   font-size: 34px;
   font-weight: 700;
   line-height: 0.6;
@@ -1063,7 +1069,8 @@ body::-webkit-scrollbar-thumb:hover {
 .ctaTitle {
   max-width: 90vw;
   min-width: 70vw;
-  font-weight: 700;
+  font-family: var(--font-headings);
+  font-weight: 600;
   font-size: clamp(2rem, 6vw, 3.2rem);
   line-height: 1.1;
   letter-spacing: -0.01em;
@@ -1150,9 +1157,9 @@ body::-webkit-scrollbar-thumb:hover {
 
 .footerStatement {
   text-align: center;
-  font-family: var(--font-display);
+  font-family: var(--font-headings);
   font-size: clamp(18px, 2.6vw, 24px);
-  font-weight: 700;
+  font-weight: 600;
   letter-spacing: -0.01em;
   color: var(--paper);
   margin: 0;
@@ -1172,8 +1179,9 @@ body::-webkit-scrollbar-thumb:hover {
 }
 
 .footerName {
-  font-size: 1.35rem;
-  font-weight: 700;
+  font-family: var(--font-headings);
+  font-size: 1.5rem;
+  font-weight: 600;
   letter-spacing: -0.01em;
   color: var(--paper);
   margin: 0;
@@ -1365,8 +1373,9 @@ body::-webkit-scrollbar-thumb:hover {
 }
 
 .drawerTitle {
-  font-size: 1.35rem;
-  font-weight: 700;
+  font-family: var(--font-headings);
+  font-size: 1.5rem;
+  font-weight: 600;
   color: var(--ink);
   margin: 0;
 }
@@ -1516,8 +1525,9 @@ body::-webkit-scrollbar-thumb:hover {
 }
 
 .sentTitle {
-  font-size: 1.3rem;
-  font-weight: 700;
+  font-family: var(--font-headings);
+  font-size: 1.5rem;
+  font-weight: 600;
   color: var(--ink);
   margin: 0;
 }
@@ -2128,7 +2138,7 @@ body::-webkit-scrollbar-thumb:hover {
 
 @media (min-width: 640px) {
   .stripItem {
-    width: 200px;
+    width: 260px;
   }
 
   .bookingOverlay {
@@ -2186,11 +2196,12 @@ body::-webkit-scrollbar-thumb:hover {
     max-width: 1400px;
     margin: 0 auto;
     padding: 0 64px;
-    gap: 22px;
+    gap: 26px;
+    scroll-snap-type: x proximity;
   }
 
   .stripItem {
-    width: 240px;
+    width: 300px;
   }
 
   .process { padding: 100px 64px; }
