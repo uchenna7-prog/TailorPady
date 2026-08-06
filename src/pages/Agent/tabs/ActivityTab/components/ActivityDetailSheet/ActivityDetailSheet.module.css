@@ -8,20 +8,21 @@
   gap: 12px;
 }
 
-.summaryCard {
+.detailSectionCard {
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: 14px;
   padding: 14px;
 }
 
-.summaryCardHeader {
+.cardHeaderRow {
   display: flex;
   align-items: center;
   gap: 8px;
+  margin-bottom: 12px;
 }
 
-.summaryIconBadge {
+.iconBadge {
   width: 26px;
   height: 26px;
   border-radius: 8px;
@@ -33,8 +34,7 @@
   flex-shrink: 0;
 }
 
-.summaryName {
-  flex: 1;
+.cardHeaderName {
   font-size: 0.88rem;
   font-weight: 700;
   color: var(--text);
@@ -44,56 +44,43 @@
   white-space: nowrap;
 }
 
-.summaryTime {
-  font-size: 0.72rem;
-  font-weight: 600;
-  color: var(--text3);
-  white-space: nowrap;
-  flex-shrink: 0;
+.infoGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
 }
 
-.summaryAmount {
-  font-size: 1.3rem;
+.infoGridCell {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 10px 12px;
+}
+
+.infoGridLabel {
+  font-size: 0.58rem;
+  font-weight: 800;
+  color: var(--text3);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 4px;
+}
+
+.infoGridValue {
+  font-size: 0.92rem;
   font-weight: 800;
   color: var(--text);
-  letter-spacing: -0.3px;
   font-variant-numeric: tabular-nums;
-  margin-top: 10px;
 }
 
-.summaryDue {
-  display: flex;
-  align-items: center;
-  gap: 5px;
-  margin-top: 6px;
-  font-size: 0.76rem;
-  font-weight: 700;
+.overdueText {
   color: #ef4444;
 }
 
-.reasonCard {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 14px;
-  padding: 14px;
-}
-
-.reasonText {
+.detailNoteText {
   font-size: 0.85rem;
   color: var(--text2);
   line-height: 1.65;
   margin: 0;
-  white-space: pre-wrap;
-}
-
-.sectionText {
-  font-size: 0.85rem;
-  color: var(--text2);
-  line-height: 1.65;
-  margin: 0;
-  padding: 14px;
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 14px;
   white-space: pre-wrap;
 }
