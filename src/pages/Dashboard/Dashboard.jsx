@@ -14,6 +14,7 @@ import { useProfileSettings } from '../../contexts/ProfileSettingsContext'
 import { useRevenueGoal } from '../../contexts/RevenueGoalContext'
 import { useTour } from '../../contexts/TourContext'
 import { APPOINTMENT_TYPE_ICONS } from '../../datas/appointmentDatas'
+import { TOUR_CATALOG } from '../../datas/tourCatalog'
 import {
   getGreeting, getGreetingEmoji, getRandomSubtext, formatUpdatedTime,
   isTaskOverdue, formatDateShort, dueThisWeek,
@@ -38,6 +39,7 @@ import { QuickActionsSection } from './components/QuickActionsSection/QuickActio
 import { RecentOrdersSection } from './components/RecentOrdersSection/RecentOrdersSection'
 import { StatCardSkeleton } from './components/StatCardSkeleton/StatCardSkeleton'
 import { SectionSkeleton } from './components/SectionSkeleton/SectionSkeleton'
+import { TourPickerSheet } from './components/TourPickerSheet/TourPickerSheet'
 import { AppointmentDetail } from '../../components/AppointmentDetail/AppointmentDetail'
 import TaskDetail from '../../components/TaskDetail/TaskDetail'
 import Header from '../../components/Header/Header'
@@ -122,6 +124,7 @@ function Dashboard({ onMenuClick, onGoToCustomer }) {
   const [confirmDelTask,    setConfirmDelTask]     = useState(null)
   const [toastMsg,          setToastMsg]          = useState('')
   const [openStatInfo,      setOpenStatInfo]      = useState(null)
+  const [isTourPickerOpen,  setIsTourPickerOpen]  = useState(false)
   const toastTimer = useRef(null)
   const autoTourAttemptedRef = useRef(false)
 
@@ -244,6 +247,20 @@ function Dashboard({ onMenuClick, onGoToCustomer }) {
     const dueDate = getInvoiceDueDate(invoice)
     if (!dueDate) return false
     return new Date(`${dueDate}T23:59:59`) < new Date()
+  }
+
+  function handleTakeTourClick() {
+    const incomplete = TOUR_CATALOG.filter(t => !hasCompletedTour(t.id))
+    if (incomplete.length <= 1) {
+      startTour(incomplete[0]?.id ?? 'onboarding')
+    } else {
+      setIsTourPickerOpen(true)
+    }
+  }
+
+  function handleTourPicked(tourId) {
+    setIsTourPickerOpen(false)
+    startTour(tourId)
   }
 
   const totalCustomers        = customers.length
@@ -416,7 +433,7 @@ function Dashboard({ onMenuClick, onGoToCustomer }) {
               <button
                 type="button"
                 className={styles.tourLink}
-                onClick={() => startTour('onboarding')}
+                onClick={handleTakeTourClick}
               >
                 <span className="mi" style={{ fontSize: '0.85rem', verticalAlign: 'middle', marginRight: '3px' }}>help_outline</span>
                 Take a tour
@@ -584,6 +601,13 @@ function Dashboard({ onMenuClick, onGoToCustomer }) {
             message="This can't be undone."
             onConfirm={handleTaskDeleteConfirm}
             onCancel={() => setConfirmDelTask(null)}
+          />
+
+          <TourPickerSheet
+            open={isTourPickerOpen}
+            hasCompletedTour={hasCompletedTour}
+            onSelect={handleTourPicked}
+            onClose={() => setIsTourPickerOpen(false)}
           />
 
         </SkeletonTheme>
