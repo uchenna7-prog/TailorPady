@@ -87,18 +87,11 @@
   color: #ef4444;
 }
 
-.detailSectionCard {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 14px;
-  padding: 14px;
-  margin-bottom: 12px;
-}
-
 .linkedRow {
   display: flex;
   align-items: center;
   gap: 10px;
+  padding: 12px 14px;
 }
 
 .linkedAvatar {
@@ -142,5 +135,6 @@
   color: var(--text2);
   line-height: 1.65;
   margin: 0;
+  padding: 12px 14px;
   white-space: pre-wrap;
 }
