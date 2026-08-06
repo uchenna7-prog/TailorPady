@@ -44,19 +44,23 @@ export function ScheduledDetailSheet({ item, onClose, onCancel, allOrders, allIn
         </div>
 
         {customerName && (
-          <SheetSection icon="person" label="Customer">
-            <div className={styles.linkedRow}>
-              <div className={styles.linkedAvatar}>
-                <span className={styles.linkedAvatarInitials}>{getInitials(customerName)}</span>
+          <div className={styles.sectionSpacer}>
+            <SheetSection icon="person" label="Customer">
+              <div className={styles.linkedRow}>
+                <div className={styles.linkedAvatar}>
+                  <span className={styles.linkedAvatarInitials}>{getInitials(customerName)}</span>
+                </div>
+                <span className={styles.linkedName}>{customerName}</span>
               </div>
-              <span className={styles.linkedName}>{customerName}</span>
-            </div>
-          </SheetSection>
+            </SheetSection>
+          </div>
         )}
 
-        <SheetSection icon="event_note" label="What will happen">
-          <p className={styles.detailNoteText}>{item.detail || item.desc}</p>
-        </SheetSection>
+        <div className={styles.sectionSpacer}>
+          <SheetSection icon="event_note" label="What will happen">
+            <p className={styles.detailNoteText}>{item.detail || item.desc}</p>
+          </SheetSection>
+        </div>
 
         <button
           className={styles.btnDanger}
