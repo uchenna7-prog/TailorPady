@@ -11,7 +11,7 @@
 
 @keyframes fadeIn {
   from { opacity: 0; }
-  to   { opacity: 1; }
+  to { opacity: 1; }
 }
 
 .sheetPanel {
@@ -28,7 +28,7 @@
 
 @keyframes sheetUp {
   from { transform: translateY(100%); }
-  to   { transform: translateY(0); }
+  to { transform: translateY(0); }
 }
 
 .sheetHandle {
@@ -40,10 +40,7 @@
   flex-shrink: 0;
 }
 
-
 @media (min-width: 769px) {
-
-
   .sheetOverlay {
     left: var(--sidebar-width, 280px);
     align-items: stretch;
@@ -61,12 +58,10 @@
 
   @keyframes slideRight {
     from { transform: translateX(100%); }
-    to   { transform: translateX(0); }
+    to { transform: translateX(0); }
   }
 
   .sheetHandle { display: none; }
-
-  
 }
 
 .sheetBody {
@@ -76,60 +71,34 @@
   -webkit-overflow-scrolling: touch;
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 12px;
 }
 
-
-.sheetMeta {
+.previewCard {
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: 14px;
-  overflow: hidden;
+  padding: 14px;
 }
 
-.sheetMetaRow {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 12px 14px;
-}
-
-.sheetMetaLabel {
-  font-size: 0.78rem;
-  color: var(--text3);
-  font-weight: 500;
-  flex: 1;
-}
-
-.sheetMetaValue {
-  font-size: 0.78rem;
-  color: var(--text2);
-  font-weight: 600;
-}
-
-.sheetMetaAccent {
-  color: var(--accent);
-}
-
-.sectionText {
+.previewText {
   font-size: 0.85rem;
   color: var(--text2);
-  line-height: 1.7;
+  line-height: 1.65;
   margin: 0;
-  padding: 12px 14px;
   white-space: pre-wrap;
-}
-
-
-
-.sectionTextItalic {
   font-style: italic;
 }
-
 
 .sheetActions {
   display: flex;
   flex-direction: column;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.btnRow {
+  display: flex;
   gap: 8px;
 }
 
@@ -140,25 +109,19 @@
   gap: 7px;
   width: 100%;
   background: var(--accent);
+  border: 1px solid var(--accent);
   color: var(--bg);
-  border: none;
   border-radius: 12px;
-  padding: 14px 16px;
-  font-size: 0.85rem;
+  padding: 13px 16px;
+  font-size: 0.84rem;
   font-weight: 700;
   font-family: inherit;
   cursor: pointer;
-  transition: opacity 0.14s, transform 0.12s;
+  transition: opacity 0.14s;
 }
 
 .btnPrimary:active {
   opacity: 0.85;
-  transform: scale(0.98);
-}
-
-.btnRow {
-  display: flex;
-  gap: 8px;
 }
 
 .btnSecondary {
@@ -166,23 +129,22 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 5px;
+  gap: 6px;
   background: var(--surface);
-  border: 1px solid var(--border2);
-  border-radius: 11px;
-  padding: 11px 10px;
-  font-size: 0.78rem;
-  font-weight: 600;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 13px 10px;
+  font-size: 0.8rem;
+  font-weight: 700;
   color: var(--text);
   cursor: pointer;
   font-family: inherit;
   white-space: nowrap;
-  transition: background 0.12s, border-color 0.12s;
+  transition: background 0.12s;
 }
 
 .btnSecondary:active {
   background: var(--surface2);
-  border-color: var(--text2);
 }
 
 .btnGreen {
@@ -190,44 +152,157 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 5px;
-  background: rgba(34, 197, 94, 0.08);
-  border: 1px solid rgba(34, 197, 94, 0.28);
-  border-radius: 11px;
-  padding: 11px 10px;
-  font-size: 0.78rem;
+  gap: 6px;
+  background: rgba(34, 197, 94, 0.1);
+  border: 1px solid rgba(34, 197, 94, 0.35);
+  border-radius: 12px;
+  padding: 13px 10px;
+  font-size: 0.8rem;
   font-weight: 700;
   color: #22c55e;
   cursor: pointer;
   font-family: inherit;
   white-space: nowrap;
-  transition: background 0.12s, border-color 0.12s;
+  transition: opacity 0.14s;
 }
 
 .btnGreen:active {
-  background: rgba(34, 197, 94, 0.16);
-  border-color: rgba(34, 197, 94, 0.5);
+  opacity: 0.75;
 }
 
 .btnGhost {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 6px;
+  gap: 7px;
   width: 100%;
-  background: transparent;
-  border: 1px solid rgba(239, 68, 68, 0.22);
+  background: rgba(239, 68, 68, 0.08);
+  border: 1px solid rgba(239, 68, 68, 0.3);
   border-radius: 12px;
-  padding: 12px 16px;
+  padding: 13px 16px;
   font-family: inherit;
   font-size: 0.82rem;
-  font-weight: 600;
+  font-weight: 700;
   color: #ef4444;
   cursor: pointer;
-  transition: background 0.12s, border-color 0.12s;
+  transition: opacity 0.14s;
 }
 
 .btnGhost:active {
-  background: rgba(239, 68, 68, 0.07);
-  border-color: rgba(239, 68, 68, 0.42);
+  opacity: 0.75;
+}
+
+.confirmOverlay {
+  position: fixed;
+  inset: 0;
+  z-index: 3200;
+  background: rgba(0, 0, 0, 0.55);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  animation: fadeIn 0.15s ease;
+}
+
+.confirmSheet {
+  width: 100%;
+  max-width: 340px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 22px 20px 18px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  animation: confirmIn 0.2s cubic-bezier(0.32, 0.72, 0, 1);
+}
+
+@keyframes confirmIn {
+  from { opacity: 0; transform: translateY(8px) scale(0.98); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.confirmIcon {
+  width: 52px;
+  height: 52px;
+  border-radius: 16px;
+  background: color-mix(in srgb, var(--accent) 12%, transparent);
+  border: 1px solid color-mix(in srgb, var(--accent) 35%, transparent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 14px;
+}
+
+.confirmIconGreen {
+  background: rgba(34, 197, 94, 0.12);
+  border-color: rgba(34, 197, 94, 0.35);
+}
+
+.confirmTitle {
+  font-size: 1rem;
+  font-weight: 800;
+  color: var(--text);
+  margin: 0 0 6px;
+}
+
+.confirmSub {
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: var(--text3);
+  line-height: 1.55;
+  margin: 0 0 20px;
+}
+
+.confirmBtns {
+  display: flex;
+  gap: 8px;
+  width: 100%;
+}
+
+.confirmBtnCancel {
+  flex: 1;
+  background: var(--surface2);
+  border: 1px solid var(--border2);
+  border-radius: 12px;
+  padding: 12px 10px;
+  font-family: inherit;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--text2);
+  cursor: pointer;
+  transition: opacity 0.14s;
+}
+
+.confirmBtnCancel:active {
+  opacity: 0.75;
+}
+
+.confirmBtnSave {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  background: var(--accent);
+  border: 1px solid var(--accent);
+  border-radius: 12px;
+  padding: 12px 10px;
+  font-family: inherit;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--bg);
+  cursor: pointer;
+  transition: opacity 0.14s;
+}
+
+.confirmBtnSave:active {
+  opacity: 0.85;
+}
+
+.confirmBtnSaveGreen {
+  background: #22c55e;
+  border-color: #22c55e;
 }
