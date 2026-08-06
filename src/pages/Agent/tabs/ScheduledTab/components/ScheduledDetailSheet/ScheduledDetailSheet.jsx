@@ -30,15 +30,15 @@ export function ScheduledDetailSheet({ item, onClose, onCancel, allOrders, allIn
       <SheetHeader title="Scheduled" onClose={onClose} />
 
       <div className={styles.sheetBody}>
-        <span className={styles.tagChip} style={{ background: tagMeta.bg, borderColor: tagMeta.border, color: tagMeta.color }}>
-          {item.tag}
-        </span>
-
         <div className={styles.detailTitle}>{item.title}</div>
 
         <div className={styles.infoGrid}>
-          <div className={styles.infoGridCellFull}>
-            <div className={styles.infoGridLabel}>Scheduled for</div>
+          <div className={styles.infoGridCell}>
+            <div className={styles.infoGridLabel}>Type</div>
+            <div className={styles.infoGridValue} style={{ color: tagMeta.color }}>{item.tag}</div>
+          </div>
+          <div className={styles.infoGridCell}>
+            <div className={styles.infoGridLabel}>Scheduled For</div>
             <div className={`${styles.infoGridValue} ${styles.accentText}`}>{item.when}</div>
           </div>
         </div>
