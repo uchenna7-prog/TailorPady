@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from "react"
+import { useTour } from "../../../../contexts/TourContext"
 import styles from "./ManageGarmentTypesSheet.module.css"
 
 export function ManageGarmentTypesSheet({ isOpen, onClose, tabId, types, onSave, photos }) {
@@ -7,6 +8,7 @@ export function ManageGarmentTypesSheet({ isOpen, onClose, tabId, types, onSave,
   const [editingId, setEditingId] = useState(null)
   const [editLabel, setEditLabel] = useState('')
   const editInputRef = useRef(null)
+  const { currentStep, completeStep } = useTour()
 
   useEffect(() => {
     if (isOpen) {
@@ -47,6 +49,9 @@ export function ManageGarmentTypesSheet({ isOpen, onClose, tabId, types, onSave,
   const handleSave = () => {
     if (editingId) confirmEdit()
     onSave(tabId, items)
+    if (currentStep?.id === 'portfolio-edit-garment-types') {
+      completeStep('portfolio-edit-garment-types')
+    }
     onClose()
   }
 
