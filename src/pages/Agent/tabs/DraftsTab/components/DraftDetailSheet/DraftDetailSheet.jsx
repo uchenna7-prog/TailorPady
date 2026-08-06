@@ -280,7 +280,9 @@ export function DraftDetailSheet({
 
           <div className={styles.sheetBody}>
             <SheetSection icon="preview" label={isDoc ? 'Breakdown preview' : 'Message'}>
-              <p className={`${styles.sectionText} ${styles.sectionTextItalic}`}>{item.preview}</p>
+              <div className={styles.previewCard}>
+                <p className={styles.previewText}>{item.preview}</p>
+              </div>
             </SheetSection>
 
             {isDoc ? (
@@ -296,17 +298,17 @@ export function DraftDetailSheet({
                   </button>
                 </div>
 
+                <button className={styles.btnPrimary} onClick={handleShareBreakdown}>
+                  <MIcon name="ios_share" size="0.9rem" color="var(--bg)" />
+                  Send breakdown to client
+                </button>
+
                 <button
                   className={styles.btnGhost}
                   onClick={() => { haptic('light'); onDiscard(item.id); onClose() }}
                 >
                   <MIcon name="delete_outline" size="0.9rem" color="#ef4444" />
                   Discard draft
-                </button>
-
-                <button className={styles.btnPrimary} onClick={handleShareBreakdown}>
-                  <MIcon name="ios_share" size="0.9rem" color="var(--bg)" />
-                  Send breakdown to client
                 </button>
               </div>
             ) : (
