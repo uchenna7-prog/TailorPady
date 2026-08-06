@@ -138,6 +138,9 @@ function SideBar({ isOpen, onClose }) {
     if (path === '/customers' && currentStep?.id === 'goto-customers-nav') {
       completeStep('goto-customers-nav')
     }
+    if (path === '/gallery' && currentStep?.id === 'portfolio-goto-gallery') {
+      completeStep('portfolio-goto-gallery')
+    }
     navigate(path)
     onClose()
   }
@@ -209,6 +212,7 @@ function SideBar({ isOpen, onClose }) {
                         data-tour={
                           item.path === '/account'   ? 'sidebar-account-nav'   :
                           item.path === '/customers' ? 'sidebar-customers-nav' :
+                          item.path === '/gallery'   ? 'sidebar-gallery-nav'   :
                           undefined
                         }
                       >
