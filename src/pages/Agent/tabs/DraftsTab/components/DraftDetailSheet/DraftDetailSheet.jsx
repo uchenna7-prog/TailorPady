@@ -191,6 +191,12 @@ export function DraftDetailSheet({
     return null
   }
 
+  const draftDoc = item.type === 'invoice'
+    ? getInvoiceForDraft()
+    : item.type === 'receipt'
+      ? getReceiptForDraft()
+      : null
+
   async function shareText(text, fallbackMessage) {
     if (navigator.share) {
       try {
@@ -280,10 +286,52 @@ export function DraftDetailSheet({
 
           <div className={styles.sheetBody}>
             <SheetSection icon="preview" label={isDoc ? 'Breakdown preview' : 'Message'}>
-              <div className={styles.previewCard}>
-                <p className={styles.previewText}>{item.preview}</p>
+              <div className={styles.detailSectionCard}>
+                <p className={`${styles.detailNoteText} ${styles.detailNoteItalic}`}>{item.preview}</p>
               </div>
             </SheetSection>
+
+            {isDoc && draftDoc && (
+              <div className={styles.infoGrid}>
+                <div className={styles.infoGridCell}>
+                  <div className={styles.infoGridLabel}>Type</div>
+                  <div className={styles.infoGridValue}>{item.tag || item.type}</div>
+                </div>
+                <div className={styles.infoGridCell}>
+                  <div className={styles.infoGridLabel}>Total</div>
+                  <div className={styles.infoGridValue}>₦{Number(draftDoc.totalAmount || 0).toLocaleString()}</div>
+                </div>
+                {item.type === 'invoice' && draftDoc.due && (
+                  <div className={styles.infoGridCell}>
+                    <div className={styles.infoGridLabel}>Due</div>
+                    <div className={styles.infoGridValue}>{draftDoc.due}</div>
+                  </div>
+                )}
+                {item.type === 'receipt' && (
+                  <div className={styles.infoGridCell}>
+                    <div className={styles.infoGridLabel}>Balance</div>
+                    <div className={`${styles.infoGridValue} ${draftDoc.balance > 0 ? styles.overdueText : ''}`}>
+                      ₦{Number(draftDoc.balance || 0).toLocaleString()}
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {!isDoc && item.summary && (
+              <div className={styles.infoGrid}>
+                <div className={styles.infoGridCell}>
+                  <div className={styles.infoGridLabel}>Amount</div>
+                  <div className={styles.infoGridValue}>{item.summary.amount}</div>
+                </div>
+                {item.summary.due && (
+                  <div className={styles.infoGridCell}>
+                    <div className={styles.infoGridLabel}>Due</div>
+                    <div className={`${styles.infoGridValue} ${styles.overdueText}`}>{item.summary.due}</div>
+                  </div>
+                )}
+              </div>
+            )}
 
             {isDoc ? (
               <div className={styles.sheetActions}>
