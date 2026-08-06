@@ -12,9 +12,6 @@ import ConfirmSheet from '../../components/ConfirmSheet/ConfirmSheet'
 import Toast from '../../components/Toast/Toast'
 import styles from './Gallery.module.css'
 
-
-
-
 const TABS = [
   { id: 'completed_works', label: 'Portfolio',   icon: 'check_circle' },
   { id: 'designs',         label: 'Designs',     icon: 'content_cut'  },
@@ -28,8 +25,6 @@ const CATEGORY_MAP = {
 }
 
 const ALL_SUB_TAB = { id: '__all__', label: 'All' }
-
-
 
 export default function Gallery({ onMenuClick }) {
   const { customers } = useCustomers()
@@ -108,13 +103,11 @@ export default function Gallery({ onMenuClick }) {
 
   const handleSaveGarmentTypes = async (tabId, types) => {
     try {
-
       const survivingIds = new Set(types.map(t => t.id))
       const removedIds   = (GarmentTypes[tabId] || [])
         .map(t => t.id)
         .filter(id => !survivingIds.has(id))
 
-      // Delete every photo in this tab whose clothingType no longer exists
       if (removedIds.length > 0) {
         const orphans = photos.filter(
           p => p.category === tabId && removedIds.includes(p.clothingType)
@@ -125,7 +118,6 @@ export default function Gallery({ onMenuClick }) {
 
       await saveGarmentTypes(tabId, types)
 
-      // Reset sub-tab to __all__ if the active one was removed
       const ids = types.map(t => t.id)
       setActiveSubTabs(prev => ({
         ...prev,
@@ -166,16 +158,13 @@ export default function Gallery({ onMenuClick }) {
     }
   }
 
-  // Resolve image src — supports both legacy base64 (src) and Cloudinary (storageUrl)
   const resolveImgSrc = (photo) => photo.storageUrl || photo.src
 
   return (
     <div className={styles.page} ref={pageRef}>
       <Header title="Gallery" onMenuClick={onMenuClick} />
 
-      {/* STICKY HEADER — both bars in one container so they never gap */}
       <div className={styles.stickyHeader}>
-        {/* MAIN TABS + PILL */}
         <div className={styles.tabActionBar} ref={tabActionBarRef}>
           <div className={styles.tabs} ref={tabsRef}>
             {TABS.map(tab => (
@@ -206,9 +195,8 @@ export default function Gallery({ onMenuClick }) {
           )}
         </div>
 
-        {/* DRESS TYPE SUB-TABS */}
         <div className={styles.subTabsBar}>
-          <div className={styles.subTabsScroll} ref={subTabsRef}>
+          <div className={styles.subTabsScroll} ref={subTabsRef} data-tour="gallery-garment-subtabs">
             <button
               key="__all__"
               className={`${styles.subTab} ${activeSubTab === '__all__' ? styles.subTabActive : ''}`}
@@ -225,11 +213,11 @@ export default function Gallery({ onMenuClick }) {
                 {st.label}
               </button>
             ))}
-            {/* Edit button — lives as last item in the scroll row */}
             <button
               className={styles.subTabEditBtn}
               onClick={() => setManageTabId(activeTab)}
               title="Edit garment types"
+              data-tour="gallery-garment-edit-btn"
             >
               <span className="mi-outlined" style={{ fontSize: '1.1rem' }}>edit</span>
             </button>
@@ -237,7 +225,6 @@ export default function Gallery({ onMenuClick }) {
         </div>
       </div>
 
-      {/* SEARCH BAR */}
       <div className={styles.searchBarWrap}>
         <div className={styles.gallerySearchWrap}>
           <span className="mi" style={{ fontSize: '1.1rem', color: 'var(--text3)', flexShrink: 0 }}>search</span>
@@ -256,7 +243,6 @@ export default function Gallery({ onMenuClick }) {
         </div>
       </div>
 
-      {/* GRID */}
       <div className={styles.gridArea}>
         {loading ? (
           <div className={styles.emptyState}>
@@ -300,7 +286,7 @@ export default function Gallery({ onMenuClick }) {
         )}
       </div>
 
-      <button className={styles.fab} onClick={() => setModalOpen(true)}>
+      <button className={styles.fab} onClick={() => setModalOpen(true)} data-tour="gallery-add-photo-fab">
         <span className="mi">add</span>
       </button>
 
@@ -340,7 +326,6 @@ export default function Gallery({ onMenuClick }) {
         onCancel={() => setConfirmDel(null)}
       />
 
-      {/* ── Share Portfolio Modal ── */}
       <SharePortfolioModal
         isOpen={shareOpen}
         onClose={() => setShareOpen(false)}
