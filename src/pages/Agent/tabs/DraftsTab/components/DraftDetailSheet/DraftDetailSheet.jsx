@@ -1,13 +1,33 @@
 import { useState } from "react"
 import { resolveCustomerName } from "../../../../utils"
 import { MIcon } from "../../../../components/MIcon/MIcon"
+import { SheetBase } from "../../../../components/SheetBase/SheetBase"
 import { SheetHeader } from "../../../../components/SheetHeader/SheetHeader"
-import { SheetHero } from "../../../../components/SheetHero/SheetHero"
 import { SheetSection } from "../../../../components/SheetSection/SheetSection"
 import { haptic, buildBrandSnapshot, buildInvoiceMessage, buildReceiptMessage } from "../../../../utils"
 import InvoiceViewer from "../../../../../../components/TemplateViewers/InvoiceViewer/InvoiceViewer"
 import ReceiptViewer from "../../../../../../components/TemplateViewers/ReceiptViewer/ReceiptViewer"
 import styles from "./DraftDetailSheet.module.css"
+
+const TAG_COLORS = {
+  invoice:    { color: '#818cf8', bg: 'rgba(99,102,241,0.12)',  border: 'rgba(99,102,241,0.4)'  },
+  receipt:    { color: '#22c55e', bg: 'rgba(34,197,94,0.12)',   border: 'rgba(34,197,94,0.4)'   },
+  reminder:   { color: '#eab308', bg: 'rgba(234,179,8,0.12)',   border: 'rgba(234,179,8,0.4)'   },
+  overdue:    { color: '#ef4444', bg: 'rgba(239,68,68,0.12)',   border: 'rgba(239,68,68,0.4)'   },
+  orderready: { color: '#0ea5e9', bg: 'rgba(14,165,233,0.12)',  border: 'rgba(14,165,233,0.4)'  },
+  birthday:   { color: '#a855f7', bg: 'rgba(168,85,247,0.12)',  border: 'rgba(168,85,247,0.4)'  },
+  followup:   { color: '#fb923c', bg: 'rgba(251,146,60,0.12)',  border: 'rgba(251,146,60,0.4)'  },
+}
+
+const DRAFT_STATUS = {
+  pending:  { label: 'Pending Review', color: '#eab308', bg: 'rgba(234,179,8,0.12)', border: 'rgba(234,179,8,0.4)', icon: 'schedule' },
+  approved: { label: 'Approved',       color: '#22c55e', bg: 'rgba(34,197,94,0.12)', border: 'rgba(34,197,94,0.4)', icon: 'check_circle' },
+}
+
+function getInitials(name) {
+  if (!name) return ''
+  return name.trim().split(/\s+/).slice(0, 2).map(p => p[0]?.toUpperCase() || '').join('')
+}
 
 function getOrderIdFromInvoiceDraftId(draftId) {
   return draftId?.replace('invoice-', '') || null
@@ -47,6 +67,8 @@ export function DraftDetailSheet({
   const isDoc = item.type === 'invoice' || item.type === 'receipt'
   const isReceipt = item.type === 'receipt'
   const customerName = resolveCustomerName(item, allOrders, allInvoices, allPayments, customers)
+  const tagMeta = TAG_COLORS[item.type] || TAG_COLORS.reminder
+  const statusMeta = DRAFT_STATUS[item.status] || DRAFT_STATUS.pending
 
   function getInvoiceForDraft() {
     const orderId = getOrderIdFromInvoiceDraftId(item.id)
@@ -197,6 +219,10 @@ export function DraftDetailSheet({
       ? getReceiptForDraft()
       : null
 
+  const linkedOrderName = isDoc
+    ? draftDoc?.orderDesc
+    : item.summary?.name
+
   async function shareText(text, fallbackMessage) {
     if (navigator.share) {
       try {
@@ -278,25 +304,27 @@ export function DraftDetailSheet({
 
   return (
     <>
-      <div className={styles.sheetOverlay} onClick={e => e.target === e.currentTarget && !confirmSave && onClose()}>
-        <div className={styles.sheetPanel}>
-          <div className={styles.sheetHandle} />
-          <SheetHeader title={sheetTitle} onClose={onClose} />
-          <SheetHero item={item} customerName={customerName} />
+      <SheetBase onClose={onClose}>
+        <SheetHeader title={sheetTitle} onClose={onClose} />
 
-          <div className={styles.sheetBody}>
-            <SheetSection icon="preview" label={isDoc ? 'Breakdown preview' : 'Message'}>
-              <div className={styles.detailSectionCard}>
-                <p className={`${styles.detailNoteText} ${styles.detailNoteItalic}`}>{item.preview}</p>
-              </div>
-            </SheetSection>
+        <div className={styles.sheetBody}>
+          <span className={styles.tagChip} style={{ background: tagMeta.bg, borderColor: tagMeta.border, color: tagMeta.color }}>
+            {item.tag}
+          </span>
 
-            {isDoc && draftDoc && (
-              <div className={styles.infoGrid}>
-                <div className={styles.infoGridCell}>
-                  <div className={styles.infoGridLabel}>Type</div>
-                  <div className={styles.infoGridValue}>{item.tag || item.type}</div>
-                </div>
+          <div className={styles.detailTitle}>{item.title}</div>
+
+          <div className={styles.statusRow}>
+            <div className={styles.chipLabel}>Status</div>
+            <div className={styles.statusChip} style={{ background: statusMeta.bg, borderColor: statusMeta.border }}>
+              <MIcon name={statusMeta.icon} size="0.9rem" color={statusMeta.color} />
+              <span style={{ color: statusMeta.color }}>{statusMeta.label}</span>
+            </div>
+          </div>
+
+          <div className={styles.infoGrid}>
+            {isDoc && draftDoc ? (
+              <>
                 <div className={styles.infoGridCell}>
                   <div className={styles.infoGridLabel}>Total</div>
                   <div className={styles.infoGridValue}>₦{Number(draftDoc.totalAmount || 0).toLocaleString()}</div>
@@ -315,11 +343,9 @@ export function DraftDetailSheet({
                     </div>
                   </div>
                 )}
-              </div>
-            )}
-
-            {!isDoc && item.summary && (
-              <div className={styles.infoGrid}>
+              </>
+            ) : item.summary ? (
+              <>
                 <div className={styles.infoGridCell}>
                   <div className={styles.infoGridLabel}>Amount</div>
                   <div className={styles.infoGridValue}>{item.summary.amount}</div>
@@ -330,53 +356,89 @@ export function DraftDetailSheet({
                     <div className={`${styles.infoGridValue} ${styles.overdueText}`}>{item.summary.due}</div>
                   </div>
                 )}
-              </div>
-            )}
-
-            {isDoc ? (
-              <div className={styles.sheetActions}>
-                <div className={styles.btnRow}>
-                  <button className={styles.btnSecondary} onClick={handleViewDoc}>
-                    <MIcon name="open_in_new" size="0.82rem" />
-                    View {item.type}
-                  </button>
-                  <button className={styles.btnGreen} onClick={() => { haptic('light'); setConfirmSave(true) }}>
-                    <MIcon name="add_circle" size="0.82rem" color="#22c55e" />
-                    Save {item.type}
-                  </button>
-                </div>
-
-                <button className={styles.btnPrimary} onClick={handleShareBreakdown}>
-                  <MIcon name="ios_share" size="0.9rem" color="var(--bg)" />
-                  Send breakdown to client
-                </button>
-
-                <button
-                  className={styles.btnGhost}
-                  onClick={() => { haptic('light'); onDiscard(item.id); onClose() }}
-                >
-                  <MIcon name="delete_outline" size="0.9rem" color="#ef4444" />
-                  Discard draft
-                </button>
-              </div>
-            ) : (
-              <div className={styles.sheetActions}>
-                <button className={styles.btnPrimary} onClick={handleShareMessage}>
-                  <MIcon name="ios_share" size="0.9rem" color="var(--bg)" />
-                  Share message
-                </button>
-                <button
-                  className={styles.btnGhost}
-                  onClick={() => { haptic('light'); onDiscard(item.id); onClose() }}
-                >
-                  <MIcon name="delete_outline" size="0.9rem" color="#ef4444" />
-                  Discard draft
-                </button>
-              </div>
-            )}
+              </>
+            ) : null}
+            <div className={styles.infoGridCell}>
+              <div className={styles.infoGridLabel}>Received</div>
+              <div className={styles.infoGridValue}>{item.time}</div>
+            </div>
           </div>
+
+          {customerName && (
+            <SheetSection icon="person" label="Customer">
+              <div className={styles.detailSectionCard}>
+                <div className={styles.linkedRow}>
+                  <div className={styles.linkedAvatar}>
+                    <span className={styles.linkedAvatarInitials}>{getInitials(customerName)}</span>
+                  </div>
+                  <span className={styles.linkedName}>{customerName}</span>
+                </div>
+              </div>
+            </SheetSection>
+          )}
+
+          {linkedOrderName && (
+            <SheetSection icon="shopping_bag" label="Linked Order">
+              <div className={styles.detailSectionCard}>
+                <div className={styles.linkedRow}>
+                  <div className={styles.iconBadge}>
+                    <MIcon name="checkroom" size="1rem" color="var(--text2)" />
+                  </div>
+                  <span className={styles.linkedName}>{linkedOrderName}</span>
+                </div>
+              </div>
+            </SheetSection>
+          )}
+
+          <SheetSection icon="preview" label={isDoc ? 'Breakdown preview' : 'Message'}>
+            <div className={styles.detailSectionCard}>
+              <p className={`${styles.detailNoteText} ${styles.detailNoteItalic}`}>{item.preview}</p>
+            </div>
+          </SheetSection>
+
+          {isDoc ? (
+            <div className={styles.sheetActions}>
+              <div className={styles.btnRow}>
+                <button className={styles.btnSecondary} onClick={handleViewDoc}>
+                  <MIcon name="open_in_new" size="0.82rem" />
+                  View {item.type}
+                </button>
+                <button className={styles.btnGreen} onClick={() => { haptic('light'); setConfirmSave(true) }}>
+                  <MIcon name="add_circle" size="0.82rem" color="#22c55e" />
+                  Save {item.type}
+                </button>
+              </div>
+
+              <button className={styles.btnPrimary} onClick={handleShareBreakdown}>
+                <MIcon name="ios_share" size="0.9rem" color="var(--bg)" />
+                Send breakdown to client
+              </button>
+
+              <button
+                className={styles.btnGhost}
+                onClick={() => { haptic('light'); onDiscard(item.id); onClose() }}
+              >
+                <MIcon name="delete_outline" size="0.9rem" color="#ef4444" />
+                Discard draft
+              </button>
+            </div>
+          ) : (
+            <div className={styles.sheetActions}>
+              <button className={styles.btnPrimary} onClick={handleShareMessage}>
+                <MIcon name="ios_share" size="0.9rem" color="var(--bg)" />
+                Share message
+              </button>
+              <button
+                className={styles.btnGhost}
+                onClick={() => { haptic('light'); onDiscard(item.id); onClose() }}
+              >
+                <MIcon name="delete_outline" size="0.9rem" color="#ef4444" />
+                Discard draft
+              </button>
+            </div>
+          )}
         </div>
-      </div>
+      </SheetBase>
 
       {confirmSave && (
         <div className={styles.confirmOverlay} onClick={() => setConfirmSave(false)}>
