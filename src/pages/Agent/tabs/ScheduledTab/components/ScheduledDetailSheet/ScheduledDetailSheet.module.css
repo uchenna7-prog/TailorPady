@@ -8,14 +8,14 @@
   gap: 12px;
 }
 
-.detailCard {
+.detailSectionCard {
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: 14px;
   padding: 14px;
 }
 
-.detailText {
+.detailNoteText {
   font-size: 0.85rem;
   color: var(--text2);
   line-height: 1.65;
@@ -23,45 +23,37 @@
   white-space: pre-wrap;
 }
 
-.sheetMeta {
+.infoGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.infoGridCellFull {
+  grid-column: 1 / -1;
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: 14px;
-  overflow: hidden;
-}
-
-.sheetMetaRow {
-  display: flex;
-  align-items: center;
-  gap: 10px;
   padding: 12px 14px;
 }
 
-.sheetMetaIcon {
-  width: 26px;
-  height: 26px;
-  border-radius: 8px;
-  background: var(--surface2);
-  border: 1px solid var(--border2);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-}
-
-.sheetMetaLabel {
-  font-size: 0.62rem;
+.infoGridLabel {
+  font-size: 0.58rem;
   font-weight: 800;
   color: var(--text3);
   text-transform: uppercase;
   letter-spacing: 0.5px;
-  flex: 1;
+  margin-bottom: 4px;
 }
 
-.sheetMetaValue {
-  font-size: 0.82rem;
+.infoGridValue {
+  font-size: 0.92rem;
+  font-weight: 800;
+  color: var(--text);
+}
+
+.accentText {
   color: var(--accent);
-  font-weight: 700;
 }
 
 .btnDanger {
