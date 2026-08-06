@@ -77,41 +77,33 @@ export function ActivityDetailSheet({ item, onClose, allOrders, allInvoices, all
 
         {customerName && (
           <SheetSection icon="person" label="Customer">
-            <div className={styles.detailSectionCard}>
-              <div className={styles.linkedRow}>
-                <div className={styles.linkedAvatar}>
-                  <span className={styles.linkedAvatarInitials}>{getInitials(customerName)}</span>
-                </div>
-                <span className={styles.linkedName}>{customerName}</span>
+            <div className={styles.linkedRow}>
+              <div className={styles.linkedAvatar}>
+                <span className={styles.linkedAvatarInitials}>{getInitials(customerName)}</span>
               </div>
+              <span className={styles.linkedName}>{customerName}</span>
             </div>
           </SheetSection>
         )}
 
         {linkedOrderName && (
           <SheetSection icon="shopping_bag" label="Linked Order">
-            <div className={styles.detailSectionCard}>
-              <div className={styles.linkedRow}>
-                <div className={styles.iconBadge}>
-                  <MIcon name={item.summary.icon || 'checkroom'} size="1rem" color="var(--text2)" />
-                </div>
-                <span className={styles.linkedName}>{linkedOrderName}</span>
+            <div className={styles.linkedRow}>
+              <div className={styles.iconBadge}>
+                <MIcon name={item.summary.icon || 'checkroom'} size="1rem" color="var(--text2)" />
               </div>
+              <span className={styles.linkedName}>{linkedOrderName}</span>
             </div>
           </SheetSection>
         )}
 
         <SheetSection icon="info" label="What happened">
-          <div className={styles.detailSectionCard}>
-            <p className={styles.detailNoteText}>{whatHappened}</p>
-          </div>
+          <p className={styles.detailNoteText}>{whatHappened}</p>
         </SheetSection>
 
         {item.reason && (
           <SheetSection icon="psychology" label="Why the assistant did this">
-            <div className={styles.detailSectionCard}>
-              <p className={styles.detailNoteText}>{item.reason}</p>
-            </div>
+            <p className={styles.detailNoteText}>{item.reason}</p>
           </SheetSection>
         )}
       </div>
