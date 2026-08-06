@@ -24,18 +24,21 @@ export function ActivityDetailSheet({ item, onClose, allOrders, allInvoices, all
       <div className={styles.sheetBody}>
         <SheetSection icon="info" label="What happened">
           {item.summary ? (
-            <div className={styles.invoiceCard}>
-              <div className={styles.invoiceCardLeft}>
-                <div className={styles.invoiceOrderRow}>
-                  <MIcon name={item.summary.icon} size="0.95rem" color="var(--text2)" />
-                  <span className={styles.invoiceOrderName}>{item.summary.name}</span>
+            <div className={styles.summaryCard}>
+              <div className={styles.summaryCardHeader}>
+                <div className={styles.summaryIconBadge}>
+                  <MIcon name={item.summary.icon} size="1rem" color="var(--text2)" />
                 </div>
-                <p className={styles.invoiceAmount}>{item.summary.amount}</p>
-                {item.summary.due && (
-                  <p className={styles.invoiceDue}>Due {item.summary.due}</p>
-                )}
+                <span className={styles.summaryName}>{item.summary.name}</span>
+                <span className={styles.summaryTime}>{item.time}</span>
               </div>
-              <span className={styles.invoiceTime}>{item.time}</span>
+              <div className={styles.summaryAmount}>{item.summary.amount}</div>
+              {item.summary.due && (
+                <div className={styles.summaryDue}>
+                  <MIcon name="schedule" size="0.78rem" color="#ef4444" />
+                  Due {item.summary.due}
+                </div>
+              )}
             </div>
           ) : (
             <p className={styles.sectionText}>{item.desc}</p>
@@ -44,7 +47,9 @@ export function ActivityDetailSheet({ item, onClose, allOrders, allInvoices, all
 
         {item.reason && (
           <SheetSection icon="psychology" label="Why the assistant did this">
-            <p className={styles.sectionText}>{item.reason}</p>
+            <div className={styles.reasonCard}>
+              <p className={styles.reasonText}>{item.reason}</p>
+            </div>
           </SheetSection>
         )}
       </div>
