@@ -308,10 +308,6 @@ export function DraftDetailSheet({
         <SheetHeader title={sheetTitle} onClose={onClose} />
 
         <div className={styles.sheetBody}>
-          <span className={styles.tagChip} style={{ background: tagMeta.bg, borderColor: tagMeta.border, color: tagMeta.color }}>
-            {item.tag}
-          </span>
-
           <div className={styles.detailTitle}>{item.title}</div>
 
           <div className={styles.statusRow}>
@@ -323,21 +319,25 @@ export function DraftDetailSheet({
           </div>
 
           <div className={styles.infoGrid}>
+            <div className={styles.infoGridCell}>
+              <div className={styles.infoGridLabel}>Type</div>
+              <div className={styles.infoGridValue} style={{ color: tagMeta.color }}>{item.tag}</div>
+            </div>
             {isDoc && draftDoc ? (
               <>
                 <div className={styles.infoGridCell}>
-                  <div className={styles.infoGridLabel}>Total</div>
+                  <div className={styles.infoGridLabel}>Order Total</div>
                   <div className={styles.infoGridValue}>₦{Number(draftDoc.totalAmount || 0).toLocaleString()}</div>
                 </div>
                 {item.type === 'invoice' && draftDoc.due && (
                   <div className={styles.infoGridCell}>
-                    <div className={styles.infoGridLabel}>Due</div>
+                    <div className={styles.infoGridLabel}>Order Due</div>
                     <div className={styles.infoGridValue}>{draftDoc.due}</div>
                   </div>
                 )}
                 {item.type === 'receipt' && (
                   <div className={styles.infoGridCell}>
-                    <div className={styles.infoGridLabel}>Balance</div>
+                    <div className={styles.infoGridLabel}>Balance Due</div>
                     <div className={`${styles.infoGridValue} ${draftDoc.balance > 0 ? styles.overdueText : ''}`}>
                       ₦{Number(draftDoc.balance || 0).toLocaleString()}
                     </div>
@@ -347,19 +347,19 @@ export function DraftDetailSheet({
             ) : item.summary ? (
               <>
                 <div className={styles.infoGridCell}>
-                  <div className={styles.infoGridLabel}>Amount</div>
+                  <div className={styles.infoGridLabel}>Order Total</div>
                   <div className={styles.infoGridValue}>{item.summary.amount}</div>
                 </div>
                 {item.summary.due && (
                   <div className={styles.infoGridCell}>
-                    <div className={styles.infoGridLabel}>Due</div>
+                    <div className={styles.infoGridLabel}>Order Due</div>
                     <div className={`${styles.infoGridValue} ${styles.overdueText}`}>{item.summary.due}</div>
                   </div>
                 )}
               </>
             ) : null}
             <div className={styles.infoGridCell}>
-              <div className={styles.infoGridLabel}>Received</div>
+              <div className={styles.infoGridLabel}>Time</div>
               <div className={styles.infoGridValue}>{item.time}</div>
             </div>
           </div>
