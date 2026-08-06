@@ -1,4 +1,4 @@
-import { TOUR_CATALOG } from '../../../datas/tourCatalog'
+import { TOUR_CATALOG } from '../../../../datas/tourCatalog'
 import styles from './TourPickerSheet.module.css'
 
 export function TourPickerSheet({ open, hasCompletedTour, onSelect, onClose }) {
