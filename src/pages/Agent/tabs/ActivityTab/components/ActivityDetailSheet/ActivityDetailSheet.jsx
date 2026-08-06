@@ -38,10 +38,6 @@ export function ActivityDetailSheet({ item, onClose, allOrders, allInvoices, all
       <SheetHeader title="Activity" onClose={onClose} />
 
       <div className={styles.sheetBody}>
-        <span className={styles.tagChip} style={{ background: tagMeta.bg, borderColor: tagMeta.border, color: tagMeta.color }}>
-          {item.tag}
-        </span>
-
         <div className={styles.detailTitle}>{item.title}</div>
 
         {item.status && (
@@ -55,15 +51,19 @@ export function ActivityDetailSheet({ item, onClose, allOrders, allInvoices, all
         )}
 
         <div className={styles.infoGrid}>
+          <div className={styles.infoGridCell}>
+            <div className={styles.infoGridLabel}>Type</div>
+            <div className={styles.infoGridValue} style={{ color: tagMeta.color }}>{item.tag}</div>
+          </div>
           {item.summary ? (
             <>
               <div className={styles.infoGridCell}>
-                <div className={styles.infoGridLabel}>Amount</div>
+                <div className={styles.infoGridLabel}>Order Total</div>
                 <div className={styles.infoGridValue}>{item.summary.amount}</div>
               </div>
               {item.summary.due && (
                 <div className={styles.infoGridCell}>
-                  <div className={styles.infoGridLabel}>Due</div>
+                  <div className={styles.infoGridLabel}>Order Due</div>
                   <div className={`${styles.infoGridValue} ${styles.overdueText}`}>{item.summary.due}</div>
                 </div>
               )}
