@@ -24,31 +24,38 @@ export function ActivityDetailSheet({ item, onClose, allOrders, allInvoices, all
       <div className={styles.sheetBody}>
         <SheetSection icon="info" label="What happened">
           {item.summary ? (
-            <div className={styles.summaryCard}>
-              <div className={styles.summaryCardHeader}>
-                <div className={styles.summaryIconBadge}>
+            <div className={styles.detailSectionCard}>
+              <div className={styles.cardHeaderRow}>
+                <div className={styles.iconBadge}>
                   <MIcon name={item.summary.icon} size="1rem" color="var(--text2)" />
                 </div>
-                <span className={styles.summaryName}>{item.summary.name}</span>
-                <span className={styles.summaryTime}>{item.time}</span>
+                <span className={styles.cardHeaderName}>{item.summary.name}</span>
               </div>
-              <div className={styles.summaryAmount}>{item.summary.amount}</div>
-              {item.summary.due && (
-                <div className={styles.summaryDue}>
-                  <MIcon name="schedule" size="0.78rem" color="#ef4444" />
-                  Due {item.summary.due}
+
+              <div className={styles.infoGrid}>
+                <div className={styles.infoGridCell}>
+                  <div className={styles.infoGridLabel}>Amount</div>
+                  <div className={styles.infoGridValue}>{item.summary.amount}</div>
                 </div>
-              )}
+                {item.summary.due && (
+                  <div className={styles.infoGridCell}>
+                    <div className={styles.infoGridLabel}>Due</div>
+                    <div className={`${styles.infoGridValue} ${styles.overdueText}`}>{item.summary.due}</div>
+                  </div>
+                )}
+              </div>
             </div>
           ) : (
-            <p className={styles.sectionText}>{item.desc}</p>
+            <div className={styles.detailSectionCard}>
+              <p className={styles.detailNoteText}>{item.desc}</p>
+            </div>
           )}
         </SheetSection>
 
         {item.reason && (
           <SheetSection icon="psychology" label="Why the assistant did this">
-            <div className={styles.reasonCard}>
-              <p className={styles.reasonText}>{item.reason}</p>
+            <div className={styles.detailSectionCard}>
+              <p className={styles.detailNoteText}>{item.reason}</p>
             </div>
           </SheetSection>
         )}
