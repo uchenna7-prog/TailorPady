@@ -1,6 +1,3 @@
-
-/* ── Sheet body ────────────────────────────────────────────── */
-
 .sheetBody {
   flex: 1;
   overflow-y: auto;
@@ -8,10 +5,23 @@
   -webkit-overflow-scrolling: touch;
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 12px;
 }
 
-/* ── Sheet meta row (time, date) ───────────────────────────── */
+.detailCard {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 14px;
+}
+
+.detailText {
+  font-size: 0.85rem;
+  color: var(--text2);
+  line-height: 1.65;
+  margin: 0;
+  white-space: pre-wrap;
+}
 
 .sheetMeta {
   background: var(--surface);
@@ -23,37 +33,36 @@
 .sheetMetaRow {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
   padding: 12px 14px;
 }
 
+.sheetMetaIcon {
+  width: 26px;
+  height: 26px;
+  border-radius: 8px;
+  background: var(--surface2);
+  border: 1px solid var(--border2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
 .sheetMetaLabel {
-  font-size: 0.78rem;
+  font-size: 0.62rem;
+  font-weight: 800;
   color: var(--text3);
-  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
   flex: 1;
 }
 
 .sheetMetaValue {
-  font-size: 0.78rem;
-  color: var(--text2);
-  font-weight: 600;
-}
-
-.sheetMetaAccent {
+  font-size: 0.82rem;
   color: var(--accent);
+  font-weight: 700;
 }
-
-.sectionText {
-  font-size: 0.85rem;
-  color: var(--text2);
-  line-height: 1.7;
-  margin: 0;
-  padding: 12px 14px;
-  white-space: pre-wrap;
-}
-
-
 
 .btnDanger {
   display: flex;
@@ -61,19 +70,18 @@
   justify-content: center;
   gap: 7px;
   width: 100%;
-  background: rgba(239, 68, 68, 0.06);
-  border: 1px solid rgba(239, 68, 68, 0.22);
+  background: rgba(239, 68, 68, 0.08);
+  border: 1px solid rgba(239, 68, 68, 0.3);
   border-radius: 12px;
-  padding: 14px 16px;
+  padding: 13px 16px;
   font-family: inherit;
-  font-size: 0.85rem;
+  font-size: 0.84rem;
   font-weight: 700;
   color: #ef4444;
   cursor: pointer;
-  transition: background 0.12s, border-color 0.12s;
+  transition: opacity 0.14s;
 }
 
 .btnDanger:active {
-  background: rgba(239, 68, 68, 0.12);
-  border-color: rgba(239, 68, 68, 0.42);
+  opacity: 0.75;
 }
