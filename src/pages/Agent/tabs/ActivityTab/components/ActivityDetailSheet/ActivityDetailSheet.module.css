@@ -5,63 +5,95 @@
   -webkit-overflow-scrolling: touch;
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 12px;
 }
 
-.invoiceCard {
-  display: flex;
-  align-items: flex-end;
-  justify-content: space-between;
-  gap: 12px;
+.summaryCard {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
   padding: 14px;
 }
 
-.invoiceCardLeft {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-
-.invoiceOrderRow {
+.summaryCardHeader {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 8px;
 }
 
-.invoiceOrderName {
-  font-size: 0.95rem;
+.summaryIconBadge {
+  width: 26px;
+  height: 26px;
+  border-radius: 8px;
+  background: var(--surface2);
+  border: 1px solid var(--border2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.summaryName {
+  flex: 1;
+  font-size: 0.88rem;
   font-weight: 700;
   color: var(--text);
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
-.invoiceAmount {
+.summaryTime {
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--text3);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.summaryAmount {
   font-size: 1.3rem;
   font-weight: 800;
   color: var(--text);
-  margin: 2px 0 0;
   letter-spacing: -0.3px;
+  font-variant-numeric: tabular-nums;
+  margin-top: 10px;
 }
 
-.invoiceDue {
-  font-size: 0.78rem;
-  font-weight: 600;
-  color: var(--danger, #e5484d);
+.summaryDue {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  margin-top: 6px;
+  font-size: 0.76rem;
+  font-weight: 700;
+  color: #ef4444;
+}
+
+.reasonCard {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 14px;
+}
+
+.reasonText {
+  font-size: 0.85rem;
+  color: var(--text2);
+  line-height: 1.65;
   margin: 0;
-}
-
-.invoiceTime {
-  font-size: 0.75rem;
-  color: var(--text3);
-  font-weight: 500;
-  white-space: nowrap;
-  align-self: flex-end;
+  white-space: pre-wrap;
 }
 
 .sectionText {
   font-size: 0.85rem;
   color: var(--text2);
-  line-height: 1.7;
+  line-height: 1.65;
   margin: 0;
-  padding: 12px 14px;
+  padding: 14px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
   white-space: pre-wrap;
 }
