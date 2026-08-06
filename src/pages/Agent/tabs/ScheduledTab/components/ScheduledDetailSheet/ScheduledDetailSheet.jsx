@@ -17,18 +17,15 @@ export function ScheduledDetailSheet({ item, onClose, onCancel, allOrders, allIn
 
       <div className={styles.sheetBody}>
         <SheetSection icon="event_note" label="What will happen">
-          <div className={styles.detailCard}>
-            <p className={styles.detailText}>{item.detail || item.desc}</p>
+          <div className={styles.detailSectionCard}>
+            <p className={styles.detailNoteText}>{item.detail || item.desc}</p>
           </div>
         </SheetSection>
 
-        <div className={styles.sheetMeta}>
-          <div className={styles.sheetMetaRow}>
-            <div className={styles.sheetMetaIcon}>
-              <MIcon name="schedule" size="0.85rem" color="var(--accent)" />
-            </div>
-            <span className={styles.sheetMetaLabel}>Scheduled for</span>
-            <span className={styles.sheetMetaValue}>{item.when}</span>
+        <div className={styles.infoGrid}>
+          <div className={styles.infoGridCellFull}>
+            <div className={styles.infoGridLabel}>Scheduled for</div>
+            <div className={`${styles.infoGridValue} ${styles.accentText}`}>{item.when}</div>
           </div>
         </div>
 
