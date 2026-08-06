@@ -143,6 +143,9 @@ function Header({
     if (currentStep?.id === 'highlight-hamburger') {
       goToStep('highlight-sidebar-account')
     }
+    if (currentStep?.id === 'portfolio-open-menu') {
+      completeStep('portfolio-open-menu')
+    }
     onMenuClick?.()
   }
 
