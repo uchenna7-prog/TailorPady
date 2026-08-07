@@ -6,7 +6,7 @@ import { ScheduledRow } from './components/ScheduledRow/ScheduledRow'
 import { groupByDate } from '../../utils'
 import styles from './ScheduledTab.module.css'
 
-export function ScheduledTab({ items, allOrders, allInvoices, allPayments, customers, onCancel }) {
+export function ScheduledTab({ items, allOrders, allInvoices, allPayments, customers, onCancel, onGoToCustomer }) {
   const [selected, setSelected] = useState(null)
 
   if (!items?.length) return (
@@ -52,6 +52,7 @@ export function ScheduledTab({ items, allOrders, allInvoices, allPayments, custo
           allInvoices={allInvoices}
           allPayments={allPayments}
           customers={customers}
+          onGoToCustomer={onGoToCustomer}
         />
       )}
     </>
