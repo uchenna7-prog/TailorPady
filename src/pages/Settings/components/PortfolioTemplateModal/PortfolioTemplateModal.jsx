@@ -41,7 +41,7 @@ export function PortfolioTemplateModal({ currentTemplate, slug, onClose, onSelec
   const [selected, setSelected] = useState(currentTemplate)
   const [previewTemplate, setPreviewTemplate] = useState(null)
   const [gender, setGender] = useState('male')
-  const { currentStep, completeStep } = useTour()
+  const { currentStep, completeStep, goToStep } = useTour()
 
   const hasChanges = selected !== currentTemplate
   const resolvedSlug = slug || (import.meta.env.DEV ? DEV_SLUG : null)
@@ -63,6 +63,9 @@ export function PortfolioTemplateModal({ currentTemplate, slug, onClose, onSelec
     onSelect(selected)
     if (currentStep?.id === 'portfolio-template-select-save') {
       completeStep('portfolio-template-select-save')
+    }
+    if (currentStep?.id === 'portfolio-template-select-save-2') {
+      goToStep('portfolio-done')
     }
     onClose()
   }
