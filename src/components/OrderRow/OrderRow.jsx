@@ -57,7 +57,7 @@ export function OrderRow({ order, isLast, onTap }) {
         >
           {statusLabel}
         </span>
-        {dueDateRaw && (
+        {dueDateRaw && !['completed', 'delivered', 'cancelled'].includes(order.status) && (
           <div className={styles.orderRowDueRight}>
             Due {formatDateShort(dueDateRaw)}
           </div>
