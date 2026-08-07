@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import Header from '../../../../components/Header/Header'
+import { useTour } from '../../../../contexts/TourContext'
 import { PortfolioTemplatePreview } from './PortfolioTemplatePreview/PortfolioTemplatePreview'
 import styles from './PortfolioTemplateModal.module.css'
 import template1Male from '../../../../assets/portfolioScreenshots/template1Male.png'
@@ -40,6 +41,7 @@ export function PortfolioTemplateModal({ currentTemplate, slug, onClose, onSelec
   const [selected, setSelected] = useState(currentTemplate)
   const [previewTemplate, setPreviewTemplate] = useState(null)
   const [gender, setGender] = useState('male')
+  const { currentStep, completeStep } = useTour()
 
   const hasChanges = selected !== currentTemplate
   const resolvedSlug = slug || (import.meta.env.DEV ? DEV_SLUG : null)
@@ -59,6 +61,9 @@ export function PortfolioTemplateModal({ currentTemplate, slug, onClose, onSelec
 
   const handleSavePress = () => {
     onSelect(selected)
+    if (currentStep?.id === 'portfolio-template-select-save') {
+      completeStep('portfolio-template-select-save')
+    }
     onClose()
   }
 
