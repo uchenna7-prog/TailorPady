@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useGeneralSettings } from '../../../../contexts/GeneralSettingsContext'
+import { useTour } from '../../../../contexts/TourContext'
 import { FullModal } from '../../../../components/FullModal/FullModal'
 import { FieldGroup } from '../FieldGroup/FieldGroup'
 import { Field } from '../Field/Field'
@@ -183,6 +184,7 @@ function MessagingChannelRow({ icon, label, description }) {
 
 export function AgentSettingsModal({ onBack, showToast }) {
   const { generalSettings, updateManyGeneralSettings } = useGeneralSettings()
+  const { currentStep, completeStep } = useTour()
 
   const [local, setLocal] = useState({
     agentEnabled:               generalSettings.agentEnabled,
@@ -210,6 +212,9 @@ export function AgentSettingsModal({ onBack, showToast }) {
   function handleSave() {
     updateManyGeneralSettings(local)
     showToast('Agent settings saved')
+    if (currentStep?.id === 'ai-configure-save') {
+      completeStep('ai-configure-save')
+    }
     onBack()
   }
 
