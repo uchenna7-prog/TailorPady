@@ -7,7 +7,7 @@ import { DailyBriefCard } from './components/DailyBriefCard/DailyBriefCard'
 import { groupByDate } from '../../utils'
 import styles from './ActivityTab.module.css'
 
-export function ActivityTab({ user, drafts, approvedDrafts, dailyBrief, allOrders, allInvoices, allPayments, customers }) {
+export function ActivityTab({ user, drafts, approvedDrafts, dailyBrief, allOrders, allInvoices, allPayments, customers, onGoToCustomer }) {
   const [selected, setSelected] = useState(null)
 
   const isEmpty = !drafts?.length && !dailyBrief
@@ -58,6 +58,7 @@ export function ActivityTab({ user, drafts, approvedDrafts, dailyBrief, allOrder
           allInvoices={allInvoices}
           allPayments={allPayments}
           customers={customers}
+          onGoToCustomer={onGoToCustomer}
         />
       )}
     </>
