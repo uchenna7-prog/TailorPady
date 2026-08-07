@@ -205,11 +205,6 @@ export default function OnboardingTour() {
     const scrollY = window.scrollY
     lockScrollYRef.current = scrollY
     const { body } = document
-    const prevPosition = body.style.position
-    const prevTop = body.style.top
-    const prevWidth = body.style.width
-    const prevOverflow = body.style.overflow
-    const prevTransition = body.style.transition
 
     body.style.position = 'fixed'
     body.style.top = `-${scrollY}px`
@@ -218,11 +213,11 @@ export default function OnboardingTour() {
     body.style.transition = 'top 0.3s ease'
 
     return () => {
-      body.style.position = prevPosition
-      body.style.top = prevTop
-      body.style.width = prevWidth
-      body.style.overflow = prevOverflow
-      body.style.transition = prevTransition
+      body.style.removeProperty('position')
+      body.style.removeProperty('top')
+      body.style.removeProperty('width')
+      body.style.removeProperty('overflow')
+      body.style.removeProperty('transition')
       window.scrollTo(0, lockScrollYRef.current)
     }
   }, [activeTourId])
