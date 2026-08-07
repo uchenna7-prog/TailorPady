@@ -62,7 +62,12 @@ export default function OnboardingTour() {
     const r0 = el.getBoundingClientRect()
     const hasRealSize = r0.width > 0 && r0.height > 0
 
-    if (hasRealSize && scrolledStepIdRef.current !== currentStep.id) {
+    if (!hasRealSize) {
+      setRect(prev => (prev === null ? prev : null))
+      return
+    }
+
+    if (scrolledStepIdRef.current !== currentStep.id) {
       scrolledStepIdRef.current = currentStep.id
 
       const scrollableAncestor = findScrollableAncestor(el)
@@ -230,7 +235,11 @@ export default function OnboardingTour() {
     const timer = setTimeout(() => {
       if (cancelled) return
       const el = document.querySelector(target)
-      if (!el) skipCurrentStep()
+      const visible = el && (() => {
+        const r = el.getBoundingClientRect()
+        return r.width > 0 && r.height > 0
+      })()
+      if (!visible) skipCurrentStep()
     }, TARGET_TIMEOUT_MS)
     return () => {
       cancelled = true
