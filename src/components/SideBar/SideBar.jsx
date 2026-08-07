@@ -141,6 +141,9 @@ function SideBar({ isOpen, onClose }) {
     if (path === '/gallery' && currentStep?.id === 'portfolio-goto-gallery') {
       completeStep('portfolio-goto-gallery')
     }
+    if (path === '/settings' && currentStep?.id === 'portfolio-goto-settings') {
+      goToStep('portfolio-done')
+    }
     navigate(path)
     onClose()
   }
@@ -213,6 +216,7 @@ function SideBar({ isOpen, onClose }) {
                           item.path === '/account'   ? 'sidebar-account-nav'   :
                           item.path === '/customers' ? 'sidebar-customers-nav' :
                           item.path === '/gallery'   ? 'sidebar-gallery-nav'   :
+                          item.path === '/settings'  ? 'sidebar-settings-nav'  :
                           undefined
                         }
                       >
