@@ -141,8 +141,14 @@ function SideBar({ isOpen, onClose }) {
     if (path === '/gallery' && currentStep?.id === 'portfolio-goto-gallery') {
       completeStep('portfolio-goto-gallery')
     }
+    if (path === '/gallery' && currentStep?.id === 'portfolio-goto-gallery-for-share') {
+      completeStep('portfolio-goto-gallery-for-share')
+    }
     if (path === '/settings' && currentStep?.id === 'portfolio-goto-settings') {
       completeStep('portfolio-goto-settings')
+    }
+    if (path === '/settings' && currentStep?.id === 'portfolio-goto-settings-2') {
+      completeStep('portfolio-goto-settings-2')
     }
     if (path === '/settings' && currentStep?.id === 'ai-goto-settings') {
       completeStep('ai-goto-settings')
