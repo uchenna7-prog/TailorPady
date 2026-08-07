@@ -4,6 +4,7 @@ import { useGeneralSettings } from '../../contexts/GeneralSettingsContext'
 import { useProfileSettings } from '../../contexts/ProfileSettingsContext'
 import { usePortfolioSettings } from '../../contexts/PortfolioSettingsContext'
 import { useAuth } from '../../contexts/AuthContext'
+import { useTour } from '../../contexts/TourContext'
 import { getCurrentSlug } from '../../services/slugService'
 import Header from '../../components/Header/Header'
 import Toast from '../../components/Toast/Toast'
@@ -53,6 +54,7 @@ export default function Settings({ onMenuClick }) {
   const { user } = useAuth()
   const location = useLocation()
   const navigate  = useNavigate()
+  const { currentStep, completeStep } = useTour()
 
   const [toastMessage, setToastMessage] = useState('')
   const toastTimerRef = useRef(null)
@@ -208,6 +210,27 @@ export default function Settings({ onMenuClick }) {
     showToast('Settings reset')
   }
 
+  function handlePortfolioRowClick() {
+    if (currentStep?.id === 'portfolio-highlight-settings-row') {
+      completeStep('portfolio-highlight-settings-row')
+    }
+    setIsPortfolioModalOpen(true)
+  }
+
+  function handlePortfolioTemplateRowClick() {
+    if (currentStep?.id === 'portfolio-highlight-template-row') {
+      completeStep('portfolio-highlight-template-row')
+    }
+    setIsPortfolioTemplateModalOpen(true)
+  }
+
+  function handleAgentRowClick() {
+    if (currentStep?.id === 'ai-highlight-row') {
+      completeStep('ai-highlight-row')
+    }
+    setIsAgentModalOpen(true)
+  }
+
   function getSelectedTemplates() {
     const invoiceTemplate       = generalSettings.invoiceTemplate
     const receiptTemplate       = generalSettings.receiptTemplate
@@ -321,8 +344,9 @@ export default function Settings({ onMenuClick }) {
           icon="image"
           label="Portfolio Settings"
           sub={"Configure your portfolio setting preferences"}
-          onClick={() => setIsPortfolioModalOpen(true)}
+          onClick={handlePortfolioRowClick}
           chevron
+          data-tour="settings-portfolio-row"
         />
 
         <SettingRow
@@ -330,8 +354,9 @@ export default function Settings({ onMenuClick }) {
           label="Portfolio Template"
           value={getPortfolioTemplate()}
           sub={"Choose your preferred portfolio template"}
-          onClick={() => setIsPortfolioTemplateModalOpen(true)}
+          onClick={handlePortfolioTemplateRowClick}
           chevron
+          data-tour="settings-portfolio-template-row"
         />
 
         <SectionHeader icon={BotIcon} label="AI Assitant" />
@@ -341,8 +366,9 @@ export default function Settings({ onMenuClick }) {
           label="AI Settings"
           sub={"Configure your AI assistant preferences"}
           value={getAgentSub()}
-          onClick={() => setIsAgentModalOpen(true)}
+          onClick={handleAgentRowClick}
           chevron
+          data-tour="settings-ai-row"
         />
 
         <SectionHeader icon="notifications" label="Notifications" />
