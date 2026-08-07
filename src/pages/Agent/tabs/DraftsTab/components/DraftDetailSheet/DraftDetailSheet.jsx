@@ -48,6 +48,7 @@ function getInstallmentIdFromReceiptDraftId(draftId) {
 export function DraftDetailSheet({
   item,
   onClose,
+  onApprove,
   onDiscard,
   allOrders,
   allInvoices,
@@ -62,6 +63,7 @@ export function DraftDetailSheet({
   const [viewerInvoice, setViewerInvoice] = useState(null)
   const [viewerReceipt, setViewerReceipt] = useState(null)
   const [confirmSave, setConfirmSave] = useState(false)
+  const [photoFailed, setPhotoFailed] = useState(false)
 
   if (!item) return null
 
@@ -320,9 +322,20 @@ export function DraftDetailSheet({
 
           <div className={styles.statusRow}>
             <div className={styles.chipLabel}>Status</div>
-            <div className={styles.statusChip} style={{ background: statusMeta.bg, borderColor: statusMeta.border }}>
-              <MIcon name={statusMeta.icon} size="0.9rem" color={statusMeta.color} />
-              <span style={{ color: statusMeta.color }}>{statusMeta.label}</span>
+            <div className={styles.statusRowInline}>
+              <div className={styles.statusChip} style={{ background: statusMeta.bg, borderColor: statusMeta.border }}>
+                <MIcon name={statusMeta.icon} size="0.9rem" color={statusMeta.color} />
+                <span style={{ color: statusMeta.color }}>{statusMeta.label}</span>
+              </div>
+              {item.status === 'pending' && (
+                <button
+                  className={styles.approveBtn}
+                  onClick={() => { haptic('light'); onApprove?.(item.id); onClose() }}
+                >
+                  <MIcon name="check" size="0.8rem" color="var(--accent)" />
+                  Approve
+                </button>
+              )}
             </div>
           </div>
 
@@ -377,8 +390,8 @@ export function DraftDetailSheet({
               <SheetSection icon="person" label="Customer">
                 <div className={styles.linkedRow}>
                   <div className={styles.linkedAvatar}>
-                    {customerObj?.photo
-                      ? <img src={customerObj.photo} alt="" className={styles.linkedAvatarImg} />
+                    {customerObj?.photo && !photoFailed
+                      ? <img src={customerObj.photo} alt="" className={styles.linkedAvatarImg} onError={() => setPhotoFailed(true)} />
                       : <span className={styles.linkedAvatarInitials}>{getInitials(customerName)}</span>}
                   </div>
                   <span className={styles.linkedName}>{customerName}</span>
