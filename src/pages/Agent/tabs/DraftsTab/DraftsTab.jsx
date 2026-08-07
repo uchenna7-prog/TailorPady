@@ -21,6 +21,7 @@ export function DraftsTab({
   profileSettings,
   showToast,
   onSaveDoc,
+  onGoToCustomer,
 }) {
   const [selected, setSelected] = useState(null)
 
@@ -81,6 +82,7 @@ export function DraftsTab({
           profileSettings={profileSettings}
           showToast={showToast}
           onSaveDoc={onSaveDoc}
+          onGoToCustomer={onGoToCustomer}
         />
       )}
     </>
