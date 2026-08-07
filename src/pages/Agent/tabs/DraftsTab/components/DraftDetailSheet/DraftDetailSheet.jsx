@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useState, useRef, useEffect } from "react"
 import { resolveCustomerName, resolveCustomer, resolveOrder } from "../../../../utils"
 import { MIcon } from "../../../../components/MIcon/MIcon"
 import { SheetBase } from "../../../../components/SheetBase/SheetBase"
@@ -21,8 +21,8 @@ const TAG_COLORS = {
 }
 
 const DRAFT_STATUS = {
-  pending:  { label: 'Pending Review', color: '#eab308', bg: 'rgba(234,179,8,0.12)', border: 'rgba(234,179,8,0.4)', icon: 'schedule' },
-  approved: { label: 'Approved',       color: '#22c55e', bg: 'rgba(34,197,94,0.12)', border: 'rgba(34,197,94,0.4)', icon: 'check_circle' },
+  pending:  { label: 'Pending',  color: '#eab308', bg: 'rgba(234,179,8,0.12)', border: 'rgba(234,179,8,0.4)', icon: 'schedule' },
+  approved: { label: 'Approved', color: '#22c55e', bg: 'rgba(34,197,94,0.12)', border: 'rgba(34,197,94,0.4)', icon: 'check_circle' },
 }
 
 function getInitials(name) {
@@ -59,11 +59,29 @@ export function DraftDetailSheet({
   profileSettings,
   showToast,
   onSaveDoc,
+  onGoToCustomer,
 }) {
   const [viewerInvoice, setViewerInvoice] = useState(null)
   const [viewerReceipt, setViewerReceipt] = useState(null)
   const [confirmSave, setConfirmSave] = useState(false)
   const [photoFailed, setPhotoFailed] = useState(false)
+  const [showStatusMenu, setShowStatusMenu] = useState(false)
+  const statusRef = useRef(null)
+
+  useEffect(() => {
+    if (!showStatusMenu) return
+    function handleClickOutside(e) {
+      if (statusRef.current && !statusRef.current.contains(e.target)) {
+        setShowStatusMenu(false)
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside)
+    document.addEventListener('touchstart', handleClickOutside)
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside)
+      document.removeEventListener('touchstart', handleClickOutside)
+    }
+  }, [showStatusMenu])
 
   if (!item) return null
 
@@ -308,6 +326,15 @@ export function DraftDetailSheet({
     onClose()
   }
 
+  function handleStatusPick(key) {
+    if (key === item.status) { setShowStatusMenu(false); return }
+    if (key === 'pending') { setShowStatusMenu(false); return }
+    haptic('light')
+    onApprove?.(item.id)
+    setShowStatusMenu(false)
+    onClose()
+  }
+
   const sheetTitle = isDoc
     ? (item.type === 'invoice' ? 'Invoice Draft' : 'Receipt Draft')
     : 'Message Draft'
@@ -322,19 +349,52 @@ export function DraftDetailSheet({
 
           <div className={styles.statusRow}>
             <div className={styles.chipLabel}>Status</div>
-            <div className={styles.statusRowInline}>
-              <div className={styles.statusChip} style={{ background: statusMeta.bg, borderColor: statusMeta.border }}>
-                <MIcon name={statusMeta.icon} size="0.9rem" color={statusMeta.color} />
-                <span style={{ color: statusMeta.color }}>{statusMeta.label}</span>
-              </div>
-              {item.status === 'pending' && (
-                <button
-                  className={styles.approveBtn}
-                  onClick={() => { haptic('light'); onApprove?.(item.id); onClose() }}
-                >
-                  <MIcon name="check" size="0.8rem" color="var(--accent)" />
-                  Approve
-                </button>
+            <div className={styles.statusDropdown} ref={statusRef}>
+              <button
+                type="button"
+                className={styles.statusTrigger}
+                onClick={() => setShowStatusMenu(v => !v)}
+                style={{ background: statusMeta.bg, borderColor: statusMeta.border }}
+              >
+                <span className={styles.statusTriggerLeft}>
+                  <MIcon name={statusMeta.icon} size="0.9rem" color={statusMeta.color} />
+                  <span style={{ color: statusMeta.color }}>{statusMeta.label}</span>
+                </span>
+                <MIcon
+                  name="expand_more"
+                  size="1.1rem"
+                  color={statusMeta.color}
+                />
+              </button>
+
+              {showStatusMenu && (
+                <div className={styles.statusMenu}>
+                  {['pending', 'approved'].map(key => {
+                    const meta = DRAFT_STATUS[key]
+                    const isActive = item.status === key
+                    const locked = key === 'pending' && item.status === 'approved'
+                    return (
+                      <button
+                        key={key}
+                        type="button"
+                        disabled={locked}
+                        className={`${styles.statusMenuItem} ${isActive ? styles.statusMenuItemActive : ''} ${locked ? styles.statusMenuItemLocked : ''}`}
+                        onClick={() => handleStatusPick(key)}
+                      >
+                        <MIcon
+                          name={meta.icon}
+                          size="0.9rem"
+                          color={locked && !isActive ? 'var(--text3)' : meta.color}
+                        />
+                        <span style={{ color: isActive ? meta.color : locked ? 'var(--text3)' : 'var(--text)' }}>
+                          {meta.label}
+                        </span>
+                        {isActive && <MIcon name="check" size="1rem" color={meta.color} />}
+                        {locked && !isActive && <MIcon name="lock" size="0.9rem" color="var(--text3)" />}
+                      </button>
+                    )
+                  })}
+                </div>
               )}
             </div>
           </div>
@@ -388,14 +448,32 @@ export function DraftDetailSheet({
           {customerName && (
             <div className={styles.sectionSpacer}>
               <SheetSection icon="person" label="Customer">
-                <div className={styles.linkedRow}>
-                  <div className={styles.linkedAvatar}>
-                    {customerObj?.photo && !photoFailed
-                      ? <img src={customerObj.photo} alt="" className={styles.linkedAvatarImg} onError={() => setPhotoFailed(true)} />
-                      : <span className={styles.linkedAvatarInitials}>{getInitials(customerName)}</span>}
+                {onGoToCustomer && customerObj?.id ? (
+                  <button
+                    type="button"
+                    className={styles.linkedRowBtn}
+                    onClick={() => { onClose(); onGoToCustomer(customerObj.id) }}
+                  >
+                    <div className={styles.linkedAvatar}>
+                      {customerObj?.photo && !photoFailed
+                        ? <img src={customerObj.photo} alt="" className={styles.linkedAvatarImg} onError={() => setPhotoFailed(true)} />
+                        : <span className={styles.linkedAvatarInitials}>{getInitials(customerName)}</span>}
+                    </div>
+                    <span className={styles.linkedName}>{customerName}</span>
+                    <span className={styles.chevronCorner}>
+                      <MIcon name="chevron_right" size="1.1rem" color="var(--text3)" />
+                    </span>
+                  </button>
+                ) : (
+                  <div className={styles.linkedRow}>
+                    <div className={styles.linkedAvatar}>
+                      {customerObj?.photo && !photoFailed
+                        ? <img src={customerObj.photo} alt="" className={styles.linkedAvatarImg} onError={() => setPhotoFailed(true)} />
+                        : <span className={styles.linkedAvatarInitials}>{getInitials(customerName)}</span>}
+                    </div>
+                    <span className={styles.linkedName}>{customerName}</span>
                   </div>
-                  <span className={styles.linkedName}>{customerName}</span>
-                </div>
+                )}
               </SheetSection>
             </div>
           )}
