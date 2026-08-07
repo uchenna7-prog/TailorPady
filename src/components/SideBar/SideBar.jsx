@@ -142,7 +142,10 @@ function SideBar({ isOpen, onClose }) {
       completeStep('portfolio-goto-gallery')
     }
     if (path === '/settings' && currentStep?.id === 'portfolio-goto-settings') {
-      goToStep('portfolio-done')
+      completeStep('portfolio-goto-settings')
+    }
+    if (path === '/settings' && currentStep?.id === 'ai-goto-settings') {
+      completeStep('ai-goto-settings')
     }
     navigate(path)
     onClose()
