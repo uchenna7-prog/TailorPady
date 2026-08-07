@@ -1,3 +1,4 @@
+import { useState } from "react"
 import { SheetBase } from "../../../../components/SheetBase/SheetBase"
 import { SheetHeader } from "../../../../components/SheetHeader/SheetHeader"
 import { SheetSection } from "../../../../components/SheetSection/SheetSection"
@@ -26,7 +27,8 @@ function getInitials(name) {
   return name.trim().split(/\s+/).slice(0, 2).map(p => p[0]?.toUpperCase() || '').join('')
 }
 
-export function ActivityDetailSheet({ item, onClose, allOrders, allInvoices, allPayments, customers }) {
+export function ActivityDetailSheet({ item, onClose, allOrders, allInvoices, allPayments, customers, onGoToCustomer }) {
+  const [photoFailed, setPhotoFailed] = useState(false)
   if (!item) return null
   const customerName = resolveCustomerName(item, allOrders, allInvoices, allPayments, customers)
   const customerObj = resolveCustomer(item, allOrders, allInvoices, allPayments, customers)
@@ -81,14 +83,30 @@ export function ActivityDetailSheet({ item, onClose, allOrders, allInvoices, all
         {customerName && (
           <div className={styles.sectionSpacer}>
             <SheetSection icon="person" label="Customer">
-              <div className={styles.linkedRow}>
-                <div className={styles.linkedAvatar}>
-                  {customerObj?.photo
-                    ? <img src={customerObj.photo} alt="" className={styles.linkedAvatarImg} />
-                    : <span className={styles.linkedAvatarInitials}>{getInitials(customerName)}</span>}
+              {onGoToCustomer && customerObj?.id ? (
+                <button
+                  type="button"
+                  className={styles.linkedRowBtn}
+                  onClick={() => { onClose(); onGoToCustomer(customerObj.id) }}
+                >
+                  <div className={styles.linkedAvatar}>
+                    {customerObj?.photo && !photoFailed
+                      ? <img src={customerObj.photo} alt="" className={styles.linkedAvatarImg} onError={() => setPhotoFailed(true)} />
+                      : <span className={styles.linkedAvatarInitials}>{getInitials(customerName)}</span>}
+                  </div>
+                  <span className={styles.linkedName}>{customerName}</span>
+                  <MIcon name="chevron_right" size="1.1rem" color="var(--text3)" />
+                </button>
+              ) : (
+                <div className={styles.linkedRow}>
+                  <div className={styles.linkedAvatar}>
+                    {customerObj?.photo && !photoFailed
+                      ? <img src={customerObj.photo} alt="" className={styles.linkedAvatarImg} onError={() => setPhotoFailed(true)} />
+                      : <span className={styles.linkedAvatarInitials}>{getInitials(customerName)}</span>}
+                  </div>
+                  <span className={styles.linkedName}>{customerName}</span>
                 </div>
-                <span className={styles.linkedName}>{customerName}</span>
-              </div>
+              )}
             </SheetSection>
           </div>
         )}
