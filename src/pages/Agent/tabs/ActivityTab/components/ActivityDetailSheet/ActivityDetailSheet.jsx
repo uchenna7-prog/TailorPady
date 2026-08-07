@@ -2,7 +2,8 @@ import { SheetBase } from "../../../../components/SheetBase/SheetBase"
 import { SheetHeader } from "../../../../components/SheetHeader/SheetHeader"
 import { SheetSection } from "../../../../components/SheetSection/SheetSection"
 import { MIcon } from "../../../../components/MIcon/MIcon"
-import { resolveCustomerName } from "../../../../utils"
+import OrderMosaic from "../../../../../../components/OrderMosaic/OrderMosaic"
+import { resolveCustomerName, resolveCustomer, resolveOrder } from "../../../../utils"
 import styles from "./ActivityDetailSheet.module.css"
 
 const TAG_COLORS = {
@@ -28,9 +29,11 @@ function getInitials(name) {
 export function ActivityDetailSheet({ item, onClose, allOrders, allInvoices, allPayments, customers }) {
   if (!item) return null
   const customerName = resolveCustomerName(item, allOrders, allInvoices, allPayments, customers)
+  const customerObj = resolveCustomer(item, allOrders, allInvoices, allPayments, customers)
+  const orderObj = resolveOrder(item, allOrders, allInvoices, allPayments)
   const tagMeta = TAG_COLORS[item.type] || TAG_COLORS.reminder
   const statusMeta = DRAFT_STATUS[item.status] || DRAFT_STATUS.pending
-  const linkedOrderName = item.summary?.name
+  const linkedOrderName = item.summary?.name || orderObj?.desc
   const whatHappened = item.preview || item.desc
 
   return (
@@ -80,7 +83,9 @@ export function ActivityDetailSheet({ item, onClose, allOrders, allInvoices, all
             <SheetSection icon="person" label="Customer">
               <div className={styles.linkedRow}>
                 <div className={styles.linkedAvatar}>
-                  <span className={styles.linkedAvatarInitials}>{getInitials(customerName)}</span>
+                  {customerObj?.photo
+                    ? <img src={customerObj.photo} alt="" className={styles.linkedAvatarImg} />
+                    : <span className={styles.linkedAvatarInitials}>{getInitials(customerName)}</span>}
                 </div>
                 <span className={styles.linkedName}>{customerName}</span>
               </div>
@@ -92,9 +97,7 @@ export function ActivityDetailSheet({ item, onClose, allOrders, allInvoices, all
           <div className={styles.sectionSpacer}>
             <SheetSection icon="shopping_bag" label="Linked Order">
               <div className={styles.linkedRow}>
-                <div className={styles.iconBadge}>
-                  <MIcon name={item.summary.icon || 'checkroom'} size="1rem" color="var(--text2)" />
-                </div>
+                <OrderMosaic items={orderObj?.items || []} size="sm" />
                 <span className={styles.linkedName}>{linkedOrderName}</span>
               </div>
             </SheetSection>
