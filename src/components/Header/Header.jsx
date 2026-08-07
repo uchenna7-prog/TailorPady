@@ -149,6 +149,9 @@ function Header({
     if (currentStep?.id === 'portfolio-open-menu-2') {
       completeStep('portfolio-open-menu-2')
     }
+    if (currentStep?.id === 'ai-open-menu') {
+      completeStep('ai-open-menu')
+    }
     onMenuClick?.()
   }
 
