@@ -69,6 +69,7 @@ function BotButton({ pendingCount, onClick }) {
       onClick={onClick}
       aria-label="Open Agent"
       title="Pady — tailorpady Agent"
+      data-tour="tour-bot-icon-btn"
     >
       <BotIcon />
       {pendingCount > 0 && (
@@ -137,7 +138,12 @@ function Header({
     onBackClick ? onBackClick() : navigate(-1)
   }
 
-  const handleBotClick = () => navigate('/agent')
+  const handleBotClick = () => {
+    if (currentStep?.id === 'ai-highlight-bot-icon') {
+      completeStep('ai-highlight-bot-icon')
+    }
+    navigate('/agent')
+  }
 
   const handleMenuClick = () => {
     if (currentStep?.id === 'highlight-hamburger') {
@@ -148,6 +154,12 @@ function Header({
     }
     if (currentStep?.id === 'portfolio-open-menu-2') {
       completeStep('portfolio-open-menu-2')
+    }
+    if (currentStep?.id === 'portfolio-open-menu-2b') {
+      completeStep('portfolio-open-menu-2b')
+    }
+    if (currentStep?.id === 'portfolio-open-menu-3') {
+      completeStep('portfolio-open-menu-3')
     }
     if (currentStep?.id === 'ai-open-menu') {
       completeStep('ai-open-menu')
