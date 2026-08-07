@@ -1,9 +1,10 @@
 import { useState } from "react"
-import { resolveCustomerName } from "../../../../utils"
+import { resolveCustomerName, resolveCustomer, resolveOrder } from "../../../../utils"
 import { MIcon } from "../../../../components/MIcon/MIcon"
 import { SheetBase } from "../../../../components/SheetBase/SheetBase"
 import { SheetHeader } from "../../../../components/SheetHeader/SheetHeader"
 import { SheetSection } from "../../../../components/SheetSection/SheetSection"
+import OrderMosaic from "../../../../../../components/OrderMosaic/OrderMosaic"
 import { haptic, buildBrandSnapshot, buildInvoiceMessage, buildReceiptMessage } from "../../../../utils"
 import InvoiceViewer from "../../../../../../components/TemplateViewers/InvoiceViewer/InvoiceViewer"
 import ReceiptViewer from "../../../../../../components/TemplateViewers/ReceiptViewer/ReceiptViewer"
@@ -219,9 +220,16 @@ export function DraftDetailSheet({
       ? getReceiptForDraft()
       : null
 
+  const customerObj = isDoc ? getCustomerForDraft() : resolveCustomer(item, allOrders, allInvoices, allPayments, customers)
+  const orderObj = isDoc ? null : resolveOrder(item, allOrders, allInvoices, allPayments)
+
   const linkedOrderName = isDoc
     ? draftDoc?.orderDesc
-    : item.summary?.name
+    : (item.summary?.name || orderObj?.desc)
+
+  const linkedOrderItems = isDoc
+    ? draftDoc?.items
+    : orderObj?.items
 
   async function shareText(text, fallbackMessage) {
     if (navigator.share) {
@@ -369,7 +377,9 @@ export function DraftDetailSheet({
               <SheetSection icon="person" label="Customer">
                 <div className={styles.linkedRow}>
                   <div className={styles.linkedAvatar}>
-                    <span className={styles.linkedAvatarInitials}>{getInitials(customerName)}</span>
+                    {customerObj?.photo
+                      ? <img src={customerObj.photo} alt="" className={styles.linkedAvatarImg} />
+                      : <span className={styles.linkedAvatarInitials}>{getInitials(customerName)}</span>}
                   </div>
                   <span className={styles.linkedName}>{customerName}</span>
                 </div>
@@ -381,9 +391,7 @@ export function DraftDetailSheet({
             <div className={styles.sectionSpacer}>
               <SheetSection icon="shopping_bag" label="Linked Order">
                 <div className={styles.linkedRow}>
-                  <div className={styles.iconBadge}>
-                    <MIcon name="checkroom" size="1rem" color="var(--text2)" />
-                  </div>
+                  <OrderMosaic items={linkedOrderItems || []} size="sm" />
                   <span className={styles.linkedName}>{linkedOrderName}</span>
                 </div>
               </SheetSection>
