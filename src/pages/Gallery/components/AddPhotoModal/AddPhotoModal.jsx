@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from "react"
 import { uploadToCloudinary } from "../../../../services/cloudinaryService"
 import { Dropdown } from "../../../../components/Dropdown/Dropdown"
+import { useTour } from "../../../../contexts/TourContext"
 import styles from './AddPhotoModal.module.css'
 
 
@@ -19,6 +20,7 @@ export function AddPhotoModal({ isOpen, onClose, onSave, GarmentTypes, activeMai
   const [typeErrors,    setTypeErrors]    = useState({})
   const fileInputRef   = useRef(null)
   const cameraInputRef = useRef(null)
+  const { currentStep, completeStep } = useTour()
 
   const typeOptions = GarmentTypes[category] || []
 
@@ -149,6 +151,11 @@ export function AddPhotoModal({ isOpen, onClose, onSave, GarmentTypes, activeMai
         date:              dateStr,
       })
     })
+
+    if (currentStep?.id === 'portfolio-add-photo') {
+      completeStep('portfolio-add-photo')
+    }
+
     reset(); onClose()
   }
 
