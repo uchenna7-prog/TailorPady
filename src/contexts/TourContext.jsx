@@ -66,8 +66,8 @@ export function TourProvider({ children }) {
   }, [resetTourState])
 
   const skipTour = useCallback(() => {
-    finishTour()
-  }, [finishTour])
+    resetTourState(null)
+  }, [resetTourState])
 
   const advanceTo = useCallback((nextIndex) => {
     if (!steps) return
