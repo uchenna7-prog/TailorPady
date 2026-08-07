@@ -86,6 +86,24 @@
   padding: 12px 14px;
 }
 
+.linkedRowBtn {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 12px 14px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-family: inherit;
+  text-align: left;
+  transition: background 0.12s ease;
+}
+
+.linkedRowBtn:active {
+  background: var(--surface2);
+}
+
 .linkedAvatar {
   width: 28px;
   height: 28px;
