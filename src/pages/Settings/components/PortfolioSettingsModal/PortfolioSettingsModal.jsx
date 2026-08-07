@@ -2,6 +2,7 @@ import { useState, useRef, useEffect } from 'react'
 import styles from './PortfolioSettingsModal.module.css'
 import { FullModal } from '../../../../components/FullModal/FullModal'
 import { usePortfolioSettings } from '../../../../contexts/PortfolioSettingsContext'
+import { useTour } from '../../../../contexts/TourContext'
 import { Field } from '../Field/Field'
 import { FieldGroup } from '../FieldGroup/FieldGroup'
 import { TextInput } from '../TextInput/TextInput'
@@ -164,6 +165,7 @@ function AboutField({ value, onChange }) {
 
 export function PortfolioSettingsModal({ onBack, showToast }) {
   const { portfolioSettings, updateManyPortfolioSettings, portfolioSettingsSettled } = usePortfolioSettings()
+  const { currentStep, completeStep } = useTour()
 
   const [local, setLocal] = useState(() => buildLocal(portfolioSettings))
   const syncedRef = useRef(false)
@@ -184,6 +186,9 @@ export function PortfolioSettingsModal({ onBack, showToast }) {
     }
     updateManyPortfolioSettings(local)
     showToast('Portfolio settings saved')
+    if (currentStep?.id === 'portfolio-settings-save') {
+      completeStep('portfolio-settings-save')
+    }
     onBack()
   }
 
