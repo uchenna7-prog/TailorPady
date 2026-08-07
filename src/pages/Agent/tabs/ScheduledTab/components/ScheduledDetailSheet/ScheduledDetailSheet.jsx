@@ -1,8 +1,9 @@
 import { SheetBase }        from "../../../../components/SheetBase/SheetBase"
 import { SheetHeader }      from "../../../../components/SheetHeader/SheetHeader"
 import { SheetSection }     from "../../../../components/SheetSection/SheetSection"
-import { resolveCustomerName, haptic } from "../../../../utils"
+import { resolveCustomerName, resolveCustomer, resolveOrder, haptic } from "../../../../utils"
 import { MIcon }            from "../../../../components/MIcon/MIcon"
+import OrderMosaic          from "../../../../../../components/OrderMosaic/OrderMosaic"
 import styles               from "./ScheduledDetailSheet.module.css"
 
 const TAG_COLORS = {
@@ -23,6 +24,8 @@ function getInitials(name) {
 export function ScheduledDetailSheet({ item, onClose, onCancel, allOrders, allInvoices, allPayments, customers }) {
   if (!item) return null
   const customerName = resolveCustomerName(item, allOrders, allInvoices, allPayments, customers)
+  const customerObj = resolveCustomer(item, allOrders, allInvoices, allPayments, customers)
+  const orderObj = resolveOrder(item, allOrders, allInvoices, allPayments)
   const tagMeta = TAG_COLORS[item.type] || TAG_COLORS.reminder
 
   return (
@@ -48,9 +51,22 @@ export function ScheduledDetailSheet({ item, onClose, onCancel, allOrders, allIn
             <SheetSection icon="person" label="Customer">
               <div className={styles.linkedRow}>
                 <div className={styles.linkedAvatar}>
-                  <span className={styles.linkedAvatarInitials}>{getInitials(customerName)}</span>
+                  {customerObj?.photo
+                    ? <img src={customerObj.photo} alt="" className={styles.linkedAvatarImg} />
+                    : <span className={styles.linkedAvatarInitials}>{getInitials(customerName)}</span>}
                 </div>
                 <span className={styles.linkedName}>{customerName}</span>
+              </div>
+            </SheetSection>
+          </div>
+        )}
+
+        {orderObj && (
+          <div className={styles.sectionSpacer}>
+            <SheetSection icon="shopping_bag" label="Linked Order">
+              <div className={styles.linkedRow}>
+                <OrderMosaic items={orderObj.items || []} size="sm" />
+                <span className={styles.linkedName}>{orderObj.desc}</span>
               </div>
             </SheetSection>
           </div>
