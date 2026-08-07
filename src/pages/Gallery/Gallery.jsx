@@ -160,6 +160,9 @@ export default function Gallery({ onMenuClick }) {
       if (currentStep?.id === 'portfolio-share-link') {
         completeStep('portfolio-share-link')
       }
+      if (currentStep?.id === 'portfolio-share-link-2') {
+        completeStep('portfolio-share-link-2')
+      }
     }
   }
 
