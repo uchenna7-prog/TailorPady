@@ -63,7 +63,9 @@ export function ScheduledDetailSheet({ item, onClose, onCancel, allOrders, allIn
                       : <span className={styles.linkedAvatarInitials}>{getInitials(customerName)}</span>}
                   </div>
                   <span className={styles.linkedName}>{customerName}</span>
-                  <MIcon name="chevron_right" size="1.1rem" color="var(--text3)" />
+                  <span className={styles.chevronCorner}>
+                    <MIcon name="chevron_right" size="1.1rem" color="var(--text3)" />
+                  </span>
                 </button>
               ) : (
                 <div className={styles.linkedRow}>
