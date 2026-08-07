@@ -214,12 +214,18 @@ export default function Settings({ onMenuClick }) {
     if (currentStep?.id === 'portfolio-highlight-settings-row') {
       completeStep('portfolio-highlight-settings-row')
     }
+    if (currentStep?.id === 'portfolio-highlight-settings-row-2') {
+      completeStep('portfolio-highlight-settings-row-2')
+    }
     setIsPortfolioModalOpen(true)
   }
 
   function handlePortfolioTemplateRowClick() {
     if (currentStep?.id === 'portfolio-highlight-template-row') {
       completeStep('portfolio-highlight-template-row')
+    }
+    if (currentStep?.id === 'portfolio-highlight-template-row-2') {
+      completeStep('portfolio-highlight-template-row-2')
     }
     setIsPortfolioTemplateModalOpen(true)
   }
