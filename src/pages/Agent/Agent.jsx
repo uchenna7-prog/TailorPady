@@ -2,6 +2,7 @@ import { useState, useRef, useLayoutEffect, useEffect, useCallback } from 'react
 import { useNavigate } from 'react-router-dom'
 import Header from '../../components/Header/Header'
 import BottomNav from '../../components/BottomNav/BottomNav'
+import Toast from '../../components/Toast/Toast'
 import { useAutonomousAgent } from '../../contexts/AutonomousAgentContext'
 import { useAuth } from '../../contexts/AuthContext'
 import { useOrders } from '../../contexts/OrdersContext'
@@ -271,9 +272,7 @@ function Agent() {
         )}
       </div>
 
-      {toast && (
-        <div className={styles.toast}>{toast}</div>
-      )}
+      <Toast message={toast} />
 
       <BottomNav />
     </div>
