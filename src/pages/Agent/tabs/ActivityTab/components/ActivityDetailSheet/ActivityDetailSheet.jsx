@@ -18,8 +18,8 @@ const TAG_COLORS = {
 }
 
 const DRAFT_STATUS = {
-  pending:  { label: 'Pending Review', color: '#eab308', bg: 'rgba(234,179,8,0.12)', border: 'rgba(234,179,8,0.4)', icon: 'schedule' },
-  approved: { label: 'Approved',       color: '#22c55e', bg: 'rgba(34,197,94,0.12)', border: 'rgba(34,197,94,0.4)', icon: 'check_circle' },
+  pending:  { label: 'Pending',  color: '#eab308', bg: 'rgba(234,179,8,0.12)', border: 'rgba(234,179,8,0.4)', icon: 'schedule' },
+  approved: { label: 'Approved', color: '#22c55e', bg: 'rgba(34,197,94,0.12)', border: 'rgba(34,197,94,0.4)', icon: 'check_circle' },
 }
 
 function getInitials(name) {
@@ -95,7 +95,9 @@ export function ActivityDetailSheet({ item, onClose, allOrders, allInvoices, all
                       : <span className={styles.linkedAvatarInitials}>{getInitials(customerName)}</span>}
                   </div>
                   <span className={styles.linkedName}>{customerName}</span>
-                  <MIcon name="chevron_right" size="1.1rem" color="var(--text3)" />
+                  <span className={styles.chevronCorner}>
+                    <MIcon name="chevron_right" size="1.1rem" color="var(--text3)" />
+                  </span>
                 </button>
               ) : (
                 <div className={styles.linkedRow}>
