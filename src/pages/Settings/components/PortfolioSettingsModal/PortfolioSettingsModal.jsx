@@ -189,6 +189,9 @@ export function PortfolioSettingsModal({ onBack, showToast }) {
     if (currentStep?.id === 'portfolio-settings-save') {
       completeStep('portfolio-settings-save')
     }
+    if (currentStep?.id === 'portfolio-settings-save-2') {
+      completeStep('portfolio-settings-save-2')
+    }
     onBack()
   }
 
