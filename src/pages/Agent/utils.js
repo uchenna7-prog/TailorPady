@@ -102,6 +102,66 @@ export function resolveCustomerName(item, allOrders, allInvoices, allPayments, c
   return customers.find(c => String(c.id) === String(customerId))?.name ?? null
 }
 
+export function resolveCustomer(item, allOrders, allInvoices, allPayments, customers) {
+  if (!customers?.length) return null
+
+  const id = item.id || ''
+  let customerId = null
+
+  const orderId = extractIdFromDraftId(id, ['invoice-', 'upcoming-invoice-'])
+  if (orderId) {
+    customerId = allOrders?.find(o => String(o.id) === String(orderId))?.customerId ?? null
+  }
+
+  if (!customerId) {
+    const paymentId = extractIdFromDraftId(id, ['receipt-'])
+    if (paymentId) {
+      customerId = allPayments?.find(p => String(p.id) === String(paymentId))?.customerId ?? null
+    }
+  }
+
+  if (!customerId) {
+    const invoiceId = extractIdFromDraftId(id, ['reminder-', 'overdue-'])
+    if (invoiceId) {
+      customerId = allInvoices?.find(i => String(i.id) === String(invoiceId))?.customerId ?? null
+    }
+  }
+
+  if (!customerId) {
+    customerId = extractIdFromDraftId(id, ['followup-', 'birthday-', 'orderready-'])
+  }
+
+  if (!customerId) return null
+  return customers.find(c => String(c.id) === String(customerId)) || null
+}
+
+export function resolveOrder(item, allOrders, allInvoices, allPayments) {
+  if (!allOrders?.length) return null
+
+  const id = item.id || ''
+  let orderId = null
+
+  orderId = extractIdFromDraftId(id, ['invoice-', 'upcoming-invoice-', 'orderready-'])
+
+  if (!orderId) {
+    const paymentId = extractIdFromDraftId(id, ['receipt-'])
+    if (paymentId) {
+      orderId = allPayments?.find(p => String(p.id) === String(paymentId))?.orderId ?? null
+    }
+  }
+
+  if (!orderId) {
+    const invoiceId = extractIdFromDraftId(id, ['reminder-', 'overdue-'])
+    if (invoiceId) {
+      orderId = allInvoices?.find(i => String(i.id) === String(invoiceId))?.orderId ?? null
+    }
+  }
+
+  if (!orderId) return null
+  return allOrders.find(o => String(o.id) === String(orderId)) || null
+}
+
+
 export function resolveOrderName(item, allOrders, allInvoices, allPayments) {
   if (!allOrders?.length) return null
 
