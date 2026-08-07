@@ -58,11 +58,12 @@
 }
 
 .linkedRowBtn {
+  position: relative;
   display: flex;
   align-items: center;
   gap: 10px;
   width: 100%;
-  padding: 12px 14px;
+  padding: 12px 34px 12px 14px;
   background: transparent;
   border: none;
   cursor: pointer;
@@ -73,6 +74,14 @@
 
 .linkedRowBtn:active {
   background: var(--surface2);
+}
+
+.chevronCorner {
+  position: absolute;
+  right: 12px;
+  bottom: 10px;
+  display: flex;
+  align-items: center;
 }
 
 .linkedAvatar {
