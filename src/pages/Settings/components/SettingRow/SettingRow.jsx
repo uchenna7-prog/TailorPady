@@ -10,7 +10,8 @@ export function SettingRow({
   chevron, 
   divider=true, 
   locked=false, 
-  danger=false 
+  danger=false,
+  ...rest
 }) {
   const isComponent = typeof icon === 'function'
   const iconColor = danger ? '#ef4444' : 'var(--text2)'
@@ -25,6 +26,7 @@ export function SettingRow({
         ${!divider ? styles.noDivider: ''}
         `}
       onClick={locked?undefined:onClick}
+      {...rest}
     >
       <div className={styles.rowIcon}>
 
