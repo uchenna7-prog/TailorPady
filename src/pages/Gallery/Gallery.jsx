@@ -2,6 +2,7 @@ import { useState, useRef, useCallback, useEffect } from 'react'
 import { useCustomers } from '../../contexts/CustomerContext'
 import { useGallery } from '../../contexts/GalleryContext'
 import { useProfileSettings } from '../../contexts/ProfileSettingsContext'
+import { useTour } from '../../contexts/TourContext'
 import { AddPhotoModal } from './components/AddPhotoModal/AddPhotoModal'
 import {SharePortfolioModal} from './components/SharePortfolioModal/SharePortfolioModal'
 import { Lightbox } from './components/Lightbox/Lightbox'
@@ -30,6 +31,7 @@ export default function Gallery({ onMenuClick }) {
   const { customers } = useCustomers()
   const { photos, GarmentTypes, loading, addPhoto, deletePhoto, updatePhoto, saveGarmentTypes } = useGallery()
   const { profileSettings } = useProfileSettings()
+  const { currentStep, completeStep } = useTour()
 
   const [activeTab,     setActiveTab]     = useState('completed_works')
   const [activeSubTabs, setActiveSubTabs] = useState({})
@@ -155,6 +157,9 @@ export default function Gallery({ onMenuClick }) {
       pillTimer.current = setTimeout(() => setPillExpanded(false), 2000)
     } else {
       tabAction?.onPress()
+      if (currentStep?.id === 'portfolio-share-link') {
+        completeStep('portfolio-share-link')
+      }
     }
   }
 
@@ -187,6 +192,7 @@ export default function Gallery({ onMenuClick }) {
                 className={`${styles.pill} ${pillExpanded ? styles.pillExpanded : ''}`}
                 onClick={handlePillClick}
                 aria-label={tabAction.label}
+                data-tour="gallery-share-portfolio-pill"
               >
                 <span className={`mi ${styles.pillIcon}`}>{tabAction.icon}</span>
                 <span className={styles.pillLabel}>{tabAction.label}</span>
