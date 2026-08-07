@@ -104,6 +104,10 @@ function Agent() {
     }
   }
 
+  function goToCustomer(id) {
+    navigate(`/customers/${id}`)
+  }
+
   const handleTouchStart = useCallback((e) => {
     touchStartX.current     = e.touches[0].clientX
     touchStartY.current     = e.touches[0].clientY
@@ -232,6 +236,7 @@ function Agent() {
             allInvoices={allInvoices}
             allPayments={allPayments}
             customers={customers}
+            onGoToCustomer={goToCustomer}
           />
         )}
         {tab === 'scheduled' && (
@@ -242,6 +247,7 @@ function Agent() {
             allPayments={allPayments}
             customers={customers}
             onCancel={cancelUpcoming}
+            onGoToCustomer={goToCustomer}
           />
         )}
         {tab === 'drafts' && (
@@ -260,6 +266,7 @@ function Agent() {
             profileSettings={profileSettings}
             showToast={showToast}
             onSaveDoc={handleSaveDoc}
+            onGoToCustomer={goToCustomer}
           />
         )}
       </div>
