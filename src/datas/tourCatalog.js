@@ -14,7 +14,7 @@ export const TOUR_CATALOG = [
   {
     id: 'ai-assistant',
     label: 'Set up your AI assistant',
-    description: 'Ask questions and get things done faster',
+    description: 'Automate invoices, reminders, and follow-ups',
     icon: 'smart_toy',
   },
 ]
