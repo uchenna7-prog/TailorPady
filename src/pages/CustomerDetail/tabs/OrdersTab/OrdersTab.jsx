@@ -1,19 +1,29 @@
 import { useState, useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { useOrders } from '../../../../contexts/OrdersContext'
+import { useUsage } from '../../../../contexts/UsageContext'
 import { useGeneralSettings } from '../../../../contexts/GeneralSettingsContext'
 import { useTour } from '../../../../contexts/TourContext'
+import { USAGE_LIMITS } from '../../../../datas/usageLimits'
 import { AddOrderModal } from './components/AddOrderModal/AddOrderModal'
 import OrderDetailModal from '../../../../components/OrderDetailModal/OrderDetailModal'
 import { OrderRow } from './components/OrderRow/OrderRow'
 import { OrderRowSkeleton } from './components/OrderRowSkeleton/OrderRowSkeleton'
 import { EmptyState } from './components/EmptyState/EmptyState'
+import { UpgradeSheet } from '../../../../components/UpgradeSheet/UpgradeSheet'
+import { LimitBanner } from '../../../../components/LimitBanner/LimitBanner'
 import { formatFirestoreDate } from './utils'
 import styles from './OrdersTab.module.css'
 
 
+const NEAR_LIMIT_THRESHOLD = 3
+
+
 export default function OrdersTab({ customerId, orders, loading, measurements, showToast, onGenerateInvoice, onViewInvoice }) {
 
+  const navigate = useNavigate()
   const { addOrder } = useOrders()
+  const { isPremium, getRemaining } = useUsage()
   const { generalSettings } = useGeneralSettings()
   const { completeStep, currentStep, pendingViewItemId, pauseTour, resumeTour } = useTour()
 
@@ -21,13 +31,25 @@ export default function OrdersTab({ customerId, orders, loading, measurements, s
   const taxRate    = generalSettings.invoiceTaxRate ?? 0
 
   const [isModalOpen,   setIsModalOpen]   = useState(false)
+  const [upgradeOpen,   setUpgradeOpen]   = useState(false)
   const [selectedOrder, setSelectedOrder] = useState(null)
 
+  const remainingOrders = getRemaining('ordersPerMonth')
+  const atLimit          = !isPremium && remainingOrders <= 0
+  const nearLimit         = !isPremium && remainingOrders > 0 && remainingOrders <= NEAR_LIMIT_THRESHOLD
+  const showLimitBanner   = atLimit || nearLimit
+
   useEffect(() => {
-    const openModal = () => setIsModalOpen(true)
+    const openModal = () => {
+      if (atLimit) {
+        setUpgradeOpen(true)
+        return
+      }
+      setIsModalOpen(true)
+    }
     document.addEventListener('openAddOrderModal', openModal)
     return () => document.removeEventListener('openAddOrderModal', openModal)
-  }, [])
+  }, [atLimit])
 
   useEffect(() => {
     if (!isModalOpen) return
@@ -50,7 +72,10 @@ export default function OrdersTab({ customerId, orders, loading, measurements, s
     } catch (err) {
       console.error('[OrdersTab] failed to place order:', err)
       const code = err?.code
-      if (code === 'resource-exhausted') {
+      if (code === 'limit-reached') {
+        setIsModalOpen(false)
+        setUpgradeOpen(true)
+      } else if (code === 'resource-exhausted') {
         showToast('Failed to place order — daily limit reached, try again later')
       } else if (code === 'permission-denied') {
         showToast('Failed to place order — permission denied')
@@ -68,6 +93,11 @@ export default function OrdersTab({ customerId, orders, loading, measurements, s
       completeStep('view-new-order')
     }
     setSelectedOrder(order)
+  }
+
+  function handleUpgrade() {
+    setUpgradeOpen(false)
+    navigate('/upgrade')
   }
 
 
@@ -88,6 +118,19 @@ export default function OrdersTab({ customerId, orders, loading, measurements, s
 
   return (
     <div>
+      {showLimitBanner && (
+        <LimitBanner
+          atLimit={atLimit}
+          icon="receipt_long"
+          message={
+            atLimit
+              ? "You've reached your Free plan limit of " + USAGE_LIMITS.ordersPerMonth + " orders this month"
+              : remainingOrders + " order" + (remainingOrders === 1 ? '' : 's') + " left this month on Free plan"
+          }
+          onUpgradeClick={() => navigate('/upgrade')}
+        />
+      )}
+
       {orders.length === 0 ? (
         <EmptyState />
       ) : (
@@ -120,6 +163,15 @@ export default function OrdersTab({ customerId, orders, loading, measurements, s
         onSave={handleSaveOrder}
         taxRate={taxRate}
         taxEnabled={taxEnabled}
+      />
+
+      <UpgradeSheet
+        isOpen={upgradeOpen}
+        onClose={() => setUpgradeOpen(false)}
+        onUpgrade={handleUpgrade}
+        icon="receipt_long"
+        title="Order limit reached"
+        message={`You've hit the free plan limit of ${USAGE_LIMITS.ordersPerMonth} active orders this month. Upgrade to Premium for unlimited orders.`}
       />
 
       {selectedOrder && (
