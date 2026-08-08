@@ -4,6 +4,7 @@ import { TOURS } from '../datas/tourSteps'
 import { getSessionId } from '../utils/sessionId'
 
 const ONBOARDING_SESSION_KEY = 'tp_onboarding_completed_session'
+const REVENUE_GOAL_NUDGE_SESSION_KEY = 'tp_revenue_goal_nudge_completed_session'
 
 const STORAGE_KEY = 'tp_tours_completed'
 
@@ -64,6 +65,11 @@ export function TourProvider({ children }) {
       if (activeTourId === 'onboarding') {
         try {
           localStorage.setItem(ONBOARDING_SESSION_KEY, getSessionId())
+        } catch {}
+      }
+      if (activeTourId === 'revenue-goal-nudge') {
+        try {
+          localStorage.setItem(REVENUE_GOAL_NUDGE_SESSION_KEY, getSessionId())
         } catch {}
       }
     }
