@@ -29,6 +29,17 @@ function findScrollableAncestor(el) {
   return null
 }
 
+function findHorizontallyScrollableAncestor(el) {
+  let node = el.parentElement
+  while (node && node !== document.body && node !== document.documentElement) {
+    const style = window.getComputedStyle(node)
+    const canScrollX = (style.overflowX === 'auto' || style.overflowX === 'scroll') && node.scrollWidth > node.clientWidth
+    if (canScrollX) return node
+    node = node.parentElement
+  }
+  return null
+}
+
 export default function OnboardingTour() {
   const {
     isActive, activeTourId, currentStep, stepIndex, totalSteps,
@@ -69,6 +80,14 @@ export default function OnboardingTour() {
 
     if (scrolledStepIdRef.current !== currentStep.id) {
       scrolledStepIdRef.current = currentStep.id
+
+      const horizontalAncestor = findHorizontallyScrollableAncestor(el)
+      if (horizontalAncestor) {
+        const hContainerRect = horizontalAncestor.getBoundingClientRect()
+        const elLeftWithinContainer = r0.left - hContainerRect.left + horizontalAncestor.scrollLeft
+        const desiredScrollLeft = elLeftWithinContainer - (hContainerRect.width / 2 - r0.width / 2)
+        horizontalAncestor.scrollTo({ left: Math.max(0, desiredScrollLeft), behavior: 'smooth' })
+      }
 
       const scrollableAncestor = findScrollableAncestor(el)
       if (scrollableAncestor) {
