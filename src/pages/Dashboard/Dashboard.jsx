@@ -543,16 +543,15 @@ function Dashboard({ onMenuClick, onGoToCustomer }) {
               onDelete={removeGoal}
             />
           ) : (
-            <div data-tour="revenue-goal-card">
-              <EmptyRevenueCard
-                onOpen={() => {
-                  if (currentStep?.id === 'revenue-goal-highlight') {
-                    finishTour()
-                  }
-                  setIsGoalModalOpen(true)
-                }}
-              />
-            </div>
+            <EmptyRevenueCard
+              data-tour="revenue-goal-card"
+              onOpen={() => {
+                if (currentStep?.id === 'revenue-goal-highlight') {
+                  finishTour()
+                }
+                setIsGoalModalOpen(true)
+              }}
+            />
           )}
 
           {customersReady ? (
