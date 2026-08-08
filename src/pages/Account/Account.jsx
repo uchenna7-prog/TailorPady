@@ -34,7 +34,7 @@ import styles from './Account.module.css'
 import { db } from '../../firebase'
 
 const PROFILE_TOUR_STEP_IDS = ['highlight-profile-card', 'highlight-edit-brand', 'highlight-edit-business-info']
-
+const AUTO_OPEN_MODALS = ['brand', 'businessInfo', 'upgrade']
 
 export default function Account({ onMenuClick, isPremium = false, onUpgrade = () => {} }) {
 
@@ -85,7 +85,7 @@ export default function Account({ onMenuClick, isPremium = false, onUpgrade = ()
     const navState = location.state
     if (!navState?.autoOpenModal) return
 
-    if (navState.autoOpenModal === 'brand' || navState.autoOpenModal === 'businessInfo') {
+    if (AUTO_OPEN_MODALS.includes(navState.autoOpenModal)) {
       setActiveModal(navState.autoOpenModal)
     }
 
@@ -116,12 +116,6 @@ export default function Account({ onMenuClick, isPremium = false, onUpgrade = ()
     else goToStep(pendingCustomerId ? 'done' : 'confirm-add-customer-after-profile')
   }, [awaitingProfileTourAdvance, hasBrand, hasBusinessInfo, goToStep, pendingCustomerId])
 
-  // If the tour brought the user here via the sidebar shortcut (after
-  // finishing the customer-first path), self-correct to whichever profile
-  // section is actually still missing, or move on if both are already done.
-  // If a customer was already added earlier in this tour session, both
-  // sections being done means the whole flow is finished, not that it's
-  // time to prompt for a first customer again.
   useEffect(() => {
     if (!['highlight-sidebar-account', 'highlight-edit-brand', 'highlight-edit-business-info'].includes(currentStep?.id)) return
     if (!hasBrand) goToStep('highlight-edit-brand')
