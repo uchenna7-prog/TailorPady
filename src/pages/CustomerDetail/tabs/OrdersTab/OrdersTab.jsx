@@ -4,7 +4,6 @@ import { useOrders } from '../../../../contexts/OrdersContext'
 import { useUsage } from '../../../../contexts/UsageContext'
 import { useGeneralSettings } from '../../../../contexts/GeneralSettingsContext'
 import { useTour } from '../../../../contexts/TourContext'
-import { USAGE_LIMITS } from '../../../../datas/usageLimits'
 import { AddOrderModal } from './components/AddOrderModal/AddOrderModal'
 import OrderDetailModal from '../../../../components/OrderDetailModal/OrderDetailModal'
 import { OrderRow } from './components/OrderRow/OrderRow'
@@ -23,7 +22,7 @@ export default function OrdersTab({ customerId, orders, loading, measurements, s
 
   const navigate = useNavigate()
   const { addOrder } = useOrders()
-  const { isPremium, getRemaining } = useUsage()
+  const { hasReachedLimit, remaining, limits } = useUsage()
   const { generalSettings } = useGeneralSettings()
   const { completeStep, currentStep, pendingViewItemId, pauseTour, resumeTour } = useTour()
 
@@ -34,9 +33,9 @@ export default function OrdersTab({ customerId, orders, loading, measurements, s
   const [upgradeOpen,   setUpgradeOpen]   = useState(false)
   const [selectedOrder, setSelectedOrder] = useState(null)
 
-  const remainingOrders = getRemaining('ordersPerMonth')
-  const atLimit          = !isPremium && remainingOrders <= 0
-  const nearLimit         = !isPremium && remainingOrders > 0 && remainingOrders <= NEAR_LIMIT_THRESHOLD
+  const remainingOrders = remaining('ordersPerMonth', 'ordersPerMonth')
+  const atLimit          = hasReachedLimit('ordersPerMonth', 'ordersPerMonth')
+  const nearLimit         = !atLimit && remainingOrders <= NEAR_LIMIT_THRESHOLD
   const showLimitBanner   = atLimit || nearLimit
 
   useEffect(() => {
@@ -124,7 +123,7 @@ export default function OrdersTab({ customerId, orders, loading, measurements, s
           icon="receipt_long"
           message={
             atLimit
-              ? "You've reached your Free plan limit of " + USAGE_LIMITS.ordersPerMonth + " orders this month"
+              ? "You've reached your Free plan limit of " + limits.ordersPerMonth + " orders this month"
               : remainingOrders + " order" + (remainingOrders === 1 ? '' : 's') + " left this month on Free plan"
           }
           onUpgradeClick={() => navigate('/upgrade')}
@@ -171,7 +170,7 @@ export default function OrdersTab({ customerId, orders, loading, measurements, s
         onUpgrade={handleUpgrade}
         icon="receipt_long"
         title="Order limit reached"
-        message={`You've hit the free plan limit of ${USAGE_LIMITS.ordersPerMonth} active orders this month. Upgrade to Premium for unlimited orders.`}
+        message={`You've hit the free plan limit of ${limits.ordersPerMonth} active orders this month. Upgrade to Premium for unlimited orders.`}
       />
 
       {selectedOrder && (
