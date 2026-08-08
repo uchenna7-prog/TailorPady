@@ -10,12 +10,8 @@ import { OrderRow } from './components/OrderRow/OrderRow'
 import { OrderRowSkeleton } from './components/OrderRowSkeleton/OrderRowSkeleton'
 import { EmptyState } from './components/EmptyState/EmptyState'
 import { UpgradeSheet } from '../../../../components/UpgradeSheet/UpgradeSheet'
-import { LimitBanner } from '../../../../components/LimitBanner/LimitBanner'
 import { formatFirestoreDate } from './utils'
 import styles from './OrdersTab.module.css'
-
-
-const NEAR_LIMIT_THRESHOLD = 3
 
 
 export default function OrdersTab({ customerId, orders, loading, measurements, showToast, onGenerateInvoice, onViewInvoice }) {
@@ -35,8 +31,6 @@ export default function OrdersTab({ customerId, orders, loading, measurements, s
 
   const remainingOrders = remaining('ordersPerMonth', 'ordersPerMonth')
   const atLimit          = hasReachedLimit('ordersPerMonth', 'ordersPerMonth')
-  const nearLimit         = !atLimit && remainingOrders <= NEAR_LIMIT_THRESHOLD
-  const showLimitBanner   = atLimit || nearLimit
 
   useEffect(() => {
     const openModal = () => {
@@ -117,19 +111,6 @@ export default function OrdersTab({ customerId, orders, loading, measurements, s
 
   return (
     <div>
-      {showLimitBanner && (
-        <LimitBanner
-          atLimit={atLimit}
-          icon="receipt_long"
-          message={
-            atLimit
-              ? "You've reached your Free plan limit of " + limits.ordersPerMonth + " orders this month"
-              : remainingOrders + " order" + (remainingOrders === 1 ? '' : 's') + " left this month on Free plan"
-          }
-          onUpgradeClick={() => navigate('/upgrade')}
-        />
-      )}
-
       {orders.length === 0 ? (
         <EmptyState />
       ) : (
