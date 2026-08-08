@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useCallback, useRef } from 'react'
+import { createContext, useContext, useState, useCallback, useRef, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { TOURS } from '../datas/tourSteps'
 
@@ -30,6 +30,8 @@ export function TourProvider({ children }) {
   const [pendingViewItemId, setPendingViewItemId] = useState(null)
   const [paused, setPaused]                 = useState(false)
   const [completedTours, setCompletedTours] = useState(loadCompletedTours)
+  const [quitPromptOpen, setQuitPromptOpen] = useState(false)
+  const pendingNavRef = useRef(null)
   const pauseCountRef = useRef(0)
 
   const steps       = activeTourId ? TOURS[activeTourId] : null
@@ -63,11 +65,44 @@ export function TourProvider({ children }) {
   const startTour = useCallback((tourId) => {
     if (!TOURS[tourId]) return
     resetTourState(tourId, 0)
+    window.history.pushState({ tourGuard: true }, '')
   }, [resetTourState])
 
   const skipTour = useCallback(() => {
     resetTourState(null)
   }, [resetTourState])
+
+  const guardNavigation = useCallback((navFn) => {
+    if (!activeTourId) {
+      navFn()
+      return
+    }
+    pendingNavRef.current = navFn
+    setQuitPromptOpen(true)
+  }, [activeTourId])
+
+  const confirmQuitTour = useCallback(() => {
+    setQuitPromptOpen(false)
+    skipTour()
+    const fn = pendingNavRef.current
+    pendingNavRef.current = null
+    fn?.()
+  }, [skipTour])
+
+  const cancelQuitTour = useCallback(() => {
+    setQuitPromptOpen(false)
+    pendingNavRef.current = null
+  }, [])
+
+  useEffect(() => {
+    function handlePopState() {
+      if (!activeTourId) return
+      window.history.pushState({ tourGuard: true }, '')
+      guardNavigation(() => window.history.back())
+    }
+    window.addEventListener('popstate', handlePopState)
+    return () => window.removeEventListener('popstate', handlePopState)
+  }, [activeTourId, guardNavigation])
 
   const advanceTo = useCallback((nextIndex) => {
     if (!steps) return
@@ -176,6 +211,10 @@ export function TourProvider({ children }) {
     skipCurrentStep,
     pauseTour,
     resumeTour,
+    quitPromptOpen,
+    guardNavigation,
+    confirmQuitTour,
+    cancelQuitTour,
   }
 
   return <TourContext.Provider value={value}>{children}</TourContext.Provider>
