@@ -1,58 +1,47 @@
-import { createContext, useContext, useEffect, useState, useCallback, useMemo } from 'react'
+import { createContext, useContext, useState, useEffect, useCallback } from 'react'
+import { db } from '../firebase'
 import { useAuth } from './AuthContext'
 import { usePremium } from './PremiumContext'
-import { db } from '../firebase'
-import { subscribeToUsage, incrementUsage } from '../services/usageService'
-import { USAGE_LIMITS } from '../datas/usageLimits'
-
+import { USAGE_LIMITS, subscribeToUsage, incrementUsage } from '../services/usageService'
 const UsageContext = createContext(null)
-
 export function UsageProvider({ children }) {
   const { user } = useAuth()
   const { isPremium } = usePremium()
   const [usage, setUsage] = useState({})
-
+  const [loading, setLoading] = useState(true)
   useEffect(() => {
     if (!user) {
       setUsage({})
+      setLoading(false)
       return
     }
-    return subscribeToUsage(db, user.uid, setUsage)
+    setLoading(true)
+    const unsub = subscribeToUsage(db, user.uid, data => {
+      setUsage(data)
+      setLoading(false)
+    })
+    return unsub
   }, [user])
-
-  const recordUsage = useCallback(async (field) => {
-    if (!user) return
+  const recordUsage = useCallback(async field => {
+    if (!user || isPremium) return
     await incrementUsage(db, user.uid, field)
-  }, [user])
-
-  const getRemaining = useCallback((field) => {
-    const limit = USAGE_LIMITS[field]
-    if (limit === undefined) return Infinity
-    const used = usage[field] || 0
-    return Math.max(0, limit - used)
-  }, [usage])
-
-  const isAtLimit = useCallback((field) => {
+  }, [user, isPremium])
+  const hasReachedLimit = useCallback((field, limitKey) => {
     if (isPremium) return false
-    return getRemaining(field) <= 0
-  }, [isPremium, getRemaining])
-
-  const value = useMemo(() => ({
-    usage,
-    limits: USAGE_LIMITS,
-    isPremium,
-    recordUsage,
-    getRemaining,
-    isAtLimit,
-  }), [usage, isPremium, recordUsage, getRemaining, isAtLimit])
-
+    return (usage[field] || 0) >= USAGE_LIMITS[limitKey]
+  }, [isPremium, usage])
+  const remaining = useCallback((field, limitKey) => {
+    if (isPremium) return Infinity
+    return Math.max(0, USAGE_LIMITS[limitKey] - (usage[field] || 0))
+  }, [isPremium, usage])
   return (
-    <UsageContext.Provider value={value}>
+    <UsageContext.Provider value={{ usage, loading, recordUsage, hasReachedLimit, remaining, limits: USAGE_LIMITS }}>
       {children}
     </UsageContext.Provider>
   )
 }
-
 export function useUsage() {
-  return useContext(UsageContext)
-}
+  const ctx = useContext(UsageContext)
+  if (!ctx) throw new Error('useUsage must be used inside UsageProvider')
+  return ctx
+} 
