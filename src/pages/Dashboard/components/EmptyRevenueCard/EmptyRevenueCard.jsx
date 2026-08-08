@@ -1,8 +1,8 @@
 import styles from './EmptyRevenueCard.module.css'
 
-export function EmptyRevenueCard({ onOpen }) {
+export function EmptyRevenueCard({ onOpen, ...rest }) {
   return (
-    <div className={styles.card} onClick={onOpen}>
+    <div className={styles.card} onClick={onOpen} {...rest}>
       <div className={styles.iconWrap}>
         <span className="mi" style={{ fontSize: '1.6rem', color: 'var(--accent)' }}>ads_click</span>
       </div>
