@@ -7,6 +7,8 @@ import {
   useMemo
 } from 'react'
 import { useAuth } from './AuthContext'
+import { usePremium } from './PremiumContext'
+import { USAGE_LIMITS } from '../datas/usageLimits'
 import {
   subscribeToCustomers,
   addCustomer              as addCustomerToDb,
@@ -14,19 +16,16 @@ import {
   deleteCustomer           as deleteCustomerFromDb,
   deleteCustomerAndAllData as deleteCustomerAndAllDataFromDb,
 } from '../services/customerService'
-
 const CustomerContext = createContext(null)
-
 function makeTempId() {
   return `temp-${Date.now()}-${Math.random().toString(36).slice(2)}`
 }
-
 export function CustomerProvider({ children }) {
   const { user } = useAuth()
+  const { isPremium } = usePremium()
   const [customers, setCustomers] = useState([])
   const [loading,   setLoading]   = useState(true)
   const [error,     setError]     = useState(null)
-
   useEffect(() => {
     if (!user) {
       setCustomers([])
@@ -42,24 +41,24 @@ export function CustomerProvider({ children }) {
     )
     return unsubscribe
   }, [user])
-
   const addCustomer = useCallback(async (customer) => {
     if (!user) return null
+    if (!isPremium && customers.length >= USAGE_LIMITS.customers) {
+      const limitError = new Error('CUSTOMER_LIMIT_REACHED')
+      limitError.code = 'limit-reached'
+      throw limitError
+    }
     const { id, ...data } = customer
     const tempId = makeTempId()
-
     setCustomers(prev => [
       { id: tempId, clientId: tempId, ...data },
       ...prev,
     ])
-
     addCustomerToDb(user.uid, { ...data, clientId: tempId }).catch(err => {
       setError(err.message)
     })
-
     return tempId
-  }, [user])
-
+  }, [user, isPremium, customers.length])
   const updateCustomer = useCallback(async (id, updates) => {
     if (!user) return
     try {
@@ -68,7 +67,6 @@ export function CustomerProvider({ children }) {
       setError(err.message)
     }
   }, [user])
-
   const deleteCustomer = useCallback(async (id) => {
     if (!user) return
     try {
@@ -77,16 +75,13 @@ export function CustomerProvider({ children }) {
       setError(err.message)
     }
   }, [user])
-
   const deleteCustomerAndAllData = useCallback(async (id) => {
     if (!user) return
     await deleteCustomerAndAllDataFromDb(user.uid, String(id))
   }, [user])
-
   const getCustomer = useCallback((id) => {
     return customers.find(c => String(c.id) === String(id)) ?? null
   }, [customers])
-
   const value = useMemo(() => ({
     customers,
     loading,
@@ -97,14 +92,12 @@ export function CustomerProvider({ children }) {
     deleteCustomerAndAllData,
     getCustomer,
   }), [customers, loading, error, addCustomer, updateCustomer, deleteCustomer, deleteCustomerAndAllData, getCustomer])
-
   return (
     <CustomerContext.Provider value={value}>
       {children}
     </CustomerContext.Provider>
   )
 }
-
 export function useCustomers() {
   return useContext(CustomerContext)
 }
