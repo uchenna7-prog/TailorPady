@@ -1,21 +1,33 @@
 import styles from './LimitBanner.module.css'
 
-export function LimitBanner({ atLimit, icon, message, onUpgradeClick, compact, current, max }) {
+export function LimitBanner({
+  atLimit,
+  icon,
+  message,
+  onUpgradeClick,
+  compact,
+  current,
+  max,
+  meter = 'fraction',
+  divider = false,
+}) {
   if (compact) {
-    const pct = typeof current === 'number' && typeof max === 'number' && max > 0
-      ? Math.min(100, (current / max) * 100)
-      : null
+    const hasCounts = typeof current === 'number' && typeof max === 'number' && max > 0
+    const pct = hasCounts ? Math.min(100, (current / max) * 100) : null
 
     return (
-      <div className={`${styles.compactBanner} ${atLimit ? styles.compactBannerAtLimit : ''}`}>
+      <div className={`${styles.compactBanner} ${divider ? styles.compactBannerDivider : ''} ${atLimit ? styles.compactBannerAtLimit : ''}`}>
         <div className={styles.compactTop}>
           <span className="mi" style={{ fontSize: '0.95rem' }}>{icon || 'info'}</span>
           <span className={styles.compactMessage}>{message}</span>
+          {hasCounts && meter === 'fraction' && (
+            <span className={styles.compactFraction}>{current}/{max}</span>
+          )}
           <button className={styles.compactUpgradeLink} onClick={onUpgradeClick}>
             Upgrade
           </button>
         </div>
-        {pct !== null && (
+        {hasCounts && meter === 'bar' && (
           <div className={styles.compactTrack}>
             <div className={styles.compactFill} style={{ width: `${pct}%` }} />
           </div>
