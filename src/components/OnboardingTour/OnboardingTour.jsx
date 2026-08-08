@@ -1,4 +1,3 @@
-
 import { useEffect, useRef, useState, useCallback, useLayoutEffect } from 'react'
 import { useLocation } from 'react-router-dom'
 import { useTour } from '../../contexts/TourContext'
@@ -290,10 +289,10 @@ export default function OnboardingTour() {
     return () => observer.disconnect()
   }, [isActive, currentStep])
 
-  if (!isActive || !currentStep) {
+  if (quitPromptOpen) {
     return (
       <ConfirmSheet
-        open={quitPromptOpen}
+        open
         title="Quit the tour?"
         message="You can restart it any time from the Take a tour button."
         confirmText="Quit"
@@ -302,6 +301,8 @@ export default function OnboardingTour() {
       />
     )
   }
+
+  if (!isActive || !currentStep) return null
 
   const isLastStep = stepIndex === totalSteps - 1
   const hasTarget = !!rect
@@ -428,15 +429,6 @@ export default function OnboardingTour() {
           </div>
         ) : null}
       </div>
-
-      <ConfirmSheet
-        open={quitPromptOpen}
-        title="Quit the tour?"
-        message="You can restart it any time from the Take a tour button."
-        confirmText="Quit"
-        onConfirm={confirmQuitTour}
-        onCancel={cancelQuitTour}
-      />
     </div>
   )
 }
