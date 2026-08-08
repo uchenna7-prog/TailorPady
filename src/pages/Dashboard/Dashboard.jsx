@@ -13,6 +13,7 @@ import { usePayments } from '../../contexts/PaymentContext'
 import { useProfileSettings } from '../../contexts/ProfileSettingsContext'
 import { useRevenueGoal } from '../../contexts/RevenueGoalContext'
 import { useTour } from '../../contexts/TourContext'
+import { useFeatureHints } from '../../contexts/FeatureHintContext'
 import { APPOINTMENT_TYPE_ICONS } from '../../datas/appointmentDatas'
 import { TOUR_CATALOG } from '../../datas/tourCatalog'
 import {
@@ -126,6 +127,7 @@ function Dashboard({ onMenuClick, onGoToCustomer }) {
   const { profileSettings, isLoading: profileLoading }                   = useProfileSettings()
   const { goal, derived, loading: goalLoading, saveGoal, removeGoal }    = useRevenueGoal()
   const { startTour, completeStep, currentStep, hasCompletedTour, isActive: tourActive, goToStep } = useTour()
+  const { triggerHint } = useFeatureHints()
 
   const [isBannerDismissed, setIsBannerDismissed] = useState(loadNotificationDismissed)
   const [isGoalModalOpen,   setIsGoalModalOpen]   = useState(false)
@@ -197,6 +199,23 @@ function Dashboard({ onMenuClick, onGoToCustomer }) {
     if (showProfileSetupCard) return
     goToStep('confirm-add-customer-after-profile')
   }, [currentStep, profileLoading, showProfileSetupCard, goToStep])
+
+  const onboardingComplete = hasCompletedTour('onboarding')
+  const prevOnboardingCompleteRef = useRef(onboardingComplete)
+
+  useEffect(() => {
+    if (onboardingComplete && !prevOnboardingCompleteRef.current) {
+      triggerHint('take-tour-discovery')
+    }
+    prevOnboardingCompleteRef.current = onboardingComplete
+  }, [onboardingComplete, triggerHint])
+
+  useEffect(() => {
+    if (goalLoading) return
+    if (goal) return
+    if (!onboardingComplete) return
+    triggerHint('revenue-goal-card')
+  }, [goalLoading, goal, onboardingComplete, triggerHint])
 
   function showToast(msg) {
     setToastMsg(msg)
@@ -446,6 +465,7 @@ function Dashboard({ onMenuClick, onGoToCustomer }) {
                 type="button"
                 className={styles.tourLink}
                 onClick={handleTakeTourClick}
+                data-hint="take-tour-btn"
               >
                 <span className="mi" style={{ fontSize: '0.85rem', verticalAlign: 'middle', marginRight: '3px' }}>help_outline</span>
                 Take a tour
@@ -499,7 +519,9 @@ function Dashboard({ onMenuClick, onGoToCustomer }) {
               onDelete={removeGoal}
             />
           ) : (
-            <EmptyRevenueCard onOpen={() => setIsGoalModalOpen(true)} />
+            <div data-hint="revenue-goal-card">
+              <EmptyRevenueCard onOpen={() => setIsGoalModalOpen(true)} />
+            </div>
           )}
 
           {customersReady ? (
