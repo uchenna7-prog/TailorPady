@@ -14,7 +14,6 @@ import { useProfileSettings } from '../../contexts/ProfileSettingsContext'
 import { useRevenueGoal } from '../../contexts/RevenueGoalContext'
 import { useTour } from '../../contexts/TourContext'
 import { APPOINTMENT_TYPE_ICONS } from '../../datas/appointmentDatas'
-import { TOUR_CATALOG } from '../../datas/tourCatalog'
 import { getSessionId } from '../../utils/sessionId'
 import {
   getGreeting, getGreetingEmoji, getRandomSubtext, formatUpdatedTime,
@@ -201,6 +200,7 @@ function Dashboard({ onMenuClick, onGoToCustomer }) {
 
   const onboardingComplete = hasCompletedTour('onboarding')
   const discoverToursComplete = hasCompletedTour('discover-tours-nudge')
+  const revenueGoalNudgeComplete = hasCompletedTour('revenue-goal-nudge')
 
   const isNewSessionSinceOnboarding = (() => {
     try {
@@ -211,28 +211,37 @@ function Dashboard({ onMenuClick, onGoToCustomer }) {
     }
   })()
 
+  const isNewSessionSinceRevenueGoalNudge = (() => {
+    try {
+      const completedInSession = localStorage.getItem('tp_revenue_goal_nudge_completed_session')
+      return completedInSession !== getSessionId()
+    } catch {
+      return true
+    }
+  })()
+
   useEffect(() => {
     if (!onboardingComplete) return
-    if (discoverToursComplete) return
+    if (goalLoading || goal) return
+    if (revenueGoalNudgeComplete) return
     if (!isNewSessionSinceOnboarding) return
+    if (tourActive) return
+    const timer = setTimeout(() => {
+      startTour('revenue-goal-nudge')
+    }, 2000)
+    return () => clearTimeout(timer)
+  }, [onboardingComplete, goalLoading, goal, revenueGoalNudgeComplete, isNewSessionSinceOnboarding, tourActive, startTour])
+
+  useEffect(() => {
+    if (!revenueGoalNudgeComplete) return
+    if (discoverToursComplete) return
+    if (!isNewSessionSinceRevenueGoalNudge) return
     if (tourActive) return
     const timer = setTimeout(() => {
       startTour('discover-tours-nudge')
     }, 2000)
     return () => clearTimeout(timer)
-  }, [onboardingComplete, discoverToursComplete, isNewSessionSinceOnboarding, tourActive, startTour])
-
-  useEffect(() => {
-    if (goalLoading || goal) return
-    if (!discoverToursComplete) return
-    if (hasCompletedTour('revenue-goal-nudge')) return
-    if (tourActive) return
-    if (allPayments.length === 0) return
-    const timer = setTimeout(() => {
-      startTour('revenue-goal-nudge')
-    }, 1200)
-    return () => clearTimeout(timer)
-  }, [goalLoading, goal, discoverToursComplete, hasCompletedTour, tourActive, allPayments.length, startTour])
+  }, [revenueGoalNudgeComplete, discoverToursComplete, isNewSessionSinceRevenueGoalNudge, tourActive, startTour])
 
   function showToast(msg) {
     setToastMsg(msg)
@@ -301,12 +310,7 @@ function Dashboard({ onMenuClick, onGoToCustomer }) {
     if (currentStep?.id === 'discover-tours-highlight') {
       finishTour()
     }
-    const incomplete = TOUR_CATALOG.filter(t => !hasCompletedTour(t.id))
-    if (incomplete.length === 1) {
-      startTour(incomplete[0].id)
-    } else {
-      setIsTourPickerOpen(true)
-    }
+    setIsTourPickerOpen(true)
   }
 
   function handleTourPicked(tourId) {
