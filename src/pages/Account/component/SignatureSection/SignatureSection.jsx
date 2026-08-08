@@ -248,7 +248,7 @@ function PhotoTab({ onChange, userId }) {
             </p>
             <p className={styles.uploadSub}>
               {canAttempt
-                ? 'Sign on white paper, take a photo or upload from gallery — background is removed automatically'
+                ? 'Sign on white paper, take a photo or upload from gallery, background is removed automatically'
                 : 'Your 5 monthly attempts have been used. Resets next month.'}
             </p>
             {canAttempt && <span className={styles.uploadBtn}>Choose Photo</span>}
