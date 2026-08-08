@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react'
 import { useAuth } from '../contexts/AuthContext'
+import { useUsage } from '../contexts/UsageContext'
 import { deleteFromCloudinary } from '../services/cloudinaryService'
 
 import {
@@ -46,6 +47,7 @@ function makeTempId() {
 
 export function useCustomerData(customerId) {
   const { user } = useAuth()
+  const { hasReachedLimit, recordUsage } = useUsage()
 
   const [measurements, setMeasurements] = useState([])
   const [orders,       setOrders]       = useState([])
@@ -126,12 +128,18 @@ export function useCustomerData(customerId) {
 
   const saveMeasurement = useCallback(async (entry) => {
     if (!user || !customerId) return null
+    if (hasReachedLimit('measurementsPerMonth', 'measurementsPerMonth')) {
+      const limitError = new Error('MEASUREMENT_LIMIT_REACHED')
+      limitError.code = 'limit-reached'
+      throw limitError
+    }
     const { id: _, ...data } = entry
     const tempId = makeTempId()
     addMeasurementOptimistic({ id: tempId, clientId: tempId, ...data })
     addMeasurementToDb(user.uid, customerId, { ...data, clientId: tempId }).catch(() => {})
+    recordUsage('measurementsPerMonth').catch(() => {})
     return tempId
-  }, [user, customerId, addMeasurementOptimistic])
+  }, [user, customerId, addMeasurementOptimistic, hasReachedLimit, recordUsage])
 
   const updateMeasurement = useCallback(async (measurementId, data) => {
     if (!user || !customerId) return
