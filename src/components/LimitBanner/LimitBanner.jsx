@@ -18,12 +18,14 @@ export function LimitBanner({
     return (
       <div className={`${styles.compactBanner} ${divider ? styles.compactBannerDivider : ''} ${atLimit ? styles.compactBannerAtLimit : ''}`}>
         <div className={styles.compactTop}>
-          <span className="mi" style={{ fontSize: '0.95rem' }}>{icon || 'info'}</span>
+          <div className={styles.compactIconBadge}>
+            <span className="mi" style={{ fontSize: '0.85rem' }}>{icon || 'info'}</span>
+          </div>
           <span className={styles.compactMessage}>{message}</span>
           {hasCounts && meter === 'fraction' && (
             <span className={styles.compactFraction}>{current}/{max}</span>
           )}
-          <button className={styles.compactUpgradeLink} onClick={onUpgradeClick}>
+          <button className={styles.compactUpgradePill} onClick={onUpgradeClick}>
             Upgrade
           </button>
         </div>
