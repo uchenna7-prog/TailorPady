@@ -22,7 +22,6 @@ import { AgentProvider }                  from './contexts/AgentContext'
 import { AutonomousAgentProvider }        from './contexts/AutonomousAgentContext'
 import { InstallProvider }                from './contexts/InstallContext'
 import { BadgeProvider }                  from './contexts/BadgeContext'
-import { FeatureHintProvider }            from './contexts/FeatureHintContext'
 import App from './App'
 import './index.css'
 import { registerSW } from 'virtual:pwa-register'
@@ -52,9 +51,7 @@ ReactDOM.createRoot(document.getElementById('root')).render(
                                           <AutonomousAgentProvider>
                                             <AgentProvider>
                                               <NotificationProvider>
-                                                <FeatureHintProvider>
-                                                  <App />
-                                                </FeatureHintProvider>
+                                                <App />
                                               </NotificationProvider>
                                             </AgentProvider>
                                           </AutonomousAgentProvider>
