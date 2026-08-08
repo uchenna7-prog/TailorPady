@@ -1,6 +1,9 @@
 import { createContext, useContext, useState, useCallback, useRef, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { TOURS } from '../datas/tourSteps'
+import { getSessionId } from '../utils/sessionId'
+
+const ONBOARDING_SESSION_KEY = 'tp_onboarding_completed_session'
 
 const STORAGE_KEY = 'tp_tours_completed'
 
@@ -58,6 +61,11 @@ export function TourProvider({ children }) {
         saveCompletedTours(next)
         return next
       })
+      if (activeTourId === 'onboarding') {
+        try {
+          localStorage.setItem(ONBOARDING_SESSION_KEY, getSessionId())
+        } catch {}
+      }
     }
     resetTourState(null)
   }, [activeTourId, resetTourState])
