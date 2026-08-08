@@ -86,8 +86,11 @@
   gap: 6px;
   padding: 10px 4px 12px;
   margin-bottom: 6px;
-  border-bottom: 1px solid var(--border);
   color: var(--text);
+}
+
+.compactBannerDivider {
+  border-bottom: 1px solid var(--border);
 }
 
 .compactTop {
@@ -105,6 +108,18 @@
   color: var(--text2);
   letter-spacing: -0.01em;
   line-height: 1.3;
+}
+
+.compactFraction {
+  flex-shrink: 0;
+  padding: 2px 8px;
+  border-radius: 6px;
+  background: var(--surface3);
+  color: var(--text2);
+  font-size: 0.7rem;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  font-variant-numeric: tabular-nums;
 }
 
 .compactUpgradeLink {
@@ -139,6 +154,11 @@
 }
 
 .compactBannerAtLimit .compactMessage {
+  color: var(--danger);
+}
+
+.compactBannerAtLimit .compactFraction {
+  background: color-mix(in srgb, var(--danger) 14%, transparent);
   color: var(--danger);
 }
 
