@@ -1,6 +1,8 @@
+
 import { useEffect, useRef, useState, useCallback, useLayoutEffect } from 'react'
 import { useLocation } from 'react-router-dom'
 import { useTour } from '../../contexts/TourContext'
+import ConfirmSheet from '../ConfirmSheet/ConfirmSheet'
 import styles from './OnboardingTour.module.css'
 
 const PAD = 8
@@ -44,7 +46,7 @@ export default function OnboardingTour() {
   const {
     isActive, activeTourId, currentStep, stepIndex, totalSteps,
     skipTour, finishTour, advanceManual, resolveConfirm, resolveBranch, skipCurrentStep,
-    pauseTour, resumeTour,
+    pauseTour, resumeTour, quitPromptOpen, confirmQuitTour, cancelQuitTour,
   } = useTour()
   const location = useLocation()
   const [rect, setRect] = useState(null)
@@ -288,7 +290,18 @@ export default function OnboardingTour() {
     return () => observer.disconnect()
   }, [isActive, currentStep])
 
-  if (!isActive || !currentStep) return null
+  if (!isActive || !currentStep) {
+    return (
+      <ConfirmSheet
+        open={quitPromptOpen}
+        title="Quit the tour?"
+        message="You can restart it any time from the Take a tour button."
+        confirmText="Quit"
+        onConfirm={confirmQuitTour}
+        onCancel={cancelQuitTour}
+      />
+    )
+  }
 
   const isLastStep = stepIndex === totalSteps - 1
   const hasTarget = !!rect
@@ -415,6 +428,15 @@ export default function OnboardingTour() {
           </div>
         ) : null}
       </div>
+
+      <ConfirmSheet
+        open={quitPromptOpen}
+        title="Quit the tour?"
+        message="You can restart it any time from the Take a tour button."
+        confirmText="Quit"
+        onConfirm={confirmQuitTour}
+        onCancel={cancelQuitTour}
+      />
     </div>
   )
 }
