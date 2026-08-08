@@ -1,26 +1,48 @@
 import { useState, useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { useTour } from '../../../../contexts/TourContext'
+import { useUsage } from '../../../../contexts/UsageContext'
 import { EmptyState } from './components/EmptyState/EmptyState'
 import { MeasurementRow } from './components/MeasurementRow/MeasurementRow'
 import { MeasurementDetailsModal } from './components/MeasurementDetailsModal/MeasurementDetailsModal'
 import { MeasurementRowSkeleton } from './components/MeasurementRowSkeleton/MeasurementRowSkeleton'
 import { AddMeasurementModal } from './components/AddMeasurementModal/AddMeasurementModal'
+import { UpgradeSheet } from '../../../../components/UpgradeSheet/UpgradeSheet'
+import { LimitBanner } from '../../../../components/LimitBanner/LimitBanner'
 import { groupMeasurementsByDate } from './utils'
 import ConfirmSheet from '../../../../components/ConfirmSheet/ConfirmSheet'
 import styles from './MeasurementsTab.module.css'
 
+
+const NEAR_LIMIT_THRESHOLD = 3
+
+
 export default function MeasurementsTab({ measurements, loading, gender, onSave, onUpdate, onDelete, showToast }) {
+  const navigate = useNavigate()
   const { completeStep, currentStep, pendingViewItemId, pauseTour, resumeTour } = useTour()
+  const { hasReachedLimit, remaining, limits } = useUsage()
 
   const [isAddModalOpen,      setIsAddModalOpen]      = useState(false)
+  const [upgradeOpen,         setUpgradeOpen]         = useState(false)
   const [selectedMeasurement, setSelectedMeasurement] = useState(null)
   const [measurementToDelete, setMeasurementToDelete] = useState(null)
 
+  const remainingMeasurements = remaining('measurementsPerMonth', 'measurementsPerMonth')
+  const atLimit                = hasReachedLimit('measurementsPerMonth', 'measurementsPerMonth')
+  const nearLimit               = !atLimit && remainingMeasurements <= NEAR_LIMIT_THRESHOLD
+  const showLimitBanner         = atLimit || nearLimit
+
   useEffect(() => {
-    const handleOpenAddModal = () => setIsAddModalOpen(true)
+    const handleOpenAddModal = () => {
+      if (atLimit) {
+        setUpgradeOpen(true)
+        return
+      }
+      setIsAddModalOpen(true)
+    }
     document.addEventListener('openAddMeasurementModal', handleOpenAddModal)
     return () => document.removeEventListener('openAddMeasurementModal', handleOpenAddModal)
-  }, [])
+  }, [atLimit])
 
   useEffect(() => {
     if (!isAddModalOpen) return
@@ -40,7 +62,12 @@ export default function MeasurementsTab({ measurements, loading, gender, onSave,
       showToast('Measurement saved ✓')
       setIsAddModalOpen(false)
       completeStep('add-measurement', { itemId: newId ? String(newId) : null })
-    } catch {
+    } catch (err) {
+      if (err?.code === 'limit-reached') {
+        setIsAddModalOpen(false)
+        setUpgradeOpen(true)
+        return
+      }
       showToast('Failed to save measurement.')
     }
   }
@@ -77,6 +104,11 @@ export default function MeasurementsTab({ measurements, loading, gender, onSave,
     setMeasurementToDelete(null)
   }
 
+  function handleUpgrade() {
+    setUpgradeOpen(false)
+    navigate('/upgrade')
+  }
+
   if (loading) {
     return (
       <div className={styles.measurementGroup}>
@@ -89,6 +121,19 @@ export default function MeasurementsTab({ measurements, loading, gender, onSave,
 
   return (
     <div>
+      {showLimitBanner && (
+        <LimitBanner
+          atLimit={atLimit}
+          icon="straighten"
+          message={
+            atLimit
+              ? "You've reached your Free plan limit of " + limits.measurementsPerMonth + " measurements this month"
+              : remainingMeasurements + " measurement" + (remainingMeasurements === 1 ? '' : 's') + " left this month on Free plan"
+          }
+          onUpgradeClick={() => navigate('/upgrade')}
+        />
+      )}
+
       {measurements.length === 0 ? (
         <EmptyState />
       ) : (
@@ -119,6 +164,15 @@ export default function MeasurementsTab({ measurements, loading, gender, onSave,
         gender={gender}
         onClose={() => setIsAddModalOpen(false)}
         onSave={handleSave}
+      />
+
+      <UpgradeSheet
+        isOpen={upgradeOpen}
+        onClose={() => setUpgradeOpen(false)}
+        onUpgrade={handleUpgrade}
+        icon="straighten"
+        title="Measurement limit reached"
+        message={`You've hit the free plan limit of ${limits.measurementsPerMonth} measurement records this month. Upgrade to Premium for unlimited measurements.`}
       />
 
       {selectedMeasurement && (
