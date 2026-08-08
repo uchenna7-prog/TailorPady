@@ -9,10 +9,14 @@ import { CustomerRow } from './components/CustomerRow/CustomerRow'
 import { AddCustomerModal } from './components/AddCustomerModal/AddCustomerModal'
 import { EmptyState } from './components/EmptyState/EmptyState'
 import { UpgradeSheet } from '../../components/UpgradeSheet/UpgradeSheet'
+import { LimitBanner } from '../../components/LimitBanner/LimitBanner'
 import BottomNav from '../../components/BottomNav/BottomNav'
 import Header from '../../components/Header/Header'
 import Toast from '../../components/Toast/Toast'
 import styles from './Customers.module.css'
+
+
+const NEAR_LIMIT_THRESHOLD = 3
 
 
 export default function Customers({ onMenuClick }) {
@@ -31,6 +35,11 @@ export default function Customers({ onMenuClick }) {
   const [filterOpen,   setFilterOpen]   = useState(false)
   const toastTimer = useRef(null)
 
+  const remainingSlots = USAGE_LIMITS.customers - customers.length
+  const atLimit         = !isPremium && remainingSlots <= 0
+  const nearLimit        = !isPremium && remainingSlots > 0 && remainingSlots <= NEAR_LIMIT_THRESHOLD
+  const showLimitBanner  = atLimit || nearLimit
+
   useEffect(() => {
     if (!formOpen) return
     pauseTour()
@@ -44,7 +53,7 @@ export default function Customers({ onMenuClick }) {
   }
 
   const handleFabClick = () => {
-    if (!isPremium && customers.length >= USAGE_LIMITS.customers) {
+    if (atLimit) {
       setUpgradeOpen(true)
       return
     }
@@ -232,6 +241,19 @@ export default function Customers({ onMenuClick }) {
           </div>
         )}
       </div>
+
+      {showLimitBanner && (
+        <LimitBanner
+          atLimit={atLimit}
+          icon="group"
+          message={
+            atLimit
+              ? "You've reached your Free plan limit of " + USAGE_LIMITS.customers + " customers"
+              : remainingSlots + " customer slot" + (remainingSlots === 1 ? '' : 's') + " left on Free plan"
+          }
+          onUpgradeClick={() => navigate('/upgrade')}
+        />
+      )}
 
       {sectionLabel && <div className={styles.sectionLabel}>{sectionLabel}</div>}
 
