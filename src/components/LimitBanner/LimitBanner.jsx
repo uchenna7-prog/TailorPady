@@ -9,7 +9,6 @@ export function LimitBanner({ atLimit, icon, message, onUpgradeClick }) {
       <span className={styles.message}>{message}</span>
       <button className={styles.upgradeButton} onClick={onUpgradeClick}>
         Upgrade
-        <span className="mi" style={{ fontSize: '1rem' }}>arrow_forward</span>
       </button>
     </div>
   )
