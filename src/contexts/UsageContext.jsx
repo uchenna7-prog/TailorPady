@@ -1,96 +1,57 @@
-import {
-  createContext,
-  useContext,
-  useState,
-  useEffect,
-  useMemo,
-  useCallback,
-} from 'react'
+import { createContext, useContext, useEffect, useState, useCallback, useMemo } from 'react'
 import { useAuth } from './AuthContext'
-import { useUsage } from './UsageContext'
-import {
-  subscribeToOrders,
-  addOrder          as addOrderToDb,
-  updateOrder       as updateOrderInDb,
-  updateOrderStatus as updateOrderStatusInDb,
-  updateOrderStage  as updateOrderStageInDb,
-  deleteOrder       as deleteOrderFromDb,
-} from '../services/orderService'
-import { useCustomers } from './CustomerContext'
-const OrdersContext = createContext(null)
-function makeTempOrderId() {
-  return `temp-${Date.now()}-${Math.random().toString(36).slice(2)}`
-}
-export function OrdersProvider({ children }) {
+import { usePremium } from './PremiumContext'
+import { db } from '../firebase'
+import { subscribeToUsage, incrementUsage } from '../services/usageService'
+import { USAGE_LIMITS } from '../datas/usageLimits'
+
+const UsageContext = createContext(null)
+
+export function UsageProvider({ children }) {
   const { user } = useAuth()
-  const { hasReachedLimit, recordUsage } = useUsage()
-  const [allOrders, setAllOrders] = useState([])
-  const { customers } = useCustomers()
+  const { isPremium } = usePremium()
+  const [usage, setUsage] = useState({})
+
   useEffect(() => {
     if (!user) {
-      setAllOrders([])
+      setUsage({})
       return
     }
-    return subscribeToOrders(user.uid, setAllOrders)
+    return subscribeToUsage(db, user.uid, setUsage)
   }, [user])
-const enrichedOrders = useMemo(() => {
-  const customerMap = new Map(
-    customers.map(c => [c.id, c])
-  )
-  return allOrders.map(order => ({
-    ...order,
-    customerName: customerMap.get(order.customerId)?.name ?? 'Unknown',
-    customerPhone: customerMap.get(order.customerId)?.phone ?? null,
-  }))
-  }, [allOrders, customers])
-  const addOrder = useCallback(async (customerId, data) => {
-    if (!user) return null
-    if (hasReachedLimit('ordersPerMonth', 'ordersPerMonth')) {
-      const limitError = new Error('ORDER_LIMIT_REACHED')
-      limitError.code = 'limit-reached'
-      throw limitError
-    }
-    const { id: _, ...orderData } = data
-    const nextOrderNumber = allOrders.reduce((max, o) => Math.max(max, o.orderNumber || 0), 0) + 1
-    const tempId = makeTempOrderId()
-    setAllOrders(prev => [
-      { id: tempId, clientId: tempId, customerId, orderNumber: nextOrderNumber, status: orderData.status ?? 'pending', createdAt: new Date(), ...orderData },
-      ...prev,
-    ])
-    addOrderToDb(user.uid, customerId, { ...orderData, orderNumber: nextOrderNumber, clientId: tempId }).catch(() => {})
-    recordUsage('ordersPerMonth').catch(() => {})
-    return tempId
-  }, [user, allOrders, hasReachedLimit, recordUsage])
-  const updateOrder = useCallback(async (customerId, orderId, data) => {
+
+  const recordUsage = useCallback(async (field) => {
     if (!user) return
-    return updateOrderInDb(user.uid, orderId, data)
+    await incrementUsage(db, user.uid, field)
   }, [user])
-  const updateOrderStatus = useCallback(async (customerId, orderId, status) => {
-    if (!user) return
-    return updateOrderStatusInDb(user.uid, orderId, status)
-  }, [user])
-  const updateOrderStage = useCallback(async (customerId, orderId, stage) => {
-    if (!user) return
-    return updateOrderStageInDb(user.uid, orderId, stage)
-  }, [user])
-  const deleteOrder = useCallback(async (customerId, orderId) => {
-    if (!user) return
-    return deleteOrderFromDb(user.uid, orderId)
-  }, [user])
+
+  const getRemaining = useCallback((field) => {
+    const limit = USAGE_LIMITS[field]
+    if (limit === undefined) return Infinity
+    const used = usage[field] || 0
+    return Math.max(0, limit - used)
+  }, [usage])
+
+  const isAtLimit = useCallback((field) => {
+    if (isPremium) return false
+    return getRemaining(field) <= 0
+  }, [isPremium, getRemaining])
+
+  const value = useMemo(() => ({
+    usage,
+    isPremium,
+    recordUsage,
+    getRemaining,
+    isAtLimit,
+  }), [usage, isPremium, recordUsage, getRemaining, isAtLimit])
+
   return (
-    <OrdersContext.Provider value={{
-      allOrders: enrichedOrders,
-      addOrder,
-      updateOrder,
-      updateOrderStatus,
-      updateOrderStage,
-      deleteOrder,
-    }}>
+    <UsageContext.Provider value={value}>
       {children}
-    </OrdersContext.Provider>
+    </UsageContext.Provider>
   )
 }
-export function useOrders() {
-  const ctx = useContext(OrdersContext)
-  return ctx
+
+export function useUsage() {
+  return useContext(UsageContext)
 }
