@@ -522,4 +522,62 @@ export const TOURS = {
       message: 'Your assistant is ready. Tap the bot icon in the header any time to review its drafts.',
     },
   ],
+
+  'discover-tours-nudge': [
+    {
+      id: 'discover-tours-confirm',
+      type: 'confirm',
+      target: null,
+      title: 'Want a quick look around? 🧭',
+      message: 'There are guided walkthroughs for setting up your portfolio and AI assistant whenever you want them.',
+      yesLabel: 'Show me',
+      noLabel: 'Not now',
+      yesTarget: 'discover-tours-highlight',
+      noTarget: 'discover-tours-done',
+      pages: ['/dashboard'],
+    },
+    {
+      id: 'discover-tours-highlight',
+      target: '[data-tour="take-tour-btn"]',
+      title: 'More guides live here',
+      message: 'Tap here any time to explore other walkthroughs.',
+    },
+    {
+      id: 'discover-tours-done',
+      target: null,
+      manual: true,
+      ctaLabel: 'Got it',
+      title: 'No problem',
+      message: 'You can always find guides from the Take a tour button.',
+    },
+  ],
+
+  'revenue-goal-nudge': [
+    {
+      id: 'revenue-goal-confirm',
+      type: 'confirm',
+      target: null,
+      title: 'Track your revenue goal? 📈',
+      message: 'Set a monthly revenue goal and watch your progress right from the dashboard.',
+      yesLabel: 'Set a goal',
+      noLabel: 'Not now',
+      yesTarget: 'revenue-goal-highlight',
+      noTarget: 'revenue-goal-done',
+      pages: ['/dashboard'],
+    },
+    {
+      id: 'revenue-goal-highlight',
+      target: '[data-tour="revenue-goal-card"]',
+      title: 'Set your goal',
+      message: 'Tap here to set your monthly revenue goal.',
+    },
+    {
+      id: 'revenue-goal-done',
+      target: null,
+      manual: true,
+      ctaLabel: 'Got it',
+      title: 'No problem',
+      message: 'You can always set a goal later from this card.',
+    },
+  ],
 }
