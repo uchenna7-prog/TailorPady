@@ -1,0 +1,43 @@
+.banner {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0 20px 10px;
+  padding: 10px 14px;
+  border-radius: 12px;
+  background: color-mix(in srgb, var(--accent) 8%, transparent);
+  color: var(--text2);
+  border: 1px solid color-mix(in srgb, var(--accent) 20%, transparent);
+}
+
+.bannerAtLimit {
+  background: rgba(239, 68, 68, 0.08);
+  color: var(--danger);
+  border-color: rgba(239, 68, 68, 0.18);
+}
+
+.message {
+  flex: 1;
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
+.upgradeLink {
+  background: none;
+  border: none;
+  color: var(--accent);
+  font-family: 'Manrope', sans-serif;
+  font-size: 0.78rem;
+  font-weight: 800;
+  cursor: pointer;
+  flex-shrink: 0;
+  padding: 4px 0;
+}
+
+.bannerAtLimit .upgradeLink {
+  color: var(--danger);
+}
+
+.upgradeLink:active {
+  opacity: 0.7;
+}
