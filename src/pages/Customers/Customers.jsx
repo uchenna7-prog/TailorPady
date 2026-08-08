@@ -60,9 +60,13 @@ export default function Customers({ onMenuClick }) {
     setFormOpen(true)
   }
 
+  const goToUpgrade = () => {
+    navigate('/account', { state: { autoOpenModal: 'upgrade' } })
+  }
+
   const handleUpgrade = () => {
     setUpgradeOpen(false)
-    navigate('/upgrade')
+    goToUpgrade()
   }
 
   const handleSave = async ({
@@ -251,7 +255,7 @@ export default function Customers({ onMenuClick }) {
               ? "You've reached your Free plan limit of " + USAGE_LIMITS.customers + " customers"
               : remainingSlots + " customer slot" + (remainingSlots === 1 ? '' : 's') + " left on Free plan"
           }
-          onUpgradeClick={() => navigate('/upgrade')}
+          onUpgradeClick={goToUpgrade}
         />
       )}
 
