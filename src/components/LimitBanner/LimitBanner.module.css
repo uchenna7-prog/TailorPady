@@ -84,9 +84,10 @@
   display: flex;
   flex-direction: column;
   gap: 6px;
-  padding: 10px 4px 12px;
+  padding: 8px 4px 12px;
   margin-bottom: 6px;
   color: var(--text);
+  animation: fadeIn 200ms cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .compactBannerDivider {
@@ -97,7 +98,18 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  color: var(--text3);
+}
+
+.compactIconBadge {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 22px;
+  height: 22px;
+  border-radius: 7px;
+  background: color-mix(in srgb, var(--accent) 10%, transparent);
+  color: var(--accent);
 }
 
 .compactMessage {
@@ -122,21 +134,31 @@
   font-variant-numeric: tabular-nums;
 }
 
-.compactUpgradeLink {
+.compactUpgradePill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   flex-shrink: 0;
-  background: none;
+  height: 24px;
+  padding: 0 10px;
   border: none;
-  padding: 0;
+  border-radius: 7px;
+  background: color-mix(in srgb, var(--accent) 10%, transparent);
   color: var(--accent);
   font-family: 'Manrope', sans-serif;
-  font-size: 0.76rem;
+  font-size: 0.72rem;
   font-weight: 800;
   letter-spacing: -0.01em;
   cursor: pointer;
+  transition: background 140ms ease, transform 140ms ease;
 }
 
-.compactUpgradeLink:active {
-  opacity: 0.7;
+.compactUpgradePill:hover {
+  background: color-mix(in srgb, var(--accent) 16%, transparent);
+}
+
+.compactUpgradePill:active {
+  transform: scale(0.95);
 }
 
 .compactTrack {
@@ -153,6 +175,11 @@
   transition: width 240ms cubic-bezier(0.4, 0, 0.2, 1);
 }
 
+.compactBannerAtLimit .compactIconBadge {
+  background: color-mix(in srgb, var(--danger) 14%, transparent);
+  color: var(--danger);
+}
+
 .compactBannerAtLimit .compactMessage {
   color: var(--danger);
 }
@@ -162,8 +189,13 @@
   color: var(--danger);
 }
 
-.compactBannerAtLimit .compactUpgradeLink {
+.compactBannerAtLimit .compactUpgradePill {
+  background: color-mix(in srgb, var(--danger) 14%, transparent);
   color: var(--danger);
+}
+
+.compactBannerAtLimit .compactUpgradePill:hover {
+  background: color-mix(in srgb, var(--danger) 22%, transparent);
 }
 
 .compactBannerAtLimit .compactFill {
@@ -175,6 +207,12 @@
     animation: none;
   }
   .upgradeButton {
+    transition: none;
+  }
+  .compactBanner {
+    animation: none;
+  }
+  .compactUpgradePill {
     transition: none;
   }
   .compactFill {
