@@ -2,6 +2,7 @@ import { useState, useRef, useCallback, useEffect, useLayoutEffect } from 'react
 import { useParams, useNavigate, useLocation }      from 'react-router-dom'
 import { useCustomers }                             from '../../contexts/CustomerContext'
 import { useOrders }                                from '../../contexts/OrdersContext'
+import { useUsage }                                 from '../../contexts/UsageContext'
 import { useCustomerData }                          from '../../hooks/useCustomerData'
 import { useInvoiceActions }                        from '../../hooks/useInvoiceActions'
 import { useReceiptActions }                        from '../../hooks/useReceiptActions'
@@ -14,6 +15,7 @@ import { DeleteConfirmModal }                       from './components/DeleteCon
 import { EditCustomerModal }                        from './components/EditCustomerModal/EditCustomerModal'
 import { WhatsAppIcon }                             from './components/WhatsAppIcon/WhatsAppIcon'
 import { TABS, TAB_IDS, TAB_MODAL_EVENTS }          from './datas'
+import { UpgradeSheet }                             from '../../components/UpgradeSheet/UpgradeSheet'
 import Header                                       from '../../components/Header/Header'
 import Toast                                        from '../../components/Toast/Toast'
 import MeasurementsTab                              from './tabs/MeasurementsTab/MeasurementsTab'
@@ -49,6 +51,7 @@ export default function CustomerDetail({ onMenuClick }) {
 
   const { getCustomer, updateCustomer, deleteCustomerAndAllData } = useCustomers()
   const { allOrders }  = useOrders()
+  const { limits }     = useUsage()
   const isDeletingRef  = useRef(false)
 
   const customer   = getCustomer(id)
@@ -70,6 +73,7 @@ export default function CustomerDetail({ onMenuClick }) {
   const [reopenTemplateModal, setReopenTemplateModal] = useState(false)
   const [completedModal, setCompletedModal]   = useState(null)
   const [completedFields, setCompletedFields] = useState([])
+  const [invoiceUpgradeOpen, setInvoiceUpgradeOpen] = useState(false)
 
   const toastTimerRef  = useRef(null)
   const tabsRef        = useRef(null)
@@ -99,6 +103,7 @@ export default function CustomerDetail({ onMenuClick }) {
     showToast,
     setActiveTab,
     setReopenInvoiceId,
+    onLimitReached: () => setInvoiceUpgradeOpen(true),
   })
 
   const { handleGenerateReceipt, handleDeleteReceipt } = useReceiptActions({
@@ -389,6 +394,11 @@ export default function CustomerDetail({ onMenuClick }) {
       showToast('Failed to delete customer. Try again.')
     }
   }, [resolvedId, deleteCustomerAndAllData, navigate, showToast])
+
+  const handleInvoiceUpgrade = useCallback(() => {
+    setInvoiceUpgradeOpen(false)
+    navigate('/upgrade')
+  }, [navigate])
 
   if (!customer && !isDeletingRef.current) return null
 
@@ -793,6 +803,15 @@ export default function CustomerDetail({ onMenuClick }) {
           onCancel={() => setDeleteModalOpen(false)}
         />
       )}
+
+      <UpgradeSheet
+        isOpen={invoiceUpgradeOpen}
+        onClose={() => setInvoiceUpgradeOpen(false)}
+        onUpgrade={handleInvoiceUpgrade}
+        icon="receipt_long"
+        title="Invoice limit reached"
+        message={`You've hit the free plan limit of ${limits.invoicesPerMonth} invoices this month. Upgrade to Premium for unlimited invoices.`}
+      />
     </div>
   )
 }
