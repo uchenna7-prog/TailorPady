@@ -23,7 +23,7 @@ function makeTempOrderId() {
 }
 export function OrdersProvider({ children }) {
   const { user } = useAuth()
-  const { isAtLimit, recordUsage } = useUsage()
+  const { hasReachedLimit, recordUsage } = useUsage()
   const [allOrders, setAllOrders] = useState([])
   const { customers } = useCustomers()
   useEffect(() => {
@@ -45,7 +45,7 @@ const enrichedOrders = useMemo(() => {
   }, [allOrders, customers])
   const addOrder = useCallback(async (customerId, data) => {
     if (!user) return null
-    if (isAtLimit('ordersPerMonth')) {
+    if (hasReachedLimit('ordersPerMonth', 'ordersPerMonth')) {
       const limitError = new Error('ORDER_LIMIT_REACHED')
       limitError.code = 'limit-reached'
       throw limitError
@@ -60,7 +60,7 @@ const enrichedOrders = useMemo(() => {
     addOrderToDb(user.uid, customerId, { ...orderData, orderNumber: nextOrderNumber, clientId: tempId }).catch(() => {})
     recordUsage('ordersPerMonth').catch(() => {})
     return tempId
-  }, [user, allOrders, isAtLimit, recordUsage])
+  }, [user, allOrders, hasReachedLimit, recordUsage])
   const updateOrder = useCallback(async (customerId, orderId, data) => {
     if (!user) return
     return updateOrderInDb(user.uid, orderId, data)
