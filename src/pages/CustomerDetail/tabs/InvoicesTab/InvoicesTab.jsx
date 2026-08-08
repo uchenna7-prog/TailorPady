@@ -1,15 +1,21 @@
 import { useState, useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { getCurrency } from '../../../../utils/moneyUtils'
 import { useProfileSettings } from '../../../../contexts/ProfileSettingsContext'
 import { useTour } from '../../../../contexts/TourContext'
+import { useUsage } from '../../../../contexts/UsageContext'
 import { buildOrderItemsMap, groupInvoicesByDate } from './utils'
 import { EmptyState } from './components/EmptyState/EmptyState'
 import { InvoiceRow } from './components/InvoiceRow/InvoiceRow'
 import { InvoiceRowSkeleton } from './components/InvoiceRowSkeleton/InvoiceRowSkeleton'
 import { AddInvoiceModal } from './components/AddInvoiceModal/AddInvoiceModal'
+import { LimitBanner } from '../../../../components/LimitBanner/LimitBanner'
 import InvoiceViewer from '../../../../components/TemplateViewers/InvoiceViewer/InvoiceViewer'
 import ConfirmSheet from '../../../../components/ConfirmSheet/ConfirmSheet'
 import styles from './InvoicesTab.module.css'
+
+
+const NEAR_LIMIT_THRESHOLD = 3
 
 
 export default function InvoiceTab({
@@ -29,8 +35,10 @@ export default function InvoiceTab({
   completedFields = [],
   onReopenInvoiceHandled,
 }) {
+  const navigate = useNavigate()
   const { profileSettings } = useProfileSettings()
   const { pauseTour, resumeTour } = useTour()
+  const { hasReachedLimit, remaining, limits } = useUsage()
 
   const [viewingInvoice, setViewingInvoice] = useState(null)
   const [deleteTarget,   setDeleteTarget]   = useState(null)
@@ -44,6 +52,11 @@ export default function InvoiceTab({
   const currency      = getCurrency()
   const orderItemsMap = buildOrderItemsMap(orders)
   const groupedByDate = groupInvoicesByDate(invoices)
+
+  const remainingInvoices = remaining('invoicesPerMonth', 'invoicesPerMonth')
+  const atLimit             = hasReachedLimit('invoicesPerMonth', 'invoicesPerMonth')
+  const nearLimit            = !atLimit && remainingInvoices <= NEAR_LIMIT_THRESHOLD
+  const showLimitBanner      = atLimit || nearLimit
 
   useEffect(() => {
     const openAddInvoiceModal = () => setaddInvoiceModalOpen(true)
@@ -85,10 +98,18 @@ export default function InvoiceTab({
 
     setGeneratingIds(new Set(selectedOrders.map(o => o.id)))
     let anyFailed = false
+    let limitHit  = false
 
     for (const order of selectedOrders) {
+      if (limitHit) break
+
       try {
-        await onGenerateInvoice(order.id)
+        const result = await onGenerateInvoice(order.id)
+        if (result?.reason === 'limit-reached') {
+          limitHit = true
+        } else if (result?.reason && result.reason !== 'ok' && result.reason !== 'already-exists') {
+          anyFailed = true
+        }
       }
       catch {
         anyFailed = true
@@ -101,7 +122,7 @@ export default function InvoiceTab({
       })
     }
 
-    if (!anyFailed) {
+    if (!limitHit && !anyFailed) {
       showToast(selectedOrders.length > 1
         ? `${selectedOrders.length} invoices generated`
         : 'Invoice generated'
@@ -147,6 +168,18 @@ export default function InvoiceTab({
   if (invoices.length === 0) {
     return (
       <div className={styles.tabContent}>
+        {showLimitBanner && (
+          <LimitBanner
+            atLimit={atLimit}
+            icon="receipt_long"
+            message={
+              atLimit
+                ? "You've reached your Free plan limit of " + limits.invoicesPerMonth + " invoices this month"
+                : remainingInvoices + " invoice" + (remainingInvoices === 1 ? '' : 's') + " left this month on Free plan"
+            }
+            onUpgradeClick={() => navigate('/upgrade')}
+          />
+        )}
         <EmptyState />
         <AddInvoiceModal
           isOpen={addInvoiceModalOpen}
@@ -165,6 +198,19 @@ export default function InvoiceTab({
 
   return (
     <div className={styles.tabContent}>
+      {showLimitBanner && (
+        <LimitBanner
+          atLimit={atLimit}
+          icon="receipt_long"
+          message={
+            atLimit
+              ? "You've reached your Free plan limit of " + limits.invoicesPerMonth + " invoices this month"
+              : remainingInvoices + " invoice" + (remainingInvoices === 1 ? '' : 's') + " left this month on Free plan"
+          }
+          onUpgradeClick={() => navigate('/upgrade')}
+        />
+      )}
+
       {Object.entries(groupedByDate).map(([date, dateInvoices]) => (
         <div key={date} className={styles.dateGroup}>
           <div className={styles.dateGroupLabel}>{date}</div>
