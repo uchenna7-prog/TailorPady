@@ -39,6 +39,7 @@ export function UsageProvider({ children }) {
 
   const value = useMemo(() => ({
     usage,
+    limits: USAGE_LIMITS,
     isPremium,
     recordUsage,
     getRemaining,
