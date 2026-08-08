@@ -1,4 +1,4 @@
-import { USAGE_LIMITS } from '../services/usageService'
+import { USAGE_LIMITS } from '../datas/usageLimits'
 
 export const FREE_FEATURES = [
   { icon: 'group', label: `Up to ${USAGE_LIMITS.customers} customers` },
