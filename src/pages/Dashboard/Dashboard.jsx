@@ -13,9 +13,9 @@ import { usePayments } from '../../contexts/PaymentContext'
 import { useProfileSettings } from '../../contexts/ProfileSettingsContext'
 import { useRevenueGoal } from '../../contexts/RevenueGoalContext'
 import { useTour } from '../../contexts/TourContext'
-import { useFeatureHints } from '../../contexts/FeatureHintContext'
 import { APPOINTMENT_TYPE_ICONS } from '../../datas/appointmentDatas'
 import { TOUR_CATALOG } from '../../datas/tourCatalog'
+import { getSessionId } from '../../utils/sessionId'
 import {
   getGreeting, getGreetingEmoji, getRandomSubtext, formatUpdatedTime,
   isTaskOverdue, formatDateShort, dueThisWeek,
@@ -126,8 +126,7 @@ function Dashboard({ onMenuClick, onGoToCustomer }) {
   const { allPayments }                                                   = usePayments()
   const { profileSettings, isLoading: profileLoading }                   = useProfileSettings()
   const { goal, derived, loading: goalLoading, saveGoal, removeGoal }    = useRevenueGoal()
-  const { startTour, completeStep, currentStep, hasCompletedTour, isActive: tourActive, goToStep } = useTour()
-  const { triggerHint } = useFeatureHints()
+  const { startTour, completeStep, currentStep, hasCompletedTour, isActive: tourActive, goToStep, finishTour } = useTour()
 
   const [isBannerDismissed, setIsBannerDismissed] = useState(loadNotificationDismissed)
   const [isGoalModalOpen,   setIsGoalModalOpen]   = useState(false)
@@ -201,21 +200,39 @@ function Dashboard({ onMenuClick, onGoToCustomer }) {
   }, [currentStep, profileLoading, showProfileSetupCard, goToStep])
 
   const onboardingComplete = hasCompletedTour('onboarding')
-  const prevOnboardingCompleteRef = useRef(onboardingComplete)
+  const discoverToursComplete = hasCompletedTour('discover-tours-nudge')
 
-  useEffect(() => {
-    if (onboardingComplete && !prevOnboardingCompleteRef.current) {
-      triggerHint('take-tour-discovery')
+  const isNewSessionSinceOnboarding = (() => {
+    try {
+      const completedInSession = localStorage.getItem('tp_onboarding_completed_session')
+      return completedInSession !== getSessionId()
+    } catch {
+      return true
     }
-    prevOnboardingCompleteRef.current = onboardingComplete
-  }, [onboardingComplete, triggerHint])
+  })()
 
   useEffect(() => {
-    if (goalLoading) return
-    if (goal) return
     if (!onboardingComplete) return
-    triggerHint('revenue-goal-card')
-  }, [goalLoading, goal, onboardingComplete, triggerHint])
+    if (discoverToursComplete) return
+    if (!isNewSessionSinceOnboarding) return
+    if (tourActive) return
+    const timer = setTimeout(() => {
+      startTour('discover-tours-nudge')
+    }, 2000)
+    return () => clearTimeout(timer)
+  }, [onboardingComplete, discoverToursComplete, isNewSessionSinceOnboarding, tourActive, startTour])
+
+  useEffect(() => {
+    if (goalLoading || goal) return
+    if (!discoverToursComplete) return
+    if (hasCompletedTour('revenue-goal-nudge')) return
+    if (tourActive) return
+    if (allPayments.length === 0) return
+    const timer = setTimeout(() => {
+      startTour('revenue-goal-nudge')
+    }, 1200)
+    return () => clearTimeout(timer)
+  }, [goalLoading, goal, discoverToursComplete, hasCompletedTour, tourActive, allPayments.length, startTour])
 
   function showToast(msg) {
     setToastMsg(msg)
@@ -281,6 +298,9 @@ function Dashboard({ onMenuClick, onGoToCustomer }) {
   }
 
   function handleTakeTourClick() {
+    if (currentStep?.id === 'discover-tours-highlight') {
+      finishTour()
+    }
     const incomplete = TOUR_CATALOG.filter(t => !hasCompletedTour(t.id))
     if (incomplete.length === 1) {
       startTour(incomplete[0].id)
@@ -465,7 +485,7 @@ function Dashboard({ onMenuClick, onGoToCustomer }) {
                 type="button"
                 className={styles.tourLink}
                 onClick={handleTakeTourClick}
-                data-hint="take-tour-btn"
+                data-tour="take-tour-btn"
               >
                 <span className="mi" style={{ fontSize: '0.85rem', verticalAlign: 'middle', marginRight: '3px' }}>help_outline</span>
                 Take a tour
@@ -519,8 +539,15 @@ function Dashboard({ onMenuClick, onGoToCustomer }) {
               onDelete={removeGoal}
             />
           ) : (
-            <div data-hint="revenue-goal-card">
-              <EmptyRevenueCard onOpen={() => setIsGoalModalOpen(true)} />
+            <div data-tour="revenue-goal-card">
+              <EmptyRevenueCard
+                onOpen={() => {
+                  if (currentStep?.id === 'revenue-goal-highlight') {
+                    finishTour()
+                  }
+                  setIsGoalModalOpen(true)
+                }}
+              />
             </div>
           )}
 
