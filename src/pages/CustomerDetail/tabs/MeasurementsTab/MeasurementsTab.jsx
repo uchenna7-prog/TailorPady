@@ -31,6 +31,7 @@ export default function MeasurementsTab({ measurements, loading, gender, onSave,
   const atLimit                = hasReachedLimit('measurementsPerMonth', 'measurementsPerMonth')
   const nearLimit               = !atLimit && remainingMeasurements <= NEAR_LIMIT_THRESHOLD
   const showLimitBanner         = atLimit || nearLimit
+  const usedMeasurements        = limits.measurementsPerMonth - remainingMeasurements
 
   useEffect(() => {
     const handleOpenAddModal = () => {
@@ -59,7 +60,13 @@ export default function MeasurementsTab({ measurements, loading, gender, onSave,
   async function handleSave(entry) {
     try {
       const newId = await onSave(entry)
-      showToast('Measurement saved ✓')
+      const remainingAfterSave = remainingMeasurements - 1
+      const nearLimitAfterSave = remainingAfterSave > 0 && remainingAfterSave <= NEAR_LIMIT_THRESHOLD
+      showToast(
+        nearLimitAfterSave
+          ? `Measurement saved ✓ · ${remainingAfterSave} left this month`
+          : 'Measurement saved ✓'
+      )
       setIsAddModalOpen(false)
       completeStep('add-measurement', { itemId: newId ? String(newId) : null })
     } catch (err) {
@@ -104,9 +111,13 @@ export default function MeasurementsTab({ measurements, loading, gender, onSave,
     setMeasurementToDelete(null)
   }
 
+  function goToUpgrade() {
+    navigate('/account', { state: { autoOpenModal: 'upgrade' } })
+  }
+
   function handleUpgrade() {
     setUpgradeOpen(false)
-    navigate('/upgrade')
+    goToUpgrade()
   }
 
   if (loading) {
@@ -123,6 +134,7 @@ export default function MeasurementsTab({ measurements, loading, gender, onSave,
     <div>
       {showLimitBanner && (
         <LimitBanner
+          compact
           atLimit={atLimit}
           icon="straighten"
           message={
@@ -130,7 +142,9 @@ export default function MeasurementsTab({ measurements, loading, gender, onSave,
               ? "You've reached your Free plan limit of " + limits.measurementsPerMonth + " measurements this month"
               : remainingMeasurements + " measurement" + (remainingMeasurements === 1 ? '' : 's') + " left this month on Free plan"
           }
-          onUpgradeClick={() => navigate('/upgrade')}
+          current={usedMeasurements}
+          max={limits.measurementsPerMonth}
+          onUpgradeClick={goToUpgrade}
         />
       )}
 
