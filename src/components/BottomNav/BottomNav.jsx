@@ -14,7 +14,7 @@ const NAV_ITEMS = [
 function BottomNav() {
   const navigate = useNavigate()
   const { pathname } = useLocation()
-  const { completeStep, isActive: tourActive } = useTour()
+  const { completeStep, isActive: tourActive, guardNavigation } = useTour()
   const [hidden, setHidden] = useState(false)
 
   const lastY     = useRef(0)
@@ -64,8 +64,10 @@ function BottomNav() {
   }, [tourActive])
 
   function handleNavClick(item) {
-    if (item.route === '/customers') completeStep('goto-customers-nav')
-    navigate(item.route)
+    guardNavigation(() => {
+      if (item.route === '/customers') completeStep('goto-customers-nav')
+      navigate(item.route)
+    })
   }
 
   return (
