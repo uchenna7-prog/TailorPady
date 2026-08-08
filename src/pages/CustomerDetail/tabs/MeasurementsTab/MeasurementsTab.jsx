@@ -8,7 +8,6 @@ import { MeasurementDetailsModal } from './components/MeasurementDetailsModal/Me
 import { MeasurementRowSkeleton } from './components/MeasurementRowSkeleton/MeasurementRowSkeleton'
 import { AddMeasurementModal } from './components/AddMeasurementModal/AddMeasurementModal'
 import { UpgradeSheet } from '../../../../components/UpgradeSheet/UpgradeSheet'
-import { LimitBanner } from '../../../../components/LimitBanner/LimitBanner'
 import { groupMeasurementsByDate } from './utils'
 import ConfirmSheet from '../../../../components/ConfirmSheet/ConfirmSheet'
 import styles from './MeasurementsTab.module.css'
@@ -29,9 +28,6 @@ export default function MeasurementsTab({ measurements, loading, gender, onSave,
 
   const remainingMeasurements = remaining('measurementsPerMonth', 'measurementsPerMonth')
   const atLimit                = hasReachedLimit('measurementsPerMonth', 'measurementsPerMonth')
-  const nearLimit               = !atLimit && remainingMeasurements <= NEAR_LIMIT_THRESHOLD
-  const showLimitBanner         = atLimit || nearLimit
-  const usedMeasurements        = limits.measurementsPerMonth - remainingMeasurements
 
   useEffect(() => {
     const handleOpenAddModal = () => {
@@ -132,22 +128,6 @@ export default function MeasurementsTab({ measurements, loading, gender, onSave,
 
   return (
     <div>
-      {showLimitBanner && (
-        <LimitBanner
-          compact
-          atLimit={atLimit}
-          icon="straighten"
-          message={
-            atLimit
-              ? "You've reached your Free plan limit of " + limits.measurementsPerMonth + " measurements this month"
-              : remainingMeasurements + " measurement" + (remainingMeasurements === 1 ? '' : 's') + " left this month on Free plan"
-          }
-          current={usedMeasurements}
-          max={limits.measurementsPerMonth}
-          onUpgradeClick={goToUpgrade}
-        />
-      )}
-
       {measurements.length === 0 ? (
         <EmptyState />
       ) : (
