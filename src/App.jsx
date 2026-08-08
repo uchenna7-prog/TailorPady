@@ -3,9 +3,7 @@ import { Routes, Route, Navigate, useNavigate } from 'react-router-dom'
 import { useAuth } from './contexts/AuthContext'
 import { usePremium } from './contexts/PremiumContext'
 import { TourProvider } from './contexts/TourContext'
-import { FeatureHintProvider } from './contexts/FeatureHintContext'
 import OnboardingTour from './components/OnboardingTour/OnboardingTour'
-import FeatureHintLayer from './components/FeatureHintLayer/FeatureHintLayer'
 import RequireAuth from './components/RequireAuth/RequireAuth'
 import ScrollToTop from './components/ScrollToTop/ScrollToTop'
 import SideBar from './components/SideBar/SideBar'
@@ -59,43 +57,40 @@ function AppShell() {
 
   return (
     <TourProvider>
-      <FeatureHintProvider>
-        <div className="appShell">
-          <SideBar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
-          <div className="appContent">
-            <ScrollToTop />
-            <Routes>
-              <Route path="/dashboard" element={<Dashboard onMenuClick={menuClick} />} />
-              <Route path="/appointments" element={<Appointments onMenuClick={menuClick} />} />
-              <Route path="/customers" element={<Customers onMenuClick={menuClick} />} />
-              <Route path="/customers/:id" element={<CustomerDetail onMenuClick={menuClick} />} />
-              <Route path="/customers/:id/body-measurements" element={<CustomerBodyMeasurements onMenuClick={menuClick} />} />
-              <Route path="/tasks" element={<Tasks onMenuClick={menuClick} />} />
-              <Route path="/orders" element={<Orders onMenuClick={menuClick} onGoToCustomer={id => navigate(`/customers/${id}`)} />} />
-              <Route path="/invoices" element={<Invoices onMenuClick={menuClick} />} />
-              <Route path="/receipts" element={<Receipts onMenuClick={menuClick} />} />
-              <Route path="/payments" element={<Payments onMenuClick={menuClick} />} />
-              <Route path="/inventory" element={<Inventory onMenuClick={menuClick} />} />
-              <Route path="/reports" element={<Reports onMenuClick={menuClick} />} />
-              <Route path="/gallery" element={<Gallery onMenuClick={menuClick} />} />
-              <Route path="/settings" element={<Settings onMenuClick={menuClick} />} />
-              <Route path="/account" element={<Account onMenuClick={menuClick} isPremium={isPremium} />} />
-              <Route path="/app/contact" element={<Contact onMenuClick={menuClick} />} />
-              <Route path="/app/faq" element={<FAQ onMenuClick={menuClick} />} />
-              <Route path="/reviews" element={<Reviews onMenuClick={menuClick} />} />
-              <Route path="/agent" element={<Agent />} />
-              <Route path="/agent/chat" element={<AgentChat />} />
-              <Route path="/app/terms" element={<TermsAndConditions onMenuClick={menuClick} />} />
-              <Route path="/app/refund" element={<RefundPolicy onMenuClick={menuClick} />} />
-              <Route path="/app/privacy" element={<PrivacyPolicy onMenuClick={menuClick} />} />
-              <Route path="/report-bug" element={<BugReport onMenuClick={menuClick} />} />
-              <Route path="*" element={<Navigate to="/dashboard" replace />} />
-            </Routes>
-          </div>
-          <OnboardingTour />
-          <FeatureHintLayer />
+      <div className="appShell">
+        <SideBar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
+        <div className="appContent">
+          <ScrollToTop />
+          <Routes>
+            <Route path="/dashboard" element={<Dashboard onMenuClick={menuClick} />} />
+            <Route path="/appointments" element={<Appointments onMenuClick={menuClick} />} />
+            <Route path="/customers" element={<Customers onMenuClick={menuClick} />} />
+            <Route path="/customers/:id" element={<CustomerDetail onMenuClick={menuClick} />} />
+            <Route path="/customers/:id/body-measurements" element={<CustomerBodyMeasurements onMenuClick={menuClick} />} />
+            <Route path="/tasks" element={<Tasks onMenuClick={menuClick} />} />
+            <Route path="/orders" element={<Orders onMenuClick={menuClick} onGoToCustomer={id => navigate(`/customers/${id}`)} />} />
+            <Route path="/invoices" element={<Invoices onMenuClick={menuClick} />} />
+            <Route path="/receipts" element={<Receipts onMenuClick={menuClick} />} />
+            <Route path="/payments" element={<Payments onMenuClick={menuClick} />} />
+            <Route path="/inventory" element={<Inventory onMenuClick={menuClick} />} />
+            <Route path="/reports" element={<Reports onMenuClick={menuClick} />} />
+            <Route path="/gallery" element={<Gallery onMenuClick={menuClick} />} />
+            <Route path="/settings" element={<Settings onMenuClick={menuClick} />} />
+            <Route path="/account" element={<Account onMenuClick={menuClick} isPremium={isPremium} />} />
+            <Route path="/app/contact" element={<Contact onMenuClick={menuClick} />} />
+            <Route path="/app/faq" element={<FAQ onMenuClick={menuClick} />} />
+            <Route path="/reviews" element={<Reviews onMenuClick={menuClick} />} />
+            <Route path="/agent" element={<Agent />} />
+            <Route path="/agent/chat" element={<AgentChat />} />
+            <Route path="/app/terms" element={<TermsAndConditions onMenuClick={menuClick} />} />
+            <Route path="/app/refund" element={<RefundPolicy onMenuClick={menuClick} />} />
+            <Route path="/app/privacy" element={<PrivacyPolicy onMenuClick={menuClick} />} />
+            <Route path="/report-bug" element={<BugReport onMenuClick={menuClick} />} />
+            <Route path="*" element={<Navigate to="/dashboard" replace />} />
+          </Routes>
         </div>
-      </FeatureHintProvider>
+        <OnboardingTour />
+      </div>
     </TourProvider>
   )
 }
