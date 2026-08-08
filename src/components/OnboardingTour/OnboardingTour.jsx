@@ -49,6 +49,10 @@ export default function OnboardingTour() {
   } = useTour()
   const location = useLocation()
   const [rect, setRect] = useState(null)
+
+  useLayoutEffect(() => {
+    setRect(null)
+  }, [currentStep?.id])
   const [isResizing, setIsResizing] = useState(false)
   const [cardSize, setCardSize] = useState({ width: CARD_WIDTH, height: CARD_HEIGHT_FALLBACK })
   const rafRef = useRef(null)
