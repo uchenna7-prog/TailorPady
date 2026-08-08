@@ -99,6 +99,18 @@ const STATUS_LABELS = {
   cancelled: 'Cancelled',
 }
 
+function getOrderTimestamp(order) {
+  const createdAt = order.createdAt
+  if (!createdAt) return 0
+  if (typeof createdAt.toMillis === 'function')    return createdAt.toMillis()
+  if (typeof createdAt.toDate === 'function')      return createdAt.toDate().getTime()
+  if (typeof createdAt.seconds === 'number')       return createdAt.seconds * 1000
+  if (typeof createdAt === 'number')               return createdAt
+  if (typeof createdAt === 'string')               return new Date(createdAt).getTime() || 0
+  if (createdAt instanceof Date)                   return createdAt.getTime()
+  return 0
+}
+
 function Dashboard({ onMenuClick, onGoToCustomer }) {
   const navigate = useNavigate()
 
@@ -390,7 +402,7 @@ function Dashboard({ onMenuClick, onGoToCustomer }) {
     { desktopIcon: 'task_alt',      value: pendingTasks.length,        label: 'Pending Tasks',   sub: taskStatSub?.text        ?? null, subColor: taskStatSub?.color        ?? 'var(--text3)', route: '/tasks',         },
   ]
 
-  const recentActiveOrders   = activeOrders.slice(0, 3)
+  const recentActiveOrders   = [...allOrders].sort((a, b) => getOrderTimestamp(b) - getOrderTimestamp(a)).slice(0, 3)
   const recentTasks          = [...tasks].sort((a, b) => new Date(b.updatedAt || b.createdAt || 0) - new Date(a.updatedAt || a.createdAt || 0)).slice(0, 3)
   const upcomingAppointments = upcoming.slice(0, 3)
   const pastAppointments     = recentAppts.slice(0, 3)
