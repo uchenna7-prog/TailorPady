@@ -3,10 +3,12 @@ import { useNavigate } from 'react-router-dom'
 import { useCustomers } from '../../contexts/CustomerContext'
 import { usePremium } from '../../contexts/PremiumContext'
 import { useTour } from '../../contexts/TourContext'
+import { USAGE_LIMITS } from '../../datas/usageLimits'
 import { DeleteConfirmSheet } from './components/DeleteConfirmSheet/DeleteConfirmSheet'
 import { CustomerRow } from './components/CustomerRow/CustomerRow'
 import { AddCustomerModal } from './components/AddCustomerModal/AddCustomerModal'
 import { EmptyState } from './components/EmptyState/EmptyState'
+import { UpgradeSheet } from '../../components/UpgradeSheet/UpgradeSheet'
 import BottomNav from '../../components/BottomNav/BottomNav'
 import Header from '../../components/Header/Header'
 import Toast from '../../components/Toast/Toast'
@@ -22,6 +24,7 @@ export default function Customers({ onMenuClick }) {
   const [deleteConfirmModalOpen, setDeleteConfirmModalOpen] = useState(false)
   const [query,        setQuery]        = useState('')
   const [formOpen,     setFormOpen]     = useState(false)
+  const [upgradeOpen,  setUpgradeOpen]  = useState(false)
   const [deleteTarget, setDeleteTarget] = useState(null)
   const [toastMsg,     setToastMsg]     = useState('')
   const [sortMode,     setSortMode]     = useState('date')
@@ -38,6 +41,19 @@ export default function Customers({ onMenuClick }) {
     setToastMsg(msg)
     clearTimeout(toastTimer.current)
     toastTimer.current = setTimeout(() => setToastMsg(''), 2400)
+  }
+
+  const handleFabClick = () => {
+    if (!isPremium && customers.length >= USAGE_LIMITS.customers) {
+      setUpgradeOpen(true)
+      return
+    }
+    setFormOpen(true)
+  }
+
+  const handleUpgrade = () => {
+    setUpgradeOpen(false)
+    navigate('/upgrade')
   }
 
   const handleSave = async ({
@@ -97,6 +113,11 @@ export default function Customers({ onMenuClick }) {
         completeStep('add-customer', { customerId: newCustomerId })
       }
     } catch (err) {
+      if (err?.code === 'limit-reached') {
+        setFormOpen(false)
+        setUpgradeOpen(true)
+        return
+      }
       showToast(`ERROR: ${err?.code || err?.message || String(err)}`)
     }
   }
@@ -256,7 +277,7 @@ export default function Customers({ onMenuClick }) {
 
       <button
         className={styles.fab}
-        onClick={() => setFormOpen(true)}
+        onClick={handleFabClick}
         data-tour="add-customer-fab"
       >
         <span className="mi">add</span>
@@ -267,6 +288,15 @@ export default function Customers({ onMenuClick }) {
         onClose={() => setFormOpen(false)}
         onSave={handleSave}
         isPremium={isPremium}
+      />
+
+      <UpgradeSheet
+        isOpen={upgradeOpen}
+        onClose={() => setUpgradeOpen(false)}
+        onUpgrade={handleUpgrade}
+        icon="group"
+        title="Customer limit reached"
+        message={`You've hit the free plan limit of ${USAGE_LIMITS.customers} customers. Upgrade to Premium for unlimited customers.`}
       />
 
       {deleteConfirmModalOpen && deleteTarget && (
