@@ -15,6 +15,7 @@ import { RevenueGoalProvider }            from './contexts/RevenueGoalContext'
 import { AppointmentProvider }            from './contexts/AppointmentContext'
 import { NotificationProvider }           from './contexts/NotificationContext'
 import { PremiumProvider }                from './contexts/PremiumContext'
+import { UsageProvider }                  from './contexts/UsageContext'
 import { GalleryProvider }                from './contexts/GalleryContext'
 import { ReviewProvider }                 from './contexts/ReviewContext'
 import { BodyMeasurementImagesProvider }  from './contexts/BodyMeasurementImagesContext'
@@ -36,37 +37,39 @@ ReactDOM.createRoot(document.getElementById('root')).render(
             <ProfileSettingsProvider>
               <PortfolioSettingsProvider>
                 <PremiumProvider>
-                  <BodyMeasurementImagesProvider>
-                    <CustomerProvider>
-                      <GalleryProvider>
-                        <ReviewProvider>
-                          <OrdersProvider>
-                            <TaskProvider>
-                              <InvoiceProvider>
-                                <ReceiptProvider>
-                                  <PaymentProvider>
-                                    <RevenueGoalProvider>
-                                      <AppointmentProvider>
-                                        <BadgeProvider>
-                                          <AutonomousAgentProvider>
-                                            <AgentProvider>
-                                              <NotificationProvider>
-                                                <App />
-                                              </NotificationProvider>
-                                            </AgentProvider>
-                                          </AutonomousAgentProvider>
-                                        </BadgeProvider>
-                                      </AppointmentProvider>
-                                    </RevenueGoalProvider>
-                                  </PaymentProvider>
-                                </ReceiptProvider>
-                              </InvoiceProvider>
-                            </TaskProvider>
-                          </OrdersProvider>
-                        </ReviewProvider>
-                      </GalleryProvider>
-                    </CustomerProvider>
-                  </BodyMeasurementImagesProvider>
+                  <UsageProvider>
+                    <BodyMeasurementImagesProvider>
+                      <CustomerProvider>
+                        <GalleryProvider>
+                          <ReviewProvider>
+                            <OrdersProvider>
+                              <TaskProvider>
+                                <InvoiceProvider>
+                                  <ReceiptProvider>
+                                    <PaymentProvider>
+                                      <RevenueGoalProvider>
+                                        <AppointmentProvider>
+                                          <BadgeProvider>
+                                            <AutonomousAgentProvider>
+                                              <AgentProvider>
+                                                <NotificationProvider>
+                                                  <App />
+                                                </NotificationProvider>
+                                              </AgentProvider>
+                                            </AutonomousAgentProvider>
+                                          </BadgeProvider>
+                                        </AppointmentProvider>
+                                      </RevenueGoalProvider>
+                                    </PaymentProvider>
+                                  </ReceiptProvider>
+                                </InvoiceProvider>
+                              </TaskProvider>
+                            </OrdersProvider>
+                          </ReviewProvider>
+                        </GalleryProvider>
+                      </CustomerProvider>
+                    </BodyMeasurementImagesProvider>
+                  </UsageProvider>
                 </PremiumProvider>
               </PortfolioSettingsProvider>
             </ProfileSettingsProvider>
