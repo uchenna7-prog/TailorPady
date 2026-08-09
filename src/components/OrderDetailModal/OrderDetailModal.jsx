@@ -99,7 +99,7 @@ export default function OrderDetailModal({
   const navigate = useNavigate()
   const { updateOrderStatus, updateOrder, deleteOrder } = useOrders()
   const { allInvoices } = useInvoices()
-  const { limits } = useUsage()
+  const { limits, hasReachedLimit, recordUsage } = useUsage()
   const { user } = useAuth()
 
   const [local, setLocal] = useState(order)
@@ -108,6 +108,7 @@ export default function OrderDetailModal({
   const [showStageSheet, setShowStageSheet] = useState(false)
   const [showPriorityMenu, setShowPriorityMenu] = useState(false)
   const [upgradeOpen, setUpgradeOpen] = useState(false)
+  const [upgradeReason, setUpgradeReason] = useState('invoice')
   const [pendingCancel, setPendingCancel] = useState(false)
   const [pendingPriority, setPendingPriority] = useState(false)
   const [brokenImages, setBrokenImages] = useState(() => new Set())
@@ -289,11 +290,19 @@ export default function OrderDetailModal({
     setHint(null)
 
     let token = local.reviewToken
+
     if (!token) {
+      if (hasReachedLimit('reviewLinksPerMonth', 'reviewLinksPerMonth')) {
+        setUpgradeReason('review')
+        setUpgradeOpen(true)
+        return
+      }
+
       token = crypto.randomUUID()
       setLocal(p => ({ ...p, reviewToken: token }))
       try {
         await updateOrder(local.customerId, local.id, { reviewToken: token })
+        recordUsage('reviewLinksPerMonth').catch(() => {})
       } catch {
         showToast?.('Failed to create review link')
         return
@@ -329,6 +338,7 @@ export default function OrderDetailModal({
       onGenerateInvoice?.(local.id)
     } catch (err) {
       if (err?.code === 'limit-reached') {
+        setUpgradeReason('invoice')
         setUpgradeOpen(true)
       } else {
         showToast?.('Failed to generate invoice')
@@ -340,6 +350,18 @@ export default function OrderDetailModal({
     setUpgradeOpen(false)
     navigate('/upgrade')
   }
+
+  const upgradeSheetContent = upgradeReason === 'review'
+    ? {
+        icon: 'star_rate',
+        title: 'Review link limit reached',
+        message: `You've hit the free plan limit of ${limits.reviewLinksPerMonth} review links this month. Upgrade to Premium for unlimited review links.`,
+      }
+    : {
+        icon: 'description',
+        title: 'Invoice limit reached',
+        message: `You've hit the free plan limit of ${limits.invoicesPerMonth} invoices this month. Upgrade to Premium for unlimited invoices.`,
+      }
 
   const panel = (
     <div
@@ -715,9 +737,9 @@ export default function OrderDetailModal({
         isOpen={upgradeOpen}
         onClose={() => setUpgradeOpen(false)}
         onUpgrade={handleUpgrade}
-        icon="description"
-        title="Invoice limit reached"
-        message={`You've hit the free plan limit of ${limits.invoicesPerMonth} invoices this month. Upgrade to Premium for unlimited invoices.`}
+        icon={upgradeSheetContent.icon}
+        title={upgradeSheetContent.title}
+        message={upgradeSheetContent.message}
       />
     </div>
   )
