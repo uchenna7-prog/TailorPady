@@ -118,8 +118,8 @@ export default function UsageModal({ onClose, onUpgrade }) {
                       <div className={styles.usageText}>
                         <div className={styles.usageLabelRow}>
                           <div className={styles.usageLabel}>{row.label}</div>
-                          <div className={row.period === 'lifetime' ? styles.periodPillLifetime : styles.periodPillMonthly}>
-                            {row.period === 'lifetime' ? 'Lifetime' : 'Monthly'}
+                          <div className={row.period === 'lifetime' ? styles.periodPillAllTime : styles.periodPillMonthly}>
+                            {row.period === 'lifetime' ? 'All-Time' : 'Monthly'}
                           </div>
                         </div>
                         <div className={styles.usageCount}>
@@ -146,7 +146,7 @@ export default function UsageModal({ onClose, onUpgrade }) {
 
           <div className={styles.footer}>
             <span className="mi" style={{ fontSize: '0.85rem', color: 'var(--text3)' }}>event_repeat</span>
-            <span className={styles.footerText}>Monthly limits reset {getResetLabel()} · Customer limit is lifetime</span>
+            <span className={styles.footerText}>Monthly limits reset {getResetLabel()} · Customer limit is all-time</span>
           </div>
 
         </div>
