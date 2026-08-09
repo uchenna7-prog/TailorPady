@@ -65,7 +65,7 @@ export default function BillingHistoryModal({ onClose }) {
                 <div>
                   <div className={styles.statusPlan}>{plan || 'TailorPady Pro'}</div>
                   <div className={styles.statusRenewal}>
-                    {paymentFailed ? 'Payment failed — update your card' : `Renews ${formatDate(nextRenewal)}`}
+                    {paymentFailed ? 'Payment failed, update your card' : `Renews ${formatDate(nextRenewal)}`}
                   </div>
                 </div>
               </div>
@@ -78,7 +78,7 @@ export default function BillingHistoryModal({ onClose }) {
           {!isPremium && (
             <div className={styles.freeBanner}>
               <span className="mi" style={{ fontSize: '1.2rem', color: 'var(--text3)' }}>info</span>
-              <span className={styles.freeBannerText}>You are on the Free plan — no billing history yet.</span>
+              <span className={styles.freeBannerText}>You are on the Free plan, no billing history yet.</span>
             </div>
           )}
 
