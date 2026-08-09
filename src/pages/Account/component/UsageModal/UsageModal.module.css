@@ -40,11 +40,13 @@
   display: flex;
   align-items: center;
   gap: 12px;
+  min-width: 0;
 }
 
 .headerIcon {
   font-size: 1.5rem;
   color: var(--accent);
+  flex-shrink: 0;
 }
 
 .headerTitle {
@@ -100,11 +102,13 @@
   display: flex;
   align-items: center;
   gap: 12px;
+  min-width: 0;
 }
 
 .statusIcon {
   font-size: 1.4rem;
   color: var(--accent);
+  flex-shrink: 0;
 }
 
 .statusPlan {
@@ -191,13 +195,16 @@
 .usageLabelRow {
   display: flex;
   align-items: center;
-  gap: 8px;
+  flex-wrap: wrap;
+  row-gap: 4px;
+  column-gap: 8px;
 }
 
 .usageLabel {
   font-size: 0.88rem;
   font-weight: 700;
   color: var(--text);
+  flex-shrink: 0;
 }
 
 .periodPillAllTime {
@@ -247,6 +254,7 @@
   width: 40px;
   height: 40px;
   flex-shrink: 0;
+  align-self: center;
 }
 
 .usageDonutSvg {
