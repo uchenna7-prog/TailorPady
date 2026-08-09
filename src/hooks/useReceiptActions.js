@@ -41,7 +41,7 @@ const RECEIPT_TOUR_PHASE_STEPS = [
   'add-receipt',
 ]
 
-export function useReceiptActions({ customerData, orders, showToast, setActiveTab, setReopenReceiptId }) {
+export function useReceiptActions({ customerData, orders, showToast, setActiveTab, setReopenReceiptId, onLimitReached }) {
 
   const { profileSettings } = useProfileSettings()
   const { generalSettings }  = useGeneralSettings()
@@ -51,13 +51,12 @@ export function useReceiptActions({ customerData, orders, showToast, setActiveTa
   const handleGenerateReceipt = useCallback((payment, installment) => {
     if (!installment) {
       showToast('No installment selected.')
-      return
+      return { ok: false, reason: 'no-installment' }
     }
 
     if (hasReachedLimit('receiptsPerMonth', 'receiptsPerMonth')) {
-      const limitError = new Error('RECEIPT_LIMIT_REACHED')
-      limitError.code = 'limit-reached'
-      throw limitError
+      onLimitReached?.()
+      return { ok: false, reason: 'limit' }
     }
 
     const localSnap        = readLocalStorageSettings()
@@ -162,7 +161,9 @@ export function useReceiptActions({ customerData, orders, showToast, setActiveTa
 
     recordUsage('receiptsPerMonth').catch(() => {})
 
-  }, [customerData, orders, generalSettings, profileSettings, hasReachedLimit, recordUsage, showToast, setActiveTab, setReopenReceiptId, resolveShortcut])
+    return { ok: true, receiptId: newReceipt.id }
+
+  }, [customerData, orders, generalSettings, profileSettings, hasReachedLimit, recordUsage, showToast, setActiveTab, setReopenReceiptId, resolveShortcut, onLimitReached])
 
 
   const handleDeleteReceipt = useCallback(async (receiptId) => {
