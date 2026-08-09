@@ -12,6 +12,7 @@ import { useInvoices }        from './InvoiceContext'
 import { usePayments }        from './PaymentContext'
 import { useTasks }           from './TaskContext'
 import { useGeneralSettings } from './GeneralSettingsContext'
+import { useUsage }           from './UsageContext'
 import {
   saveAgentMessage,
   loadAgentMessages,
@@ -203,6 +204,7 @@ export function AgentProvider({ children }) {
   const { allPayments }                            = usePayments()
   const { tasks, addTask }                         = useTasks()
   const { generalSettings }                        = useGeneralSettings()
+  const { hasReachedLimit, recordUsage, limits }   = useUsage()
 
   const [messages,   setMessages]   = useState([])
   const [isTyping,   setIsTyping]   = useState(false)
@@ -300,15 +302,26 @@ export function AgentProvider({ children }) {
   }
 
   async function executeFlow(flow) {
+    if (hasReachedLimit('aiActionsPerMonth', 'aiActionsPerMonth')) {
+      await agentReply(
+        `You've hit the free plan limit of ${limits.aiActionsPerMonth} AI assistant actions this month. Upgrade to Premium for unlimited actions.`,
+        null,
+        [{ label: 'Upgrade to Premium', action: 'navigate', payload: { route: '/upgrade' } }]
+      )
+      return
+    }
+
     const { name, data } = flow
     switch (name) {
-      case 'add_order':      return executeAddOrder(data)
-      case 'gen_invoice':    return executeGenInvoice(data)
-      case 'record_payment': return executeRecordPayment(data)
-      case 'add_task':       return executeAddTask(data)
-      case 'add_appt':       return executeAddAppt(data)
-      default: break
+      case 'add_order':      await executeAddOrder(data); break
+      case 'gen_invoice':    await executeGenInvoice(data); break
+      case 'record_payment': await executeRecordPayment(data); break
+      case 'add_task':       await executeAddTask(data); break
+      case 'add_appt':       await executeAddAppt(data); break
+      default: return
     }
+
+    recordUsage('aiActionsPerMonth').catch(() => {})
   }
 
   async function executeAddOrder(data) {
@@ -381,8 +394,16 @@ export function AgentProvider({ children }) {
       actions.push({ label: 'View order', action: 'navigate', payload: { route: '/orders' } })
 
       await agentReply(lines.join('\n'), null, actions)
-    } catch {
-      await agentReply('Something went wrong while creating that order. Please try again.')
+    } catch (err) {
+      if (err?.code === 'limit-reached') {
+        await agentReply(
+          `You've hit the free plan limit of ${limits.ordersPerMonth} orders this month. Upgrade to Premium for unlimited orders.`,
+          null,
+          [{ label: 'Upgrade to Premium', action: 'navigate', payload: { route: '/upgrade' } }]
+        )
+      } else {
+        await agentReply('Something went wrong while creating that order. Please try again.')
+      }
     }
   }
 
