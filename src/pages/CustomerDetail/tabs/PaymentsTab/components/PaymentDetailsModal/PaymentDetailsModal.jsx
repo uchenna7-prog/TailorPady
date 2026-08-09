@@ -1,10 +1,13 @@
 import { useState, useRef, useEffect } from "react"
+import { useNavigate } from "react-router-dom"
 import { AddInstallmentModal } from "../AddInstallmentModal/AddInstallmentModal"
 import { getTotalPaid, getProgressPercent, capitalise } from "../../utils"
 import { formatMoney, getCurrency } from "../../../../../../utils/moneyUtils"
 import { PAYMENT_STATUSES } from "../../../../../../datas/paymentDatas"
+import { useUsage } from "../../../../../../contexts/UsageContext"
 import Header from "../../../../../../components/Header/Header"
 import ConfirmSheet from "../../../../../../components/ConfirmSheet/ConfirmSheet"
+import { UpgradeSheet } from "../../../../../../components/UpgradeSheet/UpgradeSheet"
 import styles from "./PaymentDetailsModal.module.css"
 
 const DONUT_CIRCUMFERENCE = 2 * Math.PI * 26
@@ -20,9 +23,12 @@ export function PaymentDetailsModal({
   onViewReceipt,
   receipts = [],
 }) {
+  const navigate = useNavigate()
+  const { limits } = useUsage()
   const [showInstallmentModal, setShowInstallmentModal] = useState(false)
   const [showStatusMenu, setShowStatusMenu] = useState(false)
   const [confirmDelete, setConfirmDelete] = useState(false)
+  const [upgradeOpen, setUpgradeOpen] = useState(false)
   const statusRef = useRef(null)
 
   useEffect(() => {
@@ -76,6 +82,21 @@ export function PaymentDetailsModal({
   function handleDeleteConfirm() {
     setConfirmDelete(false)
     onDelete(payment)
+  }
+
+  function handleGenerateReceiptClick(inst) {
+    try {
+      onGenerateReceipt?.(payment, inst)
+    } catch (err) {
+      if (err?.code === 'limit-reached') {
+        setUpgradeOpen(true)
+      }
+    }
+  }
+
+  function handleUpgrade() {
+    setUpgradeOpen(false)
+    navigate('/upgrade')
   }
 
   return (
@@ -272,7 +293,7 @@ export function PaymentDetailsModal({
                     <button
                       type="button"
                       className={styles.installmentActionBtn}
-                      onClick={() => hasReceipt ? onViewReceipt?.(matchedReceipt?.id) : onGenerateReceipt?.(payment, inst)}
+                      onClick={() => hasReceipt ? onViewReceipt?.(matchedReceipt?.id) : handleGenerateReceiptClick(inst)}
                     >
                       <span className="mi" style={{ fontSize: '1rem' }}>receipt</span>
                       {hasReceipt ? 'View receipt' : 'Generate receipt'}
@@ -310,6 +331,15 @@ export function PaymentDetailsModal({
         message="This payment record will be permanently deleted. This cannot be undone."
         onConfirm={handleDeleteConfirm}
         onCancel={() => setConfirmDelete(false)}
+      />
+
+      <UpgradeSheet
+        isOpen={upgradeOpen}
+        onClose={() => setUpgradeOpen(false)}
+        onUpgrade={handleUpgrade}
+        icon="receipt"
+        title="Receipt limit reached"
+        message={`You've hit the free plan limit of ${limits.receiptsPerMonth} receipts this month. Upgrade to Premium for unlimited receipts.`}
       />
     </div>
   )
