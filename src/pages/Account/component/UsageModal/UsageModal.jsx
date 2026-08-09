@@ -124,10 +124,14 @@ export default function UsageModal({ onClose, onUpgrade }) {
                           <div className={row.period === 'lifetime' ? styles.periodPillAllTime : styles.periodPillMonthly}>
                             {row.period === 'lifetime' ? 'All-Time' : 'Monthly'}
                           </div>
-                          {atLimit && <div className={styles.limitPill}>Limit reached</div>}
                         </div>
                         <div className={styles.usageCount}>
                           {row.used} of {row.cap} used{row.period === 'monthly' ? ' this month' : ''}
+                          {atLimit && (
+                            <span className={styles.limitReached}>
+                              <span className={styles.limitDot}>•</span> Limit reached
+                            </span>
+                          )}
                         </div>
                       </div>
                       <div className={styles.usageDonutWrap}>
