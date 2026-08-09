@@ -85,12 +85,9 @@ export function PaymentDetailsModal({
   }
 
   function handleGenerateReceiptClick(inst) {
-    try {
-      onGenerateReceipt?.(payment, inst)
-    } catch (err) {
-      if (err?.code === 'limit-reached') {
-        setUpgradeOpen(true)
-      }
+    const result = onGenerateReceipt?.(payment, inst)
+    if (result && !result.ok && result.reason === 'limit') {
+      setUpgradeOpen(true)
     }
   }
 
