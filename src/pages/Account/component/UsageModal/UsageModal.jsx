@@ -84,7 +84,7 @@ export default function UsageModal({ onClose, onUpgrade }) {
                 <span className={`mi ${styles.statusIcon}`}>workspace_premium</span>
                 <div>
                   <div className={styles.statusPlan}>Unlimited usage</div>
-                  <div className={styles.statusRenewal}>No limits on Pro — use TailorPady freely</div>
+                  <div className={styles.statusRenewal}>No limits on Pro, use TailorPady freely</div>
                 </div>
               </div>
               <div className={styles.activePill}>Pro</div>
@@ -162,7 +162,7 @@ export default function UsageModal({ onClose, onUpgrade }) {
 
           <div className={styles.footer}>
             <span className="mi" style={{ fontSize: '0.85rem', color: 'var(--text3)' }}>event_repeat</span>
-            <span className={styles.footerText}>Monthly limits reset {getResetLabel()} · Customer limit is all-time</span>
+            <span className={styles.footerText}>Monthly limits reset {getResetLabel()}</span>
           </div>
 
         </div>
