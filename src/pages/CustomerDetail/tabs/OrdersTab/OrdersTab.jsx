@@ -159,8 +159,8 @@ export default function OrdersTab({ customerId, orders, loading, measurements, s
           order={selectedOrder}
           onClose={() => setSelectedOrder(null)}
           onGenerateInvoice={(orderId) => {
-            setSelectedOrder(null)
             onGenerateInvoice(orderId)
+            setSelectedOrder(null)
           }}
           onViewInvoice={(invoiceId) => {
             setSelectedOrder(null)
