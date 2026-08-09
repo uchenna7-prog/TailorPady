@@ -9,24 +9,23 @@ const STORAGE_KEY = 'TailorPady_usage_limit_banner'
 const APPROACHING_THRESHOLD = 0.7
 const DISMISS_JUMP_THRESHOLD = 0.15
 
-const LIMIT_LABELS = {
-  customers: 'customers',
-  measurementsPerMonth: 'measurements',
-  ordersPerMonth: 'orders',
-  invoicesPerMonth: 'invoices',
-  receiptsPerMonth: 'receipts',
-  portfolioUploadsPerMonth: 'portfolio uploads',
-  reviewLinksPerMonth: 'review links',
-  aiActionsPerMonth: 'AI actions',
+const TITLE_LABELS = {
+  customers: 'Customers',
+  measurementsPerMonth: 'Measurements',
+  ordersPerMonth: 'Orders',
+  invoicesPerMonth: 'Invoices',
+  receiptsPerMonth: 'Receipts',
+  portfolioUploadsPerMonth: 'Portfolio Uploads',
+  reviewLinksPerMonth: 'Review Links',
+  aiActionsPerMonth: 'AI Actions',
 }
 
 const LIFETIME_FIELDS = new Set(['customers'])
 
-function labelFor(field) {
-  if (LIMIT_LABELS[field]) return LIMIT_LABELS[field]
+function titleFor(field) {
+  if (TITLE_LABELS[field]) return TITLE_LABELS[field]
   const stripped = field.replace(/PerMonth$/, '')
-  const spaced = stripped.replace(/([A-Z])/g, ' $1').toLowerCase()
-  return spaced.trim()
+  return stripped.replace(/([A-Z])/g, ' $1').replace(/^./, c => c.toUpperCase()).trim()
 }
 
 function getMonthKey() {
@@ -86,9 +85,9 @@ export function UsageLimitBanner() {
   if ((dismissed || alreadyDismissed)) return null
 
   const isAtLimit = topField.pct >= 1
-  const percentLabel = Math.round(topField.pct * 100)
-  const metricLabel = labelFor(topField.field)
+  const titleLabel = titleFor(topField.field)
   const isLifetime = LIFETIME_FIELDS.has(topField.field)
+  const title = isAtLimit ? `${titleLabel} Limit Reached` : `Nearing ${titleLabel} Limit`
 
   function handleDismiss() {
     saveBannerState({ monthKey, field: topField.field, dismissedAtPct: topField.pct })
@@ -99,15 +98,19 @@ export function UsageLimitBanner() {
     navigate('/upgrade')
   }
 
+  function handleViewUsage() {
+    navigate('/account', { state: { autoOpenModal: 'usage' } })
+  }
+
   return (
     <div className={`${styles.banner} ${isAtLimit ? styles.bannerCritical : styles.bannerWarning}`}>
       {!isAtLimit && (
         <button className={styles.dismiss} onClick={handleDismiss} aria-label="Dismiss">
-          <span className="mi" style={{ fontSize: '1.1rem' }}>close</span>
+          <span className="mi" style={{ fontSize: '1rem' }}>close</span>
         </button>
       )}
 
-      <div className={styles.top}>
+      <div className={styles.row}>
         <div className={styles.iconBadge}>
           <span className="mi" style={{ fontSize: '1.15rem' }}>
             {isAtLimit ? 'lock' : 'bolt'}
@@ -115,20 +118,18 @@ export function UsageLimitBanner() {
         </div>
 
         <div className={styles.text}>
-          <div className={styles.title}>
-            {isAtLimit ? `You've hit your ${metricLabel} limit` : `Approaching your ${metricLabel} limit`}
-          </div>
+          <div className={styles.title}>{title}</div>
           <div className={styles.sub}>
             <span className={styles.stat}>{topField.used}/{topField.cap}</span>
-            {' '}{metricLabel} used{isLifetime ? ' · lifetime limit' : ' this month'}
+            {' '}used{isLifetime ? ' · lifetime limit' : ' this month'}
           </div>
         </div>
-      </div>
 
-      <button className={styles.upgrade} onClick={handleUpgrade}>
-        Upgrade to Premium
-        <span className="mi" style={{ fontSize: '1rem' }}>arrow_forward</span>
-      </button>
+        <div className={styles.actions}>
+          <button className={styles.upgrade} onClick={handleUpgrade}>Upgrade</button>
+          <button className={styles.viewUsage} onClick={handleViewUsage}>View Usage</button>
+        </div>
+      </div>
     </div>
   )
 }
