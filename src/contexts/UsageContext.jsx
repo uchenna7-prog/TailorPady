@@ -1,47 +1,198 @@
-import { createContext, useContext, useState, useEffect, useCallback } from 'react'
-import { db } from '../firebase'
-import { useAuth } from './AuthContext'
-import { usePremium } from './PremiumContext'
-import { USAGE_LIMITS, subscribeToUsage, incrementUsage } from '../services/usageService'
-const UsageContext = createContext(null)
-export function UsageProvider({ children }) {
-  const { user } = useAuth()
-  const { isPremium } = usePremium()
-  const [usage, setUsage] = useState({})
-  const [loading, setLoading] = useState(true)
-  useEffect(() => {
-    if (!user) {
-      setUsage({})
-      setLoading(false)
-      return
-    }
-    setLoading(true)
-    const unsub = subscribeToUsage(db, user.uid, data => {
-      setUsage(data)
-      setLoading(false)
-    })
-    return unsub
-  }, [user])
-  const recordUsage = useCallback(async field => {
-    if (!user || isPremium) return
-    await incrementUsage(db, user.uid, field)
-  }, [user, isPremium])
-  const hasReachedLimit = useCallback((field, limitKey) => {
-    if (isPremium) return false
-    return (usage[field] || 0) >= USAGE_LIMITS[limitKey]
-  }, [isPremium, usage])
-  const remaining = useCallback((field, limitKey) => {
-    if (isPremium) return Infinity
-    return Math.max(0, USAGE_LIMITS[limitKey] - (usage[field] || 0))
-  }, [isPremium, usage])
-  return (
-    <UsageContext.Provider value={{ usage, loading, recordUsage, hasReachedLimit, remaining, limits: USAGE_LIMITS }}>
-      {children}
-    </UsageContext.Provider>
-  )
+import { useCallback, useEffect, useRef } from 'react'
+import { useProfileSettings } from '../contexts/ProfileSettingsContext'
+import { useGeneralSettings } from '../contexts/GeneralSettingsContext'
+import { useUsage } from '../contexts/UsageContext'
+import { useTour } from '../contexts/TourContext'
+
+
+function buildBrandSnapshot(localSnap, profileSettings, overrides = {}) {
+  const pick = (localKey, profileKey) =>
+    localSnap[localKey] || profileSettings?.[profileKey] || ''
+
+  return {
+    name:     pick('brandName',    'brandName'),
+    tagline:  pick('brandTagline', 'brandTagline'),
+    colour:   pick('brandColour',  'brandColour'),
+    colourId: pick('brandColourId','brandColourId'),
+    phone:    pick('brandPhone',   'brandPhone'),
+    email:    pick('brandEmail',   'brandEmail'),
+    address:  pick('brandAddress', 'brandAddress'),
+    logo:     pick('brandLogo',    'brandLogo'),
+    website:  pick('brandWebsite', 'brandWebsite'),
+    ...overrides,
+  }
 }
-export function useUsage() {
-  const ctx = useContext(UsageContext)
-  if (!ctx) throw new Error('useUsage must be used inside UsageProvider')
-  return ctx
-} 
+
+
+function readLocalStorageSettings() {
+  try {
+    const profileSettings = JSON.parse(localStorage.getItem('TailorPady_profile_settings') || '{}')
+    const generalSettings = JSON.parse(localStorage.getItem('TailorPady_general_settings') || '{}')
+    return { ...profileSettings, ...generalSettings }
+  } catch {
+    return {}
+  }
+}
+
+const INVOICE_TOUR_PHASE_STEPS = [
+  'branch-after-order',
+  'view-new-order',
+  'goto-invoices-tab',
+  'add-invoice',
+]
+
+export function useInvoiceActions({ customerData, orders, showToast, setActiveTab, setReopenInvoiceId, onLimitReached }) {
+
+  const { profileSettings } = useProfileSettings()
+  const { generalSettings }  = useGeneralSettings()
+  const { usage, remaining, recordUsage } = useUsage()
+  const { resolveShortcut }  = useTour()
+  const pendingInvoiceCountRef = useRef(0)
+
+  useEffect(() => {
+    pendingInvoiceCountRef.current = 0
+  }, [usage.invoicesPerMonth])
+
+  const handleGenerateInvoice = useCallback((orderId) => {
+
+    const existingInvoice = customerData.invoices.find(
+      inv => String(inv.orderId) === String(orderId)
+    )
+    if (existingInvoice) {
+      showToast('Invoice already exists')
+      setActiveTab('invoices')
+      setReopenInvoiceId?.(existingInvoice.id)
+      return { ok: false, reason: 'exists', invoiceId: existingInvoice.id }
+    }
+
+    const remainingInvoices = remaining('invoicesPerMonth', 'invoicesPerMonth')
+    if (remainingInvoices - pendingInvoiceCountRef.current <= 0) {
+      onLimitReached?.()
+      return { ok: false, reason: 'limit' }
+    }
+
+    const order = orders.find(o => String(o.id) === String(orderId))
+    if (!order) {
+      showToast('Order not found')
+      setActiveTab('invoices')
+      return { ok: false, reason: 'not-found' }
+    }
+
+    const localSnap       = readLocalStorageSettings()
+    const invoicePrefix   = generalSettings.invoicePrefix   || localSnap.invoicePrefix   || 'INV'
+    const invoiceTemplate = generalSettings.invoiceTemplate || localSnap.invoiceTemplate || 'invoiceTemplate1'
+    const invoiceNumber   = `${invoicePrefix}-${String(customerData.invoices.length + 1).padStart(3, '0')}`
+    const invoiceCurrency = localSnap.invoiceCurrency?.symbol || generalSettings.invoiceCurrency?.symbol || '₦'
+    const invoiceDueDays  = generalSettings.invoiceDueDays || localSnap.invoiceDueDays || 7
+
+    const today = new Date().toLocaleDateString('en-US', {
+      month: 'short',
+      day:   'numeric',
+      year:  'numeric',
+    })
+
+    const measurementIds = Array.isArray(order.measurementIds)
+      ? order.measurementIds
+      : order.measurementId
+        ? [order.measurementId]
+        : []
+
+    const linkedMeasurementNames = measurementIds
+      .map(mid => customerData.measurements.find(m => String(m.id) === String(mid))?.name)
+      .filter(Boolean)
+
+    const brandSnapshot = buildBrandSnapshot(localSnap, profileSettings, {
+      footer:   localSnap.invoiceFooter || 'Thank you for your patronage 🙏',
+      currency: invoiceCurrency,
+      showTax:  localSnap.invoiceShowTax || false,
+      taxRate:  localSnap.invoiceTaxRate || 0,
+      dueDays:  invoiceDueDays,
+    })
+
+    const getDueDate = (dateString, dueDays) => {
+      try {
+        const date = new Date(dateString)
+        date.setDate(date.getDate() + (dueDays || 7))
+        return {
+          display: date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
+          iso:     date.toISOString().slice(0, 10),
+        }
+      } catch {
+        return { display: '', iso: '' }
+      }
+    }
+
+    const dueDateInfo = getDueDate(today, invoiceDueDays)
+
+    const newInvoice = {
+      id:             Date.now() + Math.random(),
+      orderId,
+      number:         invoiceNumber,
+      date:           today,
+      status:         'unpaid',
+      template:       invoiceTemplate,
+      orderDesc:      order.desc,
+      price:          order.price,
+      qty:            order.qty,
+      items:          Array.isArray(order.items) ? order.items : [],
+      linkedNames:    linkedMeasurementNames,
+      due:            dueDateInfo.display,
+      dueRaw:         dueDateInfo.iso,
+      shippingFee:    order.shippingFee    ?? 0,
+      discountType:   order.discountType   ?? null,
+      discountValue:  order.discountValue  ?? 0,
+      discountAmount: order.discountAmount ?? 0,
+      taxRate:        order.taxRate        ?? 0,
+      taxAmount:      order.taxAmount      ?? 0,
+      totalAmount:    order.totalAmount    ?? order.price ?? 0,
+      brandSnapshot,
+    }
+
+    customerData.addInvoiceOptimistic(newInvoice)
+    pendingInvoiceCountRef.current += 1
+    showToast(`${invoiceNumber} generated ✓`)
+    setActiveTab('invoices')
+    setReopenInvoiceId?.(newInvoice.id)
+    resolveShortcut(INVOICE_TOUR_PHASE_STEPS, 'confirm-add-payment')
+
+    customerData.saveInvoice(newInvoice).catch(() => {
+      showToast('Invoice saved locally — will sync when online')
+    })
+
+    recordUsage('invoicesPerMonth').catch(() => {})
+
+    return { ok: true, invoiceId: newInvoice.id }
+
+  }, [customerData, orders, generalSettings, profileSettings, remaining, recordUsage, showToast, setActiveTab, setReopenInvoiceId, resolveShortcut, onLimitReached])
+
+
+  const handleInvoicePaid = useCallback(async (orderId, invoiceStatus) => {
+    const status = invoiceStatus || 'paid'
+
+    const matchingInvoice = customerData.invoices.find(
+      inv => String(inv.orderId) === String(orderId) && inv.status !== 'paid'
+    )
+    if (!matchingInvoice) return
+
+    try {
+      await customerData.updateInvoiceStatus(matchingInvoice.id, status)
+      const label = status === 'part_paid' ? 'Part Payment' : 'Full Payment'
+      showToast(`Invoice marked as ${label} ✓`)
+    } catch {
+      showToast('Could not auto-update invoice.')
+    }
+  }, [customerData, showToast])
+
+
+  const handleDeleteInvoice = useCallback(async (invoiceId) => {
+    try {
+      await customerData.deleteInvoice(invoiceId)
+      showToast('Invoice deleted')
+    } catch {
+      showToast('Failed to delete invoice.')
+    }
+  }, [customerData, showToast])
+
+  return { handleGenerateInvoice, handleInvoicePaid, handleDeleteInvoice }
+
+}
