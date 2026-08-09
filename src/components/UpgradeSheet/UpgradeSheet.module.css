@@ -49,9 +49,7 @@
   right: 14px;
   width: 32px;
   height: 32px;
-  border-radius: 50%;
   border: none;
-  background: var(--surface2, rgba(128, 128, 128, 0.12));
   color: var(--text2);
   display: flex;
   align-items: center;
@@ -62,7 +60,6 @@
 
 .closeBtn:active {
   transform: scale(0.92);
-  background: var(--border);
 }
 
 .iconWrap {
