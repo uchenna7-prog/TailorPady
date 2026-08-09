@@ -101,37 +101,33 @@ export function UsageLimitBanner() {
 
   return (
     <div className={`${styles.banner} ${isAtLimit ? styles.bannerCritical : styles.bannerWarning}`}>
+      {!isAtLimit && (
+        <button className={styles.dismiss} onClick={handleDismiss} aria-label="Dismiss">
+          <span className="mi" style={{ fontSize: '1.1rem' }}>close</span>
+        </button>
+      )}
+
       <div className={styles.top}>
-        <span className={`mi ${styles.icon}`}>
-          {isAtLimit ? 'error' : 'trending_up'}
-        </span>
+        <div className={styles.iconBadge}>
+          <span className="mi" style={{ fontSize: '1.15rem' }}>
+            {isAtLimit ? 'lock' : 'bolt'}
+          </span>
+        </div>
 
         <div className={styles.text}>
           <div className={styles.title}>
             {isAtLimit ? `You've hit your ${metricLabel} limit` : `Approaching your ${metricLabel} limit`}
           </div>
           <div className={styles.sub}>
-            {topField.used} of {topField.cap} {metricLabel} used{isLifetime ? ' (lifetime limit)' : ' this month'}
+            <span className={styles.stat}>{topField.used}/{topField.cap}</span>
+            {' '}{metricLabel} used{isLifetime ? ' · lifetime limit' : ' this month'}
           </div>
         </div>
-
-        {!isAtLimit && (
-          <button className={styles.dismiss} onClick={handleDismiss} aria-label="Dismiss">
-            <span className="mi" style={{ fontSize: '1.1rem' }}>close</span>
-          </button>
-        )}
-      </div>
-
-      <div className={styles.barTrack}>
-        <div
-          className={`${styles.barFill} ${isAtLimit ? styles.barFillCritical : styles.barFillWarning}`}
-          style={{ width: `${percentLabel}%` }}
-        />
       </div>
 
       <button className={styles.upgrade} onClick={handleUpgrade}>
-        <span className="mi" style={{ fontSize: '1rem' }}>bolt</span>
         Upgrade to Premium
+        <span className="mi" style={{ fontSize: '1rem' }}>arrow_forward</span>
       </button>
     </div>
   )
