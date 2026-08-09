@@ -30,9 +30,16 @@ function buildLocal(ps) {
   }
 }
 
+function autoGrow(el) {
+  if (!el) return
+  el.style.height = 'auto'
+  el.style.height = `${el.scrollHeight}px`
+}
+
 export function BusinessInfoModal({ onBack, showToast }) {
   const { profileSettings, isLoading, updateManyProfileSettings } = useProfileSettings()
   const initializedRef = useRef(false)
+  const termRefs = useRef([])
 
   const parsed = parseStoredPhone(profileSettings.brandPhone)
 
@@ -48,6 +55,10 @@ export function BusinessInfoModal({ onBack, showToast }) {
     setPhoneLocal(p.local)
     setPhoneCountry(p.country)
   }, [isLoading])
+
+  useEffect(() => {
+    termRefs.current.forEach(autoGrow)
+  }, [local.brandPaymentTerms])
 
   const set = key => val => setLocal(p => ({ ...p, [key]: val }))
 
@@ -164,12 +175,13 @@ export function BusinessInfoModal({ onBack, showToast }) {
               <div key={i} className={styles.termRow}>
                 <span className={styles.termBullet}>•</span>
                 <div className={styles.termInputWrap}>
-                  <input
+                  <textarea
+                    ref={el => { termRefs.current[i] = el; autoGrow(el) }}
                     className={styles.termInput}
-                    type="text"
+                    rows={1}
                     value={term}
                     maxLength={MAX_TERM_LENGTH}
-                    onChange={e => setTerm(i, e.target.value)}
+                    onChange={e => { setTerm(i, e.target.value); autoGrow(e.target) }}
                     placeholder={termPlaceholder(i)}
                   />
                   <span className={`${styles.termCounter} ${term.length >= MAX_TERM_LENGTH ? styles.termCounterMax : ''}`}>
