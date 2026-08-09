@@ -41,12 +41,12 @@ const INVOICE_TOUR_PHASE_STEPS = [
   'add-invoice',
 ]
 
-export function useInvoiceActions({ customerData, orders, showToast, setActiveTab, setReopenInvoiceId, onLimitReached }) {
+export function useInvoiceActions({ customerData, orders, showToast, setActiveTab, setReopenInvoiceId }) {
 
   const { profileSettings } = useProfileSettings()
   const { generalSettings }  = useGeneralSettings()
-  const { resolveShortcut }  = useTour()
   const { hasReachedLimit, recordUsage } = useUsage()
+  const { resolveShortcut }  = useTour()
 
   const handleGenerateInvoice = useCallback((orderId) => {
 
@@ -57,19 +57,20 @@ export function useInvoiceActions({ customerData, orders, showToast, setActiveTa
       showToast('Invoice already exists')
       setActiveTab('invoices')
       setReopenInvoiceId?.(existingInvoice.id)
-      return { reason: 'already-exists', id: existingInvoice.id }
+      return
+    }
+
+    if (hasReachedLimit('invoicesPerMonth', 'invoicesPerMonth')) {
+      const limitError = new Error('INVOICE_LIMIT_REACHED')
+      limitError.code = 'limit-reached'
+      throw limitError
     }
 
     const order = orders.find(o => String(o.id) === String(orderId))
     if (!order) {
       showToast('Order not found')
       setActiveTab('invoices')
-      return { reason: 'order-not-found', id: null }
-    }
-
-    if (hasReachedLimit('invoicesPerMonth', 'invoicesPerMonth')) {
-      onLimitReached?.()
-      return { reason: 'limit-reached', id: null }
+      return
     }
 
     const localSnap       = readLocalStorageSettings()
@@ -151,11 +152,10 @@ export function useInvoiceActions({ customerData, orders, showToast, setActiveTa
     customerData.saveInvoice(newInvoice).catch(() => {
       showToast('Invoice saved locally — will sync when online')
     })
+
     recordUsage('invoicesPerMonth').catch(() => {})
 
-    return { reason: 'ok', id: newInvoice.id }
-
-  }, [customerData, orders, generalSettings, profileSettings, showToast, setActiveTab, setReopenInvoiceId, resolveShortcut, hasReachedLimit, recordUsage, onLimitReached])
+  }, [customerData, orders, generalSettings, profileSettings, hasReachedLimit, recordUsage, showToast, setActiveTab, setReopenInvoiceId, resolveShortcut])
 
 
   const handleInvoicePaid = useCallback(async (orderId, invoiceStatus) => {
