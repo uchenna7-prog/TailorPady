@@ -1,6 +1,7 @@
 import { useCallback } from 'react'
 import { useProfileSettings } from '../contexts/ProfileSettingsContext'
 import { useGeneralSettings } from '../contexts/GeneralSettingsContext'
+import { useUsage } from '../contexts/UsageContext'
 import { useTour } from '../contexts/TourContext'
 
 
@@ -44,12 +45,19 @@ export function useReceiptActions({ customerData, orders, showToast, setActiveTa
 
   const { profileSettings } = useProfileSettings()
   const { generalSettings }  = useGeneralSettings()
+  const { hasReachedLimit, recordUsage } = useUsage()
   const { resolveShortcut }  = useTour()
 
   const handleGenerateReceipt = useCallback((payment, installment) => {
     if (!installment) {
       showToast('No installment selected.')
       return
+    }
+
+    if (hasReachedLimit('receiptsPerMonth', 'receiptsPerMonth')) {
+      const limitError = new Error('RECEIPT_LIMIT_REACHED')
+      limitError.code = 'limit-reached'
+      throw limitError
     }
 
     const localSnap        = readLocalStorageSettings()
@@ -152,7 +160,9 @@ export function useReceiptActions({ customerData, orders, showToast, setActiveTa
       showToast('Receipt saved locally — will sync when online')
     })
 
-  }, [customerData, orders, generalSettings, profileSettings, showToast, setActiveTab, setReopenReceiptId, resolveShortcut])
+    recordUsage('receiptsPerMonth').catch(() => {})
+
+  }, [customerData, orders, generalSettings, profileSettings, hasReachedLimit, recordUsage, showToast, setActiveTab, setReopenReceiptId, resolveShortcut])
 
 
   const handleDeleteReceipt = useCallback(async (receiptId) => {
