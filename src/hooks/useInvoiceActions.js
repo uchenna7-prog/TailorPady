@@ -57,19 +57,19 @@ export function useInvoiceActions({ customerData, orders, showToast, setActiveTa
       showToast('Invoice already exists')
       setActiveTab('invoices')
       setReopenInvoiceId?.(existingInvoice.id)
-      return
+      return { ok: false, reason: 'exists', invoiceId: existingInvoice.id }
     }
 
     if (hasReachedLimit('invoicesPerMonth', 'invoicesPerMonth')) {
       onLimitReached?.()
-      return
+      return { ok: false, reason: 'limit' }
     }
 
     const order = orders.find(o => String(o.id) === String(orderId))
     if (!order) {
       showToast('Order not found')
       setActiveTab('invoices')
-      return
+      return { ok: false, reason: 'not-found' }
     }
 
     const localSnap       = readLocalStorageSettings()
@@ -153,6 +153,8 @@ export function useInvoiceActions({ customerData, orders, showToast, setActiveTa
     })
 
     recordUsage('invoicesPerMonth').catch(() => {})
+
+    return { ok: true, invoiceId: newInvoice.id }
 
   }, [customerData, orders, generalSettings, profileSettings, hasReachedLimit, recordUsage, showToast, setActiveTab, setReopenInvoiceId, resolveShortcut, onLimitReached])
 
