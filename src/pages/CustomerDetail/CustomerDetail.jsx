@@ -74,6 +74,7 @@ export default function CustomerDetail({ onMenuClick }) {
   const [completedModal, setCompletedModal]   = useState(null)
   const [completedFields, setCompletedFields] = useState([])
   const [invoiceUpgradeOpen, setInvoiceUpgradeOpen] = useState(false)
+  const [receiptUpgradeOpen, setReceiptUpgradeOpen] = useState(false)
 
   const toastTimerRef  = useRef(null)
   const tabsRef        = useRef(null)
@@ -112,6 +113,7 @@ export default function CustomerDetail({ onMenuClick }) {
     showToast,
     setActiveTab,
     setReopenReceiptId,
+    onLimitReached: () => setReceiptUpgradeOpen(true),
   })
 
   const handleViewInvoice = useCallback((invoiceId) => {
@@ -397,6 +399,11 @@ export default function CustomerDetail({ onMenuClick }) {
 
   const handleInvoiceUpgrade = useCallback(() => {
     setInvoiceUpgradeOpen(false)
+    navigate('/upgrade')
+  }, [navigate])
+
+  const handleReceiptUpgrade = useCallback(() => {
+    setReceiptUpgradeOpen(false)
     navigate('/upgrade')
   }, [navigate])
 
@@ -811,6 +818,15 @@ export default function CustomerDetail({ onMenuClick }) {
         icon="receipt_long"
         title="Invoice limit reached"
         message={`You've hit the free plan limit of ${limits.invoicesPerMonth} invoices this month. Upgrade to Premium for unlimited invoices.`}
+      />
+
+      <UpgradeSheet
+        isOpen={receiptUpgradeOpen}
+        onClose={() => setReceiptUpgradeOpen(false)}
+        onUpgrade={handleReceiptUpgrade}
+        icon="receipt"
+        title="Receipt limit reached"
+        message={`You've hit the free plan limit of ${limits.receiptsPerMonth} receipts this month. Upgrade to Premium for unlimited receipts.`}
       />
     </div>
   )
