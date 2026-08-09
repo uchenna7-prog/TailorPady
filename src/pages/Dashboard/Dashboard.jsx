@@ -687,3 +687,4 @@ function Dashboard({ onMenuClick, onGoToCustomer }) {
 }
 
 export default Dashboard
+
