@@ -89,16 +89,16 @@ export default function ReceiptTab({
   }, [reopenReceiptId, receipts])
 
   function handleSelectPayment(payment, installment) {
-    try {
-      onGenerateReceipt(payment, installment)
+    const result = onGenerateReceipt(payment, installment)
+
+    if (result?.ok) {
       setAddReceiptModalOpen(false)
-    } catch (err) {
-      if (err?.code === 'limit-reached') {
-        setAddReceiptModalOpen(false)
-        setUpgradeOpen(true)
-      } else {
-        showToast('Failed to generate receipt')
-      }
+      return
+    }
+
+    if (result?.reason === 'limit') {
+      setAddReceiptModalOpen(false)
+      setUpgradeOpen(true)
     }
   }
 
