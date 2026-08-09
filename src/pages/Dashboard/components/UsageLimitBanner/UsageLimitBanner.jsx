@@ -10,15 +10,19 @@ const DISMISS_JUMP_THRESHOLD = 0.15
 
 const LIMIT_LABELS = {
   customers: 'customers',
-  orders: 'orders',
-  invoices: 'invoices',
-  appointments: 'appointments',
-  tasks: 'tasks',
+  measurementsPerMonth: 'measurements',
+  ordersPerMonth: 'orders',
+  invoicesPerMonth: 'invoices',
+  receiptsPerMonth: 'receipts',
+  portfolioUploadsPerMonth: 'portfolio uploads',
+  reviewLinksPerMonth: 'review links',
+  aiActionsPerMonth: 'AI actions',
 }
 
 function labelFor(field) {
   if (LIMIT_LABELS[field]) return LIMIT_LABELS[field]
-  const spaced = field.replace(/([A-Z])/g, ' $1').toLowerCase()
+  const stripped = field.replace(/PerMonth$/, '')
+  const spaced = stripped.replace(/([A-Z])/g, ' $1').toLowerCase()
   return spaced.trim()
 }
 
