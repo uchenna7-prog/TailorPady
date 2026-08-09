@@ -299,7 +299,7 @@ export function AddOrderModal({ isOpen, onClose, measurements, onSave, taxRate, 
                   <span /><span /><span />
                 </div>
                 <span className={styles.clothHiddenHintText}>
-                  More results available — use the search bar above
+                  More results available, use the search bar above
                 </span>
               </div>
             )}
