@@ -11,7 +11,6 @@ export function UpgradeSheet({
   features,
   price,
   period,
-  badge,
   confirmText,
   dismissText
 }) {
@@ -49,10 +48,6 @@ export function UpgradeSheet({
         <div className={styles.iconWrap}>
           <span className="mi" style={{ fontSize: '1.7rem' }}>{icon || 'workspace_premium'}</span>
         </div>
-
-        {badge !== false && (
-          <span className={styles.badge}>{badge || 'Premium'}</span>
-        )}
 
         <h3 id="upgradeSheetTitle" className={styles.title}>{title || 'Upgrade to Premium'}</h3>
         <p className={styles.message}>{message}</p>
