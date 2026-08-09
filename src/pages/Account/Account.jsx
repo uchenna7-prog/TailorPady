@@ -35,7 +35,7 @@ import styles from './Account.module.css'
 import { db } from '../../firebase'
 
 const PROFILE_TOUR_STEP_IDS = ['highlight-profile-card', 'highlight-edit-brand', 'highlight-edit-business-info']
-const AUTO_OPEN_MODALS = ['brand', 'businessInfo', 'upgrade']
+const AUTO_OPEN_MODALS = ['brand', 'businessInfo', 'upgrade', 'usage']
 
 export default function Account({ onMenuClick, isPremium = false, onUpgrade = () => {} }) {
 
