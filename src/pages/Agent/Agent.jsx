@@ -12,10 +12,12 @@ import { usePayments } from '../../contexts/PaymentContext'
 import { useCustomers } from '../../contexts/CustomerContext'
 import { useGeneralSettings } from '../../contexts/GeneralSettingsContext'
 import { useProfileSettings } from '../../contexts/ProfileSettingsContext'
+import { useUsage } from '../../contexts/UsageContext'
 import { ActivityTab } from './tabs/ActivityTab/ActivityTab'
 import { ScheduledTab } from './tabs/ScheduledTab/ScheduledTab'
 import { DraftsTab } from './tabs/DraftsTab/DraftsTab'
 import { AgentTitleIcon } from './components/AgentTitleIcon/AgentTitleIcon'
+import { UpgradeSheet } from '../../components/UpgradeSheet/UpgradeSheet'
 import { haptic } from './utils'
 import styles from './Agent.module.css'
 
@@ -43,9 +45,11 @@ function Agent() {
   const { customers }               = useCustomers()
   const { generalSettings }         = useGeneralSettings()
   const { profileSettings }         = useProfileSettings()
+  const { hasReachedLimit, recordUsage, limits } = useUsage()
 
   const [tab,             setTab]             = useState('activity')
   const [toast,           setToast]           = useState(null)
+  const [upgradeOpen,     setUpgradeOpen]     = useState(false)
   const [swipeProgress,   setSwipeProgress]   = useState(0)
   const [tabMeasurements, setTabMeasurements] = useState([])
 
@@ -92,6 +96,11 @@ function Agent() {
   }
 
   async function handleSaveDoc(type, data, draftId) {
+    if (hasReachedLimit('aiActionsPerMonth', 'aiActionsPerMonth')) {
+      setUpgradeOpen(true)
+      return
+    }
+
     try {
       if (type === 'invoice') {
         await addInvoice(data)
@@ -99,10 +108,16 @@ function Agent() {
         await addReceipt(data)
       }
       discardDraft(draftId)
+      recordUsage('aiActionsPerMonth').catch(() => {})
       showToast(`${type === 'invoice' ? 'Invoice' : 'Receipt'} saved!`)
     } catch {
       showToast('Failed to save — please try again')
     }
+  }
+
+  function handleUpgrade() {
+    setUpgradeOpen(false)
+    navigate('/upgrade')
   }
 
   function goToCustomer(id) {
@@ -271,6 +286,15 @@ function Agent() {
           />
         )}
       </div>
+
+      <UpgradeSheet
+        isOpen={upgradeOpen}
+        onClose={() => setUpgradeOpen(false)}
+        onUpgrade={handleUpgrade}
+        icon="smart_toy"
+        title="AI action limit reached"
+        message={`You've hit the free plan limit of ${limits.aiActionsPerMonth} AI assistant actions this month. Upgrade to Premium for unlimited actions.`}
+      />
 
       <Toast message={toast} />
 
