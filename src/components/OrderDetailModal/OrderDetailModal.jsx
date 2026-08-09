@@ -329,13 +329,14 @@ export default function OrderDetailModal({
   }
 
   function handleGenerateInvoiceClick() {
-    close()
     if (hasInvoice) {
+      close()
       onViewInvoice?.(linkedInvoice.id)
       return
     }
     try {
       onGenerateInvoice?.(local.id)
+      close()
     } catch (err) {
       if (err?.code === 'limit-reached') {
         setUpgradeReason('invoice')
