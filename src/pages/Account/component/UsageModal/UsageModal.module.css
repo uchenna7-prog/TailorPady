@@ -206,7 +206,7 @@
   color: #818cf8;
   background: color-mix(in srgb, #818cf8 14%, transparent);
   padding: 2px 7px;
-  border-radius: 8px;
+  border-radius: 5px;
   text-transform: uppercase;
   letter-spacing: 0.04em;
   flex-shrink: 0;
@@ -218,7 +218,7 @@
   color: var(--text3);
   background: var(--surface2);
   padding: 2px 7px;
-  border-radius: 8px;
+  border-radius: 5px;
   text-transform: uppercase;
   letter-spacing: 0.04em;
   flex-shrink: 0;
