@@ -1,12 +1,15 @@
 import { useState, useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { getCurrency } from '../../../../utils/moneyUtils'
 import { useProfileSettings } from '../../../../contexts/ProfileSettingsContext'
+import { useUsage } from '../../../../contexts/UsageContext'
 import { useTour } from '../../../../contexts/TourContext'
 import { buildOrderItemsMap, groupReceiptsByDate } from './utils'
 import { EmptyState } from './components/EmptyState/EmptyState'
 import { AddReceiptModal } from './components/AddReceiptModal/AddReceiptModal'
 import { ReceiptRow } from './components/ReceiptRow/ReceiptRow'
 import ReceiptViewer from '../../../../components/TemplateViewers/ReceiptViewer/ReceiptViewer'
+import { UpgradeSheet } from '../../../../components/UpgradeSheet/UpgradeSheet'
 import ConfirmSheet from '../../../../components/ConfirmSheet/ConfirmSheet'
 import styles from './ReceiptsTab.module.css'
 
@@ -27,12 +30,15 @@ export default function ReceiptTab({
   completedFields = [],
   onReopenReceiptHandled,
 }) {
+  const navigate = useNavigate()
   const { profileSettings } = useProfileSettings()
+  const { limits } = useUsage()
   const { pauseTour, resumeTour } = useTour()
 
   const [viewingReceipt,     setViewingReceipt]     = useState(null)
   const [deleteTarget,       setDeleteTarget]       = useState(null)
   const [addReceiptModalOpen, setAddReceiptModalOpen] = useState(false)
+  const [upgradeOpen,        setUpgradeOpen]        = useState(false)
   const [pendingReopen, setPendingReopen] = useState(false)
   const [pendingCompletedModal, setPendingCompletedModal] = useState(null)
   const [pendingCompletedFields, setPendingCompletedFields] = useState([])
@@ -83,8 +89,17 @@ export default function ReceiptTab({
   }, [reopenReceiptId, receipts])
 
   function handleSelectPayment(payment, installment) {
-    onGenerateReceipt(payment, installment)
-    setAddReceiptModalOpen(false)
+    try {
+      onGenerateReceipt(payment, installment)
+      setAddReceiptModalOpen(false)
+    } catch (err) {
+      if (err?.code === 'limit-reached') {
+        setAddReceiptModalOpen(false)
+        setUpgradeOpen(true)
+      } else {
+        showToast('Failed to generate receipt')
+      }
+    }
   }
 
   function handleConfirmDelete() {
@@ -92,6 +107,11 @@ export default function ReceiptTab({
     showToast('Receipt deleted')
     setDeleteTarget(null)
     if (viewingReceipt?.id === deleteTarget) setViewingReceipt(null)
+  }
+
+  function handleUpgrade() {
+    setUpgradeOpen(false)
+    navigate('/upgrade')
   }
 
   return (
@@ -125,6 +145,15 @@ export default function ReceiptTab({
         payments={payments}
         receipts={receipts}
         onSelectPayment={handleSelectPayment}
+      />
+
+      <UpgradeSheet
+        isOpen={upgradeOpen}
+        onClose={() => setUpgradeOpen(false)}
+        onUpgrade={handleUpgrade}
+        icon="receipt"
+        title="Receipt limit reached"
+        message={`You've hit the free plan limit of ${limits.receiptsPerMonth} receipts this month. Upgrade to Premium for unlimited receipts.`}
       />
 
       {viewingReceipt && (
