@@ -237,16 +237,16 @@
   margin-top: 2px;
 }
 
-.limitPill {
-  font-size: 0.65rem;
-  font-weight: 800;
+.limitReached {
   color: #ef4444;
-  background: color-mix(in srgb, #ef4444 14%, transparent);
-  padding: 3px 8px;
-  border-radius: 8px;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-  flex-shrink: 0;
+  font-weight: 700;
+  margin-left: 4px;
+}
+
+.limitDot {
+  color: #ef4444;
+  font-weight: 700;
+  margin-right: 2px;
 }
 
 .usageDonutWrap {
