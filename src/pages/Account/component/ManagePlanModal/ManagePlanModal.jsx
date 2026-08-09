@@ -25,7 +25,7 @@ export default function ManagePlanModal({ uid, plan, nextRenewal, onClose, onCan
       },
       onError: (err) => {
         setCancelling(false)
-        showToast?.(err.message || 'Could not cancel subscription — please try again')
+        showToast?.(err.message || 'Could not cancel subscription, please try again')
       },
     })
   }
