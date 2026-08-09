@@ -50,12 +50,13 @@
   width: 32px;
   height: 32px;
   border: none;
+  background: transparent;
   color: var(--text2);
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  transition: background 0.15s, transform 0.15s;
+  transition: transform 0.15s;
 }
 
 .closeBtn:active {
@@ -79,19 +80,6 @@
 @keyframes iconPop {
   from { transform: scale(0.6); opacity: 0; }
   to   { transform: scale(1); opacity: 1; }
-}
-
-.badge {
-  display: inline-block;
-  font-size: 0.65rem;
-  font-weight: 800;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  color: var(--accent);
-  background: color-mix(in srgb, var(--accent) 12%, transparent);
-  padding: 5px 12px;
-  border-radius: 999px;
-  margin-bottom: 12px;
 }
 
 .title {
