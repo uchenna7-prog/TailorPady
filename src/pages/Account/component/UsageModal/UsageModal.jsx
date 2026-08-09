@@ -1,20 +1,28 @@
 import { useMemo } from 'react'
 import { useUsage } from '../../../../contexts/UsageContext'
 import { usePremium } from '../../../../contexts/PremiumContext'
+import { useCustomers } from '../../../../contexts/CustomerContext'
 import styles from './UsageModal.module.css'
 
 const LIMIT_META = {
-  customers:    { label: 'Customers',    icon: 'group' },
-  orders:       { label: 'Orders',       icon: 'shopping_bag' },
-  invoices:     { label: 'Invoices',     icon: 'receipt_long' },
-  appointments: { label: 'Appointments', icon: 'event' },
-  tasks:        { label: 'Tasks',        icon: 'task_alt' },
+  customers:                { label: 'Customers',         icon: 'group',          period: 'lifetime' },
+  measurementsPerMonth:     { label: 'Measurements',      icon: 'straighten',     period: 'monthly' },
+  ordersPerMonth:           { label: 'Orders',            icon: 'shopping_bag',   period: 'monthly' },
+  invoicesPerMonth:         { label: 'Invoices',          icon: 'receipt_long',   period: 'monthly' },
+  receiptsPerMonth:         { label: 'Receipts',          icon: 'receipt',        period: 'monthly' },
+  portfolioUploadsPerMonth: { label: 'Portfolio Uploads', icon: 'photo_library',  period: 'monthly' },
+  reviewLinksPerMonth:      { label: 'Review Links',      icon: 'reviews',        period: 'monthly' },
+  aiActionsPerMonth:        { label: 'AI Actions',        icon: 'auto_awesome',   period: 'monthly' },
 }
+
+const LIMIT_ORDER = Object.keys(LIMIT_META)
 
 function metaFor(field) {
   if (LIMIT_META[field]) return LIMIT_META[field]
-  const label = field.replace(/([A-Z])/g, ' $1').replace(/^./, c => c.toUpperCase()).trim()
-  return { label, icon: 'bar_chart' }
+  const stripped = field.replace(/PerMonth$/, '')
+  const label = stripped.replace(/([A-Z])/g, ' $1').replace(/^./, c => c.toUpperCase()).trim()
+  const period = field.endsWith('PerMonth') ? 'monthly' : 'lifetime'
+  return { label, icon: 'bar_chart', period }
 }
 
 function getResetLabel() {
@@ -26,15 +34,25 @@ function getResetLabel() {
 export default function UsageModal({ onClose, onUpgrade }) {
   const { usage, limits, loading } = useUsage()
   const { isPremium } = usePremium()
+  const { customers } = useCustomers()
 
   const rows = useMemo(() => {
-    return Object.keys(limits || {}).map(field => {
+    const fields = Object.keys(limits || {})
+    const ordered = [...fields].sort((a, b) => {
+      const ai = LIMIT_ORDER.indexOf(a)
+      const bi = LIMIT_ORDER.indexOf(b)
+      if (ai === -1 && bi === -1) return 0
+      if (ai === -1) return 1
+      if (bi === -1) return -1
+      return ai - bi
+    })
+    return ordered.map(field => {
       const cap = limits[field]
-      const used = usage[field] || 0
+      const used = field === 'customers' ? customers.length : (usage[field] || 0)
       const pct = cap ? Math.min(used / cap, 1) : 0
       return { field, cap, used, pct, ...metaFor(field) }
     })
-  }, [usage, limits])
+  }, [usage, limits, customers])
 
   return (
     <div className={styles.overlay} onClick={onClose}>
@@ -98,8 +116,15 @@ export default function UsageModal({ onClose, onUpgrade }) {
                         </span>
                       </div>
                       <div className={styles.usageText}>
-                        <div className={styles.usageLabel}>{row.label}</div>
-                        <div className={styles.usageCount}>{row.used} of {row.cap} used</div>
+                        <div className={styles.usageLabelRow}>
+                          <div className={styles.usageLabel}>{row.label}</div>
+                          <div className={row.period === 'lifetime' ? styles.periodPillLifetime : styles.periodPillMonthly}>
+                            {row.period === 'lifetime' ? 'Lifetime' : 'Monthly'}
+                          </div>
+                        </div>
+                        <div className={styles.usageCount}>
+                          {row.used} of {row.cap} used{row.period === 'monthly' ? ' this month' : ''}
+                        </div>
                       </div>
                       {atLimit && <div className={styles.limitPill}>Limit reached</div>}
                     </div>
@@ -121,7 +146,7 @@ export default function UsageModal({ onClose, onUpgrade }) {
 
           <div className={styles.footer}>
             <span className="mi" style={{ fontSize: '0.85rem', color: 'var(--text3)' }}>event_repeat</span>
-            <span className={styles.footerText}>Usage resets {getResetLabel()}</span>
+            <span className={styles.footerText}>Monthly limits reset {getResetLabel()} · Customer limit is lifetime</span>
           </div>
 
         </div>
