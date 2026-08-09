@@ -23,6 +23,7 @@ import { ChangeEmailModal } from './component/ChangeEmailModal/ChangeEmailModal'
 import { ConnectedAccountsModal } from './component/ConnectedAccountsModal/ConnectedAccountsModal'
 import UpgradeModal from './component/UpgradeModal/UpgradeModal'
 import BillingHistoryModal from './component/BillingHistoryModal/BillingHistoryModal'
+import UsageModal from './component/UsageModal/UsageModal'
 import PremiumSuccessModal from './component/PremiumSuccessModal/PremiumSuccessModal'
 import ManagePlanModal from './component/ManagePlanModal/ManagePlanModal'
 import { getOrSetJoinDate, loadPersonalInfo, savePersonalInfoLocally } from './utils'
@@ -435,6 +436,13 @@ export default function Account({ onMenuClick, isPremium = false, onUpgrade = ()
           label="Billing History"
           sub="See past payments, plan renewals & expiry dates"
           onClick={() => setActiveModal('billing')}
+        />
+
+        <TappableRow
+          icon="speed"
+          label="Usage"
+          sub={isPremium ? 'Unlimited on Pro' : 'Track your monthly plan limits'}
+          onClick={() => setActiveModal('usage')}
           divider={false}
         />
 
@@ -523,6 +531,13 @@ export default function Account({ onMenuClick, isPremium = false, onUpgrade = ()
 
       {activeModal === 'billing' && (
         <BillingHistoryModal onClose={() => setActiveModal(null)} />
+      )}
+
+      {activeModal === 'usage' && (
+        <UsageModal
+          onClose={() => setActiveModal(null)}
+          onUpgrade={() => setActiveModal('upgrade')}
+        />
       )}
 
       {activeModal === 'managePlan' && (
