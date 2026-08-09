@@ -41,7 +41,7 @@ const INVOICE_TOUR_PHASE_STEPS = [
   'add-invoice',
 ]
 
-export function useInvoiceActions({ customerData, orders, showToast, setActiveTab, setReopenInvoiceId }) {
+export function useInvoiceActions({ customerData, orders, showToast, setActiveTab, setReopenInvoiceId, onLimitReached }) {
 
   const { profileSettings } = useProfileSettings()
   const { generalSettings }  = useGeneralSettings()
@@ -61,9 +61,8 @@ export function useInvoiceActions({ customerData, orders, showToast, setActiveTa
     }
 
     if (hasReachedLimit('invoicesPerMonth', 'invoicesPerMonth')) {
-      const limitError = new Error('INVOICE_LIMIT_REACHED')
-      limitError.code = 'limit-reached'
-      throw limitError
+      onLimitReached?.()
+      return
     }
 
     const order = orders.find(o => String(o.id) === String(orderId))
@@ -155,7 +154,7 @@ export function useInvoiceActions({ customerData, orders, showToast, setActiveTa
 
     recordUsage('invoicesPerMonth').catch(() => {})
 
-  }, [customerData, orders, generalSettings, profileSettings, hasReachedLimit, recordUsage, showToast, setActiveTab, setReopenInvoiceId, resolveShortcut])
+  }, [customerData, orders, generalSettings, profileSettings, hasReachedLimit, recordUsage, showToast, setActiveTab, setReopenInvoiceId, resolveShortcut, onLimitReached])
 
 
   const handleInvoicePaid = useCallback(async (orderId, invoiceStatus) => {
