@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useUsage } from '../../../../contexts/UsageContext'
 import { usePremium } from '../../../../contexts/PremiumContext'
+import { useCustomers } from '../../../../contexts/CustomerContext'
 import styles from './UsageLimitBanner.module.css'
 
 const STORAGE_KEY = 'TailorPady_usage_limit_banner'
@@ -18,6 +19,8 @@ const LIMIT_LABELS = {
   reviewLinksPerMonth: 'review links',
   aiActionsPerMonth: 'AI actions',
 }
+
+const LIFETIME_FIELDS = new Set(['customers'])
 
 function labelFor(field) {
   if (LIMIT_LABELS[field]) return LIMIT_LABELS[field]
@@ -47,6 +50,7 @@ export function UsageLimitBanner() {
   const navigate = useNavigate()
   const { usage, limits, loading: usageLoading } = useUsage()
   const { isPremium, loading: premiumLoading } = usePremium()
+  const { customers } = useCustomers()
   const [dismissed, setDismissed] = useState(false)
 
   const topField = useMemo(() => {
@@ -55,14 +59,14 @@ export function UsageLimitBanner() {
     keys.forEach(key => {
       const cap = limits[key]
       if (!cap) return
-      const used = usage[key] || 0
+      const used = key === 'customers' ? customers.length : (usage[key] || 0)
       const pct = used / cap
       if (!best || pct > best.pct) {
         best = { field: key, used, cap, pct: Math.min(pct, 1) }
       }
     })
     return best
-  }, [usage, limits])
+  }, [usage, limits, customers])
 
   useEffect(() => {
     setDismissed(false)
@@ -84,6 +88,7 @@ export function UsageLimitBanner() {
   const isAtLimit = topField.pct >= 1
   const percentLabel = Math.round(topField.pct * 100)
   const metricLabel = labelFor(topField.field)
+  const isLifetime = LIFETIME_FIELDS.has(topField.field)
 
   function handleDismiss() {
     saveBannerState({ monthKey, field: topField.field, dismissedAtPct: topField.pct })
@@ -106,7 +111,7 @@ export function UsageLimitBanner() {
             {isAtLimit ? `You've hit your ${metricLabel} limit` : `Approaching your ${metricLabel} limit`}
           </div>
           <div className={styles.sub}>
-            {topField.used} of {topField.cap} {metricLabel} used this month
+            {topField.used} of {topField.cap} {metricLabel} used{isLifetime ? ' (lifetime limit)' : ' this month'}
           </div>
         </div>
 
