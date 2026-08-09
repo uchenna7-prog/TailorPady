@@ -116,13 +116,25 @@
 .filterOption:active { background: var(--surface2); }
 .filterOptionActive  { color: var(--text); background: var(--surface2); font-weight: 700; }
 
+/*
+  This must stay position: sticky (a single declaration only — a
+  duplicate `position: relative` used to appear later in this same
+  rule and silently won, which broke sticking and caused the tabs
+  to render shifted down with a gap above them).
+
+  top offset is set inline via JS (measured real Header height with
+  ResizeObserver) instead of hardcoded here, since Header's actual
+  rendered height varies with padding/content and a fixed guess like
+  56px causes this bar to stick too early or show a gap. The value
+  below is only a fallback before the first measurement runs.
+*/
 .tabs {
   display: flex;
   border-bottom: 1px solid var(--border);
   background: var(--bg);
   position: sticky;
   top: 56px;
-  z-index: 50;
+  z-index: 90;
   flex-shrink: 0;
   overflow-x: auto;
   white-space: nowrap;
@@ -130,7 +142,6 @@
   -webkit-overflow-scrolling: touch;
   -ms-overflow-style: none;
   scrollbar-width: none;
-  position: relative;
 }
 
 .tabs::-webkit-scrollbar { display: none; }
