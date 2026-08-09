@@ -1,4 +1,4 @@
-import { useState, useRef, useCallback, useEffect } from 'react'
+import { useState, useRef, useCallback, useEffect, useLayoutEffect } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { useGeneralSettings } from '../../contexts/GeneralSettingsContext'
 import { useOrders } from '../../contexts/OrdersContext'
@@ -103,6 +103,7 @@ export default function Receipts({ onMenuClick }) {
   const [pendingReopen, setPendingReopen] = useState(false)
   const [pendingCompletedModal, setPendingCompletedModal] = useState(null)
   const [pendingCompletedFields, setPendingCompletedFields] = useState([])
+  const [headerHeight, setHeaderHeight] = useState(56)
 
   const toastTimerRef   = useRef(null)
   const touchStartX     = useRef(null)
@@ -110,6 +111,7 @@ export default function Receipts({ onMenuClick }) {
   const swipeAxisLocked = useRef(null)
   const tabsRef         = useRef(null)
   const tabItemRefs     = useRef([])
+  const headerWrapRef   = useRef(null)
   const activeTabIdx    = TABS.findIndex(t => t.id === activeTab)
 
   const showToast = useCallback((msg) => {
@@ -120,6 +122,27 @@ export default function Receipts({ onMenuClick }) {
 
   useEffect(() => {
     return () => clearTimeout(toastTimerRef.current)
+  }, [])
+
+  useLayoutEffect(() => {
+    const el = headerWrapRef.current
+    if (!el) return
+
+    const measure = () => {
+      const rect = el.getBoundingClientRect()
+      if (rect.height > 0) setHeaderHeight(rect.height)
+    }
+
+    measure()
+
+    const ro = new ResizeObserver(measure)
+    ro.observe(el)
+
+    window.addEventListener('resize', measure)
+    return () => {
+      ro.disconnect()
+      window.removeEventListener('resize', measure)
+    }
   }, [])
 
   const measureTabs = useCallback(() => {
@@ -290,7 +313,9 @@ export default function Receipts({ onMenuClick }) {
 
   return (
     <div className={styles.page}>
-      <Header title="All Receipts" onMenuClick={onMenuClick} />
+      <div ref={headerWrapRef}>
+        <Header title="All Receipts" onMenuClick={onMenuClick} />
+      </div>
 
       <div className={styles.searchContainer}>
         <div className={styles.searchRow}>
@@ -344,6 +369,7 @@ export default function Receipts({ onMenuClick }) {
       <div
         className={styles.tabs}
         ref={tabsRef}
+        style={{ top: headerHeight }}
         onClick={() => filterOpen && setFilterOpen(false)}
       >
         {TABS.map((tab, idx) => {
