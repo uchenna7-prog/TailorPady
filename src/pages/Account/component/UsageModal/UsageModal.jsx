@@ -129,7 +129,7 @@ export default function UsageModal({ onClose, onUpgrade }) {
                           {row.used} of {row.cap} used{row.period === 'monthly' ? ' this month' : ''}
                           {atLimit && (
                             <span className={styles.limitReached}>
-                              <span className={styles.limitDot}>•</span> Limit reached
+                              <span className={styles.limitDot}>•</span> limit reached
                             </span>
                           )}
                         </div>
