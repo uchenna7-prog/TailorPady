@@ -1,6 +1,8 @@
 import { useState, useEffect, useRef } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { useOrders } from '../../contexts/OrdersContext'
 import { useInvoices } from '../../contexts/InvoiceContext'
+import { useUsage } from '../../contexts/UsageContext'
 import { useAuth } from '../../contexts/AuthContext'
 import {
   ORDER_STATUS_LABELS,
@@ -9,6 +11,7 @@ import {
 } from '../../datas/orderDatas'
 import Header from '../Header/Header'
 import ConfirmSheet from '../ConfirmSheet/ConfirmSheet'
+import { UpgradeSheet } from '../UpgradeSheet/UpgradeSheet'
 import styles from './OrderDetailModal.module.css'
 
 function formatFirestoreDate(ts) {
@@ -93,8 +96,10 @@ export default function OrderDetailModal({
   hideCustomerName = false,
   showToast,
 }) {
+  const navigate = useNavigate()
   const { updateOrderStatus, updateOrder, deleteOrder } = useOrders()
   const { allInvoices } = useInvoices()
+  const { limits } = useUsage()
   const { user } = useAuth()
 
   const [local, setLocal] = useState(order)
@@ -102,6 +107,7 @@ export default function OrderDetailModal({
   const [confirmDelete, setConfirmDelete] = useState(false)
   const [showStageSheet, setShowStageSheet] = useState(false)
   const [showPriorityMenu, setShowPriorityMenu] = useState(false)
+  const [upgradeOpen, setUpgradeOpen] = useState(false)
   const [pendingCancel, setPendingCancel] = useState(false)
   const [pendingPriority, setPendingPriority] = useState(false)
   const [brokenImages, setBrokenImages] = useState(() => new Set())
@@ -311,6 +317,28 @@ export default function OrderDetailModal({
 
   function openStageSheet() {
     setShowStageSheet(true)
+  }
+
+  function handleGenerateInvoiceClick() {
+    close()
+    if (hasInvoice) {
+      onViewInvoice?.(linkedInvoice.id)
+      return
+    }
+    try {
+      onGenerateInvoice?.(local.id)
+    } catch (err) {
+      if (err?.code === 'limit-reached') {
+        setUpgradeOpen(true)
+      } else {
+        showToast?.('Failed to generate invoice')
+      }
+    }
+  }
+
+  function handleUpgrade() {
+    setUpgradeOpen(false)
+    navigate('/upgrade')
   }
 
   const panel = (
@@ -618,11 +646,7 @@ export default function OrderDetailModal({
           {(onGenerateInvoice || onViewInvoice) && (
             <button
               className={styles.btnPrimary}
-              onClick={() => {
-                close()
-                if (hasInvoice) onViewInvoice?.(linkedInvoice.id)
-                else onGenerateInvoice?.(local.id)
-              }}
+              onClick={handleGenerateInvoiceClick}
             >
               <span className="mi" style={{ fontSize: '1.05rem' }}>receipt_long</span>
               {hasInvoice ? 'View invoice' : 'Generate invoice'}
@@ -685,6 +709,15 @@ export default function OrderDetailModal({
         message={`"${orderTitle}" will be permanently deleted. This cannot be undone.`}
         onConfirm={handleDelete}
         onCancel={() => setConfirmDelete(false)}
+      />
+
+      <UpgradeSheet
+        isOpen={upgradeOpen}
+        onClose={() => setUpgradeOpen(false)}
+        onUpgrade={handleUpgrade}
+        icon="description"
+        title="Invoice limit reached"
+        message={`You've hit the free plan limit of ${limits.invoicesPerMonth} invoices this month. Upgrade to Premium for unlimited invoices.`}
       />
     </div>
   )
