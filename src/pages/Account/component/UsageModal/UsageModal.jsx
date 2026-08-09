@@ -25,6 +25,9 @@ function metaFor(field) {
   return { label, icon: 'bar_chart', period }
 }
 
+const USAGE_DONUT_RADIUS = 15
+const USAGE_DONUT_CIRCUMFERENCE = 2 * Math.PI * USAGE_DONUT_RADIUS
+
 function getResetLabel() {
   const now = new Date()
   const nextMonth = new Date(now.getFullYear(), now.getMonth() + 1, 1)
@@ -121,15 +124,28 @@ export default function UsageModal({ onClose, onUpgrade }) {
                           <div className={row.period === 'lifetime' ? styles.periodPillAllTime : styles.periodPillMonthly}>
                             {row.period === 'lifetime' ? 'All-Time' : 'Monthly'}
                           </div>
+                          {atLimit && <div className={styles.limitPill}>Limit reached</div>}
                         </div>
                         <div className={styles.usageCount}>
                           {row.used} of {row.cap} used{row.period === 'monthly' ? ' this month' : ''}
                         </div>
                       </div>
-                      {atLimit && <div className={styles.limitPill}>Limit reached</div>}
-                    </div>
-                    <div className={styles.barTrack}>
-                      <div className={styles.barFill} style={{ width: `${row.pct * 100}%`, background: barColor }} />
+                      <div className={styles.usageDonutWrap}>
+                        <svg viewBox="0 0 40 40" className={styles.usageDonutSvg}>
+                          <circle cx="20" cy="20" r={USAGE_DONUT_RADIUS} fill="none" stroke="var(--surface2)" strokeWidth="4" />
+                          <circle
+                            cx="20" cy="20" r={USAGE_DONUT_RADIUS} fill="none"
+                            stroke={barColor}
+                            strokeWidth="4"
+                            strokeLinecap="round"
+                            strokeDasharray={USAGE_DONUT_CIRCUMFERENCE}
+                            strokeDashoffset={USAGE_DONUT_CIRCUMFERENCE - row.pct * USAGE_DONUT_CIRCUMFERENCE}
+                            transform="rotate(-90 20 20)"
+                            className={styles.usageDonutProgress}
+                          />
+                        </svg>
+                        <span className={styles.usageDonutLabel} style={{ color: barColor }}>{Math.round(row.pct * 100)}%</span>
+                      </div>
                     </div>
                   </div>
                 )
