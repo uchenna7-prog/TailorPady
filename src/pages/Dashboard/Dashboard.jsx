@@ -24,6 +24,7 @@ import {
 import { NOTIFICATION_DISMISSED_KEY } from './datas'
 import { NotificationBanner } from './components/NotificationBanner/NotificationBanner'
 import { InstallBanner } from './components/InstallBanner/InstallBanner'
+import { UsageLimitBanner } from './components/UsageLimitBanner/UsageLimitBanner'
 import { ProfileSetupCard } from './components/ProfileSetupCard/ProfileSetupCard'
 import { CustomerInsightsCard } from './components/CustomerInsightsCard/CustomerInsightsCard'
 import { RevenueGoalModal } from './components/RevenueGoalModal/RevenueGoalModal'
@@ -502,6 +503,8 @@ function Dashboard({ onMenuClick, onGoToCustomer }) {
           )}
 
           {showInstallBanner && <InstallBanner />}
+
+          <UsageLimitBanner />
 
           {showProfileSetupCard && (
             <ProfileSetupCard
