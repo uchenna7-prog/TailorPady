@@ -230,7 +230,7 @@ export default function OnboardingTour() {
   }, [isActive])
 
   useEffect(() => {
-    if (!isActive) return
+    if (!activeTourId) return
     const scrollY = window.scrollY
     lockScrollYRef.current = scrollY
     const { body } = document
@@ -249,7 +249,7 @@ export default function OnboardingTour() {
       body.style.removeProperty('transition')
       window.scrollTo(0, lockScrollYRef.current)
     }
-  }, [isActive])
+  }, [activeTourId])
 
   useEffect(() => {
     if (!isActive || !currentStep) return
