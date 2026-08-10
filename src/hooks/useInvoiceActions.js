@@ -1,4 +1,4 @@
-import { useCallback } from 'react'
+import { useCallback, useEffect, useRef } from 'react'
 import { useProfileSettings } from '../contexts/ProfileSettingsContext'
 import { useGeneralSettings } from '../contexts/GeneralSettingsContext'
 import { useUsage } from '../contexts/UsageContext'
@@ -45,8 +45,13 @@ export function useInvoiceActions({ customerData, orders, showToast, setActiveTa
 
   const { profileSettings } = useProfileSettings()
   const { generalSettings }  = useGeneralSettings()
-  const { hasReachedLimit, recordUsage } = useUsage()
+  const { usage, remaining, recordUsage } = useUsage()
   const { resolveShortcut }  = useTour()
+  const pendingInvoiceCountRef = useRef(0)
+
+  useEffect(() => {
+    pendingInvoiceCountRef.current = 0
+  }, [usage.invoicesPerMonth])
 
   const handleGenerateInvoice = useCallback((orderId) => {
 
@@ -60,7 +65,8 @@ export function useInvoiceActions({ customerData, orders, showToast, setActiveTa
       return { ok: false, reason: 'exists', invoiceId: existingInvoice.id }
     }
 
-    if (hasReachedLimit('invoicesPerMonth', 'invoicesPerMonth')) {
+    const remainingInvoices = remaining('invoicesPerMonth', 'invoicesPerMonth')
+    if (remainingInvoices - pendingInvoiceCountRef.current <= 0) {
       onLimitReached?.()
       return { ok: false, reason: 'limit' }
     }
@@ -143,6 +149,7 @@ export function useInvoiceActions({ customerData, orders, showToast, setActiveTa
     }
 
     customerData.addInvoiceOptimistic(newInvoice)
+    pendingInvoiceCountRef.current += 1
     showToast(`${invoiceNumber} generated ✓`)
     setActiveTab('invoices')
     setReopenInvoiceId?.(newInvoice.id)
@@ -156,7 +163,7 @@ export function useInvoiceActions({ customerData, orders, showToast, setActiveTa
 
     return { ok: true, invoiceId: newInvoice.id }
 
-  }, [customerData, orders, generalSettings, profileSettings, hasReachedLimit, recordUsage, showToast, setActiveTab, setReopenInvoiceId, resolveShortcut, onLimitReached])
+  }, [customerData, orders, generalSettings, profileSettings, remaining, recordUsage, showToast, setActiveTab, setReopenInvoiceId, resolveShortcut, onLimitReached])
 
 
   const handleInvoicePaid = useCallback(async (orderId, invoiceStatus) => {
