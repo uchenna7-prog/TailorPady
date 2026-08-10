@@ -1,10 +1,32 @@
+/*
+  position: fixed + inset: 0 anchors this directly to the viewport
+  instead of relying on ancestor height math. Ancestors (.appShell,
+  .appContent) use `min-height: 100vh` (static -- doesn't shrink
+  when the mobile browser's address bar is showing), while a
+  percentage/dvh-based .page nested inside them can end up shorter
+  than that when the toolbar is visible (100dvh < 100vh), leaving a
+  genuine gap that makes the ancestor overflow and become
+  scrollable -- which is what let the whole page, sticky header
+  included, get dragged off-screen by an outer scroll. Fixed
+  positioning removes .page from that box-model chain entirely, so
+  it can never be affected by an ancestor being taller or shorter
+  than expected, regardless of viewport-unit quirks.
+  overflow-y: auto below makes .page scroll internally on its own.
+*/
 .page {
-  display: flex;
-  flex-direction: column;
-  height: 100dvh;
+  position: fixed;
+  inset: 0;
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
+  display: flex;
+  flex-direction: column;
   background: var(--bg);
+}
+
+@media (min-width: 769px) {
+  .page {
+    left: var(--sidebar-width, 280px);
+  }
 }
 
 .searchContainer {
