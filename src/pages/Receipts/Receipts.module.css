@@ -1,7 +1,9 @@
 .page {
   display: flex;
   flex-direction: column;
-  min-height: 100dvh;
+  height: 100dvh;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
   background: var(--bg);
 }
 
@@ -10,6 +12,7 @@
   flex-shrink: 0;
   position: relative;
   z-index: 100;
+  background: var(--bg);
 }
 
 .searchRow {
@@ -117,16 +120,19 @@
 .filterOptionActive  { color: var(--text); background: var(--surface2); font-weight: 700; }
 
 /*
-  This must stay position: sticky (a single declaration only — a
-  duplicate `position: relative` used to appear later in this same
-  rule and silently won, which broke sticking and caused the tabs
-  to render shifted down with a gap above them).
+  .page is now the single scrolling container (height: 100dvh;
+  overflow-y: auto above). Header and .tabs are both position:
+  sticky children of that same box, so they pin to its top as its
+  content scrolls beneath them -- no separate inner scroll pane
+  fighting with an outer document scroll, which was why the header
+  could scroll away instead of staying pinned. This rule must stay
+  a single position: sticky declaration -- a duplicate position
+  later in this block previously overrode it and broke sticking.
 
-  top offset is set inline via JS (measured real Header height with
-  ResizeObserver) instead of hardcoded here, since Header's actual
-  rendered height varies with padding/content and a fixed guess like
-  56px causes this bar to stick too early or show a gap. The value
-  below is only a fallback before the first measurement runs.
+  top offset on .tabs is set inline via JS (measured real Header
+  height with ResizeObserver) instead of hardcoded here, since
+  Header's actual rendered height varies with padding/content. The
+  value below is only a fallback before the first measurement runs.
 */
 .tabs {
   display: flex;
@@ -190,11 +196,12 @@
   pointer-events: none;
 }
 
+/*
+  No longer its own scroll container -- .page handles scrolling now.
+  This just flows as normal content beneath the sticky header/tabs.
+*/
 .listArea {
-  flex: 1;
-  overflow-y: auto;
   padding: 12px 16px calc(30px + var(--sb));
-  -webkit-overflow-scrolling: touch;
 }
 
 .receiptGroup        { margin-bottom: 16px; }
