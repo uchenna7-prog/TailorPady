@@ -1,4 +1,4 @@
-import { useState, useRef, useCallback, useEffect } from 'react'
+import { useState, useRef, useCallback, useEffect, useLayoutEffect } from 'react'
 import { useNavigate }  from 'react-router-dom'
 import { usePayments }  from '../../contexts/PaymentContext'
 import { useOrders }    from '../../contexts/OrdersContext'
@@ -453,6 +453,7 @@ export default function Payments({ onMenuClick }) {
   const [swipeProgress, setSwipeProgress] = useState(0)
 
   const [tabMeasurements, setTabMeasurements] = useState([])
+  const [headerHeight, setHeaderHeight] = useState(56)
 
   const touchStartX     = useRef(null)
   const touchStartY     = useRef(null)
@@ -460,6 +461,7 @@ export default function Payments({ onMenuClick }) {
   const toastTimer      = useRef(null)
   const tabsRef         = useRef(null)
   const tabItemRefs     = useRef([])
+  const headerWrapRef   = useRef(null)
 
   const activeTabIdx = TABS.findIndex(t => t.id === activeTab)
 
@@ -488,6 +490,27 @@ export default function Payments({ onMenuClick }) {
     window.addEventListener('resize', measureTabs)
     return () => window.removeEventListener('resize', measureTabs)
   }, [measureTabs])
+
+  useLayoutEffect(() => {
+    const el = headerWrapRef.current
+    if (!el) return
+
+    const measure = () => {
+      const rect = el.getBoundingClientRect()
+      if (rect.height > 0) setHeaderHeight(rect.height)
+    }
+
+    measure()
+
+    const ro = new ResizeObserver(measure)
+    ro.observe(el)
+
+    window.addEventListener('resize', measure)
+    return () => {
+      ro.disconnect()
+      window.removeEventListener('resize', measure)
+    }
+  }, [])
 
   useEffect(() => {
     if (!tabsRef.current) return
@@ -618,7 +641,9 @@ export default function Payments({ onMenuClick }) {
 
   return (
     <div className={styles.page}>
-      <Header onMenuClick={onMenuClick} title="All Payments" />
+      <div ref={headerWrapRef}>
+        <Header onMenuClick={onMenuClick} title="All Payments" />
+      </div>
 
       <div className={styles.searchContainer}>
         <div className={styles.searchRow}>
@@ -672,7 +697,7 @@ export default function Payments({ onMenuClick }) {
         )}
       </div>
 
-      <div className={styles.tabs} ref={tabsRef}>
+      <div className={styles.tabs} ref={tabsRef} style={{ top: headerHeight }}>
         {TABS.map((tab, idx) => {
           const distanceFromActive = idx - activeTabIdx
           const colorProgress      = Math.max(0, 1 - Math.abs(distanceFromActive + (-swipeProgress)))
