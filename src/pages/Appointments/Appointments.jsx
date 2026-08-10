@@ -1,4 +1,4 @@
-import { useState, useRef, useCallback, useEffect, useLayoutEffect } from 'react'
+import { useState, useRef, useCallback, useEffect } from 'react'
 import { useCustomers } from '../../contexts/CustomerContext'
 import { useOrders } from '../../contexts/OrdersContext'
 import { useAppointments, getEffectiveStatus } from '../../contexts/AppointmentContext'
@@ -343,37 +343,14 @@ export default function Appointments({ onMenuClick }) {
   const [toastMsg,   setToastMsg]   = useState('')
   const [search,     setSearch]     = useState('')
   const [filterOpen, setFilterOpen] = useState(false)
-  const [headerHeight, setHeaderHeight] = useState(56)
   const toastTimer  = useRef(null)
   const touchStart  = useRef(null)
-  const headerWrapRef = useRef(null)
 
   useEffect(() => {
     if (!detailAppt) return
     const updated = allAppointments.find(a => a.id === detailAppt.id)
     setDetailAppt(updated ?? null)
   }, [allAppointments])
-
-  useLayoutEffect(() => {
-    const el = headerWrapRef.current
-    if (!el) return
-
-    const measure = () => {
-      const rect = el.getBoundingClientRect()
-      if (rect.height > 0) setHeaderHeight(rect.height)
-    }
-
-    measure()
-
-    const ro = new ResizeObserver(measure)
-    ro.observe(el)
-
-    window.addEventListener('resize', measure)
-    return () => {
-      ro.disconnect()
-      window.removeEventListener('resize', measure)
-    }
-  }, [])
 
   const showToast = useCallback((msg) => {
     setToastMsg(msg)
@@ -481,9 +458,7 @@ export default function Appointments({ onMenuClick }) {
 
   return (
     <div className={styles.page}>
-      <div ref={headerWrapRef}>
-        <Header title="Appointments" onMenuClick={onMenuClick} />
-      </div>
+      <Header title="Appointments" onMenuClick={onMenuClick} />
 
       <div className={styles.searchContainer}>
         <div className={styles.searchRow}>
@@ -539,7 +514,7 @@ export default function Appointments({ onMenuClick }) {
 
       <div
         className={styles.tabs}
-        style={{ top: headerHeight }}
+       
         onClick={() => filterOpen && setFilterOpen(false)}
       >
         {TABS.map(tab => (
