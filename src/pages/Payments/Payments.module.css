@@ -1,32 +1,9 @@
-/*
-  position: fixed + inset: 0 anchors this directly to the viewport
-  instead of relying on ancestor height math. Ancestors (.appShell,
-  .appContent) use `min-height: 100vh` (static -- doesn't shrink
-  when the mobile browser's address bar is showing), while a
-  percentage/dvh-based .page nested inside them can end up shorter
-  than that when the toolbar is visible (100dvh < 100vh), leaving a
-  genuine gap that makes the ancestor overflow and become
-  scrollable -- which is what let the whole page, sticky header
-  included, get dragged off-screen by an outer scroll. Fixed
-  positioning removes .page from that box-model chain entirely, so
-  it can never be affected by an ancestor being taller or shorter
-  than expected, regardless of viewport-unit quirks.
-  overflow-y: auto below makes .page scroll internally on its own.
-*/
 .page {
-  position: fixed;
-  inset: 0;
-  overflow-y: auto;
-  -webkit-overflow-scrolling: touch;
   display: flex;
   flex-direction: column;
+  height: 100dvh;
+  overflow: hidden;
   background: var(--bg);
-}
-
-@media (min-width: 769px) {
-  .page {
-    left: var(--sidebar-width, 280px);
-  }
 }
 
 .searchContainer {
@@ -176,20 +153,10 @@
 }
 
 
-/*
-  top offset is set inline via JS (measured real Header height with
-  ResizeObserver) instead of hardcoded here, since Header's actual
-  rendered height varies with padding/content and a fixed guess like
-  56px causes this bar to overlap or gap against the header. The
-  value below is only a fallback before the first measurement runs.
-*/
 .tabs {
   display: flex;
   border-bottom: 1px solid var(--border);
   background: var(--bg);
-  position: sticky;
-  top: 56px;
-  z-index: 90;
   flex-shrink: 0;
   overflow-x: auto;
   scroll-behavior: smooth;
@@ -259,11 +226,11 @@
 
 /* ── LIST AREA ── */
 
-/*
-  No longer its own scroll container -- .page handles scrolling now.
-  This just flows as normal content beneath the sticky header/tabs.
-*/
 .listArea {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
   padding: 12px 16px calc(90px + var(--sb));
 }
 
