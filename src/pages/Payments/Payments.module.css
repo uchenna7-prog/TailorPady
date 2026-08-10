@@ -157,6 +157,7 @@
   display: flex;
   border-bottom: 1px solid var(--border);
   background: var(--bg);
+  position: relative;
   flex-shrink: 0;
   overflow-x: auto;
   scroll-behavior: smooth;
