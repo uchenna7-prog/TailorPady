@@ -1,4 +1,4 @@
-import { useState, useRef, useLayoutEffect } from 'react'
+import { useState, useRef } from 'react'
 import Header from '../../components/Header/Header'
 import BottomNav from '../../components/BottomNav/BottomNav'
 import OrderDetailModal from '../../components/OrderDetailModal/OrderDetailModal'
@@ -55,34 +55,11 @@ export default function Orders({ onMenuClick, onGoToCustomer }) {
   const [detailOrder, setDetailOrder] = useState(null)
   const [search,      setSearch]      = useState('')
   const [filterOpen,  setFilterOpen]  = useState(false)
-  const [headerHeight, setHeaderHeight] = useState(56)
 
   const tabsRef     = useRef(null)
   const swipeRef    = useRef({ startX: 0, startY: 0, tracking: false })
-  const headerWrapRef = useRef(null)
 
   const activeIndex = TABS.findIndex(t => t.id === activeTab)
-
-  useLayoutEffect(() => {
-    const el = headerWrapRef.current
-    if (!el) return
-
-    const measure = () => {
-      const rect = el.getBoundingClientRect()
-      if (rect.height > 0) setHeaderHeight(rect.height)
-    }
-
-    measure()
-
-    const ro = new ResizeObserver(measure)
-    ro.observe(el)
-
-    window.addEventListener('resize', measure)
-    return () => {
-      ro.disconnect()
-      window.removeEventListener('resize', measure)
-    }
-  }, [])
 
   function goToTab(index) {
     if (index < 0 || index >= TABS.length) return
@@ -172,9 +149,7 @@ export default function Orders({ onMenuClick, onGoToCustomer }) {
 
   return (
     <div className={styles.page}>
-      <div ref={headerWrapRef}>
-        <Header title="All Orders" onMenuClick={onMenuClick} />
-      </div>
+      <Header title="All Orders" onMenuClick={onMenuClick} />
 
       <div className={styles.searchContainer}>
         <div className={styles.searchRow}>
@@ -226,7 +201,7 @@ export default function Orders({ onMenuClick, onGoToCustomer }) {
       <div
         className={styles.tabs}
         ref={tabsRef}
-        style={{ top: headerHeight }}
+       
         onClick={() => filterOpen && setFilterOpen(false)}
       >
         {TABS.map(tab => (
