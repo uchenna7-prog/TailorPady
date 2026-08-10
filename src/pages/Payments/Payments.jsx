@@ -132,15 +132,11 @@ function PaymentRow({ row, isLast, onTap, orderItems }) {
       className={`${styles.row} ${isLast ? styles.rowLast : ''}`}
       onClick={() => onTap(row)}
     >
-      <div className={styles.mosaicWrap}>
-        <OrderMosaic
-          items={orderItems}
-          size="md"
-          overdue={false}
-          className={styles.mosaicOverride}
-          emptyIcon="payments"
-        />
-      </div>
+      <OrderMosaic
+        items={orderItems}
+        overdue={false}
+        emptyIcon="payments"
+      />
 
       <div className={styles.info}>
         <div className={styles.titleRow}>
