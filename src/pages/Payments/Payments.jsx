@@ -132,20 +132,13 @@ function PaymentRow({ row, isLast, onTap, orderItems }) {
       className={`${styles.row} ${isLast ? styles.rowLast : ''}`}
       onClick={() => onTap(row)}
     >
-      <div
-        className={styles.mosaicWrap}
-        style={{
-          '--mosaic-border': isPending ? 'var(--border)' : sm.border,
-          '--mosaic-bg':     isPending ? 'var(--surface)' : sm.bg,
-        }}
-      >
+      <div className={styles.mosaicWrap}>
         <OrderMosaic
           items={orderItems}
           size="md"
           overdue={false}
           className={styles.mosaicOverride}
           emptyIcon="payments"
-          iconColor={isPending ? null : sm.color}
         />
       </div>
 
@@ -238,17 +231,13 @@ function PaymentDetail({ row, onClose, onNavigateToCustomer, orderItems }) {
         <div className={styles.modalBody}>
 
           <div className={styles.detailTitleRow}>
-            <div
-              className={styles.detailMosaicWrap}
-              style={{ '--mosaic-border': sm.border, '--mosaic-bg': sm.bg }}
-            >
+            <div className={styles.detailMosaicWrap}>
               <OrderMosaic
                 items={orderItems}
                 size="sm"
                 overdue={false}
                 className={styles.mosaicOverride}
                 emptyIcon="payments"
-                iconColor={sm.color}
               />
             </div>
             <div className={styles.detailTitle}>{row.orderDesc || 'Payment'}</div>
