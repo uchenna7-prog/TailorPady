@@ -290,7 +290,6 @@ function ReviewCard({ review, onTap, isLast }) {
           className={styles.statusPill}
           style={{ color: sc.color, background: sc.bg, borderColor: sc.border }}
         >
-          
           {sc.label}
         </span>
         <span className={styles.cardDate}>{formatDate(review.createdAt)}</span>
