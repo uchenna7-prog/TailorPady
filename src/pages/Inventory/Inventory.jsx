@@ -14,8 +14,6 @@ import { Dropdown } from '../../components/Dropdown/Dropdown'
 import styles from './Inventory.module.css'
 import BottomNav from '../../components/BottomNav/BottomNav'
 
-// ── Constants ─────────────────────────────────────────────────
-
 const DONUT_CIRCUMFERENCE = 2 * Math.PI * 26
 
 const CATEGORIES = [
@@ -55,8 +53,6 @@ const STATUS_CONFIG = {
   low: { label: 'Low Stock', color: '#fb923c', bg: 'rgba(251,146,60,0.12)', border: 'rgba(251,146,60,0.3)' },
   out: { label: 'Out',       color: '#ef4444', bg: 'rgba(239,68,68,0.12)',  border: 'rgba(239,68,68,0.3)'  },
 }
-
-// ── Inventory Row ─────────────────────────────────────────────
 
 function InventoryRow({ item, isLast, onTap }) {
   const cat    = CAT_MAP[item.category] ?? CAT_MAP.other
@@ -104,8 +100,6 @@ function InventoryRow({ item, isLast, onTap }) {
   )
 }
 
-// ── Add / Edit Item Modal ─────────────────────────────────────
-
 function ItemModal({ isOpen, editItem, onClose, onSave }) {
   const [name,       setName]       = useState('')
   const [category,   setCategory]   = useState('fabric')
@@ -115,7 +109,6 @@ function ItemModal({ isOpen, editItem, onClose, onSave }) {
   const [notes,      setNotes]      = useState('')
   const [colour,     setColour]     = useState('')
 
-  // Populate when editing
   useEffect(() => {
     if (editItem) {
       setName(editItem.name || '')
@@ -191,7 +184,6 @@ function ItemModal({ isOpen, editItem, onClose, onSave }) {
 
         <div className={styles.modalBody}>
 
-          {/* Name */}
           <div className={styles.fieldGroup}>
             <label className={styles.fieldLabel}>Item Name *</label>
             <input
@@ -203,7 +195,6 @@ function ItemModal({ isOpen, editItem, onClose, onSave }) {
             />
           </div>
 
-          {/* Category */}
           <div className={styles.fieldGroup}>
             <label className={styles.fieldLabel}>Category</label>
             <div className={styles.categoryGrid}>
@@ -220,7 +211,6 @@ function ItemModal({ isOpen, editItem, onClose, onSave }) {
             </div>
           </div>
 
-          {/* Colour (optional, great for fabrics/threads) */}
           <div className={styles.fieldGroup}>
             <label className={styles.fieldLabel}>
               Colour / Variant <span className={styles.optional}>(optional)</span>
@@ -234,7 +224,6 @@ function ItemModal({ isOpen, editItem, onClose, onSave }) {
             />
           </div>
 
-          {/* Quantity + Unit */}
           <div className={styles.fieldRow}>
             <div className={styles.fieldGroup} style={{ flex: 1 }}>
               <label className={styles.fieldLabel}>Quantity</label>
@@ -257,7 +246,6 @@ function ItemModal({ isOpen, editItem, onClose, onSave }) {
             </div>
           </div>
 
-          {/* Low stock threshold */}
           <div className={styles.fieldGroup}>
             <label className={styles.fieldLabel}>Low Stock Alert Threshold</label>
             <input
@@ -273,7 +261,6 @@ function ItemModal({ isOpen, editItem, onClose, onSave }) {
             </div>
           </div>
 
-          {/* Notes */}
           <div className={styles.fieldGroup}>
             <label className={styles.fieldLabel}>
               Notes <span className={styles.optional}>(optional)</span>
@@ -293,11 +280,9 @@ function ItemModal({ isOpen, editItem, onClose, onSave }) {
   )
 }
 
-// ── Adjust Quantity Sheet ─────────────────────────────────────
-
 function AdjustSheet({ item, onClose, onAdjust }) {
   const [delta, setDelta] = useState('')
-  const [mode,  setMode]  = useState('use')   // 'use' | 'restock'
+  const [mode,  setMode]  = useState('use')
 
   if (!item) return null
 
@@ -377,8 +362,6 @@ function AdjustSheet({ item, onClose, onAdjust }) {
     </div>
   )
 }
-
-// ── Item Detail Modal ────────────────────────────────────────
 
 function ItemDetail({ item, onClose, onEdit, onDelete, onAdjust }) {
   if (!item) return null
@@ -534,8 +517,6 @@ function ItemDetail({ item, onClose, onEdit, onDelete, onAdjust }) {
   )
 }
 
-// ── Main Page ─────────────────────────────────────────────────
-
 export default function Inventory({ onMenuClick }) {
   const { user } = useAuth()
 
@@ -550,14 +531,12 @@ export default function Inventory({ onMenuClick }) {
   const [filterCat,   setFilterCat]   = useState('all')
   const toastTimer = useRef(null)
 
-  // Subscribe to Firestore
   useEffect(() => {
     if (!user) return
     const unsub = subscribeToInventory(
       user.uid,
       (data) => {
         setItems(data)
-        // Keep detail in sync
         setDetailItem(prev => prev ? data.find(i => i.id === prev.id) ?? null : null)
       },
       (err) => console.error('[Inventory]', err)
@@ -570,8 +549,6 @@ export default function Inventory({ onMenuClick }) {
     clearTimeout(toastTimer.current)
     toastTimer.current = setTimeout(() => setToastMsg(''), 2400)
   }, [])
-
-  // ── CRUD ─────────────────────────────────────────────────────
 
   const handleSave = async (data) => {
     if (!user) return
@@ -611,14 +588,9 @@ export default function Inventory({ onMenuClick }) {
     setConfirmDel(null)
   }
 
-  // ── Filter pipeline ──────────────────────────────────────────
-
   const filtered = items.filter(item => {
-    // Tab filter
     if (activeTab !== 'all' && stockStatus(item) !== activeTab) return false
-    // Category filter
     if (filterCat !== 'all' && item.category !== filterCat) return false
-    // Search
     if (search.trim()) {
       const q = search.toLowerCase()
       return (
@@ -637,7 +609,6 @@ export default function Inventory({ onMenuClick }) {
     out: items.filter(i => stockStatus(i) === 'out').length,
   }
 
-  // Group by category
   const grouped = filtered.reduce((acc, item) => {
     const cat = CAT_MAP[item.category]?.label ?? 'Other'
     if (!acc[cat]) acc[cat] = []
@@ -651,7 +622,6 @@ export default function Inventory({ onMenuClick }) {
     <div className={styles.page}>
       <Header onMenuClick={onMenuClick} title="Inventory" />
 
-      {/* ── Search + category filter ── */}
       <div className={styles.searchContainer}>
         <div className={styles.searchRow}>
           <div className={styles.searchBox}>
@@ -698,7 +668,6 @@ export default function Inventory({ onMenuClick }) {
         </div>
       </div>
 
-      {/* ── Tabs ── */}
       <div className={styles.tabs}>
         {TABS.map(tab => (
           <div
@@ -716,7 +685,6 @@ export default function Inventory({ onMenuClick }) {
         ))}
       </div>
 
-      {/* ── List ── */}
       <div className={styles.listArea}>
 
         {items.length === 0 && (
@@ -734,7 +702,6 @@ export default function Inventory({ onMenuClick }) {
           </div>
         )}
 
-        {/* Low stock banner — shown on All tab when there are alerts */}
         {activeTab === 'all' && lowStockCount > 0 && (
           <div className={styles.alertBanner} onClick={() => setActiveTab('low')}>
             <span className="mi" style={{ fontSize: '1rem', color: '#fb923c' }}>warning_amber</span>
@@ -763,12 +730,10 @@ export default function Inventory({ onMenuClick }) {
         <div style={{ height: 32 }} />
       </div>
 
-      {/* ── FAB ── */}
       <button className={styles.fab} onClick={() => { setEditItem(null); setModalOpen(true) }}>
         <span className="mi">add</span>
       </button>
 
-      {/* ── Modals ── */}
       <ItemModal
         isOpen={modalOpen}
         editItem={editItem}
