@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect, useCallback, useLayoutEffect } from 'react'
+import { useState, useRef, useEffect, useCallback } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { useGeneralSettings } from '../../contexts/GeneralSettingsContext'
 import { useOrders } from '../../contexts/OrdersContext'
@@ -112,13 +112,11 @@ export default function Invoices({ onMenuClick }) {
   const [pendingReopen, setPendingReopen] = useState(false)
   const [pendingCompletedModal, setPendingCompletedModal] = useState(null)
   const [pendingCompletedFields, setPendingCompletedFields] = useState([])
-  const [headerHeight, setHeaderHeight] = useState(56)
 
   const toastTimerRef = useRef(null)
   const touchStart    = useRef(null)
   const tabsRef       = useRef(null)
   const tabItemsRef   = useRef({})
-  const headerWrapRef = useRef(null)
 
   const showToast = useCallback((msg) => {
     setToastMsg(msg)
@@ -128,27 +126,6 @@ export default function Invoices({ onMenuClick }) {
 
   useEffect(() => {
     return () => clearTimeout(toastTimerRef.current)
-  }, [])
-
-  useLayoutEffect(() => {
-    const el = headerWrapRef.current
-    if (!el) return
-
-    const measure = () => {
-      const rect = el.getBoundingClientRect()
-      if (rect.height > 0) setHeaderHeight(rect.height)
-    }
-
-    measure()
-
-    const ro = new ResizeObserver(measure)
-    ro.observe(el)
-
-    window.addEventListener('resize', measure)
-    return () => {
-      ro.disconnect()
-      window.removeEventListener('resize', measure)
-    }
   }, [])
 
   useEffect(() => {
@@ -252,9 +229,7 @@ export default function Invoices({ onMenuClick }) {
   return (
     <div className={styles.page}>
 
-      <div ref={headerWrapRef}>
-        <Header title="All Invoices" onMenuClick={onMenuClick} />
-      </div>
+      <Header title="All Invoices" onMenuClick={onMenuClick} />
 
       <div className={styles.searchContainer}>
         <div className={styles.searchRow}>
@@ -312,7 +287,7 @@ export default function Invoices({ onMenuClick }) {
       <div
         ref={tabsRef}
         className={styles.tabs}
-        style={{ top: headerHeight }}
+       
         onClick={() => filterOpen && setFilterOpen(false)}
       >
         {TABS.map(tab => (
