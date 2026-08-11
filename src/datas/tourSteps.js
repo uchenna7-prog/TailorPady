@@ -580,4 +580,13 @@ export const TOURS = {
       message: 'You can always set a goal later from this card.',
     },
   ],
+
+  'body-measurements-nudge': [
+    {
+      id: 'body-measurements-tip',
+      target: '[data-tour="body-measurements-btn"]',
+      title: 'Missing a measurement? 📏',
+      message: "If you forgot to note a specific measurement while taking an order, check here — as long as you recorded body measurements when you added this customer. Didn't get to it yet? You can add them here any time.",
+    },
+  ],
 }
