@@ -52,6 +52,14 @@ function formatDate(dateStr) {
   })
 }
 
+function formatTime(timeStr) {
+  if (!timeStr) return ''
+  const [h, m] = timeStr.split(':').map(Number)
+  const period = h >= 12 ? 'PM' : 'AM'
+  const hour12 = h % 12 === 0 ? 12 : h % 12
+  return `${hour12}:${String(m).padStart(2, '0')} ${period}`
+}
+
 function CustomerLinkIcon({ customer }) {
   if (!customer) {
     return <span className="mi" style={{ fontSize: '1rem', color: 'var(--text3)' }}>person</span>
@@ -232,7 +240,15 @@ export default function TaskDetail({ task, customer, order, onClose, onToggle, o
               <div className={styles.infoGridCell}>
                 <div className={styles.infoGridLabel}>Due Date</div>
                 <div className={`${styles.infoGridValue} ${isOverdue ? styles.overdueText : ''}`}>
-                  {formatDate(task.dueDate)}{task.dueTime ? ` · ${task.dueTime}` : ''}
+                  {formatDate(task.dueDate)}
+                </div>
+              </div>
+            )}
+            {task.dueTime && (
+              <div className={styles.infoGridCell}>
+                <div className={styles.infoGridLabel}>Due Time</div>
+                <div className={`${styles.infoGridValue} ${isOverdue ? styles.overdueText : ''}`}>
+                  {formatTime(task.dueTime)}
                 </div>
               </div>
             )}
