@@ -134,6 +134,8 @@ function Header({
   const handleBack = () => {
     if (currentStep?.id === 'highlight-back-button') {
       completeStep('highlight-back-button')
+      navigate('/customers')
+      return
     }
     onBackClick ? onBackClick() : navigate(-1)
   }
