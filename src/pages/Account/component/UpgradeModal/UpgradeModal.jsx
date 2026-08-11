@@ -156,7 +156,7 @@ export default function UpgradeModal({ onClose, onSuccess }) {
                 <span className={styles.planAmount}>₦1,200</span>
                 <span className={styles.planPeriod}>/month</span>
               </div>
-              <div className={styles.planBilled}>Billed monthly · Cancel anytime</div>
+              <div className={styles.planBilled}>Billed monthly, Cancel anytime</div>
             </div>
             <div className={styles.divider} />
             <div className={styles.featureList}>
