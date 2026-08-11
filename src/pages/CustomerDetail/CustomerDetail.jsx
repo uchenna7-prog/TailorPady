@@ -47,7 +47,7 @@ export default function CustomerDetail({ onMenuClick }) {
   const { id }       = useParams()
   const navigate     = useNavigate()
   const location     = useLocation()
-  const { completeStep } = useTour()
+  const { completeStep, currentStep, startTour, hasCompletedTour, activeTourId } = useTour()
 
   const { getCustomer, updateCustomer, deleteCustomerAndAllData } = useCustomers()
   const { allOrders }  = useOrders()
@@ -205,6 +205,23 @@ export default function CustomerDetail({ onMenuClick }) {
 
     navigate(location.pathname, { replace: true, state: null })
   }, [location.state])
+
+  // One-time contextual tip nudging the user toward the Body Measurements
+  // button, explaining how it differs from the per-garment Measurements
+  // tab. Only fires once ever, only after onboarding is done, and only
+  // when no other tour is currently in progress (so it can never collide
+  // with onboarding's own steps that also visit this page).
+  useEffect(() => {
+    if (!customer) return
+    if (activeTourId) return
+    if (!hasCompletedTour('onboarding')) return
+    if (hasCompletedTour('body-measurements-nudge')) return
+
+    const timer = setTimeout(() => {
+      startTour('body-measurements-nudge')
+    }, 1800)
+    return () => clearTimeout(timer)
+  }, [customer, activeTourId, hasCompletedTour, startTour])
 
   const scrollTabIntoView = useCallback((tabId) => {
     tabRefs.current[tabId]?.scrollIntoView({
@@ -406,6 +423,13 @@ export default function CustomerDetail({ onMenuClick }) {
     setReceiptUpgradeOpen(false)
     navigate('/upgrade')
   }, [navigate])
+
+  const handleBodyMeasurementsClick = useCallback(() => {
+    if (currentStep?.id === 'body-measurements-tip') {
+      completeStep('body-measurements-tip')
+    }
+    navigate(`/customers/${resolvedId}/body-measurements`)
+  }, [currentStep, completeStep, navigate, resolvedId])
 
   if (!customer && !isDeletingRef.current) return null
 
@@ -646,7 +670,8 @@ export default function CustomerDetail({ onMenuClick }) {
 
           <button
             className={`${styles.btn} ${styles.primary}`}
-            onClick={() => navigate(`/customers/${resolvedId}/body-measurements`)}
+            onClick={handleBodyMeasurementsClick}
+            data-tour="body-measurements-btn"
           >
             <span className="mi">straighten</span>
             Body Measurements
