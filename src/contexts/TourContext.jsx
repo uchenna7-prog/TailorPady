@@ -55,26 +55,29 @@ export function TourProvider({ children }) {
     pauseCountRef.current = 0
   }, [])
 
-  const finishTour = useCallback(() => {
-    if (activeTourId) {
-      setCompletedTours(prev => {
-        const next = { ...prev, [activeTourId]: true }
-        saveCompletedTours(next)
-        return next
-      })
-      if (activeTourId === 'onboarding') {
-        try {
-          localStorage.setItem(ONBOARDING_SESSION_KEY, getSessionId())
-        } catch {}
-      }
-      if (activeTourId === 'revenue-goal-nudge') {
-        try {
-          localStorage.setItem(REVENUE_GOAL_NUDGE_SESSION_KEY, getSessionId())
-        } catch {}
-      }
+  const persistTourSeen = useCallback((tourId) => {
+    setCompletedTours(prev => {
+      if (prev[tourId]) return prev
+      const next = { ...prev, [tourId]: true }
+      saveCompletedTours(next)
+      return next
+    })
+    if (tourId === 'onboarding') {
+      try {
+        localStorage.setItem(ONBOARDING_SESSION_KEY, getSessionId())
+      } catch {}
     }
+    if (tourId === 'revenue-goal-nudge') {
+      try {
+        localStorage.setItem(REVENUE_GOAL_NUDGE_SESSION_KEY, getSessionId())
+      } catch {}
+    }
+  }, [])
+
+  const finishTour = useCallback(() => {
+    if (activeTourId) persistTourSeen(activeTourId)
     resetTourState(null)
-  }, [activeTourId, resetTourState])
+  }, [activeTourId, resetTourState, persistTourSeen])
 
   const startTour = useCallback((tourId) => {
     if (!TOURS[tourId]) return
@@ -83,8 +86,9 @@ export function TourProvider({ children }) {
   }, [resetTourState])
 
   const skipTour = useCallback(() => {
+    if (activeTourId) persistTourSeen(activeTourId)
     resetTourState(null)
-  }, [resetTourState])
+  }, [activeTourId, resetTourState, persistTourSeen])
 
   const guardNavigation = useCallback((navFn) => {
     if (!activeTourId) {
