@@ -5,7 +5,7 @@ import ConfirmSheet from '../ConfirmSheet/ConfirmSheet'
 import styles from './OnboardingTour.module.css'
 
 const PAD = 8
-const CARD_GAP = 8
+const CARD_GAP = 20
 const CARD_WIDTH = 280
 const CARD_HEIGHT_FALLBACK = 170
 const TARGET_TIMEOUT_MS = 2500
@@ -327,7 +327,7 @@ export default function OnboardingTour() {
       const spaceBelow = window.innerHeight - (rect.top + rect.height)
       placeBelow = spaceBelow > cardSize.height + CARD_GAP
       const top = placeBelow
-        ? Math.min(rect.top + rect.height + CARD_GAP, window.innerHeight - cardSize.height - 12)
+        ? rect.top + rect.height + CARD_GAP
         : Math.max(12, rect.top - cardSize.height - CARD_GAP)
       const targetCenter = rect.left + rect.width / 2
       const idealLeft = targetCenter - cardSize.width / 2
@@ -369,7 +369,6 @@ export default function OnboardingTour() {
 
         <div
           ref={cardRef}
-          key={currentStep.id}
           className={`${styles.card} ${!hasTarget ? styles.cardCentered : ''} ${noTransitionClass}`}
           style={hasTarget ? { top: tooltipPos.top, left: tooltipPos.left } : undefined}
         >
