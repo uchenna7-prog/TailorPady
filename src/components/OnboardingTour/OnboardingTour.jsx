@@ -44,8 +44,8 @@ function findHorizontallyScrollableAncestor(el) {
 export default function OnboardingTour() {
   const {
     isActive, activeTourId, currentStep, stepIndex, totalSteps,
-    skipTour, finishTour, advanceManual, resolveConfirm, resolveBranch, skipCurrentStep,
-    pauseTour, resumeTour, quitPromptOpen, confirmQuitTour, cancelQuitTour,
+    finishTour, advanceManual, resolveConfirm, resolveBranch, skipCurrentStep,
+    pauseTour, resumeTour, quitPromptOpen, guardNavigation, confirmQuitTour, cancelQuitTour,
   } = useTour()
   const location = useLocation()
   const [rect, setRect] = useState(null)
@@ -293,146 +293,165 @@ export default function OnboardingTour() {
     return () => observer.disconnect()
   }, [isActive, currentStep])
 
-  if (quitPromptOpen) {
-    return (
-      <ConfirmSheet
-        open
-        title="Quit the tour?"
-        message="You can restart it any time from the Take a tour button."
-        confirmText="Quit"
-        onConfirm={confirmQuitTour}
-        onCancel={cancelQuitTour}
-      />
-    )
+  function handleCloseClick() {
+    guardNavigation(() => {})
   }
 
-  if (!isActive || !currentStep) return null
+  if (!quitPromptOpen && (!isActive || !currentStep)) return null
 
-  const isLastStep = stepIndex === totalSteps - 1
-  const hasTarget = !!rect
-  const isConfirm = currentStep.type === 'confirm'
-  const isBranch = currentStep.type === 'branch'
-  const isDesktopViewport = window.innerWidth >= DESKTOP_BREAKPOINT
-  const displayTitle = (isDesktopViewport && currentStep.desktopTitle) || currentStep.title
-  const displayMessage = (isDesktopViewport && currentStep.desktopMessage) || currentStep.message
+  const showTour = isActive && !!currentStep
 
+  let isLastStep = false
+  let hasTarget = false
+  let isConfirm = false
+  let isBranch = false
+  let displayTitle = ''
+  let displayMessage = ''
   let tooltipPos = null
   let placeBelow = true
   let arrowLeft = null
+  let noTransitionClass = ''
+  let centeredActionsClass = ''
+  let centeredBranchClass = ''
 
-  if (hasTarget) {
-    const spaceBelow = window.innerHeight - (rect.top + rect.height)
-    placeBelow = spaceBelow > cardSize.height + CARD_GAP
-    const top = placeBelow
-      ? rect.top + rect.height + CARD_GAP
-      : Math.max(12, rect.top - cardSize.height - CARD_GAP)
-    const targetCenter = rect.left + rect.width / 2
-    const idealLeft = targetCenter - cardSize.width / 2
-    const rawLeft = Math.min(Math.max(12, idealLeft), window.innerWidth - cardSize.width - 12)
-    tooltipPos = { top, left: rawLeft }
-    arrowLeft = Math.min(Math.max(targetCenter - rawLeft, 20), cardSize.width - 20)
+  if (showTour) {
+    isLastStep = stepIndex === totalSteps - 1
+    hasTarget = !!rect
+    isConfirm = currentStep.type === 'confirm'
+    isBranch = currentStep.type === 'branch'
+    const isDesktopViewport = window.innerWidth >= DESKTOP_BREAKPOINT
+    displayTitle = (isDesktopViewport && currentStep.desktopTitle) || currentStep.title
+    displayMessage = (isDesktopViewport && currentStep.desktopMessage) || currentStep.message
+
+    if (hasTarget) {
+      const spaceBelow = window.innerHeight - (rect.top + rect.height)
+      placeBelow = spaceBelow > cardSize.height + CARD_GAP
+      const top = placeBelow
+        ? rect.top + rect.height + CARD_GAP
+        : Math.max(12, rect.top - cardSize.height - CARD_GAP)
+      const targetCenter = rect.left + rect.width / 2
+      const idealLeft = targetCenter - cardSize.width / 2
+      const rawLeft = Math.min(Math.max(12, idealLeft), window.innerWidth - cardSize.width - 12)
+      tooltipPos = { top, left: rawLeft }
+      arrowLeft = Math.min(Math.max(targetCenter - rawLeft, 20), cardSize.width - 20)
+    }
+
+    noTransitionClass = isResizing ? styles.noTransition : ''
+    centeredActionsClass = !hasTarget ? styles.actionsCentered : ''
+    centeredBranchClass = !hasTarget ? styles.branchButtonsCentered : ''
   }
 
-  const noTransitionClass = isResizing ? styles.noTransition : ''
-  const centeredActionsClass = !hasTarget ? styles.actionsCentered : ''
-  const centeredBranchClass = !hasTarget ? styles.branchButtonsCentered : ''
-
   return (
-    <div className={styles.overlayRoot}>
-      {hasTarget ? (
-        <>
-          <div className={`${styles.blockStrip} ${noTransitionClass}`} style={{ top: 0, left: 0, right: 0, height: rect.top }} />
-          <div className={`${styles.blockStrip} ${noTransitionClass}`} style={{ top: rect.top + rect.height, left: 0, right: 0, bottom: 0 }} />
-          <div className={`${styles.blockStrip} ${noTransitionClass}`} style={{ top: rect.top, left: 0, width: rect.left, height: rect.height }} />
-          <div className={`${styles.blockStrip} ${noTransitionClass}`} style={{ top: rect.top, left: rect.left + rect.width, right: 0, height: rect.height }} />
+    <>
+      {showTour && (
+      <div className={styles.overlayRoot}>
+        {hasTarget ? (
+          <>
+            <div className={`${styles.blockStrip} ${noTransitionClass}`} style={{ top: 0, left: 0, right: 0, height: rect.top }} />
+            <div className={`${styles.blockStrip} ${noTransitionClass}`} style={{ top: rect.top + rect.height, left: 0, right: 0, bottom: 0 }} />
+            <div className={`${styles.blockStrip} ${noTransitionClass}`} style={{ top: rect.top, left: 0, width: rect.left, height: rect.height }} />
+            <div className={`${styles.blockStrip} ${noTransitionClass}`} style={{ top: rect.top, left: rect.left + rect.width, right: 0, height: rect.height }} />
+            <div
+              className={`${styles.spotlightRing} ${noTransitionClass}`}
+              style={{ top: rect.top, left: rect.left, width: rect.width, height: rect.height }}
+            />
+            <div
+              className={`${styles.pulseRing} ${noTransitionClass}`}
+              style={{ top: rect.top, left: rect.left, width: rect.width, height: rect.height }}
+            />
+          </>
+        ) : (
           <div
-            className={`${styles.spotlightRing} ${noTransitionClass}`}
-            style={{ top: rect.top, left: rect.left, width: rect.width, height: rect.height }}
+            className={`${styles.blockStrip} ${styles.blockStripHeavy}`}
+            style={{ top: 0, left: 0, right: 0, bottom: 0 }}
           />
-          <div
-            className={`${styles.pulseRing} ${noTransitionClass}`}
-            style={{ top: rect.top, left: rect.left, width: rect.width, height: rect.height }}
-          />
-        </>
-      ) : (
+        )}
+
         <div
-          className={`${styles.blockStrip} ${styles.blockStripHeavy}`}
-          style={{ top: 0, left: 0, right: 0, bottom: 0 }}
-        />
+          ref={cardRef}
+          className={`${styles.card} ${!hasTarget ? styles.cardCentered : ''} ${noTransitionClass}`}
+          style={hasTarget ? { top: tooltipPos.top, left: tooltipPos.left } : undefined}
+        >
+          {!hasTarget && <div className={styles.sheetHandle} />}
+
+          {hasTarget && (
+            <div
+              className={placeBelow ? styles.arrowUp : styles.arrowDown}
+              style={{ left: arrowLeft }}
+            />
+          )}
+
+          <button
+            type="button"
+            className={styles.closeBtn}
+            onClick={handleCloseClick}
+            aria-label="Quit tour"
+          >
+            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round">
+              <line x1="4" y1="4" x2="20" y2="20" />
+              <line x1="20" y1="4" x2="4" y2="20" />
+            </svg>
+          </button>
+
+          {currentStep.count && (
+            <div className={styles.dots}>
+              {Array.from({ length: currentStep.count.total }).map((_, i) => (
+                <span
+                  key={i}
+                  className={`${styles.dot} ${i === currentStep.count.current - 1 ? styles.dotActive : ''}`}
+                />
+              ))}
+            </div>
+          )}
+
+          {currentStep.phase && (
+            <div className={styles.phaseLabel}>{currentStep.phase}</div>
+          )}
+
+          <h3 className={styles.title}>{displayTitle}</h3>
+          <p className={styles.message}>{displayMessage}</p>
+
+          {isBranch ? (
+            <div className={`${styles.branchButtons} ${centeredBranchClass}`}>
+              <button className={styles.skipBtn} onClick={() => resolveBranch(currentStep.id, 'view')}>
+                {currentStep.viewLabel}
+              </button>
+              <button className={styles.doneBtn} onClick={() => resolveBranch(currentStep.id, 'continue')}>
+                {currentStep.continueLabel}
+              </button>
+            </div>
+          ) : isConfirm ? (
+            <div className={`${styles.actions} ${centeredActionsClass}`}>
+              <button className={styles.skipBtn} onClick={() => resolveConfirm(currentStep.id, 'no')}>
+                {currentStep.noLabel || 'Not now'}
+              </button>
+              <button className={styles.doneBtn} onClick={() => resolveConfirm(currentStep.id, 'yes')}>
+                {currentStep.yesLabel || 'Yes'}
+              </button>
+            </div>
+          ) : currentStep.manual ? (
+            <div className={`${styles.actions} ${centeredActionsClass}`}>
+              <button className={styles.doneBtn} onClick={advanceManual}>{currentStep.ctaLabel || 'Next'}</button>
+            </div>
+          ) : isLastStep ? (
+            <div className={`${styles.actions} ${centeredActionsClass}`}>
+              <button className={styles.doneBtn} onClick={finishTour}>Got it</button>
+            </div>
+          ) : null}
+        </div>
+      </div>
       )}
 
-      <div
-        ref={cardRef}
-        className={`${styles.card} ${!hasTarget ? styles.cardCentered : ''} ${noTransitionClass}`}
-        style={hasTarget ? { top: tooltipPos.top, left: tooltipPos.left } : undefined}
-      >
-        {!hasTarget && <div className={styles.sheetHandle} />}
-
-        {hasTarget && (
-          <div
-            className={placeBelow ? styles.arrowUp : styles.arrowDown}
-            style={{ left: arrowLeft }}
-          />
-        )}
-
-        <button
-          type="button"
-          className={styles.closeBtn}
-          onClick={skipTour}
-          aria-label="Skip tour"
-        >
-          <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round">
-            <line x1="4" y1="4" x2="20" y2="20" />
-            <line x1="20" y1="4" x2="4" y2="20" />
-          </svg>
-        </button>
-
-        {currentStep.count && (
-          <div className={styles.dots}>
-            {Array.from({ length: currentStep.count.total }).map((_, i) => (
-              <span
-                key={i}
-                className={`${styles.dot} ${i === currentStep.count.current - 1 ? styles.dotActive : ''}`}
-              />
-            ))}
-          </div>
-        )}
-
-        {currentStep.phase && (
-          <div className={styles.phaseLabel}>{currentStep.phase}</div>
-        )}
-
-        <h3 className={styles.title}>{displayTitle}</h3>
-        <p className={styles.message}>{displayMessage}</p>
-
-        {isBranch ? (
-          <div className={`${styles.branchButtons} ${centeredBranchClass}`}>
-            <button className={styles.skipBtn} onClick={() => resolveBranch(currentStep.id, 'view')}>
-              {currentStep.viewLabel}
-            </button>
-            <button className={styles.doneBtn} onClick={() => resolveBranch(currentStep.id, 'continue')}>
-              {currentStep.continueLabel}
-            </button>
-          </div>
-        ) : isConfirm ? (
-          <div className={`${styles.actions} ${centeredActionsClass}`}>
-            <button className={styles.skipBtn} onClick={() => resolveConfirm(currentStep.id, 'no')}>
-              {currentStep.noLabel || 'Not now'}
-            </button>
-            <button className={styles.doneBtn} onClick={() => resolveConfirm(currentStep.id, 'yes')}>
-              {currentStep.yesLabel || 'Yes'}
-            </button>
-          </div>
-        ) : currentStep.manual ? (
-          <div className={`${styles.actions} ${centeredActionsClass}`}>
-            <button className={styles.doneBtn} onClick={advanceManual}>{currentStep.ctaLabel || 'Next'}</button>
-          </div>
-        ) : isLastStep ? (
-          <div className={`${styles.actions} ${centeredActionsClass}`}>
-            <button className={styles.doneBtn} onClick={finishTour}>Got it</button>
-          </div>
-        ) : null}
-      </div>
-    </div>
+      {quitPromptOpen && (
+        <ConfirmSheet
+          open
+          title="Quit the tour?"
+          message="You can restart it any time from the Take a tour button."
+          confirmText="Quit"
+          onConfirm={confirmQuitTour}
+          onCancel={cancelQuitTour}
+        />
+      )}
+    </>
   )
 }
