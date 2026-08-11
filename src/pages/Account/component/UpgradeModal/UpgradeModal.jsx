@@ -178,7 +178,7 @@ export default function UpgradeModal({ onClose, onSuccess }) {
               {payingPlan === 'monthly' ? 'Processing…' : 'Start Pro — ₦1,200/month'}
             </button>
             {errorMsg && <p className={styles.fine} style={{ color: '#ef4444' }}>{errorMsg}</p>}
-            <p className={styles.fine}>No hidden charges · Instant activation</p>
+            <p className={styles.fine}>No hidden charges, Instant activation</p>
           </div>
         )}
 
@@ -194,10 +194,10 @@ export default function UpgradeModal({ onClose, onSuccess }) {
                 </div>
               </div>
               <div className={styles.planPriceRow}>
-                <span className={styles.planAmount}>₦9,999/year</span>
-                <span className={styles.planPeriod}>/month</span>
+                <span className={styles.planAmount}>₦9,999</span>
+                <span className={styles.planPeriod}>/year</span>
               </div>
-              <div className={styles.planBilled}>Billed as ₦833/month</div>
+              <div className={styles.planBilled}>₦833/month</div>
               <div className={styles.planSavingsBadge}>
                 <span className="mi" style={{ fontSize: '0.75rem' }}>savings</span>
                 You save ₦4,401 vs monthly
