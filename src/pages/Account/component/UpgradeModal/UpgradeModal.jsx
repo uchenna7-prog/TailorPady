@@ -85,7 +85,7 @@ export default function UpgradeModal({ onClose, onSuccess }) {
 
       <Header
         type="back"
-        title="TailorPady Pro"
+        title="TailorPady Plans"
         onBackClick={onClose}
         showBorderBottom={false}
       />
@@ -194,10 +194,10 @@ export default function UpgradeModal({ onClose, onSuccess }) {
                 </div>
               </div>
               <div className={styles.planPriceRow}>
-                <span className={styles.planAmount}>₦833</span>
+                <span className={styles.planAmount}>₦9,999/year</span>
                 <span className={styles.planPeriod}>/month</span>
               </div>
-              <div className={styles.planBilled}>Billed as ₦9,999/year</div>
+              <div className={styles.planBilled}>Billed as ₦833/month</div>
               <div className={styles.planSavingsBadge}>
                 <span className="mi" style={{ fontSize: '0.75rem' }}>savings</span>
                 You save ₦4,401 vs monthly
