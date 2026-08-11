@@ -369,6 +369,7 @@ export default function OnboardingTour() {
 
         <div
           ref={cardRef}
+          key={currentStep.id}
           className={`${styles.card} ${!hasTarget ? styles.cardCentered : ''} ${noTransitionClass}`}
           style={hasTarget ? { top: tooltipPos.top, left: tooltipPos.left } : undefined}
         >
