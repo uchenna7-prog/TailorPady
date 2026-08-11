@@ -1,5 +1,5 @@
 import { createContext, useContext, useState, useCallback, useRef, useEffect } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useLocation } from 'react-router-dom'
 import { TOURS } from '../datas/tourSteps'
 import { getSessionId } from '../utils/sessionId'
 
@@ -27,6 +27,7 @@ function saveCompletedTours(data) {
 
 export function TourProvider({ children }) {
   const navigate = useNavigate()
+  const location = useLocation()
 
   const [activeTourId, setActiveTourId]     = useState(null)
   const [stepIndex, setStepIndex]           = useState(0)
@@ -37,6 +38,8 @@ export function TourProvider({ children }) {
   const [quitPromptOpen, setQuitPromptOpen] = useState(false)
   const pendingNavRef = useRef(null)
   const pauseCountRef = useRef(0)
+  const lastActivePathRef = useRef(null)
+  const suppressPopStateRef = useRef(false)
 
   const steps       = activeTourId ? TOURS[activeTourId] : null
   const currentStep = steps ? steps[stepIndex] : null
@@ -53,6 +56,7 @@ export function TourProvider({ children }) {
     setPendingViewItemId(null)
     setPaused(false)
     pauseCountRef.current = 0
+    suppressPopStateRef.current = false
   }, [])
 
   const persistTourSeen = useCallback((tourId) => {
@@ -112,15 +116,43 @@ export function TourProvider({ children }) {
     pendingNavRef.current = null
   }, [])
 
+  // Keep track of whatever page the active tour currently expects the
+  // user to be on, so a native back-button press can be undone instantly.
+  useEffect(() => {
+    if (activeTourId) {
+      lastActivePathRef.current = location.pathname
+    }
+  }, [activeTourId, location.pathname])
+
   useEffect(() => {
     function handlePopState() {
+      // Ignore the popstate our own confirmed-quit navigate(-1) triggers below —
+      // without this, that navigation would re-enter this handler and re-open
+      // the prompt right after the user just confirmed leaving it.
+      if (suppressPopStateRef.current) {
+        suppressPopStateRef.current = false
+        return
+      }
       if (!activeTourId) return
-      window.history.pushState({ tourGuard: true }, '')
-      guardNavigation(() => window.history.back())
+
+      // The browser has already navigated away by the time this fires.
+      // Immediately navigate back to the tour's page in the same tick so
+      // the user never actually sees the page they were leaving — they
+      // should just see the quit prompt appear over where they already were.
+      const restorePath = lastActivePathRef.current
+      if (restorePath) {
+        navigate(restorePath)
+      }
+
+      guardNavigation(() => {
+        suppressPopStateRef.current = true
+        navigate(-1)
+        setTimeout(() => { suppressPopStateRef.current = false }, 500)
+      })
     }
     window.addEventListener('popstate', handlePopState)
     return () => window.removeEventListener('popstate', handlePopState)
-  }, [activeTourId, guardNavigation])
+  }, [activeTourId, guardNavigation, navigate])
 
   const advanceTo = useCallback((nextIndex) => {
     if (!steps) return
