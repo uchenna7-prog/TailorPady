@@ -90,8 +90,9 @@
   font-size: 1.05rem;
   font-weight: 800;
   color: var(--text, #1a1a1a);
-  letter-spacing: 0.2px;
+  letter-spacing: 0.4px;
   line-height: 1.2;
+  text-transform: uppercase;
 }
 
 .brandTagline {
@@ -243,19 +244,23 @@
 .chipCard {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 7px;
   border: 1px solid var(--border2, #e4ddd0);
   background: var(--bg, #faf6ef);
   color: var(--text2, #4a463e);
   font-family: 'Manrope', sans-serif;
-  font-size: 0.8rem;
+  font-size: 0.78rem;
   font-weight: 600;
-  padding: 12px 14px;
-  border-radius: 12px;
+  padding: 9px 12px;
+  border-radius: 11px;
   text-align: left;
   white-space: normal;
   line-height: 1.25;
   transition: all 0.15s;
+}
+
+.chipCard .mi {
+  flex-shrink: 0;
 }
 
 .chipCard svg {
@@ -267,9 +272,9 @@
 }
 
 .chipCardActive {
-  background: var(--brand-accent, var(--accent, #1a1a1a));
-  border-color: var(--brand-accent, var(--accent, #1a1a1a));
-  color: var(--brand-accent-text, #ffffff);
+  background: rgba(184, 134, 47, 0.1);
+  border-color: rgba(184, 134, 47, 0.45);
+  color: #8a6215;
 }
 
 .fieldGroup {
