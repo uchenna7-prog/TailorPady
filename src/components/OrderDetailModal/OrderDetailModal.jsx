@@ -5,6 +5,8 @@ import { useInvoices } from '../../contexts/InvoiceContext'
 import { useUsage } from '../../contexts/UsageContext'
 import { useAuth } from '../../contexts/AuthContext'
 import { useProfileSettings } from '../../contexts/ProfileSettingsContext'
+import { db } from '../../firebase'
+import { saveReviewOrderSnapshot } from '../../services/reviewService'
 import {
   ORDER_STATUS_LABELS,
   ORDER_STAGES,
@@ -324,6 +326,9 @@ export default function OrderDetailModal({
         return
       }
     }
+
+    const snapshotItems = items.filter(i => i.imgSrc).map(i => ({ imgSrc: i.imgSrc }))
+    saveReviewOrderSnapshot(db, user.uid, token, { items: snapshotItems, orderDesc: orderTitle }).catch(() => {})
 
     const url = `https://TailorPady.web.app/review/${user?.uid}/${token}`
     const message = buildReviewMessage({
