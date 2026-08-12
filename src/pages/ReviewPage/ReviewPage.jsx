@@ -12,30 +12,129 @@ import styles from './ReviewPage.module.css'
 
 const RATING_LABELS = { 1: 'Poor', 2: 'Fair', 3: 'Good', 4: 'Great', 5: 'Excellent' }
 
+const ICON_PATHS = {
+  ruler: (
+    <>
+      <rect x="2.5" y="9.5" width="19" height="5" rx="1.2" transform="rotate(-8 12 12)" />
+      <line x1="6.3" y1="10.2" x2="6.9" y2="12.3" transform="rotate(-8 12 12)" />
+      <line x1="10" y1="9.8" x2="10.6" y2="12.7" transform="rotate(-8 12 12)" />
+      <line x1="13.7" y1="9.4" x2="14.3" y2="13.1" transform="rotate(-8 12 12)" />
+      <line x1="17.4" y1="9" x2="18" y2="13.5" transform="rotate(-8 12 12)" />
+    </>
+  ),
+  fabric: (
+    <>
+      <path d="M4 8c2-2 4-2 6 0s4 2 6 0 4-2 4 0v3c-2 2-4 2-6 0s-4-2-6 0-4 2-4 0z" />
+      <path d="M4 14c2-2 4-2 6 0s4 2 6 0 4-2 4 0v3c-2 2-4 2-6 0s-4-2-6 0-4 2-4 0z" />
+    </>
+  ),
+  scissors: (
+    <>
+      <circle cx="6" cy="6.5" r="2.3" />
+      <circle cx="6" cy="17.5" r="2.3" />
+      <line x1="7.8" y1="8" x2="20" y2="19" />
+      <line x1="7.8" y1="16" x2="20" y2="5" />
+    </>
+  ),
+  truck: (
+    <>
+      <rect x="2" y="8" width="12" height="8" rx="1" />
+      <path d="M14 11h4l3 3v2h-7z" />
+      <circle cx="7" cy="18" r="1.7" />
+      <circle cx="17.5" cy="18" r="1.7" />
+    </>
+  ),
+  headset: (
+    <>
+      <path d="M4 13v-1a8 8 0 0 1 16 0v1" />
+      <rect x="2.5" y="13" width="4" height="6" rx="1.5" />
+      <rect x="17.5" y="13" width="4" height="6" rx="1.5" />
+      <path d="M19.5 19v.5a3 3 0 0 1-3 3h-3" />
+    </>
+  ),
+  chat: (
+    <>
+      <path d="M4 5h16v11H9l-4 4v-4H4z" />
+      <line x1="7.5" y1="9" x2="16.5" y2="9" />
+      <line x1="7.5" y1="12.3" x2="13.5" y2="12.3" />
+    </>
+  ),
+  star: (
+    <path d="M12 3.5l2.5 5.6 6 .6-4.5 4 1.3 6-5.3-3.2-5.3 3.2 1.3-6-4.5-4 6-.6z" />
+  ),
+  clock: (
+    <>
+      <circle cx="12" cy="12" r="9" />
+      <line x1="12" y1="7" x2="12" y2="12.5" />
+      <line x1="12" y1="12.5" x2="15.5" y2="14.5" />
+    </>
+  ),
+  warning: (
+    <>
+      <path d="M12 4l9.5 16h-19z" />
+      <line x1="12" y1="10.5" x2="12" y2="14.5" />
+      <circle cx="12" cy="17" r="0.15" fill="currentColor" stroke="none" />
+    </>
+  ),
+  thumbsUp: (
+    <path d="M8 20V10l4.5-6a1.7 1.7 0 0 1 3 1.3L14.5 10H19a2 2 0 0 1 2 2.4l-1.5 6A2 2 0 0 1 17.5 20H8zM8 10H4.5v10H8" />
+  ),
+  thumbsDown: (
+    <path d="M16 4v10l-4.5 6a1.7 1.7 0 0 1-3-1.3l1-4.7H9a2 2 0 0 1-2-2.4l1.5-6A2 2 0 0 1 10.5 4H16zM16 14h3.5V4H16" />
+  ),
+  meh: (
+    <>
+      <circle cx="12" cy="12" r="9" />
+      <line x1="8" y1="9.5" x2="8" y2="11" />
+      <line x1="16" y1="9.5" x2="16" y2="11" />
+      <line x1="8" y1="15" x2="16" y2="15" />
+    </>
+  ),
+}
+
+function Icon({ name, size = 18 }) {
+  const path = ICON_PATHS[name]
+  if (!path) return null
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.6"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      {path}
+    </svg>
+  )
+}
+
 const POSITIVE_CHIPS = [
-  { label: 'Perfect Fit', icon: 'straighten' },
-  { label: 'Quality of Material', icon: 'workspace_premium' },
-  { label: 'Finishing', icon: 'content_cut' },
-  { label: 'On-time Delivery', icon: 'local_shipping' },
-  { label: 'Customer Service', icon: 'support_agent' },
-  { label: 'Communication', icon: 'chat_bubble' },
+  { label: 'Perfect Fit', icon: 'ruler' },
+  { label: 'Quality of Material', icon: 'fabric' },
+  { label: 'Finishing', icon: 'scissors' },
+  { label: 'On-time Delivery', icon: 'truck' },
+  { label: 'Customer Service', icon: 'headset' },
+  { label: 'Communication', icon: 'chat' },
   { label: 'Overall Experience', icon: 'star' },
 ]
 
 const CONSTRUCTIVE_CHIPS = [
-  { label: 'Fit Issues', icon: 'straighten' },
-  { label: 'Material Quality', icon: 'workspace_premium' },
-  { label: 'Took Too Long', icon: 'schedule' },
-  { label: 'Late Delivery', icon: 'local_shipping' },
-  { label: 'Customer Service', icon: 'support_agent' },
-  { label: 'Communication', icon: 'chat_bubble' },
-  { label: 'Not As Expected', icon: 'report_problem' },
+  { label: 'Fit Issues', icon: 'ruler' },
+  { label: 'Material Quality', icon: 'fabric' },
+  { label: 'Took Too Long', icon: 'clock' },
+  { label: 'Late Delivery', icon: 'truck' },
+  { label: 'Customer Service', icon: 'headset' },
+  { label: 'Communication', icon: 'chat' },
+  { label: 'Not As Expected', icon: 'warning' },
 ]
 
 const RECOMMEND_OPTIONS = [
-  { value: 'yes', label: 'Yes, definitely' },
-  { value: 'maybe', label: 'Maybe' },
-  { value: 'no', label: 'No' },
+  { value: 'yes', label: 'Yes, definitely', icon: 'thumbsUp' },
+  { value: 'maybe', label: 'Maybe', icon: 'meh' },
+  { value: 'no', label: 'No', icon: 'thumbsDown' },
 ]
 
 const MIN_REVIEW_LENGTH = 10
@@ -192,6 +291,7 @@ export default function ReviewPage() {
   const [customerName, setCustomerName] = useState('')
   const [rating,       setRating]       = useState(0)
   const [reviewText,   setReviewText]   = useState('')
+  const [highlights,   setHighlights]   = useState([])
   const [recommend,    setRecommend]    = useState('')
   const [photoFile,    setPhotoFile]    = useState(null)
   const [photoPreview, setPhotoPreview] = useState('')
@@ -264,17 +364,9 @@ export default function ReviewPage() {
   }
 
   const toggleChip = (label) => {
-    const parts = reviewText.split('. ').map(s => s.trim()).filter(Boolean)
-    const idx = parts.indexOf(label)
-    let next
-    if (idx >= 0) {
-      parts.splice(idx, 1)
-      next = parts.join('. ')
-    } else {
-      next = parts.length ? `${parts.join('. ')}. ${label}` : label
-    }
-    setReviewText(next.slice(0, MAX_REVIEW_LENGTH))
-    setFieldErrors(p => ({ ...p, reviewText: '' }))
+    setHighlights(prev =>
+      prev.includes(label) ? prev.filter(l => l !== label) : [...prev, label]
+    )
   }
 
   const handlePhotoSelect = (e) => {
@@ -321,6 +413,7 @@ export default function ReviewPage() {
         customerId:   null,
         review:       reviewText.trim(),
         rating,
+        highlights,
         recommend:    recommend || null,
         photoFile:    photoFile || null,
       })
@@ -477,7 +570,19 @@ export default function ReviewPage() {
       <div className={styles.sectionCard}>
         <span className={styles.sectionTitle}>1. How would you rate your overall experience?</span>
         <div className={styles.ratingWrap}>
-          <StarPicker value={rating} onChange={v => { setRating(v); setFieldErrors(p => ({ ...p, rating: '' })) }} disabled={submitting} />
+          <StarPicker
+            value={rating}
+            onChange={v => {
+              setRating(prev => {
+                const wasLow = prev > 0 && prev <= 3
+                const isLow = v <= 3
+                if (wasLow !== isLow) setHighlights([])
+                return v
+              })
+              setFieldErrors(p => ({ ...p, rating: '' }))
+            }}
+            disabled={submitting}
+          />
           {rating > 0 ? (
             <span className={styles.ratingLabel}>{RATING_LABELS[rating]}</span>
           ) : (
@@ -494,7 +599,7 @@ export default function ReviewPage() {
         </span>
         <div className={styles.chipGrid}>
           {chips.map(chip => {
-            const active = reviewText.split('. ').map(s => s.trim()).includes(chip.label)
+            const active = highlights.includes(chip.label)
             return (
               <button
                 key={chip.label}
@@ -503,7 +608,7 @@ export default function ReviewPage() {
                 onClick={() => toggleChip(chip.label)}
                 disabled={submitting}
               >
-                <span className="mi" style={{ fontSize: '1.1rem' }}>{chip.icon}</span>
+                <Icon name={chip.icon} size={18} />
                 {chip.label}
               </button>
             )
@@ -563,7 +668,7 @@ export default function ReviewPage() {
               onClick={() => setRecommend(opt.value)}
               disabled={submitting}
             >
-              <span className={styles.radioDot} />
+              <Icon name={opt.icon} size={19} />
               {opt.label}
             </button>
           ))}
