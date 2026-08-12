@@ -522,7 +522,6 @@ export default function ReviewPage() {
             <span className={styles.orderName}>{orderName}</span>
             {orderItems.length > 0 && (
               <span className={styles.orderMetaRow}>
-                <span className="mi" style={{ fontSize: '1rem' }}>checkroom</span>
                 {orderItems.length} {orderItems.length === 1 ? 'item' : 'items'}
               </span>
             )}
