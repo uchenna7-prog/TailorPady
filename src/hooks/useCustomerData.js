@@ -216,11 +216,17 @@ export function useCustomerData(customerId) {
 
   const savePayment = useCallback(async (data) => {
     if (!user || !customerId) return null
+    if (hasReachedLimit('paymentRecordsPerMonth', 'paymentRecordsPerMonth')) {
+      const limitError = new Error('PAYMENT_LIMIT_REACHED')
+      limitError.code = 'limit-reached'
+      throw limitError
+    }
     const tempId = makeTempId()
     addPaymentOptimistic({ id: tempId, clientId: tempId, customerId, ...data })
     fsCreatePayment(user.uid, customerId, { ...data, clientId: tempId }).catch(() => {})
+    recordUsage('paymentRecordsPerMonth').catch(() => {})
     return tempId
-  }, [user, customerId, addPaymentOptimistic])
+  }, [user, customerId, addPaymentOptimistic, hasReachedLimit, recordUsage])
 
   const updatePayment = useCallback(async (paymentId, data) => {
     if (!user) return
