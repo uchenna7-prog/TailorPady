@@ -301,7 +301,7 @@
   transition: all 0.15s;
 }
 
-.chipCard .mi {
+.chipCard svg {
   flex-shrink: 0;
 }
 
@@ -440,25 +440,8 @@
   color: var(--text, #1a1a1a);
 }
 
-.radioDot {
-  width: 16px;
-  height: 16px;
-  border-radius: 50%;
-  border: 1.5px solid var(--border2, #cfc7b6);
-  flex-shrink: 0;
-  position: relative;
-}
-
-.recommendOptionActive .radioDot {
-  border-color: #b8862f;
-}
-
-.recommendOptionActive .radioDot::after {
-  content: '';
-  position: absolute;
-  inset: 3px;
-  border-radius: 50%;
-  background: #b8862f;
+.recommendOptionActive svg {
+  color: #b8862f;
 }
 
 .hiddenInput {
