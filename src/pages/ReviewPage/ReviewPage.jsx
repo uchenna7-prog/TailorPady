@@ -2,7 +2,8 @@ import { useState, useEffect } from 'react'
 import { useParams } from 'react-router-dom'
 import { db } from '../../firebasePublic'
 import { getPublicBrandDataFromServer } from '../../services/profileService'
-import { getReviewByToken, submitPublicReview } from '../../services/reviewService'
+import { getReviewByToken, submitPublicReview, getReviewOrderSnapshot } from '../../services/reviewService'
+import OrderMosaic from '../../components/OrderMosaic/OrderMosaic'
 import styles from './ReviewPage.module.css'
 
 function StarPicker({ value, onChange, disabled }) {
@@ -48,6 +49,7 @@ export default function ReviewPage() {
   const { uid, token } = useParams()
 
   const [tailorName,      setTailorName]      = useState('')
+  const [orderItems,      setOrderItems]      = useState([])
   const [alreadyReviewed, setAlreadyReviewed] = useState(false)
   const [loading,         setLoading]         = useState(true)
   const [submitting,      setSubmitting]      = useState(false)
@@ -64,10 +66,13 @@ export default function ReviewPage() {
 
     async function init() {
       try {
-        const brand = await getPublicBrandDataFromServer(db, uid)
+        const [brand, snapshot, existing] = await Promise.all([
+          getPublicBrandDataFromServer(db, uid),
+          getReviewOrderSnapshot(db, uid, token).catch(() => null),
+          getReviewByToken(db, uid, token),
+        ])
         setTailorName(brand?.brandName || brand?.name || 'Your tailor')
-
-        const existing = await getReviewByToken(db, uid, token)
+        if (snapshot?.items?.length) setOrderItems(snapshot.items)
         if (existing) setAlreadyReviewed(true)
       } catch {
         setTailorName('Your tailor')
@@ -180,9 +185,13 @@ export default function ReviewPage() {
       <div className={styles.card}>
 
         <div className={styles.header}>
-          <div className={styles.brandBadge}>
-            <span className="mi" style={{ fontSize: '1.4rem', color: 'var(--text)' }}>content_cut</span>
-          </div>
+          {orderItems.length > 0 ? (
+            <OrderMosaic items={orderItems} size="md" className={styles.brandBadge} />
+          ) : (
+            <div className={styles.brandBadge}>
+              <span className="mi" style={{ fontSize: '1.4rem', color: 'var(--text)' }}>content_cut</span>
+            </div>
+          )}
           <h1 className={styles.title}>Leave a Review</h1>
           <p className={styles.subtitle}>
             How was your experience with <strong>{tailorName}</strong>?
