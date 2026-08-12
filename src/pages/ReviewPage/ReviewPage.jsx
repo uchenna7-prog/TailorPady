@@ -65,20 +65,22 @@ export default function ReviewPage() {
     if (!uid || !token) { setLoading(false); return }
 
     async function init() {
-      try {
-        const [brand, snapshot, existing] = await Promise.all([
-          getPublicBrandDataFromServer(db, uid),
-          getReviewOrderSnapshot(db, uid, token).catch(() => null),
-          getReviewByToken(db, uid, token),
-        ])
-        setTailorName(brand?.brandName || brand?.name || 'Your tailor')
-        if (snapshot?.items?.length) setOrderItems(snapshot.items)
-        if (existing) setAlreadyReviewed(true)
-      } catch {
-        setTailorName('Your tailor')
-      } finally {
-        setLoading(false)
-      }
+      const [brandResult, snapshotResult, existingResult] = await Promise.allSettled([
+        getPublicBrandDataFromServer(db, uid),
+        getReviewOrderSnapshot(db, uid, token),
+        getReviewByToken(db, uid, token),
+      ])
+
+      const brand = brandResult.status === 'fulfilled' ? brandResult.value : null
+      setTailorName(brand?.brandName || brand?.name || 'Your tailor')
+
+      const snapshot = snapshotResult.status === 'fulfilled' ? snapshotResult.value : null
+      if (snapshot?.items?.length) setOrderItems(snapshot.items)
+
+      const existing = existingResult.status === 'fulfilled' ? existingResult.value : null
+      if (existing) setAlreadyReviewed(true)
+
+      setLoading(false)
     }
 
     init()
