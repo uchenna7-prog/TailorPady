@@ -112,6 +112,7 @@ function ReviewSkeleton() {
         <div className={`${styles.skel} ${styles.skelLine}`} style={{ width: '55%', height: 13 }} />
       </div>
 
+      <div className={`${styles.skel} ${styles.skelLine}`} style={{ width: 50, height: 12 }} />
       <div className={styles.orderCard}>
         <div className={`${styles.skel} ${styles.skelOrderImage}`} />
         <div className={styles.orderInfo}>
@@ -438,6 +439,7 @@ export default function ReviewPage() {
         </p>
       </div>
 
+      <span className={styles.orderLabel}>Order</span>
       <div className={styles.orderCard}>
         {orderItems.length > 0 ? (
           <OrderMosaic items={orderItems} size="lg" className={styles.orderImage} />
@@ -622,8 +624,8 @@ export default function ReviewPage() {
 
       <div className={styles.footerBlock}>
         <span className={styles.privacyRow}>
-          <span className="mi" style={{ fontSize: '0.9rem' }}>lock</span>
-          Your review is private and will only be used to improve our service.
+          <span className="mi" style={{ fontSize: '0.95rem' }}>info</span>
+          Your name, photo, and review may be published on {tailorName}'s portfolio for other customers to see.
         </span>
         <button className={styles.submitBtn} onClick={handleSubmit} disabled={submitting}>
           {submitting ? (
