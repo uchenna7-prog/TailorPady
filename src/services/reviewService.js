@@ -4,6 +4,7 @@ import {
   addDoc,
   setDoc,
   getDoc,
+  getDocFromServer,
   updateDoc,
   deleteDoc,
   onSnapshot,
@@ -24,6 +25,10 @@ function reviewDoc(db, uid, reviewId) {
 
 function reviewContactDoc(db, uid, reviewId) {
   return doc(db, 'users', uid, 'reviewContacts', reviewId)
+}
+
+function reviewOrderDoc(db, uid, token) {
+  return doc(db, 'users', uid, 'reviewOrders', token)
 }
 
 export async function addReview(db, uid, data) {
@@ -133,4 +138,17 @@ export async function getApprovedReviews(db, uid) {
     const { customerId, ...safe } = d.data()
     return { id: d.id, ...safe }
   })
+}
+
+export async function saveReviewOrderSnapshot(db, uid, token, data) {
+  await setDoc(reviewOrderDoc(db, uid, token), {
+    items:     data.items ?? [],
+    orderDesc: data.orderDesc ?? '',
+    updatedAt: serverTimestamp(),
+  })
+}
+
+export async function getReviewOrderSnapshot(db, uid, token) {
+  const snap = await getDocFromServer(reviewOrderDoc(db, uid, token))
+  return snap.exists() ? snap.data() : null
 }
