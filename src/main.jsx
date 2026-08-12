@@ -27,6 +27,7 @@ import App from './App'
 import './index.css'
 import { registerSW } from 'virtual:pwa-register'
 
+window.addEventListener('popstate', () => alert('RAW popstate fired on window'))
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
