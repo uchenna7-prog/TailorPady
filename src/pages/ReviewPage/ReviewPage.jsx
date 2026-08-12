@@ -6,7 +6,6 @@ import {
   getReviewByToken,
   submitPublicReview,
   getReviewOrderSnapshot,
-  getApprovedReviews,
 } from '../../services/reviewService'
 import OrderMosaic from '../../components/OrderMosaic/OrderMosaic'
 import styles from './ReviewPage.module.css'
@@ -19,8 +18,6 @@ const CONSTRUCTIVE_CHIPS = ['Took too long', 'Fit issues', 'Poor communication',
 const MIN_REVIEW_LENGTH = 10
 const MAX_REVIEW_LENGTH = 500
 
-// Simple luminance check so the accent button text stays readable
-// against whatever brand color the tailor picked.
 function getReadableTextColor(hex) {
   if (!hex || hex.length < 7) return '#ffffff'
   try {
@@ -106,9 +103,8 @@ export default function ReviewPage() {
 
   const [tailorName,      setTailorName]      = useState('')
   const [brandColour,     setBrandColour]     = useState('')
+  const [brandLogoUrl,    setBrandLogoUrl]    = useState('')
   const [orderItems,      setOrderItems]      = useState([])
-  const [avgRating,       setAvgRating]       = useState(0)
-  const [reviewCount,     setReviewCount]     = useState(0)
   const [alreadyReviewed, setAlreadyReviewed] = useState(false)
   const [loading,         setLoading]         = useState(true)
   const [submitting,      setSubmitting]      = useState(false)
@@ -120,27 +116,36 @@ export default function ReviewPage() {
   const [rating,       setRating]       = useState(0)
   const [reviewText,   setReviewText]   = useState('')
   const [fieldErrors,  setFieldErrors]  = useState({})
+  const [logoFailed,   setLogoFailed]   = useState(false)
 
-  const revealed = rating > 0
   const isLowRating = rating > 0 && rating <= 3
 
   const textColor = useMemo(() => getReadableTextColor(brandColour), [brandColour])
   const chips = isLowRating ? CONSTRUCTIVE_CHIPS : POSITIVE_CHIPS
 
+  const orderName = useMemo(() => {
+    if (!orderItems.length) return 'Your order'
+    const names = orderItems
+      .map(item => item.name || item.itemName || item.garmentName || item.type)
+      .filter(Boolean)
+    if (!names.length) return 'Your order'
+    return names.length > 2 ? `${names.slice(0, 2).join(', ')} +${names.length - 2} more` : names.join(', ')
+  }, [orderItems])
+
   useEffect(() => {
     if (!uid || !token) { setLoading(false); return }
 
     async function init() {
-      const [brandResult, snapshotResult, existingResult, approvedResult] = await Promise.allSettled([
+      const [brandResult, snapshotResult, existingResult] = await Promise.allSettled([
         getPublicBrandDataFromServer(db, uid),
         getReviewOrderSnapshot(db, uid, token),
         getReviewByToken(db, uid, token),
-        getApprovedReviews(db, uid),
       ])
 
       const brand = brandResult.status === 'fulfilled' ? brandResult.value : null
       setTailorName(brand?.brandName || brand?.name || 'Your tailor')
       setBrandColour(brand?.brandColour || '')
+      setBrandLogoUrl(brand?.logoUrl || brand?.brandLogo || '')
 
       const snapshot = snapshotResult.status === 'fulfilled' ? snapshotResult.value : null
       if (snapshot?.items?.length) setOrderItems(snapshot.items)
@@ -148,16 +153,6 @@ export default function ReviewPage() {
       const existing = existingResult.status === 'fulfilled' ? existingResult.value : null
       if (existing) setAlreadyReviewed(true)
 
-      const approved = approvedResult.status === 'fulfilled' ? approvedResult.value : []
-      if (approved.length) {
-        const sum = approved.reduce((acc, r) => acc + (Number(r.rating) || 0), 0)
-        setAvgRating(sum / approved.length)
-        setReviewCount(approved.length)
-      }
-
-      // If literally everything failed, this is likely a connectivity issue
-      // rather than "no data" — tell the visitor instead of silently
-      // rendering a page with defaults.
       const allFailed = [brandResult, snapshotResult, existingResult].every(r => r.status === 'rejected')
       if (allFailed) setOffline(true)
 
@@ -171,7 +166,6 @@ export default function ReviewPage() {
     setOffline(false)
     setLoading(true)
     setError('')
-    // re-trigger the effect
     setTailorName('')
   }
 
@@ -195,7 +189,7 @@ export default function ReviewPage() {
     if (rating === 0)         errs.rating       = 'Please select a rating'
     if (!reviewText.trim())   errs.reviewText   = 'Please write a short review'
     else if (reviewText.trim().length < MIN_REVIEW_LENGTH) {
-      errs.reviewText = `A few more details help — at least ${MIN_REVIEW_LENGTH} characters`
+      errs.reviewText = `A few more details help, at least ${MIN_REVIEW_LENGTH} characters`
     }
     if (Object.keys(errs).length) { setFieldErrors(errs); return }
 
@@ -266,7 +260,7 @@ export default function ReviewPage() {
           </div>
           <h2 className={styles.title}>Already Submitted</h2>
           <p className={styles.subtitle}>
-            You've already submitted a review for this order — thank you for taking the time! 🙏
+            You've already submitted a review for this order, thank you for taking the time! 🙏
           </p>
         </div>
       </div>
@@ -313,8 +307,13 @@ export default function ReviewPage() {
       >
 
         <div className={styles.header}>
-          {orderItems.length > 0 ? (
-            <OrderMosaic items={orderItems} size="md" className={styles.brandBadge} />
+          {brandLogoUrl && !logoFailed ? (
+            <img
+              src={brandLogoUrl}
+              alt={`${tailorName} logo`}
+              className={styles.brandLogo}
+              onError={() => setLogoFailed(true)}
+            />
           ) : (
             <div className={styles.brandBadge}>
               <span className="mi" style={{ fontSize: '1.4rem', color: 'var(--text)' }}>content_cut</span>
@@ -325,128 +324,134 @@ export default function ReviewPage() {
             How was your experience with <strong>{tailorName}</strong>?
             Your honest feedback helps them grow. ✂️
           </p>
-          {reviewCount > 0 && (
-            <div className={styles.ratingSummary}>
-              <span className="mi" style={{ fontSize: '0.9rem', color: '#f59e0b' }}>star</span>
-              {avgRating.toFixed(1)} · {reviewCount} review{reviewCount !== 1 ? 's' : ''}
-            </div>
-          )}
-        </div>
 
-        {/* Step 1: rating always shown first, on its own */}
-        <div className={styles.fieldGroup} style={{ alignItems: 'center', textAlign: 'center' }}>
-          <label className={styles.fieldLabel}>Your Rating *</label>
-          <StarPicker value={rating} onChange={v => { setRating(v); setFieldErrors(p => ({ ...p, rating: '' })) }} disabled={submitting} />
-          {rating > 0 && (
-            <span className={styles.ratingLabel}>{RATING_LABELS[rating]}</span>
-          )}
-          {fieldErrors.rating && (
-            <span className={styles.errorMsg}>{fieldErrors.rating}</span>
-          )}
-        </div>
-
-        {/* Step 2: revealed once a rating is picked */}
-        {revealed && (
-          <div className={styles.form}>
-
-            <p className={styles.branchNote}>
-              {isLowRating
-                ? `We're sorry to hear that. Tell ${tailorName} what went wrong — this helps them fix it.`
-                : `You're about to make ${tailorName}'s day!`}
-            </p>
-
-            <div className={styles.fieldGroup}>
-              <label className={styles.fieldLabel}>Your Name *</label>
-              <input
-                className={`${styles.input} ${fieldErrors.customerName ? styles.inputError : ''}`}
-                placeholder="e.g. Emeka Okafor"
-                value={customerName}
-                onChange={e => {
-                  setCustomerName(e.target.value)
-                  setFieldErrors(p => ({ ...p, customerName: '' }))
-                }}
-                disabled={submitting}
-              />
-              {fieldErrors.customerName && (
-                <span className={styles.errorMsg}>{fieldErrors.customerName}</span>
-              )}
-              <span className={styles.privacyNote}>
-                Your name and review will be shown publicly on {tailorName}'s portfolio once approved.
-              </span>
-            </div>
-
-            <div className={styles.fieldGroup}>
-              <label className={styles.fieldLabel}>{isLowRating ? 'What could be better?' : 'What stood out?'}</label>
-              <div className={styles.chipRow}>
-                {chips.map(chip => {
-                  const active = reviewText.split('. ').map(s => s.trim()).includes(chip)
-                  return (
-                    <button
-                      key={chip}
-                      type="button"
-                      className={`${styles.chip} ${active ? styles.chipActive : ''}`}
-                      onClick={() => toggleChip(chip)}
-                      disabled={submitting}
-                    >
-                      {chip}
-                    </button>
-                  )
-                })}
-              </div>
-            </div>
-
-            <div className={styles.fieldGroup}>
-              <label className={styles.fieldLabel}>Your Review *</label>
-              <textarea
-                className={`${styles.textarea} ${fieldErrors.reviewText ? styles.inputError : ''}`}
-                placeholder="Tell others about the quality, fit, communication and delivery…"
-                value={reviewText}
-                rows={5}
-                maxLength={MAX_REVIEW_LENGTH}
-                onChange={e => {
-                  setReviewText(e.target.value)
-                  setFieldErrors(p => ({ ...p, reviewText: '' }))
-                }}
-                disabled={submitting}
-              />
-              <div className={styles.textareaFooter}>
-                {fieldErrors.reviewText ? (
-                  <span className={styles.errorMsg}>{fieldErrors.reviewText}</span>
-                ) : <span />}
-                <span className={styles.charCount}>{reviewText.length}/{MAX_REVIEW_LENGTH}</span>
-              </div>
-            </div>
-
-            {error && (
-              <div className={styles.submitError}>
-                <span className="mi" style={{ fontSize: '1rem' }}>error_outline</span>
-                {error}
+          <div className={styles.orderChip}>
+            {orderItems.length > 0 ? (
+              <OrderMosaic items={orderItems} size="sm" className={styles.orderThumb} />
+            ) : (
+              <div className={styles.orderThumbFallback}>
+                <span className="mi" style={{ fontSize: '1rem', color: 'var(--text)' }}>content_cut</span>
               </div>
             )}
-
-            <button
-              className={styles.submitBtn}
-              onClick={handleSubmit}
-              disabled={submitting}
-            >
-              {submitting ? (
-                <>
-                  <span className="mi" style={{ fontSize: '1rem', animation: 'spin 1s linear infinite' }}>autorenew</span>
-                  Submitting…
-                </>
-              ) : (
-                <>
-                  <span className="mi" style={{ fontSize: '1rem' }}>send</span>
-                  Submit Review
-                </>
-              )}
-            </button>
-
-            <p className={styles.disclaimer}>
-              Your review will be live on {tailorName}'s portfolio once it's approved.
-            </p>
+            <div className={styles.orderChipText}>
+              <span className={styles.orderChipLabel}>Order</span>
+              <span className={styles.orderChipName}>{orderName}</span>
+            </div>
           </div>
-        )}
+        </div>
+
+        <div className={styles.form}>
+
+          <div className={styles.fieldGroup} style={{ alignItems: 'center', textAlign: 'center' }}>
+            <label className={styles.fieldLabel}>Your Rating *</label>
+            <StarPicker value={rating} onChange={v => { setRating(v); setFieldErrors(p => ({ ...p, rating: '' })) }} disabled={submitting} />
+            {rating > 0 && (
+              <span className={styles.ratingLabel}>{RATING_LABELS[rating]}</span>
+            )}
+            {fieldErrors.rating && (
+              <span className={styles.errorMsg}>{fieldErrors.rating}</span>
+            )}
+          </div>
+
+          {rating > 0 && (
+            <p className={styles.branchNote}>
+              {isLowRating
+                ? `We're sorry to hear that. Tell ${tailorName} what went wrong, this helps them fix it.`
+                : `You're about to make ${tailorName}'s day!`}
+            </p>
+          )}
+
+          <div className={styles.fieldGroup}>
+            <label className={styles.fieldLabel}>Your Name *</label>
+            <input
+              className={`${styles.input} ${fieldErrors.customerName ? styles.inputError : ''}`}
+              placeholder="e.g. Emeka Okafor"
+              value={customerName}
+              onChange={e => {
+                setCustomerName(e.target.value)
+                setFieldErrors(p => ({ ...p, customerName: '' }))
+              }}
+              disabled={submitting}
+            />
+            {fieldErrors.customerName && (
+              <span className={styles.errorMsg}>{fieldErrors.customerName}</span>
+            )}
+            <span className={styles.privacyNote}>
+              Your name and review will be shown publicly on {tailorName}'s portfolio once approved.
+            </span>
+          </div>
+
+          <div className={styles.fieldGroup}>
+            <label className={styles.fieldLabel}>{isLowRating ? 'What could be better?' : 'What stood out?'}</label>
+            <div className={styles.chipRow}>
+              {chips.map(chip => {
+                const active = reviewText.split('. ').map(s => s.trim()).includes(chip)
+                return (
+                  <button
+                    key={chip}
+                    type="button"
+                    className={`${styles.chip} ${active ? styles.chipActive : ''}`}
+                    onClick={() => toggleChip(chip)}
+                    disabled={submitting}
+                  >
+                    {chip}
+                  </button>
+                )
+              })}
+            </div>
+          </div>
+
+          <div className={styles.fieldGroup}>
+            <label className={styles.fieldLabel}>Your Review *</label>
+            <textarea
+              className={`${styles.textarea} ${fieldErrors.reviewText ? styles.inputError : ''}`}
+              placeholder="Tell others about the quality, fit, communication and delivery…"
+              value={reviewText}
+              rows={5}
+              maxLength={MAX_REVIEW_LENGTH}
+              onChange={e => {
+                setReviewText(e.target.value)
+                setFieldErrors(p => ({ ...p, reviewText: '' }))
+              }}
+              disabled={submitting}
+            />
+            <div className={styles.textareaFooter}>
+              {fieldErrors.reviewText ? (
+                <span className={styles.errorMsg}>{fieldErrors.reviewText}</span>
+              ) : <span />}
+              <span className={styles.charCount}>{reviewText.length}/{MAX_REVIEW_LENGTH}</span>
+            </div>
+          </div>
+
+          {error && (
+            <div className={styles.submitError}>
+              <span className="mi" style={{ fontSize: '1rem' }}>error_outline</span>
+              {error}
+            </div>
+          )}
+
+          <button
+            className={styles.submitBtn}
+            onClick={handleSubmit}
+            disabled={submitting}
+          >
+            {submitting ? (
+              <>
+                <span className="mi" style={{ fontSize: '1rem', animation: 'spin 1s linear infinite' }}>autorenew</span>
+                Submitting…
+              </>
+            ) : (
+              <>
+                <span className="mi" style={{ fontSize: '1rem' }}>send</span>
+                Submit Review
+              </>
+            )}
+          </button>
+
+          <p className={styles.disclaimer}>
+            Your review will be live on {tailorName}'s portfolio once it's approved.
+          </p>
+        </div>
 
       </div>
     </div>
