@@ -586,8 +586,7 @@ export const TOURS = {
       id: 'body-measurements-tip',
       target: '[data-tour="body-measurements-btn"]',
       title: 'Body measurements 📏',
-      message: "Keep the customer's full body measurements here for future reference. Unlike the Measurements tab, which is linked to a specific garment, these measurements can be reused across multiple orders.
-      Forgot a measurement? Check here first. You can add or update body measurements anytime.",
+      message: "Keep the customer's full body measurements here for future reference. Unlike the Measurements tab, which is linked to a specific garment, these measurements can be reused across multiple orders. Forgot a measurement? Check here first. You can add or update body measurements anytime.",
     },
   ],
 }
