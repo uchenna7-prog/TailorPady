@@ -41,40 +41,64 @@
   padding: 4px 8px 4px;
 }
 
-.logoRow {
+.brandHeaderRow {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 12px;
+  margin-bottom: 2px;
 }
 
-.brandLogo {
-  width: 26px;
-  height: 26px;
+.logoImg {
+  max-width: 48px;
+  max-height: 48px;
+  width: 48px;
+  height: 48px;
+  object-fit: contain;
+  display: block;
   border-radius: 8px;
-  object-fit: cover;
+  flex-shrink: 0;
+  border: 1.5px solid var(--brand-accent, var(--accent, #1a1a1a));
+  background: var(--surface, #ffffff);
+}
+
+.logoPlaceholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  border: 1.5px dashed var(--brand-accent, var(--accent, #1a1a1a));
+  border-radius: 8px;
+  font-size: 0.6rem;
+  font-weight: 900;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  opacity: 0.65;
+  flex-shrink: 0;
+  color: var(--brand-accent, var(--accent, #1a1a1a));
+}
+
+.brandHeaderText {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+  text-align: left;
 }
 
 .brandName {
-  font-size: 0.95rem;
+  font-size: 1.05rem;
   font-weight: 800;
   color: var(--text, #1a1a1a);
   letter-spacing: 0.2px;
+  line-height: 1.2;
 }
 
-.progressTrack {
-  width: 200px;
-  height: 5px;
-  border-radius: 4px;
-  background: var(--border2, #e4ddd0);
-  overflow: hidden;
-  margin: 2px 0 4px;
-}
-
-.progressFill {
-  height: 100%;
-  border-radius: 4px;
-  background: var(--brand-accent, var(--accent, #1a1a1a));
-  transition: width 0.3s ease;
+.brandTagline {
+  font-size: 0.74rem;
+  color: var(--text3, #8a8378);
+  font-weight: 500;
+  line-height: 1.3;
 }
 
 .heading {
@@ -243,8 +267,8 @@
 }
 
 .chipGrid {
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
   gap: 10px;
 }
 
@@ -256,11 +280,18 @@
   background: var(--bg, #faf6ef);
   color: var(--text2, #4a463e);
   font-family: 'Manrope', sans-serif;
-  font-size: 0.82rem;
+  font-size: 0.8rem;
   font-weight: 600;
-  padding: 11px 15px;
+  padding: 12px 14px;
   border-radius: 12px;
+  text-align: left;
+  white-space: normal;
+  line-height: 1.25;
   transition: all 0.15s;
+}
+
+.chipCard .mi {
+  flex-shrink: 0;
 }
 
 .chipCard:active {
@@ -642,33 +673,62 @@
   background-size: 200% 100%;
   animation: shimmer 1.4s ease-in-out infinite;
   border-radius: 8px;
+  flex-shrink: 0;
 }
 
-.skelBadge {
-  width: 56px;
-  height: 56px;
-  border-radius: 16px;
-}
-
-.skelTitle {
-  width: 60%;
-  height: 20px;
+.skelLine {
   border-radius: 6px;
 }
 
-.skelSubtitle {
-  width: 85%;
-  height: 14px;
-  border-radius: 6px;
+.skelLogoBox {
+  width: 48px;
+  height: 48px;
+  border-radius: 8px;
 }
 
-.skelStars {
-  width: 200px;
-  height: 32px;
-  margin: 0 auto;
+.skelOrderImage {
+  width: 104px;
+  height: 104px;
+  border-radius: 12px;
 }
 
-.skelTextarea {
+.skelStarDot {
+  width: 2rem;
+  height: 2rem;
+  border-radius: 50%;
+}
+
+.skelChip {
+  height: 44px;
+  border-radius: 12px;
+}
+
+.skelInputBar {
   width: 100%;
-  height: 110px;
+  height: 44px;
+  border-radius: 12px;
+}
+
+.skelTextareaBar {
+  width: 100%;
+  height: 92px;
+  border-radius: 12px;
+}
+
+.skelRecommendOption {
+  flex: 1 1 auto;
+  height: 44px;
+  border-radius: 12px;
+}
+
+.skelPhotoBar {
+  width: 100%;
+  height: 68px;
+  border-radius: 14px;
+}
+
+.skelSubmitBar {
+  width: 100%;
+  height: 52px;
+  border-radius: 14px;
 }
