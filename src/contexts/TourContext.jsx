@@ -124,7 +124,6 @@ export function TourProvider({ children }) {
 
   useEffect(() => {
     function handlePopState() {
-      alert('TourContext handlePopState fired')
       if (suppressPopStateRef.current) {
         suppressPopStateRef.current = false
         return
@@ -143,7 +142,6 @@ export function TourProvider({ children }) {
       })
     }
     window.addEventListener('popstate', handlePopState)
-    alert('popstate listener attached')
     return () => window.removeEventListener('popstate', handlePopState)
   }, [activeTourId, guardNavigation, navigate])
 
