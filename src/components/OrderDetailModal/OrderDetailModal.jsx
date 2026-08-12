@@ -4,6 +4,7 @@ import { useOrders } from '../../contexts/OrdersContext'
 import { useInvoices } from '../../contexts/InvoiceContext'
 import { useUsage } from '../../contexts/UsageContext'
 import { useAuth } from '../../contexts/AuthContext'
+import { useProfileSettings } from '../../contexts/ProfileSettingsContext'
 import {
   ORDER_STATUS_LABELS,
   ORDER_STAGES,
@@ -59,6 +60,20 @@ function formatOrderNumber(num) {
   return `ORD-${String(num).padStart(4, '0')}`
 }
 
+function buildReviewMessage({ customerName, orderTitle, brandName, url }) {
+  const name = customerName || 'there'
+  const isGenericOrder = !orderTitle || orderTitle === 'Order' || orderTitle === 'New Order'
+  const orderPart = isGenericOrder ? 'your recent order' : `your order "${orderTitle}"`
+  const fromPart = brandName ? `from ${brandName}` : 'from us'
+
+  return (
+    `Hi ${name}! ${orderPart} ${fromPart} is complete 🎉\n\n` +
+    `Would you mind leaving a quick review? It really helps us out and takes less than a minute.\n\n` +
+    `Tap the link below to leave your review:\n${url}\n\n` +
+    `Thanks so much for trusting us with your outfit 🙏`
+  )
+}
+
 const DONUT_CIRCUMFERENCE = 2 * Math.PI * 26
 
 const STATUS_CHIP = {
@@ -101,6 +116,7 @@ export default function OrderDetailModal({
   const { allInvoices } = useInvoices()
   const { limits, hasReachedLimit, recordUsage } = useUsage()
   const { user } = useAuth()
+  const { profileSettings } = useProfileSettings()
 
   const [local, setLocal] = useState(order)
   const [hint, setHint] = useState(null)
@@ -310,10 +326,13 @@ export default function OrderDetailModal({
     }
 
     const url = `https://TailorPady.web.app/review/${user?.uid}/${token}`
-    const name = local.customerName || 'there'
-    const msg = encodeURIComponent(
-      `Hi ${name}! 🙏 Thank you for your order.\n\nWe'd love your feedback — it only takes a minute:\n${url}\n\nYour review means a lot! ⭐`
-    )
+    const message = buildReviewMessage({
+      customerName: local.customerName,
+      orderTitle,
+      brandName: profileSettings?.brandName?.trim(),
+      url,
+    })
+    const msg = encodeURIComponent(message)
     const raw = (local.customerPhone || '').replace(/[\s\-()]/g, '')
     const wa = raw.startsWith('+') ? raw.slice(1)
       : raw.startsWith('0') ? `234${raw.slice(1)}` : raw
