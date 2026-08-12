@@ -44,6 +44,23 @@ export async function addReview(db, uid, data) {
   return ref.id
 }
 
+export async function submitPublicReview(db, uid, token, data) {
+  await setDoc(reviewDoc(db, uid, token), {
+    ...data,
+    token,
+    status:     'pending',
+    approvedAt: null,
+    createdAt:  serverTimestamp(),
+    updatedAt:  serverTimestamp(),
+  })
+  return token
+}
+
+export async function getReviewByToken(db, uid, token) {
+  const snap = await getDoc(reviewDoc(db, uid, token))
+  return snap.exists() ? { id: snap.id, ...snap.data() } : null
+}
+
 export async function updateReview(db, uid, reviewId, data) {
   const { customerPhone, ...reviewData } = data
   await updateDoc(reviewDoc(db, uid, reviewId), {
