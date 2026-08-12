@@ -99,16 +99,70 @@ function StarPicker({ value, onChange, disabled }) {
 function ReviewSkeleton() {
   return (
     <div className={styles.page}>
-      <div className={styles.simpleCard}>
-        <div className={`${styles.skel} ${styles.skelBadge}`} />
-        <div className={`${styles.skel} ${styles.skelTitle}`} />
-        <div className={`${styles.skel} ${styles.skelSubtitle}`} />
+      <div className={styles.headerBlock}>
+        <div className={styles.brandHeaderRow}>
+          <div className={`${styles.skel} ${styles.skelLogoBox}`} />
+          <div className={styles.brandHeaderText}>
+            <div className={`${styles.skel} ${styles.skelLine}`} style={{ width: 110, height: 14 }} />
+            <div className={`${styles.skel} ${styles.skelLine}`} style={{ width: 140, height: 11, marginTop: 4 }} />
+          </div>
+        </div>
+        <div className={`${styles.skel} ${styles.skelLine}`} style={{ width: '70%', height: 26 }} />
+        <div className={`${styles.skel} ${styles.skelLine}`} style={{ width: '85%', height: 13 }} />
+        <div className={`${styles.skel} ${styles.skelLine}`} style={{ width: '55%', height: 13 }} />
       </div>
-      <div className={styles.simpleCard}>
-        <div className={`${styles.skel} ${styles.skelStars}`} />
+
+      <div className={styles.orderCard}>
+        <div className={`${styles.skel} ${styles.skelOrderImage}`} />
+        <div className={styles.orderInfo}>
+          <div className={`${styles.skel} ${styles.skelLine}`} style={{ width: 70, height: 11 }} />
+          <div className={`${styles.skel} ${styles.skelLine}`} style={{ width: 100, height: 11 }} />
+          <div className={`${styles.skel} ${styles.skelLine}`} style={{ width: '80%', height: 17, marginTop: 2 }} />
+          <div className={`${styles.skel} ${styles.skelLine}`} style={{ width: '90%', height: 12, marginTop: 2 }} />
+        </div>
       </div>
-      <div className={styles.simpleCard}>
-        <div className={`${styles.skel} ${styles.skelTextarea}`} />
+
+      <div className={styles.sectionCard}>
+        <div className={`${styles.skel} ${styles.skelLine}`} style={{ width: '75%', height: 15 }} />
+        <div className={styles.starPicker}>
+          {[1, 2, 3, 4, 5].map(n => (
+            <div key={n} className={`${styles.skel} ${styles.skelStarDot}`} />
+          ))}
+        </div>
+      </div>
+
+      <div className={styles.sectionCard}>
+        <div className={`${styles.skel} ${styles.skelLine}`} style={{ width: '60%', height: 15 }} />
+        <div className={styles.chipGrid}>
+          {Array.from({ length: 6 }).map((_, i) => (
+            <div key={i} className={`${styles.skel} ${styles.skelChip}`} />
+          ))}
+        </div>
+      </div>
+
+      <div className={styles.sectionCard}>
+        <div className={`${styles.skel} ${styles.skelLine}`} style={{ width: '65%', height: 15 }} />
+        <div className={`${styles.skel} ${styles.skelInputBar}`} />
+        <div className={`${styles.skel} ${styles.skelTextareaBar}`} />
+      </div>
+
+      <div className={styles.sectionCard}>
+        <div className={`${styles.skel} ${styles.skelLine}`} style={{ width: '70%', height: 15 }} />
+        <div className={styles.recommendGrid}>
+          {Array.from({ length: 3 }).map((_, i) => (
+            <div key={i} className={`${styles.skel} ${styles.skelRecommendOption}`} />
+          ))}
+        </div>
+      </div>
+
+      <div className={styles.sectionCard}>
+        <div className={`${styles.skel} ${styles.skelLine}`} style={{ width: '40%', height: 15 }} />
+        <div className={`${styles.skel} ${styles.skelPhotoBar}`} />
+      </div>
+
+      <div className={styles.footerBlock}>
+        <div className={`${styles.skel} ${styles.skelLine}`} style={{ width: '65%', height: 12 }} />
+        <div className={`${styles.skel} ${styles.skelSubmitBar}`} />
       </div>
     </div>
   )
@@ -119,6 +173,7 @@ export default function ReviewPage() {
   const photoInputRef = useRef(null)
 
   const [tailorName,      setTailorName]      = useState('')
+  const [brandTagline,    setBrandTagline]    = useState('')
   const [brandColour,     setBrandColour]     = useState('')
   const [brandLogoUrl,    setBrandLogoUrl]    = useState('')
   const [orderItems,      setOrderItems]      = useState([])
@@ -159,15 +214,6 @@ export default function ReviewPage() {
 
   const deliveredLabel = useMemo(() => formatDate(deliveredAt), [deliveredAt])
 
-  const progress = useMemo(() => {
-    let filled = 0
-    const total = 3
-    if (rating > 0) filled += 1
-    if (customerName.trim()) filled += 1
-    if (reviewText.trim().length >= MIN_REVIEW_LENGTH) filled += 1
-    return Math.round((filled / total) * 100)
-  }, [rating, customerName, reviewText])
-
   useEffect(() => {
     if (!uid || !token) { setLoading(false); return }
 
@@ -180,6 +226,7 @@ export default function ReviewPage() {
 
       const brand = brandResult.status === 'fulfilled' ? brandResult.value : null
       setTailorName(brand?.brandName || brand?.name || 'Your tailor')
+      setBrandTagline(brand?.tagline || brand?.slogan || '')
       setBrandColour(brand?.brandColour || '')
       setBrandLogoUrl(brand?.logoUrl || brand?.brandLogo || '')
 
@@ -369,21 +416,21 @@ export default function ReviewPage() {
     <div className={styles.page} style={{ '--brand-accent': brandColour || 'var(--accent)', '--brand-accent-text': textColor }}>
 
       <div className={styles.headerBlock}>
-        <div className={styles.logoRow}>
+        <div className={styles.brandHeaderRow}>
           {brandLogoUrl && !logoFailed ? (
             <img
               src={brandLogoUrl}
               alt={`${tailorName} logo`}
-              className={styles.brandLogo}
+              className={styles.logoImg}
               onError={() => setLogoFailed(true)}
             />
           ) : (
-            <span className="mi" style={{ fontSize: '1.3rem', color: 'var(--text)' }}>content_cut</span>
+            <div className={styles.logoPlaceholder}>LOGO</div>
           )}
-          <span className={styles.brandName}>{tailorName}</span>
-        </div>
-        <div className={styles.progressTrack}>
-          <div className={styles.progressFill} style={{ width: `${progress}%` }} />
+          <div className={styles.brandHeaderText}>
+            <span className={styles.brandName}>{tailorName}</span>
+            {brandTagline && <span className={styles.brandTagline}>{brandTagline}</span>}
+          </div>
         </div>
         <h1 className={styles.heading}>We'd love your feedback</h1>
         <p className={styles.subheading}>
