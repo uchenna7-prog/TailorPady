@@ -126,6 +126,7 @@ export function TourProvider({ children }) {
 
   useEffect(() => {
     function handlePopState() {
+      alert(`popstate fired\nsuppressed: ${suppressPopStateRef.current}\nactiveTourId: ${activeTourId}\nrestorePath: ${lastActivePathRef.current}\ncurrentPath: ${window.location.pathname}`)
       // Ignore the popstate our own confirmed-quit navigate(-1) triggers below —
       // without this, that navigation would re-enter this handler and re-open
       // the prompt right after the user just confirmed leaving it.
