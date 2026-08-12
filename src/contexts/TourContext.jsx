@@ -29,10 +29,6 @@ export function TourProvider({ children }) {
   const navigate = useNavigate()
   const location = useLocation()
 
-  useEffect(() => {
-    alert('TourContext v2 mounted — if you see this, the new file is running')
-  }, [])
-
   const [activeTourId, setActiveTourId]     = useState(null)
   const [stepIndex, setStepIndex]           = useState(0)
   const [pendingCustomerId, setPendingCustomerId] = useState(null)
@@ -130,7 +126,6 @@ export function TourProvider({ children }) {
 
   useEffect(() => {
     function handlePopState() {
-      alert(`popstate fired\nsuppressed: ${suppressPopStateRef.current}\nactiveTourId: ${activeTourId}\nrestorePath: ${lastActivePathRef.current}\ncurrentPath: ${window.location.pathname}`)
       // Ignore the popstate our own confirmed-quit navigate(-1) triggers below —
       // without this, that navigation would re-enter this handler and re-open
       // the prompt right after the user just confirmed leaving it.
