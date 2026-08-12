@@ -116,8 +116,6 @@ export function TourProvider({ children }) {
     pendingNavRef.current = null
   }, [])
 
-  // Keep track of whatever page the active tour currently expects the
-  // user to be on, so a native back-button press can be undone instantly.
   useEffect(() => {
     if (activeTourId) {
       lastActivePathRef.current = location.pathname
@@ -126,20 +124,12 @@ export function TourProvider({ children }) {
 
   useEffect(() => {
     function handlePopState() {
-      alert('TourContext handlePopState fired')
-      // Ignore the popstate our own confirmed-quit navigate(-1) triggers below —
-      // without this, that navigation would re-enter this handler and re-open
-      // the prompt right after the user just confirmed leaving it.
       if (suppressPopStateRef.current) {
         suppressPopStateRef.current = false
         return
       }
       if (!activeTourId) return
 
-      // The browser has already navigated away by the time this fires.
-      // Immediately navigate back to the tour's page in the same tick so
-      // the user never actually sees the page they were leaving — they
-      // should just see the quit prompt appear over where they already were.
       const restorePath = lastActivePathRef.current
       if (restorePath) {
         navigate(restorePath)
