@@ -29,6 +29,10 @@ export function TourProvider({ children }) {
   const navigate = useNavigate()
   const location = useLocation()
 
+  useEffect(() => {
+    alert('TourContext v2 mounted — if you see this, the new file is running')
+  }, [])
+
   const [activeTourId, setActiveTourId]     = useState(null)
   const [stepIndex, setStepIndex]           = useState(0)
   const [pendingCustomerId, setPendingCustomerId] = useState(null)
