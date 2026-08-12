@@ -1,10 +1,12 @@
 import { useState, useEffect } from 'react'
-import { formatMoney } from '../../../../utils/moneyUtils'
+import { useNavigate } from 'react-router-dom'
 import { useTour } from '../../../../contexts/TourContext'
+import { useUsage } from '../../../../contexts/UsageContext'
 import { AddPaymentModal } from './components/AddPaymentModal/AddPaymentModal'
 import { PaymentRow } from './components/PaymentRow/PaymentRow'
 import { EmptyState } from './components/EmptyState/EmptyState'
 import { PaymentDetailsModal } from './components/PaymentDetailsModal/PaymentDetailsModal'
+import { UpgradeSheet } from '../../../../components/UpgradeSheet/UpgradeSheet'
 import { getTodayLabel, getTimeLabel, buildOrderItemsMap, groupPaymentsByDate, getTotalPaid } from './utils'
 import ConfirmSheet from '../../../../components/ConfirmSheet/ConfirmSheet'
 import styles from './PaymentsTab.module.css'
@@ -23,11 +25,16 @@ export default function PaymentsTab({
   onViewReceipt,
 }) {
 
+  const navigate = useNavigate()
   const { completeStep, currentStep, pendingViewItemId, pauseTour, resumeTour } = useTour()
+  const { hasReachedLimit, limits } = useUsage()
 
   const [modalOpen,      setModalOpen]      = useState(false)
   const [viewingPayment, setViewingPayment] = useState(null)
   const [deleteTarget,   setDeleteTarget]   = useState(null)
+  const [upgradeOpen,    setUpgradeOpen]    = useState(false)
+
+  const atLimit = hasReachedLimit('paymentRecordsPerMonth', 'paymentRecordsPerMonth')
 
   useEffect(() => {
     if (!viewingPayment) return
@@ -36,10 +43,16 @@ export default function PaymentsTab({
   }, [payments])
 
   useEffect(() => {
-    const handler = () => setModalOpen(true)
+    const handler = () => {
+      if (atLimit) {
+        setUpgradeOpen(true)
+        return
+      }
+      setModalOpen(true)
+    }
     document.addEventListener('openAddPaymentModal', handler)
     return () => document.removeEventListener('openAddPaymentModal', handler)
-  }, [])
+  }, [atLimit])
 
   useEffect(() => {
     if (!modalOpen) return
@@ -63,8 +76,12 @@ export default function PaymentsTab({
       completeStep('add-payment', { itemId: newId ? String(newId) : null })
       if (paymentData.status === 'paid')      onInvoicePaid?.(paymentData.orderId, 'paid')
       else if (paymentData.status === 'part') onInvoicePaid?.(paymentData.orderId, 'part_paid')
-    } catch {
-      showToast('Failed to save payment.')
+    } catch (err) {
+      if (err?.code === 'limit-reached') {
+        setUpgradeOpen(true)
+      } else {
+        showToast('Failed to save payment.')
+      }
     }
   }
 
@@ -121,6 +138,11 @@ export default function PaymentsTab({
       completeStep('view-new-payment')
     }
     setViewingPayment(payment)
+  }
+
+  function handleUpgrade() {
+    setUpgradeOpen(false)
+    navigate('/upgrade')
   }
 
   return (
@@ -181,10 +203,19 @@ export default function PaymentsTab({
         onConfirm={handleConfirmDelete}
         onCancel={() => setDeleteTarget(null)}
       />
+
+      <UpgradeSheet
+        isOpen={upgradeOpen}
+        onClose={() => setUpgradeOpen(false)}
+        onUpgrade={handleUpgrade}
+        icon="payments"
+        title="Payment limit reached"
+        message={`You've hit the free plan limit of ${limits.paymentRecordsPerMonth} payment records this month. Upgrade to Premium for unlimited payments.`}
+      />
     </>
   )
 }
 
 PaymentsTab.openModal = () => {
-  document.dispatchEvent(new Event('openPaymentModal'))
+  document.dispatchEvent(new Event('openAddPaymentModal'))
 }
