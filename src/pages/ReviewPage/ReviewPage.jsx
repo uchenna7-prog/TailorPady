@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react'
+import { useState, useEffect, useMemo, useRef } from 'react'
 import { useParams } from 'react-router-dom'
 import { db } from '../../firebasePublic'
 import { getPublicBrandDataFromServer } from '../../services/profileService'
@@ -12,11 +12,35 @@ import styles from './ReviewPage.module.css'
 
 const RATING_LABELS = { 1: 'Poor', 2: 'Fair', 3: 'Good', 4: 'Great', 5: 'Excellent' }
 
-const POSITIVE_CHIPS = ['Great fit', 'Fast delivery', 'High quality', 'Great communication', 'Worth the price']
-const CONSTRUCTIVE_CHIPS = ['Took too long', 'Fit issues', 'Poor communication', 'Not as expected', 'Price concerns']
+const POSITIVE_CHIPS = [
+  { label: 'Perfect Fit', icon: 'straighten' },
+  { label: 'Quality of Material', icon: 'workspace_premium' },
+  { label: 'Finishing', icon: 'content_cut' },
+  { label: 'On-time Delivery', icon: 'local_shipping' },
+  { label: 'Customer Service', icon: 'support_agent' },
+  { label: 'Communication', icon: 'chat_bubble' },
+  { label: 'Overall Experience', icon: 'star' },
+]
+
+const CONSTRUCTIVE_CHIPS = [
+  { label: 'Fit Issues', icon: 'straighten' },
+  { label: 'Material Quality', icon: 'workspace_premium' },
+  { label: 'Took Too Long', icon: 'schedule' },
+  { label: 'Late Delivery', icon: 'local_shipping' },
+  { label: 'Customer Service', icon: 'support_agent' },
+  { label: 'Communication', icon: 'chat_bubble' },
+  { label: 'Not As Expected', icon: 'report_problem' },
+]
+
+const RECOMMEND_OPTIONS = [
+  { value: 'yes', label: 'Yes, definitely' },
+  { value: 'maybe', label: 'Maybe' },
+  { value: 'no', label: 'No' },
+]
 
 const MIN_REVIEW_LENGTH = 10
 const MAX_REVIEW_LENGTH = 500
+const MAX_PHOTO_MB = 5
 
 function getReadableTextColor(hex) {
   if (!hex || hex.length < 7) return '#ffffff'
@@ -31,7 +55,18 @@ function getReadableTextColor(hex) {
   }
 }
 
-function StarPicker({ value, onChange, disabled, size = 'lg' }) {
+function formatDate(value) {
+  if (!value) return ''
+  try {
+    const date = value?.toDate ? value.toDate() : new Date(value)
+    if (Number.isNaN(date.getTime())) return ''
+    return date.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })
+  } catch {
+    return ''
+  }
+}
+
+function StarPicker({ value, onChange, disabled }) {
   const [hovered, setHovered] = useState(0)
   return (
     <div className={styles.starPicker}>
@@ -39,7 +74,7 @@ function StarPicker({ value, onChange, disabled, size = 'lg' }) {
         <button
           key={n}
           type="button"
-          className={`${styles.starBtn} ${n <= (hovered || value) ? styles.starBtnActive : ''}`}
+          className={styles.starBtn}
           disabled={disabled}
           onMouseEnter={() => !disabled && setHovered(n)}
           onMouseLeave={() => !disabled && setHovered(0)}
@@ -49,11 +84,11 @@ function StarPicker({ value, onChange, disabled, size = 'lg' }) {
           <span
             className="mi"
             style={{
-              fontSize: size === 'lg' ? '2.6rem' : '1.6rem',
-              color: n <= (hovered || value) ? '#f59e0b' : '#d1d5db',
+              fontSize: '2rem',
+              color: n <= (hovered || value) ? '#e0a92f' : '#d9d3c7',
             }}
           >
-            star
+            {n <= (hovered || value) ? 'star' : 'star_outline'}
           </span>
         </button>
       ))}
@@ -61,37 +96,18 @@ function StarPicker({ value, onChange, disabled, size = 'lg' }) {
   )
 }
 
-function ConfettiBurst() {
-  const particles = ['🎉', '✨', '⭐', '🎊', '✨']
-  return (
-    <div className={styles.confettiWrap} aria-hidden="true">
-      {particles.map((p, i) => (
-        <span
-          key={i}
-          className={styles.confettiParticle}
-          style={{
-            left: `${18 + i * 16}%`,
-            animationDelay: `${i * 70}ms`,
-          }}
-        >
-          {p}
-        </span>
-      ))}
-    </div>
-  )
-}
-
 function ReviewSkeleton() {
   return (
-    <div className={styles.card}>
-      <div className={styles.header}>
+    <div className={styles.page}>
+      <div className={styles.simpleCard}>
         <div className={`${styles.skel} ${styles.skelBadge}`} />
         <div className={`${styles.skel} ${styles.skelTitle}`} />
         <div className={`${styles.skel} ${styles.skelSubtitle}`} />
       </div>
-      <div className={styles.form}>
+      <div className={styles.simpleCard}>
         <div className={`${styles.skel} ${styles.skelStars}`} />
-        <div className={`${styles.skel} ${styles.skelInput}`} />
+      </div>
+      <div className={styles.simpleCard}>
         <div className={`${styles.skel} ${styles.skelTextarea}`} />
       </div>
     </div>
@@ -100,11 +116,16 @@ function ReviewSkeleton() {
 
 export default function ReviewPage() {
   const { uid, token } = useParams()
+  const photoInputRef = useRef(null)
 
   const [tailorName,      setTailorName]      = useState('')
   const [brandColour,     setBrandColour]     = useState('')
   const [brandLogoUrl,    setBrandLogoUrl]    = useState('')
   const [orderItems,      setOrderItems]      = useState([])
+  const [orderNumber,     setOrderNumber]     = useState('')
+  const [orderStatus,     setOrderStatus]     = useState('')
+  const [deliveredAt,     setDeliveredAt]     = useState(null)
+  const [snapshotCustomerName, setSnapshotCustomerName] = useState('')
   const [alreadyReviewed, setAlreadyReviewed] = useState(false)
   const [loading,         setLoading]         = useState(true)
   const [submitting,      setSubmitting]      = useState(false)
@@ -115,6 +136,10 @@ export default function ReviewPage() {
   const [customerName, setCustomerName] = useState('')
   const [rating,       setRating]       = useState(0)
   const [reviewText,   setReviewText]   = useState('')
+  const [recommend,    setRecommend]    = useState('')
+  const [photoFile,    setPhotoFile]    = useState(null)
+  const [photoPreview, setPhotoPreview] = useState('')
+  const [photoError,   setPhotoError]   = useState('')
   const [fieldErrors,  setFieldErrors]  = useState({})
   const [logoFailed,   setLogoFailed]   = useState(false)
 
@@ -131,6 +156,17 @@ export default function ReviewPage() {
     if (!names.length) return 'Your order'
     return names.length > 2 ? `${names.slice(0, 2).join(', ')} +${names.length - 2} more` : names.join(', ')
   }, [orderItems])
+
+  const deliveredLabel = useMemo(() => formatDate(deliveredAt), [deliveredAt])
+
+  const progress = useMemo(() => {
+    let filled = 0
+    const total = 3
+    if (rating > 0) filled += 1
+    if (customerName.trim()) filled += 1
+    if (reviewText.trim().length >= MIN_REVIEW_LENGTH) filled += 1
+    return Math.round((filled / total) * 100)
+  }, [rating, customerName, reviewText])
 
   useEffect(() => {
     if (!uid || !token) { setLoading(false); return }
@@ -149,6 +185,10 @@ export default function ReviewPage() {
 
       const snapshot = snapshotResult.status === 'fulfilled' ? snapshotResult.value : null
       if (snapshot?.items?.length) setOrderItems(snapshot.items)
+      if (snapshot?.orderNumber) setOrderNumber(snapshot.orderNumber)
+      if (snapshot?.status) setOrderStatus(snapshot.status)
+      if (snapshot?.deliveredAt) setDeliveredAt(snapshot.deliveredAt)
+      if (snapshot?.customerName) setSnapshotCustomerName(snapshot.customerName)
 
       const existing = existingResult.status === 'fulfilled' ? existingResult.value : null
       if (existing) setAlreadyReviewed(true)
@@ -162,6 +202,12 @@ export default function ReviewPage() {
     init()
   }, [uid, token])
 
+  useEffect(() => {
+    return () => {
+      if (photoPreview) URL.revokeObjectURL(photoPreview)
+    }
+  }, [photoPreview])
+
   const retry = () => {
     setOffline(false)
     setLoading(true)
@@ -169,18 +215,43 @@ export default function ReviewPage() {
     setTailorName('')
   }
 
-  const toggleChip = (chip) => {
+  const toggleChip = (label) => {
     const parts = reviewText.split('. ').map(s => s.trim()).filter(Boolean)
-    const idx = parts.indexOf(chip)
+    const idx = parts.indexOf(label)
     let next
     if (idx >= 0) {
       parts.splice(idx, 1)
       next = parts.join('. ')
     } else {
-      next = parts.length ? `${parts.join('. ')}. ${chip}` : chip
+      next = parts.length ? `${parts.join('. ')}. ${label}` : label
     }
     setReviewText(next.slice(0, MAX_REVIEW_LENGTH))
     setFieldErrors(p => ({ ...p, reviewText: '' }))
+  }
+
+  const handlePhotoSelect = (e) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+    setPhotoError('')
+    if (!file.type.startsWith('image/')) {
+      setPhotoError('Please choose an image file')
+      return
+    }
+    if (file.size > MAX_PHOTO_MB * 1024 * 1024) {
+      setPhotoError(`Photo must be under ${MAX_PHOTO_MB}MB`)
+      return
+    }
+    if (photoPreview) URL.revokeObjectURL(photoPreview)
+    setPhotoFile(file)
+    setPhotoPreview(URL.createObjectURL(file))
+  }
+
+  const removePhoto = () => {
+    if (photoPreview) URL.revokeObjectURL(photoPreview)
+    setPhotoFile(null)
+    setPhotoPreview('')
+    setPhotoError('')
+    if (photoInputRef.current) photoInputRef.current.value = ''
   }
 
   const handleSubmit = async () => {
@@ -202,6 +273,8 @@ export default function ReviewPage() {
         customerId:   null,
         review:       reviewText.trim(),
         rating,
+        recommend:    recommend || null,
+        photoFile:    photoFile || null,
       })
       setSubmitted(true)
     } catch (err) {
@@ -216,20 +289,16 @@ export default function ReviewPage() {
   }
 
   if (loading) {
-    return (
-      <div className={styles.page}>
-        <ReviewSkeleton />
-      </div>
-    )
+    return <ReviewSkeleton />
   }
 
   if (!uid || !token) {
     return (
       <div className={styles.page}>
-        <div className={styles.card}>
+        <div className={styles.simpleCard}>
           <span className="mi" style={{ fontSize: '3rem', color: 'var(--text3)' }}>link_off</span>
-          <h2 className={styles.title} style={{ marginTop: 16 }}>Invalid Link</h2>
-          <p className={styles.subtitle}>This review link is not valid. Please ask your tailor to resend the link.</p>
+          <h2 className={styles.simpleTitle}>Invalid Link</h2>
+          <p className={styles.simpleSubtitle}>This review link is not valid. Please ask your tailor to resend the link.</p>
         </div>
       </div>
     )
@@ -238,10 +307,10 @@ export default function ReviewPage() {
   if (offline) {
     return (
       <div className={styles.page}>
-        <div className={styles.card}>
+        <div className={styles.simpleCard}>
           <span className="mi" style={{ fontSize: '3rem', color: 'var(--text3)' }}>wifi_off</span>
-          <h2 className={styles.title} style={{ marginTop: 16 }}>Couldn't Load</h2>
-          <p className={styles.subtitle}>Check your connection and try again.</p>
+          <h2 className={styles.simpleTitle}>Couldn't Load</h2>
+          <p className={styles.simpleSubtitle}>Check your connection and try again.</p>
           <button className={styles.retryBtn} onClick={retry}>
             <span className="mi" style={{ fontSize: '1rem' }}>refresh</span>
             Try Again
@@ -254,13 +323,13 @@ export default function ReviewPage() {
   if (alreadyReviewed) {
     return (
       <div className={styles.page}>
-        <div className={styles.card}>
+        <div className={styles.simpleCard}>
           <div className={styles.successIcon}>
             <span className="mi" style={{ fontSize: '2rem', color: '#22c55e' }}>check_circle</span>
           </div>
-          <h2 className={styles.title}>Already Submitted</h2>
-          <p className={styles.subtitle}>
-            You've already submitted a review for this order, thank you for taking the time! 🙏
+          <h2 className={styles.simpleTitle}>Already Submitted</h2>
+          <p className={styles.simpleSubtitle}>
+            You've already submitted a review for this order, thank you for taking the time.
           </p>
         </div>
       </div>
@@ -270,25 +339,22 @@ export default function ReviewPage() {
   if (submitted) {
     return (
       <div className={styles.page}>
-        <div className={styles.card}>
-          <div className={styles.successIconWrap}>
-            {!isLowRating && <ConfettiBurst />}
-            <div className={styles.successIcon}>
-              <span className="mi" style={{ fontSize: '2.5rem', color: '#22c55e' }}>check_circle</span>
-            </div>
+        <div className={styles.simpleCard}>
+          <div className={styles.successIcon}>
+            <span className="mi" style={{ fontSize: '2.5rem', color: '#22c55e' }}>check_circle</span>
           </div>
-          <h2 className={styles.title}>{isLowRating ? 'Thank You for Sharing' : 'Thank You! 🎉'}</h2>
-          <p className={styles.subtitle}>
+          <h2 className={styles.simpleTitle}>{isLowRating ? 'Thank You for Sharing' : 'Thank You'}</h2>
+          <p className={styles.simpleSubtitle}>
             {isLowRating
               ? `Your feedback goes straight to ${tailorName} so they can make it right.`
-              : `Thank you for your feedback! ${tailorName} appreciates it.`}
+              : `Thank you for your feedback, ${tailorName} appreciates it.`}
           </p>
           <div className={styles.starRow}>
             {[1, 2, 3, 4, 5].map(n => (
               <span
                 key={n}
                 className="mi"
-                style={{ fontSize: '1.6rem', color: n <= rating ? '#f59e0b' : '#d1d5db' }}
+                style={{ fontSize: '1.5rem', color: n <= rating ? '#e0a92f' : '#d9d3c7' }}
               >
                 star
               </span>
@@ -300,13 +366,10 @@ export default function ReviewPage() {
   }
 
   return (
-    <div className={styles.page}>
-      <div
-        className={styles.card}
-        style={{ '--brand-accent': brandColour || 'var(--accent)', '--brand-accent-text': textColor }}
-      >
+    <div className={styles.page} style={{ '--brand-accent': brandColour || 'var(--accent)', '--brand-accent-text': textColor }}>
 
-        <div className={styles.header}>
+      <div className={styles.headerBlock}>
+        <div className={styles.logoRow}>
           {brandLogoUrl && !logoFailed ? (
             <img
               src={brandLogoUrl}
@@ -315,145 +378,224 @@ export default function ReviewPage() {
               onError={() => setLogoFailed(true)}
             />
           ) : (
-            <div className={styles.brandBadge}>
-              <span className="mi" style={{ fontSize: '1.4rem', color: 'var(--text)' }}>content_cut</span>
-            </div>
+            <span className="mi" style={{ fontSize: '1.3rem', color: 'var(--text)' }}>content_cut</span>
           )}
-          <h1 className={styles.title}>Leave a Review</h1>
-          <p className={styles.subtitle}>
-            How was your experience with <strong>{tailorName}</strong>?
-            Your honest feedback helps them grow. ✂️
-          </p>
+          <span className={styles.brandName}>{tailorName}</span>
+        </div>
+        <div className={styles.progressTrack}>
+          <div className={styles.progressFill} style={{ width: `${progress}%` }} />
+        </div>
+        <h1 className={styles.heading}>We'd love your feedback</h1>
+        <p className={styles.subheading}>
+          Your review helps {tailorName} improve and helps other customers choose with confidence.
+        </p>
+      </div>
 
-          <div className={styles.orderChip}>
-            {orderItems.length > 0 ? (
-              <OrderMosaic items={orderItems} size="sm" className={styles.orderThumb} />
-            ) : (
-              <div className={styles.orderThumbFallback}>
-                <span className="mi" style={{ fontSize: '1rem', color: 'var(--text)' }}>content_cut</span>
-              </div>
-            )}
-            <div className={styles.orderChipText}>
-              <span className={styles.orderChipLabel}>Order</span>
-              <span className={styles.orderChipName}>{orderName}</span>
-            </div>
+      <div className={styles.orderCard}>
+        {orderItems.length > 0 ? (
+          <OrderMosaic items={orderItems} size="lg" className={styles.orderImage} />
+        ) : (
+          <div className={styles.orderImageFallback}>
+            <span className="mi" style={{ fontSize: '1.6rem', color: 'var(--text3)' }}>content_cut</span>
+          </div>
+        )}
+        <div className={styles.orderInfo}>
+          {orderStatus && (
+            <span className={styles.statusBadge}>
+              {orderStatus}
+              <span className="mi" style={{ fontSize: '0.9rem' }}>check_circle</span>
+            </span>
+          )}
+          {orderNumber && (
+            <span className={styles.orderNumber}>Order #{orderNumber}</span>
+          )}
+          <span className={styles.orderName}>{orderName}</span>
+          {deliveredLabel && (
+            <span className={styles.orderMetaRow}>
+              <span className="mi" style={{ fontSize: '1rem' }}>calendar_today</span>
+              Delivered on {deliveredLabel}
+            </span>
+          )}
+          {snapshotCustomerName && (
+            <span className={styles.orderMetaRow}>
+              <span className="mi" style={{ fontSize: '1rem' }}>person</span>
+              Thank you, {snapshotCustomerName}
+            </span>
+          )}
+        </div>
+      </div>
+
+      <div className={styles.sectionCard}>
+        <span className={styles.sectionTitle}>1. How would you rate your overall experience?</span>
+        <div className={styles.ratingWrap}>
+          <StarPicker value={rating} onChange={v => { setRating(v); setFieldErrors(p => ({ ...p, rating: '' })) }} disabled={submitting} />
+          {rating > 0 ? (
+            <span className={styles.ratingLabel}>{RATING_LABELS[rating]}</span>
+          ) : (
+            <span className={styles.ratingHint}>Tap a star to rate</span>
+          )}
+        </div>
+        {fieldErrors.rating && <span className={styles.errorMsg}>{fieldErrors.rating}</span>}
+      </div>
+
+      <div className={styles.sectionCard}>
+        <span className={styles.sectionTitle}>
+          2. {isLowRating ? 'What could be better?' : 'What did you like?'}
+          <span className={styles.sectionOptional}> (Select all that apply)</span>
+        </span>
+        <div className={styles.chipGrid}>
+          {chips.map(chip => {
+            const active = reviewText.split('. ').map(s => s.trim()).includes(chip.label)
+            return (
+              <button
+                key={chip.label}
+                type="button"
+                className={`${styles.chipCard} ${active ? styles.chipCardActive : ''}`}
+                onClick={() => toggleChip(chip.label)}
+                disabled={submitting}
+              >
+                <span className="mi" style={{ fontSize: '1.1rem' }}>{chip.icon}</span>
+                {chip.label}
+              </button>
+            )
+          })}
+        </div>
+      </div>
+
+      <div className={styles.sectionCard}>
+        <span className={styles.sectionTitle}>
+          3. Tell us more about your experience
+          <span className={styles.sectionOptional}> (Optional)</span>
+        </span>
+        <div className={styles.fieldGroup}>
+          <label className={styles.fieldLabel}>Your Name *</label>
+          <input
+            className={`${styles.input} ${fieldErrors.customerName ? styles.inputError : ''}`}
+            placeholder="Enter your name"
+            value={customerName}
+            onChange={e => {
+              setCustomerName(e.target.value)
+              setFieldErrors(p => ({ ...p, customerName: '' }))
+            }}
+            disabled={submitting}
+          />
+          {fieldErrors.customerName && <span className={styles.errorMsg}>{fieldErrors.customerName}</span>}
+        </div>
+        <div className={styles.textareaWrap}>
+          <textarea
+            className={`${styles.textarea} ${fieldErrors.reviewText ? styles.inputError : ''}`}
+            placeholder="Share details about the fit, quality, delivery, or anything else you'd like us to know…"
+            value={reviewText}
+            rows={4}
+            maxLength={MAX_REVIEW_LENGTH}
+            onChange={e => {
+              setReviewText(e.target.value)
+              setFieldErrors(p => ({ ...p, reviewText: '' }))
+            }}
+            disabled={submitting}
+          />
+          <div className={styles.textareaFooter}>
+            {fieldErrors.reviewText ? (
+              <span className={styles.errorMsg}>{fieldErrors.reviewText}</span>
+            ) : <span />}
+            <span className={styles.charCount}>{reviewText.length}/{MAX_REVIEW_LENGTH}</span>
           </div>
         </div>
+      </div>
 
-        <div className={styles.form}>
-
-          <div className={styles.fieldGroup} style={{ alignItems: 'center', textAlign: 'center' }}>
-            <label className={styles.fieldLabel}>Your Rating *</label>
-            <StarPicker value={rating} onChange={v => { setRating(v); setFieldErrors(p => ({ ...p, rating: '' })) }} disabled={submitting} />
-            {rating > 0 && (
-              <span className={styles.ratingLabel}>{RATING_LABELS[rating]}</span>
-            )}
-            {fieldErrors.rating && (
-              <span className={styles.errorMsg}>{fieldErrors.rating}</span>
-            )}
-          </div>
-
-          {rating > 0 && (
-            <p className={styles.branchNote}>
-              {isLowRating
-                ? `We're sorry to hear that. Tell ${tailorName} what went wrong, this helps them fix it.`
-                : `You're about to make ${tailorName}'s day!`}
-            </p>
-          )}
-
-          <div className={styles.fieldGroup}>
-            <label className={styles.fieldLabel}>Your Name *</label>
-            <input
-              className={`${styles.input} ${fieldErrors.customerName ? styles.inputError : ''}`}
-              placeholder="e.g. Emeka Okafor"
-              value={customerName}
-              onChange={e => {
-                setCustomerName(e.target.value)
-                setFieldErrors(p => ({ ...p, customerName: '' }))
-              }}
+      <div className={styles.sectionCard}>
+        <span className={styles.sectionTitle}>4. Would you recommend {tailorName} to others?</span>
+        <div className={styles.recommendGrid}>
+          {RECOMMEND_OPTIONS.map(opt => (
+            <button
+              key={opt.value}
+              type="button"
+              className={`${styles.recommendOption} ${recommend === opt.value ? styles.recommendOptionActive : ''}`}
+              onClick={() => setRecommend(opt.value)}
               disabled={submitting}
-            />
-            {fieldErrors.customerName && (
-              <span className={styles.errorMsg}>{fieldErrors.customerName}</span>
-            )}
-            <span className={styles.privacyNote}>
-              Your name and review will be shown publicly on {tailorName}'s portfolio once approved.
-            </span>
-          </div>
+            >
+              <span className={styles.radioDot} />
+              {opt.label}
+            </button>
+          ))}
+        </div>
+      </div>
 
-          <div className={styles.fieldGroup}>
-            <label className={styles.fieldLabel}>{isLowRating ? 'What could be better?' : 'What stood out?'}</label>
-            <div className={styles.chipRow}>
-              {chips.map(chip => {
-                const active = reviewText.split('. ').map(s => s.trim()).includes(chip)
-                return (
-                  <button
-                    key={chip}
-                    type="button"
-                    className={`${styles.chip} ${active ? styles.chipActive : ''}`}
-                    onClick={() => toggleChip(chip)}
-                    disabled={submitting}
-                  >
-                    {chip}
-                  </button>
-                )
-              })}
-            </div>
-          </div>
-
-          <div className={styles.fieldGroup}>
-            <label className={styles.fieldLabel}>Your Review *</label>
-            <textarea
-              className={`${styles.textarea} ${fieldErrors.reviewText ? styles.inputError : ''}`}
-              placeholder="Tell others about the quality, fit, communication and delivery…"
-              value={reviewText}
-              rows={5}
-              maxLength={MAX_REVIEW_LENGTH}
-              onChange={e => {
-                setReviewText(e.target.value)
-                setFieldErrors(p => ({ ...p, reviewText: '' }))
-              }}
+      <div className={styles.sectionCard}>
+        <span className={styles.sectionTitle}>
+          5. Add a photo
+          <span className={styles.sectionOptional}> (Optional)</span>
+        </span>
+        <input
+          ref={photoInputRef}
+          type="file"
+          accept="image/*"
+          className={styles.hiddenInput}
+          onChange={handlePhotoSelect}
+          disabled={submitting}
+        />
+        {photoPreview ? (
+          <div className={styles.photoPreviewWrap}>
+            <img src={photoPreview} alt="Your photo" className={styles.photoPreview} />
+            <button
+              type="button"
+              className={styles.photoRemoveBtn}
+              onClick={removePhoto}
               disabled={submitting}
-            />
-            <div className={styles.textareaFooter}>
-              {fieldErrors.reviewText ? (
-                <span className={styles.errorMsg}>{fieldErrors.reviewText}</span>
-              ) : <span />}
-              <span className={styles.charCount}>{reviewText.length}/{MAX_REVIEW_LENGTH}</span>
-            </div>
+            >
+              <span className="mi" style={{ fontSize: '1rem' }}>close</span>
+            </button>
           </div>
-
-          {error && (
-            <div className={styles.submitError}>
-              <span className="mi" style={{ fontSize: '1rem' }}>error_outline</span>
-              {error}
-            </div>
-          )}
-
+        ) : (
           <button
-            className={styles.submitBtn}
-            onClick={handleSubmit}
+            type="button"
+            className={styles.photoUpload}
+            onClick={() => photoInputRef.current?.click()}
             disabled={submitting}
           >
-            {submitting ? (
-              <>
-                <span className="mi" style={{ fontSize: '1rem', animation: 'spin 1s linear infinite' }}>autorenew</span>
-                Submitting…
-              </>
-            ) : (
-              <>
-                <span className="mi" style={{ fontSize: '1rem' }}>send</span>
-                Submit Review
-              </>
-            )}
+            <span className={styles.photoUploadIcon}>
+              <span className="mi" style={{ fontSize: '1.2rem' }}>upload</span>
+            </span>
+            <span className={styles.photoUploadText}>
+              <span className={styles.photoUploadTitle}>Upload a photo of yourself</span>
+              <span className={styles.photoUploadHint}>JPG, PNG up to {MAX_PHOTO_MB}MB</span>
+            </span>
+            <span className="mi" style={{ fontSize: '1.6rem', color: 'var(--text3)' }}>account_circle</span>
           </button>
-
-          <p className={styles.disclaimer}>
-            Your review will be live on {tailorName}'s portfolio once it's approved.
-          </p>
-        </div>
-
+        )}
+        {photoError && <span className={styles.errorMsg}>{photoError}</span>}
       </div>
+
+      {error && (
+        <div className={styles.submitError}>
+          <span className="mi" style={{ fontSize: '1rem' }}>error_outline</span>
+          {error}
+        </div>
+      )}
+
+      <div className={styles.footerBlock}>
+        <span className={styles.privacyRow}>
+          <span className="mi" style={{ fontSize: '0.9rem' }}>lock</span>
+          Your review is private and will only be used to improve our service.
+        </span>
+        <button className={styles.submitBtn} onClick={handleSubmit} disabled={submitting}>
+          {submitting ? (
+            <>
+              <span className="mi" style={{ fontSize: '1rem', animation: 'spin 1s linear infinite' }}>autorenew</span>
+              Submitting…
+            </>
+          ) : (
+            <>
+              Submit Review
+              <span className="mi" style={{ fontSize: '1rem' }}>arrow_forward</span>
+            </>
+          )}
+        </button>
+        <button className={styles.skipBtn} type="button" disabled={submitting}>
+          Skip for now
+        </button>
+      </div>
+
     </div>
   )
 }
