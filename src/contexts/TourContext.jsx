@@ -124,6 +124,7 @@ export function TourProvider({ children }) {
 
   useEffect(() => {
     function handlePopState() {
+      alert('TourContext handlePopState fired')
       if (suppressPopStateRef.current) {
         suppressPopStateRef.current = false
         return
