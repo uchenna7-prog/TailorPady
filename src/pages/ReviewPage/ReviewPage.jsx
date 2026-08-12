@@ -1,9 +1,8 @@
 import { useState, useEffect } from 'react'
 import { useParams } from 'react-router-dom'
-import { collection, getDocs, query, where } from 'firebase/firestore'
 import { db } from '../../firebasePublic'
 import { getPublicBrandDataFromServer } from '../../services/profileService'
-import { addReview } from '../../services/reviewService'
+import { getReviewByToken, submitPublicReview } from '../../services/reviewService'
 import styles from './ReviewPage.module.css'
 
 function StarPicker({ value, onChange, disabled }) {
@@ -68,12 +67,8 @@ export default function ReviewPage() {
         const brand = await getPublicBrandDataFromServer(db, uid)
         setTailorName(brand?.brandName || brand?.name || 'Your tailor')
 
-        const q = query(
-          collection(db, 'users', uid, 'reviews'),
-          where('token', '==', token)
-        )
-        const snap = await getDocs(q)
-        if (!snap.empty) setAlreadyReviewed(true)
+        const existing = await getReviewByToken(db, uid, token)
+        if (existing) setAlreadyReviewed(true)
       } catch {
         setTailorName('Your tailor')
       } finally {
@@ -95,17 +90,19 @@ export default function ReviewPage() {
     setError('')
 
     try {
-      await addReview(db, uid, {
-        customerName:  customerName.trim(),
-        customerPhone: '',
-        customerId:    null,
-        review:        reviewText.trim(),
+      await submitPublicReview(db, uid, token, {
+        customerName: customerName.trim(),
+        customerId:   null,
+        review:       reviewText.trim(),
         rating,
-        token,
       })
       setSubmitted(true)
     } catch (err) {
-      setError('Something went wrong. Please try again.')
+      if (err?.code === 'permission-denied') {
+        setAlreadyReviewed(true)
+      } else {
+        setError('Something went wrong. Please try again.')
+      }
     } finally {
       setSubmitting(false)
     }
@@ -144,7 +141,7 @@ export default function ReviewPage() {
           </div>
           <h2 className={styles.title}>Already Submitted</h2>
           <p className={styles.subtitle}>
-            You've already submitted a review for this order. Thank you! 🙏
+            You've already submitted a review for this order — thank you for taking the time! 🙏
           </p>
         </div>
       </div>
