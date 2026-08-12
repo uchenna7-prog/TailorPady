@@ -585,8 +585,9 @@ export const TOURS = {
     {
       id: 'body-measurements-tip',
       target: '[data-tour="body-measurements-btn"]',
-      title: 'Missing a measurement? 📏',
-      message: "If you forgot to note a specific measurement while taking an order, check here — as long as you recorded body measurements when you added this customer. Didn't get to it yet? You can add them here any time.",
+      title: 'Body measurements 📏',
+      message: "Keep the customer's full body measurements here for future reference. Unlike the Measurements tab, which is linked to a specific garment, these measurements can be reused across multiple orders.
+      Forgot a measurement? Check here first. You can add or update body measurements anytime.",
     },
   ],
 }
