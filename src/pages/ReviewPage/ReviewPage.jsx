@@ -154,17 +154,6 @@ function getReadableTextColor(hex) {
   }
 }
 
-function formatDate(value) {
-  if (!value) return ''
-  try {
-    const date = value?.toDate ? value.toDate() : new Date(value)
-    if (Number.isNaN(date.getTime())) return ''
-    return date.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })
-  } catch {
-    return ''
-  }
-}
-
 function StarPicker({ value, onChange, disabled }) {
   const [hovered, setHovered] = useState(0)
   return (
@@ -211,14 +200,14 @@ function ReviewSkeleton() {
         <div className={`${styles.skel} ${styles.skelLine}`} style={{ width: '55%', height: 13 }} />
       </div>
 
-      <div className={`${styles.skel} ${styles.skelLine}`} style={{ width: 50, height: 12 }} />
       <div className={styles.orderCard}>
-        <div className={`${styles.skel} ${styles.skelOrderImage}`} />
-        <div className={styles.orderInfo}>
-          <div className={`${styles.skel} ${styles.skelLine}`} style={{ width: 70, height: 11 }} />
-          <div className={`${styles.skel} ${styles.skelLine}`} style={{ width: 100, height: 11 }} />
-          <div className={`${styles.skel} ${styles.skelLine}`} style={{ width: '80%', height: 17, marginTop: 2 }} />
-          <div className={`${styles.skel} ${styles.skelLine}`} style={{ width: '90%', height: 12, marginTop: 2 }} />
+        <div className={`${styles.skel} ${styles.skelLine}`} style={{ width: 50, height: 13 }} />
+        <div className={styles.orderCardBody}>
+          <div className={`${styles.skel} ${styles.skelOrderImage}`} />
+          <div className={styles.orderInfo}>
+            <div className={`${styles.skel} ${styles.skelLine}`} style={{ width: '75%', height: 17 }} />
+            <div className={`${styles.skel} ${styles.skelLine}`} style={{ width: '45%', height: 12, marginTop: 2 }} />
+          </div>
         </div>
       </div>
 
@@ -277,10 +266,7 @@ export default function ReviewPage() {
   const [brandColour,     setBrandColour]     = useState('')
   const [brandLogoUrl,    setBrandLogoUrl]    = useState('')
   const [orderItems,      setOrderItems]      = useState([])
-  const [orderNumber,     setOrderNumber]     = useState('')
-  const [orderStatus,     setOrderStatus]     = useState('')
-  const [deliveredAt,     setDeliveredAt]     = useState(null)
-  const [snapshotCustomerName, setSnapshotCustomerName] = useState('')
+  const [orderDesc,       setOrderDesc]       = useState('')
   const [alreadyReviewed, setAlreadyReviewed] = useState(false)
   const [loading,         setLoading]         = useState(true)
   const [submitting,      setSubmitting]      = useState(false)
@@ -305,15 +291,14 @@ export default function ReviewPage() {
   const chips = isLowRating ? CONSTRUCTIVE_CHIPS : POSITIVE_CHIPS
 
   const orderName = useMemo(() => {
+    if (orderDesc.trim()) return orderDesc.trim()
     if (!orderItems.length) return 'Your order'
     const names = orderItems
       .map(item => item.name || item.itemName || item.garmentName || item.type)
       .filter(Boolean)
     if (!names.length) return 'Your order'
     return names.length > 2 ? `${names.slice(0, 2).join(', ')} +${names.length - 2} more` : names.join(', ')
-  }, [orderItems])
-
-  const deliveredLabel = useMemo(() => formatDate(deliveredAt), [deliveredAt])
+  }, [orderDesc, orderItems])
 
   useEffect(() => {
     if (!uid || !token) { setLoading(false); return }
@@ -326,17 +311,14 @@ export default function ReviewPage() {
       ])
 
       const brand = brandResult.status === 'fulfilled' ? brandResult.value : null
-      setTailorName(brand?.brandName || brand?.name || 'Your tailor')
-      setBrandTagline(brand?.tagline || brand?.slogan || '')
+      setTailorName(brand?.brandName || 'Your tailor')
+      setBrandTagline(brand?.brandTagline || '')
       setBrandColour(brand?.brandColour || '')
-      setBrandLogoUrl(brand?.logoUrl || brand?.brandLogo || '')
+      setBrandLogoUrl(brand?.brandLogo || '')
 
       const snapshot = snapshotResult.status === 'fulfilled' ? snapshotResult.value : null
       if (snapshot?.items?.length) setOrderItems(snapshot.items)
-      if (snapshot?.orderNumber) setOrderNumber(snapshot.orderNumber)
-      if (snapshot?.status) setOrderStatus(snapshot.status)
-      if (snapshot?.deliveredAt) setDeliveredAt(snapshot.deliveredAt)
-      if (snapshot?.customerName) setSnapshotCustomerName(snapshot.customerName)
+      if (snapshot?.orderDesc) setOrderDesc(snapshot.orderDesc)
 
       const existing = existingResult.status === 'fulfilled' ? existingResult.value : null
       if (existing) setAlreadyReviewed(true)
@@ -532,38 +514,19 @@ export default function ReviewPage() {
         </p>
       </div>
 
-      <span className={styles.orderLabel}>Order</span>
       <div className={styles.orderCard}>
-        {orderItems.length > 0 ? (
-          <OrderMosaic items={orderItems} size="lg" className={styles.orderImage} />
-        ) : (
-          <div className={styles.orderImageFallback}>
-            <span className="mi" style={{ fontSize: '1.6rem', color: 'var(--text3)' }}>content_cut</span>
+        <span className={styles.sectionTitle}>Order</span>
+        <div className={styles.orderCardBody}>
+          <OrderMosaic items={orderItems} size="md" />
+          <div className={styles.orderInfo}>
+            <span className={styles.orderName}>{orderName}</span>
+            {orderItems.length > 0 && (
+              <span className={styles.orderMetaRow}>
+                <span className="mi" style={{ fontSize: '1rem' }}>checkroom</span>
+                {orderItems.length} {orderItems.length === 1 ? 'item' : 'items'}
+              </span>
+            )}
           </div>
-        )}
-        <div className={styles.orderInfo}>
-          {orderStatus && (
-            <span className={styles.statusBadge}>
-              {orderStatus}
-              <span className="mi" style={{ fontSize: '0.9rem' }}>check_circle</span>
-            </span>
-          )}
-          {orderNumber && (
-            <span className={styles.orderNumber}>Order #{orderNumber}</span>
-          )}
-          <span className={styles.orderName}>{orderName}</span>
-          {deliveredLabel && (
-            <span className={styles.orderMetaRow}>
-              <span className="mi" style={{ fontSize: '1rem' }}>calendar_today</span>
-              Delivered on {deliveredLabel}
-            </span>
-          )}
-          {snapshotCustomerName && (
-            <span className={styles.orderMetaRow}>
-              <span className="mi" style={{ fontSize: '1rem' }}>person</span>
-              Thank you, {snapshotCustomerName}
-            </span>
-          )}
         </div>
       </div>
 
@@ -729,7 +692,7 @@ export default function ReviewPage() {
 
       <div className={styles.footerBlock}>
         <span className={styles.privacyRow}>
-          <span className="mi" style={{ fontSize: '0.95rem' }}>info</span>
+          <span className="mi" style={{ fontSize: '0.95rem', flexShrink: 0, marginTop: 1 }}>info</span>
           Your name, photo, and review may be published on {tailorName}'s portfolio for other customers to see.
         </span>
         <button className={styles.submitBtn} onClick={handleSubmit} disabled={submitting}>
