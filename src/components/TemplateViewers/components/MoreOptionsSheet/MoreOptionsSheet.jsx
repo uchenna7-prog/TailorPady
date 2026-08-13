@@ -5,7 +5,7 @@ export function MoreOptionsSheet({
   onDelete,
   onChangeCurrency,
   currencyLocked = false,
-  currencyLockedReason = "Can't change currency after a payment has been recorded",
+  currencyLockedReason = "Locked because a payment has already been recorded",
   docType = 'invoice',
 }) {
   const label = docType === 'receipt' ? 'Receipt' : 'Invoice'
@@ -39,7 +39,7 @@ export function MoreOptionsSheet({
             <div className={styles.optionText}>
               <span className={styles.optionLabel}>Change Currency</span>
               <span className={styles.optionDesc}>
-                {currencyLocked ? currencyLockedReason : "Corrects the symbol shown — doesn't convert amounts"}
+                {currencyLocked ? currencyLockedReason : 'Fixes the symbol shown. Amounts stay the same.'}
               </span>
             </div>
           </button>
