@@ -194,7 +194,7 @@ export function NotificationProvider({ children }) {
         type:    'invoice',
         icon:    ICONS.invoice,
         title:   `Overdue invoice: ${inv.number || 'Invoice'}`,
-        body:    `${inv.customerName ? `${inv.customerName} · ` : ''}${inv.orderDesc || ''} — payment past due.`,
+        body:    `${inv.customerName ? `${inv.customerName} · ` : ''}${inv.orderDesc ? `${inv.orderDesc}, ` : ''}payment is past due.`,
         time:    inv.due,
         sortKey: 0,
       })
@@ -209,7 +209,7 @@ export function NotificationProvider({ children }) {
           type:    'invoice',
           icon:    ICONS.invoice,
           title:   `Unpaid: ${inv.number || 'Invoice'}`,
-          body:    `${inv.orderDesc || 'Order'} — awaiting payment.`,
+          body:    `${inv.orderDesc || 'Order'}, awaiting payment.`,
           time:    inv.date,
           sortKey: 2,
         })
