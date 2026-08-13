@@ -319,6 +319,7 @@ function Header({
               <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
                 {unreadCount > 0 && (
                   <button className={styles.markAllBtn} onClick={markAllRead}>
+                    <span className="mi" style={{ fontSize: '0.85rem' }}>done_all</span>
                     Mark all read
                   </button>
                 )}
