@@ -217,7 +217,6 @@
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  overflow: hidden;
 }
 
 .cardAvatarInner {
@@ -228,17 +227,22 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1.1rem;
-  font-weight: 800;
-  color: var(--accent);
-  letter-spacing: 0.5px;
+  overflow: hidden;
 }
 
 .cardAvatarImg {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  border-radius: 10px;
   display: block;
+}
+
+.cardAvatarInitials {
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: var(--accent);
+  letter-spacing: 0.5px;
 }
 
 .cardInfo {
@@ -377,6 +381,23 @@
   text-transform: uppercase;
   letter-spacing: 1.2px;
   color: var(--text2);
+}
+
+.sheetHeaderActions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.sheetHeaderDelete {
+  display: flex;
+  align-items: center;
+  padding: 5px 8px;
+  border-radius: 8px;
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  background: rgba(239, 68, 68, 0.08);
+  color: #ef4444;
+  cursor: pointer;
 }
 
 .sheetClose {
@@ -523,7 +544,7 @@
   display: flex;
   align-items: center;
   gap: 12px;
-  margin-bottom: 16px;
+  margin-bottom: 20px;
 }
 
 .detailAvatar {
@@ -567,46 +588,132 @@
   margin-top: 2px;
 }
 
-.detailMeta {
+.chipLabel {
+  font-size: 0.58rem;
+  font-weight: 800;
+  color: var(--text3);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 8px;
+}
+
+.statusRow {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  margin-bottom: 16px;
+}
+
+.statusDropdown {
+  position: relative;
+  display: inline-block;
+}
+
+.statusTrigger {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--bg);
+  border: 1.5px solid var(--border);
+  border-radius: 10px;
+  padding: 8px 8px 8px 12px;
+  font-family: inherit;
+  cursor: pointer;
+  transition: background 0.15s ease, border-color 0.15s ease;
+}
+
+.statusTrigger:disabled {
+  cursor: wait;
+  opacity: 0.7;
+}
+
+.statusTriggerLeft {
   display: flex;
   align-items: center;
-  gap: 12px;
-  margin-bottom: 14px;
+  gap: 6px;
+  font-size: 0.8rem;
+  font-weight: 800;
+  white-space: nowrap;
 }
 
-.detailDate {
-  font-size: 0.72rem;
-  color: var(--text3);
-  font-weight: 500;
+.statusMenu {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  min-width: 168px;
+  background: var(--bg);
+  border: 1px solid var(--border2);
+  border-radius: 12px;
+  padding: 6px;
+  z-index: 20;
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.32);
 }
 
-.detailReviewBox {
+.statusMenuItem {
   display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 10px 10px;
+  border: none;
+  background: transparent;
+  border-radius: 8px;
+  font-family: inherit;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--text);
+  cursor: pointer;
+  text-align: left;
+  white-space: nowrap;
+}
+
+.statusMenuItem:active {
+  background: var(--surface2);
+}
+
+.infoGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
   gap: 10px;
+  margin-bottom: 16px;
+}
+
+.infoGridCell {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 12px 14px;
+  min-height: 62px;
+}
+
+.infoGridLabel {
+  font-size: 0.58rem;
+  font-weight: 800;
+  color: var(--text3);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 6px;
+}
+
+.infoGridValue {
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.sectionCard {
   background: var(--bg);
   border: 1px solid var(--border);
   border-radius: 14px;
   padding: 14px;
-  margin-bottom: 20px;
+  margin-bottom: 12px;
 }
 
-.detailReviewText {
-  font-size: 0.9rem;
-  color: var(--text2);
-  line-height: 1.6;
-  margin: 0;
-  font-style: italic;
-}
-
-.detailSection {
-  margin-bottom: 20px;
-}
-
-.detailSectionLabel {
+.sectionCardLabel {
   display: block;
-  font-size: 0.62rem;
+  font-size: 0.58rem;
   font-weight: 800;
-  color: var(--text2);
+  color: var(--text3);
   text-transform: uppercase;
   letter-spacing: 0.5px;
   margin-bottom: 10px;
@@ -624,101 +731,24 @@
   gap: 6px;
   padding: 7px 12px;
   border-radius: 10px;
-  background: var(--bg);
+  background: var(--surface);
   border: 1px solid var(--border);
   color: var(--text2);
   font-size: 0.75rem;
   font-weight: 700;
 }
 
-.recommendPill {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 8px 13px;
-  border-radius: 10px;
-  border: 1px solid;
-  font-size: 0.8rem;
-  font-weight: 800;
-}
-
-.detailActions {
+.detailReviewBox {
   display: flex;
   gap: 10px;
-  margin-bottom: 10px;
 }
 
-.approveBtn {
-  flex: 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 7px;
-  padding: 13px;
-  border-radius: 14px;
-  border: none;
-  background: rgba(34, 197, 94, 0.12);
-  color: #22c55e;
-  font-family: 'Manrope', sans-serif;
-  font-size: 0.82rem;
-  font-weight: 800;
-  cursor: pointer;
-  text-transform: uppercase;
-  letter-spacing: 0.4px;
-  transition: opacity 0.15s;
-}
-
-.approveBtn:active {
-  opacity: 0.75;
-}
-
-.rejectBtn {
-  flex: 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 7px;
-  padding: 13px;
-  border-radius: 14px;
-  border: none;
-  background: rgba(148, 163, 184, 0.1);
+.detailReviewText {
+  font-size: 0.9rem;
   color: var(--text2);
-  font-family: 'Manrope', sans-serif;
-  font-size: 0.82rem;
-  font-weight: 800;
-  cursor: pointer;
-  text-transform: uppercase;
-  letter-spacing: 0.4px;
-  transition: opacity 0.15s;
-}
-
-.rejectBtn:active {
-  opacity: 0.75;
-}
-
-.deleteBtn {
-  width: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 7px;
-  padding: 13px;
-  border-radius: 14px;
-  border: 1px solid rgba(239, 68, 68, 0.25);
-  background: rgba(239, 68, 68, 0.06);
-  color: #ef4444;
-  font-family: 'Manrope', sans-serif;
-  font-size: 0.78rem;
-  font-weight: 800;
-  cursor: pointer;
-  text-transform: uppercase;
-  letter-spacing: 0.4px;
-  margin-top: 10px;
-  transition: opacity 0.15s;
-}
-
-.deleteBtn:active {
-  opacity: 0.75;
+  line-height: 1.6;
+  margin: 0;
+  font-style: italic;
 }
 
 @keyframes sheetSlideInRight {
