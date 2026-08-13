@@ -1,5 +1,4 @@
-import styles from "./EmptyState.module.css"
-
+import styles from './EmptyState.module.css'
 
 export function EmptyState() {
   return (
@@ -7,9 +6,8 @@ export function EmptyState() {
       <span className="mi" style={{ fontSize: '2.5rem', color: 'var(--text3)' }}>receipt</span>
       <p className={styles.emptyStateTitle}>No receipts yet</p>
       <p className={styles.emptyStateSubtitle}>
-        Tap <strong>+</strong> to generate a receipt from a recorded payment.
+        Tap the <strong>+</strong> button to generate a receipt from a recorded payment.
       </p>
     </div>
   )
 }
-
