@@ -258,10 +258,10 @@
 
 .customAmountInput {
   width: 72px;
-  height: 38px;
-  border-radius: 10px;
-  border: 1px solid var(--border);
-  background: var(--surface2);
+  height: 46px;
+  border-radius: 12px;
+  border: 1px solid var(--border2);
+  background: var(--surface);
   color: var(--text);
   font-size: 0.9rem;
   font-weight: 600;
@@ -273,28 +273,7 @@
 }
 
 .customAmountInput:focus {
-  border-color: var(--text);
-}
-
-.customUnitSelect {
-  flex: 1;
-  height: 38px;
-  border-radius: 10px;
-  border: 1px solid var(--border);
-  background: var(--surface2);
-  color: var(--text);
-  font-size: 0.85rem;
-  font-weight: 500;
-  font-family: inherit;
-  padding: 0 10px;
-  outline: none;
-  appearance: none;
-  cursor: pointer;
-  transition: border-color 0.15s;
-}
-
-.customUnitSelect:focus {
-  border-color: var(--text);
+  border-color: var(--accent);
 }
 
 /* ── Messaging section ───────────────────────────────────────────────────────── */
