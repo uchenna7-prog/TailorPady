@@ -13,6 +13,27 @@ function formatDate(ts) {
   return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
 }
 
+const HIGHLIGHT_ICONS = {
+  'Perfect Fit':          'straighten',
+  'Fit Issues':           'straighten',
+  'Quality of Material':  'checkroom',
+  'Material Quality':     'checkroom',
+  'Finishing':            'content_cut',
+  'On-time Delivery':     'local_shipping',
+  'Late Delivery':        'local_shipping',
+  'Took Too Long':        'schedule',
+  'Customer Service':     'support_agent',
+  'Communication':        'chat',
+  'Overall Experience':   'star',
+  'Not As Expected':      'report_problem',
+}
+
+const RECOMMEND_CONFIG = {
+  yes:   { label: 'Yes, definitely', icon: 'thumb_up',            color: '#22c55e', bg: 'rgba(34,197,94,0.12)',  border: 'rgba(34,197,94,0.35)'  },
+  maybe: { label: 'Maybe',           icon: 'sentiment_neutral',   color: '#f59e0b', bg: 'rgba(245,158,11,0.12)', border: 'rgba(245,158,11,0.35)' },
+  no:    { label: 'No',              icon: 'thumb_down',          color: '#ef4444', bg: 'rgba(239,68,68,0.1)',   border: 'rgba(239,68,68,0.3)'   },
+}
+
 function StarDisplay({ rating, size = '1rem' }) {
   return (
     <div className={styles.stars}>
@@ -174,8 +195,13 @@ function AddReviewSheet({ isOpen, onClose, onSave }) {
 }
 
 function ReviewDetailSheet({ review, phone, phoneLoading, onClose, onApprove, onReject, onDelete }) {
+  const [avatarFailed, setAvatarFailed] = useState(false)
+
   if (!review) return null
   const sc = STATUS_CONFIG[review.status] ?? STATUS_CONFIG.pending
+  const rc = review.recommend ? RECOMMEND_CONFIG[review.recommend] : null
+  const hasPhoto = review.photoUrl && !avatarFailed
+  const highlights = Array.isArray(review.highlights) ? review.highlights : []
 
   return (
     <div className={styles.sheetOverlay} onClick={onClose}>
@@ -190,9 +216,18 @@ function ReviewDetailSheet({ review, phone, phoneLoading, onClose, onApprove, on
 
         <div className={styles.sheetBody}>
           <div className={styles.detailCustomerRow}>
-            <div className={styles.detailAvatar}>
-              {getInitials(review.customerName) || '?'}
-            </div>
+            {hasPhoto ? (
+              <img
+                src={review.photoUrl}
+                alt={review.customerName}
+                className={styles.detailAvatarImg}
+                onError={() => setAvatarFailed(true)}
+              />
+            ) : (
+              <div className={styles.detailAvatar}>
+                {getInitials(review.customerName) || '?'}
+              </div>
+            )}
             <div>
               <div className={styles.detailCustomerName}>{review.customerName}</div>
               {phoneLoading ? (
@@ -225,6 +260,35 @@ function ReviewDetailSheet({ review, phone, phoneLoading, onClose, onApprove, on
             <span className="mi" style={{ fontSize: '1.2rem', color: 'var(--text3)', flexShrink: 0 }}>format_quote</span>
             <p className={styles.detailReviewText}>{review.review}</p>
           </div>
+
+          {highlights.length > 0 && (
+            <div className={styles.detailSection}>
+              <span className={styles.detailSectionLabel}>Highlights</span>
+              <div className={styles.highlightGrid}>
+                {highlights.map(label => (
+                  <span key={label} className={styles.highlightChip}>
+                    <span className="mi" style={{ fontSize: '0.95rem' }}>
+                      {HIGHLIGHT_ICONS[label] || 'label'}
+                    </span>
+                    {label}
+                  </span>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {rc && (
+            <div className={styles.detailSection}>
+              <span className={styles.detailSectionLabel}>Would Recommend</span>
+              <span
+                className={styles.recommendPill}
+                style={{ color: rc.color, background: rc.bg, borderColor: rc.border }}
+              >
+                <span className="mi" style={{ fontSize: '1rem' }}>{rc.icon}</span>
+                {rc.label}
+              </span>
+            </div>
+          )}
 
           {review.status === 'pending' && (
             <div className={styles.detailActions}>
@@ -264,7 +328,9 @@ function ReviewDetailSheet({ review, phone, phoneLoading, onClose, onApprove, on
 }
 
 function ReviewCard({ review, onTap, isLast }) {
+  const [avatarFailed, setAvatarFailed] = useState(false)
   const sc = STATUS_CONFIG[review.status] ?? STATUS_CONFIG.pending
+  const hasPhoto = review.photoUrl && !avatarFailed
 
   return (
     <div
@@ -272,9 +338,18 @@ function ReviewCard({ review, onTap, isLast }) {
       onClick={onTap}
     >
       <div className={styles.cardAvatarOuter}>
-        <div className={styles.cardAvatarInner}>
-          {getInitials(review.customerName) || '?'}
-        </div>
+        {hasPhoto ? (
+          <img
+            src={review.photoUrl}
+            alt={review.customerName}
+            className={styles.cardAvatarImg}
+            onError={() => setAvatarFailed(true)}
+          />
+        ) : (
+          <div className={styles.cardAvatarInner}>
+            {getInitials(review.customerName) || '?'}
+          </div>
+        )}
       </div>
 
       <div className={styles.cardInfo}>
