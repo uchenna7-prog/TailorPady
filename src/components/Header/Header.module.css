@@ -537,21 +537,30 @@
 }
 
 .markAllBtn {
-  background: none;
-  border: none;
-  font-size: 0.7rem;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background: color-mix(in srgb, var(--accent) 10%, transparent);
+  border: 1px solid color-mix(in srgb, var(--accent) 22%, transparent);
+  font-size: 0.68rem;
   font-weight: 700;
-  color: var(--text);
+  color: var(--accent);
   cursor: pointer;
-  padding: 4px 8px;
-  border-radius: 8px;
+  padding: 6px 10px 6px 8px;
+  border-radius: 20px;
   font-family: "Manrope", sans-serif;
   white-space: nowrap;
-  transition: background 0.15s;
+  transition: background 0.15s ease, transform 0.1s ease;
 }
 
-.markAllBtn:hover  { background: var(--surface2); }
-.markAllBtn:active { background: var(--surface); }
+.markAllBtn:hover {
+  background: color-mix(in srgb, var(--accent) 16%, transparent);
+}
+
+.markAllBtn:active {
+  transform: scale(0.96);
+  background: color-mix(in srgb, var(--accent) 20%, transparent);
+}
 
 @keyframes fadeIn {
   from { opacity: 0; }
