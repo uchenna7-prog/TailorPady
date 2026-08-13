@@ -5,6 +5,7 @@ import { FullModal } from '../../../../components/FullModal/FullModal'
 import { FieldGroup } from '../FieldGroup/FieldGroup'
 import { Field } from '../Field/Field'
 import { Toggle } from '../../components/Toggle/Toggle'
+import { Dropdown } from '../../../../components/Dropdown/Dropdown'
 import { BotIcon } from '../../../../components/BotIcon/BotIcon'
 import styles from './AgentSettingsModal.module.css'
 
@@ -76,10 +77,10 @@ function DurationPicker({ value, onChange }) {
     }
   }
 
-  function handleCustomUnitChange(e) {
-    setCustomUnit(e.target.value)
+  function handleCustomUnitChange(newUnit) {
+    setCustomUnit(newUnit)
     const amount = parseInt(customAmount, 10) || 1
-    onChange({ amount, unit: e.target.value })
+    onChange({ amount, unit: newUnit })
   }
 
   return (
@@ -113,15 +114,12 @@ function DurationPicker({ value, onChange }) {
             min={1}
             inputMode="numeric"
           />
-          <select
-            className={styles.customUnitSelect}
+          <Dropdown
+            options={UNIT_OPTIONS}
             value={customUnit}
             onChange={handleCustomUnitChange}
-          >
-            {UNIT_OPTIONS.map(u => (
-              <option key={u.value} value={u.value}>{u.label}</option>
-            ))}
-          </select>
+            wrapStyle={{ flex: 1 }}
+          />
         </div>
       )}
     </div>
