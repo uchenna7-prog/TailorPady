@@ -217,6 +217,7 @@
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
+  overflow: hidden;
 }
 
 .cardAvatarInner {
@@ -231,6 +232,13 @@
   font-weight: 800;
   color: var(--accent);
   letter-spacing: 0.5px;
+}
+
+.cardAvatarImg {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
 }
 
 .cardInfo {
@@ -533,6 +541,16 @@
   flex-shrink: 0;
 }
 
+.detailAvatarImg {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  border: 1px solid var(--border);
+  object-fit: cover;
+  flex-shrink: 0;
+  display: block;
+}
+
 .detailCustomerName {
   font-size: 1rem;
   font-weight: 700;
@@ -578,6 +596,50 @@
   line-height: 1.6;
   margin: 0;
   font-style: italic;
+}
+
+.detailSection {
+  margin-bottom: 20px;
+}
+
+.detailSectionLabel {
+  display: block;
+  font-size: 0.62rem;
+  font-weight: 800;
+  color: var(--text2);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 10px;
+}
+
+.highlightGrid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.highlightChip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 12px;
+  border-radius: 10px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  color: var(--text2);
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.recommendPill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 13px;
+  border-radius: 10px;
+  border: 1px solid;
+  font-size: 0.8rem;
+  font-weight: 800;
 }
 
 .detailActions {
