@@ -127,29 +127,43 @@ export function TourProvider({ children }) {
     }
   }, [activeTourId, location.pathname])
 
+  const activeTourIdRef = useRef(activeTourId)
+  useEffect(() => {
+    activeTourIdRef.current = activeTourId
+  }, [activeTourId])
+
+  const guardNavigationRef = useRef(guardNavigation)
+  useEffect(() => {
+    guardNavigationRef.current = guardNavigation
+  }, [guardNavigation])
+
+  const navigateRef = useRef(navigate)
+  useEffect(() => {
+    navigateRef.current = navigate
+  }, [navigate])
+
   useEffect(() => {
     function handlePopState() {
       if (suppressPopStateRef.current) {
         suppressPopStateRef.current = false
         return
       }
-      if (!activeTourId) return
+      if (!activeTourIdRef.current) return
 
       const restorePath = lastActivePathRef.current
       if (restorePath) {
-        navigate(restorePath)
+        navigateRef.current(restorePath)
       }
 
-      guardNavigation(() => {
+      guardNavigationRef.current(() => {
         suppressPopStateRef.current = true
-        navigate(-1)
+        navigateRef.current(-1)
         setTimeout(() => { suppressPopStateRef.current = false }, 500)
       })
     }
     window.addEventListener('popstate', handlePopState)
-    alert('listener attached, activeTourId=' + activeTourId)
     return () => window.removeEventListener('popstate', handlePopState)
-  }, [activeTourId, guardNavigation, navigate])
+  }, [])
 
   const advanceTo = useCallback((nextIndex) => {
     if (!steps) return
