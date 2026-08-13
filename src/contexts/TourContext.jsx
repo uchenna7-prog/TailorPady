@@ -116,6 +116,11 @@ export function TourProvider({ children }) {
     pendingNavRef.current = null
   }, [])
 
+  const suppressNextPopState = useCallback(() => {
+    suppressPopStateRef.current = true
+    setTimeout(() => { suppressPopStateRef.current = false }, 500)
+  }, [])
+
   useEffect(() => {
     if (activeTourId) {
       lastActivePathRef.current = location.pathname
@@ -256,6 +261,7 @@ export function TourProvider({ children }) {
     guardNavigation,
     confirmQuitTour,
     cancelQuitTour,
+    suppressNextPopState,
   }
 
   return <TourContext.Provider value={value}>{children}</TourContext.Provider>
