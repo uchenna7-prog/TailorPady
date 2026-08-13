@@ -5,6 +5,7 @@ import { useInvoices } from '../../contexts/InvoiceContext'
 import { useUsage } from '../../contexts/UsageContext'
 import { useAuth } from '../../contexts/AuthContext'
 import { useProfileSettings } from '../../contexts/ProfileSettingsContext'
+import { useTour } from '../../contexts/TourContext'
 import { db } from '../../firebase'
 import { saveReviewOrderSnapshot } from '../../services/reviewService'
 import {
@@ -119,6 +120,7 @@ export default function OrderDetailModal({
   const { limits, hasReachedLimit, recordUsage } = useUsage()
   const { user } = useAuth()
   const { profileSettings } = useProfileSettings()
+  const { suppressNextPopState } = useTour()
 
   const [local, setLocal] = useState(order)
   const [hint, setHint] = useState(null)
@@ -167,8 +169,12 @@ export default function OrderDetailModal({
   if (!order) return null
 
   function close() {
-    if (fullHeight) window.history.back()
-    else onClose()
+    if (fullHeight) {
+      suppressNextPopState()
+      window.history.back()
+    } else {
+      onClose()
+    }
   }
 
   const dueTag = daysUntil(local.dueRaw || local.dueDate)
