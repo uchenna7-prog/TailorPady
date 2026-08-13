@@ -142,7 +142,7 @@ export default function PaymentsTab({
 
   function handleUpgrade() {
     setUpgradeOpen(false)
-    navigate('/upgrade')
+    navigate('/account', { state: { autoOpenModal: 'upgrade', upgradeTab: 'monthly' } })
   }
 
   return (
