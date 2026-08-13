@@ -54,7 +54,7 @@ export const DEFAULTS = {
   agentAutoInvoiceTimeframe: { amount: 1,  unit: 'days'  },
 
   agentAutoReceipt:          false,
-  agentAutoReceiptTimeframe: { amount: 1,  unit: 'hours' },
+  agentAutoReceiptTimeframe: { amount: 1,  unit: 'days'  },
 
   agentBirthdayMessages: false,
   agentBirthdayNotice:   { amount: 1,  unit: 'days'  },
