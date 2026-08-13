@@ -71,6 +71,15 @@
   transform: scale(0.98);
 }
 
+.optionDisabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.optionDisabled:active {
+  transform: none;
+}
+
 .optionIcon {
   width: 42px;
   height: 42px;
@@ -107,7 +116,6 @@
   line-height: 1.4;
 }
 
-/* Danger — Delete */
 .optionDanger {
   border-color: color-mix(in srgb, var(--danger) 28%, var(--border));
   background: color-mix(in srgb, var(--danger) 6%, var(--surface));
@@ -127,7 +135,6 @@
   color: var(--danger);
 }
 
-/* Cancel — neutral dismiss, not danger */
 .cancel {
   margin-top: 4px;
   width: 100%;
@@ -189,14 +196,3 @@
     to   { opacity: 1; transform: translateY(0)   scale(1);    }
   }
 }
-
-
-.optionDisabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-
-.optionDisabled:active {
-  transform: none;
-}
-
