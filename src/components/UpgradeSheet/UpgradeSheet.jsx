@@ -73,7 +73,7 @@ export function UpgradeSheet({
         )}
 
         <button className={styles.upgradeBtn} onClick={onUpgrade}>
-          <span>{confirmText || 'Upgrade Now'}</span>
+          <span>{confirmText || 'Subscribe to Pro'}</span>
           <span className="mi" style={{ fontSize: '1.1rem' }}>arrow_forward</span>
         </button>
         <button className={styles.cancelBtn} onClick={onClose}>
