@@ -18,6 +18,7 @@ import { DesignOptionsSheet } from '../components/DesignOptionsSheet/DesignOptio
 import { ShareOptionsSheet } from '../components/ShareOptionsSheet/ShareOptionsSheet'
 import { MoreOptionsSheet } from '../components/MoreOptionsSheet/MoreOptionsSheet'
 import { BrandColourSheet } from '../components/BrandColourSheet/BrandColourSheet'
+import { CurrencySheet } from '../components/CurrencySheet/CurrencySheet'
 import { ApplyScopeSheet } from '../components/ApplyScopeSheet/ApplyScopeSheet'
 import Header from '../../Header/Header'
 import styles from './ReceiptViewer.module.css'
@@ -104,6 +105,7 @@ export default function ReceiptViewer({
   const [showMoreSheet,       setShowMoreSheet]        = useState(false)
   const [showTemplateModal,   setShowTemplateModal]    = useState(false)
   const [showColourSheet,     setShowColourSheet]      = useState(false)
+  const [showCurrencySheet,   setShowCurrencySheet]    = useState(false)
   const [pendingChange,       setPendingChange]        = useState(null)
   const [missingFields,       setMissingFields]        = useState(null)
   const [pendingActionLabel,  setPendingActionLabel]   = useState(null)
@@ -125,6 +127,7 @@ export default function ReceiptViewer({
   const cumulativePaid = resolveCumulativePaid(receipt)
   const orderTotal     = receipt.orderPrice ? parseFloat(receipt.orderPrice) : cumulativePaid
   const isFullPay      = cumulativePaid >= orderTotal && orderTotal > 0
+  const isCurrencyLocked = cumulativePaid > 0
 
   const returnTo = returnPath
     ? { returnPath, receiptId: receipt.id }
@@ -230,6 +233,25 @@ export default function ReceiptViewer({
     setShowColourSheet(false)
     const hex = getPaletteById(selectedColourId)?.tokens.primary
     setPendingChange({ type: 'colour', colourId: selectedColourId, colour: hex })
+  }
+
+  const handleCurrencySelect = (chosenCurrency) => {
+    setShowCurrencySheet(false)
+    const prevSnapshot = receipt.brandSnapshot
+    pendingFieldsRef.current.add('brandSnapshot')
+    setReceipt(prev => ({
+      ...prev,
+      brandSnapshot: { ...prev.brandSnapshot, currency: chosenCurrency },
+    }))
+    showToast?.('Currency updated for this receipt ✓')
+
+    customerData.updateReceiptCurrency(receipt.id, chosenCurrency)
+      .then(() => { pendingFieldsRef.current.delete('brandSnapshot') })
+      .catch((err) => {
+        pendingFieldsRef.current.delete('brandSnapshot')
+        setReceipt(prev => ({ ...prev, brandSnapshot: prevSnapshot }))
+        showToast?.(getUpdateErrorMessage(err, isOnline, 'currency'))
+      })
   }
 
   const handleApplyToThis = () => {
@@ -375,6 +397,8 @@ export default function ReceiptViewer({
           docType="receipt"
           onClose={() => setShowMoreSheet(false)}
           onDelete={() => onDelete(receipt.id)}
+          onChangeCurrency={() => setShowCurrencySheet(true)}
+          currencyLocked={isCurrencyLocked}
         />
       )}
 
@@ -396,6 +420,14 @@ export default function ReceiptViewer({
           currentColourId={effectiveColourId}
           onClose={() => setShowColourSheet(false)}
           onSelect={handleColourSelect}
+        />
+      )}
+
+      {showCurrencySheet && (
+        <CurrencySheet
+          currentCurrency={snapShotedReceiptBrandSettings.currency}
+          onClose={() => setShowCurrencySheet(false)}
+          onSelect={handleCurrencySelect}
         />
       )}
 
