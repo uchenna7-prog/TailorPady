@@ -204,6 +204,13 @@ export function useCustomerData(customerId) {
     })
   }, [user])
 
+  const updateInvoiceCurrency = useCallback(async (id, currency) => {
+    if (!user) return
+    await updateInvoiceInDb(user.uid, String(id), {
+      'brandSnapshot.currency': currency,
+    })
+  }, [user])
+
   const deleteInvoice = useCallback(async (id) => {
     if (!user) return
     await deleteInvoiceFromDb(user.uid, String(id))
@@ -261,6 +268,13 @@ export function useCustomerData(customerId) {
     })
   }, [user])
 
+  const updateReceiptCurrency = useCallback(async (id, currency) => {
+    if (!user) return
+    await fsUpdateReceipt(user.uid, String(id), {
+      'brandSnapshot.currency': currency,
+    })
+  }, [user])
+
   const deleteReceipt = useCallback(async (receiptId) => {
     if (!user || !customerId) return
     await fsDeleteReceipt(user.uid, receiptId)
@@ -288,6 +302,7 @@ export function useCustomerData(customerId) {
     updateInvoiceStatus,
     updateInvoiceTemplate,
     updateInvoiceColour,
+    updateInvoiceCurrency,
     deleteInvoice,
 
     addPaymentOptimistic,
@@ -299,6 +314,7 @@ export function useCustomerData(customerId) {
     saveReceipt,
     updateReceiptTemplate,
     updateReceiptColour,
+    updateReceiptCurrency,
     deleteReceipt,
   }
 }
