@@ -90,7 +90,7 @@ export default function OrdersTab({ customerId, orders, loading, measurements, s
 
   function handleUpgrade() {
     setUpgradeOpen(false)
-    navigate('/upgrade')
+    navigate('/account', { state: { autoOpenModal: 'upgrade', upgradeTab: 'monthly' } })
   }
 
 
