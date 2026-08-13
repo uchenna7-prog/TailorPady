@@ -13,9 +13,9 @@ const TABS = [
 
 const TAB_KEYS = TABS.map(t => t.key)
 
-export default function UpgradeModal({ onClose, onSuccess }) {
+export default function UpgradeModal({ onClose, onSuccess, initialTab = 'free' }) {
   const { user } = useAuth()
-  const [active, setActive] = useState('free')
+  const [active, setActive] = useState(initialTab)
   const [payingPlan, setPayingPlan] = useState(null)
   const [errorMsg, setErrorMsg] = useState('')
   const scrollRef = useRef(null)
@@ -175,7 +175,7 @@ export default function UpgradeModal({ onClose, onSuccess }) {
               disabled={payingPlan === 'monthly'}
             >
               <span className="mi" style={{ fontSize: '1rem' }}>workspace_premium</span>
-              {payingPlan === 'monthly' ? 'Processing…' : 'Start Pro — ₦1,200/month'}
+              {payingPlan === 'monthly' ? 'Processing…' : 'Subscribe to Pro'}
             </button>
             {errorMsg && <p className={styles.fine} style={{ color: '#ef4444' }}>{errorMsg}</p>}
             <p className={styles.fine}>No hidden charges, Instant activation</p>
@@ -220,7 +220,7 @@ export default function UpgradeModal({ onClose, onSuccess }) {
               disabled={payingPlan === 'annual'}
             >
               <span className="mi" style={{ fontSize: '1rem' }}>workspace_premium</span>
-              {payingPlan === 'annual' ? 'Processing…' : 'Start Pro — ₦9,999/year'}
+              {payingPlan === 'annual' ? 'Processing…' : 'Subscribe to Pro'}
             </button>
             {errorMsg && <p className={styles.fine} style={{ color: '#ef4444' }}>{errorMsg}</p>}
             <p className={styles.fine}>No hidden charges · Instant activation</p>
