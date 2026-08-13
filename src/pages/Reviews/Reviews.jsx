@@ -29,9 +29,9 @@ const HIGHLIGHT_ICONS = {
 }
 
 const RECOMMEND_CONFIG = {
-  yes:   { label: 'Yes, definitely', icon: 'thumb_up',            color: '#22c55e', bg: 'rgba(34,197,94,0.12)',  border: 'rgba(34,197,94,0.35)'  },
-  maybe: { label: 'Maybe',           icon: 'sentiment_neutral',   color: '#f59e0b', bg: 'rgba(245,158,11,0.12)', border: 'rgba(245,158,11,0.35)' },
-  no:    { label: 'No',              icon: 'thumb_down',          color: '#ef4444', bg: 'rgba(239,68,68,0.1)',   border: 'rgba(239,68,68,0.3)'   },
+  yes:   { label: 'Yes, definitely', icon: 'thumb_up',          color: '#22c55e' },
+  maybe: { label: 'Maybe',           icon: 'sentiment_neutral', color: '#f59e0b' },
+  no:    { label: 'No',              icon: 'thumb_down',        color: '#ef4444' },
 }
 
 function StarDisplay({ rating, size = '1rem' }) {
@@ -86,6 +86,11 @@ const STATUS_CONFIG = {
   pending:  { label: 'Pending',  color: '#f59e0b', bg: 'rgba(245,158,11,0.12)',  border: 'rgba(245,158,11,0.35)',  icon: 'schedule'     },
   approved: { label: 'Approved', color: '#22c55e', bg: 'rgba(34,197,94,0.12)',   border: 'rgba(34,197,94,0.35)',   icon: 'check_circle' },
   rejected: { label: 'Rejected', color: '#94a3b8', bg: 'rgba(148,163,184,0.12)', border: 'rgba(148,163,184,0.35)', icon: 'cancel'       },
+}
+
+const STATUS_ACTIONS = {
+  approved: 'Approve',
+  rejected: 'Reject',
 }
 
 const TABS = [
@@ -195,13 +200,56 @@ function AddReviewSheet({ isOpen, onClose, onSave }) {
 }
 
 function ReviewDetailSheet({ review, phone, phoneLoading, onClose, onApprove, onReject, onDelete }) {
-  const [avatarFailed, setAvatarFailed] = useState(false)
+  const [avatarFailed,   setAvatarFailed]   = useState(false)
+  const [showStatusMenu, setShowStatusMenu] = useState(false)
+  const [pendingStatus,  setPendingStatus]  = useState(false)
+  const statusRef = useRef(null)
+
+  useEffect(() => {
+    setAvatarFailed(false)
+    setShowStatusMenu(false)
+    setPendingStatus(false)
+  }, [review?.id])
+
+  useEffect(() => {
+    if (!showStatusMenu) return
+    function handleClickOutside(e) {
+      if (statusRef.current && !statusRef.current.contains(e.target)) {
+        setShowStatusMenu(false)
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside)
+    document.addEventListener('touchstart', handleClickOutside)
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside)
+      document.removeEventListener('touchstart', handleClickOutside)
+    }
+  }, [showStatusMenu])
 
   if (!review) return null
+
   const sc = STATUS_CONFIG[review.status] ?? STATUS_CONFIG.pending
   const rc = review.recommend ? RECOMMEND_CONFIG[review.recommend] : null
   const hasPhoto = review.photoUrl && !avatarFailed
   const highlights = Array.isArray(review.highlights) ? review.highlights : []
+  const isLowRating = review.rating > 0 && review.rating <= 3
+  const highlightsTitle = isLowRating ? 'What Could Improve' : 'What They Enjoyed'
+  const submittedLabel = formatDate(review.createdAt)
+
+  async function handleStatusSelect(nextStatus) {
+    if (pendingStatus || nextStatus === review.status) {
+      setShowStatusMenu(false)
+      return
+    }
+    setShowStatusMenu(false)
+    setPendingStatus(true)
+    try {
+      if (nextStatus === 'approved') await onApprove(review.id)
+      else if (nextStatus === 'rejected') await onReject(review.id)
+    } finally {
+      setPendingStatus(false)
+    }
+  }
 
   return (
     <div className={styles.sheetOverlay} onClick={onClose}>
@@ -209,12 +257,18 @@ function ReviewDetailSheet({ review, phone, phoneLoading, onClose, onApprove, on
         <div className={styles.sheetHandle} />
         <div className={styles.sheetHeader}>
           <span className={styles.sheetTitle}>Review Details</span>
-          <button className={styles.sheetClose} onClick={onClose}>
-            <span className="mi" style={{ fontSize: '1.2rem' }}>close</span>
-          </button>
+          <div className={styles.sheetHeaderActions}>
+            <button className={styles.sheetHeaderDelete} onClick={() => onDelete(review)}>
+              <span className="mi" style={{ fontSize: '1.05rem' }}>delete_outline</span>
+            </button>
+            <button className={styles.sheetClose} onClick={onClose}>
+              <span className="mi" style={{ fontSize: '1.2rem' }}>close</span>
+            </button>
+          </div>
         </div>
 
         <div className={styles.sheetBody}>
+
           <div className={styles.detailCustomerRow}>
             {hasPhoto ? (
               <img
@@ -242,28 +296,82 @@ function ReviewDetailSheet({ review, phone, phoneLoading, onClose, onApprove, on
                 </div>
               ) : null}
             </div>
-            <span
-              className={styles.statusPill}
-              style={{ color: sc.color, background: sc.bg, borderColor: sc.border, marginLeft: 'auto', textTransform: 'lowercase' }}
-            >
-              <span className="mi" style={{ fontSize: '0.75rem' }}>{sc.icon}</span>
-              {sc.label}
-            </span>
           </div>
 
-          <div className={styles.detailMeta}>
-            <StarDisplay rating={review.rating} size="1.1rem" />
-            <span className={styles.detailDate}>{formatDate(review.createdAt)}</span>
+          <div className={styles.statusRow}>
+            <div className={styles.chipLabel}>Status</div>
+            <div className={styles.statusDropdown} ref={statusRef}>
+              <button
+                type="button"
+                className={styles.statusTrigger}
+                disabled={pendingStatus}
+                onClick={() => setShowStatusMenu(v => !v)}
+                style={{ background: sc.bg, borderColor: sc.border }}
+              >
+                <span className={styles.statusTriggerLeft}>
+                  <span className="mi" style={{ fontSize: '0.9rem', color: sc.color }}>{sc.icon}</span>
+                  <span style={{ color: sc.color }}>{sc.label}</span>
+                </span>
+                <span
+                  className="mi"
+                  style={{
+                    fontSize: '1.1rem',
+                    color: sc.color,
+                    opacity: 0.7,
+                    transform: showStatusMenu ? 'rotate(180deg)' : 'none',
+                    transition: 'transform 0.15s',
+                  }}
+                >
+                  expand_more
+                </span>
+              </button>
+
+              {showStatusMenu && (
+                <div className={styles.statusMenu}>
+                  {['approved', 'rejected'].filter(s => s !== review.status).map(s => {
+                    const meta = STATUS_CONFIG[s]
+                    return (
+                      <button
+                        key={s}
+                        type="button"
+                        className={styles.statusMenuItem}
+                        onClick={() => handleStatusSelect(s)}
+                      >
+                        <span className="mi" style={{ fontSize: '0.9rem', color: meta.color }}>{meta.icon}</span>
+                        <span>{STATUS_ACTIONS[s]}</span>
+                      </button>
+                    )
+                  })}
+                </div>
+              )}
+            </div>
           </div>
 
-          <div className={styles.detailReviewBox}>
-            <span className="mi" style={{ fontSize: '1.2rem', color: 'var(--text3)', flexShrink: 0 }}>format_quote</span>
-            <p className={styles.detailReviewText}>{review.review}</p>
+          <div className={styles.infoGrid}>
+            <div className={styles.infoGridCell}>
+              <div className={styles.infoGridLabel}>Rating</div>
+              <div className={styles.infoGridValue}>
+                <StarDisplay rating={review.rating} size="0.85rem" />
+              </div>
+            </div>
+            {rc && (
+              <div className={styles.infoGridCell}>
+                <div className={styles.infoGridLabel}>Recommend</div>
+                <div className={styles.infoGridValue} style={{ color: rc.color, display: 'flex', alignItems: 'center', gap: 5 }}>
+                  <span className="mi" style={{ fontSize: '0.95rem' }}>{rc.icon}</span>
+                  {rc.label}
+                </div>
+              </div>
+            )}
+            <div className={styles.infoGridCell}>
+              <div className={styles.infoGridLabel}>Submitted</div>
+              <div className={styles.infoGridValue}>{submittedLabel || '—'}</div>
+            </div>
           </div>
 
           {highlights.length > 0 && (
-            <div className={styles.detailSection}>
-              <span className={styles.detailSectionLabel}>Highlights</span>
+            <div className={styles.sectionCard}>
+              <div className={styles.sectionCardLabel}>{highlightsTitle}</div>
               <div className={styles.highlightGrid}>
                 {highlights.map(label => (
                   <span key={label} className={styles.highlightChip}>
@@ -277,50 +385,14 @@ function ReviewDetailSheet({ review, phone, phoneLoading, onClose, onApprove, on
             </div>
           )}
 
-          {rc && (
-            <div className={styles.detailSection}>
-              <span className={styles.detailSectionLabel}>Would Recommend</span>
-              <span
-                className={styles.recommendPill}
-                style={{ color: rc.color, background: rc.bg, borderColor: rc.border }}
-              >
-                <span className="mi" style={{ fontSize: '1rem' }}>{rc.icon}</span>
-                {rc.label}
-              </span>
+          <div className={styles.sectionCard}>
+            <div className={styles.sectionCardLabel}>Review</div>
+            <div className={styles.detailReviewBox}>
+              <span className="mi" style={{ fontSize: '1.2rem', color: 'var(--text3)', flexShrink: 0 }}>format_quote</span>
+              <p className={styles.detailReviewText}>{review.review}</p>
             </div>
-          )}
+          </div>
 
-          {review.status === 'pending' && (
-            <div className={styles.detailActions}>
-              <button className={styles.approveBtn} onClick={() => onApprove(review.id)}>
-                <span className="mi" style={{ fontSize: '1.1rem', textTransform: 'lowercase' }}>check_circle</span>
-                Approve
-              </button>
-              <button className={styles.rejectBtn} onClick={() => onReject(review.id)}>
-                <span className="mi" style={{ fontSize: '1.1rem', textTransform: 'lowercase' }}>cancel</span>
-                Reject
-              </button>
-            </div>
-          )}
-
-          {review.status === 'rejected' && (
-            <button className={styles.approveBtn} style={{ width: '100%', marginTop: 8 }} onClick={() => onApprove(review.id)}>
-              <span className="mi" style={{ fontSize: '1.1rem', textTransform: 'lowercase' }}>check_circle</span>
-              Approve Anyway
-            </button>
-          )}
-
-          {review.status === 'approved' && (
-            <button className={styles.rejectBtn} style={{ width: '100%', marginTop: 8 }} onClick={() => onReject(review.id)}>
-              <span className="mi" style={{ fontSize: '1.1rem', textTransform: 'lowercase' }}>cancel</span>
-              Remove from Portfolio
-            </button>
-          )}
-
-          <button className={styles.deleteBtn} onClick={() => onDelete(review)}>
-            <span className="mi" style={{ fontSize: '1rem', textTransform: 'lowercase' }}>delete_outline</span>
-            Delete Review
-          </button>
         </div>
       </div>
     </div>
@@ -338,18 +410,20 @@ function ReviewCard({ review, onTap, isLast }) {
       onClick={onTap}
     >
       <div className={styles.cardAvatarOuter}>
-        {hasPhoto ? (
-          <img
-            src={review.photoUrl}
-            alt={review.customerName}
-            className={styles.cardAvatarImg}
-            onError={() => setAvatarFailed(true)}
-          />
-        ) : (
-          <div className={styles.cardAvatarInner}>
-            {getInitials(review.customerName) || '?'}
-          </div>
-        )}
+        <div className={styles.cardAvatarInner}>
+          {hasPhoto ? (
+            <img
+              src={review.photoUrl}
+              alt={review.customerName}
+              className={styles.cardAvatarImg}
+              onError={() => setAvatarFailed(true)}
+            />
+          ) : (
+            <span className={styles.cardAvatarInitials}>
+              {getInitials(review.customerName) || '?'}
+            </span>
+          )}
+        </div>
       </div>
 
       <div className={styles.cardInfo}>
