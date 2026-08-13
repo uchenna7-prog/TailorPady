@@ -73,7 +73,7 @@
   background: color-mix(in srgb, var(--accent) 8%, var(--surface));
 }
 
-.itemSymbol {
+.itemFlag {
   width: 36px;
   height: 36px;
   border-radius: 10px;
@@ -82,9 +82,20 @@
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  font-weight: 700;
-  font-size: 0.95rem;
-  color: var(--text);
+  overflow: hidden;
+}
+
+.flagImg {
+  width: 24px;
+  height: 18px;
+  border-radius: 3px;
+  object-fit: cover;
+  display: block;
+}
+
+.flagFallback {
+  font-size: 1rem;
+  line-height: 1;
 }
 
 .itemText {
@@ -104,6 +115,13 @@
 .itemMeta {
   font-size: 0.75rem;
   color: var(--text2);
+}
+
+.itemSymbol {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--text2);
+  flex-shrink: 0;
 }
 
 .empty {
