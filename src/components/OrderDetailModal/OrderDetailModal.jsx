@@ -379,7 +379,7 @@ export default function OrderDetailModal({
 
   function handleUpgrade() {
     setUpgradeOpen(false)
-    navigate('/upgrade')
+    navigate('/account', { state: { autoOpenModal: 'upgrade', upgradeTab: 'monthly' } })
   }
 
   const upgradeSheetContent = upgradeReason === 'review'
