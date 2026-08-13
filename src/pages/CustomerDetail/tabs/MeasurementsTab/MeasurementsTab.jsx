@@ -107,13 +107,9 @@ export default function MeasurementsTab({ measurements, loading, gender, onSave,
     setMeasurementToDelete(null)
   }
 
-  function goToUpgrade() {
-    navigate('/account', { state: { autoOpenModal: 'upgrade' } })
-  }
-
   function handleUpgrade() {
     setUpgradeOpen(false)
-    goToUpgrade()
+    navigate('/account', { state: { autoOpenModal: 'upgrade', upgradeTab: 'monthly' } })
   }
 
   if (loading) {
