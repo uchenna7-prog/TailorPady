@@ -7,6 +7,7 @@ import {
   submitPublicReview,
   getReviewOrderSnapshot,
 } from '../../services/reviewService'
+import { uploadToCloudinary, deleteFromCloudinary } from '../../services/cloudinaryService'
 import OrderMosaic from '../../components/OrderMosaic/OrderMosaic'
 import styles from './ReviewPage.module.css'
 
@@ -285,6 +286,9 @@ export default function ReviewPage() {
   const [fieldErrors,  setFieldErrors]  = useState({})
   const [logoFailed,   setLogoFailed]   = useState(false)
 
+  const [uploadProgress, setUploadProgress] = useState(0)
+  const [uploadStage,    setUploadStage]    = useState('')
+
   const isLowRating = rating > 0 && rating <= 3
 
   const textColor = useMemo(() => getReadableTextColor(brandColour), [brandColour])
@@ -389,7 +393,20 @@ export default function ReviewPage() {
     setSubmitting(true)
     setError('')
 
+    let photoUrl = null
+    let photoPublicId = null
+
     try {
+      if (photoFile) {
+        setUploadStage('photo')
+        setUploadProgress(0)
+        const uploaded = await uploadToCloudinary(photoFile, 'reviews', setUploadProgress)
+        photoUrl = uploaded.url
+        photoPublicId = uploaded.publicId
+      }
+
+      setUploadStage('review')
+
       await submitPublicReview(db, uid, token, {
         customerName: customerName.trim(),
         customerId:   null,
@@ -397,10 +414,12 @@ export default function ReviewPage() {
         rating,
         highlights,
         recommend:    recommend || null,
-        photoFile:    photoFile || null,
+        photoUrl,
+        photoPublicId,
       })
       setSubmitted(true)
     } catch (err) {
+      if (photoPublicId) deleteFromCloudinary(photoPublicId).catch(() => {})
       if (err?.code === 'permission-denied') {
         setAlreadyReviewed(true)
       } else {
@@ -408,8 +427,16 @@ export default function ReviewPage() {
       }
     } finally {
       setSubmitting(false)
+      setUploadStage('')
+      setUploadProgress(0)
     }
   }
+
+  const submitLabel = uploadStage === 'photo'
+    ? `Uploading Photo… ${uploadProgress}%`
+    : uploadStage === 'review'
+    ? 'Submitting…'
+    : 'Submit Review'
 
   if (loading) {
     return <ReviewSkeleton />
@@ -680,6 +707,14 @@ export default function ReviewPage() {
           </button>
         )}
         {photoError && <span className={styles.errorMsg}>{photoError}</span>}
+        {uploadStage === 'photo' && (
+          <div className={styles.photoUploadProgressBar}>
+            <div
+              className={styles.photoUploadProgressFill}
+              style={{ width: `${uploadProgress}%` }}
+            />
+          </div>
+        )}
       </div>
 
       {error && (
@@ -698,7 +733,7 @@ export default function ReviewPage() {
           {submitting ? (
             <>
               <span className="mi" style={{ fontSize: '1rem', animation: 'spin 1s linear infinite' }}>autorenew</span>
-              Submitting…
+              {submitLabel}
             </>
           ) : (
             <>
