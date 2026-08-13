@@ -15,6 +15,7 @@ import { DesignOptionsSheet } from '../components/DesignOptionsSheet/DesignOptio
 import { ShareOptionsSheet } from '../components/ShareOptionsSheet/ShareOptionsSheet'
 import { MoreOptionsSheet } from '../components/MoreOptionsSheet/MoreOptionsSheet'
 import { BrandColourSheet } from '../components/BrandColourSheet/BrandColourSheet'
+import { CurrencySheet } from '../components/CurrencySheet/CurrencySheet'
 import { ApplyScopeSheet } from '../components/ApplyScopeSheet/ApplyScopeSheet'
 import Header from '../../Header/Header'
 import styles from './InvoiceViewer.module.css'
@@ -108,6 +109,7 @@ export default function InvoiceViewer({
   const [showMoreSheet,     setShowMoreSheet]      = useState(false)
   const [showTemplateModal, setShowTemplateModal]  = useState(false)
   const [showColourSheet,   setShowColourSheet]    = useState(false)
+  const [showCurrencySheet, setShowCurrencySheet]  = useState(false)
   const [pendingChange,     setPendingChange]      = useState(null)
   const [missingFields,     setMissingFields]      = useState(null)
   const [pendingActionLabel,  setPendingActionLabel]  = useState(null)
@@ -231,6 +233,25 @@ export default function InvoiceViewer({
     setShowColourSheet(false)
     const hex = getPaletteById(selectedColourId)?.tokens.primary
     setPendingChange({ type: 'colour', colourId: selectedColourId, colour: hex })
+  }
+
+  const handleCurrencySelect = (chosenCurrency) => {
+    setShowCurrencySheet(false)
+    const prevSnapshot = invoice.brandSnapshot
+    pendingFieldsRef.current.add('brandSnapshot')
+    setInvoice(prev => ({
+      ...prev,
+      brandSnapshot: { ...prev.brandSnapshot, currency: chosenCurrency },
+    }))
+    showToast?.('Currency updated for this invoice ✓')
+
+    customerData.updateInvoiceCurrency(invoice.id, chosenCurrency)
+      .then(() => { pendingFieldsRef.current.delete('brandSnapshot') })
+      .catch((err) => {
+        pendingFieldsRef.current.delete('brandSnapshot')
+        setInvoice(prev => ({ ...prev, brandSnapshot: prevSnapshot }))
+        showToast?.(getUpdateErrorMessage(err, isOnline, 'currency'))
+      })
   }
 
   const handleApplyToThis = () => {
@@ -376,6 +397,7 @@ export default function InvoiceViewer({
           docType="invoice"
           onClose={() => setShowMoreSheet(false)}
           onDelete={() => onDelete(invoice.id)}
+          onChangeCurrency={() => setShowCurrencySheet(true)}
         />
       )}
 
@@ -397,6 +419,14 @@ export default function InvoiceViewer({
           currentColourId={effectiveColourId}
           onClose={() => setShowColourSheet(false)}
           onSelect={handleColourSelect}
+        />
+      )}
+
+      {showCurrencySheet && (
+        <CurrencySheet
+          currentCurrency={snapShotedInvoiceBrandSettings.currency}
+          onClose={() => setShowCurrencySheet(false)}
+          onSelect={handleCurrencySelect}
         />
       )}
 
