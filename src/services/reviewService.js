@@ -14,6 +14,7 @@ import {
   serverTimestamp,
   getDocsFromServer,
 } from 'firebase/firestore'
+import { deleteFromCloudinary } from './cloudinaryService'
 
 function reviewsRef(db, uid) {
   return collection(db, 'users', uid, 'reviews')
@@ -50,8 +51,26 @@ export async function addReview(db, uid, data) {
 }
 
 export async function submitPublicReview(db, uid, token, data) {
+  const {
+    customerName,
+    customerId,
+    review,
+    rating,
+    highlights,
+    recommend,
+    photoUrl,
+    photoPublicId,
+  } = data
+
   await setDoc(reviewDoc(db, uid, token), {
-    ...data,
+    customerName:  customerName ?? '',
+    customerId:    customerId ?? null,
+    review:        review ?? '',
+    rating:        rating ?? 0,
+    highlights:    highlights ?? [],
+    recommend:     recommend ?? null,
+    photoUrl:      photoUrl ?? null,
+    photoPublicId: photoPublicId ?? null,
     token,
     status:     'pending',
     approvedAt: null,
@@ -97,8 +116,15 @@ export async function rejectReview(db, uid, reviewId) {
 }
 
 export async function deleteReview(db, uid, reviewId) {
+  const snap = await getDoc(reviewDoc(db, uid, reviewId))
+  const photoPublicId = snap.exists() ? snap.data().photoPublicId : null
+
   await deleteDoc(reviewDoc(db, uid, reviewId))
   await deleteDoc(reviewContactDoc(db, uid, reviewId))
+
+  if (photoPublicId) {
+    deleteFromCloudinary(photoPublicId).catch(() => {})
+  }
 }
 
 export async function getReviewContactPhone(db, uid, reviewId) {
