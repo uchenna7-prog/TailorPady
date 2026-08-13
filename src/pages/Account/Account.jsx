@@ -49,6 +49,7 @@ export default function Account({ onMenuClick, isPremium = false, onUpgrade = ()
 
   const [personalInfo, setPersonalInfo] = useState(() => loadPersonalInfo(user))
   const [activeModal, setActiveModal] = useState(null)
+  const [upgradeInitialTab, setUpgradeInitialTab] = useState('free')
   const [logoutConfirm, setLogoutConfirm] = useState(false)
   const [deleteConfirm, setDeleteConfirm] = useState(false)
   const [toastMsg, setToastMsg] = useState('')
@@ -88,6 +89,10 @@ export default function Account({ onMenuClick, isPremium = false, onUpgrade = ()
 
     if (AUTO_OPEN_MODALS.includes(navState.autoOpenModal)) {
       setActiveModal(navState.autoOpenModal)
+    }
+
+    if (navState.upgradeTab) {
+      setUpgradeInitialTab(navState.upgradeTab)
     }
 
     if (navState.pendingTemplate) {
@@ -198,9 +203,20 @@ export default function Account({ onMenuClick, isPremium = false, onUpgrade = ()
 
   const handleUpgradeSuccess = useCallback((info) => {
     setActiveModal(null)
+    setUpgradeInitialTab('free')
     setPremiumSuccess(info)
     onUpgrade?.(info.billingCycle)
   }, [onUpgrade])
+
+  const handleUpgradeModalClose = useCallback(() => {
+    setActiveModal(null)
+    setUpgradeInitialTab('free')
+  }, [])
+
+  const handleOpenUpgrade = useCallback(() => {
+    setUpgradeInitialTab('monthly')
+    setActiveModal('upgrade')
+  }, [])
 
   const handleSubscriptionCancelled = useCallback(() => {
     setActiveModal(null)
@@ -420,7 +436,7 @@ export default function Account({ onMenuClick, isPremium = false, onUpgrade = ()
         </div>
 
         {!isPremium && (
-          <div className={`${styles.row} ${styles.upgradeStrip}`} onClick={() => setActiveModal('upgrade')}>
+          <div className={`${styles.row} ${styles.upgradeStrip}`} onClick={handleOpenUpgrade}>
             <div className={styles.upgradeStripGlow} />
             <span className="mi" style={{ fontSize: '1.3rem', color: 'var(--accent)' }}>workspace_premium</span>
             <div className={styles.upgradeStripText}>
@@ -524,7 +540,8 @@ export default function Account({ onMenuClick, isPremium = false, onUpgrade = ()
 
       {activeModal === 'upgrade' && (
         <UpgradeModal
-          onClose={() => setActiveModal(null)}
+          initialTab={upgradeInitialTab}
+          onClose={handleUpgradeModalClose}
           onSuccess={handleUpgradeSuccess}
         />
       )}
@@ -536,7 +553,7 @@ export default function Account({ onMenuClick, isPremium = false, onUpgrade = ()
       {activeModal === 'usage' && (
         <UsageModal
           onClose={() => setActiveModal(null)}
-          onUpgrade={() => setActiveModal('upgrade')}
+          onUpgrade={handleOpenUpgrade}
         />
       )}
 
