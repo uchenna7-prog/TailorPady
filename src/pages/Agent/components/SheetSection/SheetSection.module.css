@@ -13,6 +13,16 @@
   border-bottom: 1px solid var(--border);
 }
 
+.sectionHeaderNoDivider {
+  border-bottom: none;
+}
+
+.sectionHeaderAction {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+}
+
 .sectionLabel {
   font-size: 0.58rem;
   font-weight: 800;
@@ -24,4 +34,3 @@
 .sectionBody {
   padding: 0;
 }
-
