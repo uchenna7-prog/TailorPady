@@ -15,6 +15,11 @@ function fmt(amount) {
   return `₦${Number(amount).toLocaleString('en-NG')}`
 }
 
+function getInitials(name) {
+  if (!name) return ''
+  return name.trim().split(/\s+/).slice(0, 2).map(p => p[0]?.toUpperCase() || '').join('')
+}
+
 const METHOD_ICONS = {
   cash:     'payments',
   transfer: 'swap_horiz',
@@ -199,6 +204,7 @@ function PaymentDetail({ row, onClose, onNavigateToCustomer, orderItems }) {
   const rawPct        = fullPrice > 0 ? (totalPaid / fullPrice) * 100 : 0
   const progressPercent = Math.round(rawPct >= 100 ? 100 : Math.min(99, rawPct))
   const isMultiInstallment = row.totalInstallments > 1
+  const initials = getInitials(row.customerName)
 
   return (
     <div
@@ -226,19 +232,6 @@ function PaymentDetail({ row, onClose, onNavigateToCustomer, orderItems }) {
 
         <div className={styles.modalBody}>
 
-          <div className={styles.detailTitleRow}>
-            <div className={styles.detailMosaicWrap}>
-              <OrderMosaic
-                items={orderItems}
-                size="sm"
-                overdue={false}
-                className={styles.mosaicOverride}
-                emptyIcon="payments"
-              />
-            </div>
-            <div className={styles.detailTitle}>{row.orderDesc || 'Payment'}</div>
-          </div>
-
           <div className={styles.statusRow}>
             <div className={styles.chipLabel}>Payment Status</div>
             <div
@@ -255,10 +248,6 @@ function PaymentDetail({ row, onClose, onNavigateToCustomer, orderItems }) {
 
           <div className={styles.infoGrid}>
             <div className={styles.infoGridCell}>
-              <div className={styles.infoGridLabel}>Customer</div>
-              <div className={styles.infoGridValue}>{row.customerName}</div>
-            </div>
-            <div className={styles.infoGridCell}>
               <div className={styles.infoGridLabel}>Date</div>
               <div className={styles.infoGridValue}>{row.date}</div>
             </div>
@@ -273,6 +262,54 @@ function PaymentDetail({ row, onClose, onNavigateToCustomer, orderItems }) {
               <div className={styles.infoGridValue}>{row.method ? mLabel : '—'}</div>
             </div>
           </div>
+
+          {row.customerName && (
+            <div className={styles.sectionSpacer}>
+              <div className={styles.sectionCard}>
+                <div className={styles.sectionHeader}>
+                  <span className={styles.sectionLabel}>Customer</span>
+                  {onNavigateToCustomer && row.customerId && (
+                    <span className={styles.sectionHeaderAction}>
+                      <span className="mi" style={{ fontSize: '1.1rem', color: 'var(--text3)' }}>chevron_right</span>
+                    </span>
+                  )}
+                </div>
+                {onNavigateToCustomer && row.customerId ? (
+                  <button
+                    type="button"
+                    className={styles.linkedRowBtn}
+                    onClick={() => { onClose(); onNavigateToCustomer(row.customerId) }}
+                  >
+                    <div className={styles.linkedAvatar}>
+                      <span className={styles.linkedAvatarInitials}>{initials}</span>
+                    </div>
+                    <span className={styles.linkedName}>{row.customerName}</span>
+                  </button>
+                ) : (
+                  <div className={styles.linkedRow}>
+                    <div className={styles.linkedAvatar}>
+                      <span className={styles.linkedAvatarInitials}>{initials}</span>
+                    </div>
+                    <span className={styles.linkedName}>{row.customerName}</span>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+
+          {row.orderDesc && (
+            <div className={styles.sectionSpacer}>
+              <div className={styles.sectionCard}>
+                <div className={styles.sectionHeader}>
+                  <span className={styles.sectionLabel}>Linked Order</span>
+                </div>
+                <div className={styles.linkedRow}>
+                  <OrderMosaic items={orderItems} size="sm" overdue={false} emptyIcon="payments" />
+                  <span className={styles.linkedName}>{row.orderDesc}</span>
+                </div>
+              </div>
+            </div>
+          )}
 
           {row.notes && (
             <div className={styles.detailSectionCard}>
@@ -406,16 +443,6 @@ function PaymentDetail({ row, onClose, onNavigateToCustomer, orderItems }) {
                 </div>
               )}
             </div>
-          </div>
-
-          <div className={styles.footerButtons}>
-            <button
-              className={styles.btnPrimary}
-              onClick={() => { onClose(); onNavigateToCustomer(row.customerId) }}
-            >
-              <span className="mi" style={{ fontSize: '1.05rem' }}>open_in_new</span>
-              View {row.customerName}'s Profile
-            </button>
           </div>
 
         </div>
