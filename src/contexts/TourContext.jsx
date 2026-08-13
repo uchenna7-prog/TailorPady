@@ -147,6 +147,7 @@ export function TourProvider({ children }) {
       })
     }
     window.addEventListener('popstate', handlePopState)
+    alert('listener attached, activeTourId=' + activeTourId)
     return () => window.removeEventListener('popstate', handlePopState)
   }, [activeTourId, guardNavigation, navigate])
 
