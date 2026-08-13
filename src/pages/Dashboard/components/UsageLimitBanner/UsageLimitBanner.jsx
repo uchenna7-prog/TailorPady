@@ -15,6 +15,7 @@ const TITLE_LABELS = {
   receiptsPerMonth: 'Receipt',
   portfolioUploadsPerMonth: 'Portfolio Upload',
   reviewLinksPerMonth: 'Review Link',
+  paymentRecordsPerMonth: 'Payment Record',
   aiActionsPerMonth: 'AI Action',
 }
 
@@ -26,6 +27,7 @@ const ITEM_LABELS = {
   receiptsPerMonth: 'receipts',
   portfolioUploadsPerMonth: 'portfolio uploads',
   reviewLinksPerMonth: 'review links',
+  paymentRecordsPerMonth: 'payment records',
   aiActionsPerMonth: 'AI actions',
 }
 
@@ -70,7 +72,7 @@ export function UsageLimitBanner() {
   const title = `Free ${titleLabel} Limit`
 
   function handleUpgrade() {
-    navigate('/account', { state: { autoOpenModal: 'upgrade' } })
+    navigate('/account', { state: { autoOpenModal: 'upgrade', upgradeTab: 'monthly' } })
   }
 
   function handleViewUsage() {
