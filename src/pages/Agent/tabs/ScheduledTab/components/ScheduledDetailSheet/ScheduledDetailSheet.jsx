@@ -50,7 +50,12 @@ export function ScheduledDetailSheet({ item, onClose, onCancel, allOrders, allIn
 
         {customerName && (
           <div className={styles.sectionSpacer}>
-            <SheetSection icon="person" label="Customer">
+            <SheetSection
+              label="Customer"
+              hideIcon
+              noDivider
+              headerAction={onGoToCustomer && customerObj?.id ? <MIcon name="chevron_right" size="1.1rem" color="var(--text3)" /> : null}
+            >
               {onGoToCustomer && customerObj?.id ? (
                 <button
                   type="button"
@@ -63,9 +68,6 @@ export function ScheduledDetailSheet({ item, onClose, onCancel, allOrders, allIn
                       : <span className={styles.linkedAvatarInitials}>{getInitials(customerName)}</span>}
                   </div>
                   <span className={styles.linkedName}>{customerName}</span>
-                  <span className={styles.chevronCorner}>
-                    <MIcon name="chevron_right" size="1.1rem" color="var(--text3)" />
-                  </span>
                 </button>
               ) : (
                 <div className={styles.linkedRow}>
@@ -83,7 +85,7 @@ export function ScheduledDetailSheet({ item, onClose, onCancel, allOrders, allIn
 
         {orderObj && (
           <div className={styles.sectionSpacer}>
-            <SheetSection icon="shopping_bag" label="Linked Order">
+            <SheetSection label="Linked Order" hideIcon noDivider>
               <div className={styles.linkedRow}>
                 <OrderMosaic items={orderObj.items || []} size="sm" />
                 <span className={styles.linkedName}>{orderObj.desc}</span>
