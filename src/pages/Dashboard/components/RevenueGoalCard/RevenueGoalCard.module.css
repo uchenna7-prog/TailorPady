@@ -25,13 +25,35 @@
   flex: 1;
 }
 
+.labelRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 2px;
+}
+
 .label {
   font-size: 0.62rem;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.8px;
   color: var(--text3);
-  margin-bottom: 2px;
+}
+
+.metBadge {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.62rem;
+  font-weight: 800;
+  letter-spacing: 0.3px;
+  padding: 3px 8px;
+  border-radius: 20px;
+  background: color-mix(in srgb, var(--accent) 14%, transparent);
+  color: var(--accent);
+  white-space: nowrap;
+  flex-shrink: 0;
 }
 
 .amount {
@@ -46,6 +68,11 @@
   font-size: 0.72rem;
   font-weight: 500;
   color: var(--text3);
+}
+
+.targetMet {
+  color: var(--accent);
+  font-weight: 700;
 }
 
 .delta {
