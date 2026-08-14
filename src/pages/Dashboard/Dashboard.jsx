@@ -33,6 +33,7 @@ import { UrgentStrip } from './components/UrgentStrip/UrgentStrip'
 import { RevenueGoalCard } from './components/RevenueGoalCard/RevenueGoalCard'
 import { RevenueGoalCardSkeleton } from './components/RevenueGoalCardSkeleton/RevenueGoalCardSkeleton'
 import { EmptyRevenueCard } from './components/EmptyRevenueCard/EmptyRevenueCard'
+import { GoalReachedModal } from './components/GoalReachedModal/GoalReachedModal'
 import { RecentTasksSection } from './components/RecentTasksSection/RecentTasksSection'
 import { PastAppointmentsSection } from './components/PastAppointmentsSection/PastAppointmentsSection'
 import { UpcomingAppointmentsSection } from './components/UpcomingAppointmentsSection/UpcomingAppointmentsSection'
@@ -125,7 +126,7 @@ function Dashboard({ onMenuClick, onGoToCustomer }) {
   const { generalSettings }                                               = useGeneralSettings()
   const { allPayments }                                                   = usePayments()
   const { profileSettings, isLoading: profileLoading }                   = useProfileSettings()
-  const { goal, derived, loading: goalLoading, saveGoal, removeGoal }    = useRevenueGoal()
+  const { goal, derived, loading: goalLoading, saveGoal, removeGoal, markGoalCelebrated } = useRevenueGoal()
   const { startTour, completeStep, currentStep, hasCompletedTour, isActive: tourActive, goToStep, finishTour } = useTour()
 
   const [isBannerDismissed, setIsBannerDismissed] = useState(loadNotificationDismissed)
@@ -138,6 +139,8 @@ function Dashboard({ onMenuClick, onGoToCustomer }) {
   const [toastMsg,          setToastMsg]          = useState('')
   const [openStatInfo,      setOpenStatInfo]      = useState(null)
   const [isTourPickerOpen,  setIsTourPickerOpen]  = useState(false)
+  const [celebrationOpen,   setCelebrationOpen]   = useState(false)
+  const [celebrationIsFirst, setCelebrationIsFirst] = useState(false)
   const toastTimer = useRef(null)
   const autoTourAttemptedRef = useRef(false)
 
@@ -244,10 +247,25 @@ function Dashboard({ onMenuClick, onGoToCustomer }) {
     return () => clearTimeout(timer)
   }, [revenueGoalNudgeComplete, discoverToursComplete, isNewSessionSinceRevenueGoalNudge, tourActive, startTour])
 
+  useEffect(() => {
+    if (goalLoading || !goal || !derived) return
+    if (!derived.met) return
+    if (goal.lastCelebratedPeriodKey === derived.periodKey) return
+    setCelebrationIsFirst(!goal.hasCelebratedAnyGoal)
+    setCelebrationOpen(true)
+  }, [goalLoading, goal, derived])
+
   function showToast(msg) {
     setToastMsg(msg)
     clearTimeout(toastTimer.current)
     toastTimer.current = setTimeout(() => setToastMsg(''), 2400)
+  }
+
+  async function handleCelebrationClose() {
+    setCelebrationOpen(false)
+    if (derived?.periodKey) {
+      await markGoalCelebrated(derived.periodKey)
+    }
   }
 
   function handleApptStatusChange(id, newStatus) {
@@ -577,6 +595,16 @@ function Dashboard({ onMenuClick, onGoToCustomer }) {
             />
           )}
 
+          {celebrationOpen && goal && derived && (
+            <GoalReachedModal
+              goal={goal}
+              derived={derived}
+              isFirstTime={celebrationIsFirst}
+              generalSettings={generalSettings}
+              onClose={handleCelebrationClose}
+            />
+          )}
+
           {appointmentsReady ? (
             upcomingAppointments.length > 0 && (
               <UpcomingAppointmentsSection
@@ -687,4 +715,3 @@ function Dashboard({ onMenuClick, onGoToCustomer }) {
 }
 
 export default Dashboard
-
