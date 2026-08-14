@@ -2,6 +2,7 @@ import { useState, useRef, useEffect, useCallback } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
 import { useProfileSettings } from '../../contexts/ProfileSettingsContext'
 import { useGeneralSettings } from '../../contexts/GeneralSettingsContext'
+import { usePortfolioSettings } from '../../contexts/PortfolioSettingsContext'
 import { useAuth } from '../../contexts/AuthContext'
 import { usePremium } from '../../contexts/PremiumContext'
 import { useTour } from '../../contexts/TourContext'
@@ -35,12 +36,13 @@ import styles from './Account.module.css'
 import { db } from '../../firebase'
 
 const PROFILE_TOUR_STEP_IDS = ['highlight-profile-card', 'highlight-edit-brand', 'highlight-edit-business-info']
-const AUTO_OPEN_MODALS = ['brand', 'businessInfo', 'upgrade', 'usage']
+const AUTO_OPEN_MODALS = ['brand', 'businessInfo', 'socials', 'upgrade', 'usage']
 
 export default function Account({ onMenuClick, isPremium = false, onUpgrade = () => {} }) {
 
   const { profileSettings } = useProfileSettings()
   const { updateManyGeneralSettings } = useGeneralSettings()
+  const { updateManyPortfolioSettings } = usePortfolioSettings()
   const { user, logout } = useAuth()
   const { plan, nextRenewal } = usePremium()
   const navigate = useNavigate()
@@ -141,13 +143,17 @@ export default function Account({ onMenuClick, isPremium = false, onUpgrade = ()
       if (extraMessage) showToast(extraMessage)
       return
     }
-    updateManyGeneralSettings({
-      invoiceTemplate: pendingTemplate.invoiceTemplate,
-      receiptTemplate: pendingTemplate.receiptTemplate,
-    })
+    if (pendingTemplate.portfolioTemplate) {
+      updateManyPortfolioSettings({ portfolioTemplate: pendingTemplate.portfolioTemplate })
+    } else {
+      updateManyGeneralSettings({
+        invoiceTemplate: pendingTemplate.invoiceTemplate,
+        receiptTemplate: pendingTemplate.receiptTemplate,
+      })
+    }
     setPendingTemplate(null)
     showToast(extraMessage ? `${extraMessage} · Template applied ✓` : 'Template applied ✓')
-  }, [pendingTemplate, updateManyGeneralSettings, showToast])
+  }, [pendingTemplate, updateManyGeneralSettings, updateManyPortfolioSettings, showToast])
 
   const returnToOriginIfAny = useCallback(() => {
     if (!returnTo) return
@@ -175,7 +181,21 @@ export default function Account({ onMenuClick, isPremium = false, onUpgrade = ()
       })
     } else if (returnTo.reopenTemplateModal) {
       navigate('/settings', {
-        state: { reopenTemplateModal: true },
+        state: {
+          reopenTemplateModal: true,
+          reopenMissingFields: returnTo.reopenMissingFields ?? false,
+          completedModal: returnTo.completedModal ?? null,
+          completedFields: returnTo.completedFields ?? [],
+        },
+      })
+    } else if (returnTo.reopenPortfolioTemplateModal) {
+      navigate('/settings', {
+        state: {
+          reopenPortfolioTemplateModal: true,
+          reopenMissingFields: returnTo.reopenMissingFields ?? false,
+          completedModal: returnTo.completedModal ?? null,
+          completedFields: returnTo.completedFields ?? [],
+        },
       })
     }
 
@@ -200,6 +220,12 @@ export default function Account({ onMenuClick, isPremium = false, onUpgrade = ()
     returnToOriginIfAny()
     flagProfileTourAdvance()
   }, [applyPendingTemplateIfAny, returnToOriginIfAny, flagProfileTourAdvance])
+
+  const handleSocialsModalBack = useCallback(() => {
+    setActiveModal(null)
+    applyPendingTemplateIfAny('Social links saved')
+    returnToOriginIfAny()
+  }, [applyPendingTemplateIfAny, returnToOriginIfAny])
 
   const handleUpgradeSuccess = useCallback((info) => {
     setActiveModal(null)
@@ -535,7 +561,7 @@ export default function Account({ onMenuClick, isPremium = false, onUpgrade = ()
       )}
 
       {activeModal === 'socials' && (
-        <SocialsModal onBack={() => setActiveModal(null)} showToast={showToast} />
+        <SocialsModal onBack={handleSocialsModalBack} showToast={showToast} />
       )}
 
       {activeModal === 'upgrade' && (
