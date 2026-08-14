@@ -5,6 +5,7 @@ import Header from '../../../../components/Header/Header'
 import { useTour } from '../../../../contexts/TourContext'
 import { PortfolioTemplatePreview } from './PortfolioTemplatePreview/PortfolioTemplatePreview'
 import { MissingFieldsSheet } from '../../../../components/TemplateModal/MissingFieldsSheet/MissingFieldsSheet'
+import { MIN_ABOUT_LENGTH } from '../PortfolioSettingsModal/datas'
 import styles from './PortfolioTemplateModal.module.css'
 import template1Male from '../../../../assets/portfolioScreenshots/template1Male.png'
 import template1Female from '../../../../assets/portfolioScreenshots/template1Female.png'
@@ -74,7 +75,7 @@ function hasFilledEntry(entries, requiredSubKeys) {
 function isPortfolioFieldMissing(key, portfolioSettings) {
   switch (key) {
     case 'about':
-      return !portfolioSettings.brandAbout?.trim()
+      return (portfolioSettings.brandAbout?.trim().length || 0) < MIN_ABOUT_LENGTH
     case 'location':
       return !portfolioSettings.brandLocation?.trim()
     case 'yearFounded':
