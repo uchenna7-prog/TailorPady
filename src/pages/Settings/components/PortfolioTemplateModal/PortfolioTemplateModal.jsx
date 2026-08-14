@@ -1,7 +1,10 @@
-import { useState } from 'react'
+import { useState, useCallback } from 'react'
+import { useProfileSettings } from '../../../../contexts/ProfileSettingsContext'
+import { usePortfolioSettings } from '../../../../contexts/PortfolioSettingsContext'
 import Header from '../../../../components/Header/Header'
 import { useTour } from '../../../../contexts/TourContext'
 import { PortfolioTemplatePreview } from './PortfolioTemplatePreview/PortfolioTemplatePreview'
+import { MissingFieldsSheet } from '../../../../components/TemplateModal/MissingFieldsSheet/MissingFieldsSheet'
 import styles from './PortfolioTemplateModal.module.css'
 import template1Male from '../../../../assets/portfolioScreenshots/template1Male.png'
 import template1Female from '../../../../assets/portfolioScreenshots/template1Female.png'
@@ -37,10 +40,72 @@ const TEMPLATES = [
 
 const DEV_SLUG = 'urchstitches'
 
-export function PortfolioTemplateModal({ currentTemplate, slug, onClose, onSelect }) {
+const FIELD_TO_PROFILE_KEY = {
+  name:    'brandName',
+  tagline: 'brandTagline',
+  phone:   'brandPhone',
+  email:   'brandEmail',
+  address: 'brandAddress',
+  logo:    'brandLogo',
+  socials: 'brandSocials',
+}
+
+const PORTFOLIO_FIELD_KEYS = new Set(['about', 'location', 'yearFounded', 'milestones', 'processSteps', 'faqs'])
+
+const PORTFOLIO_REQUIRES = [
+  'logo', 'name', 'tagline', 'phone', 'email', 'address', 'socials',
+  'about', 'location', 'yearFounded', 'milestones', 'processSteps', 'faqs',
+]
+
+function isProfileFieldMissing(key, profileSettings) {
+  const rawKey = FIELD_TO_PROFILE_KEY[key]
+  const value  = rawKey ? profileSettings[rawKey] : null
+  if (value === null || value === undefined) return true
+  if (typeof value === 'string' && value.trim() === '') return true
+  if (Array.isArray(value) && value.length === 0) return true
+  return false
+}
+
+function hasFilledEntry(entries, requiredSubKeys) {
+  if (!Array.isArray(entries) || entries.length === 0) return false
+  return entries.some(entry => requiredSubKeys.every(k => entry?.[k]?.toString().trim()))
+}
+
+function isPortfolioFieldMissing(key, portfolioSettings) {
+  switch (key) {
+    case 'about':
+      return !portfolioSettings.brandAbout?.trim()
+    case 'location':
+      return !portfolioSettings.brandLocation?.trim()
+    case 'yearFounded':
+      return !portfolioSettings.brandYearFounded?.toString().trim()
+    case 'milestones':
+      return !hasFilledEntry(portfolioSettings.brandMilestones, ['number', 'label'])
+    case 'processSteps':
+      return !hasFilledEntry(portfolioSettings.brandProcessSteps, ['title', 'description'])
+    case 'faqs':
+      return !hasFilledEntry(portfolioSettings.brandFaqs, ['question', 'answer'])
+    default:
+      return false
+  }
+}
+
+function getPortfolioMissingFields(profileSettings, portfolioSettings) {
+  return PORTFOLIO_REQUIRES.filter(key => (
+    PORTFOLIO_FIELD_KEYS.has(key)
+      ? isPortfolioFieldMissing(key, portfolioSettings)
+      : isProfileFieldMissing(key, profileSettings)
+  ))
+}
+
+export function PortfolioTemplateModal({ currentTemplate, slug, onClose, onSelect, returnTo }) {
+  const { profileSettings }   = useProfileSettings()
+  const { portfolioSettings } = usePortfolioSettings()
+
   const [selected, setSelected] = useState(currentTemplate)
   const [previewTemplate, setPreviewTemplate] = useState(null)
   const [gender, setGender] = useState('male')
+  const [missingFields, setMissingFields] = useState(null)
   const { currentStep, completeStep, goToStep } = useTour()
 
   const hasChanges = selected !== currentTemplate
@@ -59,7 +124,7 @@ export function PortfolioTemplateModal({ currentTemplate, slug, onClose, onSelec
     setPreviewTemplate(null)
   }
 
-  const handleSavePress = () => {
+  const commitSelection = useCallback(() => {
     onSelect(selected)
     if (currentStep?.id === 'portfolio-template-select-save') {
       completeStep('portfolio-template-select-save')
@@ -68,7 +133,21 @@ export function PortfolioTemplateModal({ currentTemplate, slug, onClose, onSelec
       goToStep('portfolio-done')
     }
     onClose()
-  }
+  }, [selected, onSelect, currentStep, completeStep, goToStep, onClose])
+
+  const handleSavePress = useCallback(() => {
+    const missing = getPortfolioMissingFields(profileSettings, portfolioSettings)
+    if (missing.length > 0) {
+      setMissingFields(missing)
+      return
+    }
+    commitSelection()
+  }, [profileSettings, portfolioSettings, commitSelection])
+
+  const handleSkipAndSave = useCallback(() => {
+    setMissingFields(null)
+    commitSelection()
+  }, [commitSelection])
 
   return (
     <div className={styles.templateModalContainer}>
@@ -168,6 +247,17 @@ export function PortfolioTemplateModal({ currentTemplate, slug, onClose, onSelec
           slug={resolvedSlug}
           onClose={handlePreviewClose}
           onSelect={handlePreviewSelect}
+        />
+      )}
+
+      {missingFields !== null && (
+        <MissingFieldsSheet
+          missingFields={missingFields}
+          docType="portfolio"
+          onClose={() => setMissingFields(null)}
+          onSkipAndSave={handleSkipAndSave}
+          pendingTemplate={{ portfolioTemplate: selected }}
+          returnTo={returnTo}
         />
       )}
     </div>
