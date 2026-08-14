@@ -4,7 +4,7 @@ function getDonutColor(percentage) {
   return '#ef4444'
 }
 
-export function RevenueDonut({ percentage }) {
+export function RevenueDonut({ percentage, rawPercentage, met }) {
   const r      = 36
   const cx     = 44
   const cy     = 44
@@ -12,6 +12,8 @@ export function RevenueDonut({ percentage }) {
   const filled = Math.min(Math.max(percentage, 0), 100)
   const dash   = (filled / 100) * circ
   const color  = getDonutColor(filled)
+  const displayPercent = rawPercentage ?? percentage
+  const fontSize = displayPercent >= 1000 ? '11' : displayPercent >= 100 ? '13' : '15'
 
   return (
     <svg width="88" height="88" viewBox="0 0 88 88">
@@ -25,7 +27,10 @@ export function RevenueDonut({ percentage }) {
           strokeDasharray={`${dash} ${circ}`}
           strokeLinecap="round"
           transform={`rotate(-90 ${cx} ${cy})`}
-          style={{ transition: 'stroke-dasharray 0.6s cubic-bezier(0.4,0,0.2,1), stroke 0.4s ease' }}
+          style={{
+            transition: 'stroke-dasharray 0.6s cubic-bezier(0.4,0,0.2,1), stroke 0.4s ease, filter 0.4s ease',
+            filter: met ? `drop-shadow(0 0 3px ${color}99)` : 'none',
+          }}
         />
       )}
       <text
@@ -33,11 +38,11 @@ export function RevenueDonut({ percentage }) {
         textAnchor="middle"
         dominantBaseline="middle"
         fill={filled > 0 ? color : 'var(--text3)'}
-        fontSize="15"
+        fontSize={fontSize}
         fontWeight="800"
         style={{ transition: 'fill 0.4s ease' }}
       >
-        {percentage}%
+        {displayPercent}%
       </text>
     </svg>
   )
