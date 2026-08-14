@@ -1,267 +1,265 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
-import styles from './MissingFieldsSheet.module.css'
+import { useState, useCallback } from 'react'
+import { useProfileSettings } from '../../../../contexts/ProfileSettingsContext'
+import { usePortfolioSettings } from '../../../../contexts/PortfolioSettingsContext'
+import Header from '../../../../components/Header/Header'
+import { useTour } from '../../../../contexts/TourContext'
+import { PortfolioTemplatePreview } from './PortfolioTemplatePreview/PortfolioTemplatePreview'
+import { MissingFieldsSheet } from '../../../../components/TemplateModal/MissingFieldsSheet/MissingFieldsSheet'
+import styles from './PortfolioTemplateModal.module.css'
+import template1Male from '../../../../assets/portfolioScreenshots/template1Male.png'
+import template1Female from '../../../../assets/portfolioScreenshots/template1Female.png'
+import template2Male from '../../../../assets/portfolioScreenshots/template2Male.png'
+import template2Female from '../../../../assets/portfolioScreenshots/template2Female.png'
 
-const FIELD_META = {
-  logo:          { label: 'Business logo',    icon: 'image'           },
-  name:          { label: 'Business name',    icon: 'badge'           },
-  tagline:       { label: 'Tagline',          icon: 'format_quote'    },
-  address:       { label: 'Business address', icon: 'location_on'     },
-  phone:         { label: 'Phone number',     icon: 'phone'           },
-  email:         { label: 'Email address',    icon: 'mail'            },
-  website:       { label: 'Website',          icon: 'language'        },
-  signature:     { label: 'Signature',        icon: 'draw'            },
-  accountBank:   { label: 'Bank name',        icon: 'account_balance' },
-  accountNumber: { label: 'Account number',   icon: 'pin'             },
-  accountName:   { label: 'Account name',     icon: 'person'          },
-  paymentTerms:  { label: 'Payment terms',    icon: 'gavel'           },
+const TEMPLATES = [
+  {
+    id: 'template1',
+    label: 'Template One',
+    description: 'Classic layout with hero banner and gallery grid',
+    thumbs: { male: template1Male, female: template1Female },
+  },
+  {
+    id: 'template2',
+    label: 'Template Two',
+    description: 'Modern layout with featured work showcase',
+    thumbs: { male: template2Male, female: template2Female },
+  },
+  {
+    id: 'template3',
+    label: 'Template Three',
+    description: 'Editorial black and white studio portfolio',
+    thumbs: null,
+  },
+  {
+    id: 'template4',
+    label: 'Template Four',
+    description: 'Modern layout with featured work showcase',
+    thumbs: null,
+  },
+]
+
+const DEV_SLUG = 'urchstitches'
+
+const FIELD_TO_PROFILE_KEY = {
+  name:    'brandName',
+  tagline: 'brandTagline',
+  phone:   'brandPhone',
+  email:   'brandEmail',
+  address: 'brandAddress',
+  logo:    'brandLogo',
+  socials: 'brandSocials',
 }
 
-const DESTINATIONS = {
-  brand: {
-    icon: 'storefront',
-    title: 'Brand Identity',
-    actionLabel: 'Add brand details',
-    completedLabel: 'Brand details added',
-    fieldKeys: ['logo', 'name', 'tagline', 'signature'],
-    route: '/account',
-    modal: 'brand',
-  },
-  contact: {
-    icon: 'contact_phone',
-    title: 'Business Contact',
-    actionLabel: 'Add contact details',
-    completedLabel: 'Business contact added',
-    fieldKeys: ['phone', 'email', 'address', 'website'],
-    route: '/account',
-    modal: 'businessContact',
-  },
-  invoice: {
-    icon: 'receipt_long',
-    title: 'Invoice Settings',
-    actionLabel: 'Add invoice details',
-    completedLabel: 'Invoice details added',
-    fieldKeys: ['accountBank', 'accountNumber', 'accountName', 'paymentTerms'],
-    route: '/settings',
-    modal: 'invoiceSettings',
-    invoiceOnly: true,
-  },
+const PORTFOLIO_FIELD_KEYS = new Set(['about', 'location', 'yearFounded', 'milestones', 'processSteps', 'faqs'])
+
+const PORTFOLIO_REQUIRES = [
+  'logo', 'name', 'tagline', 'phone', 'email', 'address', 'socials',
+  'about', 'location', 'yearFounded', 'milestones', 'processSteps', 'faqs',
+]
+
+function isProfileFieldMissing(key, profileSettings) {
+  const rawKey = FIELD_TO_PROFILE_KEY[key]
+  const value  = rawKey ? profileSettings[rawKey] : null
+  if (value === null || value === undefined) return true
+  if (typeof value === 'string' && value.trim() === '') return true
+  if (Array.isArray(value) && value.length === 0) return true
+  return false
 }
 
-function buildGroups(missingFields, docType) {
-  const missingSet = new Set(missingFields)
-  const groups = []
+function hasFilledEntry(entries, requiredSubKeys) {
+  if (!Array.isArray(entries) || entries.length === 0) return false
+  return entries.some(entry => requiredSubKeys.every(k => entry?.[k]?.toString().trim()))
+}
 
-  for (const key of missingFields) {
-    for (const [groupKey, destination] of Object.entries(DESTINATIONS)) {
-      if (destination.invoiceOnly && docType === 'receipt') continue
-      if (!destination.fieldKeys.includes(key)) continue
-      if (groups.some(g => g.key === groupKey)) continue
-      const fields = destination.fieldKeys.filter(f => missingSet.has(f))
-      groups.push({ key: groupKey, fields, ...destination })
-    }
+function isPortfolioFieldMissing(key, portfolioSettings) {
+  switch (key) {
+    case 'about':
+      return !portfolioSettings.brandAbout?.trim()
+    case 'location':
+      return !portfolioSettings.brandLocation?.trim()
+    case 'yearFounded':
+      return !portfolioSettings.brandYearFounded?.toString().trim()
+    case 'milestones':
+      return !hasFilledEntry(portfolioSettings.brandMilestones, ['number', 'label'])
+    case 'processSteps':
+      return !hasFilledEntry(portfolioSettings.brandProcessSteps, ['title', 'description'])
+    case 'faqs':
+      return !hasFilledEntry(portfolioSettings.brandFaqs, ['question', 'answer'])
+    default:
+      return false
+  }
+}
+
+function getPortfolioMissingFields(profileSettings, portfolioSettings) {
+  return PORTFOLIO_REQUIRES.filter(key => (
+    PORTFOLIO_FIELD_KEYS.has(key)
+      ? isPortfolioFieldMissing(key, portfolioSettings)
+      : isProfileFieldMissing(key, profileSettings)
+  ))
+}
+
+export function PortfolioTemplateModal({ currentTemplate, slug, onClose, onSelect, returnTo }) {
+  const { profileSettings }   = useProfileSettings()
+  const { portfolioSettings } = usePortfolioSettings()
+
+  const [selected, setSelected] = useState(currentTemplate)
+  const [previewTemplate, setPreviewTemplate] = useState(null)
+  const [gender, setGender] = useState('male')
+  const [missingFields, setMissingFields] = useState(null)
+  const { currentStep, completeStep, goToStep } = useTour()
+
+  const hasChanges = selected !== currentTemplate
+  const resolvedSlug = slug || (import.meta.env.DEV ? DEV_SLUG : null)
+  const canPreview = Boolean(resolvedSlug)
+
+  const handlePreviewOpen = (e, template) => {
+    e.stopPropagation()
+    setPreviewTemplate(template)
   }
 
-  return groups
-}
+  const handlePreviewClose = () => setPreviewTemplate(null)
 
-function getCompletedLabel(completedModal) {
-  const entry = Object.values(DESTINATIONS).find(d => d.modal === completedModal)
-  return entry?.completedLabel ?? null
-}
+  const handlePreviewSelect = (templateId) => {
+    setSelected(templateId)
+    setPreviewTemplate(null)
+  }
 
-function FieldPill({ fieldKey }) {
-  const meta = FIELD_META[fieldKey]
-  return (
-    <div className={styles.pill}>
-      <span className={`mi ${styles.pillIcon}`}>{meta?.icon ?? 'circle'}</span>
-      <span className={styles.pillLabel}>{meta?.label ?? fieldKey}</span>
-    </div>
-  )
-}
-
-function GroupCard({ icon, title, fields, actionLabel, onAction }) {
-  return (
-    <div className={styles.group}>
-      <div className={styles.groupHeader}>
-        <div className={styles.groupIconWrap}>
-          <span className="mi">{icon}</span>
-        </div>
-        <p className={styles.groupTitle}>{title}</p>
-        <span className={styles.groupCount}>{fields.length}</span>
-      </div>
-
-      <div className={styles.pillList}>
-        {fields.map(key => (
-          <FieldPill key={key} fieldKey={key} />
-        ))}
-      </div>
-
-      <button className={styles.groupAction} onClick={onAction}>
-        <span>{actionLabel}</span>
-        <span className={`mi ${styles.groupActionIcon}`}>arrow_forward</span>
-      </button>
-    </div>
-  )
-}
-
-function CompletedBanner({ label }) {
-  return (
-    <div className={styles.completedBanner}>
-      <span className={`mi ${styles.completedBannerIcon}`}>check_circle</span>
-      <span className={styles.completedBannerLabel}>{label} ✓</span>
-    </div>
-  )
-}
-
-export function MissingFieldsSheet({
-  missingFields,
-  docType,
-  pendingAction,
-  onClose,
-  onSkipAndSave,
-  pendingTemplate,
-  returnTo,
-  completedModal,
-}) {
-  const navigate  = useNavigate()
-  const scrollRef = useRef(null)
-  const [scrolled, setScrolled] = useState(false)
-  const [canScrollMore, setCanScrollMore] = useState(false)
-
-  const completedLabel = useMemo(() => getCompletedLabel(completedModal), [completedModal])
-  const [showCompletedBanner, setShowCompletedBanner] = useState(!!completedLabel)
-
-  useEffect(() => {
-    if (!completedLabel) return
-    setShowCompletedBanner(true)
-    const timer = setTimeout(() => setShowCompletedBanner(false), 2400)
-    return () => clearTimeout(timer)
-  }, [completedLabel])
-
-  const docLabel = docType === 'receipt' ? 'receipt' : docType === 'invoice' ? 'invoice' : 'template'
-  const saveVerb = docType === 'both' ? 'use' : 'save'
-
-  const skipLabel = docType === 'both'
-    ? 'Use template without these details'
-    : pendingAction === 'download'
-    ? `Download ${docLabel} without these details`
-    : pendingAction === 'share'
-    ? `Share ${docLabel} without these details`
-    : `Save ${docLabel} without these details`
-
-  const groups = useMemo(() => buildGroups(missingFields, docType), [missingFields, docType])
-
-  const stopPropagation = useCallback(e => e.stopPropagation(), [])
-
-  const goToDestination = useCallback((route, modal, pendingFields) => {
+  const commitSelection = useCallback(() => {
+    onSelect(selected)
+    if (currentStep?.id === 'portfolio-template-select-save') {
+      completeStep('portfolio-template-select-save')
+    }
+    if (currentStep?.id === 'portfolio-template-select-save-2') {
+      goToStep('portfolio-done')
+    }
     onClose()
-    navigate(route, {
-      state: {
-        autoOpenModal: modal,
-        pendingTemplate,
-        returnTo: { ...returnTo, reopenMissingFields: true, completedModal: modal, completedFields: pendingFields },
-      },
-    })
-  }, [onClose, navigate, pendingTemplate, returnTo])
+  }, [selected, onSelect, currentStep, completeStep, goToStep, onClose])
 
-  useEffect(() => {
-    const el = scrollRef.current
-    if (!el) return
-
-    const handleScroll = () => {
-      setScrolled(el.scrollTop > 4)
-      const remaining = el.scrollHeight - el.scrollTop - el.clientHeight
-      setCanScrollMore(remaining > 8)
+  const handleSavePress = useCallback(() => {
+    const missing = getPortfolioMissingFields(profileSettings, portfolioSettings)
+    if (missing.length > 0) {
+      setMissingFields(missing)
+      return
     }
+    commitSelection()
+  }, [profileSettings, portfolioSettings, commitSelection])
 
-    handleScroll()
-    el.addEventListener('scroll', handleScroll, { passive: true })
-
-    const resizeObserver = new ResizeObserver(handleScroll)
-    resizeObserver.observe(el)
-
-    return () => {
-      el.removeEventListener('scroll', handleScroll)
-      resizeObserver.disconnect()
-    }
-  }, [groups.length, showCompletedBanner])
-
-  const scrollToBottom = useCallback(() => {
-    const el = scrollRef.current
-    if (!el) return
-    el.scrollTo({ top: el.scrollHeight, behavior: 'smooth' })
-  }, [])
-
-  const sectionWord = groups.length === 1 ? 'section' : 'sections'
+  const handleSkipAndSave = useCallback(() => {
+    setMissingFields(null)
+    commitSelection()
+  }, [commitSelection])
 
   return (
-    <div className={styles.backdrop} onClick={onClose}>
-      <div className={styles.sheet} onClick={stopPropagation}>
+    <div className={styles.templateModalContainer}>
+      <Header
+        type="back"
+        title="Portfolio Template"
+        onBackClick={onClose}
+        showBorderBottom={false}
+        customActions={[{
+          label: 'Save',
+          onClick: handleSavePress,
+          disabled: !hasChanges,
+        }]}
+      />
 
-        <div className={`${styles.sheetTop} ${scrolled ? styles.sheetTopScrolled : ''}`}>
-          <div className={styles.handle} />
-          <button className={styles.closeBtn} onClick={onClose} aria-label="Close">
-            <span className="mi">close</span>
-          </button>
+      <div className={styles.templateList}>
+        <div className={styles.toolbar}>
+          <p className={styles.hint}>
+            Tap a card to select it. Tap the preview icon to see it live before saving.
+          </p>
 
-          <div className={styles.progressRow}>
-            <div className={styles.progressDots}>
-              {groups.map(group => (
-                <span key={group.key} className={styles.progressDot} />
-              ))}
-            </div>
-            <span className={styles.progressLabel}>
-              {groups.length} {sectionWord} to complete
-            </span>
+          <div className={styles.genderToggle}>
+            <button
+              className={`${styles.genderOption} ${gender === 'male' ? styles.genderOptionActive : ''}`}
+              onClick={() => setGender('male')}
+            >
+              Male
+            </button>
+            <button
+              className={`${styles.genderOption} ${gender === 'female' ? styles.genderOptionActive : ''}`}
+              onClick={() => setGender('female')}
+            >
+              Female
+            </button>
           </div>
         </div>
 
-        <div className={styles.scrollBody} ref={scrollRef}>
+        <div className={styles.templateGrid}>
+          {TEMPLATES.map((template, index) => {
+            const isSelected = selected === template.id
+            const thumbSrc = template.thumbs ? template.thumbs[gender] : null
 
-          {showCompletedBanner && completedLabel && (
-            <CompletedBanner label={completedLabel} />
-          )}
+            return (
+              <div
+                key={template.id}
+                className={styles.templateItem}
+                onClick={() => setSelected(template.id)}
+              >
+                <div className={`${styles.templateCard} ${isSelected ? styles.templateCardSelected : ''}`}>
+                  <div className={styles.previewShell}>
+                    {thumbSrc ? (
+                      <img
+                        src={thumbSrc}
+                        alt={template.label}
+                        className={styles.thumbImage}
+                      />
+                    ) : (
+                      <div className={styles.thumbPlaceholder}>
+                        <span className="mi" style={{ fontSize: '1.6rem' }}>visibility_off</span>
+                        <span>No preview available yet</span>
+                      </div>
+                    )}
 
-          <div className={styles.titleBlock}>
-            <p className={styles.sheetTitle}>A few things are missing</p>
-            <p className={styles.sheetSubtitle}>
-              This template looks best with your business details filled in.
-              Add them now, or {saveVerb} the {docLabel} and finish later.
-            </p>
-          </div>
+                    {canPreview && (
+                      <button
+                        className={styles.zoomTrigger}
+                        onClick={e => handlePreviewOpen(e, template)}
+                        aria-label="Preview template"
+                      >
+                        <span className="mi" style={{ fontSize: '0.9rem' }}>open_in_full</span>
+                      </button>
+                    )}
 
-          <div className={styles.groupList}>
-            {groups.map(group => (
-              <GroupCard
-                key={group.key}
-                icon={group.icon}
-                title={group.title}
-                fields={group.fields}
-                actionLabel={group.actionLabel}
-                onAction={() => goToDestination(group.route, group.modal, group.fields)}
-              />
-            ))}
-          </div>
+                    {isSelected && (
+                      <div className={styles.selectedBadge}>
+                        <span className="mi" style={{ fontSize: '0.75rem' }}>check</span>
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                <div className={styles.templateMeta}>
+                  <p className={`${styles.templateName} ${isSelected ? styles.templateNameSelected : ''}`}>
+                    {`${index + 1}. ${template.label}`}
+                  </p>
+                  <p className={styles.templateDesc}>{template.description}</p>
+                </div>
+              </div>
+            )
+          })}
         </div>
-
-        {canScrollMore && (
-          <button
-            className={styles.scrollMoreBtn}
-            onClick={scrollToBottom}
-            aria-label="Scroll down for more"
-          >
-            <span className="mi">keyboard_arrow_down</span>
-          </button>
-        )}
-
-        <div className={styles.sheetFooter}>
-          <button className={styles.skipBtn} onClick={onSkipAndSave}>
-            {skipLabel}
-          </button>
-        </div>
-
       </div>
+
+      {previewTemplate && (
+        <PortfolioTemplatePreview
+          template={previewTemplate}
+          slug={resolvedSlug}
+          onClose={handlePreviewClose}
+          onSelect={handlePreviewSelect}
+        />
+      )}
+
+      {missingFields !== null && (
+        <MissingFieldsSheet
+          missingFields={missingFields}
+          docType="portfolio"
+          onClose={() => setMissingFields(null)}
+          onSkipAndSave={handleSkipAndSave}
+          pendingTemplate={{ portfolioTemplate: selected }}
+          returnTo={returnTo}
+        />
+      )}
     </div>
   )
 }
