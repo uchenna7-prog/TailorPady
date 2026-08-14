@@ -26,6 +26,10 @@ function sumPaymentsInRange(allPayments, fromDate, toDate = null) {
     .reduce((sum, inst) => sum + (Number(inst.amount) || 0), 0)
 }
 
+function periodKeyFor(period) {
+  return getWindowStart(period).toISOString().slice(0, 10)
+}
+
 function buildHistory(existingGoal, newData) {
   const prev        = existingGoal?.history || []
   const isNewPeriod = !existingGoal ||
@@ -35,6 +39,7 @@ function buildHistory(existingGoal, newData) {
   if (!isNewPeriod || !existingGoal) return prev
 
   const entry = {
+    type:    'target_changed',
     period:  existingGoal.period,
     goal:    existingGoal.goal,
     savedAt: existingGoal.updatedAt ?? null,
@@ -75,9 +80,10 @@ export function RevenueGoalProvider({ children }) {
     const isUp          = delta >= 0
     const met           = rawPercent >= 100
     const over          = Math.max(0, earnedThis - goal.goal)
-    const periodKey      = currentStart.toISOString().slice(0, 10)
+    const periodKey         = currentStart.toISOString().slice(0, 10)
+    const previousPeriodKey = previousStart.toISOString().slice(0, 10)
 
-    return { earnedThis, earnedLast, percent, rawPercent, delta, isUp, met, over, periodKey }
+    return { earnedThis, earnedLast, percent, rawPercent, delta, isUp, met, over, periodKey, previousPeriodKey }
   }, [goal, allPayments])
 
   const saveGoal = useCallback(async (data) => {
@@ -88,6 +94,8 @@ export function RevenueGoalProvider({ children }) {
       ...data,
       history: buildHistory(goal, data),
       hasCelebratedAnyGoal: goal?.hasCelebratedAnyGoal ?? false,
+      currentPeriodKey: periodKeyFor(data.period),
+      lastCelebratedPeriodKey: null,
     }
 
     setGoal(optimisticGoal)
@@ -136,6 +144,65 @@ export function RevenueGoalProvider({ children }) {
       setGoal(previousGoal)
     }
   }, [user, goal])
+
+  const initializePeriodKey = useCallback(async (periodKey) => {
+    if (!user || !goal) return
+
+    const previousGoal = goal
+    const updatedGoal  = { ...goal, currentPeriodKey: periodKey }
+
+    setGoal(updatedGoal)
+
+    try {
+      await updateRevenueGoalFields(user.uid, { currentPeriodKey: periodKey })
+    } catch {
+      setGoal(previousGoal)
+    }
+  }, [user, goal])
+
+  const closePeriodAndAdvance = useCallback(async () => {
+    if (!user || !goal || !derived) return
+
+    const snapshot = {
+      type:      'period_closed',
+      period:    goal.period,
+      goal:      goal.goal,
+      earned:    derived.earnedLast,
+      met:       derived.earnedLast >= goal.goal,
+      periodKey: goal.currentPeriodKey,
+      closedAt:  new Date().toISOString(),
+    }
+
+    const previousGoal = goal
+    const updatedGoal  = {
+      ...goal,
+      history: [snapshot, ...(goal.history || [])].slice(0, 12),
+      currentPeriodKey: derived.periodKey,
+      lastCelebratedPeriodKey: null,
+    }
+
+    setGoal(updatedGoal)
+
+    try {
+      await updateRevenueGoalFields(user.uid, {
+        history: updatedGoal.history,
+        currentPeriodKey: updatedGoal.currentPeriodKey,
+        lastCelebratedPeriodKey: null,
+      })
+    } catch {
+      setGoal(previousGoal)
+    }
+  }, [user, goal, derived])
+
+  useEffect(() => {
+    if (!goal || !derived) return
+    if (!goal.currentPeriodKey) {
+      initializePeriodKey(derived.periodKey)
+      return
+    }
+    if (goal.currentPeriodKey === derived.periodKey) return
+    closePeriodAndAdvance()
+  }, [goal, derived, initializePeriodKey, closePeriodAndAdvance])
 
   return (
     <RevenueGoalContext.Provider value={{ goal, derived, loading, saveGoal, removeGoal, markGoalCelebrated }}>
