@@ -1,7 +1,7 @@
 import { createContext, useContext, useEffect, useState, useMemo, useCallback } from 'react'
 import { useAuth } from './AuthContext'
 import { usePayments } from './PaymentContext'
-import { fetchRevenueGoal, saveRevenueGoal, deleteRevenueGoal } from '../services/revenueGoalService'
+import { fetchRevenueGoal, saveRevenueGoal, updateRevenueGoalFields, deleteRevenueGoal } from '../services/revenueGoalService'
 import { getWindowStart, getPrevWindowStart } from '../pages/Dashboard/utils'
 
 const RevenueGoalContext = createContext(null)
@@ -69,20 +69,26 @@ export function RevenueGoalProvider({ children }) {
     const previousStart = getPrevWindowStart(goal.period)
     const earnedThis    = sumPaymentsInRange(allPayments, currentStart)
     const earnedLast    = sumPaymentsInRange(allPayments, previousStart, currentStart)
-    const percent       = goal.goal > 0
-      ? Math.min(Math.round((earnedThis / goal.goal) * 100), 100)
-      : 0
+    const rawPercent    = goal.goal > 0 ? Math.round((earnedThis / goal.goal) * 100) : 0
+    const percent       = Math.min(rawPercent, 100)
     const delta         = earnedThis - earnedLast
     const isUp          = delta >= 0
+    const met           = rawPercent >= 100
+    const over          = Math.max(0, earnedThis - goal.goal)
+    const periodKey      = currentStart.toISOString().slice(0, 10)
 
-    return { earnedThis, earnedLast, percent, delta, isUp }
+    return { earnedThis, earnedLast, percent, rawPercent, delta, isUp, met, over, periodKey }
   }, [goal, allPayments])
 
   const saveGoal = useCallback(async (data) => {
     if (!user) return
 
     const previousGoal   = goal
-    const optimisticGoal = { ...data, history: buildHistory(goal, data) }
+    const optimisticGoal = {
+      ...data,
+      history: buildHistory(goal, data),
+      hasCelebratedAnyGoal: goal?.hasCelebratedAnyGoal ?? false,
+    }
 
     setGoal(optimisticGoal)
 
@@ -109,8 +115,30 @@ export function RevenueGoalProvider({ children }) {
     }
   }, [user, goal])
 
+  const markGoalCelebrated = useCallback(async (periodKey) => {
+    if (!user || !goal) return
+
+    const previousGoal = goal
+    const updatedGoal  = {
+      ...goal,
+      lastCelebratedPeriodKey: periodKey,
+      hasCelebratedAnyGoal: true,
+    }
+
+    setGoal(updatedGoal)
+
+    try {
+      await updateRevenueGoalFields(user.uid, {
+        lastCelebratedPeriodKey: periodKey,
+        hasCelebratedAnyGoal: true,
+      })
+    } catch {
+      setGoal(previousGoal)
+    }
+  }, [user, goal])
+
   return (
-    <RevenueGoalContext.Provider value={{ goal, derived, loading, saveGoal, removeGoal }}>
+    <RevenueGoalContext.Provider value={{ goal, derived, loading, saveGoal, removeGoal, markGoalCelebrated }}>
       {children}
     </RevenueGoalContext.Provider>
   )
