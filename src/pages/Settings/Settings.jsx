@@ -73,6 +73,8 @@ export default function Settings({ onMenuClick }) {
   const [portfolioSlug, setPortfolioSlug] = useState(null)
   const [pendingTemplate, setPendingTemplate] = useState(null)
   const [returnTo, setReturnTo] = useState(null)
+  const [templateCompletedInfo, setTemplateCompletedInfo] = useState(null)
+  const [portfolioTemplateCompletedInfo, setPortfolioTemplateCompletedInfo] = useState(null)
 
   const isDarkMode = generalSettings.theme === 'dark'
 
@@ -85,14 +87,34 @@ export default function Settings({ onMenuClick }) {
 
   useEffect(() => {
     const navState = location.state
-    if (!navState?.autoOpenModal && !navState?.reopenTemplateModal) return
+    if (!navState?.autoOpenModal && !navState?.reopenTemplateModal && !navState?.reopenPortfolioTemplateModal) return
 
     if (navState.autoOpenModal === 'invoiceSettings') {
       setIsInvoiceModalOpen(true)
     }
 
+    if (navState.autoOpenModal === 'portfolioSettings') {
+      setIsPortfolioModalOpen(true)
+    }
+
     if (navState.reopenTemplateModal) {
       setIsTemplateModalOpen(true)
+      if (navState.reopenMissingFields) {
+        setTemplateCompletedInfo({
+          completedModal: navState.completedModal ?? null,
+          completedFields: navState.completedFields ?? [],
+        })
+      }
+    }
+
+    if (navState.reopenPortfolioTemplateModal) {
+      setIsPortfolioTemplateModalOpen(true)
+      if (navState.reopenMissingFields) {
+        setPortfolioTemplateCompletedInfo({
+          completedModal: navState.completedModal ?? null,
+          completedFields: navState.completedFields ?? [],
+        })
+      }
     }
 
     if (navState.pendingTemplate) {
@@ -117,10 +139,14 @@ export default function Settings({ onMenuClick }) {
       if (extraMessage) showToast(extraMessage)
       return
     }
-    updateManyGeneralSettings({
-      invoiceTemplate: pendingTemplate.invoiceTemplate,
-      receiptTemplate: pendingTemplate.receiptTemplate,
-    })
+    if (pendingTemplate.portfolioTemplate) {
+      updateManyPortfolioSettings({ portfolioTemplate: pendingTemplate.portfolioTemplate })
+    } else {
+      updateManyGeneralSettings({
+        invoiceTemplate: pendingTemplate.invoiceTemplate,
+        receiptTemplate: pendingTemplate.receiptTemplate,
+      })
+    }
     setPendingTemplate(null)
     showToast(extraMessage ? `${extraMessage} · Template applied ✓` : 'Template applied ✓')
   }
@@ -148,6 +174,22 @@ export default function Settings({ onMenuClick }) {
           completedFields: returnTo.completedFields ?? [],
         },
       })
+    } else if (returnTo.reopenTemplateModal) {
+      setIsTemplateModalOpen(true)
+      if (returnTo.reopenMissingFields) {
+        setTemplateCompletedInfo({
+          completedModal: returnTo.completedModal ?? null,
+          completedFields: returnTo.completedFields ?? [],
+        })
+      }
+    } else if (returnTo.reopenPortfolioTemplateModal) {
+      setIsPortfolioTemplateModalOpen(true)
+      if (returnTo.reopenMissingFields) {
+        setPortfolioTemplateCompletedInfo({
+          completedModal: returnTo.completedModal ?? null,
+          completedFields: returnTo.completedFields ?? [],
+        })
+      }
     }
 
     setReturnTo(null)
@@ -156,6 +198,12 @@ export default function Settings({ onMenuClick }) {
   function handleInvoiceModalBack() {
     setIsInvoiceModalOpen(false)
     applyPendingTemplateIfAny('Invoice settings saved')
+    returnToOriginIfAny()
+  }
+
+  function handlePortfolioSettingsModalBack() {
+    setIsPortfolioModalOpen(false)
+    applyPendingTemplateIfAny('Portfolio settings saved')
     returnToOriginIfAny()
   }
 
@@ -446,6 +494,8 @@ export default function Settings({ onMenuClick }) {
         onClose={() => setIsTemplateModalOpen(false)}
         onSelect={handleTemplateSelect}
         returnTo={{ reopenTemplateModal: true }}
+        completionSignal={templateCompletedInfo}
+        onCompletionSignalHandled={() => setTemplateCompletedInfo(null)}
       />
 
       {isInvoiceModalOpen && (
@@ -471,7 +521,7 @@ export default function Settings({ onMenuClick }) {
 
       {isPortfolioModalOpen && (
         <PortfolioSettingsModal
-          onBack={() => setIsPortfolioModalOpen(false)}
+          onBack={handlePortfolioSettingsModalBack}
           showToast={showToast}
         />
       )}
@@ -482,6 +532,9 @@ export default function Settings({ onMenuClick }) {
           slug={portfolioSlug || user?.uid}
           onClose={() => setIsPortfolioTemplateModalOpen(false)}
           onSelect={handlePortfolioTemplateSelect}
+          returnTo={{ reopenPortfolioTemplateModal: true }}
+          completionSignal={portfolioTemplateCompletedInfo}
+          onCompletionSignalHandled={() => setPortfolioTemplateCompletedInfo(null)}
         />
       )}
 
