@@ -22,6 +22,10 @@ export async function saveRevenueGoal(uid, data) {
   })
 }
 
+export async function updateRevenueGoalFields(uid, fields) {
+  await setDoc(goalDocument(uid), fields, { merge: true })
+}
+
 export async function deleteRevenueGoal(uid) {
   await deleteDoc(goalDocument(uid))
 }
