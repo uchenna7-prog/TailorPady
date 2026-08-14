@@ -84,6 +84,8 @@ export function TemplateModal({
   onClose,
   onSelect,
   returnTo,
+  completionSignal,
+  onCompletionSignalHandled,
 }) {
   const { profileSettings }    = useProfileSettings()
   const RECEIPT_BRAND_SETTINGS = useReceiptBrandSettings()
@@ -116,6 +118,7 @@ export function TemplateModal({
   const [slideDir,       setSlideDir]       = useState(null)
   const [slideKey,       setSlideKey]       = useState(0)
   const [missingFields,  setMissingFields]  = useState(null)
+  const [completedModalKey, setCompletedModalKey] = useState(null)
 
   const docType = lockToTab ?? 'both'
 
@@ -227,6 +230,15 @@ export function TemplateModal({
     })
   }, [activeTab])
 
+  useEffect(() => {
+    if (!isOpen || !completionSignal) return
+    const requires = getRequiresForDoc(docType, selectedInvoiceTemplate, selectedReceiptTemplate)
+    const missing  = getMissingFields(requires, profileSettings)
+    setCompletedModalKey(completionSignal.completedModal ?? null)
+    setMissingFields(missing.length > 0 ? missing : null)
+    onCompletionSignalHandled?.()
+  }, [isOpen, completionSignal, docType, selectedInvoiceTemplate, selectedReceiptTemplate, profileSettings, onCompletionSignalHandled])
+
   const handleTabSwitch = useCallback((tabKey) => {
     if (lockToTab) return
     if (tabKey === activeTab) return
@@ -298,6 +310,7 @@ export function TemplateModal({
     const requires = getRequiresForDoc(docType, selectedInvoiceTemplate, selectedReceiptTemplate)
     const missing  = getMissingFields(requires, profileSettings)
     if (missing.length > 0) {
+      setCompletedModalKey(null)
       setMissingFields(missing)
       return
     }
@@ -306,6 +319,7 @@ export function TemplateModal({
 
   const handleSkipAndSave = useCallback(() => {
     setMissingFields(null)
+    setCompletedModalKey(null)
     commitSelection()
   }, [commitSelection])
 
@@ -450,13 +464,14 @@ export function TemplateModal({
         <MissingFieldsSheet
           missingFields={missingFields}
           docType={docType}
-          onClose={() => setMissingFields(null)}
+          onClose={() => { setMissingFields(null); setCompletedModalKey(null) }}
           onSkipAndSave={handleSkipAndSave}
           pendingTemplate={{
             invoiceTemplate: selectedInvoiceTemplate,
             receiptTemplate: selectedReceiptTemplate,
           }}
           returnTo={returnTo}
+          completedModal={completedModalKey}
         />
       )}
 
