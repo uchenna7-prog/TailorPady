@@ -519,13 +519,6 @@ export default function Settings({ onMenuClick }) {
         />
       )}
 
-      {isPortfolioModalOpen && (
-        <PortfolioSettingsModal
-          onBack={handlePortfolioSettingsModalBack}
-          showToast={showToast}
-        />
-      )}
-
       {isPortfolioTemplateModalOpen && (
         <PortfolioTemplateModal
           currentTemplate={portfolioSettings.portfolioTemplate || 'template2'}
@@ -535,6 +528,13 @@ export default function Settings({ onMenuClick }) {
           returnTo={{ reopenPortfolioTemplateModal: true }}
           completionSignal={portfolioTemplateCompletedInfo}
           onCompletionSignalHandled={() => setPortfolioTemplateCompletedInfo(null)}
+        />
+      )}
+
+      {isPortfolioModalOpen && (
+        <PortfolioSettingsModal
+          onBack={handlePortfolioSettingsModalBack}
+          showToast={showToast}
         />
       )}
 
