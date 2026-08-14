@@ -18,7 +18,6 @@ function resolveCurrencySymbol(raw) {
   return raw.symbol ?? '₦'
 }
 
-
 export function RevenueGoalCard({ goal, derived, onEdit, onDelete }) {
   const { generalSettings } = useGeneralSettings()
   const [menuOpen, setMenuOpen] = useState(false)
@@ -33,6 +32,7 @@ export function RevenueGoalCard({ goal, derived, onEdit, onDelete }) {
   const periodName = goal.period === 'weekly' ? 'week' : goal.period === 'monthly' ? 'month' : 'year'
   const deltaColor = derived.isUp ? '#15803d' : '#ef4444'
   const deltaIcon  = derived.isUp ? 'arrow_upward' : 'arrow_downward'
+  const isMet      = derived.met
 
   useEffect(() => {
     if (!menuOpen) return
@@ -66,12 +66,26 @@ export function RevenueGoalCard({ goal, derived, onEdit, onDelete }) {
     <div className={styles.card} onClick={onEdit}>
 
       <div className={styles.left}>
-        <div className={styles.label}>
-          {goal.period === 'weekly' ? 'This week' : goal.period === 'monthly' ? 'This month' : 'This year'} · Revenue
+        <div className={styles.labelRow}>
+          <div className={styles.label}>
+            {goal.period === 'weekly' ? 'This week' : goal.period === 'monthly' ? 'This month' : 'This year'} · Revenue
+          </div>
+          {isMet && (
+            <div className={styles.metBadge}>
+              <span className="mi" style={{ fontSize: '0.7rem' }}>check_circle</span>
+              Goal met
+            </div>
+          )}
         </div>
 
         <div className={styles.amount}>{fmt(derived.earnedThis)}</div>
-        <div className={styles.target}>Goal: {fmt(goal.goal)}</div>
+        <div className={`${styles.target} ${isMet ? styles.targetMet : ''}`}>
+          {isMet
+            ? derived.over > 0
+              ? `${fmt(derived.over)} over goal`
+              : 'Goal reached exactly'
+            : `Goal: ${fmt(goal.goal)}`}
+        </div>
 
         {derived.delta !== 0 && (
           <div className={styles.delta}>
