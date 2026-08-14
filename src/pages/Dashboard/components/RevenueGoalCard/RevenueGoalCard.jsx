@@ -66,16 +66,8 @@ export function RevenueGoalCard({ goal, derived, onEdit, onDelete }) {
     <div className={styles.card} onClick={onEdit}>
 
       <div className={styles.left}>
-        <div className={styles.labelRow}>
-          <div className={styles.label}>
-            {goal.period === 'weekly' ? 'This week' : goal.period === 'monthly' ? 'This month' : 'This year'} · Revenue
-          </div>
-          {isMet && (
-            <div className={styles.metBadge}>
-              <span className="mi" style={{ fontSize: '0.7rem' }}>check_circle</span>
-              Goal met
-            </div>
-          )}
+        <div className={styles.label}>
+          {goal.period === 'weekly' ? 'This week' : goal.period === 'monthly' ? 'This month' : 'This year'} · Revenue
         </div>
 
         <div className={styles.amount}>{fmt(derived.earnedThis)}</div>
@@ -102,7 +94,11 @@ export function RevenueGoalCard({ goal, derived, onEdit, onDelete }) {
 
       <div className={styles.right}>
         <div className={styles.donutWrap}>
-          <RevenueDonut percentage={derived.percent} />
+          <RevenueDonut
+            percentage={derived.percent}
+            rawPercentage={derived.rawPercent}
+            met={isMet}
+          />
         </div>
 
         <div className={styles.menuWrap} ref={menuRef}>
