@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useEffect } from 'react'
 import { useProfileSettings } from '../../../../contexts/ProfileSettingsContext'
 import { usePortfolioSettings } from '../../../../contexts/PortfolioSettingsContext'
 import Header from '../../../../components/Header/Header'
@@ -99,7 +99,15 @@ function getPortfolioMissingFields(profileSettings, portfolioSettings) {
   ))
 }
 
-export function PortfolioTemplateModal({ currentTemplate, slug, onClose, onSelect, returnTo }) {
+export function PortfolioTemplateModal({
+  currentTemplate,
+  slug,
+  onClose,
+  onSelect,
+  returnTo,
+  completionSignal,
+  onCompletionSignalHandled,
+}) {
   const { profileSettings }   = useProfileSettings()
   const { portfolioSettings } = usePortfolioSettings()
 
@@ -107,6 +115,7 @@ export function PortfolioTemplateModal({ currentTemplate, slug, onClose, onSelec
   const [previewTemplate, setPreviewTemplate] = useState(null)
   const [gender, setGender] = useState('male')
   const [missingFields, setMissingFields] = useState(null)
+  const [completedModalKey, setCompletedModalKey] = useState(null)
   const { currentStep, completeStep, goToStep } = useTour()
 
   const hasChanges = selected !== currentTemplate
@@ -139,6 +148,7 @@ export function PortfolioTemplateModal({ currentTemplate, slug, onClose, onSelec
   const handleSavePress = useCallback(() => {
     const missing = getPortfolioMissingFields(profileSettings, portfolioSettings)
     if (missing.length > 0) {
+      setCompletedModalKey(null)
       setMissingFields(missing)
       return
     }
@@ -147,8 +157,17 @@ export function PortfolioTemplateModal({ currentTemplate, slug, onClose, onSelec
 
   const handleSkipAndSave = useCallback(() => {
     setMissingFields(null)
+    setCompletedModalKey(null)
     commitSelection()
   }, [commitSelection])
+
+  useEffect(() => {
+    if (!completionSignal) return
+    const missing = getPortfolioMissingFields(profileSettings, portfolioSettings)
+    setCompletedModalKey(completionSignal.completedModal ?? null)
+    setMissingFields(missing.length > 0 ? missing : null)
+    onCompletionSignalHandled?.()
+  }, [completionSignal, profileSettings, portfolioSettings, onCompletionSignalHandled])
 
   return (
     <div className={styles.templateModalContainer}>
@@ -255,10 +274,11 @@ export function PortfolioTemplateModal({ currentTemplate, slug, onClose, onSelec
         <MissingFieldsSheet
           missingFields={missingFields}
           docType="portfolio"
-          onClose={() => setMissingFields(null)}
+          onClose={() => { setMissingFields(null); setCompletedModalKey(null) }}
           onSkipAndSave={handleSkipAndSave}
           pendingTemplate={{ portfolioTemplate: selected }}
           returnTo={returnTo}
+          completedModal={completedModalKey}
         />
       )}
     </div>
