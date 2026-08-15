@@ -8,7 +8,7 @@ export const TOUR_CATALOG = [
   {
     id: 'portfolio-setup',
     label: 'Set up your portfolio',
-    description: 'Learn how to create and customize your portfolio',
+    description: 'Learn how to build your portfolio, add photos, choose a template, and share your link',
     icon: 'photo_library',
   },
   {
