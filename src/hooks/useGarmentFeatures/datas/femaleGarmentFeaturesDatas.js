@@ -25,6 +25,12 @@ import femHighWaist from '../../../assets/femaleGarmentFeatures/lowerWearFeature
 import femLowWaist from '../../../assets/femaleGarmentFeatures/lowerWearFeatures/waistType/lowWaist.jpg'
 import femMidWaist from '../../../assets/femaleGarmentFeatures/lowerWearFeatures/waistType/midWaist.jpg'
 
+import femTrouserFitAthletic from '../../../assets/femaleGarmentFeatures/lowerWearFeatures/trouser/fitType/athleticFit.jpg'
+import femTrouserFitOversized from '../../../assets/femaleGarmentFeatures/lowerWearFeatures/trouser/fitType/oversizedFit.jpg'
+import femTrouserFitRegular from '../../../assets/femaleGarmentFeatures/lowerWearFeatures/trouser/fitType/regularFit.jpg'
+import femTrouserFitRelaxed from '../../../assets/femaleGarmentFeatures/lowerWearFeatures/trouser/fitType/relaxedFit.jpg'
+import femTrouserFitSlim from '../../../assets/femaleGarmentFeatures/lowerWearFeatures/trouser/fitType/slimFit.jpg'
+
 import femUNeck from '../../../assets/femaleGarmentFeatures/upperWearFeatures/frontNeckType/U-Neck.jpg'
 import femVNeck from '../../../assets/femaleGarmentFeatures/upperWearFeatures/frontNeckType/V-Neck.jpg'
 import femBasketNeck from '../../../assets/femaleGarmentFeatures/upperWearFeatures/frontNeckType/basketNeck.jpg'
@@ -138,6 +144,14 @@ const FEMALE_LOWER_WEAR_IMGS = {
   highWaist: femHighWaist,
   lowWaist: femLowWaist,
   midWaist: femMidWaist,
+}
+
+const FEMALE_TROUSER_FIT_IMGS = {
+  athletic: femTrouserFitAthletic,
+  oversized: femTrouserFitOversized,
+  regular: femTrouserFitRegular,
+  relaxed: femTrouserFitRelaxed,
+  slim: femTrouserFitSlim,
 }
 
 const FEMALE_NECK_IMGS = {
@@ -414,6 +428,18 @@ const FEMALE_LINING_SLOT = {
     { id: 'none', label: 'No Lining', img: FEMALE_LOWER_WEAR_IMGS.noLining },
     { id: 'half', label: 'Half Lining', img: FEMALE_LOWER_WEAR_IMGS.halfLining },
     { id: 'full', label: 'Full Lining', img: FEMALE_LOWER_WEAR_IMGS.fullLining },
+  ],
+}
+
+export const FEMALE_TROUSER_FIT_SLOT = {
+  id: 'fit',
+  label: 'Fit',
+  options: [
+    { id: 'slim', label: 'Slim Fit', img: FEMALE_TROUSER_FIT_IMGS.slim },
+    { id: 'regular', label: 'Regular Fit', img: FEMALE_TROUSER_FIT_IMGS.regular },
+    { id: 'relaxed', label: 'Relaxed Fit', img: FEMALE_TROUSER_FIT_IMGS.relaxed },
+    { id: 'athletic', label: 'Athletic Fit', img: FEMALE_TROUSER_FIT_IMGS.athletic },
+    { id: 'oversized', label: 'Oversized Fit', img: FEMALE_TROUSER_FIT_IMGS.oversized },
   ],
 }
 
