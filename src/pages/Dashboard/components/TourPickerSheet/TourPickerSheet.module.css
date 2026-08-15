@@ -67,7 +67,7 @@
 
 .item {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   gap: 12px;
   width: 100%;
   background: var(--surface2);
@@ -106,6 +106,7 @@
   gap: 2px;
   flex: 1;
   min-width: 0;
+  padding-top: 2px;
 }
 
 .itemLabel {
@@ -117,21 +118,23 @@
 .itemDescription {
   font-size: 0.75rem;
   color: var(--text3);
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  white-space: normal;
+  overflow: visible;
+  line-height: 1.35;
 }
 
 .completedIcon {
   color: #22c55e;
   font-size: 1.2rem;
   flex-shrink: 0;
+  margin-top: 2px;
 }
 
 .chevron {
   color: var(--text3);
   font-size: 1.2rem;
   flex-shrink: 0;
+  margin-top: 2px;
 }
 
 .cancelBtn {
