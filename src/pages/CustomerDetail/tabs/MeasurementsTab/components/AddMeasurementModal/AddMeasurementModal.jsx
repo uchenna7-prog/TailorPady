@@ -499,7 +499,7 @@ export function AddMeasurementModal({ isOpen, onClose, onSave, gender }) {
                 </div>
               )}
 
-              {measurement.category === 'full_body' && fullWearTypes.length === 0 && (
+              {gender === 'Female' && measurement.category === 'full_body' && fullWearTypes.length === 0 && (
                 <div className={styles.featureEmptyState}>
                   <span className="mi-outlined" style={{ fontSize: '2rem', color: 'var(--text3)' }}>checkroom</span>
                   <p>No garment types available</p>
