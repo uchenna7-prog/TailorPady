@@ -123,12 +123,26 @@ export function InvoiceSettingsModal({ onBack, showToast }) {
     invoiceFooter: generalSettings.invoiceFooter,
   })
 
+  const [prefixError, setPrefixError] = useState(false)
+
   const [currencyPickerOpen, setCurrencyPickerOpen] = useState(false)
   const currencyTriggerRef = useRef(null)
+  const prefixFieldRef = useRef(null)
 
-  const setGeneral = key => val => setLocalGeneral(p => ({ ...p, [key]: val }))
+  const setGeneral = key => val => {
+    setLocalGeneral(p => ({ ...p, [key]: val }))
+    if (key === 'invoicePrefix' && prefixError) setPrefixError(false)
+  }
 
   function save() {
+    if (!localGeneral.invoicePrefix?.trim()) {
+      setPrefixError(true)
+      prefixFieldRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+      showToast('Invoice number prefix is required')
+      return
+    }
+
+    setPrefixError(false)
     updateManyGeneralSettings({ ...localGeneral })
     showToast('Invoice settings saved')
     onBack()
@@ -143,11 +157,12 @@ export function InvoiceSettingsModal({ onBack, showToast }) {
 
           <div className={styles.sectionLabel}>Invoice</div>
           <FieldGroup>
-            <Field label="Invoice Number Prefix" hint="Shown before the number, e.g. INV-0042.">
+            <Field ref={prefixFieldRef} label="Invoice Number Prefix" hint="Shown before the number, e.g. INV-0042.">
               <TextInput
                 value={localGeneral.invoicePrefix}
                 onChange={setGeneral('invoicePrefix')}
                 placeholder="INV"
+                error={prefixError}
               />
             </Field>
 
