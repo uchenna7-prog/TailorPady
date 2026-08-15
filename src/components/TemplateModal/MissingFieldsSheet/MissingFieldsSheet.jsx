@@ -39,19 +39,10 @@ const DESTINATIONS = {
     title: 'Business Contact',
     actionLabel: 'Add contact details',
     completedLabel: 'Business contact added',
-    fieldKeys: ['phone', 'email', 'address', 'website'],
+    fieldKeys: ['phone', 'email', 'address', 'website', 'accountBank', 'accountNumber', 'accountName', 'paymentTerms'],
+    invoiceOnlyFieldKeys: ['accountBank', 'accountNumber', 'accountName', 'paymentTerms'],
     route: '/account',
     modal: 'businessInfo',
-  },
-  invoice: {
-    icon: 'receipt_long',
-    title: 'Invoice Settings',
-    actionLabel: 'Add invoice details',
-    completedLabel: 'Invoice details added',
-    fieldKeys: ['accountBank', 'accountNumber', 'accountName', 'paymentTerms'],
-    route: '/settings',
-    modal: 'invoiceSettings',
-    invoiceOnly: true,
   },
   socials: {
     icon: 'share',
@@ -81,11 +72,16 @@ function buildGroups(missingFields, docType) {
 
   for (const key of missingFields) {
     for (const [groupKey, destination] of Object.entries(DESTINATIONS)) {
-      if (destination.invoiceOnly && docType !== 'invoice' && docType !== 'both') continue
       if (destination.portfolioOnly && docType !== 'portfolio') continue
       if (!destination.fieldKeys.includes(key)) continue
       if (groups.some(g => g.key === groupKey)) continue
-      const fields = destination.fieldKeys.filter(f => missingSet.has(f))
+
+      const visibleFieldKeys = destination.fieldKeys.filter(f => {
+        if (destination.invoiceOnlyFieldKeys?.includes(f) && docType !== 'invoice' && docType !== 'both') return false
+        return true
+      })
+      const fields = visibleFieldKeys.filter(f => missingSet.has(f))
+      if (fields.length === 0) continue
       groups.push({ key: groupKey, fields, ...destination })
     }
   }
