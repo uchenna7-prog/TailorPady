@@ -2,19 +2,19 @@ export const TOUR_CATALOG = [
   {
     id: 'onboarding',
     label: 'Get started with TailorPady',
-    description: 'Customers, orders, invoices, payments, and receipts',
+    description: 'Learn how to manage customers, measurements, orders, invoices, payments, and receipts',
     icon: 'rocket_launch',
   },
   {
     id: 'portfolio-setup',
     label: 'Set up your portfolio',
-    description: 'Build a public showcase of your work',
+    description: 'Learn how to create and customize your portfolio',
     icon: 'photo_library',
   },
   {
     id: 'ai-assistant',
     label: 'Set up your AI assistant',
-    description: 'Automate invoices, reminders, and follow-ups',
+    description: 'Learn how to set up your AI assistant for invoices, receipts, reminders, and follow-ups',
     icon: 'smart_toy',
   },
 ]
