@@ -26,7 +26,7 @@ function Agent() {
 
   const {
     enabled,
-    drafts,
+    activityLog,
     pendingDrafts,
     approvedDrafts,
     pendingCount,
@@ -35,6 +35,7 @@ function Agent() {
     cancelUpcoming,
     approveDraft,
     discardDraft,
+    markDraftSaved,
   } = useAutonomousAgent()
 
   const { user }                     = useAuth()
@@ -107,7 +108,7 @@ function Agent() {
       } else {
         await addReceipt(data)
       }
-      discardDraft(draftId)
+      markDraftSaved(draftId)
       recordUsage('aiActionsPerMonth').catch(() => {})
       showToast(`${type === 'invoice' ? 'Invoice' : 'Receipt'} saved!`)
     } catch {
@@ -245,8 +246,7 @@ function Agent() {
         {tab === 'activity' && (
           <ActivityTab
             user={user}
-            drafts={drafts}
-            approvedDrafts={approvedDrafts}
+            items={activityLog}
             dailyBrief={dailyBrief}
             allOrders={allOrders}
             allInvoices={allInvoices}
@@ -268,7 +268,7 @@ function Agent() {
         )}
         {tab === 'drafts' && (
           <DraftsTab
-            items={drafts}
+            items={pendingDrafts.concat(approvedDrafts)}
             pendingDrafts={pendingDrafts}
             approvedDrafts={approvedDrafts}
             onApprove={approveDraft}
