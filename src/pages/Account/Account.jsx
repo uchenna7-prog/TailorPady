@@ -2,7 +2,6 @@ import { useState, useRef, useEffect, useCallback } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
 import { useProfileSettings } from '../../contexts/ProfileSettingsContext'
 import { useGeneralSettings } from '../../contexts/GeneralSettingsContext'
-import { usePortfolioSettings } from '../../contexts/PortfolioSettingsContext'
 import { useAuth } from '../../contexts/AuthContext'
 import { usePremium } from '../../contexts/PremiumContext'
 import { useTour } from '../../contexts/TourContext'
@@ -42,7 +41,6 @@ export default function Account({ onMenuClick, isPremium = false, onUpgrade = ()
 
   const { profileSettings } = useProfileSettings()
   const { updateManyGeneralSettings } = useGeneralSettings()
-  const { updateManyPortfolioSettings } = usePortfolioSettings()
   const { user, logout } = useAuth()
   const { plan, nextRenewal } = usePremium()
   const navigate = useNavigate()
@@ -144,16 +142,16 @@ export default function Account({ onMenuClick, isPremium = false, onUpgrade = ()
       return
     }
     if (pendingTemplate.portfolioTemplate) {
-      updateManyPortfolioSettings({ portfolioTemplate: pendingTemplate.portfolioTemplate })
-    } else {
-      updateManyGeneralSettings({
-        invoiceTemplate: pendingTemplate.invoiceTemplate,
-        receiptTemplate: pendingTemplate.receiptTemplate,
-      })
+      if (extraMessage) showToast(extraMessage)
+      return
     }
+    updateManyGeneralSettings({
+      invoiceTemplate: pendingTemplate.invoiceTemplate,
+      receiptTemplate: pendingTemplate.receiptTemplate,
+    })
     setPendingTemplate(null)
     showToast(extraMessage ? `${extraMessage} · Template applied ✓` : 'Template applied ✓')
-  }, [pendingTemplate, updateManyGeneralSettings, updateManyPortfolioSettings, showToast])
+  }, [pendingTemplate, updateManyGeneralSettings, showToast])
 
   const returnToOriginIfAny = useCallback(() => {
     if (!returnTo) return
