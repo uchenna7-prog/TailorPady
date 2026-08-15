@@ -26,6 +26,7 @@ import {
   FEMALE_JUMPSUIT_BASE_SLOTS,
   FEMALE_ROMPER_BASE_SLOTS,
   FEMALE_TROUSER_FIT_SLOT,
+  FEMALE_TROUSER_LENGTH_SLOT,
 } from './datas/femaleGarmentFeaturesDatas'
 
 export const GARMENT_CATEGORIES = [
@@ -45,6 +46,12 @@ export const FEMALE_FULL_WEAR_TYPES = [
 export const FEMALE_LOWER_BODY_TYPES = [
   { id: 'skirt', label: 'Skirt' },
   { id: 'trousers', label: 'Trousers' },
+]
+
+const FEMALE_TROUSER_SLOTS = [
+  FEMALE_TROUSER_FIT_SLOT,
+  FEMALE_TROUSER_LENGTH_SLOT,
+  ...TROUSER_SLOTS.slice(2),
 ]
 
 function buildUpperWearSlots(gender) {
@@ -76,7 +83,7 @@ function buildUpperWearSlots(gender) {
 
 function buildLowerWearSlots(gender, lowerBodyType) {
   if (gender === 'Female') {
-    if (lowerBodyType === 'trousers') return [FEMALE_TROUSER_FIT_SLOT, ...TROUSER_SLOTS.slice(1)]
+    if (lowerBodyType === 'trousers') return FEMALE_TROUSER_SLOTS
     if (lowerBodyType === 'skirt') return FEMALE_SKIRT_BASE_SLOTS
     return []
   }
