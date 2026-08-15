@@ -9,6 +9,7 @@ import {
   MALE_BACK_DESIGN_SLOT,
   MALE_BUTTON_STYLE_SLOT,
   POCKET_SLOT_MALE_FRONT,
+  MALE_FULL_WEAR_SLOTS,
 } from './datas/maleGarmentFeaturesDatas'
 
 import {
@@ -24,6 +25,7 @@ import {
   FEMALE_GOWN_BASE_SLOTS,
   FEMALE_JUMPSUIT_BASE_SLOTS,
   FEMALE_ROMPER_BASE_SLOTS,
+  FEMALE_TROUSER_FIT_SLOT,
 } from './datas/femaleGarmentFeaturesDatas'
 
 export const GARMENT_CATEGORIES = [
@@ -74,7 +76,7 @@ function buildUpperWearSlots(gender) {
 
 function buildLowerWearSlots(gender, lowerBodyType) {
   if (gender === 'Female') {
-    if (lowerBodyType === 'trousers') return TROUSER_SLOTS
+    if (lowerBodyType === 'trousers') return [FEMALE_TROUSER_FIT_SLOT, ...TROUSER_SLOTS.slice(1)]
     if (lowerBodyType === 'skirt') return FEMALE_SKIRT_BASE_SLOTS
     return []
   }
@@ -125,7 +127,7 @@ function buildFullWearSlots(gender, fullWearType) {
     return []
   }
 
-  return []
+  return MALE_FULL_WEAR_SLOTS
 }
 
 function getSlotsForCard(category, fullWearType, gender, lowerBodyType) {
