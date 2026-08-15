@@ -15,3 +15,11 @@
 .textarea:focus {
   border-color: var(--accent);
 }
+
+.textareaError {
+  border-color: #ef4444;
+}
+
+.textareaError:focus {
+  border-color: #ef4444;
+}
