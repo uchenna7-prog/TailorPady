@@ -135,20 +135,7 @@ export default function Settings({ onMenuClick }) {
   }
 
   function applyPendingTemplateIfAny(extraMessage) {
-    if (!pendingTemplate) {
-      if (extraMessage) showToast(extraMessage)
-      return
-    }
-    if (pendingTemplate.portfolioTemplate) {
-      if (extraMessage) showToast(extraMessage)
-      return
-    }
-    updateManyGeneralSettings({
-      invoiceTemplate: pendingTemplate.invoiceTemplate,
-      receiptTemplate: pendingTemplate.receiptTemplate,
-    })
-    setPendingTemplate(null)
-    showToast(extraMessage ? `${extraMessage} · Template applied ✓` : 'Template applied ✓')
+    if (extraMessage) showToast(extraMessage)
   }
 
   function returnToOriginIfAny() {
@@ -212,6 +199,7 @@ export default function Settings({ onMenuClick }) {
       invoiceTemplate: selectedTemplates.invoiceTemplate,
       receiptTemplate: selectedTemplates.receiptTemplate,
     })
+    setPendingTemplate(null)
     showToast('Template selected')
   }
 
@@ -491,8 +479,10 @@ export default function Settings({ onMenuClick }) {
         isOpen={isTemplateModalOpen}
         currentInvoiceTemplate={generalSettings.invoiceTemplate || 'invoiceTemplate1'}
         currentReceiptTemplate={generalSettings.receiptTemplate || 'receiptTemplate1'}
+        initialSelectedInvoiceTemplate={pendingTemplate?.invoiceTemplate ?? generalSettings.invoiceTemplate ?? 'invoiceTemplate1'}
+        initialSelectedReceiptTemplate={pendingTemplate?.receiptTemplate ?? generalSettings.receiptTemplate ?? 'receiptTemplate1'}
         colourId={profileSettings.brandColourId}
-        onClose={() => setIsTemplateModalOpen(false)}
+        onClose={() => { setIsTemplateModalOpen(false); setPendingTemplate(null) }}
         onSelect={handleTemplateSelect}
         returnTo={{ reopenTemplateModal: true }}
         completionSignal={templateCompletedInfo}
