@@ -1,7 +1,7 @@
 import { useRef, useEffect } from "react"
 import styles from "./TextInput.module.css"
 
-export function TextInput({ value, onChange, placeholder, maxLength = 100 }) {
+export function TextInput({ value, onChange, placeholder, maxLength = 100, error = false }) {
   const ref = useRef(null)
 
   useEffect(() => {
@@ -18,7 +18,7 @@ export function TextInput({ value, onChange, placeholder, maxLength = 100 }) {
   return (
     <textarea
       ref={ref}
-      className={styles.textInput}
+      className={`${styles.textInput} ${error ? styles.textInputError : ''}`}
       value={value}
       maxLength={maxLength}
       onChange={e => onChange(e.target.value)}
