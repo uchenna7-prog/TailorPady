@@ -28,6 +28,8 @@ import {
   MAX_ABOUT_LENGTH,
 } from './datas'
 
+const FIELD_ERROR_ORDER = ['about', 'yearFounded', 'location']
+
 function normalizeAvailableUntil(v) {
   if (v && typeof v === 'object') {
     return { month: v.month || null, year: v.year || null }
@@ -64,6 +66,14 @@ function buildLocal(ps) {
     brandAvailableUntil: normalizeAvailableUntil(ps.brandAvailableUntil),
     brandBusinessHours: normalizeBusinessHours(ps.brandBusinessHours),
   }
+}
+
+function validateLocal(local) {
+  const errors = {}
+  if (!local.brandAbout || local.brandAbout.trim().length < MIN_ABOUT_LENGTH) errors.about = true
+  if (!local.brandYearFounded || !local.brandYearFounded.toString().trim()) errors.yearFounded = true
+  if (!local.brandLocation || !local.brandLocation.trim()) errors.location = true
+  return errors
 }
 
 function BackgroundImageField({ label, hint, value, onChange, showToast }) {
@@ -138,12 +148,13 @@ function BackgroundImageField({ label, hint, value, onChange, showToast }) {
   )
 }
 
-function AboutField({ value, onChange }) {
+function AboutField({ value, onChange, error, fieldRef }) {
   const length = value?.length || 0
   const belowMin = length > 0 && length < MIN_ABOUT_LENGTH
 
   return (
     <Field
+      ref={fieldRef}
       label="About"
       hint={`Tell clients who you are and what your brand stands for. At least ${MIN_ABOUT_LENGTH} characters.`}
     >
@@ -153,8 +164,9 @@ function AboutField({ value, onChange }) {
         placeholder="e.g. I'm a tailor based in Lagos with over 8 years of experience crafting bespoke suits, agbadas, and formal wear for clients who value fit and finishing."
         rows={5}
         maxLength={MAX_ABOUT_LENGTH}
+        error={error}
       />
-      <div className={`${styles.charCount} ${belowMin ? styles.charCountWarn : ''}`}>
+      <div className={`${styles.charCount} ${belowMin || error ? styles.charCountWarn : ''}`}>
         {belowMin
           ? `${MIN_ABOUT_LENGTH - length} more characters needed`
           : `${length}/${MAX_ABOUT_LENGTH}`}
@@ -168,7 +180,13 @@ export function PortfolioSettingsModal({ onBack, showToast }) {
   const { currentStep, completeStep } = useTour()
 
   const [local, setLocal] = useState(() => buildLocal(portfolioSettings))
+  const [fieldErrors, setFieldErrors] = useState({})
   const syncedRef = useRef(false)
+
+  const aboutRef = useRef(null)
+  const yearFoundedRef = useRef(null)
+  const locationRef = useRef(null)
+  const fieldRefs = { about: aboutRef, yearFounded: yearFoundedRef, location: locationRef }
 
   useEffect(() => {
     if (portfolioSettingsSettled && !syncedRef.current) {
@@ -177,13 +195,35 @@ export function PortfolioSettingsModal({ onBack, showToast }) {
     }
   }, [portfolioSettingsSettled, portfolioSettings])
 
-  const set = key => val => setLocal(p => ({ ...p, [key]: val }))
+  const set = key => val => {
+    setLocal(p => ({ ...p, [key]: val }))
+    const errorKey = key === 'brandAbout' ? 'about' : key === 'brandYearFounded' ? 'yearFounded' : key === 'brandLocation' ? 'location' : null
+    if (errorKey) {
+      setFieldErrors(prev => (prev[errorKey] ? { ...prev, [errorKey]: false } : prev))
+    }
+  }
 
   const save = () => {
-    if (local.brandAbout && local.brandAbout.length < MIN_ABOUT_LENGTH) {
-      showToast(`About must be at least ${MIN_ABOUT_LENGTH} characters`)
+    const errors = validateLocal(local)
+
+    if (Object.keys(errors).length > 0) {
+      setFieldErrors(errors)
+      const firstErrorKey = FIELD_ERROR_ORDER.find(key => errors[key])
+      const el = fieldRefs[firstErrorKey]?.current
+      if (el) {
+        el.scrollIntoView({ behavior: 'smooth', block: 'center' })
+      }
+      if (errors.about) {
+        showToast(`About must be at least ${MIN_ABOUT_LENGTH} characters`)
+      } else if (errors.yearFounded) {
+        showToast('Year Founded is required')
+      } else {
+        showToast('Location is required')
+      }
       return
     }
+
+    setFieldErrors({})
     updateManyPortfolioSettings(local)
     showToast('Portfolio settings saved')
     if (currentStep?.id === 'portfolio-settings-save') {
@@ -259,23 +299,25 @@ export function PortfolioSettingsModal({ onBack, showToast }) {
 
       <div className={styles.sectionLabel}>About Section</div>
       <FieldGroup>
-        <AboutField value={local.brandAbout} onChange={set('brandAbout')} />
-        <Field label="Year Founded" hint="When did you start your business? Shown as one of your stats.">
+        <AboutField value={local.brandAbout} onChange={set('brandAbout')} error={fieldErrors.about} fieldRef={aboutRef} />
+        <Field ref={yearFoundedRef} label="Year Founded" hint="When did you start your business? Shown as one of your stats.">
           <TextInput
             value={local.brandYearFounded}
             onChange={set('brandYearFounded')}
             placeholder="e.g. 2018"
+            error={fieldErrors.yearFounded}
           />
         </Field>
         <Field label="Milestones" hint="Two proud achievements shown as stats on your portfolio. e.g. 500+ Happy Clients">
           <MilestonesField value={local.brandMilestones} onChange={set('brandMilestones')} />
         </Field>
-        <Field label="Location" hint="Where you're based. Shown on your portfolio.">
+        <Field ref={locationRef} label="Location" hint="Where you're based. Shown on your portfolio.">
           <TextInput
             value={local.brandLocation}
             onChange={set('brandLocation')}
             placeholder="e.g. Lekki, Lagos"
             maxLength={MAX_LOCATION_LENGTH}
+            error={fieldErrors.location}
           />
           <div className={styles.charCount}>
             {(local.brandLocation || '').length}/{MAX_LOCATION_LENGTH}
