@@ -675,12 +675,7 @@ export function AutonomousAgentProvider({ children }) {
     return () => clearTimeout(timer)
   }, [user, enabled, agentDataLoaded, candidates, knownDraftIds, knownScheduledIds, scheduledItems])
 
-  const activeDrafts = useMemo(
-    () => persistedDrafts.filter(d => d.status !== 'discarded'),
-    [persistedDrafts]
-  )
-
-  const drafts = useMemo(() => activeDrafts.map(draft => {
+  const mapDraftForDisplay = useCallback((draft) => {
     const createdAtMs = timestampToMs(draft.createdAt)
     const dateLabel   = formatDateLabel(createdAtMs)
     const clockLabel  = formatClockLabel(createdAtMs)
@@ -696,7 +691,22 @@ export function AutonomousAgentProvider({ children }) {
       date:    dateLabel,
       time:    clockLabel ? `${dateLabel}, ${clockLabel}` : dateLabel,
     }
-  }), [activeDrafts])
+  }, [])
+
+  const activeDrafts = useMemo(
+    () => persistedDrafts.filter(d => d.status === 'pending' || d.status === 'approved'),
+    [persistedDrafts]
+  )
+
+  const drafts = useMemo(
+    () => activeDrafts.map(mapDraftForDisplay),
+    [activeDrafts, mapDraftForDisplay]
+  )
+
+  const activityLog = useMemo(
+    () => persistedDrafts.map(mapDraftForDisplay),
+    [persistedDrafts, mapDraftForDisplay]
+  )
 
   const pendingDrafts  = useMemo(() => drafts.filter(d => d.status === 'pending'),  [drafts])
   const approvedDrafts = useMemo(() => drafts.filter(d => d.status === 'approved'), [drafts])
@@ -751,10 +761,17 @@ export function AutonomousAgentProvider({ children }) {
     updateAgentDraftStatus(user.uid, id, 'discarded')
   }, [user])
 
+  const markDraftSaved = useCallback((id) => {
+    if (!user) return
+    setPersistedDrafts(prev => prev.map(d => d.id === id ? { ...d, status: 'saved' } : d))
+    updateAgentDraftStatus(user.uid, id, 'saved')
+  }, [user])
+
   return (
     <AutonomousAgentContext.Provider value={{
       enabled,
       drafts,
+      activityLog,
       pendingDrafts,
       approvedDrafts,
       pendingCount:  pendingDrafts.length,
@@ -764,6 +781,7 @@ export function AutonomousAgentProvider({ children }) {
       cancelUpcoming,
       approveDraft,
       discardDraft,
+      markDraftSaved,
     }}>
       {children}
     </AutonomousAgentContext.Provider>
