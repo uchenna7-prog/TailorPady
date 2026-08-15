@@ -140,13 +140,13 @@ export default function Settings({ onMenuClick }) {
       return
     }
     if (pendingTemplate.portfolioTemplate) {
-      updateManyPortfolioSettings({ portfolioTemplate: pendingTemplate.portfolioTemplate })
-    } else {
-      updateManyGeneralSettings({
-        invoiceTemplate: pendingTemplate.invoiceTemplate,
-        receiptTemplate: pendingTemplate.receiptTemplate,
-      })
+      if (extraMessage) showToast(extraMessage)
+      return
     }
+    updateManyGeneralSettings({
+      invoiceTemplate: pendingTemplate.invoiceTemplate,
+      receiptTemplate: pendingTemplate.receiptTemplate,
+    })
     setPendingTemplate(null)
     showToast(extraMessage ? `${extraMessage} · Template applied ✓` : 'Template applied ✓')
   }
@@ -217,6 +217,7 @@ export default function Settings({ onMenuClick }) {
 
   async function handlePortfolioTemplateSelect(templateId) {
     setIsPortfolioTemplateModalOpen(false)
+    setPendingTemplate(null)
     try {
       await updateManyPortfolioSettings({ portfolioTemplate: templateId })
       showToast('Portfolio template saved')
@@ -522,8 +523,9 @@ export default function Settings({ onMenuClick }) {
       {isPortfolioTemplateModalOpen && (
         <PortfolioTemplateModal
           currentTemplate={portfolioSettings.portfolioTemplate || 'template2'}
+          initialSelected={pendingTemplate?.portfolioTemplate ?? portfolioSettings.portfolioTemplate ?? 'template2'}
           slug={portfolioSlug || user?.uid}
-          onClose={() => setIsPortfolioTemplateModalOpen(false)}
+          onClose={() => { setIsPortfolioTemplateModalOpen(false); setPendingTemplate(null) }}
           onSelect={handlePortfolioTemplateSelect}
           returnTo={{ reopenPortfolioTemplateModal: true }}
           completionSignal={portfolioTemplateCompletedInfo}
