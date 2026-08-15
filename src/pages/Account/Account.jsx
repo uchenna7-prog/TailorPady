@@ -1,7 +1,6 @@
 import { useState, useRef, useEffect, useCallback } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
 import { useProfileSettings } from '../../contexts/ProfileSettingsContext'
-import { useGeneralSettings } from '../../contexts/GeneralSettingsContext'
 import { useAuth } from '../../contexts/AuthContext'
 import { usePremium } from '../../contexts/PremiumContext'
 import { useTour } from '../../contexts/TourContext'
@@ -40,7 +39,6 @@ const AUTO_OPEN_MODALS = ['brand', 'businessInfo', 'socials', 'upgrade', 'usage'
 export default function Account({ onMenuClick, isPremium = false, onUpgrade = () => {} }) {
 
   const { profileSettings } = useProfileSettings()
-  const { updateManyGeneralSettings } = useGeneralSettings()
   const { user, logout } = useAuth()
   const { plan, nextRenewal } = usePremium()
   const navigate = useNavigate()
@@ -137,21 +135,8 @@ export default function Account({ onMenuClick, isPremium = false, onUpgrade = ()
   }, [])
 
   const applyPendingTemplateIfAny = useCallback((extraMessage) => {
-    if (!pendingTemplate) {
-      if (extraMessage) showToast(extraMessage)
-      return
-    }
-    if (pendingTemplate.portfolioTemplate) {
-      if (extraMessage) showToast(extraMessage)
-      return
-    }
-    updateManyGeneralSettings({
-      invoiceTemplate: pendingTemplate.invoiceTemplate,
-      receiptTemplate: pendingTemplate.receiptTemplate,
-    })
-    setPendingTemplate(null)
-    showToast(extraMessage ? `${extraMessage} · Template applied ✓` : 'Template applied ✓')
-  }, [pendingTemplate, updateManyGeneralSettings, showToast])
+    if (extraMessage) showToast(extraMessage)
+  }, [showToast])
 
   const returnToOriginIfAny = useCallback(() => {
     if (!returnTo) return
