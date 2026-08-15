@@ -1,6 +1,7 @@
 import { useState, useEffect, useMemo, useRef } from 'react'
 import { useParams } from 'react-router-dom'
 import { db } from '../../firebasePublic'
+import { useBrandTokens } from '../../hooks/useBrandTokens'
 import { getPublicBrandDataFromServer } from '../../services/profileService'
 import {
   getReviewByToken,
@@ -142,19 +143,6 @@ const MIN_REVIEW_LENGTH = 10
 const MAX_REVIEW_LENGTH = 500
 const MAX_PHOTO_MB = 5
 
-function getReadableTextColor(hex) {
-  if (!hex || hex.length < 7) return '#ffffff'
-  try {
-    const r = parseInt(hex.slice(1, 3), 16)
-    const g = parseInt(hex.slice(3, 5), 16)
-    const b = parseInt(hex.slice(5, 7), 16)
-    const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255
-    return luminance > 0.6 ? '#0a0a0a' : '#ffffff'
-  } catch {
-    return '#ffffff'
-  }
-}
-
 function StarPicker({ value, onChange, disabled }) {
   const [hovered, setHovered] = useState(0)
   return (
@@ -264,7 +252,7 @@ export default function ReviewPage() {
 
   const [tailorName,      setTailorName]      = useState('')
   const [brandTagline,    setBrandTagline]    = useState('')
-  const [brandColour,     setBrandColour]     = useState('')
+  const [brandColourId,   setBrandColourId]   = useState('')
   const [brandLogoUrl,    setBrandLogoUrl]    = useState('')
   const [orderItems,      setOrderItems]      = useState([])
   const [orderDesc,       setOrderDesc]       = useState('')
@@ -291,7 +279,8 @@ export default function ReviewPage() {
 
   const isLowRating = rating > 0 && rating <= 3
 
-  const textColor = useMemo(() => getReadableTextColor(brandColour), [brandColour])
+  useBrandTokens(brandColourId)
+
   const chips = isLowRating ? CONSTRUCTIVE_CHIPS : POSITIVE_CHIPS
 
   const orderName = useMemo(() => {
@@ -317,7 +306,7 @@ export default function ReviewPage() {
       const brand = brandResult.status === 'fulfilled' ? brandResult.value : null
       setTailorName(brand?.brandName || 'Your tailor')
       setBrandTagline(brand?.brandTagline || '')
-      setBrandColour(brand?.brandColour || '')
+      setBrandColourId(brand?.brandColourId || '')
       setBrandLogoUrl(brand?.brandLogo || '')
 
       const snapshot = snapshotResult.status === 'fulfilled' ? snapshotResult.value : null
@@ -444,7 +433,7 @@ export default function ReviewPage() {
 
   if (!uid || !token) {
     return (
-      <div className={styles.page}>
+      <div className={`${styles.page} ${styles.pageCenter}`}>
         <div className={styles.simpleCard}>
           <span className="mi" style={{ fontSize: '3rem', color: 'var(--text3)' }}>link_off</span>
           <h2 className={styles.simpleTitle}>Invalid Link</h2>
@@ -456,7 +445,7 @@ export default function ReviewPage() {
 
   if (offline) {
     return (
-      <div className={styles.page}>
+      <div className={`${styles.page} ${styles.pageCenter}`}>
         <div className={styles.simpleCard}>
           <span className="mi" style={{ fontSize: '3rem', color: 'var(--text3)' }}>wifi_off</span>
           <h2 className={styles.simpleTitle}>Couldn't Load</h2>
@@ -472,7 +461,7 @@ export default function ReviewPage() {
 
   if (alreadyReviewed) {
     return (
-      <div className={styles.page}>
+      <div className={`${styles.page} ${styles.pageCenter}`}>
         <div className={styles.simpleCard}>
           <div className={styles.successIcon}>
             <span className="mi" style={{ fontSize: '2rem', color: '#22c55e' }}>check_circle</span>
@@ -488,7 +477,7 @@ export default function ReviewPage() {
 
   if (submitted) {
     return (
-      <div className={styles.page}>
+      <div className={`${styles.page} ${styles.pageCenter}`}>
         <div className={styles.simpleCard}>
           <div className={styles.successIcon}>
             <span className="mi" style={{ fontSize: '2.5rem', color: '#22c55e' }}>check_circle</span>
@@ -516,7 +505,7 @@ export default function ReviewPage() {
   }
 
   return (
-    <div className={styles.page} style={{ '--brand-accent': brandColour || 'var(--accent)', '--brand-accent-text': textColor }}>
+    <div className={styles.page}>
 
       <div className={styles.headerBlock}>
         <div className={styles.brandHeaderRow}>
