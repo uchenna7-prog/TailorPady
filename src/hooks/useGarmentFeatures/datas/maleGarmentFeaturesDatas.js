@@ -114,6 +114,15 @@ import shortSleeveType from '../../../assets/maleGarmentFeatures/upperWearFeatur
 import sleevelessType from '../../../assets/maleGarmentFeatures/upperWearFeatures/sleeveType/sleeveless.jpg'
 import threeQuarterSleeveType from '../../../assets/maleGarmentFeatures/upperWearFeatures/sleeveType/threeQuarterSleeve.jpg'
 
+import fullWearFitOversized from '../../../assets/maleGarmentFeatures/fullWearFeatures/fitType/oversizedFit.jpg'
+import fullWearFitRegular from '../../../assets/maleGarmentFeatures/fullWearFeatures/fitType/regularFit.jpg'
+import fullWearFitSlim from '../../../assets/maleGarmentFeatures/fullWearFeatures/fitType/slimFit.jpg'
+
+import fullWearNeckEmbroideredBand from '../../../assets/maleGarmentFeatures/fullWearFeatures/frontNeckType/embroideredBandCollar.jpg'
+import fullWearNeckKeyHole from '../../../assets/maleGarmentFeatures/fullWearFeatures/frontNeckType/keyHole.jpg'
+import fullWearNeckMandarin from '../../../assets/maleGarmentFeatures/fullWearFeatures/frontNeckType/mandarinCollar.jpg'
+import fullWearNeckVNeck from '../../../assets/maleGarmentFeatures/fullWearFeatures/frontNeckType/v-neck.jpg'
+
 const BACK_POCKET_IMGS = {
   jettedOneBackPocket,
   jettedTwoBackPocket,
@@ -248,6 +257,19 @@ const MALE_BUTTON_STYLE_IMGS = {
   half: halfButton,
   hiddenPlacket: hiddenPlacketButton,
   mandarinNoPlacket: mandarinNoPlacketButton,
+}
+
+const MALE_FULL_WEAR_FIT_IMGS = {
+  slim: fullWearFitSlim,
+  regular: fullWearFitRegular,
+  oversized: fullWearFitOversized,
+}
+
+const MALE_FULL_WEAR_NECK_IMGS = {
+  embroideredBand: fullWearNeckEmbroideredBand,
+  keyHole: fullWearNeckKeyHole,
+  mandarin: fullWearNeckMandarin,
+  vNeck: fullWearNeckVNeck,
 }
 
 const POCKET_SLOT_MALE_BACK = {
@@ -505,6 +527,32 @@ export const MALE_BUTTON_STYLE_SLOT = {
     { id: 'mandarin_no_placket', label: 'Mandarin (No Placket)', img: MALE_BUTTON_STYLE_IMGS.mandarinNoPlacket },
   ],
 }
+
+export const MALE_FULL_WEAR_FIT_SLOT = {
+  id: 'fit',
+  label: 'Fit',
+  options: [
+    { id: 'slim', label: 'Slim Fit', img: MALE_FULL_WEAR_FIT_IMGS.slim },
+    { id: 'regular', label: 'Regular Fit', img: MALE_FULL_WEAR_FIT_IMGS.regular },
+    { id: 'oversized', label: 'Oversized Fit', img: MALE_FULL_WEAR_FIT_IMGS.oversized },
+  ],
+}
+
+export const MALE_FULL_WEAR_NECK_SLOT = {
+  id: 'front_neck_type',
+  label: 'Front Neck Type',
+  options: [
+    { id: 'v_neck', label: 'V-Neck', img: MALE_FULL_WEAR_NECK_IMGS.vNeck },
+    { id: 'mandarin', label: 'Mandarin Collar', img: MALE_FULL_WEAR_NECK_IMGS.mandarin },
+    { id: 'embroidered_band', label: 'Embroidered Band Collar', img: MALE_FULL_WEAR_NECK_IMGS.embroideredBand },
+    { id: 'key_hole', label: 'Keyhole', img: MALE_FULL_WEAR_NECK_IMGS.keyHole },
+  ],
+}
+
+export const MALE_FULL_WEAR_SLOTS = [
+  MALE_FULL_WEAR_FIT_SLOT,
+  MALE_FULL_WEAR_NECK_SLOT,
+]
 
 export const TROUSER_SLOTS = [
   MALE_LOWER_FIT_SLOT,
