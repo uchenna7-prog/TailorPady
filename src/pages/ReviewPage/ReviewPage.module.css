@@ -9,6 +9,10 @@
   font-family: 'Manrope', sans-serif;
 }
 
+.pageCenter {
+  justify-content: center;
+}
+
 @keyframes spin {
   from { transform: rotate(0deg); }
   to   { transform: rotate(360deg); }
@@ -57,7 +61,7 @@
   display: block;
   border-radius: 8px;
   flex-shrink: 0;
-  border: 1.5px solid var(--brand-accent, var(--accent, #1a1a1a));
+  border: 1.5px solid var(--brand-primary-dark, var(--accent, #1a1a1a));
   background: var(--surface, #ffffff);
 }
 
@@ -67,7 +71,7 @@
   justify-content: center;
   width: 48px;
   height: 48px;
-  border: 1.5px dashed var(--brand-accent, var(--accent, #1a1a1a));
+  border: 1.5px dashed var(--brand-primary-dark, var(--accent, #1a1a1a));
   border-radius: 8px;
   font-size: 0.6rem;
   font-weight: 900;
@@ -75,7 +79,7 @@
   text-transform: uppercase;
   opacity: 0.65;
   flex-shrink: 0;
-  color: var(--brand-accent, var(--accent, #1a1a1a));
+  color: var(--brand-primary-dark, var(--accent, #1a1a1a));
 }
 
 .brandHeaderText {
@@ -89,7 +93,7 @@
 .brandName {
   font-size: 1.05rem;
   font-weight: 800;
-  color: var(--text, #1a1a1a);
+  color: var(--brand-primary-dark, var(--text, #1a1a1a));
   letter-spacing: 0.4px;
   line-height: 1.2;
   text-transform: uppercase;
@@ -238,6 +242,8 @@
 .chipGrid {
   display: grid;
   grid-template-columns: 1fr 1fr;
+  grid-auto-rows: 1fr;
+  align-items: stretch;
   gap: 10px;
 }
 
@@ -245,6 +251,7 @@
   display: flex;
   align-items: center;
   gap: 7px;
+  height: 100%;
   border: 1px solid var(--border2, #e4ddd0);
   background: var(--bg, #faf6ef);
   color: var(--text2, #4a463e);
@@ -256,6 +263,7 @@
   text-align: left;
   white-space: normal;
   line-height: 1.25;
+  box-sizing: border-box;
   transition: all 0.15s;
 }
 
@@ -308,7 +316,7 @@
 }
 
 .input:focus {
-  border-color: var(--brand-accent, var(--accent, #1a1a1a));
+  border-color: var(--brand-primary-dark, var(--accent, #1a1a1a));
 }
 
 .input::placeholder { color: var(--text3, #8a8378); }
@@ -339,7 +347,7 @@
 }
 
 .textarea:focus {
-  border-color: var(--brand-accent, var(--accent, #1a1a1a));
+  border-color: var(--brand-primary-dark, var(--accent, #1a1a1a));
 }
 
 .textarea::placeholder { color: var(--text3, #8a8378); }
@@ -424,7 +432,7 @@
 }
 
 .photoUpload:active {
-  border-color: var(--brand-accent, var(--accent, #1a1a1a));
+  border-color: var(--brand-primary-dark, var(--accent, #1a1a1a));
 }
 
 .photoUploadIcon {
@@ -519,8 +527,8 @@
   padding: 16px;
   border-radius: 14px;
   border: none;
-  background: var(--brand-accent, var(--accent, #1a1a1a));
-  color: var(--brand-accent-text, #ffffff);
+  background: var(--brand-gradient, var(--accent, #1a1a1a));
+  color: var(--brand-on-primary, #ffffff);
   font-family: 'Manrope', sans-serif;
   font-size: 0.94rem;
   font-weight: 800;
