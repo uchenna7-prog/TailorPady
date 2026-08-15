@@ -101,6 +101,7 @@ function getPortfolioMissingFields(profileSettings, portfolioSettings) {
 
 export function PortfolioTemplateModal({
   currentTemplate,
+  initialSelected,
   slug,
   onClose,
   onSelect,
@@ -111,7 +112,7 @@ export function PortfolioTemplateModal({
   const { profileSettings }   = useProfileSettings()
   const { portfolioSettings } = usePortfolioSettings()
 
-  const [selected, setSelected] = useState(currentTemplate)
+  const [selected, setSelected] = useState(initialSelected ?? currentTemplate)
   const [previewTemplate, setPreviewTemplate] = useState(null)
   const [gender, setGender] = useState('male')
   const [missingFields, setMissingFields] = useState(null)
