@@ -51,12 +51,26 @@ export function ReceiptSettingsModal({ onBack, showToast }) {
     receiptTaxRate:  generalSettings.receiptTaxRate ?? 0,
   })
 
+  const [prefixError, setPrefixError] = useState(false)
+
   const [currencyPickerOpen, setCurrencyPickerOpen] = useState(false)
   const currencyTriggerRef                          = useRef(null)
+  const prefixFieldRef                              = useRef(null)
 
-  const set = key => val => setLocal(p => ({ ...p, [key]: val }))
+  const set = key => val => {
+    setLocal(p => ({ ...p, [key]: val }))
+    if (key === 'receiptPrefix' && prefixError) setPrefixError(false)
+  }
 
   function save() {
+    if (!local.receiptPrefix?.trim()) {
+      setPrefixError(true)
+      prefixFieldRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+      showToast('Receipt number prefix is required')
+      return
+    }
+
+    setPrefixError(false)
     updateManyGeneralSettings(local)
     showToast('Receipt settings saved')
     onBack()
@@ -70,11 +84,12 @@ export function ReceiptSettingsModal({ onBack, showToast }) {
         <div>
 
           <FieldGroup>
-            <Field label="Receipt Number Prefix" hint="Shown before the number, e.g. RCP-0001.">
+            <Field ref={prefixFieldRef} label="Receipt Number Prefix" hint="Shown before the number, e.g. RCP-0001.">
               <TextInput
                 value={local.receiptPrefix}
                 onChange={set('receiptPrefix')}
                 placeholder="RCP"
+                error={prefixError}
               />
             </Field>
 
