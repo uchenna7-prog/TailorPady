@@ -79,6 +79,8 @@ export function TemplateModal({
   isOpen,
   currentInvoiceTemplate,
   currentReceiptTemplate,
+  initialSelectedInvoiceTemplate,
+  initialSelectedReceiptTemplate,
   colourId,
   lockToTab,
   onClose,
@@ -98,10 +100,10 @@ export function TemplateModal({
   const cardRefs     = useRef({})
 
   const [selectedInvoiceTemplate, setSelectedInvoiceTemplate] = useState(
-    currentInvoiceTemplate || 'invoiceTemplate1'
+    initialSelectedInvoiceTemplate || currentInvoiceTemplate || 'invoiceTemplate1'
   )
   const [selectedReceiptTemplate, setSelectedReceiptTemplate] = useState(
-    currentReceiptTemplate || 'receiptTemplate1'
+    initialSelectedReceiptTemplate || currentReceiptTemplate || 'receiptTemplate1'
   )
   const [appliedInvoiceTemplate, setAppliedInvoiceTemplate] = useState(
     currentInvoiceTemplate || 'invoiceTemplate1'
