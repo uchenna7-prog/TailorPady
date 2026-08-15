@@ -89,10 +89,6 @@ export default function Settings({ onMenuClick }) {
     const navState = location.state
     if (!navState?.autoOpenModal && !navState?.reopenTemplateModal && !navState?.reopenPortfolioTemplateModal) return
 
-    if (navState.autoOpenModal === 'invoiceSettings') {
-      setIsInvoiceModalOpen(true)
-    }
-
     if (navState.autoOpenModal === 'portfolioSettings') {
       setIsPortfolioModalOpen(true)
     }
