@@ -31,6 +31,11 @@ import femTrouserFitRegular from '../../../assets/femaleGarmentFeatures/lowerWea
 import femTrouserFitRelaxed from '../../../assets/femaleGarmentFeatures/lowerWearFeatures/trouser/fitType/relaxedFit.jpg'
 import femTrouserFitSlim from '../../../assets/femaleGarmentFeatures/lowerWearFeatures/trouser/fitType/slimFit.jpg'
 
+import femTrouserLengthFull from '../../../assets/femaleGarmentFeatures/lowerWearFeatures/trouser/length/fullLength.jpg'
+import femTrouserLengthKnee from '../../../assets/femaleGarmentFeatures/lowerWearFeatures/trouser/length/kneeLength.jpg'
+import femTrouserLengthShort from '../../../assets/femaleGarmentFeatures/lowerWearFeatures/trouser/length/shortLength.jpg'
+import femTrouserLengthThreeQuarter from '../../../assets/femaleGarmentFeatures/lowerWearFeatures/trouser/length/threeQuarterLength.jpg'
+
 import femUNeck from '../../../assets/femaleGarmentFeatures/upperWearFeatures/frontNeckType/U-Neck.jpg'
 import femVNeck from '../../../assets/femaleGarmentFeatures/upperWearFeatures/frontNeckType/V-Neck.jpg'
 import femBasketNeck from '../../../assets/femaleGarmentFeatures/upperWearFeatures/frontNeckType/basketNeck.jpg'
@@ -152,6 +157,13 @@ const FEMALE_TROUSER_FIT_IMGS = {
   regular: femTrouserFitRegular,
   relaxed: femTrouserFitRelaxed,
   slim: femTrouserFitSlim,
+}
+
+const FEMALE_TROUSER_LENGTH_IMGS = {
+  full: femTrouserLengthFull,
+  knee: femTrouserLengthKnee,
+  short: femTrouserLengthShort,
+  threeQuarter: femTrouserLengthThreeQuarter,
 }
 
 const FEMALE_NECK_IMGS = {
@@ -440,6 +452,17 @@ export const FEMALE_TROUSER_FIT_SLOT = {
     { id: 'relaxed', label: 'Relaxed Fit', img: FEMALE_TROUSER_FIT_IMGS.relaxed },
     { id: 'athletic', label: 'Athletic Fit', img: FEMALE_TROUSER_FIT_IMGS.athletic },
     { id: 'oversized', label: 'Oversized Fit', img: FEMALE_TROUSER_FIT_IMGS.oversized },
+  ],
+}
+
+export const FEMALE_TROUSER_LENGTH_SLOT = {
+  id: 'length',
+  label: 'Length',
+  options: [
+    { id: 'short', label: 'Shorts', img: FEMALE_TROUSER_LENGTH_IMGS.short },
+    { id: 'knee', label: 'Knee Length', img: FEMALE_TROUSER_LENGTH_IMGS.knee },
+    { id: 'three_qtr', label: 'Three-Quarter', img: FEMALE_TROUSER_LENGTH_IMGS.threeQuarter },
+    { id: 'full', label: 'Full Length', img: FEMALE_TROUSER_LENGTH_IMGS.full },
   ],
 }
 
