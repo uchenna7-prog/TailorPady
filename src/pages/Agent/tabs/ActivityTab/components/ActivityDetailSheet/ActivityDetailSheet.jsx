@@ -18,8 +18,10 @@ const TAG_COLORS = {
 }
 
 const DRAFT_STATUS = {
-  pending:  { label: 'Pending',  color: '#eab308', bg: 'rgba(234,179,8,0.12)', border: 'rgba(234,179,8,0.4)', icon: 'schedule' },
-  approved: { label: 'Approved', color: '#22c55e', bg: 'rgba(34,197,94,0.12)', border: 'rgba(34,197,94,0.4)', icon: 'check_circle' },
+  pending:   { label: 'Pending',   color: '#eab308', bg: 'rgba(234,179,8,0.12)', border: 'rgba(234,179,8,0.4)', icon: 'schedule' },
+  approved:  { label: 'Approved',  color: '#22c55e', bg: 'rgba(34,197,94,0.12)', border: 'rgba(34,197,94,0.4)', icon: 'check_circle' },
+  saved:     { label: 'Saved',     color: '#22c55e', bg: 'rgba(34,197,94,0.12)', border: 'rgba(34,197,94,0.4)', icon: 'task_alt' },
+  discarded: { label: 'Discarded', color: '#ef4444', bg: 'rgba(239,68,68,0.12)', border: 'rgba(239,68,68,0.4)', icon: 'delete_outline' },
 }
 
 function getInitials(name) {
