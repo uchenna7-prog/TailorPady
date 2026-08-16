@@ -155,6 +155,10 @@ service cloud.firestore {
       allow read, write: if false;
     }
 
+    match /rateLimits/{id} {
+      allow read, write: if false;
+    }
+
     match /bugReports/{reportId} {
       allow create: if request.auth != null
         && request.resource.data.userId == request.auth.uid;
