@@ -1,7 +1,8 @@
-import { useState } from 'react'
-import { useNavigate, Link } from 'react-router-dom'
+import { useState, useEffect } from 'react'
+import { useNavigate, useSearchParams, Link } from 'react-router-dom'
 import { useAuth } from '../../contexts/AuthContext'
 import { useGeneralSettings } from '../../contexts/GeneralSettingsContext'
+import { stashReferralCode } from '../../services/referralService'
 import logoLightMode from '../../assets/logoLightMode.png'
 import logoDarkMode from '../../assets/logoDarkMode.png'
 import styles from './Signup.module.css'
@@ -50,6 +51,7 @@ export default function Signup() {
   const { signup, loginWithGoogle, setRedirecting } = useAuth()
   const { generalSettings }                         = useGeneralSettings()
   const navigate                                    = useNavigate()
+  const [searchParams]                              = useSearchParams()
 
   const [fullName,      setFullName]      = useState('')
   const [email,         setEmail]         = useState('')
@@ -60,6 +62,11 @@ export default function Signup() {
   const [error,         setError]         = useState('')
   const [loading,       setLoading]       = useState(false)
   const [googleLoading, setGoogleLoading] = useState(false)
+
+  useEffect(() => {
+    const ref = searchParams.get('ref')
+    if (ref) stashReferralCode(ref)
+  }, [searchParams])
 
   const strengthScore = getStrength(password)
   const strengthLevel = strengthScore >= 0 ? STRENGTH_LEVELS[strengthScore] : null
