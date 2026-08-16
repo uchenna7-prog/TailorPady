@@ -1,28 +1,44 @@
-import { createContext, useContext, useState, useEffect, useMemo } from 'react'
+import { createContext, useContext, useState, useEffect, useMemo, useRef, useCallback } from 'react'
 import { onAuthStateChanged } from 'firebase/auth'
 import { auth } from '../firebase'
 import {
-  signup,
+  signup as signupService,
   login,
   logout,
   resetPassword,
   changePassword,
   changeEmail,
-  loginWithGoogle,
+  loginWithGoogle as loginWithGoogleService,
   getGoogleRedirectResult,
   linkGoogle,
   unlinkProvider,
 } from '../services/authService'
+import { ensureUserProfile, checkReferralActivation } from '../services/referralService'
 
 const AuthContext = createContext(null)
 
 export function AuthProvider({ children }) {
-  const [user,        setUser]        = useState(null)
-  const [loading,     setLoading]     = useState(true)
+  const [user, setUser] = useState(null)
+  const [loading, setLoading] = useState(true)
   const [redirecting, setRedirecting] = useState(false)
+  const profiledUidRef = useRef(null)
+
+  const handleUser = useCallback((firebaseUser, hint) => {
+    setUser(firebaseUser)
+    if (firebaseUser && profiledUidRef.current !== firebaseUser.uid) {
+      profiledUidRef.current = firebaseUser.uid
+      ensureUserProfile(firebaseUser, hint)
+        .then(() => {
+          checkReferralActivation(firebaseUser).catch(() => {})
+        })
+        .catch(() => {
+          profiledUidRef.current = null
+        })
+    }
+  }, [])
 
   useEffect(() => {
-    let authSettled     = false
+    let authSettled = false
     let redirectSettled = false
 
     const trySettle = () => {
@@ -32,15 +48,15 @@ export function AuthProvider({ children }) {
     }
 
     const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
-      setUser(firebaseUser)
+      handleUser(firebaseUser)
       authSettled = true
       trySettle()
     })
 
     getGoogleRedirectResult()
-      .then(result => {
-        if (result?.user) {
-          setUser(result.user)
+      .then(({ user: redirectUser, isNewUser }) => {
+        if (redirectUser) {
+          handleUser(redirectUser, { isNewUser })
         }
       })
       .catch(() => {})
@@ -50,7 +66,23 @@ export function AuthProvider({ children }) {
       })
 
     return unsubscribe
-  }, [])
+  }, [handleUser])
+
+  const signup = useCallback(async (email, password, displayName) => {
+    const credential = await signupService(email, password, displayName)
+    if (credential?.user) {
+      handleUser(credential.user, { isNewUser: true })
+    }
+    return credential
+  }, [handleUser])
+
+  const loginWithGoogle = useCallback(async () => {
+    const { user: googleUser, isNewUser } = await loginWithGoogleService()
+    if (googleUser) {
+      handleUser(googleUser, { isNewUser })
+    }
+    return googleUser
+  }, [handleUser])
 
   const value = useMemo(() => ({
     user,
@@ -66,7 +98,7 @@ export function AuthProvider({ children }) {
     changeEmail,
     linkGoogle,
     unlinkProvider,
-  }), [user, loading, redirecting])
+  }), [user, loading, redirecting, signup, loginWithGoogle])
 
   return (
     <AuthContext.Provider value={value}>
