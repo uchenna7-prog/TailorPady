@@ -7,6 +7,7 @@ import { useAuth }            from '../../contexts/AuthContext'
 import { useTour }            from '../../contexts/TourContext'
 import { useReferral }        from '../../contexts/ReferralContext'
 import ConfirmSheet           from '../ConfirmSheet/ConfirmSheet'
+import ShareAppSheet          from '../ShareAppSheet/ShareAppSheet'
 import logoLightMode          from '../../assets/logoLightMode.png'
 import logoDarkMode           from '../../assets/logoDarkMode.png'
 import styles                 from './SideBar.module.css'
@@ -97,6 +98,7 @@ function SideBar({ isOpen, onClose }) {
 
   const [scrolled, setScrolled]         = useState(false)
   const [logoutConfirm, setLogoutConfirm] = useState(false)
+  const [shareSheetOpen, setShareSheetOpen] = useState(false)
   const scrollRef = useRef(null)
 
   const theme   = generalSettings.theme
@@ -114,32 +116,13 @@ function SideBar({ isOpen, onClose }) {
     setScrolled(scrollRef.current?.scrollTop > 0)
   }
 
-  const handleShare = async () => {
-    const shareUrl = referralCode
-      ? `${window.location.origin}/signup?ref=${referralCode}`
-      : window.location.origin
-
-    const shareText = referralCode
-      ? `Join me on TailorPady! Use my code ${referralCode} when you sign up, and I get a free month once you get started.`
-      : 'Check out TailorPady!'
-
-    if (navigator.share) {
-      try {
-        await navigator.share({
-          title: 'TailorPady',
-          text:  shareText,
-          url:   shareUrl,
-        })
-      } catch {}
-    }
-  }
-
   const handleAction = (action) => {
     if (action === 'share') {
-      handleShare()
+      setShareSheetOpen(true)
       if (currentStep?.id === 'referral-nudge-share-app') {
         completeStep('referral-nudge-share-app')
       }
+      return
     }
     if (action === 'install') triggerInstall()
     if (action === 'logout')  { setLogoutConfirm(true); return }
@@ -271,6 +254,12 @@ function SideBar({ isOpen, onClose }) {
         confirmText="Log Out"
         onConfirm={handleLogout}
         onCancel={() => setLogoutConfirm(false)}
+      />
+
+      <ShareAppSheet
+        open={shareSheetOpen}
+        referralCode={referralCode}
+        onClose={() => setShareSheetOpen(false)}
       />
     </>
   )
