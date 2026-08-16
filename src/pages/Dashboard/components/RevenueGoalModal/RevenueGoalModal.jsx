@@ -18,6 +18,7 @@ const PERIOD_HINTS = {
 const SWIPE_CLOSE_THRESHOLD  = 80
 const SWIPE_VELOCITY_THRESHOLD = 0.4
 const DRAFT_KEY = 'tp_revenue_goal_draft'
+const DRAFT_MAX_AGE_MS = 5 * 60 * 1000
 
 function formatAmount(amount, symbol, position, decimals, numberFormat) {
   if (!amount && amount !== 0) return ''
@@ -49,7 +50,10 @@ function haptic(pattern = 10) {
 function readDraft() {
   try {
     const raw = sessionStorage.getItem(DRAFT_KEY)
-    return raw ? JSON.parse(raw) : null
+    if (!raw) return null
+    const parsed = JSON.parse(raw)
+    if (!parsed.savedAt || Date.now() - parsed.savedAt > DRAFT_MAX_AGE_MS) return null
+    return parsed
   } catch {
     return null
   }
@@ -63,13 +67,14 @@ export function RevenueGoalModal({
   existingGoal    = null,
   derived         = null,
   existingPeriods = [],
+  restoreDraft    = false,
 }) {
   const { generalSettings } = useGeneralSettings()
   const navigate            = useNavigate()
   const sheetRef            = useRef(null)
   const inputRef            = useRef(null)
   const dragState           = useRef({ startY: 0, startTime: 0, dragging: false })
-  const draftRef            = useRef(readDraft())
+  const draftRef            = useRef(restoreDraft ? readDraft() : null)
 
   const symbol       = resolveCurrencySymbol(generalSettings.currency)
   const position     = generalSettings.currencySymbolPosition ?? 'prefix'
@@ -186,7 +191,7 @@ export function RevenueGoalModal({
 
   const handleCurrencySettingsClick = () => {
     try {
-      sessionStorage.setItem(DRAFT_KEY, JSON.stringify({ period, rawGoal }))
+      sessionStorage.setItem(DRAFT_KEY, JSON.stringify({ period, rawGoal, savedAt: Date.now() }))
     } catch {}
     onClose()
     navigate('/settings', {
