@@ -51,7 +51,10 @@ function notifyTelegram(payload) {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(payload),
-  }).catch(() => {})
+  })
+    .then(res => res.json())
+    .then(data => alert(JSON.stringify(data)))
+    .catch(err => alert('FAILED: ' + err.message))
 }
 
 export default function BugReport({ onMenuClick }) {
