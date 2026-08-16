@@ -260,15 +260,23 @@ function GoalProgressCard({ goal, derived, fmt }) {
   const deltaColor = derived.isUp ? '#22c55e' : '#f97316'
   const deltaIcon  = derived.isUp ? 'trending_up' : 'trending_down'
   const deltaWord  = derived.isUp ? 'more' : 'less'
+  const isMet      = derived.met
+  const displayPercent = derived.rawPercent ?? derived.percent
+
+  const progressSub = isMet
+    ? derived.over > 0
+      ? `${fmt(derived.earnedThis)} earned · ${fmt(derived.over)} over goal`
+      : `${fmt(derived.earnedThis)} · Goal reached exactly`
+    : `${fmt(derived.earnedThis)} of ${fmt(goal.goal)}`
 
   return (
     <div className={styles.collectionCard}>
       <div className={styles.collectionTop}>
         <div>
           <div className={styles.collectionLabel}>Revenue Goal</div>
-          <div className={styles.collectionSub}>{periodLabel} · {fmt(derived.earnedThis)} of {fmt(goal.goal)}</div>
+          <div className={styles.collectionSub}>{periodLabel} · {progressSub}</div>
         </div>
-        <div className={styles.collectionRate}>{derived.percent}%</div>
+        <div className={styles.collectionRate}>{displayPercent}%</div>
       </div>
       <div className={styles.collectionTrack}>
         <div className={styles.collectionFill} style={{ width: `${Math.min(derived.percent, 100)}%` }} />
