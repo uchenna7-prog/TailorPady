@@ -679,7 +679,7 @@
 }
 
 .infoGridCell {
-  background: var(--bg);
+  background: var(--surface);
   border: 1px solid var(--border);
   border-radius: 14px;
   padding: 12px 14px;
