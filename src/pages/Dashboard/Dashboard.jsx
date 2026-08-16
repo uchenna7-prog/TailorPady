@@ -207,6 +207,7 @@ function Dashboard({ onMenuClick, onGoToCustomer }) {
   const onboardingComplete = hasCompletedTour('onboarding')
   const discoverToursComplete = hasCompletedTour('discover-tours-nudge')
   const revenueGoalNudgeComplete = hasCompletedTour('revenue-goal-nudge')
+  const referralNudgeComplete = hasCompletedTour('referral-nudge')
 
   const isNewSessionSinceOnboarding = (() => {
     try {
@@ -220,6 +221,15 @@ function Dashboard({ onMenuClick, onGoToCustomer }) {
   const isNewSessionSinceRevenueGoalNudge = (() => {
     try {
       const completedInSession = localStorage.getItem('tp_revenue_goal_nudge_completed_session')
+      return completedInSession !== getSessionId()
+    } catch {
+      return true
+    }
+  })()
+
+  const isNewSessionSinceDiscoverToursNudge = (() => {
+    try {
+      const completedInSession = localStorage.getItem('tp_discover_tours_nudge_completed_session')
       return completedInSession !== getSessionId()
     } catch {
       return true
@@ -248,6 +258,17 @@ function Dashboard({ onMenuClick, onGoToCustomer }) {
     }, 2000)
     return () => clearTimeout(timer)
   }, [revenueGoalNudgeComplete, discoverToursComplete, isNewSessionSinceRevenueGoalNudge, tourActive, startTour])
+
+  useEffect(() => {
+    if (!discoverToursComplete) return
+    if (referralNudgeComplete) return
+    if (!isNewSessionSinceDiscoverToursNudge) return
+    if (tourActive) return
+    const timer = setTimeout(() => {
+      startTour('referral-nudge')
+    }, 2000)
+    return () => clearTimeout(timer)
+  }, [discoverToursComplete, referralNudgeComplete, isNewSessionSinceDiscoverToursNudge, tourActive, startTour])
 
   useEffect(() => {
     if (goalLoading || !goal || !derived) return
