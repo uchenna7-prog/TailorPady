@@ -166,6 +166,9 @@ function Header({
     if (currentStep?.id === 'ai-open-menu') {
       completeStep('ai-open-menu')
     }
+    if (currentStep?.id === 'referral-nudge-open-menu') {
+      completeStep('referral-nudge-open-menu')
+    }
     onMenuClick?.()
   }
 
@@ -380,4 +383,3 @@ function Header({
 }
 
 export default Header
-
