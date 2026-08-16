@@ -10,10 +10,18 @@ service cloud.firestore {
     }
 
     match /users/{uid} {
-      allow read, write: if request.auth != null && request.auth.uid == uid;
+      allow read: if request.auth != null && request.auth.uid == uid;
+      allow create: if request.auth != null && request.auth.uid == uid
+        && request.resource.data.keys().hasOnly(['referralCode', 'referredBy', 'createdAt'])
+        && request.resource.data.referredBy == null;
+      allow update: if request.auth != null && request.auth.uid == uid
+        && !request.resource.data.diff(resource.data).affectedKeys()
+              .hasAny(['referralCode', 'referredBy', 'createdAt']);
 
       match /settings/{docId} {
-        allow read, write: if request.auth != null && request.auth.uid == uid;
+        allow read: if request.auth != null && request.auth.uid == uid;
+        allow write: if docId != 'premium'
+          && request.auth != null && request.auth.uid == uid;
       }
 
       match /subscriptionPayments/{paymentId} {
@@ -131,6 +139,20 @@ service cloud.firestore {
         allow read: if true;
         allow write: if request.auth != null && request.auth.uid == uid;
       }
+    }
+
+    match /referrals/{referralId} {
+      allow read: if request.auth != null
+        && (resource.data.referrerUid == request.auth.uid || resource.data.referredUid == request.auth.uid);
+      allow create: if request.auth != null
+        && request.resource.data.referredUid == request.auth.uid
+        && request.resource.data.referrerUid != request.auth.uid
+        && request.resource.data.status == 'pending';
+      allow update, delete: if false;
+    }
+
+    match /referralCodes/{code} {
+      allow read, write: if false;
     }
 
     match /bugReports/{reportId} {
