@@ -596,7 +596,7 @@ export const TOURS = {
       type: 'confirm',
       target: null,
       title: 'Get a free month, on us 🎁',
-      message: 'Share your referral code with another tailor. Once they start using TailorPady, you get a free month of Pro automatically — no strings attached.',
+      message: 'Share your referral code with another tailor. Once they start using TailorPady, you get a free month of Pro automatically. No strings attached.',
       yesLabel: 'Show me how',
       noLabel: 'Not now',
       yesTarget: 'referral-nudge-open-menu',
@@ -621,7 +621,7 @@ export const TOURS = {
       manual: true,
       ctaLabel: 'Got it',
       title: 'No problem',
-      message: 'You can always find your referral code and share link on your Account page.',
+      message: 'You can always share your referral link from your Account page whenever you are ready.',
     },
   ],
 }
