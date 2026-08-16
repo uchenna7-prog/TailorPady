@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useLocation } from 'react-router-dom'
 import { SkeletonTheme } from 'react-loading-skeleton'
 import { useAuth } from '../../contexts/AuthContext'
 import { useCustomers } from '../../contexts/CustomerContext'
@@ -115,6 +115,7 @@ function getOrderTimestamp(order) {
 
 function Dashboard({ onMenuClick, onGoToCustomer }) {
   const navigate = useNavigate()
+  const location  = useLocation()
 
   const { user }                                                          = useAuth()
   const { customers, loading: loadingCustomers }                          = useCustomers()
@@ -131,6 +132,7 @@ function Dashboard({ onMenuClick, onGoToCustomer }) {
 
   const [isBannerDismissed, setIsBannerDismissed] = useState(loadNotificationDismissed)
   const [isGoalModalOpen,   setIsGoalModalOpen]   = useState(false)
+  const [restoreGoalDraft,  setRestoreGoalDraft]  = useState(false)
   const [selectedOrder,     setSelectedOrder]     = useState(null)
   const [detailAppt,        setDetailAppt]        = useState(null)
   const [detailTask,        setDetailTask]        = useState(null)
@@ -254,6 +256,15 @@ function Dashboard({ onMenuClick, onGoToCustomer }) {
     setCelebrationIsFirst(!goal.hasCelebratedAnyGoal)
     setCelebrationOpen(true)
   }, [goalLoading, goal, derived])
+
+  useEffect(() => {
+    const navState = location.state
+    if (!navState?.reopenRevenueGoalModal) return
+    setRestoreGoalDraft(true)
+    setIsGoalModalOpen(true)
+    if (navState.toastMessage) showToast(navState.toastMessage)
+    navigate(location.pathname, { replace: true, state: null })
+  }, [location.state])
 
   function showToast(msg) {
     setToastMsg(msg)
@@ -589,9 +600,10 @@ function Dashboard({ onMenuClick, onGoToCustomer }) {
 
           {isGoalModalOpen && (
             <RevenueGoalModal
-              onSave={async (data) => { await saveGoal(data); setIsGoalModalOpen(false) }}
-              onClose={() => setIsGoalModalOpen(false)}
+              onSave={async (data) => { await saveGoal(data); setIsGoalModalOpen(false); setRestoreGoalDraft(false) }}
+              onClose={() => { setIsGoalModalOpen(false); setRestoreGoalDraft(false) }}
               existingGoal={goal}
+              restoreDraft={restoreGoalDraft}
             />
           )}
 
