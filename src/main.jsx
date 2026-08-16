@@ -2,6 +2,7 @@ import React from 'react'
 import ReactDOM from 'react-dom/client'
 import { BrowserRouter } from 'react-router-dom'
 import { AuthProvider }                   from './contexts/AuthContext'
+import { ReferralProvider }               from './contexts/ReferralContext'
 import { ProfileSettingsProvider }        from './contexts/ProfileSettingsContext'
 import { GeneralSettingsProvider }        from './contexts/GeneralSettingsContext'
 import { PortfolioSettingsProvider }      from './contexts/PortfolioSettingsContext'
@@ -32,47 +33,49 @@ ReactDOM.createRoot(document.getElementById('root')).render(
     <BrowserRouter>
       <InstallProvider>
         <AuthProvider>
-          <GeneralSettingsProvider>
-            <ProfileSettingsProvider>
-              <PortfolioSettingsProvider>
-                <PremiumProvider>
-                  <UsageProvider>
-                    <BodyMeasurementImagesProvider>
-                      <CustomerProvider>
-                        <GalleryProvider>
-                          <ReviewProvider>
-                            <OrdersProvider>
-                              <TaskProvider>
-                                <InvoiceProvider>
-                                  <ReceiptProvider>
-                                    <PaymentProvider>
-                                      <RevenueGoalProvider>
-                                        <AppointmentProvider>
-                                          <BadgeProvider>
-                                            <AutonomousAgentProvider>
-                                              <AgentProvider>
-                                                <NotificationProvider>
-                                                  <App />
-                                                </NotificationProvider>
-                                              </AgentProvider>
-                                            </AutonomousAgentProvider>
-                                          </BadgeProvider>
-                                        </AppointmentProvider>
-                                      </RevenueGoalProvider>
-                                    </PaymentProvider>
-                                  </ReceiptProvider>
-                                </InvoiceProvider>
-                              </TaskProvider>
-                            </OrdersProvider>
-                          </ReviewProvider>
-                        </GalleryProvider>
-                      </CustomerProvider>
-                    </BodyMeasurementImagesProvider>
-                  </UsageProvider>
-                </PremiumProvider>
-              </PortfolioSettingsProvider>
-            </ProfileSettingsProvider>
-          </GeneralSettingsProvider>
+          <ReferralProvider>
+            <GeneralSettingsProvider>
+              <ProfileSettingsProvider>
+                <PortfolioSettingsProvider>
+                  <PremiumProvider>
+                    <UsageProvider>
+                      <BodyMeasurementImagesProvider>
+                        <CustomerProvider>
+                          <GalleryProvider>
+                            <ReviewProvider>
+                              <OrdersProvider>
+                                <TaskProvider>
+                                  <InvoiceProvider>
+                                    <ReceiptProvider>
+                                      <PaymentProvider>
+                                        <RevenueGoalProvider>
+                                          <AppointmentProvider>
+                                            <BadgeProvider>
+                                              <AutonomousAgentProvider>
+                                                <AgentProvider>
+                                                  <NotificationProvider>
+                                                    <App />
+                                                  </NotificationProvider>
+                                                </AgentProvider>
+                                              </AutonomousAgentProvider>
+                                            </BadgeProvider>
+                                          </AppointmentProvider>
+                                        </RevenueGoalProvider>
+                                      </PaymentProvider>
+                                    </ReceiptProvider>
+                                  </InvoiceProvider>
+                                </TaskProvider>
+                              </OrdersProvider>
+                            </ReviewProvider>
+                          </GalleryProvider>
+                        </CustomerProvider>
+                      </BodyMeasurementImagesProvider>
+                    </UsageProvider>
+                  </PremiumProvider>
+                </PortfolioSettingsProvider>
+              </ProfileSettingsProvider>
+            </GeneralSettingsProvider>
+          </ReferralProvider>
         </AuthProvider>
       </InstallProvider>
     </BrowserRouter>
