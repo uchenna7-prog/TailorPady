@@ -1,0 +1,176 @@
+.overlay {
+  position:        fixed;
+  inset:           0;
+  background:      rgba(0,0,0,0.7);
+  z-index:         5000;
+  display:         flex;
+  align-items:     flex-end;
+  justify-content: center;
+}
+
+.sheet {
+  background:    var(--surface);
+  border-radius: 20px 20px 0 0;
+  padding:       24px 20px calc(24px + var(--sb));
+  width:         100%;
+  border-top:    1px solid var(--border);
+}
+
+.sheet h4 {
+  font-size:     1rem;
+  font-weight:   800;
+  margin-bottom: 6px;
+}
+
+.sheet p {
+  font-size:     0.8rem;
+  color:         var(--text2);
+  margin-bottom: 20px;
+}
+
+.channelGrid {
+  display:               grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap:                   14px 8px;
+  margin-bottom:         18px;
+}
+
+.channelBtn {
+  display:        flex;
+  flex-direction: column;
+  align-items:    center;
+  gap:            8px;
+  background:     none;
+  border:         none;
+  padding:        4px 0;
+  cursor:         pointer;
+  font-family:    'Manrope', sans-serif;
+}
+
+.channelBtn:active .channelIcon {
+  transform: scale(0.92);
+}
+
+.channelIcon {
+  width:          52px;
+  height:         52px;
+  border-radius:  16px;
+  display:        flex;
+  align-items:    center;
+  justify-content: center;
+  transition:     transform 0.1s ease;
+}
+
+.channelIcon svg {
+  width:  24px;
+  height: 24px;
+}
+
+.channelIcon .mi {
+  font-size: 1.4rem;
+}
+
+.channelIcon.whatsapp {
+  background: #25D366;
+}
+
+.channelIcon.whatsapp svg {
+  fill: #04150c;
+}
+
+.channelIcon.telegram {
+  background: #29A9EA;
+}
+
+.channelIcon.telegram svg {
+  fill: #04121c;
+}
+
+.channelIcon.neutral {
+  background: var(--surface2);
+  border:     1px solid var(--border);
+}
+
+.channelIcon.neutral .mi {
+  color: var(--text2);
+}
+
+.channelLabel {
+  font-size:   0.72rem;
+  font-weight: 600;
+  color:       var(--text2);
+}
+
+.linkRow {
+  display:        flex;
+  align-items:    center;
+  gap:            12px;
+  background:     var(--surface2);
+  border:         1px solid var(--border);
+  border-radius:  14px;
+  padding:        12px 12px 12px 14px;
+  margin-bottom:  16px;
+}
+
+.linkText {
+  flex:          1;
+  min-width:     0;
+  font-size:     0.78rem;
+  color:         var(--text2);
+  white-space:   nowrap;
+  overflow:      hidden;
+  text-overflow: ellipsis;
+}
+
+.copyChip {
+  font-size:     0.68rem;
+  font-weight:   700;
+  padding:       7px 12px;
+  border-radius: 999px;
+  background:    color-mix(in srgb, var(--accent) 14%, transparent);
+  color:         var(--accent);
+  flex-shrink:   0;
+  cursor:        pointer;
+  border:        none;
+  font-family:   'Manrope', sans-serif;
+  transition:    background 0.15s, color 0.15s;
+}
+
+.copyChip.copied {
+  background: color-mix(in srgb, #34D399 15%, transparent);
+  color:      #34D399;
+}
+
+.btnCancel {
+  width:         100%;
+  background:    var(--surface2);
+  color:         var(--text2);
+  padding:       16px;
+  border-radius: 12px;
+  font-weight:   700;
+  border:        none;
+  font-family:   'Manrope', sans-serif;
+  font-size:     0.85rem;
+  cursor:        pointer;
+  transition:    background 0.15s;
+}
+
+.btnCancel:hover {
+  background: var(--border);
+}
+
+@media (min-width: 640px) {
+  .overlay {
+    align-items:     center;
+    justify-content: center;
+  }
+
+  .sheet {
+    width:         100%;
+    max-width:     420px;
+    border-radius: 20px;
+    border:        1px solid var(--border);
+    border-top:    1px solid var(--border);
+    padding:       28px 24px;
+  }
+}
