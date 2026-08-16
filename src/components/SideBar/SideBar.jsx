@@ -5,6 +5,7 @@ import { useInstall }         from '../../contexts/InstallContext'
 import { useBadges }          from '../../contexts/BadgeContext'
 import { useAuth }            from '../../contexts/AuthContext'
 import { useTour }            from '../../contexts/TourContext'
+import { useReferral }        from '../../contexts/ReferralContext'
 import ConfirmSheet           from '../ConfirmSheet/ConfirmSheet'
 import logoLightMode          from '../../assets/logoLightMode.png'
 import logoDarkMode           from '../../assets/logoDarkMode.png'
@@ -92,6 +93,7 @@ function SideBar({ isOpen, onClose }) {
   const badges              = useBadges()
   const { logout }          = useAuth()
   const { currentStep, goToStep, completeStep } = useTour()
+  const { referralCode }    = useReferral()
 
   const [scrolled, setScrolled]         = useState(false)
   const [logoutConfirm, setLogoutConfirm] = useState(false)
@@ -113,12 +115,20 @@ function SideBar({ isOpen, onClose }) {
   }
 
   const handleShare = async () => {
+    const shareUrl = referralCode
+      ? `${window.location.origin}/signup?ref=${referralCode}`
+      : window.location.origin
+
+    const shareText = referralCode
+      ? `Join me on TailorPady! Use my code ${referralCode} when you sign up, and I get a free month once you get started.`
+      : 'Check out TailorPady!'
+
     if (navigator.share) {
       try {
         await navigator.share({
           title: 'TailorPady',
-          text:  'Check out TailorPady!',
-          url:   window.location.origin,
+          text:  shareText,
+          url:   shareUrl,
         })
       } catch {}
     }
