@@ -82,6 +82,21 @@
   color: var(--text3); 
 }
 
+.copyIconBtn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--text3);
+  display: inline-flex;
+  align-items: center;
+  padding: 2px;
+  margin-left: 2px;
+}
+
+.copyIconBtn:hover {
+  color: var(--accent);
+}
+
 .row { 
   display: flex; 
   align-items: center; 
