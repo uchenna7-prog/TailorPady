@@ -589,4 +589,35 @@ export const TOURS = {
       message: "Keep the customer's full body measurements here for future reference. Unlike the Measurements tab, which is linked to a specific garment, these measurements can be reused across multiple orders. Forgot a measurement? Check here first. You can add or update body measurements anytime.",
     },
   ],
+
+  'referral-nudge': [
+    {
+      id: 'referral-nudge-confirm',
+      type: 'confirm',
+      target: null,
+      title: 'Get a free month, on us 🎁',
+      message: 'Share your referral code with another tailor. Once they start using TailorPady, you get a free month of Pro automatically — no strings attached.',
+      yesLabel: 'Show me how',
+      noLabel: 'Not now',
+      yesTarget: 'referral-nudge-instructions',
+      noTarget: 'referral-nudge-done',
+      pages: ['/dashboard'],
+    },
+    {
+      id: 'referral-nudge-instructions',
+      target: null,
+      manual: true,
+      ctaLabel: 'Got it',
+      title: "Here's how",
+      message: 'Tap the menu icon in the top corner, scroll down to "Share App", and send your referral link to another tailor.',
+    },
+    {
+      id: 'referral-nudge-done',
+      target: null,
+      manual: true,
+      ctaLabel: 'Got it',
+      title: 'No problem',
+      message: 'You can always find your referral code and share link on your Account page.',
+    },
+  ],
 }
