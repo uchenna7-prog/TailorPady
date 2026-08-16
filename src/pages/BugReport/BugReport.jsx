@@ -5,6 +5,7 @@ import { useAuth } from '../../contexts/AuthContext'
 import { uploadToCloudinary } from '../../services/cloudinaryService'
 import Header from '../../components/Header/Header'
 import BottomNav from '../../components/BottomNav/BottomNav'
+import { Dropdown } from '../../components/Dropdown/Dropdown'
 import styles from './BugReport.module.css'
 
 const SECTIONS = [
@@ -41,6 +42,7 @@ function getDeviceMeta() {
     viewport:   `${window.innerWidth}x${window.innerHeight}`,
     url:        window.location.href,
     standalone: window.matchMedia('(display-mode: standalone)').matches,
+    appVersion: import.meta.env.VITE_APP_VERSION || 'unknown',
   }
 }
 
@@ -208,18 +210,12 @@ export default function BugReport({ onMenuClick }) {
 
         <div className={styles.fieldPadding}>
           <label className={styles.label} htmlFor="bugSection">Where did this happen?</label>
-          <div className={styles.selectWrap}>
-            <select
-              id="bugSection"
-              className={styles.select}
-              value={section}
-              onChange={e => setSection(e.target.value)}
-            >
-              <option value="">Select a page or section</option>
-              {SECTIONS.map(s => <option key={s} value={s}>{s}</option>)}
-            </select>
-            <span className={`mi ${styles.selectChevron}`}>expand_more</span>
-          </div>
+          <Dropdown
+            options={SECTIONS}
+            value={section}
+            onChange={(val) => setSection(val)}
+            placeholder="Select a page or section"
+          />
         </div>
 
         <div className={styles.fieldPadding}>
