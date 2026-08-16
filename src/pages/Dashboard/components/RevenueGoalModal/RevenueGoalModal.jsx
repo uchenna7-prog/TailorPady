@@ -17,6 +17,7 @@ const PERIOD_HINTS = {
 
 const SWIPE_CLOSE_THRESHOLD  = 80
 const SWIPE_VELOCITY_THRESHOLD = 0.4
+const DRAFT_KEY = 'tp_revenue_goal_draft'
 
 function formatAmount(amount, symbol, position, decimals, numberFormat) {
   if (!amount && amount !== 0) return ''
@@ -45,6 +46,15 @@ function haptic(pattern = 10) {
   navigator.vibrate?.(pattern)
 }
 
+function readDraft() {
+  try {
+    const raw = sessionStorage.getItem(DRAFT_KEY)
+    return raw ? JSON.parse(raw) : null
+  } catch {
+    return null
+  }
+}
+
 
 export function RevenueGoalModal({
   onSave,
@@ -59,14 +69,15 @@ export function RevenueGoalModal({
   const sheetRef            = useRef(null)
   const inputRef            = useRef(null)
   const dragState           = useRef({ startY: 0, startTime: 0, dragging: false })
+  const draftRef            = useRef(readDraft())
 
   const symbol       = resolveCurrencySymbol(generalSettings.currency)
   const position     = generalSettings.currencySymbolPosition ?? 'prefix'
   const decimals     = generalSettings.currencyDecimals       ?? 0
   const numberFormat = generalSettings.currencyNumberFormat   ?? 'anglophone'
 
-  const [period,        setPeriod]        = useState(existingGoal?.period ?? 'monthly')
-  const [rawGoal,       setRawGoal]       = useState(existingGoal ? String(existingGoal.goal) : '')
+  const [period,        setPeriod]        = useState(draftRef.current?.period ?? existingGoal?.period ?? 'monthly')
+  const [rawGoal,       setRawGoal]       = useState(draftRef.current?.rawGoal ?? (existingGoal ? String(existingGoal.goal) : ''))
   const [confirmDelete, setConfirmDelete] = useState(false)
   const [sheetOffset,   setSheetOffset]   = useState(0)
   const [debouncedGoal, setDebouncedGoal] = useState(rawGoal)
@@ -80,7 +91,13 @@ export function RevenueGoalModal({
   const isDisabled  = !rawGoal || numericGoal <= 0 || periodAlreadyTaken
 
   useEffect(() => {
-    if (existingGoal) {
+    try {
+      sessionStorage.removeItem(DRAFT_KEY)
+    } catch {}
+  }, [])
+
+  useEffect(() => {
+    if (existingGoal && !draftRef.current) {
       setPeriod(existingGoal.period)
       setRawGoal(String(existingGoal.goal))
     }
@@ -165,6 +182,19 @@ export function RevenueGoalModal({
     setConfirmDelete(false)
     onClose()
     onDelete?.()
+  }
+
+  const handleCurrencySettingsClick = () => {
+    try {
+      sessionStorage.setItem(DRAFT_KEY, JSON.stringify({ period, rawGoal }))
+    } catch {}
+    onClose()
+    navigate('/settings', {
+      state: {
+        autoOpenModal: 'currency',
+        returnTo: { returnPath: '/dashboard', reopenRevenueGoalModal: true },
+      },
+    })
   }
 
   const fmt = (n) => formatAmount(n, symbol, position, decimals, numberFormat)
@@ -276,7 +306,7 @@ export function RevenueGoalModal({
 
         <button
           className={styles.currencySettingsBtn}
-          onClick={() => { onClose(); navigate('/settings') }}
+          onClick={handleCurrencySettingsClick}
         >
           <div className={styles.currencySettingsBtnInner}>
             <span className={styles.currencySettingsIcon}>
