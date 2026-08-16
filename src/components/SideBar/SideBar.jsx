@@ -135,7 +135,12 @@ function SideBar({ isOpen, onClose }) {
   }
 
   const handleAction = (action) => {
-    if (action === 'share')   handleShare()
+    if (action === 'share') {
+      handleShare()
+      if (currentStep?.id === 'referral-nudge-share-app') {
+        completeStep('referral-nudge-share-app')
+      }
+    }
     if (action === 'install') triggerInstall()
     if (action === 'logout')  { setLogoutConfirm(true); return }
     onClose()
@@ -236,6 +241,7 @@ function SideBar({ isOpen, onClose }) {
                           item.path === '/customers' ? 'sidebar-customers-nav' :
                           item.path === '/gallery'   ? 'sidebar-gallery-nav'   :
                           item.path === '/settings'  ? 'sidebar-settings-nav'  :
+                          item.action === 'share'    ? 'sidebar-share-app-btn' :
                           undefined
                         }
                       >
