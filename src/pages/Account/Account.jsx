@@ -1,9 +1,10 @@
-import { useState, useRef, useEffect, useCallback } from 'react'
+import { useRef, useState, useEffect, useCallback } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
 import { useProfileSettings } from '../../contexts/ProfileSettingsContext'
 import { useAuth } from '../../contexts/AuthContext'
 import { usePremium } from '../../contexts/PremiumContext'
 import { useTour } from '../../contexts/TourContext'
+import { useReferral } from '../../contexts/ReferralContext'
 import { getPersonalInfosFromFirestore } from '../../services/profileService'
 import { getPaletteById, DEFAULT_COLOUR_ID } from '../../config/brandPalette'
 import { SOCIAL_PLATFORMS } from './datas'
@@ -25,7 +26,7 @@ import BillingHistoryModal from './component/BillingHistoryModal/BillingHistoryM
 import UsageModal from './component/UsageModal/UsageModal'
 import PremiumSuccessModal from './component/PremiumSuccessModal/PremiumSuccessModal'
 import ManagePlanModal from './component/ManagePlanModal/ManagePlanModal'
-import { getOrSetJoinDate, loadPersonalInfo, savePersonalInfoLocally } from './utils'
+import { getJoinDate, loadPersonalInfo, savePersonalInfoLocally } from './utils'
 import BottomNav from '../../components/BottomNav/BottomNav'
 import Header from '../../components/Header/Header'
 import Toast from '../../components/Toast/Toast'
@@ -41,6 +42,7 @@ export default function Account({ onMenuClick, isPremium = false, onUpgrade = ()
   const { profileSettings } = useProfileSettings()
   const { user, logout } = useAuth()
   const { plan, nextRenewal } = usePremium()
+  const { referralCode } = useReferral()
   const navigate = useNavigate()
   const location = useLocation()
   const { currentStep, pauseTour, resumeTour, goToStep, pendingCustomerId } = useTour()
@@ -57,7 +59,7 @@ export default function Account({ onMenuClick, isPremium = false, onUpgrade = ()
   const [awaitingProfileTourAdvance, setAwaitingProfileTourAdvance] = useState(false)
   const toastTimer = useRef(null)
 
-  const joinDate = getOrSetJoinDate()
+  const joinDate = getJoinDate(user)
 
   const hasBrand = !!(profileSettings.brandName || profileSettings.brandLogo)
   const hasBusinessInfo = !!(profileSettings.brandPhone || profileSettings.brandEmail || profileSettings.brandAddress)
@@ -133,6 +135,13 @@ export default function Account({ onMenuClick, isPremium = false, onUpgrade = ()
     clearTimeout(toastTimer.current)
     toastTimer.current = setTimeout(() => setToastMsg(''), 2400)
   }, [])
+
+  const handleCopyReferral = useCallback(() => {
+    if (!referralCode) return
+    navigator.clipboard.writeText(referralCode)
+      .then(() => showToast('Referral code copied'))
+      .catch(() => showToast('Could not copy code'))
+  }, [referralCode, showToast])
 
   const applyPendingTemplateIfAny = useCallback((extraMessage) => {
     if (extraMessage) showToast(extraMessage)
@@ -285,14 +294,30 @@ export default function Account({ onMenuClick, isPremium = false, onUpgrade = ()
             </div>
           </div>
           <div className={styles.heroMeta}>
-            <div className={styles.heroMetaItem}>
-              <span className="mi" style={{ fontSize: '0.85rem', color: 'var(--text3)' }}>calendar_today</span>
-              <span className={styles.heroMetaLabel}>Joined {joinDate}</span>
-            </div>
+            {joinDate && (
+              <div className={styles.heroMetaItem}>
+                <span className="mi" style={{ fontSize: '0.85rem', color: 'var(--text3)' }}>calendar_today</span>
+                <span className={styles.heroMetaLabel}>Joined {joinDate}</span>
+              </div>
+            )}
             {(personalInfo.email || user?.email) && (
               <div className={styles.heroMetaItem}>
                 <span className="mi" style={{ fontSize: '0.85rem', color: 'var(--text3)' }}>mail</span>
                 <span className={styles.heroMetaLabel}>{personalInfo.email || user?.email}</span>
+              </div>
+            )}
+            {referralCode && (
+              <div className={styles.heroMetaItem}>
+                <span className="mi" style={{ fontSize: '0.85rem', color: 'var(--text3)' }}>redeem</span>
+                <span className={styles.heroMetaLabel}>Referral code: {referralCode}</span>
+                <button
+                  type="button"
+                  className={styles.copyIconBtn}
+                  onClick={handleCopyReferral}
+                  aria-label="Copy referral code"
+                >
+                  <span className="mi" style={{ fontSize: '0.9rem' }}>content_copy</span>
+                </button>
               </div>
             )}
           </div>
