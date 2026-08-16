@@ -93,6 +93,10 @@ export default function Settings({ onMenuClick }) {
       setIsPortfolioModalOpen(true)
     }
 
+    if (navState.autoOpenModal === 'currency') {
+      setIsCurrencyModalOpen(true)
+    }
+
     if (navState.reopenTemplateModal) {
       setIsTemplateModalOpen(true)
       if (navState.reopenMissingFields) {
@@ -134,7 +138,7 @@ export default function Settings({ onMenuClick }) {
     if (extraMessage) showToast(extraMessage)
   }
 
-  function returnToOriginIfAny() {
+  function returnToOriginIfAny(toastMessageForReturn) {
     if (!returnTo) return
 
     if (returnTo.customerId) {
@@ -155,6 +159,8 @@ export default function Settings({ onMenuClick }) {
           reopenMissingFields: returnTo.reopenMissingFields ?? false,
           completedModal: returnTo.completedModal ?? null,
           completedFields: returnTo.completedFields ?? [],
+          reopenRevenueGoalModal: returnTo.reopenRevenueGoalModal ?? false,
+          toastMessage: toastMessageForReturn ?? null,
         },
       })
     } else if (returnTo.reopenTemplateModal) {
@@ -218,7 +224,11 @@ export default function Settings({ onMenuClick }) {
       currencyNumberFormat:   settings.numberFormat,
     })
     setIsCurrencyModalOpen(false)
-    showToast('Currency updated')
+    if (returnTo) {
+      returnToOriginIfAny('Currency updated')
+    } else {
+      showToast('Currency updated')
+    }
   }
 
   function handleThemeChange(theme) {
