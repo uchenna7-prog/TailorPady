@@ -46,6 +46,14 @@ function getDeviceMeta() {
   }
 }
 
+function notifyTelegram(payload) {
+  fetch('https://tailor-pady-api.vercel.app/api/notify-bug', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload),
+  }).catch(() => {})
+}
+
 export default function BugReport({ onMenuClick }) {
   const { user } = useAuth()
 
@@ -100,10 +108,14 @@ export default function BugReport({ onMenuClick }) {
         screenshotPublicId = uploaded.publicId
       }
 
+      const trimmedTitle       = title.trim()
+      const trimmedDescription = description.trim()
+      const resolvedSection    = section || 'Not specified'
+
       await addDoc(collection(db, 'bugReports'), {
-        title:              title.trim(),
-        description:        description.trim(),
-        section:            section || 'Not specified',
+        title:              trimmedTitle,
+        description:        trimmedDescription,
+        section:            resolvedSection,
         severity,
         screenshotUrl,
         screenshotPublicId,
@@ -112,6 +124,15 @@ export default function BugReport({ onMenuClick }) {
         userEmail:           user?.email ?? null,
         device:              getDeviceMeta(),
         createdAt:           serverTimestamp(),
+      })
+
+      notifyTelegram({
+        title: trimmedTitle,
+        description: trimmedDescription,
+        section: resolvedSection,
+        severity,
+        screenshotUrl,
+        userEmail: user?.email ?? null,
       })
 
       setSubmitted(true)
