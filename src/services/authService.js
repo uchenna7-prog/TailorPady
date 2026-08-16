@@ -13,6 +13,7 @@ import {
   signInWithPopup,
   signInWithRedirect,
   getRedirectResult,
+  getAdditionalUserInfo,
   linkWithPopup,
   unlink,
 } from 'firebase/auth'
@@ -33,17 +34,22 @@ export const loginWithGoogle = async () => {
 
   try {
     const result = await signInWithPopup(auth, provider)
-    return result
+    const isNewUser = getAdditionalUserInfo(result)?.isNewUser ?? false
+    return { user: result.user, isNewUser }
   } catch (err) {
     if (err.code === 'auth/popup-blocked') {
-      return signInWithRedirect(auth, provider)
+      await signInWithRedirect(auth, provider)
+      return { user: null, isNewUser: null }
     }
     throw err
   }
 }
 
-export const getGoogleRedirectResult = () => {
-  return getRedirectResult(auth)
+export const getGoogleRedirectResult = async () => {
+  const result = await getRedirectResult(auth)
+  if (!result) return { user: null, isNewUser: null }
+  const isNewUser = getAdditionalUserInfo(result)?.isNewUser ?? false
+  return { user: result.user, isNewUser }
 }
 
 export const logout = () => {
