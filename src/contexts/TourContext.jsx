@@ -5,6 +5,8 @@ import { getSessionId } from '../utils/sessionId'
 
 const ONBOARDING_SESSION_KEY = 'tp_onboarding_completed_session'
 const REVENUE_GOAL_NUDGE_SESSION_KEY = 'tp_revenue_goal_nudge_completed_session'
+const DISCOVER_TOURS_NUDGE_SESSION_KEY = 'tp_discover_tours_nudge_completed_session'
+const REFERRAL_NUDGE_SESSION_KEY = 'tp_referral_nudge_completed_session'
 
 const STORAGE_KEY = 'tp_tours_completed'
 
@@ -74,6 +76,16 @@ export function TourProvider({ children }) {
     if (tourId === 'revenue-goal-nudge') {
       try {
         localStorage.setItem(REVENUE_GOAL_NUDGE_SESSION_KEY, getSessionId())
+      } catch {}
+    }
+    if (tourId === 'discover-tours-nudge') {
+      try {
+        localStorage.setItem(DISCOVER_TOURS_NUDGE_SESSION_KEY, getSessionId())
+      } catch {}
+    }
+    if (tourId === 'referral-nudge') {
+      try {
+        localStorage.setItem(REFERRAL_NUDGE_SESSION_KEY, getSessionId())
       } catch {}
     }
   }, [])
