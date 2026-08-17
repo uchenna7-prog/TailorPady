@@ -61,21 +61,19 @@ export default function ShareAppSheet({ open, referralCode, onClose }) {
         <h4>Share TailorPady</h4>
         <p>Invite another tailor. Once they start using TailorPady, you get a free month of Pro.</p>
 
-        {referralCode && (
-          <div className={styles.codeBlock}>
-            <div className={styles.codeLeft}>
-              <span className={styles.codeLabel}>Your referral code</span>
-              <span className={styles.codeValue}>{referralCode}</span>
-            </div>
-            <button
-              className={`${styles.codeCopyBtn} ${codeCopied ? styles.copied : ''}`}
-              onClick={handleCopyCode}
-            >
-              <span className="mi">{codeCopied ? 'check' : 'content_copy'}</span>
-              {codeCopied ? 'Copied' : 'Copy'}
-            </button>
-          </div>
-        )}
+        <div className={styles.linkRow}>
+          <span className={`mi ${styles.linkIcon}`}>link</span>
+          <span className={styles.linkText}>{shareUrl.replace(/^https?:\/\//, '')}</span>
+          <button
+            className={`${styles.linkCopyBtn} ${linkCopied ? styles.copied : ''}`}
+            onClick={handleCopyLink}
+          >
+            <span className="mi">{linkCopied ? 'check' : 'content_copy'}</span>
+            {linkCopied ? 'Copied' : 'Copy'}
+          </button>
+        </div>
+
+        <span className={styles.sectionLabel}>Share via</span>
 
         <div className={styles.channelGrid}>
           <button className={styles.channelBtn} onClick={handleWhatsApp}>
@@ -109,17 +107,21 @@ export default function ShareAppSheet({ open, referralCode, onClose }) {
 
         <div className={styles.divider} />
 
-        <div className={styles.linkRow}>
-          <span className={`mi ${styles.linkIcon}`}>link</span>
-          <span className={styles.linkText}>{shareUrl.replace(/^https?:\/\//, '')}</span>
-          <button
-            className={`${styles.linkCopyBtn} ${linkCopied ? styles.copied : ''}`}
-            onClick={handleCopyLink}
-          >
-            <span className="mi">{linkCopied ? 'check' : 'content_copy'}</span>
-            {linkCopied ? 'Copied' : 'Copy'}
-          </button>
-        </div>
+        {referralCode && (
+          <div className={styles.codeBlock}>
+            <div className={styles.codeLeft}>
+              <span className={styles.codeLabel}>Your referral code</span>
+              <span className={styles.codeValue}>{referralCode}</span>
+            </div>
+            <button
+              className={`${styles.codeCopyBtn} ${codeCopied ? styles.copied : ''}`}
+              onClick={handleCopyCode}
+            >
+              <span className="mi">{codeCopied ? 'check' : 'content_copy'}</span>
+              {codeCopied ? 'Copied' : 'Copy'}
+            </button>
+          </div>
+        )}
 
         <button className={styles.btnCancel} onClick={onClose}>Cancel</button>
       </div>
