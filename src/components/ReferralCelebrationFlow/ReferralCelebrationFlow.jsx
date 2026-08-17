@@ -30,7 +30,8 @@ export default function ReferralCelebrationFlow() {
 
   return (
     <ReferralRewardModal
-      referredName={activeReward.referredDisplayName}
+      contributingNames={activeReward.contributingNames}
+      rewardDays={activeReward.rewardDays}
       onContinue={handleRewardContinue}
     />
   )
