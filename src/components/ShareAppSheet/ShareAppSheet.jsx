@@ -94,14 +94,14 @@ export default function ShareAppSheet({ open, referralCode, onClose }) {
 
           <button className={styles.channelBtn} onClick={handleSms}>
             <div className={styles.channelIcon}>
-              <span className="mi">sms</span>
+              <svg viewBox="0 0 24 24" className={styles.neutralIcon}><path d="M12 2C6.48 2 2 5.94 2 10.8c0 2.72 1.42 5.14 3.64 6.76-.12.94-.44 2.22-1.28 3.44a.5.5 0 0 0 .58.76c2.02-.62 3.52-1.62 4.4-2.32.86.2 1.76.32 2.66.32 5.52 0 10-3.94 10-8.8S17.52 2 12 2z" /></svg>
             </div>
             <span className={styles.channelLabel}>Messages</span>
           </button>
 
           <button className={styles.channelBtn} onClick={handleEmail}>
             <div className={styles.channelIcon}>
-              <span className="mi">mail</span>
+              <svg viewBox="0 0 24 24" className={styles.neutralIcon}><path d="M4 4h16a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2zm0 2v.35l8 6.6 8-6.6V6H4zm16 2.6-7.4 6.1a1 1 0 0 1-1.2 0L4 8.6V18h16V8.6z" /></svg>
             </div>
             <span className={styles.channelLabel}>Email</span>
           </button>
@@ -113,9 +113,10 @@ export default function ShareAppSheet({ open, referralCode, onClose }) {
           <span className={`mi ${styles.linkIcon}`}>link</span>
           <span className={styles.linkText}>{shareUrl.replace(/^https?:\/\//, '')}</span>
           <button
-            className={`${styles.copyChip} ${linkCopied ? styles.copied : ''}`}
+            className={`${styles.linkCopyBtn} ${linkCopied ? styles.copied : ''}`}
             onClick={handleCopyLink}
           >
+            <span className="mi">{linkCopied ? 'check' : 'content_copy'}</span>
             {linkCopied ? 'Copied' : 'Copy'}
           </button>
         </div>
