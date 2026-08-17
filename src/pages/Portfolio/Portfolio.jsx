@@ -6,6 +6,7 @@ import { getPublicBrandDataFromServer } from '../../services/profileService'
 import { getPortfolioSettingsFromServer } from '../../services/portfolioSettingsService'
 import { getApprovedReviews } from '../../services/reviewService'
 import { resolveSlug } from '../../services/slugService'
+import { useNetworkStatus } from '../../hooks/useNetworkStatus'
 import { PortfolioTemplate1 } from './PortfolioTemplates/PortfolioTemplate1/PortfolioTemplate1'
 import { PortfolioTemplate2 } from './PortfolioTemplates/PortfolioTemplate2/PortfolioTemplate2'
 import { PortfolioTemplate3 } from './PortfolioTemplates/PortfolioTemplate3/PortfolioTemplate3'
@@ -25,6 +26,7 @@ export default function Portfolio() {
   const { handle } = useParams()
   const [searchParams] = useSearchParams()
   const previewTemplate = searchParams.get('template')
+  const isOnline = useNetworkStatus()
 
   const [resolvedUid,       setResolvedUid]       = useState(null)
   const [brand,             setBrand]             = useState(null)
@@ -37,6 +39,7 @@ export default function Portfolio() {
   const [notFound,          setNotFound]          = useState(false)
 
   useEffect(() => {
+    if (!isOnline) return
     if (!handle) {
       setNotFound(true)
       setLoading(false)
@@ -48,20 +51,40 @@ export default function Portfolio() {
     } else {
       resolveSlug(db, handle)
         .then(uid => {
-          if (!uid) { setNotFound(true); setLoading(false) }
-          else setResolvedUid(uid)
+          if (!uid) {
+            setNotFound(true)
+            setLoading(false)
+          } else {
+            setResolvedUid(uid)
+          }
         })
-        .catch(() => { setNotFound(true); setLoading(false) })
+        .catch(() => {
+          if (navigator.onLine) {
+            setNotFound(true)
+            setLoading(false)
+          }
+        })
     }
-  }, [handle])
+  }, [handle, isOnline])
 
   useEffect(() => {
-    if (!resolvedUid) return
+    if (!resolvedUid || !isOnline) return
     getPublicBrandDataFromServer(db, resolvedUid)
-      .then(data => { if (!data || Object.keys(data).length === 0) setNotFound(true); else setBrand(data) })
-      .catch(() => setNotFound(true))
-      .finally(() => setLoading(false))
-  }, [resolvedUid])
+      .then(data => {
+        if (!data || Object.keys(data).length === 0) {
+          setNotFound(true)
+        } else {
+          setBrand(data)
+        }
+        setLoading(false)
+      })
+      .catch(() => {
+        if (navigator.onLine) {
+          setNotFound(true)
+          setLoading(false)
+        }
+      })
+  }, [resolvedUid, isOnline])
 
   useEffect(() => {
     if (!resolvedUid) return
@@ -102,20 +125,30 @@ export default function Portfolio() {
       .catch(() => {})
   }, [resolvedUid])
 
+  if (!isOnline && loading) {
+    return (
+      <div className={styles.statusScreen}>
+        <span className='mi-outlined' style={{ fontSize: '3rem' }}>wifi_off</span>
+        <p className={styles.statusTitle}>You're offline</p>
+        <p className={styles.statusSub}>Check your connection and try again.</p>
+      </div>
+    )
+  }
+
   if (loading) {
     return (
-    <div className={styles.loadingScreen}>
-      <div className={styles.spinner} />
-    </div>
+      <div className={styles.loadingScreen}>
+        <div className={styles.spinner} />
+      </div>
     )
   }
 
   if (notFound) {
     return (
-      <div className={styles.notFoundScreen}>
-        <span className='mi' style={{ fontSize: '3rem', color: '#bbb' }}>content_cut</span>
-        <p className={styles.notFoundTitle}>Portfolio not found</p>
-        <p className={styles.notFoundSub}>This tailor hasn't set up their portfolio yet.</p>
+      <div className={styles.statusScreen}>
+        <span className='mi-outlined' style={{ fontSize: '3rem' }}>search_off</span>
+        <p className={styles.statusTitle}>Portfolio not found</p>
+        <p className={styles.statusSub}>This tailor hasn't set up their portfolio yet.</p>
       </div>
     )
   }
