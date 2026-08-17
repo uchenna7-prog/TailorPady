@@ -210,6 +210,13 @@
   padding-left: 2px;
 }
 
+.fieldSuccess {
+  font-size: 0.74rem;
+  font-weight: 600;
+  color: var(--accent);
+  padding-left: 2px;
+}
+
 .eyeBtn {
   position: absolute;
   right: 12px;
