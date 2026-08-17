@@ -4,6 +4,8 @@ import { db } from '../firebase'
 const REFERRAL_STASH_KEY = 'TailorPady_referral_code'
 const API_BASE = 'https://tailor-pady-api.vercel.app'
 
+let hasCheckedThisSession = false
+
 export function stashReferralCode(code) {
   if (!code) return
   try {
@@ -71,6 +73,17 @@ export async function checkReferralActivation(user) {
     throw new Error(data.error || 'Could not check referral activation')
   }
   return data
+}
+
+export async function triggerReferralActivationCheck(user) {
+  if (!user || hasCheckedThisSession) return
+  hasCheckedThisSession = true
+  try {
+    await checkReferralActivation(user)
+  } catch (err) {
+    console.warn('Referral activation check failed:', err)
+    hasCheckedThisSession = false
+  }
 }
 
 export async function acknowledgeReferral(user, referralId) {
