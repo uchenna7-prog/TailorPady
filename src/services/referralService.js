@@ -72,3 +72,22 @@ export async function checkReferralActivation(user) {
   }
   return data
 }
+
+export async function acknowledgeReferral(user, referralId) {
+  const idToken = await user.getIdToken()
+
+  const response = await fetch(`${API_BASE}/api/acknowledge-referral`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${idToken}`,
+    },
+    body: JSON.stringify({ referralId }),
+  })
+
+  const data = await response.json()
+  if (!response.ok) {
+    throw new Error(data.error || 'Could not acknowledge referral')
+  }
+  return data
+}
