@@ -39,7 +39,7 @@ export function ReferralProvider({ children }) {
     const q = query(
       collection(db, 'referrals'),
       where('referrerUid', '==', user.uid),
-      where('status', '==', 'activated'),
+      where('rewardGranted', '==', true),
     )
 
     const unsub = onSnapshot(q,
