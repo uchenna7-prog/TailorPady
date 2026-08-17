@@ -274,7 +274,7 @@ export default function Signup() {
               />
             </div>
             {referralFromLink && (
-              <span className={styles.fieldError} style={{ color: 'var(--accent)' }}>
+              <span className={styles.fieldSuccess}>
                 Applied from your invite link ✓
               </span>
             )}
