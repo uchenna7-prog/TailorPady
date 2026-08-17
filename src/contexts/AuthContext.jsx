@@ -29,7 +29,9 @@ export function AuthProvider({ children }) {
       profiledUidRef.current = firebaseUser.uid
       ensureUserProfile(firebaseUser, hint)
         .then(() => {
-          checkReferralActivation(firebaseUser).catch(() => {})
+          checkReferralActivation(firebaseUser).catch(err => {
+            console.warn('Referral activation check failed:', err)
+          })
         })
         .catch(() => {
           profiledUidRef.current = null
