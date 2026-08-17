@@ -56,6 +56,8 @@ export default function Signup() {
   const [fullName,      setFullName]      = useState('')
   const [email,         setEmail]         = useState('')
   const [password,      setPassword]      = useState('')
+  const [referralInput, setReferralInput] = useState('')
+  const [referralFromLink, setReferralFromLink] = useState(false)
   const [showPass,      setShowPass]      = useState(false)
   const [agreed,        setAgreed]        = useState(false)
   const [touched,       setTouched]       = useState({})
@@ -65,7 +67,11 @@ export default function Signup() {
 
   useEffect(() => {
     const ref = searchParams.get('ref')
-    if (ref) stashReferralCode(ref)
+    if (ref) {
+      stashReferralCode(ref)
+      setReferralInput(ref.trim().toUpperCase())
+      setReferralFromLink(true)
+    }
   }, [searchParams])
 
   const strengthScore = getStrength(password)
@@ -80,6 +86,12 @@ export default function Signup() {
   const logoSrc  = theme === 'dark' ? logoLightMode : logoDarkMode
 
   const handleBlur = (field) => setTouched(prev => ({ ...prev, [field]: true }))
+
+  const handleReferralChange = (value) => {
+    setReferralInput(value)
+    setReferralFromLink(false)
+    stashReferralCode(value)
+  }
 
   const handleSubmit = async (e) => {
     e.preventDefault()
@@ -244,6 +256,27 @@ export default function Signup() {
                   {strengthLevel.label}
                 </span>
               </div>
+            )}
+          </div>
+
+          <div className={styles.field}>
+            <label className={styles.label}>Referral Code (optional)</label>
+            <div className={styles.inputWrap}>
+              <span className="mi" style={{ position: 'absolute', left: 12, color: 'var(--text3)', fontSize: '1.1rem' }}>redeem</span>
+              <input
+                className={styles.input}
+                type="text"
+                value={referralInput}
+                onChange={e => handleReferralChange(e.target.value)}
+                placeholder="Enter a code if you have one"
+                autoCapitalize="characters"
+                disabled={isLoading}
+              />
+            </div>
+            {referralFromLink && (
+              <span className={styles.fieldError} style={{ color: 'var(--accent)' }}>
+                Applied from your invite link ✓
+              </span>
             )}
           </div>
 
