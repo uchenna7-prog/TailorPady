@@ -1,8 +1,10 @@
 import { useCallback, useEffect, useRef } from 'react'
+import { useAuth } from '../contexts/AuthContext'
 import { useProfileSettings } from '../contexts/ProfileSettingsContext'
 import { useGeneralSettings } from '../contexts/GeneralSettingsContext'
 import { useUsage } from '../contexts/UsageContext'
 import { useTour } from '../contexts/TourContext'
+import { triggerReferralActivationCheck } from '../services/referralService'
 
 
 function buildBrandSnapshot(localSnap, profileSettings, overrides = {}) {
@@ -43,6 +45,7 @@ const INVOICE_TOUR_PHASE_STEPS = [
 
 export function useInvoiceActions({ customerData, orders, showToast, setActiveTab, setReopenInvoiceId, onLimitReached }) {
 
+  const { user } = useAuth()
   const { profileSettings } = useProfileSettings()
   const { generalSettings }  = useGeneralSettings()
   const { usage, remaining, recordUsage } = useUsage()
@@ -155,15 +158,19 @@ export function useInvoiceActions({ customerData, orders, showToast, setActiveTa
     setReopenInvoiceId?.(newInvoice.id)
     resolveShortcut(INVOICE_TOUR_PHASE_STEPS, 'confirm-add-payment')
 
-    customerData.saveInvoice(newInvoice).catch(() => {
-      showToast('Invoice saved locally — will sync when online')
-    })
+    customerData.saveInvoice(newInvoice)
+      .then(() => {
+        triggerReferralActivationCheck(user)
+      })
+      .catch(() => {
+        showToast('Invoice saved locally — will sync when online')
+      })
 
     recordUsage('invoicesPerMonth').catch(() => {})
 
     return { ok: true, invoiceId: newInvoice.id }
 
-  }, [customerData, orders, generalSettings, profileSettings, remaining, recordUsage, showToast, setActiveTab, setReopenInvoiceId, resolveShortcut, onLimitReached])
+  }, [customerData, orders, generalSettings, profileSettings, remaining, recordUsage, showToast, setActiveTab, setReopenInvoiceId, resolveShortcut, onLimitReached, user])
 
 
   const handleInvoicePaid = useCallback(async (orderId, invoiceStatus) => {
