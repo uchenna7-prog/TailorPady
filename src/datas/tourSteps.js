@@ -620,8 +620,8 @@ export const TOURS = {
       target: null,
       manual: true,
       ctaLabel: 'Got it',
-      title: 'No problem',
-      message: 'You can always share your referral link from your Account page whenever you are ready.',
+      title: 'Your reward is waiting 🚀',
+      message: 'You will receive 1 month of Pro access when the people you refer sign up and start using TailorPady, such as adding their first customer.',
     },
   ],
 }
