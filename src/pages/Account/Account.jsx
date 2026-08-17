@@ -3,6 +3,7 @@ import { useNavigate, useLocation } from 'react-router-dom'
 import { useProfileSettings } from '../../contexts/ProfileSettingsContext'
 import { useAuth } from '../../contexts/AuthContext'
 import { usePremium } from '../../contexts/PremiumContext'
+import { usePremiumSuccess } from '../../contexts/PremiumSuccessContext'
 import { useTour } from '../../contexts/TourContext'
 import { useReferral } from '../../contexts/ReferralContext'
 import { getPersonalInfosFromFirestore } from '../../services/profileService'
@@ -24,7 +25,6 @@ import { ConnectedAccountsModal } from './component/ConnectedAccountsModal/Conne
 import UpgradeModal from './component/UpgradeModal/UpgradeModal'
 import BillingHistoryModal from './component/BillingHistoryModal/BillingHistoryModal'
 import UsageModal from './component/UsageModal/UsageModal'
-import PremiumSuccessModal from './component/PremiumSuccessModal/PremiumSuccessModal'
 import ManagePlanModal from './component/ManagePlanModal/ManagePlanModal'
 import { getJoinDate, loadPersonalInfo, savePersonalInfoLocally } from './utils'
 import BottomNav from '../../components/BottomNav/BottomNav'
@@ -42,6 +42,7 @@ export default function Account({ onMenuClick, isPremium = false, onUpgrade = ()
   const { profileSettings } = useProfileSettings()
   const { user, logout } = useAuth()
   const { plan, nextRenewal } = usePremium()
+  const { triggerPremiumSuccess } = usePremiumSuccess()
   const { referralCode } = useReferral()
   const navigate = useNavigate()
   const location = useLocation()
@@ -55,7 +56,6 @@ export default function Account({ onMenuClick, isPremium = false, onUpgrade = ()
   const [toastMsg, setToastMsg] = useState('')
   const [pendingTemplate, setPendingTemplate] = useState(null)
   const [returnTo, setReturnTo] = useState(null)
-  const [premiumSuccess, setPremiumSuccess] = useState(null)
   const [awaitingProfileTourAdvance, setAwaitingProfileTourAdvance] = useState(false)
   const toastTimer = useRef(null)
 
@@ -222,9 +222,9 @@ export default function Account({ onMenuClick, isPremium = false, onUpgrade = ()
   const handleUpgradeSuccess = useCallback((info) => {
     setActiveModal(null)
     setUpgradeInitialTab('free')
-    setPremiumSuccess(info)
+    triggerPremiumSuccess(info)
     onUpgrade?.(info.billingCycle)
-  }, [onUpgrade])
+  }, [onUpgrade, triggerPremiumSuccess])
 
   const handleUpgradeModalClose = useCallback(() => {
     setActiveModal(null)
@@ -612,14 +612,6 @@ export default function Account({ onMenuClick, isPremium = false, onUpgrade = ()
 
       {activeModal === 'connectedAccounts' && (
         <ConnectedAccountsModal onBack={() => setActiveModal(null)} showToast={showToast} />
-      )}
-
-      {premiumSuccess && (
-        <PremiumSuccessModal
-          billingCycle={premiumSuccess.billingCycle}
-          nextRenewal={premiumSuccess.nextRenewal}
-          onClose={() => setPremiumSuccess(null)}
-        />
       )}
 
       <ConfirmSheet
