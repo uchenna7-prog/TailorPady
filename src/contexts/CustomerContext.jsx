@@ -9,6 +9,7 @@ import {
 import { useAuth } from './AuthContext'
 import { usePremium } from './PremiumContext'
 import { USAGE_LIMITS } from '../datas/usageLimits'
+import { triggerReferralActivationCheck } from '../services/referralService'
 import {
   subscribeToCustomers,
   addCustomer              as addCustomerToDb,
@@ -54,9 +55,13 @@ export function CustomerProvider({ children }) {
       { id: tempId, clientId: tempId, ...data },
       ...prev,
     ])
-    addCustomerToDb(user.uid, { ...data, clientId: tempId }).catch(err => {
-      setError(err.message)
-    })
+    addCustomerToDb(user.uid, { ...data, clientId: tempId })
+      .then(() => {
+        triggerReferralActivationCheck(user)
+      })
+      .catch(err => {
+        setError(err.message)
+      })
     return tempId
   }, [user, isPremium, customers.length])
   const updateCustomer = useCallback(async (id, updates) => {
