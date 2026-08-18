@@ -1,4 +1,3 @@
-// Payments.jsx
 import { useState, useRef, useCallback, useEffect } from 'react'
 import { useNavigate }  from 'react-router-dom'
 import { usePayments }  from '../../contexts/PaymentContext'
@@ -743,15 +742,22 @@ export default function Payments({ onMenuClick }) {
       >
         {filtered.length === 0 && (
           <div className={styles.emptyState}>
-            <span className="mi" style={{ fontSize: '2.8rem', opacity: 0.2 }}>
+            <span className="mi" style={{ fontSize: '2.5rem', color: 'var(--text3)' }}>
               {activeTab === 'full_payment' ? 'check_circle' : activeTab === 'part' ? 'pending' : 'payments'}
             </span>
-            <p>
+            <p className={styles.emptyStateTitle}>
               {search
-                ? `No results for "${search}"`
+                ? 'No results found'
                 : activeTab === 'all'
-                  ? 'No payments recorded yet.'
-                  : `No ${TABS.find(t => t.id === activeTab)?.label.toLowerCase()} payments.`}
+                  ? 'No payments yet'
+                  : `No ${TABS.find(t => t.id === activeTab)?.label.toLowerCase()} payments`}
+            </p>
+            <p className={styles.emptyStateSubtitle}>
+              {search
+                ? `No payments match "${search}".`
+                : activeTab === 'all'
+                  ? 'Add a customer first, then record a payment from their profile page.'
+                  : 'Payments matching this filter will appear here.'}
             </p>
             {!search && activeTab === 'all' && (
               <button
