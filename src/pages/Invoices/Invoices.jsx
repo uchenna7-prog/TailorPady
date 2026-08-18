@@ -1,4 +1,3 @@
-// Invoices.jsx
 import { useState, useRef, useEffect, useCallback } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { useGeneralSettings } from '../../contexts/GeneralSettingsContext'
@@ -187,12 +186,12 @@ export default function Invoices({ onMenuClick }) {
     overdue:   allInvoices.filter(i => isOverdue(i)).length,
   }
 
-  const EMPTY_STATE_TEXTS = {
-    all:       'No invoices yet.',
-    unpaid:    'No unpaid invoices.',
-    part_paid: 'No part-payment invoices.',
-    paid:      'No paid invoices yet.',
-    overdue:   'No overdue invoices. All good!',
+  const EMPTY_STATE_CONFIG = {
+    all:       { title: 'No invoices yet',           subtitle: 'Add a customer first, then create an invoice from their profile page.' },
+    unpaid:    { title: 'No unpaid invoices',         subtitle: 'Invoices awaiting payment will appear here.' },
+    part_paid: { title: 'No part-payment invoices',   subtitle: 'Invoices with a partial payment will appear here.' },
+    paid:      { title: 'No paid invoices yet',       subtitle: 'Fully paid invoices will appear here.' },
+    overdue:   { title: 'No overdue invoices',        subtitle: 'Nice work, every invoice is on schedule.' },
   }
 
   const searchFiltered = search.trim()
@@ -326,8 +325,9 @@ export default function Invoices({ onMenuClick }) {
       >
         {searchFiltered.length === 0 ? (
           <div className={styles.emptyState}>
-            <span className="mi" style={{ fontSize: '2.8rem', opacity: 0.2 }}>receipt_long</span>
-            <p>{EMPTY_STATE_TEXTS[activeTab]}</p>
+            <span className="mi" style={{ fontSize: '2.5rem', color: 'var(--text3)' }}>receipt_long</span>
+            <p className={styles.emptyStateTitle}>{EMPTY_STATE_CONFIG[activeTab].title}</p>
+            <p className={styles.emptyStateSubtitle}>{EMPTY_STATE_CONFIG[activeTab].subtitle}</p>
             {activeTab === 'all' && !search && (
               <button
                 onClick={handleAddCTA}
