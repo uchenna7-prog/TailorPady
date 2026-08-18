@@ -274,6 +274,9 @@
 
 .gridArea {
   flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
   padding: 8px 8px calc(90px + var(--sb));
 }
 
@@ -344,6 +347,8 @@
 }
 
 .emptyState {
+  flex: 1;
+  min-height: 0;
   display: flex;
   flex-direction: column;
   align-items: center;
