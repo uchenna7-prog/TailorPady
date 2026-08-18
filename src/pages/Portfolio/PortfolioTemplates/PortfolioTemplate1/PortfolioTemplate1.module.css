@@ -1023,13 +1023,18 @@
 }
 
 .reviewStars {
-  font-size: 2rem;
-  color: var(--brand-primary, var(--ink));
-  letter-spacing: 3px;
+  display: flex;
+  gap: 2px;
+  align-items: center;
+}
+
+.starIcon {
+  font-size: 1.15rem;
+  color: #d9d3c7;
 }
 
 .starIconFilled {
-  color: #FBBF24;
+  color: #e0a92f;
 }
 
 .reviewText {
