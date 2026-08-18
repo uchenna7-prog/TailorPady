@@ -1,3 +1,4 @@
+// CustomerDetail.jsx
 import { useState, useRef, useCallback, useEffect, useLayoutEffect } from 'react'
 import { useParams, useNavigate, useLocation }      from 'react-router-dom'
 import { useCustomers }                             from '../../contexts/CustomerContext'
@@ -36,9 +37,20 @@ const TAB_TOUR_STEP_IDS = {
 
 function prevTabIdToDirection(currentTabId, nextTabId) {
   const currentIdx = TAB_IDS.indexOf(currentTabId)
-  const nextIdx    = TAB_IDS.indexOf(nextTabId)
+  const nextIdx = TAB_IDS.indexOf(nextTabId)
   if (nextIdx === currentIdx) return null
   return nextIdx > currentIdx ? 'left' : 'right'
+}
+
+
+function resolveChainLanding(tourId, measurementsCount, ordersCount, paymentsCount) {
+  if (measurementsCount === 0) return 'recovery-needs-measurement'
+  if (tourId === 'recovery-orders') return 'goto-orders-tab'
+  if (ordersCount === 0) return 'recovery-needs-order'
+  if (tourId === 'recovery-invoices') return 'goto-invoices-tab'
+  if (tourId === 'recovery-payments') return 'goto-payments-tab'
+  if (paymentsCount === 0) return 'recovery-needs-payment'
+  return 'goto-receipts-tab'
 }
 
 
@@ -47,7 +59,7 @@ export default function CustomerDetail({ onMenuClick }) {
   const { id }       = useParams()
   const navigate     = useNavigate()
   const location     = useLocation()
-  const { completeStep, currentStep, startTour, hasCompletedTour, activeTourId } = useTour()
+  const { completeStep, currentStep, startTour, hasCompletedTour, activeTourId, goToStep } = useTour()
 
   const { getCustomer, updateCustomer, deleteCustomerAndAllData } = useCustomers()
   const { allOrders }  = useOrders()
@@ -126,11 +138,6 @@ export default function CustomerDetail({ onMenuClick }) {
     setReopenReceiptId(receiptId)
   }, [])
 
-  // The URL may briefly hold a client-generated temp id if the customer
-  // was just created and Firestore hasn't confirmed the real document id
-  // yet. Once the real id is known, redirect so every write from this
-  // point on (measurements, orders, etc.) uses the permanent id rather
-  // than a temp id that will never match once the sync settles.
   useEffect(() => {
     if (!customer) return
     if (customer.id === id) return
@@ -206,11 +213,6 @@ export default function CustomerDetail({ onMenuClick }) {
     navigate(location.pathname, { replace: true, state: null })
   }, [location.state])
 
-  // One-time contextual tip nudging the user toward the Body Measurements
-  // button, explaining how it differs from the per-garment Measurements
-  // tab. Only fires once ever, only after onboarding is done, and only
-  // when no other tour is currently in progress (so it can never collide
-  // with onboarding's own steps that also visit this page).
   useEffect(() => {
     if (!customer) return
     if (activeTourId) return
@@ -222,6 +224,24 @@ export default function CustomerDetail({ onMenuClick }) {
     }, 1800)
     return () => clearTimeout(timer)
   }, [customer, activeTourId, hasCompletedTour, startTour])
+
+  useEffect(() => {
+    if (currentStep?.id !== 'recovery-chain-check') return
+    if (customerData.measurementsLoading || customerData.ordersLoading) return
+    const landing = resolveChainLanding(
+      activeTourId,
+      customerData.measurements?.length ?? 0,
+      orders.length,
+      customerData.payments?.length ?? 0,
+    )
+    goToStep(landing)
+  }, [currentStep, activeTourId, customerData.measurementsLoading, customerData.ordersLoading, customerData.measurements, orders, customerData.payments, goToStep])
+
+  useEffect(() => {
+    if (currentStep?.id !== 'confirm-setup-profile-after-tour') return
+    if (activeTourId !== 'recovery-receipts') return
+    goToStep('done')
+  }, [currentStep, activeTourId, goToStep])
 
   const scrollTabIntoView = useCallback((tabId) => {
     tabRefs.current[tabId]?.scrollIntoView({
