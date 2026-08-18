@@ -903,15 +903,16 @@ body::-webkit-scrollbar-thumb:hover {
 .reviewStars {
   display: flex;
   gap: 2px;
+  align-items: center;
 }
 
 .starIcon {
-  font-size: 2rem;
-  color: var(--line-strong);
+  font-size: 1.05rem;
+  color: #d9d3c7;
 }
 
 .starIconFilled {
-  color: #FBBF24;
+  color: #e0a92f;
 }
 
 .reviewQuoteMark {
