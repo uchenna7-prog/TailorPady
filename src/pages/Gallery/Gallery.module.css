@@ -34,7 +34,6 @@
 }
 .tabs::-webkit-scrollbar { display: none; }
 
-/* ── EXPANDABLE PILL ── */
 .pillWrap {
   flex-shrink: 0;
   display: flex;
@@ -76,7 +75,6 @@
   font-size: 0.68rem;
   font-weight: 800;
   letter-spacing: 0.1px;
-  /* hidden until expanded */
   max-width: 0;
   opacity: 0;
   overflow: hidden;
@@ -235,7 +233,6 @@
 }
 .portfolioBtn:active { opacity: 0.75; }
 
-/* ── SEARCH BAR ── */
 .searchBarWrap {
   padding: 10px 12px 8px;
   background: var(--bg);
@@ -275,7 +272,6 @@
   flex-shrink: 0;
 }
 
-/* ── PHOTO GRID ── */
 .gridArea {
   flex: 1;
   padding: 8px 8px calc(90px + var(--sb));
@@ -351,21 +347,32 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding-top: 80px;
-  gap: 10px;
+  justify-content: center;
+  gap: 8px;
   text-align: center;
-}
-.emptyState p {
-  font-size: 0.85rem;
-  color: var(--text3);
-}
-.emptyHint {
-  font-size: 0.75rem;
-  color: var(--text3);
-  opacity: 0.6;
+  padding: 32px;
 }
 
-/* ── FAB ── */
+.emptyStateTitle {
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: var(--text);
+  margin: 0;
+}
+
+.emptyStateSubtitle {
+  font-size: 0.8rem;
+  color: var(--text3);
+  margin: 0;
+  line-height: 1.5;
+  max-width: 260px;
+}
+
+.emptyStateSubtitle strong {
+  color: var(--text2);
+  font-weight: 800;
+}
+
 .fab {
   position: fixed;
   bottom: calc(28px + var(--sb) + 60px);
@@ -387,7 +394,6 @@
 }
 .fab:active { transform: scale(0.93); }
 
-/* Search */
 .searchWrap {
   display: flex;
   align-items: center;
@@ -452,7 +458,6 @@
 .dropMeta  { font-size: 0.7rem; color: var(--text3); margin-top: 1px; }
 .dropEmpty { padding: 14px; font-size: 0.8rem; color: var(--text3); text-align: center; }
 
-/* Selected chip */
 .selectedChip {
   display: flex;
   align-items: center;
