@@ -44,7 +44,7 @@ const EMPTY_CONFIG = {
   completed:     { icon: 'check_circle',   title: 'No completed orders yet', subtitle: 'Orders marked complete will appear here.' },
   delivered:     { icon: 'local_shipping', title: 'No delivered orders yet', subtitle: 'Orders marked delivered will appear here.' },
   cancelled:     { icon: 'cancel',         title: 'No cancelled orders',    subtitle: 'Orders you cancel will appear here.' },
-  overdue:       { icon: 'alarm_on',       title: 'No overdue orders',      subtitle: 'Nice work — every order is on schedule.' },
+  overdue:       { icon: 'alarm_on',       title: 'No overdue orders',      subtitle: 'Nice work, every order is on schedule.' },
 }
 
 const SWIPE_THRESHOLD    = 50
