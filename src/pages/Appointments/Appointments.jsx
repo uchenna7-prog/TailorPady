@@ -514,7 +514,7 @@ export default function Appointments({ onMenuClick }) {
 
       <div
         className={styles.tabs}
-       
+
         onClick={() => filterOpen && setFilterOpen(false)}
       >
         {TABS.map(tab => (
@@ -541,20 +541,22 @@ export default function Appointments({ onMenuClick }) {
       >
         {searchFiltered.length === 0 && (
           <div className={styles.emptyState}>
-            <span className="mi" style={{ fontSize: '2.8rem', opacity: 0.2 }}>
+            <span className="mi" style={{ fontSize: '2.5rem', color: 'var(--text3)' }}>
               {activeTab === 'done'         ? 'check_circle'
                 : activeTab === 'missed'   ? 'event_busy'
                 : activeTab === 'upcoming' ? 'event_available'
                 : 'calendar_today'}
             </span>
-            <p>
-              {activeTab === 'all'      && 'No appointments yet.'}
-              {activeTab === 'upcoming' && 'No upcoming appointments.'}
-              {activeTab === 'done'     && 'No completed appointments yet.'}
+            <p className={styles.emptyStateTitle}>
+              {activeTab === 'all'      && 'No appointments yet'}
+              {activeTab === 'upcoming' && 'No upcoming appointments'}
+              {activeTab === 'done'     && 'No completed appointments yet'}
               {activeTab === 'missed'   && 'No missed appointments. Good job!'}
             </p>
             {activeTab === 'all' && (
-              <span className={styles.emptyHint}>Tap + to schedule your first appointment</span>
+              <p className={styles.emptyStateSubtitle}>
+                Tap the <strong>+</strong> button to schedule your first appointment.
+              </p>
             )}
           </div>
         )}
