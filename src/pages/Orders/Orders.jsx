@@ -1,4 +1,3 @@
-// Orders.jsx
 import { useState, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useTour } from '../../contexts/TourContext'
@@ -39,13 +38,13 @@ const TABS = [
 ]
 
 const EMPTY_CONFIG = {
-  all:           { icon: 'assignment',     text: 'No orders yet.'              },
-  pending:       { icon: 'schedule',       text: 'No pending orders.'           },
-  'in-progress': { icon: 'autorenew',      text: 'No orders in progress.'       },
-  completed:     { icon: 'check_circle',   text: 'No completed orders yet.'     },
-  delivered:     { icon: 'local_shipping', text: 'No delivered orders yet.'     },
-  cancelled:     { icon: 'cancel',         text: 'No cancelled orders.'         },
-  overdue:       { icon: 'alarm_on',       text: 'No overdue orders. Good job!' },
+  all:           { icon: 'assignment',     title: 'No orders yet',          subtitle: 'Add a customer first, then create an order from their profile page.' },
+  pending:       { icon: 'schedule',       title: 'No pending orders',      subtitle: 'Orders waiting to be started will appear here.' },
+  'in-progress': { icon: 'autorenew',      title: 'No orders in progress',  subtitle: 'Orders currently being worked on will appear here.' },
+  completed:     { icon: 'check_circle',   title: 'No completed orders yet', subtitle: 'Orders marked complete will appear here.' },
+  delivered:     { icon: 'local_shipping', title: 'No delivered orders yet', subtitle: 'Orders marked delivered will appear here.' },
+  cancelled:     { icon: 'cancel',         title: 'No cancelled orders',    subtitle: 'Orders you cancel will appear here.' },
+  overdue:       { icon: 'alarm_on',       title: 'No overdue orders',      subtitle: 'Nice work — every order is on schedule.' },
 }
 
 const SWIPE_THRESHOLD    = 50
@@ -242,10 +241,11 @@ export default function Orders({ onMenuClick, onGoToCustomer }) {
       >
         {searchFiltered.length === 0 ? (
           <div className={styles.emptyState}>
-            <span className="mi" style={{ fontSize: '2.8rem', opacity: 0.2 }}>
+            <span className="mi" style={{ fontSize: '2.5rem', color: 'var(--text3)' }}>
               {EMPTY_CONFIG[activeTab].icon}
             </span>
-            <p>{EMPTY_CONFIG[activeTab].text}</p>
+            <p className={styles.emptyStateTitle}>{EMPTY_CONFIG[activeTab].title}</p>
+            <p className={styles.emptyStateSubtitle}>{EMPTY_CONFIG[activeTab].subtitle}</p>
             {activeTab === 'all' && !search && (
               <button
                 onClick={handleAddCTA}
