@@ -1,8 +1,10 @@
+// Receipts.jsx
 import { useState, useRef, useCallback, useEffect } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { useGeneralSettings } from '../../contexts/GeneralSettingsContext'
 import { useOrders } from '../../contexts/OrdersContext'
 import { useReceipts } from '../../contexts/ReceiptContext'
+import { useTour } from '../../contexts/TourContext'
 import { formatMoney } from '../../utils/moneyUtils'
 import OrderMosaic from '../../components/OrderMosaic/OrderMosaic'
 import ReceiptViewer from '../../components/TemplateViewers/ReceiptViewer/ReceiptViewer'
@@ -87,6 +89,7 @@ export default function Receipts({ onMenuClick }) {
   const { generalSettings }                                                          = useGeneralSettings()
   const { allOrders }                                                                = useOrders()
   const { allReceipts, updateReceiptTemplate, updateReceiptColour, deleteReceipt }  = useReceipts()
+  const { hasCompletedTour, startTour } = useTour()
 
   const currency = generalSettings.invoiceCurrency || '₦'
 
@@ -121,6 +124,14 @@ export default function Receipts({ onMenuClick }) {
   useEffect(() => {
     return () => clearTimeout(toastTimerRef.current)
   }, [])
+
+  function handleAddCTA() {
+    if (!hasCompletedTour('onboarding') && !hasCompletedTour('recovery-receipts')) {
+      startTour('recovery-receipts')
+      return
+    }
+    navigate('/customers')
+  }
 
   const measureTabs = useCallback(() => {
     if (!tabsRef.current) return
@@ -344,7 +355,7 @@ export default function Receipts({ onMenuClick }) {
       <div
         className={styles.tabs}
         ref={tabsRef}
-       
+
         onClick={() => filterOpen && setFilterOpen(false)}
       >
         {TABS.map((tab, idx) => {
@@ -394,10 +405,28 @@ export default function Receipts({ onMenuClick }) {
           <div className={styles.emptyState}>
             <span className="mi" style={{ fontSize: '2.8rem', opacity: 0.2 }}>receipt</span>
             <p>{EMPTY_TEXT[activeTab]}</p>
-            {activeTab === 'all' && (
-              <span className={styles.emptyHint}>
-                Go to a customer → Receipts → Generate Receipt
-              </span>
+            {activeTab === 'all' && !search && (
+              <button
+                onClick={handleAddCTA}
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: 6,
+                  marginTop: 4,
+                  padding: '10px 18px',
+                  borderRadius: 12,
+                  border: '1px solid var(--accent)',
+                  background: 'color-mix(in srgb, var(--accent) 10%, transparent)',
+                  color: 'var(--accent)',
+                  fontFamily: 'Manrope, sans-serif',
+                  fontSize: '0.82rem',
+                  fontWeight: 700,
+                  cursor: 'pointer',
+                }}
+              >
+                <span className="mi" style={{ fontSize: '1rem' }}>add</span>
+                Generate Receipt
+              </button>
             )}
           </div>
         ) : (
