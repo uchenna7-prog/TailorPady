@@ -953,7 +953,11 @@ export function PortfolioTemplate1({ brand, photos, garmentTypes, reviews }) {
               {reviews.map((r, i) => (
                 <Reveal as="div" key={r.id} className={styles.reviewCard} delay={(i % 3) * 80}>
                   <div className={styles.reviewStars}>
-                    {'*'.repeat(r.rating)}
+                    {Array.from({ length: 5 }).map((_, s) => (
+                      <span key={s} className={`mi ${styles.starIcon} ${s < r.rating ? styles.starIconFilled : ''}`}>
+                        {s < r.rating ? 'star' : 'star_outline'}
+                      </span>
+                    ))}
                   </div>
                   <p className={styles.reviewText}>{r.review}</p>
                   <div className={styles.reviewAuthor}>
