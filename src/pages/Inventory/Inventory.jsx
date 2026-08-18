@@ -689,16 +689,21 @@ export default function Inventory({ onMenuClick }) {
 
         {items.length === 0 && (
           <div className={styles.emptyState}>
-            <span className="mi" style={{ fontSize: '3rem', opacity: 0.15 }}>inventory_2</span>
-            <p>No items yet.</p>
-            <span>Tap + to add your first inventory item</span>
+            <span className="mi" style={{ fontSize: '2.5rem', color: 'var(--text3)' }}>inventory_2</span>
+            <p className={styles.emptyStateTitle}>No items yet</p>
+            <p className={styles.emptyStateSubtitle}>
+              Tap the <strong>+</strong> button to add your first inventory item.
+            </p>
           </div>
         )}
 
         {items.length > 0 && filtered.length === 0 && (
           <div className={styles.emptyState}>
-            <span className="mi" style={{ fontSize: '2.8rem', opacity: 0.15 }}>search_off</span>
-            <p>No items match your filters.</p>
+            <span className="mi" style={{ fontSize: '2.5rem', color: 'var(--text3)' }}>search_off</span>
+            <p className={styles.emptyStateTitle}>No items match your filters</p>
+            <p className={styles.emptyStateSubtitle}>
+              Try adjusting your search or category filter.
+            </p>
           </div>
         )}
 
