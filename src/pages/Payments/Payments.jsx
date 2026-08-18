@@ -1,7 +1,9 @@
+// Payments.jsx
 import { useState, useRef, useCallback, useEffect } from 'react'
 import { useNavigate }  from 'react-router-dom'
 import { usePayments }  from '../../contexts/PaymentContext'
 import { useOrders }    from '../../contexts/OrdersContext'
+import { useTour }      from '../../contexts/TourContext'
 import Header           from '../../components/Header/Header'
 import Toast            from '../../components/Toast/Toast'
 import OrderMosaic      from '../../components/OrderMosaic/OrderMosaic'
@@ -455,6 +457,7 @@ export default function Payments({ onMenuClick }) {
   const navigate         = useNavigate()
   const { allPayments }  = usePayments()
   const { allOrders }    = useOrders()
+  const { hasCompletedTour, startTour } = useTour()
 
   const [activeTab,     setActiveTab]     = useState('all')
   const [detailRow,     setDetailRow]     = useState(null)
@@ -474,6 +477,14 @@ export default function Payments({ onMenuClick }) {
   const tabItemRefs     = useRef([])
 
   const activeTabIdx = TABS.findIndex(t => t.id === activeTab)
+
+  function handleAddCTA() {
+    if (!hasCompletedTour('onboarding') && !hasCompletedTour('recovery-payments')) {
+      startTour('recovery-payments')
+      return
+    }
+    navigate('/customers')
+  }
 
   const measureTabs = useCallback(() => {
     if (!tabsRef.current) return
@@ -742,6 +753,29 @@ export default function Payments({ onMenuClick }) {
                   ? 'No payments recorded yet.'
                   : `No ${TABS.find(t => t.id === activeTab)?.label.toLowerCase()} payments.`}
             </p>
+            {!search && activeTab === 'all' && (
+              <button
+                onClick={handleAddCTA}
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: 6,
+                  marginTop: 4,
+                  padding: '10px 18px',
+                  borderRadius: 12,
+                  border: '1px solid var(--accent)',
+                  background: 'color-mix(in srgb, var(--accent) 10%, transparent)',
+                  color: 'var(--accent)',
+                  fontFamily: 'Manrope, sans-serif',
+                  fontSize: '0.82rem',
+                  fontWeight: 700,
+                  cursor: 'pointer',
+                }}
+              >
+                <span className="mi" style={{ fontSize: '1rem' }}>add</span>
+                Record Payment
+              </button>
+            )}
           </div>
         )}
 
