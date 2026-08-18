@@ -586,19 +586,21 @@ export default function Tasks({ onMenuClick }) {
       >
         {searchFiltered.length === 0 && (
           <div className={styles.emptyState}>
-            <span className="mi" style={{ fontSize: '2.8rem', opacity: 0.2 }}>
+            <span className="mi" style={{ fontSize: '2.5rem', color: 'var(--text3)' }}>
               {activeTab === 'done'    ? 'check_circle'
                 : activeTab === 'overdue' ? 'alarm_on'
                 : 'assignment'}
             </span>
-            <p>
-              {activeTab === 'all'     && 'No tasks yet.'}
-              {activeTab === 'pending' && 'No pending tasks.'}
-              {activeTab === 'done'    && 'No completed tasks yet.'}
+            <p className={styles.emptyStateTitle}>
+              {activeTab === 'all'     && 'No tasks yet'}
+              {activeTab === 'pending' && 'No pending tasks'}
+              {activeTab === 'done'    && 'No completed tasks yet'}
               {activeTab === 'overdue' && "No overdue tasks. You're on track!"}
             </p>
             {activeTab === 'all' && (
-              <span className={styles.emptyHint}>Tap + to add your first task</span>
+              <p className={styles.emptyStateSubtitle}>
+                Tap the <strong>+</strong> button to add your first task.
+              </p>
             )}
           </div>
         )}
