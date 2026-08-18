@@ -1,8 +1,10 @@
+// Invoices.jsx
 import { useState, useRef, useEffect, useCallback } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { useGeneralSettings } from '../../contexts/GeneralSettingsContext'
 import { useOrders } from '../../contexts/OrdersContext'
 import { useInvoices } from '../../contexts/InvoiceContext'
+import { useTour } from '../../contexts/TourContext'
 import { INVOICE_STATUS_STYLES, INVOICE_STATUS_LABELS } from '../../datas/invoiceDatas'
 import { formatMoney } from '../../utils/moneyUtils'
 import InvoiceViewer from '../../components/TemplateViewers/InvoiceViewer/InvoiceViewer'
@@ -99,6 +101,7 @@ export default function Invoices({ onMenuClick }) {
   const { generalSettings }                                                                              = useGeneralSettings()
   const { allOrders }                                                                                    = useOrders()
   const { allInvoices, updateInvoiceStatus, updateInvoiceTemplate, updateInvoiceColour, deleteInvoice } = useInvoices()
+  const { hasCompletedTour, startTour } = useTour()
   const currency = generalSettings.invoiceCurrency || '₦'
 
   const location = useLocation()
@@ -151,6 +154,14 @@ export default function Invoices({ onMenuClick }) {
 
     navigate(location.pathname, { replace: true, state: null })
   }, [location.state, allInvoices])
+
+  function handleAddCTA() {
+    if (!hasCompletedTour('onboarding') && !hasCompletedTour('recovery-invoices')) {
+      startTour('recovery-invoices')
+      return
+    }
+    navigate('/customers')
+  }
 
   const orderItemsMap = {}
   for (const order of allOrders) {
@@ -287,7 +298,7 @@ export default function Invoices({ onMenuClick }) {
       <div
         ref={tabsRef}
         className={styles.tabs}
-       
+
         onClick={() => filterOpen && setFilterOpen(false)}
       >
         {TABS.map(tab => (
@@ -317,10 +328,28 @@ export default function Invoices({ onMenuClick }) {
           <div className={styles.emptyState}>
             <span className="mi" style={{ fontSize: '2.8rem', opacity: 0.2 }}>receipt_long</span>
             <p>{EMPTY_STATE_TEXTS[activeTab]}</p>
-            {activeTab === 'all' && (
-              <span className={styles.emptyHint}>
-                Go to a customer → Orders → Generate Invoice
-              </span>
+            {activeTab === 'all' && !search && (
+              <button
+                onClick={handleAddCTA}
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: 6,
+                  marginTop: 4,
+                  padding: '10px 18px',
+                  borderRadius: 12,
+                  border: '1px solid var(--accent)',
+                  background: 'color-mix(in srgb, var(--accent) 10%, transparent)',
+                  color: 'var(--accent)',
+                  fontFamily: 'Manrope, sans-serif',
+                  fontSize: '0.82rem',
+                  fontWeight: 700,
+                  cursor: 'pointer',
+                }}
+              >
+                <span className="mi" style={{ fontSize: '1rem' }}>add</span>
+                Create Invoice
+              </button>
             )}
           </div>
         ) : (
