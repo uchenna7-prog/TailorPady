@@ -168,9 +168,43 @@
 
 .scrollArea {
   flex: 1;
+  min-height: 0;
   overflow-y: auto;
+  display: flex;
+  flex-direction: column;
   padding: 0 20px calc(140px + var(--sb));
   -webkit-overflow-scrolling: touch;
+}
+
+.emptyState {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  text-align: center;
+  padding: 32px;
+}
+
+.emptyIcon {
+  display: flex;
+}
+
+.emptyState p {
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: var(--text);
+  margin: 0;
+}
+
+.emptyState span {
+  font-size: 0.8rem;
+  color: var(--text3);
+  margin: 0;
+  line-height: 1.5;
+  max-width: 260px;
 }
 
 .fab {
@@ -196,5 +230,3 @@
 .fab:active { 
   transform: scale(0.93); 
 }
-
-
