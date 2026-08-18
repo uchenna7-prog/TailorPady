@@ -1,4 +1,3 @@
-// Receipts.jsx
 import { useState, useRef, useCallback, useEffect } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { useGeneralSettings } from '../../contexts/GeneralSettingsContext'
@@ -203,10 +202,10 @@ export default function Receipts({ onMenuClick }) {
     part: allReceipts.filter(r => !isFullPayment(r)).length,
   }
 
-  const EMPTY_TEXT = {
-    all:  'No receipts yet.',
-    full: 'No fully paid receipts yet.',
-    part: 'No part payment receipts.',
+  const EMPTY_STATE_CONFIG = {
+    all:  { title: 'No receipts yet',           subtitle: 'Add a customer first, then generate a receipt from their profile page.' },
+    full: { title: 'No fully paid receipts yet', subtitle: 'Receipts paid in full will appear here.' },
+    part: { title: 'No part payment receipts',   subtitle: 'Receipts with a partial payment will appear here.' },
   }
 
   const searchFiltered = search.trim()
@@ -403,8 +402,9 @@ export default function Receipts({ onMenuClick }) {
       >
         {searchFiltered.length === 0 ? (
           <div className={styles.emptyState}>
-            <span className="mi" style={{ fontSize: '2.8rem', opacity: 0.2 }}>receipt</span>
-            <p>{EMPTY_TEXT[activeTab]}</p>
+            <span className="mi" style={{ fontSize: '2.5rem', color: 'var(--text3)' }}>receipt</span>
+            <p className={styles.emptyStateTitle}>{EMPTY_STATE_CONFIG[activeTab].title}</p>
+            <p className={styles.emptyStateSubtitle}>{EMPTY_STATE_CONFIG[activeTab].subtitle}</p>
             {activeTab === 'all' && !search && (
               <button
                 onClick={handleAddCTA}
