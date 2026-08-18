@@ -255,14 +255,20 @@ export default function Gallery({ onMenuClick }) {
       <div className={styles.gridArea}>
         {loading ? (
           <div className={styles.emptyState}>
-            <span className="mi" style={{ fontSize: '2rem', opacity: 0.2 }}>hourglass_empty</span>
-            <p>Loading…</p>
+            <span className="mi" style={{ fontSize: '2.5rem', color: 'var(--text3)' }}>hourglass_empty</span>
+            <p className={styles.emptyStateTitle}>Loading…</p>
           </div>
         ) : filtered.length === 0 ? (
           <div className={styles.emptyState}>
-            <span className="mi" style={{ fontSize: '3rem', opacity: 0.15 }}>{CATEGORY_MAP[activeTab]?.icon ?? 'image'}</span>
-            <p>{searchQuery ? 'No results found.' : 'No photos here yet.'}</p>
-            {!searchQuery && <span className={styles.emptyHint}>Tap + to add your first photo</span>}
+            <span className="mi" style={{ fontSize: '2.5rem', color: 'var(--text3)' }}>{CATEGORY_MAP[activeTab]?.icon ?? 'image'}</span>
+            <p className={styles.emptyStateTitle}>
+              {searchQuery ? 'No results found' : 'No photos here yet'}
+            </p>
+            {!searchQuery && (
+              <p className={styles.emptyStateSubtitle}>
+                Tap the <strong>+</strong> button to add your first photo.
+              </p>
+            )}
           </div>
         ) : (
           <div className={styles.masonryGrid}>
