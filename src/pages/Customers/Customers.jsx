@@ -1,3 +1,4 @@
+// Customers.jsx
 import { useState, useRef, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useCustomers } from '../../contexts/CustomerContext'
@@ -20,7 +21,7 @@ export default function Customers({ onMenuClick }) {
   const navigate = useNavigate()
   const {customers, addCustomer,deleteCustomerAndAllData } = useCustomers()
   const { isPremium } = usePremium()
-  const { completeStep, pendingCustomerId, currentStep, pauseTour, resumeTour } = useTour()
+  const { completeStep, pendingCustomerId, currentStep, pauseTour, resumeTour, goToStep } = useTour()
   const [deleteConfirmModalOpen, setDeleteConfirmModalOpen] = useState(false)
   const [query,        setQuery]        = useState('')
   const [formOpen,     setFormOpen]     = useState(false)
@@ -39,6 +40,11 @@ export default function Customers({ onMenuClick }) {
     pauseTour()
     return () => resumeTour()
   }, [formOpen, pauseTour, resumeTour])
+
+  useEffect(() => {
+    if (currentStep?.id !== 'recovery-check-customers') return
+    goToStep(customers.length === 0 ? 'add-customer' : 'recovery-search-customer')
+  }, [currentStep, customers.length, goToStep])
 
   const showToast = (msg) => {
     setToastMsg(msg)
@@ -140,7 +146,7 @@ export default function Customers({ onMenuClick }) {
     showToast('Failed to delete customer. Try again.')
   }
 }
-  
+
   const filtered = query.trim()
     ? customers.filter(c =>
         c.name.toLowerCase().includes(query.toLowerCase()) ||
@@ -187,6 +193,9 @@ export default function Customers({ onMenuClick }) {
     if (currentStep?.id === 'tap-new-customer' && String(c.clientId ?? c.id) === String(pendingCustomerId)) {
       completeStep('tap-new-customer')
     }
+    if (currentStep?.id === 'recovery-pick-customer') {
+      completeStep('recovery-pick-customer', { customerId: c.clientId ?? c.id })
+    }
     navigate(`/customers/${c.id}`)
   }
 
@@ -196,7 +205,7 @@ export default function Customers({ onMenuClick }) {
 
       <div className={styles.searchContainer}>
         <div className={styles.searchRow}>
-          <div className={styles.searchBox}>
+          <div className={styles.searchBox} data-tour="customer-search-box">
             <span className="mi" style={{ color: 'var(--text3)', fontSize: '1.1rem' }}>search</span>
             <input
               type="text"
@@ -242,7 +251,7 @@ export default function Customers({ onMenuClick }) {
 
       {sectionLabel && <div className={styles.sectionLabel}>{sectionLabel}</div>}
 
-      <div className={styles.scrollArea} onClick={() => filterOpen && setFilterOpen(false)}>
+      <div className={styles.scrollArea} data-tour="customer-list-area" onClick={() => filterOpen && setFilterOpen(false)}>
         {customers.length === 0 && (
           <EmptyState />
         )}
