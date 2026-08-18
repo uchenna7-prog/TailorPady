@@ -385,7 +385,7 @@
   border-radius: 12px;
   border: 1px solid var(--accent);
   background: var(--accent);
-  color: var(--brand-on-primary, #fff);
+  color: var(--surface);
   font-family: 'Manrope', sans-serif;
   font-size: 0.82rem;
   font-weight: 700;
