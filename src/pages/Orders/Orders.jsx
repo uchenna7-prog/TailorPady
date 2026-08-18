@@ -249,23 +249,9 @@ export default function Orders({ onMenuClick, onGoToCustomer }) {
             {activeTab === 'all' && !search && (
               <button
                 onClick={handleAddCTA}
-                style={{
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  gap: 6,
-                  marginTop: 4,
-                  padding: '10px 18px',
-                  borderRadius: 12,
-                  border: '1px solid var(--accent)',
-                  background: 'color-mix(in srgb, var(--accent) 10%, transparent)',
-                  color: 'var(--accent)',
-                  fontFamily: 'Manrope, sans-serif',
-                  fontSize: '0.82rem',
-                  fontWeight: 700,
-                  cursor: 'pointer',
-                }}
+                className={styles.addOrderBtn}
               >
-                <span className="mi" style={{ fontSize: '1rem' }}>add</span>
+                <span className="mi">add</span>
                 Add Order
               </button>
             )}
