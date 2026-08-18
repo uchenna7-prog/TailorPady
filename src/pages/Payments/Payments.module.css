@@ -424,13 +424,23 @@
   flex-direction: column;
   align-items: center;
   padding-top: 70px;
-  gap: 10px;
+  gap: 8px;
   text-align: center;
 }
 
-.emptyState p {
-  font-size: 0.85rem;
+.emptyStateTitle {
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: var(--text);
+  margin: 0;
+}
+
+.emptyStateSubtitle {
+  font-size: 0.8rem;
   color: var(--text3);
+  margin: 0;
+  line-height: 1.5;
+  max-width: 260px;
 }
 
 .recordPaymentBtn {
