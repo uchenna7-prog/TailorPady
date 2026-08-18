@@ -1,11 +1,13 @@
-import styles from "./EmptyState.module.css"
+import styles from './EmptyState.module.css'
 
-export function EmptyState(){
-    return(
-        <div className={styles.emptyState}>
-            <div className={styles.emptyIcon}><span className="mi" style={{ fontSize: '3rem', color: 'var(--text3)' }}>person_outline</span></div>
-            <p>No customer yet.</p>
-            <span>Tap + to add your first customer</span>
-        </div>
-    )
+export function EmptyState() {
+  return (
+    <div className={styles.emptyState}>
+      <span className="mi" style={{ fontSize: '2.5rem', color: 'var(--text3)' }}>group</span>
+      <p className={styles.emptyStateTitle}>No customers yet</p>
+      <p className={styles.emptyStateSubtitle}>
+        Tap the <strong>+</strong> button to add your first customer.
+      </p>
+    </div>
+  )
 }
