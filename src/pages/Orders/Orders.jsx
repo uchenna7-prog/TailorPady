@@ -1,4 +1,7 @@
+// Orders.jsx
 import { useState, useRef } from 'react'
+import { useNavigate } from 'react-router-dom'
+import { useTour } from '../../contexts/TourContext'
 import Header from '../../components/Header/Header'
 import BottomNav from '../../components/BottomNav/BottomNav'
 import OrderDetailModal from '../../components/OrderDetailModal/OrderDetailModal'
@@ -50,6 +53,8 @@ const SWIPE_MAX_VERTICAL = 80
 
 export default function Orders({ onMenuClick, onGoToCustomer }) {
   const { allOrders } = useOrders()
+  const { hasCompletedTour, startTour } = useTour()
+  const navigate = useNavigate()
 
   const [activeTab,   setActiveTab]   = useState('all')
   const [detailOrder, setDetailOrder] = useState(null)
@@ -60,6 +65,14 @@ export default function Orders({ onMenuClick, onGoToCustomer }) {
   const swipeRef    = useRef({ startX: 0, startY: 0, tracking: false })
 
   const activeIndex = TABS.findIndex(t => t.id === activeTab)
+
+  function handleAddCTA() {
+    if (!hasCompletedTour('onboarding') && !hasCompletedTour('recovery-orders')) {
+      startTour('recovery-orders')
+      return
+    }
+    navigate('/customers')
+  }
 
   function goToTab(index) {
     if (index < 0 || index >= TABS.length) return
@@ -201,7 +214,7 @@ export default function Orders({ onMenuClick, onGoToCustomer }) {
       <div
         className={styles.tabs}
         ref={tabsRef}
-       
+
         onClick={() => filterOpen && setFilterOpen(false)}
       >
         {TABS.map(tab => (
@@ -233,6 +246,29 @@ export default function Orders({ onMenuClick, onGoToCustomer }) {
               {EMPTY_CONFIG[activeTab].icon}
             </span>
             <p>{EMPTY_CONFIG[activeTab].text}</p>
+            {activeTab === 'all' && !search && (
+              <button
+                onClick={handleAddCTA}
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: 6,
+                  marginTop: 4,
+                  padding: '10px 18px',
+                  borderRadius: 12,
+                  border: '1px solid var(--accent)',
+                  background: 'color-mix(in srgb, var(--accent) 10%, transparent)',
+                  color: 'var(--accent)',
+                  fontFamily: 'Manrope, sans-serif',
+                  fontSize: '0.82rem',
+                  fontWeight: 700,
+                  cursor: 'pointer',
+                }}
+              >
+                <span className="mi" style={{ fontSize: '1rem' }}>add</span>
+                Add Order
+              </button>
+            )}
           </div>
         ) : (
           Object.entries(grouped).map(([date, dateOrders]) => (
