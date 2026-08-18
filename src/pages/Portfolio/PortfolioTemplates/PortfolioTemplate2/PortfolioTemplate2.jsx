@@ -867,7 +867,9 @@ export function PortfolioTemplate2({ brand, photos, garmentTypes, reviews }) {
                     <div className={styles.reviewTop}>
                       <div className={styles.reviewStars}>
                         {Array.from({ length: 5 }).map((_, s) => (
-                          <span key={s} className={`${styles.starIcon} ${s < r.rating ? styles.starIconFilled : ''}`}>*</span>
+                          <span key={s} className={`mi ${styles.starIcon} ${s < r.rating ? styles.starIconFilled : ''}`}>
+                            {s < r.rating ? 'star' : 'star_outline'}
+                          </span>
                         ))}
                       </div>
                       <span className={styles.reviewQuoteMark} aria-hidden="true">"</span>
@@ -943,7 +945,7 @@ export function PortfolioTemplate2({ brand, photos, garmentTypes, reviews }) {
                   <span className={styles.footerRow}>{brand.brandAddress}</span>
                 </span>
               )}
-             
+
             </div>
             <div className={styles.footerCol}>
               <p className={styles.footerColLabel}>Navigate</p>
