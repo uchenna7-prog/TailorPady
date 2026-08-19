@@ -74,6 +74,11 @@ export const DEFAULTS = {
   agentDailyBrief: false,
 }
 
+const STATUS_BAR_COLORS = {
+  light: '#f7f7f8',
+  dark:  '#000000',
+}
+
 function loadFromLocalStorage() {
   try {
     const stored = localStorage.getItem(STORAGE_KEY)
@@ -95,11 +100,17 @@ function resolveTheme(theme) {
   return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
 }
 
+function updateStatusBarColor(resolvedTheme) {
+  const meta = document.querySelector('meta[name="theme-color"]')
+  if (meta) meta.setAttribute('content', STATUS_BAR_COLORS[resolvedTheme])
+}
+
 function applyTheme(theme, animated) {
   const resolvedTheme = resolveTheme(theme)
 
   if (!animated) {
     document.documentElement.setAttribute('data-theme', resolvedTheme)
+    updateStatusBarColor(resolvedTheme)
     return
   }
 
@@ -121,6 +132,7 @@ function applyTheme(theme, animated) {
 
   document.head.appendChild(transitionStyle)
   document.documentElement.setAttribute('data-theme', resolvedTheme)
+  updateStatusBarColor(resolvedTheme)
 
   const removalTimer = setTimeout(() => transitionStyle.remove(), THEME_TRANSITION_MS + 50)
 
