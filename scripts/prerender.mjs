@@ -1,6 +1,6 @@
 import { createServer } from 'vite'
 import { renderToStaticMarkup } from 'react-dom/server'
-import { StaticRouter } from 'react-router-dom/server'
+import { StaticRouter } from 'react-router'
 import React from 'react'
 import { readFile, writeFile } from 'node:fs/promises'
 import path from 'node:path'
