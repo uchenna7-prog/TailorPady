@@ -8,22 +8,22 @@
   "hosting": {
     "public": "dist",
     "ignore": [
-    "firebase.json",
-    "**/.*",
-    "!**/.well-known/**",
-    "**/node_modules/**"
-  ],
+      "firebase.json",
+      "**/.*",
+      "!**/.well-known/**",
+      "**/node_modules/**"
+    ],
     "rewrites": [
       { "source": "/sitemap.xml",  "destination": "/sitemap.xml" },
       { "source": "/robots.txt",   "destination": "/robots.txt" },
       { "source": "/portfolio/**", "destination": "/index.html" },
       { "source": "/review/**",    "destination": "/index.html" },
-      { "source": "/faq",          "destination": "/index.html" },
-      { "source": "/contact",      "destination": "/index.html" },
-      { "source": "/privacy",      "destination": "/index.html" },
-      { "source": "/terms",        "destination": "/index.html" },
-      { "source": "/refund",       "destination": "/index.html" },
-      { "source": "/founder",      "destination": "/index.html" },
+      { "source": "/faq",          "destination": "/faq.html" },
+      { "source": "/contact",      "destination": "/contact.html" },
+      { "source": "/privacy",      "destination": "/privacy.html" },
+      { "source": "/terms",        "destination": "/terms.html" },
+      { "source": "/refund",       "destination": "/refund.html" },
+      { "source": "/founder",      "destination": "/founder.html" },
       { "source": "**",            "destination": "/app.html" }
     ]
   },
