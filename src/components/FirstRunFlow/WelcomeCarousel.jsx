@@ -5,7 +5,7 @@ import logoDarkMode from '../../assets/logoDarkMode.png'
 import dashboardSlide from '../../assets/onboarding/onboarding-dashboard.png'
 import ordersSlide from '../../assets/onboarding/onboarding-orders.png'
 import notificationsSlide from '../../assets/onboarding/onboarding-notifications.png'
-import styles from './WelcomeCarousel.module.css'
+import styles from './FirstRunFlow.module.css'
 
 const SLIDES = [
   {
@@ -26,10 +26,13 @@ const SLIDES = [
 ]
 
 const SWIPE_THRESHOLD = 50
+const DRAG_DAMPING = 0.55
 
 export default function WelcomeCarousel({ onDone }) {
   const { generalSettings } = useGeneralSettings()
   const [index, setIndex] = useState(0)
+  const [dragX, setDragX] = useState(0)
+  const [dragging, setDragging] = useState(false)
   const touchStartX = useRef(null)
 
   const slide = SLIDES[index]
@@ -51,18 +54,27 @@ export default function WelcomeCarousel({ onDone }) {
 
   function handleTouchStart(e) {
     touchStartX.current = e.touches[0].clientX
+    setDragging(true)
+  }
+
+  function handleTouchMove(e) {
+    if (touchStartX.current === null) return
+    const delta = e.touches[0].clientX - touchStartX.current
+    setDragX(delta * DRAG_DAMPING)
   }
 
   function handleTouchEnd(e) {
     if (touchStartX.current === null) return
     const deltaX = e.changedTouches[0].clientX - touchStartX.current
+    setDragging(false)
+    setDragX(0)
     if (deltaX <= -SWIPE_THRESHOLD) goToNext()
     else if (deltaX >= SWIPE_THRESHOLD) goToPrev()
     touchStartX.current = null
   }
 
   return (
-    <div className={styles.page} onTouchStart={handleTouchStart} onTouchEnd={handleTouchEnd}>
+    <div className={styles.page}>
       <div className={styles.header}>
         <img
           src={logoSrc}
@@ -76,11 +88,23 @@ export default function WelcomeCarousel({ onDone }) {
         </div>
       </div>
 
-      <h1 className={styles.title}>{slide.title}</h1>
-      <p className={styles.sub}>{slide.sub}</p>
+      <div
+        key={index}
+        className={styles.slideTrack}
+        style={{
+          transform: `translateX(${dragX}px)`,
+          transition: dragging ? 'none' : 'transform 320ms cubic-bezier(0.22, 1, 0.36, 1)',
+        }}
+        onTouchStart={handleTouchStart}
+        onTouchMove={handleTouchMove}
+        onTouchEnd={handleTouchEnd}
+      >
+        <h1 className={styles.title}>{slide.title}</h1>
+        <p className={styles.sub}>{slide.sub}</p>
 
-      <div className={styles.imageBackdrop}>
-        <img src={slide.image} alt={slide.title} className={styles.image} />
+        <div className={styles.backdrop}>
+          <img src={slide.image} alt={slide.title} className={styles.image} draggable={false} />
+        </div>
       </div>
 
       <div className={styles.dotsRow}>
@@ -92,17 +116,13 @@ export default function WelcomeCarousel({ onDone }) {
             onClick={() => setIndex(i)}
             aria-label={`Go to slide ${i + 1}`}
           >
-            <span
-              className={`mi-outlined ${styles.dotIcon} ${i === index ? styles.dotIconActive : ''}`}
-            >
-              content_cut
-            </span>
+            <span className={`${styles.dot} ${i === index ? styles.dotActive : ''}`} />
           </button>
         ))}
       </div>
 
       <div className={styles.footer}>
-        <button className={styles.button} onClick={goToNext}>
+        <button className={styles.primaryBtn} onClick={goToNext}>
           {isLast ? 'Continue' : 'Next'}
         </button>
       </div>
