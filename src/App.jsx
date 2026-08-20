@@ -4,7 +4,6 @@ import { useAuth } from './contexts/AuthContext'
 import { usePremium } from './contexts/PremiumContext'
 import { TourProvider } from './contexts/TourContext'
 import { PremiumSuccessProvider } from './contexts/PremiumSuccessContext'
-import FirstRunFlow from './components/FirstRunFlow/FirstRunFlow'
 import OnboardingTour from './components/OnboardingTour/OnboardingTour'
 import ReferralCelebrationFlow from './components/ReferralCelebrationFlow/ReferralCelebrationFlow'
 import RequireAuth from './components/RequireAuth/RequireAuth'
@@ -93,7 +92,6 @@ function AppShell() {
               <Route path="*" element={<Navigate to="/dashboard" replace />} />
             </Routes>
           </div>
-          <FirstRunFlow />
           <OnboardingTour />
           <ReferralCelebrationFlow />
         </div>
