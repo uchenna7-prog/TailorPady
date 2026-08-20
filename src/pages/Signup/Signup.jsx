@@ -141,7 +141,7 @@ export default function Signup() {
             alt="TailorPady"
             className={styles.logoIcon}
             style={{
-              borderRadius: '50%',
+              borderRadius: '10px',
               background: theme === 'dark' ? '#ffffff' : '#000000',
             }}
           />
