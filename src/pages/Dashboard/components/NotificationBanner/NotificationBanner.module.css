@@ -1,6 +1,6 @@
 .NotificationBanner {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   gap: 12px;
   background: var(--surface);
   border: 1px solid var(--border2);
