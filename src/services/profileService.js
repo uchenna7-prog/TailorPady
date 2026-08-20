@@ -12,6 +12,10 @@ function publicBrandDoc(db, uid) {
   return doc(db, 'users', uid, 'publicProfile', 'brand')
 }
 
+function userDoc(db, uid) {
+  return doc(db, 'users', uid)
+}
+
 export async function saveBrandDataToFirestore(db, uid, settings) {
   const brandData = {
     brandName:          settings.brandName          ?? '',
@@ -92,4 +96,29 @@ export async function getPersonalInfosFromFirestore(db, uid) {
   if (!snap.exists()) return {}
   const { updatedAt, ...rest } = snap.data()
   return rest
+}
+
+export async function getOnboardingStatus(db, uid) {
+  const snap = await getDoc(userDoc(db, uid))
+  if (!snap.exists()) return { onboardingCompleted: false, role: null }
+  const data = snap.data()
+  return {
+    onboardingCompleted: data.onboardingCompleted === true,
+    role: data.role ?? null,
+  }
+}
+
+export async function saveOnboardingRole(db, uid, role) {
+  await setDoc(userDoc(db, uid), {
+    role,
+    onboardingCompleted: true,
+    onboardingCompletedAt: new Date().toISOString(),
+  }, { merge: true })
+}
+
+export async function skipOnboarding(db, uid) {
+  await setDoc(userDoc(db, uid), {
+    onboardingCompleted: true,
+    onboardingCompletedAt: new Date().toISOString(),
+  }, { merge: true })
 }
