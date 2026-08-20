@@ -101,7 +101,7 @@ export function SlugEditor({ uid, currentSlug, onSlugSaved }) {
       <div className={styles.readView}>
         <div className={styles.readTop}>
           <div className={styles.readIconWrap}>
-            <span className="mi" style={{ fontSize: '1.1rem', color: 'var(--accent)' }}>link</span>
+            <span className="mi-outlined" style={{ fontSize: '1.1rem', color: 'var(--accent)' }}>link</span>
           </div>
           <div className={styles.readMeta}>
             <span className={styles.readLabel}>Your Portfolio Link</span>
@@ -129,7 +129,7 @@ export function SlugEditor({ uid, currentSlug, onSlugSaved }) {
       <div className={styles.editorTop}>
         <span className={styles.editorLabel}>Choose your link</span>
         <button className={styles.cancelIconBtn} onClick={handleCancel} disabled={saving}>
-          <span className="mi" style={{ fontSize: '1rem' }}>close</span>
+          <span className="mi-outlined" style={{ fontSize: '1rem' }}>close</span>
         </button>
       </div>
 
@@ -155,12 +155,12 @@ export function SlugEditor({ uid, currentSlug, onSlugSaved }) {
 
       {available === true && (
         <p className={`${styles.hint} ${styles.hintOk}`}>
-          <span className="mi" style={{ fontSize: '0.8rem' }}>check_circle</span> Available!
+          <span className="mi-outlined" style={{ fontSize: '0.8rem' }}>check_circle</span> Available!
         </p>
       )}
       {available === false && (
         <p className={`${styles.hint} ${styles.hintErr}`}>
-          <span className="mi" style={{ fontSize: '0.8rem' }}>error_outline</span> That name is already taken. Try adding your city or a number, for example emekaTailors_Lagos or emekaTailors2.
+          <span className="mi-outlined" style={{ fontSize: '0.8rem' }}>error_outline</span> That name is already taken. Try adding your city or a number, for example emekaTailors_Lagos or emekaTailors2.
         </p>
       )}
       {preview.length > 0 && preview.length < 3 && <p className={styles.hint}>Minimum 3 characters.</p>}
@@ -173,7 +173,7 @@ export function SlugEditor({ uid, currentSlug, onSlugSaved }) {
         <button className={styles.saveBtn} onClick={handleSave} disabled={!canSave}>
           {saving
             ? <><span className={`mi ${styles.spinIcon}`} style={{ fontSize: '0.9rem' }}>refresh</span> Saving…</>
-            : <><span className="mi" style={{ fontSize: '0.9rem' }}>check</span> Save Link</>
+            : <><span className="mi-outlined" style={{ fontSize: '0.9rem' }}>check</span> Save Link</>
           }
         </button>
       </div>

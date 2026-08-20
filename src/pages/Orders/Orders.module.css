@@ -261,3 +261,8 @@
 
 .fab:active { transform: scale(0.93); }
 .fab:disabled { opacity: 0.5; cursor: default; }
+
+.emptyStateSubtitle strong {
+  color: var(--text);
+  font-weight: 800;
+}

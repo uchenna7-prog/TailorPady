@@ -22,14 +22,14 @@ export default function ReferralRewardModal({ contributingNames, rewardDays, onC
           <div className={styles.handle} />
 
           <div className={styles.iconWrap}>
-            <span className="mi" style={{ fontSize: '2.2rem' }}>redeem</span>
+            <span className="mi-outlined" style={{ fontSize: '2.2rem' }}>redeem</span>
           </div>
 
           <div className={styles.title}>You unlocked {days} days of Pro! 🎉</div>
           <div className={styles.subtitle}>{subtitle}</div>
 
           <div className={styles.rewardCard}>
-            <span className="mi" style={{ fontSize: '1rem', color: 'var(--accent)' }}>bolt</span>
+            <span className="mi-outlined" style={{ fontSize: '1rem', color: 'var(--accent)' }}>bolt</span>
             <span className={styles.rewardText}>+{days} days of Pro, on us</span>
           </div>
         </div>

@@ -80,7 +80,7 @@ export function SharePortfolioModal({ isOpen, onClose, brandName }) {
 
         <div className={styles.header}>
           <button className={styles.closeBtn} onClick={onClose}>
-            <span className="mi">close</span>
+            <span className="mi-outlined">close</span>
           </button>
           <div className={styles.headerTitle}>Share Portfolio</div>
           <div className={styles.headerSpacer} />
@@ -100,11 +100,11 @@ export function SharePortfolioModal({ isOpen, onClose, brandName }) {
             <div className={styles.sectionLabel}>Your Portfolio Link</div>
             <div className={styles.linkRow}>
               <div className={styles.linkBox}>
-                <span className="mi" style={{ fontSize: '0.9rem', color: 'var(--text3)', flexShrink: 0 }}>language</span>
+                <span className="mi-outlined" style={{ fontSize: '0.9rem', color: 'var(--text3)', flexShrink: 0 }}>language</span>
                 <span className={styles.linkText}>{portfolioLink}</span>
               </div>
               <button className={`${styles.copyBtn} ${copied ? styles.copyBtnDone : ''}`} onClick={handleCopy}>
-                <span className="mi" style={{ fontSize: '1rem' }}>{copied ? 'check' : 'content_copy'}</span>
+                <span className="mi-outlined" style={{ fontSize: '1rem' }}>{copied ? 'check' : 'content_copy'}</span>
                 <span>{copied ? 'Copied!' : 'Copy'}</span>
               </button>
             </div>

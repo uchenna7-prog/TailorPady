@@ -91,7 +91,7 @@ function BottomNav() {
             aria-current={isActive ? 'page' : undefined}
             data-tour={item.route === '/customers' ? 'nav-customers' : undefined}
           >
-            <span className={`mi ${styles.navIcon}`}>{item.icon}</span>
+            <span className={`mi-outlined ${styles.navIcon}`}>{item.icon}</span>
             <span className={styles.navLabel}>{item.label}</span>
             {isActive && <span className={styles.activeDot} />}
           </button>

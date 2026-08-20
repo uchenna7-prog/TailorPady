@@ -175,7 +175,7 @@ function AddTaskModal({ isOpen, onClose, onSave, customers, allOrders }) {
                   className={`${styles.categoryChip} ${category === cat.id ? styles.categoryActive : ''}`}
                   onClick={() => setCategory(cat.id)}
                 >
-                  <span className="mi" style={{ fontSize: '1.2rem' }}>{cat.icon}</span>
+                  <span className="mi-outlined" style={{ fontSize: '1.2rem' }}>{cat.icon}</span>
                   <span>{cat.label}</span>
                 </button>
               ))}
@@ -257,12 +257,12 @@ function AddTaskModal({ isOpen, onClose, onSave, customers, allOrders }) {
                   className={styles.chipRemove}
                   onClick={() => { setSelectedCust(null); setSelectedOrder(null) }}
                 >
-                  <span className="mi" style={{ fontSize: '1rem' }}>close</span>
+                  <span className="mi-outlined" style={{ fontSize: '1rem' }}>close</span>
                 </button>
               </div>
             ) : (
               <div className={styles.searchWrap} ref={custSearchRef}>
-                <span className="mi" style={{ color: 'var(--text3)', fontSize: '1.1rem' }}>search</span>
+                <span className="mi-outlined" style={{ color: 'var(--text3)', fontSize: '1.1rem' }}>search</span>
                 <input
                   type="text"
                   className={styles.searchInput}
@@ -317,15 +317,15 @@ function AddTaskModal({ isOpen, onClose, onSave, customers, allOrders }) {
                   <OrderMosaic items={selectedOrder.items} size="sm" />
                   <span className={styles.chipName}>{selectedOrder.desc}</span>
                   <button className={styles.chipRemove} onClick={() => setSelectedOrder(null)}>
-                    <span className="mi" style={{ fontSize: '1rem' }}>close</span>
+                    <span className="mi-outlined" style={{ fontSize: '1rem' }}>close</span>
                   </button>
                 </div>
               ) : (
                 <div className={styles.orderDropWrap}>
                   <button className={styles.orderDropBtn} onClick={() => setOrderDropOpen(p => !p)}>
-                    <span className="mi" style={{ fontSize: '1.1rem', color: 'var(--text3)' }}>assignment</span>
+                    <span className="mi-outlined" style={{ fontSize: '1.1rem', color: 'var(--text3)' }}>assignment</span>
                     <span>{custOrders.length === 0 ? 'No orders for this client' : 'Select an order…'}</span>
-                    <span className="mi" style={{ fontSize: '1rem', color: 'var(--text3)', marginLeft: 'auto' }}>expand_more</span>
+                    <span className="mi-outlined" style={{ fontSize: '1rem', color: 'var(--text3)', marginLeft: 'auto' }}>expand_more</span>
                   </button>
                   {orderDropOpen && custOrders.length > 0 && (
                     <div className={styles.dropdown}>
@@ -511,7 +511,7 @@ export default function Tasks({ onMenuClick }) {
       <div className={styles.searchContainer}>
         <div className={styles.searchRow}>
           <div className={styles.searchBox}>
-            <span className="mi" style={{ color: 'var(--text3)', fontSize: '1.1rem' }}>search</span>
+            <span className="mi-outlined" style={{ color: 'var(--text3)', fontSize: '1.1rem' }}>search</span>
             <input
               type="text"
               placeholder="Search tasks or clients…"
@@ -523,7 +523,7 @@ export default function Tasks({ onMenuClick }) {
                 style={{ background: 'none', border: 'none', color: 'var(--text3)', display: 'flex', cursor: 'pointer', padding: 0 }}
                 onClick={() => setSearch('')}
               >
-                <span className="mi" style={{ fontSize: '1rem' }}>close</span>
+                <span className="mi-outlined" style={{ fontSize: '1rem' }}>close</span>
               </button>
             )}
           </div>
@@ -531,7 +531,7 @@ export default function Tasks({ onMenuClick }) {
             className={`${styles.filterBtn} ${filterOpen ? styles.filterBtnActive : ''}`}
             onClick={() => setFilterOpen(p => !p)}
           >
-            <span className="mi" style={{ fontSize: '1.2rem' }}>tune</span>
+            <span className="mi-outlined" style={{ fontSize: '1.2rem' }}>tune</span>
           </button>
         </div>
 
@@ -544,7 +544,7 @@ export default function Tasks({ onMenuClick }) {
                 className={`${styles.filterOption} ${activeTab === t.id ? styles.filterOptionActive : ''}`}
                 onClick={() => { setActiveTab(t.id); setFilterOpen(false) }}
               >
-                <span className="mi" style={{ fontSize: '1.1rem' }}>
+                <span className="mi-outlined" style={{ fontSize: '1.1rem' }}>
                   {t.id === 'done'    ? 'check_circle'
                     : t.id === 'overdue' ? 'alarm_on'
                     : t.id === 'pending' ? 'pending'
@@ -552,7 +552,7 @@ export default function Tasks({ onMenuClick }) {
                 </span>
                 {t.label}
                 {activeTab === t.id && (
-                  <span className="mi" style={{ fontSize: '1rem', marginLeft: 'auto', color: 'var(--accent)' }}>check</span>
+                  <span className="mi-outlined" style={{ fontSize: '1rem', marginLeft: 'auto', color: 'var(--accent)' }}>check</span>
                 )}
               </button>
             ))}
@@ -586,7 +586,7 @@ export default function Tasks({ onMenuClick }) {
       >
         {searchFiltered.length === 0 && (
           <div className={styles.emptyState}>
-            <span className="mi" style={{ fontSize: '2.5rem', color: 'var(--text3)' }}>
+            <span className="mi-outlined" style={{ fontSize: '2.5rem', color: 'var(--text3)' }}>
               {activeTab === 'done'    ? 'check_circle'
                 : activeTab === 'overdue' ? 'alarm_on'
                 : 'assignment'}
@@ -624,7 +624,7 @@ export default function Tasks({ onMenuClick }) {
       </div>
 
       <button className={styles.fab} onClick={() => setModalOpen(true)}>
-        <span className="mi">add</span>
+        <span className="mi-outlined">add</span>
       </button>
 
       <AddTaskModal

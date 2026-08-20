@@ -95,7 +95,7 @@ function CurrencyList({ selected, onSelect, onClose }) {
   return (
     <>
       <div className={styles.searchWrap}>
-        <span className="mi" style={{ fontSize: '1rem', color: 'var(--text3)' }}>search</span>
+        <span className="mi-outlined" style={{ fontSize: '1rem', color: 'var(--text3)' }}>search</span>
         <input
           type="text"
           placeholder="Search country or currency…"
@@ -105,7 +105,7 @@ function CurrencyList({ selected, onSelect, onClose }) {
         />
         {search.length > 0 && (
           <button type="button" className={styles.clearBtn} onClick={() => setSearch('')}>
-            <span className="mi" style={{ fontSize: '1rem' }}>close</span>
+            <span className="mi-outlined" style={{ fontSize: '1rem' }}>close</span>
           </button>
         )}
       </div>
@@ -113,7 +113,7 @@ function CurrencyList({ selected, onSelect, onClose }) {
       <div className={styles.list}>
         {filtered.length === 0 && (
           <div className={styles.stateWrap}>
-            <span className="mi" style={{ fontSize: '1.1rem', color: 'var(--text3)' }}>search_off</span>
+            <span className="mi-outlined" style={{ fontSize: '1.1rem', color: 'var(--text3)' }}>search_off</span>
             <span>No results for "{search}"</span>
           </div>
         )}
@@ -139,7 +139,7 @@ function CurrencyList({ selected, onSelect, onClose }) {
                 <span className={styles.optionSymbol}>{c.symbol}</span>
               </div>
               {isSelected && (
-                <span className="mi" style={{ fontSize: '1rem', color: 'var(--accent)', flexShrink: 0 }}>check</span>
+                <span className="mi-outlined" style={{ fontSize: '1rem', color: 'var(--accent)', flexShrink: 0 }}>check</span>
               )}
             </button>
           )
@@ -182,7 +182,7 @@ export function CurrencyPickerSheet({ anchorRef, isOpen, onClose, selected: sele
           <div className={styles.sheetHeader}>
             <span className={styles.sheetTitle}>Select Currency</span>
             <button type="button" className={styles.closeBtn} onClick={close}>
-              <span className="mi">close</span>
+              <span className="mi-outlined">close</span>
             </button>
           </div>
           <CurrencyList selected={selected} onSelect={onSelect} onClose={close} />
@@ -200,7 +200,7 @@ export function CurrencyPickerSheet({ anchorRef, isOpen, onClose, selected: sele
         </span>
         <span className={styles.triggerSymbol}>{selected.symbol}</span>
         <span className={styles.triggerCode}>{selected.currencyCode}</span>
-        <span className="mi" style={{ fontSize: '0.9rem', color: 'var(--text3)' }}>expand_more</span>
+        <span className="mi-outlined" style={{ fontSize: '0.9rem', color: 'var(--text3)' }}>expand_more</span>
       </button>
 
       {open && (

@@ -214,7 +214,7 @@ function Header({
               aria-label="Go back"
               data-tour="tour-back-btn"
             >
-              <span className="mi" style={{ fontSize: '1.4rem' }}>{backIcon}</span>
+              <span className="mi-outlined" style={{ fontSize: '1.4rem' }}>{backIcon}</span>
             </button>
           )}
 
@@ -294,7 +294,7 @@ function Header({
           <div className={styles.right}>
             {showNotifications && (
               <button className={styles.iconBtn} onClick={openNotif} aria-label="Notifications">
-                <span className="mi" style={{ fontSize: '1.4rem', color: 'var(--text2)' }}>notifications</span>
+                <span className="mi-outlined" style={{ fontSize: '1.4rem', color: 'var(--text2)' }}>notifications</span>
                 {unreadCount > 0 && (
                   <span className={styles.notifBadge}>
                     {unreadCount > 9 ? '9+' : unreadCount}
@@ -322,12 +322,12 @@ function Header({
               <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
                 {unreadCount > 0 && (
                   <button className={styles.markAllBtn} onClick={markAllRead}>
-                    <span className="mi" style={{ fontSize: '0.85rem' }}>done_all</span>
+                    <span className="mi-outlined" style={{ fontSize: '0.85rem' }}>done_all</span>
                     Mark all read
                   </button>
                 )}
                 <button className={styles.iconBtn} onClick={closeNotif}>
-                  <span className="mi" style={{ fontSize: '1.5rem' }}>close</span>
+                  <span className="mi-outlined" style={{ fontSize: '1.5rem' }}>close</span>
                 </button>
               </div>
             </div>
@@ -352,7 +352,7 @@ function Header({
             <div className={styles.notifBody}>
               {visibleNotifs.length === 0 ? (
                 <div className={styles.notifEmpty}>
-                  <span className="mi" style={{ fontSize: '2.5rem', opacity: 0.2 }}>
+                  <span className="mi-outlined" style={{ fontSize: '2.5rem', opacity: 0.2 }}>
                     {notifTab === 'read' ? 'done_all' : 'notifications_none'}
                   </span>
                   <p>

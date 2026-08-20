@@ -374,7 +374,7 @@ export function AddMeasurementModal({ isOpen, onClose, onSave, gender }) {
 
         {formInlineMsg && (
           <div className={`${styles.formInlineMsg} ${formInlineMsg.ok ? styles.formInlineMsgOk : styles.formInlineMsgErr}`}>
-            <span className="mi" style={{ fontSize: '0.95rem' }}>
+            <span className="mi-outlined" style={{ fontSize: '0.95rem' }}>
               {formInlineMsg.ok ? 'check_circle' : 'error_outline'}
             </span>
             {formInlineMsg.text}
@@ -469,7 +469,7 @@ export function AddMeasurementModal({ isOpen, onClose, onSave, gender }) {
                         />
                       </div>
                       <button className={styles.removeFieldButton} onClick={() => removeField(field.id)}>
-                        <span className="mi" style={{ fontSize: '1.1rem' }}>remove_circle_outline</span>
+                        <span className="mi-outlined" style={{ fontSize: '1.1rem' }}>remove_circle_outline</span>
                       </button>
                     </div>
                   ))}
@@ -480,7 +480,7 @@ export function AddMeasurementModal({ isOpen, onClose, onSave, gender }) {
                 )}
 
                 <button className={styles.addFieldButton} onClick={addField}>
-                  <span className="mi" style={{ fontSize: '0.9rem' }}>add</span>
+                  <span className="mi-outlined" style={{ fontSize: '0.9rem' }}>add</span>
                   Add Field
                 </button>
               </div>
@@ -564,11 +564,11 @@ export function AddMeasurementModal({ isOpen, onClose, onSave, gender }) {
                           <div className={styles.slotCardRight}>
                             {summary && (
                               <div className={styles.slotCheckCircle}>
-                                <span className="mi" style={{ fontSize: '0.85rem' }}>check</span>
+                                <span className="mi-outlined" style={{ fontSize: '0.85rem' }}>check</span>
                               </div>
                             )}
                             <span
-                              className="mi"
+                              className="mi-outlined"
                               style={{
                                 fontSize:   '1.1rem',
                                 color:      'var(--text3)',

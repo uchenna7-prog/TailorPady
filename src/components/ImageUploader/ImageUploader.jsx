@@ -111,7 +111,7 @@ export default function ImageUploader({
                 onClick={handleRemove}
                 title="Remove image"
               >
-                <span className="mi" style={{ fontSize: '0.75rem' }}>close</span>
+                <span className="mi-outlined" style={{ fontSize: '0.75rem' }}>close</span>
               </button>
             )}
           </>
@@ -122,7 +122,7 @@ export default function ImageUploader({
           </div>
         ) : (
           <div className={styles.emptyState}>
-            <span className="mi" style={{ fontSize: size < 60 ? '1.2rem' : '1.6rem', color: 'var(--text3)' }}>
+            <span className="mi-outlined" style={{ fontSize: size < 60 ? '1.2rem' : '1.6rem', color: 'var(--text3)' }}>
               {placeholder}
             </span>
           </div>

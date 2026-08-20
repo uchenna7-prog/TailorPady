@@ -45,7 +45,7 @@ export function ServiceAreaPicker({ value, onChange }) {
           className={`${styles.optionChip} ${mode === 'states' ? styles.optionChipActive : ''}`}
           onClick={() => setMode('states')}
         >
-          <span className="mi" style={{ fontSize: '0.9rem' }}>map</span>
+          <span className="mi-outlined" style={{ fontSize: '0.9rem' }}>map</span>
           Specific states
         </button>
         <button
@@ -53,7 +53,7 @@ export function ServiceAreaPicker({ value, onChange }) {
           className={`${styles.optionChip} ${mode === 'nationwide' ? styles.optionChipActive : ''}`}
           onClick={() => setMode('nationwide')}
         >
-          <span className="mi" style={{ fontSize: '0.9rem' }}>flag</span>
+          <span className="mi-outlined" style={{ fontSize: '0.9rem' }}>flag</span>
           Nationwide
         </button>
       </div>
@@ -74,7 +74,7 @@ export function ServiceAreaPicker({ value, onChange }) {
               {selectedStates.map(s => (
                 <button key={s} type="button" className={styles.chip} onClick={() => removeChip(s)}>
                   {s}
-                  <span className="mi" style={{ fontSize: '0.75rem' }}>close</span>
+                  <span className="mi-outlined" style={{ fontSize: '0.75rem' }}>close</span>
                 </button>
               ))}
             </div>

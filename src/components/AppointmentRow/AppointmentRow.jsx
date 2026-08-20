@@ -79,7 +79,7 @@ export function AppointmentRow({ appt, isLast, allOrders, onOpen }) {
       ) : (
         <div className={styles.apptRowIcon}>
           <div className={styles.apptRowIconInner}>
-            <span className="mi" style={{ fontSize: '1.3rem', color: sc.color }}>{icon}</span>
+            <span className="mi-outlined" style={{ fontSize: '1.3rem', color: sc.color }}>{icon}</span>
           </div>
         </div>
       )}
@@ -88,12 +88,12 @@ export function AppointmentRow({ appt, isLast, allOrders, onOpen }) {
         <div className={styles.apptRowTitle}>{appt.title}</div>
         {appt.customerName && (
           <div className={styles.apptRowMeta}>
-            <span className="mi" style={{ fontSize: '0.75rem', color: 'var(--text3)' }}>person</span>
+            <span className="mi-outlined" style={{ fontSize: '0.75rem', color: 'var(--text3)' }}>person</span>
             <span className={styles.apptRowMetaText}>{appt.customerName}</span>
           </div>
         )}
         <div className={styles.apptRowMeta}>
-          <span className="mi" style={{ fontSize: '0.75rem', color: isMissed ? '#ef4444' : 'var(--text3)' }}>schedule</span>
+          <span className="mi-outlined" style={{ fontSize: '0.75rem', color: isMissed ? '#ef4444' : 'var(--text3)' }}>schedule</span>
           <span className={`${styles.apptRowMetaText} ${isMissed ? styles.apptRowMetaOverdue : ''}`}>
             {formatShortDate(appt.date)}{appt.time ? ` · ${formatTime(appt.time)}` : ''}
           </span>

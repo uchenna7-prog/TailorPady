@@ -7,7 +7,7 @@ export function PremiumSheet({ onClose }) {
     <div className={styles.confirmOverlay} onClick={(e) => e.target === e.currentTarget && onClose()}>
       <div className={styles.confirmSheet}>
         <div style={{ textAlign: 'center', marginBottom: 16 }}>
-          <span className="mi" style={{ fontSize: '2.5rem', color: 'var(--accent)' }}>workspace_premium</span>
+          <span className="mi-outlined" style={{ fontSize: '2.5rem', color: 'var(--accent)' }}>workspace_premium</span>
         </div>
         <h4 style={{ textAlign: 'center' }}>Premium Feature</h4>
         <p style={{ textAlign: 'center' }}>
@@ -19,7 +19,7 @@ export function PremiumSheet({ onClose }) {
             style={{ background: 'var(--accent)' }}
             onClick={onClose}
           >
-            <span className="mi" style={{ fontSize: '1rem', verticalAlign: 'middle', marginRight: 6 }}>workspace_premium</span>
+            <span className="mi-outlined" style={{ fontSize: '1rem', verticalAlign: 'middle', marginRight: 6 }}>workspace_premium</span>
             Upgrade to Pro
           </button>
           <button className={styles.btnConfirmCancel} onClick={onClose}>Maybe Later</button>

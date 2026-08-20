@@ -418,11 +418,11 @@ export default function OrderDetailModal({
       ) : (
         <div className={styles.header}>
           <button className={styles.headerCloseBtn} onClick={close}>
-            <span className="mi" style={{ fontSize: '1.35rem' }}>close</span>
+            <span className="mi-outlined" style={{ fontSize: '1.35rem' }}>close</span>
           </button>
           <div className={styles.headerTitle}>Order Details</div>
           <button className={styles.headerDelete} onClick={() => setConfirmDelete(true)}>
-            <span className="mi" style={{ fontSize: '1.1rem' }}>delete_outline</span>
+            <span className="mi-outlined" style={{ fontSize: '1.1rem' }}>delete_outline</span>
           </button>
         </div>
       )}
@@ -443,12 +443,12 @@ export default function OrderDetailModal({
             >
               <span className={styles.priorityTriggerLeft}>
                 {priorityMeta.icon && (
-                  <span className="mi" style={{ fontSize: '0.9rem', color: priorityMeta.color }}>{priorityMeta.icon}</span>
+                  <span className="mi-outlined" style={{ fontSize: '0.9rem', color: priorityMeta.color }}>{priorityMeta.icon}</span>
                 )}
                 <span style={{ color: priorityMeta.color }}>{priorityMeta.label}</span>
               </span>
               <span
-                className="mi"
+                className="mi-outlined"
                 style={{
                   fontSize: '1.1rem',
                   color: priorityMeta.color,
@@ -474,10 +474,10 @@ export default function OrderDetailModal({
                       onClick={() => handlePriority(p)}
                     >
                       {meta.icon
-                        ? <span className="mi" style={{ fontSize: '0.9rem', color: meta.color }}>{meta.icon}</span>
+                        ? <span className="mi-outlined" style={{ fontSize: '0.9rem', color: meta.color }}>{meta.icon}</span>
                         : <span className={styles.priorityMenuItemDot} />}
                       <span style={{ color: isActive ? meta.color : 'var(--text)' }}>{meta.label}</span>
-                      {isActive && <span className="mi" style={{ marginLeft: 'auto', fontSize: '1rem', color: meta.color }}>check</span>}
+                      {isActive && <span className="mi-outlined" style={{ marginLeft: 'auto', fontSize: '1rem', color: meta.color }}>check</span>}
                     </button>
                   )
                 })}
@@ -526,13 +526,13 @@ export default function OrderDetailModal({
               <div className={styles.donutContent}>
                 <div className={styles.cardValueRow}>
                   {stageObj?.icon && (
-                    <span className="mi" style={{ fontSize: '1.05rem', color: 'var(--text)' }}>{stageObj.icon}</span>
+                    <span className="mi-outlined" style={{ fontSize: '1.05rem', color: 'var(--text)' }}>{stageObj.icon}</span>
                   )}
                   <div className={styles.cardValue}>{stageObj ? stageObj.label : 'Not started'}</div>
                 </div>
                 {stageUpdatedLabel && (
                   <div className={styles.donutMeta}>
-                    <span className="mi" style={{ fontSize: '0.82rem' }}>schedule</span>
+                    <span className="mi-outlined" style={{ fontSize: '0.82rem' }}>schedule</span>
                     <span>Updated on {stageUpdatedLabel}</span>
                   </div>
                 )}
@@ -568,7 +568,7 @@ export default function OrderDetailModal({
               <span className={`mi ${styles.chevronIcon}`} style={{ fontSize: '1.05rem', color: 'var(--text3)' }}>chevron_right</span>
             </div>
             <div className={styles.linkedRow}>
-              <span className="mi" style={{ fontSize: '1rem', color: 'var(--text3)' }}>person</span>
+              <span className="mi-outlined" style={{ fontSize: '1rem', color: 'var(--text3)' }}>person</span>
               <div style={{ flex: 1, textAlign: 'left' }}>
                 <div style={{ fontWeight: 700, fontSize: '0.88rem', color: 'var(--text)' }}>{local.customerName}</div>
                 {local.customerPhone && (
@@ -581,7 +581,7 @@ export default function OrderDetailModal({
                   className={styles.callBtn}
                   onClick={e => e.stopPropagation()}
                 >
-                  <span className="mi" style={{ fontSize: '1rem' }}>call</span>
+                  <span className="mi-outlined" style={{ fontSize: '1rem' }}>call</span>
                 </a>
               )}
             </div>
@@ -608,7 +608,7 @@ export default function OrderDetailModal({
                             onError={() => setBrokenImages(prev => new Set(prev).add(i))}
                           />
                         )
-                        : <span className="mi" style={{ fontSize: '0.95rem', color: 'var(--text3)' }}>checkroom</span>
+                        : <span className="mi-outlined" style={{ fontSize: '0.95rem', color: 'var(--text3)' }}>checkroom</span>
                       }
                     </div>
                     <div>
@@ -670,7 +670,7 @@ export default function OrderDetailModal({
 
         {hint === 'review' && (
           <div className={styles.footerHintCard}>
-            <span className="mi" style={{ fontSize: '0.9rem', flexShrink: 0, marginTop: 1 }}>info</span>
+            <span className="mi-outlined" style={{ fontSize: '0.9rem', flexShrink: 0, marginTop: 1 }}>info</span>
             Review links can only be sent once the order is Completed or Delivered.
           </div>
         )}
@@ -680,7 +680,7 @@ export default function OrderDetailModal({
             className={`${styles.btnSecondary} ${!canReview ? styles.btnSecondary_disabled : ''}`}
             onClick={handleReviewClick}
           >
-            <span className="mi" style={{ fontSize: '1rem' }}>share</span>
+            <span className="mi-outlined" style={{ fontSize: '1rem' }}>share</span>
             {reviewSharedLabel ? 'Share review link again' : 'Share review link via WhatsApp'}
           </button>
           {reviewSharedLabel && (
@@ -692,7 +692,7 @@ export default function OrderDetailModal({
               disabled={pendingCancel}
               onClick={handleCancelOrder}
             >
-              <span className="mi" style={{ fontSize: '1.05rem' }}>{isCancelled ? 'undo' : 'cancel'}</span>
+              <span className="mi-outlined" style={{ fontSize: '1.05rem' }}>{isCancelled ? 'undo' : 'cancel'}</span>
               {isCancelled ? 'Restore order' : 'Cancel order'}
             </button>
           )}
@@ -701,7 +701,7 @@ export default function OrderDetailModal({
               className={styles.btnPrimary}
               onClick={handleGenerateInvoiceClick}
             >
-              <span className="mi" style={{ fontSize: '1.05rem' }}>receipt_long</span>
+              <span className="mi-outlined" style={{ fontSize: '1.05rem' }}>receipt_long</span>
               {hasInvoice ? 'View invoice' : 'Generate invoice'}
             </button>
           )}
@@ -730,7 +730,7 @@ export default function OrderDetailModal({
                   >
                     <div className={styles.timelineIndicatorCol}>
                       <span
-                        className="mi"
+                        className="mi-outlined"
                         style={{
                           fontSize: '1.2rem',
                           color: isDone ? '#22c55e' : isCurrent ? 'var(--accent)' : 'var(--text3)',

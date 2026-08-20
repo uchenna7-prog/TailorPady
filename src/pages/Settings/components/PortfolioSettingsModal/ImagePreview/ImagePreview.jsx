@@ -10,7 +10,7 @@ export function ImagePreview({ src, alt, onRemove, size = 80 }) {
       </div>
       {onRemove && (
         <button type="button" className={styles.removeBtn} onClick={onRemove}>
-          <span className="mi" style={{ fontSize: 15 }}>close</span>
+          <span className="mi-outlined" style={{ fontSize: 15 }}>close</span>
           Remove
         </button>
       )}

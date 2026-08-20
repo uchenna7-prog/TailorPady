@@ -46,7 +46,7 @@ export default function TermsAndConditions({ onMenuClick }) {
       <div className={styles.scrollArea} ref={scrollRef}>
         <div className={styles.hero}>
           <div className={styles.heroIcon}>
-            <span className="mi">gavel</span>
+            <span className="mi-outlined">gavel</span>
           </div>
           <p className={styles.heroSub}>Last revised {TERMS_LAST_UPDATED}</p>
           <div className={styles.heroDivider} />

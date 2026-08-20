@@ -10,7 +10,7 @@ export function DesignOptionsSheet({ onClose, onSelectTemplate, onSelectColour }
         <div className={styles.options}>
           <button className={styles.option} onClick={onSelectTemplate}>
             <div className={styles.optionIcon}>
-              <span className="mi" style={{ fontSize: '1.3rem' }}>style</span>
+              <span className="mi-outlined" style={{ fontSize: '1.3rem' }}>style</span>
             </div>
             <div className={styles.optionText}>
               <span className={styles.optionLabel}>Template</span>
@@ -21,7 +21,7 @@ export function DesignOptionsSheet({ onClose, onSelectTemplate, onSelectColour }
 
           <button className={styles.option} onClick={onSelectColour}>
             <div className={styles.optionIcon}>
-              <span className="mi" style={{ fontSize: '1.3rem' }}>palette</span>
+              <span className="mi-outlined" style={{ fontSize: '1.3rem' }}>palette</span>
             </div>
             <div className={styles.optionText}>
               <span className={styles.optionLabel}>Brand Colour</span>

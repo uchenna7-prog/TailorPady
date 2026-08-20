@@ -42,11 +42,11 @@ export function UpgradeSheet({
         <div className={styles.handle} />
 
         <button className={styles.closeBtn} onClick={onClose} aria-label="Close">
-          <span className="mi" style={{ fontSize: '1.1rem' }}>close</span>
+          <span className="mi-outlined" style={{ fontSize: '1.1rem' }}>close</span>
         </button>
 
         <div className={styles.iconWrap}>
-          <span className="mi" style={{ fontSize: '1.7rem' }}>{icon || 'workspace_premium'}</span>
+          <span className="mi-outlined" style={{ fontSize: '1.7rem' }}>{icon || 'workspace_premium'}</span>
         </div>
 
         <h3 id="upgradeSheetTitle" className={styles.title}>{title || 'Upgrade to Premium'}</h3>
@@ -57,7 +57,7 @@ export function UpgradeSheet({
             {features.map((feature, i) => (
               <li key={i} className={styles.feature}>
                 <span className={styles.featureCheck}>
-                  <span className="mi" style={{ fontSize: '0.95rem' }}>check</span>
+                  <span className="mi-outlined" style={{ fontSize: '0.95rem' }}>check</span>
                 </span>
                 <span>{feature}</span>
               </li>
@@ -74,7 +74,7 @@ export function UpgradeSheet({
 
         <button className={styles.upgradeBtn} onClick={onUpgrade}>
           <span>{confirmText || 'Upgrade Now'}</span>
-          <span className="mi" style={{ fontSize: '1.1rem' }}>arrow_forward</span>
+          <span className="mi-outlined" style={{ fontSize: '1.1rem' }}>arrow_forward</span>
         </button>
         <button className={styles.cancelBtn} onClick={onClose}>
           {dismissText || 'Not Now'}

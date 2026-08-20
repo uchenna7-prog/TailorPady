@@ -21,16 +21,16 @@ export function ImageCarousel({ images, className, onImageClick }) {
       />
       {onImageClick && (
         <div className={styles.carouselExpandHint}>
-          <span className="mi" style={{ fontSize: '0.85rem' }}>open_in_full</span>
+          <span className="mi-outlined" style={{ fontSize: '0.85rem' }}>open_in_full</span>
         </div>
       )}
       {images.length > 1 && (
         <>
           <button className={`${styles.carouselArrow} ${styles.carouselArrow_left}`} onClick={goPrev} type="button">
-            <span className="mi">chevron_left</span>
+            <span className="mi-outlined">chevron_left</span>
           </button>
           <button className={`${styles.carouselArrow} ${styles.carouselArrow_right}`} onClick={goNext} type="button">
-            <span className="mi">chevron_right</span>
+            <span className="mi-outlined">chevron_right</span>
           </button>
           <div className={styles.carouselDots}>
             {images.map((_, i) => (

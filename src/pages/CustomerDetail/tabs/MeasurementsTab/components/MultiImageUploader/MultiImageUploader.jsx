@@ -60,7 +60,7 @@ export function MultiImageUploader({ images, onChange, isOnline }) {
         <label className={`${styles.uploadArea_empty} ${!isOnline ? styles.uploadArea_empty_offline : ''}`}>
           {isOnline ? (
             <>
-              <span className="mi" style={{ fontSize: '1.8rem', color: 'var(--text3)', pointerEvents: 'none' }}>
+              <span className="mi-outlined" style={{ fontSize: '1.8rem', color: 'var(--text3)', pointerEvents: 'none' }}>
                 add_a_photo
               </span>
               <span className={styles.uploadArea_label}>Tap to add design references</span>
@@ -74,7 +74,7 @@ export function MultiImageUploader({ images, onChange, isOnline }) {
             </>
           ) : (
             <>
-              <span className="mi" style={{ fontSize: '2rem', color: 'var(--text3)', pointerEvents: 'none' }}>
+              <span className="mi-outlined" style={{ fontSize: '2rem', color: 'var(--text3)', pointerEvents: 'none' }}>
                 wifi_off
               </span>
               <span className={styles.uploadArea_label}>You're offline</span>
@@ -107,7 +107,7 @@ export function MultiImageUploader({ images, onChange, isOnline }) {
           className={styles.uploadRemoveButton}
           onClick={e => { e.stopPropagation(); removeSlot(previewIndex) }}
         >
-          <span className="mi" style={{ fontSize: '1rem' }}>close</span>
+          <span className="mi-outlined" style={{ fontSize: '1rem' }}>close</span>
         </button>
 
         {slots.length > 1 && (
@@ -117,14 +117,14 @@ export function MultiImageUploader({ images, onChange, isOnline }) {
               className={`${styles.carouselArrow} ${styles.carouselArrow_left}`}
               onClick={e => { e.stopPropagation(); setPreviewIndex(i => Math.max(0, i - 1)) }}
             >
-              <span className="mi">chevron_left</span>
+              <span className="mi-outlined">chevron_left</span>
             </button>
             <button
               type="button"
               className={`${styles.carouselArrow} ${styles.carouselArrow_right}`}
               onClick={e => { e.stopPropagation(); setPreviewIndex(i => Math.min(slots.length - 1, i + 1)) }}
             >
-              <span className="mi">chevron_right</span>
+              <span className="mi-outlined">chevron_right</span>
             </button>
           </>
         )}
@@ -146,7 +146,7 @@ export function MultiImageUploader({ images, onChange, isOnline }) {
       </div>
 
       <label className={styles.addMoreImagesButton}>
-        <span className="mi" style={{ fontSize: '0.9rem' }}>add_photo_alternate</span>
+        <span className="mi-outlined" style={{ fontSize: '0.9rem' }}>add_photo_alternate</span>
         Add More Images
         <input
           type="file"

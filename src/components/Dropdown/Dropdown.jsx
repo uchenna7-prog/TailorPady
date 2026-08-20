@@ -253,7 +253,7 @@ export function Dropdown({
                   }}
                   aria-label="Clear search"
                 >
-                  <span className="mi">close</span>
+                  <span className="mi-outlined">close</span>
                 </button>
               )}
             </div>

@@ -338,6 +338,11 @@
   max-width: 260px;
 }
 
+.emptyStateSubtitle strong {
+  color: var(--text);
+  font-weight: 800;
+}
+
 /* ── FAB ── */
 .fab {
   position: fixed;

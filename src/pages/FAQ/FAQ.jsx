@@ -57,7 +57,7 @@ export default function FAQ({ onMenuClick }) {
             />
             {search && (
               <button className={styles.searchClear} onClick={() => setSearch('')}>
-                <span className="mi" style={{ fontSize: '1rem' }}>close</span>
+                <span className="mi-outlined" style={{ fontSize: '1rem' }}>close</span>
               </button>
             )}
           </div>
@@ -65,7 +65,7 @@ export default function FAQ({ onMenuClick }) {
 
         {filtered.length === 0 ? (
           <div className={styles.empty}>
-            <span className="mi" style={{ fontSize: '2.5rem', color: 'var(--text3)' }}>search_off</span>
+            <span className="mi-outlined" style={{ fontSize: '2.5rem', color: 'var(--text3)' }}>search_off</span>
             <p className={styles.emptyText}>No results for "{search}"</p>
           </div>
         ) : (
@@ -73,7 +73,7 @@ export default function FAQ({ onMenuClick }) {
             <div key={cat.category}>
               <div className={styles.sectionHeader}>
                 <div className={styles.sectionIconWrap}>
-                  <span className="mi" style={{ fontSize: '1rem' }}>{cat.icon}</span>
+                  <span className="mi-outlined" style={{ fontSize: '1rem' }}>{cat.icon}</span>
                 </div>
                 <span className={styles.sectionLabel}>{cat.category}</span>
               </div>
@@ -98,7 +98,7 @@ export default function FAQ({ onMenuClick }) {
         {!query && (
           <div className={styles.footerPadding}>
             <div className={styles.footerCta}>
-              <span className="mi" style={{ fontSize: '1.4rem', color: 'var(--accent)' }}>support_agent</span>
+              <span className="mi-outlined" style={{ fontSize: '1.4rem', color: 'var(--accent)' }}>support_agent</span>
               <div className={styles.footerCtaText}>
                 <div className={styles.footerCtaTitle}>Still have questions?</div>
                 <div className={styles.footerCtaSub}>Reach out via the Contact page — we're happy to help.</div>

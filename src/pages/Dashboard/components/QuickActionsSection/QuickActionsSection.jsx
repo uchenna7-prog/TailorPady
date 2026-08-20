@@ -24,7 +24,7 @@ export function QuickActionsSection({ onNavigate }) {
             data-tour={action.tourId}
           >
             <div className={styles.statIconWrap}>
-              <span className="mi" style={{ fontSize: '1.75rem', color: 'var(--accent)' }}>
+              <span className="mi-outlined" style={{ fontSize: '1.75rem', color: 'var(--accent)' }}>
                 {action.icon}
               </span>
             </div>

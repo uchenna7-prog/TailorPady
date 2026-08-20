@@ -190,7 +190,7 @@ export function BusinessInfoModal({ onBack, showToast }) {
                 </div>
                 {local.brandPaymentTerms.length > 2 && (
                   <button className={styles.termRemove} onClick={() => removeTerm(i)}>
-                    <span className="mi" style={{ fontSize: 16 }}>close</span>
+                    <span className="mi-outlined" style={{ fontSize: 16 }}>close</span>
                   </button>
                 )}
               </div>
@@ -198,7 +198,7 @@ export function BusinessInfoModal({ onBack, showToast }) {
           </div>
           {local.brandPaymentTerms.length < MAX_TERMS && (
             <button className={styles.addTermBtn} onClick={addTerm}>
-              <span className="mi" style={{ fontSize: 16 }}>add</span>
+              <span className="mi-outlined" style={{ fontSize: 16 }}>add</span>
               Add another term
             </button>
           )}

@@ -37,12 +37,12 @@ export function OrderRow({ order, isLast, onTap }) {
       <div className={styles.orderRowInfo}>
         <div className={styles.orderRowDesc}>{order.desc || order.name || 'Order'}</div>
         <div className={styles.orderRowMeta}>
-          <span className="mi" style={{ fontSize: '0.78rem', color: 'var(--text3)', verticalAlign: 'middle' }}>person</span>
+          <span className="mi-outlined" style={{ fontSize: '0.78rem', color: 'var(--text3)', verticalAlign: 'middle' }}>person</span>
           <span className={styles.orderRowMetaText}>{order.customerName || '—'}</span>
         </div>
         {stageObj && (
           <div className={styles.orderRowStageLine}>
-            <span className="mi" style={{ fontSize: '0.78rem' }}>{stageObj.icon}</span>
+            <span className="mi-outlined" style={{ fontSize: '0.78rem' }}>{stageObj.icon}</span>
             {stageObj.label}
           </div>
         )}

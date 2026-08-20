@@ -228,7 +228,7 @@ function SideBar({ isOpen, onClose }) {
                           undefined
                         }
                       >
-                        <span className="mi">{item.icon}</span>
+                        <span className={`${styles.navIcon} mi-outlined`}>{item.icon}</span>
                         <span className={styles.navLabel}>{item.label}</span>
                         {badge && <NavBadge count={badge.count} variant={badge.variant} />}
                       </button>

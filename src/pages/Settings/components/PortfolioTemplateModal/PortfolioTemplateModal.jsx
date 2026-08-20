@@ -25,18 +25,7 @@ const TEMPLATES = [
     description: 'Modern layout with featured work showcase',
     thumbs: { male: template2Male, female: template2Female },
   },
-  {
-    id: 'template3',
-    label: 'Template Three',
-    description: 'Editorial black and white studio portfolio',
-    thumbs: null,
-  },
-  {
-    id: 'template4',
-    label: 'Template Four',
-    description: 'Modern layout with featured work showcase',
-    thumbs: null,
-  },
+
 ]
 
 const DEV_SLUG = 'urchstitches'
@@ -227,7 +216,7 @@ export function PortfolioTemplateModal({
                       />
                     ) : (
                       <div className={styles.thumbPlaceholder}>
-                        <span className="mi" style={{ fontSize: '1.6rem' }}>visibility_off</span>
+                        <span className="mi-outlined" style={{ fontSize: '1.6rem' }}>visibility_off</span>
                         <span>No preview available yet</span>
                       </div>
                     )}
@@ -238,13 +227,13 @@ export function PortfolioTemplateModal({
                         onClick={e => handlePreviewOpen(e, template)}
                         aria-label="Preview template"
                       >
-                        <span className="mi" style={{ fontSize: '0.9rem' }}>open_in_full</span>
+                        <span className="mi-outlined" style={{ fontSize: '0.9rem' }}>open_in_full</span>
                       </button>
                     )}
 
                     {isSelected && (
                       <div className={styles.selectedBadge}>
-                        <span className="mi" style={{ fontSize: '0.75rem' }}>check</span>
+                        <span className="mi-outlined" style={{ fontSize: '0.75rem' }}>check</span>
                       </div>
                     )}
                   </div>

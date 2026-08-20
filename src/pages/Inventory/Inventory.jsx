@@ -66,7 +66,7 @@ function InventoryRow({ item, isLast, onTap }) {
     >
       <div className={styles.invRowIcon}>
         <div className={styles.invRowIconInner}>
-          <span className="mi" style={{ fontSize: '1.3rem', color: sc.color }}>{cat.icon}</span>
+          <span className="mi-outlined" style={{ fontSize: '1.3rem', color: sc.color }}>{cat.icon}</span>
         </div>
       </div>
 
@@ -74,12 +74,12 @@ function InventoryRow({ item, isLast, onTap }) {
         <div className={styles.invRowName}>{item.name}</div>
         {item.colour && (
           <div className={styles.invRowMeta}>
-            <span className="mi" style={{ fontSize: '0.75rem', color: 'var(--text3)' }}>circle</span>
+            <span className="mi-outlined" style={{ fontSize: '0.75rem', color: 'var(--text3)' }}>circle</span>
             <span className={styles.invRowMetaText}>{item.colour}</span>
           </div>
         )}
         <div className={styles.invRowMeta}>
-          <span className="mi" style={{ fontSize: '0.75rem', color: 'var(--text3)' }}>category</span>
+          <span className="mi-outlined" style={{ fontSize: '0.75rem', color: 'var(--text3)' }}>category</span>
           <span className={styles.invRowMetaText}>{cat.label}</span>
         </div>
       </div>
@@ -155,7 +155,7 @@ function ItemModal({ isOpen, editItem, onClose, onSave }) {
         <div className={styles.modalHeader}>
           <div className={styles.modalHeaderLeft}>
             <button className={styles.modalBack} onClick={handleClose}>
-              <span className="mi" style={{ fontSize: '1.5rem' }}>arrow_back_ios</span>
+              <span className="mi-outlined" style={{ fontSize: '1.5rem' }}>arrow_back_ios</span>
             </button>
             <span className={styles.modalTitle}>
               {editItem ? 'Edit Item' : 'New Item'}
@@ -204,7 +204,7 @@ function ItemModal({ isOpen, editItem, onClose, onSave }) {
                   className={`${styles.catChip} ${category === cat.id ? styles.catChipActive : ''}`}
                   onClick={() => setCategory(cat.id)}
                 >
-                  <span className="mi" style={{ fontSize: '1.1rem' }}>{cat.icon}</span>
+                  <span className="mi-outlined" style={{ fontSize: '1.1rem' }}>{cat.icon}</span>
                   <span>{cat.label}</span>
                 </button>
               ))}
@@ -316,14 +316,14 @@ function AdjustSheet({ item, onClose, onAdjust }) {
             className={`${styles.modeBtn} ${mode === 'use' ? styles.modeBtnUse : ''}`}
             onClick={() => setMode('use')}
           >
-            <span className="mi" style={{ fontSize: '1rem' }}>remove_circle_outline</span>
+            <span className="mi-outlined" style={{ fontSize: '1rem' }}>remove_circle_outline</span>
             Used / Remove
           </button>
           <button
             className={`${styles.modeBtn} ${mode === 'restock' ? styles.modeBtnRestock : ''}`}
             onClick={() => setMode('restock')}
           >
-            <span className="mi" style={{ fontSize: '1rem' }}>add_circle_outline</span>
+            <span className="mi-outlined" style={{ fontSize: '1rem' }}>add_circle_outline</span>
             Restock / Add
           </button>
         </div>
@@ -394,11 +394,11 @@ function ItemDetail({ item, onClose, onEdit, onDelete, onAdjust }) {
 
           <div className={styles.mobileHeader}>
             <button className={styles.mobileCloseBtn} onClick={onClose}>
-              <span className="mi" style={{ fontSize: '1.35rem' }}>close</span>
+              <span className="mi-outlined" style={{ fontSize: '1.35rem' }}>close</span>
             </button>
             <div className={styles.mobileHeaderTitle}>Item Details</div>
             <button className={styles.mobileHeaderDelete} onClick={onDelete}>
-              <span className="mi" style={{ fontSize: '1.1rem' }}>delete_outline</span>
+              <span className="mi-outlined" style={{ fontSize: '1.1rem' }}>delete_outline</span>
             </button>
           </div>
 
@@ -418,7 +418,7 @@ function ItemDetail({ item, onClose, onEdit, onDelete, onAdjust }) {
 
             <div className={styles.detailTitleRow}>
               <div className={styles.detailIconWrap} style={{ background: sc.bg, borderColor: sc.border }}>
-                <span className="mi" style={{ fontSize: '1.5rem', color: sc.color }}>{cat.icon}</span>
+                <span className="mi-outlined" style={{ fontSize: '1.5rem', color: sc.color }}>{cat.icon}</span>
               </div>
               <div>
                 <div className={styles.detailTitle}>{item.name}</div>
@@ -468,7 +468,7 @@ function ItemDetail({ item, onClose, onEdit, onDelete, onAdjust }) {
                 <div className={styles.donutContent}>
                   <div className={styles.cardValue}>{item.quantity} {item.unit} in stock</div>
                   <div className={styles.donutMeta}>
-                    <span className="mi" style={{ fontSize: '0.82rem' }}>warning_amber</span>
+                    <span className="mi-outlined" style={{ fontSize: '0.82rem' }}>warning_amber</span>
                     <span style={{ color: sc.color }}>{statusNote}</span>
                   </div>
                 </div>
@@ -493,11 +493,11 @@ function ItemDetail({ item, onClose, onEdit, onDelete, onAdjust }) {
 
             <div className={styles.footerButtons}>
               <button className={styles.btnPrimary} onClick={() => setAdjustOpen(true)}>
-                <span className="mi" style={{ fontSize: '1.05rem' }}>tune</span>
+                <span className="mi-outlined" style={{ fontSize: '1.05rem' }}>tune</span>
                 Adjust Stock
               </button>
               <button className={styles.btnSecondary} onClick={onEdit}>
-                <span className="mi" style={{ fontSize: '1rem' }}>edit</span>
+                <span className="mi-outlined" style={{ fontSize: '1rem' }}>edit</span>
                 Edit Item
               </button>
             </div>
@@ -625,7 +625,7 @@ export default function Inventory({ onMenuClick }) {
       <div className={styles.searchContainer}>
         <div className={styles.searchRow}>
           <div className={styles.searchBox}>
-            <span className="mi" style={{ color: 'var(--text3)', fontSize: '1.1rem' }}>search</span>
+            <span className="mi-outlined" style={{ color: 'var(--text3)', fontSize: '1.1rem' }}>search</span>
             <input
               type="text"
               placeholder="Search items…"
@@ -637,7 +637,7 @@ export default function Inventory({ onMenuClick }) {
                 style={{ background: 'none', border: 'none', color: 'var(--text3)', display: 'flex', cursor: 'pointer', padding: 0 }}
                 onClick={() => setSearch('')}
               >
-                <span className="mi" style={{ fontSize: '1rem' }}>close</span>
+                <span className="mi-outlined" style={{ fontSize: '1rem' }}>close</span>
               </button>
             )}
           </div>
@@ -654,13 +654,13 @@ export default function Inventory({ onMenuClick }) {
               menuMinWidth={220}
               menuHeader="Filter by Category"
               renderTrigger={() => (
-                <span className="mi" style={{ fontSize: '1.2rem' }}>tune</span>
+                <span className="mi-outlined" style={{ fontSize: '1.2rem' }}>tune</span>
               )}
               renderOption={(c, active) => (
                 <span style={{ display: 'flex', alignItems: 'center', gap: 10, width: '100%' }}>
-                  <span className="mi" style={{ fontSize: '1.1rem' }}>{c.icon}</span>
+                  <span className="mi-outlined" style={{ fontSize: '1.1rem' }}>{c.icon}</span>
                   <span style={{ flex: 1 }}>{c.label}</span>
-                  {active && <span className="mi" style={{ fontSize: '1rem', color: 'var(--accent)' }}>check</span>}
+                  {active && <span className="mi-outlined" style={{ fontSize: '1rem', color: 'var(--accent)' }}>check</span>}
                 </span>
               )}
             />
@@ -689,7 +689,7 @@ export default function Inventory({ onMenuClick }) {
 
         {items.length === 0 && (
           <div className={styles.emptyState}>
-            <span className="mi" style={{ fontSize: '2.5rem', color: 'var(--text3)' }}>inventory_2</span>
+            <span className="mi-outlined" style={{ fontSize: '2.5rem', color: 'var(--text3)' }}>inventory_2</span>
             <p className={styles.emptyStateTitle}>No items yet</p>
             <p className={styles.emptyStateSubtitle}>
               Tap the <strong>+</strong> button to add your first inventory item.
@@ -699,7 +699,7 @@ export default function Inventory({ onMenuClick }) {
 
         {items.length > 0 && filtered.length === 0 && (
           <div className={styles.emptyState}>
-            <span className="mi" style={{ fontSize: '2.5rem', color: 'var(--text3)' }}>search_off</span>
+            <span className="mi-outlined" style={{ fontSize: '2.5rem', color: 'var(--text3)' }}>search_off</span>
             <p className={styles.emptyStateTitle}>No items match your filters</p>
             <p className={styles.emptyStateSubtitle}>
               Try adjusting your search or category filter.
@@ -709,11 +709,11 @@ export default function Inventory({ onMenuClick }) {
 
         {activeTab === 'all' && lowStockCount > 0 && (
           <div className={styles.alertBanner} onClick={() => setActiveTab('low')}>
-            <span className="mi" style={{ fontSize: '1rem', color: '#fb923c' }}>warning_amber</span>
+            <span className="mi-outlined" style={{ fontSize: '1rem', color: '#fb923c' }}>warning_amber</span>
             <span className={styles.alertText}>
               {lowStockCount} item{lowStockCount !== 1 ? 's' : ''} need attention
             </span>
-            <span className="mi" style={{ fontSize: '0.9rem', color: 'var(--text3)', marginLeft: 'auto' }}>chevron_right</span>
+            <span className="mi-outlined" style={{ fontSize: '0.9rem', color: 'var(--text3)', marginLeft: 'auto' }}>chevron_right</span>
           </div>
         )}
 
@@ -736,7 +736,7 @@ export default function Inventory({ onMenuClick }) {
       </div>
 
       <button className={styles.fab} onClick={() => { setEditItem(null); setModalOpen(true) }}>
-        <span className="mi">add</span>
+        <span className="mi-outlined">add</span>
       </button>
 
       <ItemModal

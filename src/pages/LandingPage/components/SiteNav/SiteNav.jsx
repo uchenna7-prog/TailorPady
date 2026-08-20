@@ -125,7 +125,7 @@ function InstallButton({ className, fullWidth }) {
   return (
     <div className={`${styles.installWrap} ${fullWidth ? styles.installWrapFull : ''}`}>
       <button type="button" className={`${styles.installButton} ${className || ''}`} onClick={handleClick}>
-        <span className="mi" style={{ fontSize: '1.05rem' }}>install_mobile</span>
+        <span className="mi-outlined" style={{ fontSize: '1.05rem' }}>install_mobile</span>
         Install app
       </button>
       {showIOSHint && (
@@ -218,7 +218,7 @@ export default function SiteNav({
               onClick={() => setOpen(prev => !prev)}
               aria-label="Toggle menu"
             >
-              <span className="mi">{open ? 'close' : 'menu'}</span>
+              <span className="mi-outlined">{open ? 'close' : 'menu'}</span>
             </button>
           ) : null}
         </div>

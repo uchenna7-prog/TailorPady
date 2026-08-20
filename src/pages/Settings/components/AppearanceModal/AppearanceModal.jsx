@@ -55,10 +55,10 @@ export function AppearanceModal({ currentTheme, currentAccent, onBack, onThemeCh
               </div>
             </div>
             <div className={styles.themeFooter}>
-              <span className="mi" style={{ fontSize: '1rem' }}>light_mode</span>
+              <span className="mi-outlined" style={{ fontSize: '1rem' }}>light_mode</span>
               <span className={styles.themeLabel}>Light</span>
               {!isDark && (
-                <span className="mi" style={{ fontSize: '1rem', color: 'var(--accent)', marginLeft: 'auto' }}>
+                <span className="mi-outlined" style={{ fontSize: '1rem', color: 'var(--accent)', marginLeft: 'auto' }}>
                   check_circle
                 </span>
               )}
@@ -81,10 +81,10 @@ export function AppearanceModal({ currentTheme, currentAccent, onBack, onThemeCh
               </div>
             </div>
             <div className={styles.themeFooter}>
-              <span className="mi" style={{ fontSize: '1rem' }}>dark_mode</span>
+              <span className="mi-outlined" style={{ fontSize: '1rem' }}>dark_mode</span>
               <span className={styles.themeLabel}>Dark</span>
               {isDark && (
-                <span className="mi" style={{ fontSize: '1rem', color: 'var(--accent)', marginLeft: 'auto' }}>
+                <span className="mi-outlined" style={{ fontSize: '1rem', color: 'var(--accent)', marginLeft: 'auto' }}>
                   check_circle
                 </span>
               )}
@@ -121,7 +121,7 @@ export function AppearanceModal({ currentTheme, currentAccent, onBack, onThemeCh
                 </div>
                 {isSelected && (
                   <span
-                    className="mi"
+                    className="mi-outlined"
                     style={{
                       fontSize: '1.1rem',
                       color: isDefault ? 'var(--accent)' : a.color,

@@ -161,7 +161,7 @@ export default function BugReport({ onMenuClick }) {
         <div className={styles.scrollArea}>
           <div className={styles.successWrap}>
             <div className={styles.successIconWrap}>
-              <span className="mi" style={{ fontSize: '2rem' }}>check_circle</span>
+              <span className="mi-outlined" style={{ fontSize: '2rem' }}>check_circle</span>
             </div>
             <div className={styles.successTitle}>Report sent</div>
             <p className={styles.successSub}>
@@ -190,7 +190,7 @@ export default function BugReport({ onMenuClick }) {
 
         <div className={styles.sectionHeader}>
           <div className={styles.sectionIconWrap}>
-            <span className="mi" style={{ fontSize: '1rem' }}>edit_note</span>
+            <span className="mi-outlined" style={{ fontSize: '1rem' }}>edit_note</span>
           </div>
           <span className={styles.sectionLabel}>What happened</span>
         </div>
@@ -224,7 +224,7 @@ export default function BugReport({ onMenuClick }) {
 
         <div className={styles.sectionHeader}>
           <div className={styles.sectionIconWrap}>
-            <span className="mi" style={{ fontSize: '1rem' }}>tune</span>
+            <span className="mi-outlined" style={{ fontSize: '1rem' }}>tune</span>
           </div>
           <span className={styles.sectionLabel}>Details</span>
         </div>
@@ -258,7 +258,7 @@ export default function BugReport({ onMenuClick }) {
 
         <div className={styles.sectionHeader}>
           <div className={styles.sectionIconWrap}>
-            <span className="mi" style={{ fontSize: '1rem' }}>image</span>
+            <span className="mi-outlined" style={{ fontSize: '1rem' }}>image</span>
           </div>
           <span className={styles.sectionLabel}>Screenshot (optional)</span>
         </div>
@@ -268,12 +268,12 @@ export default function BugReport({ onMenuClick }) {
             <div className={styles.screenshotPreviewWrap}>
               <img src={screenshotPreview} alt="Screenshot preview" className={styles.screenshotPreview} />
               <button type="button" className={styles.screenshotRemove} onClick={removeScreenshot}>
-                <span className="mi" style={{ fontSize: '1rem' }}>close</span>
+                <span className="mi-outlined" style={{ fontSize: '1rem' }}>close</span>
               </button>
             </div>
           ) : (
             <label className={styles.uploadBox} htmlFor="bugScreenshot">
-              <span className="mi" style={{ fontSize: '1.4rem', color: 'var(--text3)' }}>add_photo_alternate</span>
+              <span className="mi-outlined" style={{ fontSize: '1.4rem', color: 'var(--text3)' }}>add_photo_alternate</span>
               <span className={styles.uploadText}>Add a screenshot</span>
               <span className={styles.uploadHint}>Helps us see exactly what you saw</span>
               <input
@@ -290,7 +290,7 @@ export default function BugReport({ onMenuClick }) {
         {error && (
           <div className={styles.fieldPadding}>
             <div className={styles.errorBanner}>
-              <span className="mi" style={{ fontSize: '1.1rem' }}>error_outline</span>
+              <span className="mi-outlined" style={{ fontSize: '1.1rem' }}>error_outline</span>
               <span>{error}</span>
             </div>
           </div>

@@ -24,7 +24,7 @@ export function InlineInstallmentList({ order, payment, receipts, generating, on
   if (!payment) {
     return (
       <div className={styles.inlineEmptyNotice}>
-        <span className="mi" style={{ fontSize: '1rem', color: 'var(--text3)' }}>error_outline</span>
+        <span className="mi-outlined" style={{ fontSize: '1rem', color: 'var(--text3)' }}>error_outline</span>
         <span>No payment record found for this order.</span>
       </div>
     )
@@ -50,7 +50,7 @@ export function InlineInstallmentList({ order, payment, receipts, generating, on
             <div className={styles.donutContent}>
               <div className={styles.cardValue}>{formatMoney(currency, totalPaid)} received</div>
               <div className={styles.donutMeta}>
-                <span className="mi" style={{ fontSize: '0.82rem' }}>account_balance_wallet</span>
+                <span className="mi-outlined" style={{ fontSize: '0.82rem' }}>account_balance_wallet</span>
                 <span>{isFullyPaid ? 'Fully settled' : `${formatMoney(currency, balance)} balance left`}</span>
               </div>
             </div>
@@ -104,7 +104,7 @@ export function InlineInstallmentList({ order, payment, receipts, generating, on
               <div className={styles.installmentTopRow}>
                 <div className={styles.installmentLineLeft}>
                   <div className={styles.installmentLineIcon}>
-                    <span className="mi" style={{ fontSize: '0.95rem', color: '#22c55e' }}>payments</span>
+                    <span className="mi-outlined" style={{ fontSize: '0.95rem', color: '#22c55e' }}>payments</span>
                   </div>
                   <div>
                     <div className={styles.installmentLineAmount}>{formatMoney(currency, inst.amount)}</div>
@@ -139,7 +139,7 @@ export function InlineInstallmentList({ order, payment, receipts, generating, on
                 </div>
               ) : isReceipted ? (
                 <div className={styles.actionTagReceipted}>
-                  <span className="mi" style={{ fontSize: '0.9rem' }}>receipt_long</span>
+                  <span className="mi-outlined" style={{ fontSize: '0.9rem' }}>receipt_long</span>
                   <span>Receipted</span>
                 </div>
               ) : (
@@ -149,7 +149,7 @@ export function InlineInstallmentList({ order, payment, receipts, generating, on
                   onClick={() => onSelectPayment(payment, inst)}
                 >
                   Generate receipt
-                  <span className="mi" style={{ fontSize: '1rem' }}>chevron_right</span>
+                  <span className="mi-outlined" style={{ fontSize: '1rem' }}>chevron_right</span>
                 </button>
               )}
             </div>

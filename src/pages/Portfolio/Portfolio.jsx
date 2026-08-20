@@ -9,15 +9,11 @@ import { resolveSlug } from '../../services/slugService'
 import { useNetworkStatus } from '../../hooks/useNetworkStatus'
 import { PortfolioTemplate1 } from './PortfolioTemplates/PortfolioTemplate1/PortfolioTemplate1'
 import { PortfolioTemplate2 } from './PortfolioTemplates/PortfolioTemplate2/PortfolioTemplate2'
-import { PortfolioTemplate3 } from './PortfolioTemplates/PortfolioTemplate3/PortfolioTemplate3'
-import { PortfolioTemplate4 } from './PortfolioTemplates/PortfolioTemplate4/PortfolioTemplate4'
 import styles from './Portfolio.module.css'
 
 const TEMPLATE_MAP = {
   template1: PortfolioTemplate1,
-  template2: PortfolioTemplate2,
-  template3: PortfolioTemplate3,
-  template4: PortfolioTemplate4,
+  template2: PortfolioTemplate2
 }
 
 const DEFAULT_TEMPLATE = 'template1'

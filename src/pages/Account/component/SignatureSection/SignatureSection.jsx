@@ -150,7 +150,7 @@ function DrawTab({ value, onChange }) {
       <div className={styles.sigFooter}>
         <span className={styles.sigHint}>Draw your signature above</span>
         <button type="button" className={styles.clearBtn} onClick={clear}>
-          <span className="mi" style={{ fontSize: '0.9rem' }}>refresh</span>Clear
+          <span className="mi-outlined" style={{ fontSize: '0.9rem' }}>refresh</span>Clear
         </button>
       </div>
     </div>
@@ -242,7 +242,7 @@ function PhotoTab({ onChange, userId }) {
               className={styles.hiddenInput}
               onChange={handleFile}
             />
-            <span className="mi" style={{ fontSize: '2rem', color: 'var(--text3)' }}>photo_camera</span>
+            <span className="mi-outlined" style={{ fontSize: '2rem', color: 'var(--text3)' }}>photo_camera</span>
             <p className={styles.uploadTitle}>
               {canAttempt ? 'Snap or upload your signature' : 'No attempts left this month'}
             </p>
@@ -286,7 +286,7 @@ function PhotoTab({ onChange, userId }) {
           </div>
           <div className={styles.sigFooter}>
             <button type="button" className={styles.clearBtn} onClick={handleRetake}>
-              <span className="mi" style={{ fontSize: '0.9rem' }}>refresh</span>Retake
+              <span className="mi-outlined" style={{ fontSize: '0.9rem' }}>refresh</span>Retake
             </button>
             <div className={styles.attemptsInline}>
               <span className={styles.attemptsText}>{attemptsLeft} of 5 left this month</span>
@@ -381,7 +381,7 @@ export function SignatureSection({ value, onChange, userId }) {
             className={`${styles.tabBtn} ${activeTab === tab.id ? styles.tabBtn_active : ''}`}
             onClick={() => handleTabChange(tab.id)}
           >
-            <span className="mi" style={{ fontSize: '1rem' }}>{tab.icon}</span>
+            <span className="mi-outlined" style={{ fontSize: '1rem' }}>{tab.icon}</span>
             {tab.label}
           </button>
         ))}

@@ -90,7 +90,7 @@ export function ZoomOverlay({
           onClick={() => onNav(-1)}
           aria-label="Previous template"
         >
-          <span className="mi" style={{ fontSize: '1.25rem' }}>chevron_left</span>
+          <span className="mi-outlined" style={{ fontSize: '1.25rem' }}>chevron_left</span>
         </button>
       )}
 
@@ -100,7 +100,7 @@ export function ZoomOverlay({
           onClick={() => onNav(1)}
           aria-label="Next template"
         >
-          <span className="mi" style={{ fontSize: '1.25rem' }}>chevron_right</span>
+          <span className="mi-outlined" style={{ fontSize: '1.25rem' }}>chevron_right</span>
         </button>
       )}
     </div>

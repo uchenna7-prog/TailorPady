@@ -125,7 +125,7 @@ function BackgroundImageField({ label, hint, value, onChange, showToast }) {
         </div>
       ) : (
         <button className={styles.uploadBtn} onClick={() => setSourceMenuOpen(true)}>
-          <span className="mi">add_photo_alternate</span>
+          <span className="mi-outlined">add_photo_alternate</span>
           Add image
         </button>
       )}

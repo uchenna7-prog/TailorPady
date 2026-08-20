@@ -213,7 +213,7 @@ function StatCard({ icon, label, value, info, isInfoOpen, onToggleInfo, onCloseI
             onClick={onToggleInfo}
             aria-label="More info"
           >
-            <span className="mi" style={{ fontSize: '0.8rem' }}>info</span>
+            <span className="mi-outlined" style={{ fontSize: '0.8rem' }}>info</span>
           </button>
           {isInfoOpen && (
             <>
@@ -282,7 +282,7 @@ function GoalProgressCard({ goal, derived, fmt }) {
         <div className={styles.collectionFill} style={{ width: `${Math.min(derived.percent, 100)}%` }} />
       </div>
       <div className={styles.collectionSub} style={{ color: deltaColor, marginTop: 8, display: 'flex', alignItems: 'center', gap: 4 }}>
-        <span className="mi" style={{ fontSize: '0.8rem' }}>{deltaIcon}</span>
+        <span className="mi-outlined" style={{ fontSize: '0.8rem' }}>{deltaIcon}</span>
         {fmt(deltaAbs)} {deltaWord} than {previousLabel}
       </div>
     </div>
@@ -296,7 +296,7 @@ function PeriodSelector({ value, onChange }) {
     <div className={styles.periodWrap}>
       <button className={styles.periodBtn} onClick={() => setOpen(p => !p)}>
         {current.label}
-        <span className="mi" style={{ fontSize: '0.85rem' }}>expand_more</span>
+        <span className="mi-outlined" style={{ fontSize: '0.85rem' }}>expand_more</span>
       </button>
       {open && (
         <>
@@ -310,7 +310,7 @@ function PeriodSelector({ value, onChange }) {
               >
                 {p.label}
                 {value === p.id && (
-                  <span className="mi" style={{ fontSize: '0.85rem', marginLeft: 'auto' }}>check</span>
+                  <span className="mi-outlined" style={{ fontSize: '0.85rem', marginLeft: 'auto' }}>check</span>
                 )}
               </button>
             ))}

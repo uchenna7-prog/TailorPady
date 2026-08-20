@@ -8,7 +8,7 @@ export function ApplyScopeSheet({ icon, title, description, thisLabel, defaultLa
 
         <div className={styles.header}>
           <div className={styles.iconWrap}>
-            <span className="mi" style={{ fontSize: '1.4rem' }}>{icon}</span>
+            <span className="mi-outlined" style={{ fontSize: '1.4rem' }}>{icon}</span>
           </div>
           <h3 className={styles.title}>{title}</h3>
           <p className={styles.subtitle}>{description}</p>

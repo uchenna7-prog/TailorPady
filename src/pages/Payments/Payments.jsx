@@ -121,9 +121,21 @@ const TABS = [
 ]
 
 const EMPTY_CONFIG = {
-  all:          { icon: 'payments',     title: 'No payments yet',      subtitle: 'Payments from all your customers will appear here. Record one from their profile page. Tap ? button for help.' },
-  full_payment: { icon: 'check_circle', title: 'No full payments yet', subtitle: 'Fully paid payments from all your customers will appear here. Tap ? button for help.' },
-  part:         { icon: 'pending',      title: 'No part payments yet', subtitle: 'Partial payments from all your customers will appear here. Tap ? button for help.' },
+  all: {
+    icon: 'payments',
+    title: 'No payments yet',
+    subtitle: <>Payments from all your customers will appear here. Record one from their profile page. Tap <strong>?</strong> button for help.</>,
+  },
+  full_payment: {
+    icon: 'check_circle',
+    title: 'No full payments yet',
+    subtitle: <>Fully paid payments from all your customers will appear here. Tap <strong>?</strong> button for help.</>,
+  },
+  part: {
+    icon: 'pending',
+    title: 'No part payments yet',
+    subtitle: <>Partial payments from all your customers will appear here. Tap <strong>?</strong> button for help.</>,
+  },
 }
 
 function PaymentRow({ row, isLast, onTap, orderItems }) {
@@ -156,7 +168,7 @@ function PaymentRow({ row, isLast, onTap, orderItems }) {
         </div>
 
         <div className={styles.metaRow}>
-          <span className="mi" style={{ fontSize: '0.78rem', color: 'var(--text3)' }}>person</span>
+          <span className="mi-outlined" style={{ fontSize: '0.78rem', color: 'var(--text3)' }}>person</span>
           <span className={styles.metaText}>{row.customerName}</span>
         </div>
 
@@ -187,7 +199,7 @@ function PaymentRow({ row, isLast, onTap, orderItems }) {
 
         {row.method && (
           <div className={styles.methodRow}>
-            <span className="mi" style={{ fontSize: '0.7rem', color: 'var(--text3)' }}>{mIcon}</span>
+            <span className="mi-outlined" style={{ fontSize: '0.7rem', color: 'var(--text3)' }}>{mIcon}</span>
             <span className={styles.methodLabel}>{mLabel}</span>
           </div>
         )}
@@ -223,7 +235,7 @@ function PaymentDetail({ row, onClose, onNavigateToCustomer, orderItems }) {
 
         <div className={styles.mobileHeader}>
           <button className={styles.mobileCloseBtn} onClick={onClose}>
-            <span className="mi" style={{ fontSize: '1.35rem' }}>close</span>
+            <span className="mi-outlined" style={{ fontSize: '1.35rem' }}>close</span>
           </button>
           <div className={styles.mobileHeaderTitle}>Payment Details</div>
         </div>
@@ -277,7 +289,7 @@ function PaymentDetail({ row, onClose, onNavigateToCustomer, orderItems }) {
                   <span className={styles.sectionLabel}>Customer</span>
                   {onNavigateToCustomer && row.customerId && (
                     <span className={styles.sectionHeaderAction}>
-                      <span className="mi" style={{ fontSize: '1.1rem', color: 'var(--text3)' }}>chevron_right</span>
+                      <span className="mi-outlined" style={{ fontSize: '1.1rem', color: 'var(--text3)' }}>chevron_right</span>
                     </span>
                   )}
                 </div>
@@ -335,7 +347,7 @@ function PaymentDetail({ row, onClose, onNavigateToCustomer, orderItems }) {
                 <div className={styles.donutContent}>
                   <div className={styles.cardValue}>{fmt(totalPaid)} received</div>
                   <div className={styles.donutMeta}>
-                    <span className="mi" style={{ fontSize: '0.82rem' }}>account_balance_wallet</span>
+                    <span className="mi-outlined" style={{ fontSize: '0.82rem' }}>account_balance_wallet</span>
                     <span style={{ color: balanceAfter > 0 ? '#ef4444' : '#22c55e' }}>
                       {balanceAfter > 0 ? `${fmt(balanceAfter)} balance left` : 'Fully settled'}
                     </span>
@@ -379,7 +391,7 @@ function PaymentDetail({ row, onClose, onNavigateToCustomer, orderItems }) {
                   </div>
                   <div className={styles.installmentLineLeft}>
                     <div className={styles.installmentLineIcon}>
-                      <span className="mi" style={{ fontSize: '0.95rem', color: '#22c55e' }}>payments</span>
+                      <span className="mi-outlined" style={{ fontSize: '0.95rem', color: '#22c55e' }}>payments</span>
                     </div>
                     <div>
                       <div className={styles.installmentLineAmount}>{fmt(p.amount)}</div>
@@ -423,7 +435,7 @@ function PaymentDetail({ row, onClose, onNavigateToCustomer, orderItems }) {
               </div>
               <div className={styles.installmentLineLeft}>
                 <div className={styles.installmentLineIcon}>
-                  <span className="mi" style={{ fontSize: '0.95rem', color: '#22c55e' }}>payments</span>
+                  <span className="mi-outlined" style={{ fontSize: '0.95rem', color: '#22c55e' }}>payments</span>
                 </div>
                 <div>
                   <div className={styles.installmentLineAmount}>{row.amount !== null ? fmt(thisAmount) : '—'}</div>
@@ -648,7 +660,7 @@ export default function Payments({ onMenuClick }) {
       <div className={styles.searchContainer}>
         <div className={styles.searchRow}>
           <div className={styles.searchBox}>
-            <span className="mi" style={{ color: 'var(--text3)', fontSize: '1.1rem' }}>search</span>
+            <span className="mi-outlined" style={{ color: 'var(--text3)', fontSize: '1.1rem' }}>search</span>
             <input
               type="text"
               placeholder="Search client or order…"
@@ -660,7 +672,7 @@ export default function Payments({ onMenuClick }) {
                 style={{ background: 'none', border: 'none', color: 'var(--text3)', display: 'flex', cursor: 'pointer', padding: 0 }}
                 onClick={() => setSearch('')}
               >
-                <span className="mi" style={{ fontSize: '1rem' }}>close</span>
+                <span className="mi-outlined" style={{ fontSize: '1rem' }}>close</span>
               </button>
             )}
           </div>
@@ -668,7 +680,7 @@ export default function Payments({ onMenuClick }) {
             className={`${styles.filterBtn} ${filterOpen ? styles.filterBtnActive : ''}`}
             onClick={() => setFilterOpen(p => !p)}
           >
-            <span className="mi" style={{ fontSize: '1.2rem' }}>tune</span>
+            <span className="mi-outlined" style={{ fontSize: '1.2rem' }}>tune</span>
           </button>
         </div>
 
@@ -686,11 +698,11 @@ export default function Payments({ onMenuClick }) {
                 className={`${styles.filterOption} ${filterStatus === t.id ? styles.filterOptionActive : ''}`}
                 onClick={() => { setFilterStatus(t.id); setActiveTab(t.id); setFilterOpen(false) }}
               >
-                <span className="mi" style={{ fontSize: '1.1rem' }}>
+                <span className="mi-outlined" style={{ fontSize: '1.1rem' }}>
                   {t.id === 'full_payment' ? 'check_circle' : t.id === 'part' ? 'pending' : 'payments'}
                 </span>
                 {t.label || 'All Statuses'}
-                {filterStatus === t.id && <span className="mi" style={{ fontSize: '1rem', marginLeft: 'auto', color: 'var(--accent)' }}>check</span>}
+                {filterStatus === t.id && <span className="mi-outlined" style={{ fontSize: '1rem', marginLeft: 'auto', color: 'var(--accent)' }}>check</span>}
               </button>
             ))}
           </div>
@@ -745,7 +757,7 @@ export default function Payments({ onMenuClick }) {
       >
         {filtered.length === 0 && (
           <div className={styles.emptyState}>
-            <span className="mi" style={{ fontSize: '2.5rem', color: 'var(--text3)' }}>
+            <span className="mi-outlined" style={{ fontSize: '2.5rem', color: 'var(--text3)' }}>
               {search ? 'search_off' : EMPTY_CONFIG[activeTab].icon}
             </span>
             <p className={styles.emptyStateTitle}>
@@ -783,7 +795,7 @@ export default function Payments({ onMenuClick }) {
         disabled={isActive}
         title={isActive ? 'Finish the current tour first' : 'Need help?'}
       >
-        <span className="mi">help_outline</span>
+        <span className="mi-outlined">help_outline</span>
       </button>
 
       {detailRow && (

@@ -111,7 +111,7 @@ export function EditCustomerModal({ customer, onSave, onClose }) {
                 style={{ cursor: 'pointer' }}
                 onClick={() => fileInputRef.current?.click()}
               >
-                <span className="mi" style={{ fontSize: '0.85rem' }}>photo_camera</span>
+                <span className="mi-outlined" style={{ fontSize: '0.85rem' }}>photo_camera</span>
               </div>
 
               <input
@@ -129,7 +129,7 @@ export function EditCustomerModal({ customer, onSave, onClose }) {
                   onClick={handleRemovePhoto}
                   title="Remove photo"
                 >
-                  <span className="mi" style={{ fontSize: '0.7rem' }}>close</span>
+                  <span className="mi-outlined" style={{ fontSize: '0.7rem' }}>close</span>
                 </button>
               )}
             </div>

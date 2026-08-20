@@ -35,7 +35,7 @@ export function OrderRow({ order, ordersInGroup, index, onTap }) {
         )}
         {stageInfo && (
           <div className={styles.orderRowStage}>
-            <span className="mi">{stageInfo.icon}</span>
+            <span className="mi-outlined">{stageInfo.icon}</span>
             <span>{stageInfo.label}</span>
           </div>
         )}

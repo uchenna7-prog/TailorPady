@@ -168,12 +168,12 @@ export function BrandModal({ onBack, showToast }) {
               <div className={styles.logoPreviewWrap}>
                 <img src={local.brandLogo} alt="Brand logo" className={styles.logoPreview} />
                 <button className={styles.logoRemove} onClick={handleLogoRemove}>
-                  <span className="mi" style={{ fontSize: 15 }}>close</span> Remove
+                  <span className="mi-outlined" style={{ fontSize: 15 }}>close</span> Remove
                 </button>
               </div>
             ) : (
               <button className={styles.logoUploadBtn} onClick={() => logoInputRef.current?.click()}>
-                <span className="mi">add_photo_alternate</span>
+                <span className="mi-outlined">add_photo_alternate</span>
                 Upload Logo
               </button>
             )}

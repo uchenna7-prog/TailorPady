@@ -43,7 +43,7 @@ export default function PrivacyPolicy({ onMenuClick }) {
       <div className={styles.scrollArea}>
         <div className={styles.hero}>
           <div className={styles.heroIcon}>
-            <span className="mi">shield</span>
+            <span className="mi-outlined">shield</span>
           </div>
           <p className={styles.heroSub}>Last revised {PRIVACY_LAST_UPDATED}</p>
           <div className={styles.heroDivider} />

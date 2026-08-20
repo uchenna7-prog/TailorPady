@@ -109,7 +109,7 @@ export function LogoCropModal({ imageSrc, onConfirm, onCancel }) {
             className={`${styles.toggleBtn} ${freeForm ? styles.toggleBtnActive : ''}`}
             onClick={handleFreeFormToggle}
           >
-            <span className="mi" style={{ fontSize: '1rem' }}>
+            <span className="mi-outlined" style={{ fontSize: '1rem' }}>
               {freeForm ? 'crop_square' : 'crop_free'}
             </span>
             {freeForm ? 'Switch to square' : 'Switch to free-form'}

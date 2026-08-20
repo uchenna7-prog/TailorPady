@@ -99,7 +99,7 @@ export default function Login() {
 
         {error && (
           <div className={styles.errorBanner}>
-            <span className="mi" style={{ fontSize: '1rem' }}>error</span>
+            <span className="mi-outlined" style={{ fontSize: '1rem' }}>error</span>
             {error}
           </div>
         )}
@@ -124,7 +124,7 @@ export default function Login() {
           <div className={styles.field}>
             <label className={styles.label}>Email</label>
             <div className={styles.inputWrap}>
-              <span className="mi" style={{ position: 'absolute', left: 12, color: 'var(--text3)', fontSize: '1.1rem' }}>mail</span>
+              <span className="mi-outlined" style={{ position: 'absolute', left: 12, color: 'var(--text3)', fontSize: '1.1rem' }}>mail</span>
               <input
                 className={styles.input}
                 type="email"
@@ -141,7 +141,7 @@ export default function Login() {
           <div className={styles.field}>
             <label className={styles.label}>Password</label>
             <div className={styles.inputWrap}>
-              <span className="mi" style={{ position: 'absolute', left: 12, color: 'var(--text3)', fontSize: '1.1rem' }}>lock</span>
+              <span className="mi-outlined" style={{ position: 'absolute', left: 12, color: 'var(--text3)', fontSize: '1.1rem' }}>lock</span>
               <input
                 className={styles.input}
                 type={showPass ? 'text' : 'password'}
@@ -157,7 +157,7 @@ export default function Login() {
                 className={styles.eyeBtn}
                 onClick={() => setShowPass(p => !p)}
               >
-                <span className="mi" style={{ fontSize: '1.1rem', color: 'var(--text3)' }}>
+                <span className="mi-outlined" style={{ fontSize: '1.1rem', color: 'var(--text3)' }}>
                   {showPass ? 'visibility_off' : 'visibility'}
                 </span>
               </button>

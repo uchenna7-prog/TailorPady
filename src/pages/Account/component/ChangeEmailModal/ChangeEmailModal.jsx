@@ -58,7 +58,7 @@ export function ChangeEmailModal({ onBack, showToast }) {
       <FullModal title="Change Email" onBack={onBack}>
         <div className={styles.successState}>
           <div className={styles.successIcon}>
-            <span className="mi">mark_email_read</span>
+            <span className="mi-outlined">mark_email_read</span>
           </div>
           <p className={styles.successTitle}>Check your inbox</p>
           <p className={styles.successSub}>
@@ -110,7 +110,7 @@ export function ChangeEmailModal({ onBack, showToast }) {
 
         {error && (
           <div className={styles.error}>
-            <span className="mi" style={{ fontSize: '1rem' }}>error_outline</span>
+            <span className="mi-outlined" style={{ fontSize: '1rem' }}>error_outline</span>
             <span>{error}</span>
           </div>
         )}

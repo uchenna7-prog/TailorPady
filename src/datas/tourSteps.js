@@ -695,7 +695,7 @@ export const TOURS = {
       manual: true,
       ctaLabel: 'Add Measurement',
       title: 'One more step first',
-      message: 'Before you can create an order, this customer needs garment measurements on file.',
+      message: 'Orders are created from customer measurements. Add a measurement for this customer before creating an order.',
     },
     {
       id: 'add-measurement',
@@ -723,7 +723,7 @@ export const TOURS = {
       id: 'recovery-orders-done',
       target: null,
       title: 'Order created 🎉',
-      message: "This order belongs to this customer. If you want to see orders across everyone, that's what the Orders page is for.",
+      message: "This order belongs to this customer. If you want to see orders across all customers, that's what the Orders page is for.",
     },
   ],
 
@@ -847,7 +847,7 @@ export const TOURS = {
       id: 'confirm-add-payment',
       target: null,
       title: 'Invoice created 🎉',
-      message: "This invoice belongs to this customer. If you want to see invoices across everyone, that's what the Invoices page is for.",
+      message: "This invoice belongs to this customer. If you want to see invoices across all customers, that's what the Invoices page is for.",
     },
   ],
 
@@ -971,7 +971,7 @@ export const TOURS = {
       id: 'recovery-payments-done',
       target: null,
       title: 'Payment recorded 🎉',
-      message: "This payment belongs to this customer. If you want to see payments across everyone, that's what the Payments page is for.",
+      message: "This payment belongs to this customer. If you want to see payments across all customers, that's what the Payments page is for.",
     },
   ],
 
@@ -1124,7 +1124,7 @@ export const TOURS = {
       id: 'done',
       target: null,
       title: 'Receipt generated 🎉',
-      message: "This receipt belongs to this customer. If you want to see receipts across everyone, that's what the Receipts page is for.",
+      message: "This receipt belongs to this customer. If you want to see receipts across all customers, that's what the Receipts page is for.",
     },
   ],
 }

@@ -13,7 +13,7 @@ export function PortfolioTemplatePreview({ template, slug, onClose, onSelect }) 
   if (!previewUrl) {
     previewContent = (
       <div className={styles.previewNoSlug}>
-        <span className="mi" style={{ fontSize: '2rem' }}>visibility_off</span>
+        <span className="mi-outlined" style={{ fontSize: '2rem' }}>visibility_off</span>
         <p>Set up your portfolio slug in Profile to enable live preview.</p>
       </div>
     )

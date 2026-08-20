@@ -7,7 +7,7 @@ export function CustomerInsightsCard({ totalCustomers, newThisMonth, topCustomer
     <div className={styles.customerCard} onClick={onNavigate}>
       <div className={styles.customerCardHeader}>
         <span className={styles.customerCardSectionLabel}>Customer Insights</span>
-        <span className="mi" style={{ fontSize: '0.95rem', color: 'var(--text3)' }}>chevron_right</span>
+        <span className="mi-outlined" style={{ fontSize: '0.95rem', color: 'var(--text3)' }}>chevron_right</span>
       </div>
 
       <div className={styles.customerHeroBlock}>

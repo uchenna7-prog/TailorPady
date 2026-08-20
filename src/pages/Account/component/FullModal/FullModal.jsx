@@ -29,7 +29,7 @@ export function FullModal({ title, onBack, onSave, saving = false, children }) {
 
         <div className={styles.header}>
           <button className={styles.closeBtn} onClick={handleClose} disabled={saving}>
-            <span className="mi">close</span>
+            <span className="mi-outlined">close</span>
           </button>
           <div className={styles.headerTitle}>{title}</div>
           {onSave && (

@@ -30,7 +30,7 @@ export function FaqField({ value, onChange }) {
               disabled={faqs.length === 1}
               onClick={() => removeFaq(i)}
             >
-              <span className="mi" style={{ fontSize: '1rem' }}>close</span>
+              <span className="mi-outlined" style={{ fontSize: '1rem' }}>close</span>
             </button>
           </div>
           <input
@@ -60,7 +60,7 @@ export function FaqField({ value, onChange }) {
 
       {faqs.length < MAX_FAQS && (
         <button type="button" className={styles.addBtn} onClick={addFaq}>
-          <span className="mi">add</span>
+          <span className="mi-outlined">add</span>
           Add Question
         </button>
       )}

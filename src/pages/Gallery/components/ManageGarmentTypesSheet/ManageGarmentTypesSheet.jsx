@@ -68,7 +68,7 @@ export function ManageGarmentTypesSheet({ isOpen, onClose, tabId, types, onSave,
         <div className={styles.sheetHeader}>
           <span className={styles.sheetTitle}>Garment Types</span>
           <button className={styles.sheetClose} onClick={onClose}>
-            <span className="mi" style={{ fontSize: '1.2rem' }}>close</span>
+            <span className="mi-outlined" style={{ fontSize: '1.2rem' }}>close</span>
           </button>
         </div>
 
@@ -99,7 +99,7 @@ export function ManageGarmentTypesSheet({ isOpen, onClose, tabId, types, onSave,
                     onMouseDown={e => e.preventDefault()}
                     onClick={confirmEdit}
                   >
-                    <span className="mi" style={{ fontSize: '1rem', color: 'var(--accent)' }}>check</span>
+                    <span className="mi-outlined" style={{ fontSize: '1rem', color: 'var(--accent)' }}>check</span>
                   </button>
                 ) : (
                   <button className={styles.manageActionBtn} onClick={() => startEdit(item)}>
@@ -123,13 +123,13 @@ export function ManageGarmentTypesSheet({ isOpen, onClose, tabId, types, onSave,
               onKeyDown={e => { if (e.key === 'Enter') addItem() }}
             />
             <button className={styles.manageAddBtn} onClick={addItem} disabled={!newLabel.trim()}>
-              <span className="mi" style={{ fontSize: '1.1rem' }}>add</span>
+              <span className="mi-outlined" style={{ fontSize: '1.1rem' }}>add</span>
             </button>
           </div>
 
           {affectedCount > 0 && (
             <div className={styles.deleteWarning}>
-              <span className="mi" style={{ fontSize: '1rem', flexShrink: 0 }}>warning</span>
+              <span className="mi-outlined" style={{ fontSize: '1rem', flexShrink: 0 }}>warning</span>
               <span>
                 {affectedCount} photo{affectedCount > 1 ? 's' : ''} under removed
                 type{removedTypes.length > 1 ? 's' : ''} will also be deleted.

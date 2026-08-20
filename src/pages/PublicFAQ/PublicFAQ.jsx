@@ -16,7 +16,7 @@ export default function PublicFAQ() {
       {MARKETING_FAQ.map((cat, ci) => (
         <div key={cat.category} className={styles.categoryBlock}>
           <div className={styles.categoryHeader}>
-            <span className="mi" style={{ fontSize: '1.1rem', textTransform: "lowercase" }}>{cat.icon}</span>
+            <span className="mi-outlined" style={{ fontSize: '1.1rem', textTransform: "lowercase" }}>{cat.icon}</span>
             {cat.category}
           </div>
           {cat.items.map((item, ii) => {

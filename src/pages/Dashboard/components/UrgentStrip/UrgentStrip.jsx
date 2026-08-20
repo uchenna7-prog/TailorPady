@@ -20,7 +20,7 @@ export function UrgentStrip({ items, navigate }) {
 
             <span className={`mi ${styles.urgentItemIcon}`}>{item.icon}</span>
             <span className={styles.urgentItemText}>{item.text}</span>
-            <span className="mi" style={{ fontSize: '0.8rem', color: 'var(--text3)', marginLeft: 'auto', flexShrink: 0 }}>chevron_right</span>
+            <span className="mi-outlined" style={{ fontSize: '0.8rem', color: 'var(--text3)', marginLeft: 'auto', flexShrink: 0 }}>chevron_right</span>
           
           </button>
         ))}

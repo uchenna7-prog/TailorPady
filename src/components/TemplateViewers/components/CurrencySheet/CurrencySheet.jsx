@@ -94,7 +94,7 @@ export function CurrencySheet({ currentCurrency, onClose, onSelect }) {
                 </span>
                 <span className={styles.itemSymbol}>{c.symbol}</span>
                 {isSelected && (
-                  <span className="mi" style={{ fontSize: '1.2rem' }}>check_circle</span>
+                  <span className="mi-outlined" style={{ fontSize: '1.2rem' }}>check_circle</span>
                 )}
               </button>
             )

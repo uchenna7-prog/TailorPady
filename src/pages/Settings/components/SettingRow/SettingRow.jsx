@@ -32,7 +32,7 @@ export function SettingRow({
 
         {isComponent
           ? icon({ size: 18, color: iconColor })
-          : <span className="mi" style={{ fontSize: '1.15rem', color: danger ? '#ef4444' : undefined }}>{icon}</span>
+          : <span className="mi-outlined" style={{ fontSize: '1.15rem', color: danger ? '#ef4444' : undefined }}>{icon}</span>
         }
 
       </div>
@@ -47,12 +47,12 @@ export function SettingRow({
       <div className={styles.rowRight}>
 
         {locked ? 
-          <span className="mi" style={{ fontSize:'1.1rem',color:'var(--accent)',opacity:0.7 }}>lock</span>
+          <span className="mi-outlined" style={{ fontSize:'1.1rem',color:'var(--accent)',opacity:0.7 }}>lock</span>
           :
           <>
             {value && <span className={styles.rowValue}>{value}</span>}
             {children}
-            {chevron && <span className="mi" style={{ fontSize:'1rem',color:'var(--text3)',marginLeft:6 }}>chevron_right</span>}
+            {chevron && <span className="mi-outlined" style={{ fontSize:'1rem',color:'var(--text3)',marginLeft:6 }}>chevron_right</span>}
           </>
         }
 

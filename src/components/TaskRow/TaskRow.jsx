@@ -101,7 +101,7 @@ export function TaskRow({ task, isLast, allOrders, onOpen }) {
         <div className={styles.taskRowIcon}>
           <div className={styles.taskRowIconInner}>
             <span
-              className="mi"
+              className="mi-outlined"
               style={{
                 fontSize: '1.3rem',
                 color: iconColor,
@@ -119,18 +119,18 @@ export function TaskRow({ task, isLast, allOrders, onOpen }) {
         </div>
         {task.customerName && (
           <div className={styles.taskRowMeta}>
-            <span className="mi" style={{ fontSize: '0.75rem', color: 'var(--text3)' }}>person</span>
+            <span className="mi-outlined" style={{ fontSize: '0.75rem', color: 'var(--text3)' }}>person</span>
             <span className={styles.taskRowMetaText}>{task.customerName}</span>
           </div>
         )}
         {task.orderDesc && (
           <div className={styles.taskRowMeta}>
-            <span className="mi" style={{ fontSize: '0.75rem', color: 'var(--text3)' }}>content_cut</span>
+            <span className="mi-outlined" style={{ fontSize: '0.75rem', color: 'var(--text3)' }}>content_cut</span>
             <span className={styles.taskRowMetaText}>{task.orderDesc}</span>
           </div>
         )}
         <div className={styles.taskRowMeta}>
-          <span className="mi" style={{ fontSize: '0.75rem', color: isOverdue ? '#ef4444' : 'var(--text3)' }}>schedule</span>
+          <span className="mi-outlined" style={{ fontSize: '0.75rem', color: isOverdue ? '#ef4444' : 'var(--text3)' }}>schedule</span>
           <span className={`${styles.taskRowMetaText} ${isOverdue ? styles.taskRowMetaOverdue : ''}`}>
             {formatShortDate(task.dueDate)}{task.dueTime ? ` · ${formatTime(task.dueTime)}` : ''}
           </span>
@@ -146,7 +146,7 @@ export function TaskRow({ task, isLast, allOrders, onOpen }) {
         </span>
         {task.category && (
           <div className={styles.taskRowCategory}>
-            <span className="mi" style={{ fontSize: '0.65rem' }}>{catIcon}</span>
+            <span className="mi-outlined" style={{ fontSize: '0.65rem' }}>{catIcon}</span>
             {task.category.charAt(0).toUpperCase() + task.category.slice(1)}
           </div>
         )}

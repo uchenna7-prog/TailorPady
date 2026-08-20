@@ -74,7 +74,7 @@ function InvoiceRow({ invoice, currency, onTap, isLast, orderItems }) {
         <div className={styles.invoiceListDesc}>{invoice.orderDesc || 'Order'}</div>
         <div className={styles.invoiceListOrdRow}>{invoice.number}</div>
         <div className={styles.invoiceListMeta}>
-          <span className="mi" style={{ fontSize: '0.8rem', color: 'var(--text3)', verticalAlign: 'middle' }}>person</span>
+          <span className="mi-outlined" style={{ fontSize: '0.8rem', color: 'var(--text3)', verticalAlign: 'middle' }}>person</span>
           <span className={styles.invoiceListMetaText}>{invoice.customerName || '—'}</span>
         </div>
       </div>
@@ -184,11 +184,26 @@ export default function Invoices({ onMenuClick }) {
   }
 
   const EMPTY_STATE_CONFIG = {
-    all:       { title: 'No invoices yet',           subtitle: 'Invoices from all your customers will appear here. Create one from their profile page. Tap ? button for help.' },
-    unpaid:    { title: 'No unpaid invoices',         subtitle: 'Unpaid invoices from all your customers will appear here. Tap ? button for help.' },
-    part_paid: { title: 'No part-payment invoices',   subtitle: 'Part-payment invoices from all your customers will appear here. Tap ? button for help.' },
-    paid:      { title: 'No paid invoices yet',       subtitle: 'Paid invoices from all your customers will appear here. Tap ? button for help.' },
-    overdue:   { title: 'No overdue invoices',        subtitle: 'Nice work, every invoice is on schedule. Tap ? button for help.' },
+    all: {
+      title: 'No invoices yet',
+      subtitle: <>Invoices from all your customers will appear here. Create one from their profile page. Tap <strong>?</strong> button for help.</>,
+    },
+    unpaid: {
+      title: 'No unpaid invoices',
+      subtitle: <>Unpaid invoices from all your customers will appear here. Tap <strong>?</strong> button for help.</>,
+    },
+    part_paid: {
+      title: 'No part-payment invoices',
+      subtitle: <>Part-payment invoices from all your customers will appear here. Tap <strong>?</strong> button for help.</>,
+    },
+    paid: {
+      title: 'No paid invoices yet',
+      subtitle: <>Paid invoices from all your customers will appear here. Tap <strong>?</strong> button for help.</>,
+    },
+    overdue: {
+      title: 'No overdue invoices',
+      subtitle: <>Nice work, every invoice is on schedule. Tap <strong>?</strong> button for help.</>,
+    },
   }
 
   const searchFiltered = search.trim()
@@ -241,7 +256,7 @@ export default function Invoices({ onMenuClick }) {
       <div className={styles.searchContainer}>
         <div className={styles.searchRow}>
           <div className={styles.searchBox}>
-            <span className="mi" style={{ color: 'var(--text3)', fontSize: '1.1rem' }}>search</span>
+            <span className="mi-outlined" style={{ color: 'var(--text3)', fontSize: '1.1rem' }}>search</span>
             <input
               type="text"
               placeholder="Search invoices or clients…"
@@ -253,7 +268,7 @@ export default function Invoices({ onMenuClick }) {
                 style={{ background: 'none', border: 'none', color: 'var(--text3)', display: 'flex', cursor: 'pointer', padding: 0 }}
                 onClick={() => setSearch('')}
               >
-                <span className="mi" style={{ fontSize: '1rem' }}>close</span>
+                <span className="mi-outlined" style={{ fontSize: '1rem' }}>close</span>
               </button>
             )}
           </div>
@@ -261,7 +276,7 @@ export default function Invoices({ onMenuClick }) {
             className={`${styles.filterBtn} ${filterOpen ? styles.filterBtnActive : ''}`}
             onClick={() => setFilterOpen(p => !p)}
           >
-            <span className="mi" style={{ fontSize: '1.2rem' }}>tune</span>
+            <span className="mi-outlined" style={{ fontSize: '1.2rem' }}>tune</span>
           </button>
         </div>
 
@@ -274,7 +289,7 @@ export default function Invoices({ onMenuClick }) {
                 className={`${styles.filterOption} ${activeTab === t.id ? styles.filterOptionActive : ''}`}
                 onClick={() => { setActiveTab(t.id); setFilterOpen(false) }}
               >
-                <span className="mi" style={{ fontSize: '1.1rem' }}>
+                <span className="mi-outlined" style={{ fontSize: '1.1rem' }}>
                   {t.id === 'paid'      ? 'check_circle'
                     : t.id === 'unpaid'    ? 'pending'
                     : t.id === 'part_paid' ? 'payments'
@@ -283,7 +298,7 @@ export default function Invoices({ onMenuClick }) {
                 </span>
                 {t.label}
                 {activeTab === t.id && (
-                  <span className="mi" style={{ fontSize: '1rem', marginLeft: 'auto', color: 'var(--accent)' }}>check</span>
+                  <span className="mi-outlined" style={{ fontSize: '1rem', marginLeft: 'auto', color: 'var(--accent)' }}>check</span>
                 )}
               </button>
             ))}
@@ -322,7 +337,7 @@ export default function Invoices({ onMenuClick }) {
       >
         {searchFiltered.length === 0 ? (
           <div className={styles.emptyState}>
-            <span className="mi" style={{ fontSize: '2.5rem', color: 'var(--text3)' }}>receipt_long</span>
+            <span className="mi-outlined" style={{ fontSize: '2.5rem', color: 'var(--text3)' }}>receipt_long</span>
             <p className={styles.emptyStateTitle}>{EMPTY_STATE_CONFIG[activeTab].title}</p>
             <p className={styles.emptyStateSubtitle}>{EMPTY_STATE_CONFIG[activeTab].subtitle}</p>
           </div>
@@ -352,7 +367,7 @@ export default function Invoices({ onMenuClick }) {
         disabled={isActive}
         title={isActive ? 'Finish the current tour first' : 'Need help?'}
       >
-        <span className="mi">help_outline</span>
+        <span className="mi-outlined">help_outline</span>
       </button>
 
       {viewing && (

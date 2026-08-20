@@ -11,14 +11,14 @@ export function SectionHeader({ icon, label, premium = false }) {
           {icon({ size: 18, color: 'var(--accent)' })}
         </span>
       ) : (
-        <span className="mi" style={{ fontSize: '1.1rem', color: 'var(--accent)' }}>{icon}</span>
+        <span className="mi-outlined" style={{ fontSize: '1.1rem', color: 'var(--accent)' }}>{icon}</span>
       )}
 
       <span className={styles.sectionLabel}>{label}</span>
       {premium && (
         <span className={styles.premiumBadge}>
 
-          <span className="mi" style={{ fontSize: '0.7rem' }}>workspace_premium</span>PRO
+          <span className="mi-outlined" style={{ fontSize: '0.7rem' }}>workspace_premium</span>PRO
 
         </span>
       )}

@@ -378,7 +378,7 @@ export function AddCustomerModal({ isOpen, onClose, onSave }) {
 
           {formInlineMsg && (
             <div className={`${styles.formInlineMsg} ${formInlineMsg.ok ? styles.formInlineMsgOk : styles.formInlineMsgErr}`}>
-              <span className="mi" style={{ fontSize: '0.95rem' }}>
+              <span className="mi-outlined" style={{ fontSize: '0.95rem' }}>
                 {formInlineMsg.ok ? 'check_circle' : 'error_outline'}
               </span>
               {formInlineMsg.text}
@@ -406,7 +406,7 @@ export function AddCustomerModal({ isOpen, onClose, onSave }) {
                     )}
 
                     <div className={styles.camBadge}>
-                      <span className="mi" style={{ fontSize: '0.9rem' }}>
+                      <span className="mi-outlined" style={{ fontSize: '0.9rem' }}>
                         {isOnline ? 'photo_camera' : 'wifi_off'}
                       </span>
                     </div>
@@ -427,7 +427,7 @@ export function AddCustomerModal({ isOpen, onClose, onSave }) {
                       onClick={removePhoto}
                       title="Remove photo"
                     >
-                      <span className="mi" style={{ fontSize: '0.75rem' }}>close</span>
+                      <span className="mi-outlined" style={{ fontSize: '0.75rem' }}>close</span>
                     </button>
                   )}
                 </div>
@@ -536,13 +536,13 @@ export function AddCustomerModal({ isOpen, onClose, onSave }) {
                   {contactPickerSupported && (
                     <button className={styles.contactPickerRow} onClick={handleContactPicker}>
                       <div className={styles.contactPickerRowIcon}>
-                        <span className="mi" style={{ fontSize: '1rem' }}>contacts</span>
+                        <span className="mi-outlined" style={{ fontSize: '1rem' }}>contacts</span>
                       </div>
                       <div className={styles.contactPickerRowText}>
                         <span className={styles.contactPickerRowLabel}>Select from phone contacts</span>
                         <span className={styles.contactPickerRowSub}>Tap to browse your saved contacts</span>
                       </div>
-                      <span className="mi" style={{ fontSize: '1rem', color: 'var(--text3)' }}>chevron_right</span>
+                      <span className="mi-outlined" style={{ fontSize: '1rem', color: 'var(--text3)' }}>chevron_right</span>
                     </button>
                   )}
                 </div>
@@ -676,13 +676,13 @@ export function AddCustomerModal({ isOpen, onClose, onSave }) {
                           />
                         </div>
                         <button className={styles.removeCustomBtn} onClick={() => removeCustomField(f.id)}>
-                          <span className="mi" style={{ fontSize: '1.2rem' }}>remove_circle_outline</span>
+                          <span className="mi-outlined" style={{ fontSize: '1.2rem' }}>remove_circle_outline</span>
                         </button>
                       </div>
                     ))}
 
                     <button className={styles.addCustomFieldBtn} onClick={addCustomField}>
-                      <span className="mi" style={{ fontSize: '1rem' }}>add</span>
+                      <span className="mi-outlined" style={{ fontSize: '1rem' }}>add</span>
                       Add Custom Field
                     </button>
                   </>
@@ -704,7 +704,7 @@ export function AddCustomerModal({ isOpen, onClose, onSave }) {
                 className={styles.contactSheetOption}
                 onClick={() => applyContactNumber(num)}
               >
-                <span className="mi" style={{ fontSize: '1rem', color: 'var(--text3)' }}>phone</span>
+                <span className="mi-outlined" style={{ fontSize: '1rem', color: 'var(--text3)' }}>phone</span>
                 {num}
               </button>
             ))}

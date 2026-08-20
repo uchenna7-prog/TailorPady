@@ -472,7 +472,7 @@ function Features() {
               {f.featured ? (
                 <BotIcon size={20} color="var(--ink)" backgroundColor="var(--surface)" />
               ) : (
-                <span className="mi">{f.icon}</span>
+                <span className="mi-outlined">{f.icon}</span>
               )}
             </span>
             <h3 className={styles.featureTitle}>{f.title}</h3>
@@ -820,7 +820,7 @@ function WhatsAppWidget() {
             onClick={handlePeekDismiss}
             aria-label="Dismiss message"
           >
-            <span className="mi" style={{ fontSize: '0.95rem' }}>close</span>
+            <span className="mi-outlined" style={{ fontSize: '0.95rem' }}>close</span>
           </button>
           <span className={styles.peekAvatar}>
             <WhatsAppIcon size={18} />
@@ -851,7 +851,7 @@ function WhatsAppWidget() {
               onClick={() => setOpen(false)}
               aria-label="Close chat"
             >
-              <span className="mi" style={{ fontSize: '1.1rem' }}>close</span>
+              <span className="mi-outlined" style={{ fontSize: '1.1rem' }}>close</span>
             </button>
           </div>
           <div className={styles.whatsappPanelBody}>

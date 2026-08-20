@@ -558,7 +558,7 @@ function Dashboard({ onMenuClick, onGoToCustomer, sidebarOpen }) {
             <p className={styles.subtitle}>{subtitleTextRef.current}</p>
             <div className={styles.updatedAtRow}>
               <p className={styles.updatedAt}>
-                <span className="mi" style={{ fontSize: '0.7rem', verticalAlign: 'middle', marginRight: '3px' }}>update</span>
+                <span className="mi-outlined" style={{ fontSize: '0.7rem', verticalAlign: 'middle', marginRight: '3px' }}>update</span>
                 Updated at {formatUpdatedTime(lastUpdatedRef.current)}
               </p>
               <button
@@ -567,7 +567,7 @@ function Dashboard({ onMenuClick, onGoToCustomer, sidebarOpen }) {
                 onClick={handleTakeTourClick}
                 data-tour="take-tour-btn"
               >
-                <span className="mi" style={{ fontSize: '0.85rem', verticalAlign: 'middle', marginRight: '3px' }}>help_outline</span>
+                <span className="mi-outlined" style={{ fontSize: '0.85rem', verticalAlign: 'middle', marginRight: '3px' }}>help_outline</span>
                 Take a tour
               </button>
             </div>

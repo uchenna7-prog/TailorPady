@@ -109,7 +109,7 @@ function GroupCard({ icon, title, fields, actionLabel, onAction }) {
     <div className={styles.group}>
       <div className={styles.groupHeader}>
         <div className={styles.groupIconWrap}>
-          <span className="mi">{icon}</span>
+          <span className="mi-outlined">{icon}</span>
         </div>
         <p className={styles.groupTitle}>{title}</p>
         <span className={styles.groupCount}>{fields.length}</span>
@@ -232,7 +232,7 @@ export function MissingFieldsSheet({
         <div className={`${styles.sheetTop} ${scrolled ? styles.sheetTopScrolled : ''}`}>
           <div className={styles.handle} />
           <button className={styles.closeBtn} onClick={onClose} aria-label="Close">
-            <span className="mi">close</span>
+            <span className="mi-outlined">close</span>
           </button>
 
           <div className={styles.progressRow}>
@@ -281,7 +281,7 @@ export function MissingFieldsSheet({
             onClick={scrollToBottom}
             aria-label="Scroll down for more"
           >
-            <span className="mi">keyboard_arrow_down</span>
+            <span className="mi-outlined">keyboard_arrow_down</span>
           </button>
         )}
 

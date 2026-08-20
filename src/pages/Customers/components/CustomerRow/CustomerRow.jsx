@@ -37,9 +37,9 @@ export function CustomerRow({ customer, onDelete, onOpen, isLast }) {
           className={styles.custDeleteBtn}
           onClick={e => { e.stopPropagation(); onDelete(customer) }}
         >
-          <span className="mi" style={{ fontSize: '1.1rem', color: 'var(--text3)' }}>delete_outline</span>
+          <span className="mi-outlined" style={{ fontSize: '1.1rem', color: 'var(--text3)' }}>delete_outline</span>
         </button>
-        <span className="mi" style={{ color: 'var(--text3)', fontSize: '1.1rem' }}>chevron_right</span>
+        <span className="mi-outlined" style={{ color: 'var(--text3)', fontSize: '1.1rem' }}>chevron_right</span>
       </div>
     </div>
   )

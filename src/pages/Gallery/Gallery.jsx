@@ -236,7 +236,7 @@ export default function Gallery({ onMenuClick }) {
 
       <div className={styles.searchBarWrap}>
         <div className={styles.gallerySearchWrap}>
-          <span className="mi" style={{ fontSize: '1.1rem', color: 'var(--text3)', flexShrink: 0 }}>search</span>
+          <span className="mi-outlined" style={{ fontSize: '1.1rem', color: 'var(--text3)', flexShrink: 0 }}>search</span>
           <input
             className={styles.gallerySearchInput}
             type="text"
@@ -246,7 +246,7 @@ export default function Gallery({ onMenuClick }) {
           />
           {searchQuery.length > 0 && (
             <button className={styles.gallerySearchClear} onClick={() => setSearchQuery('')}>
-              <span className="mi" style={{ fontSize: '1rem' }}>close</span>
+              <span className="mi-outlined" style={{ fontSize: '1rem' }}>close</span>
             </button>
           )}
         </div>
@@ -255,12 +255,12 @@ export default function Gallery({ onMenuClick }) {
       <div className={styles.gridArea}>
         {loading ? (
           <div className={styles.emptyState}>
-            <span className="mi" style={{ fontSize: '2.5rem', color: 'var(--text3)' }}>hourglass_empty</span>
+            <span className="mi-outlined" style={{ fontSize: '2.5rem', color: 'var(--text3)' }}>hourglass_empty</span>
             <p className={styles.emptyStateTitle}>Loading…</p>
           </div>
         ) : filtered.length === 0 ? (
           <div className={styles.emptyState}>
-            <span className="mi" style={{ fontSize: '2.5rem', color: 'var(--text3)' }}>{CATEGORY_MAP[activeTab]?.icon ?? 'image'}</span>
+            <span className="mi-outlined" style={{ fontSize: '2.5rem', color: 'var(--text3)' }}>{CATEGORY_MAP[activeTab]?.icon ?? 'image'}</span>
             <p className={styles.emptyStateTitle}>
               {searchQuery ? 'No results found' : 'No photos here yet'}
             </p>
@@ -287,7 +287,7 @@ export default function Gallery({ onMenuClick }) {
                       className={styles.thumbImg}
                     />
                     <div className={styles.thumbBadge}>
-                      <span className="mi" style={{ fontSize: '0.8rem' }}>{CATEGORY_MAP[photo.category]?.icon}</span>
+                      <span className="mi-outlined" style={{ fontSize: '0.8rem' }}>{CATEGORY_MAP[photo.category]?.icon}</span>
                     </div>
                     {photo.price && (
                       <div className={styles.thumbPrice}>₦{photo.price}</div>
@@ -302,7 +302,7 @@ export default function Gallery({ onMenuClick }) {
       </div>
 
       <button className={styles.fab} onClick={() => setModalOpen(true)} data-tour="gallery-add-photo-fab">
-        <span className="mi">add</span>
+        <span className="mi-outlined">add</span>
       </button>
 
       {modalOpen && (

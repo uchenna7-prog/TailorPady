@@ -1,4 +1,4 @@
-import { useState, useRef, useCallback, useEffect } from 'react'
+import { useState, useRef, useEffect, useCallback } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { useGeneralSettings } from '../../contexts/GeneralSettingsContext'
 import { useOrders } from '../../contexts/OrdersContext'
@@ -46,9 +46,18 @@ const STATUS_STYLES = {
 }
 
 const EMPTY_STATE_CONFIG = {
-  all:  { title: 'No receipts yet',            subtitle: 'Receipts from all your customers will appear here. Generate one from their profile page. Tap ? button for help.' },
-  full: { title: 'No fully paid receipts yet',  subtitle: 'Fully paid receipts from all your customers will appear here. Tap ? button for help.' },
-  part: { title: 'No part payment receipts',    subtitle: 'Part-payment receipts from all your customers will appear here. Tap ? button for help.' },
+  all: {
+    title: 'No receipts yet',
+    subtitle: <>Receipts from all your customers will appear here. Generate one from their profile page. Tap <strong>?</strong> button for help.</>,
+  },
+  full: {
+    title: 'No fully paid receipts yet',
+    subtitle: <>Fully paid receipts from all your customers will appear here. Tap <strong>?</strong> button for help.</>,
+  },
+  part: {
+    title: 'No part payment receipts',
+    subtitle: <>Part-payment receipts from all your customers will appear here. Tap <strong>?</strong> button for help.</>,
+  },
 }
 
 function ReceiptCard({ receipt, currency, onTap, isLast, orderItems }) {
@@ -71,7 +80,7 @@ function ReceiptCard({ receipt, currency, onTap, isLast, orderItems }) {
         <div className={styles.receiptListDesc}>{receipt.orderDesc || 'Order'}</div>
         <div className={styles.receiptListOrdRow}>{receipt.number}</div>
         <div className={styles.receiptListMeta}>
-          <span className="mi" style={{ fontSize: '0.8rem', color: 'var(--text3)', verticalAlign: 'middle' }}>person</span>
+          <span className="mi-outlined" style={{ fontSize: '0.8rem', color: 'var(--text3)', verticalAlign: 'middle' }}>person</span>
           <span className={styles.receiptListMetaText}>{receipt.customerName || '—'}</span>
         </div>
       </div>
@@ -302,7 +311,7 @@ export default function Receipts({ onMenuClick }) {
       <div className={styles.searchContainer}>
         <div className={styles.searchRow}>
           <div className={styles.searchBox}>
-            <span className="mi" style={{ color: 'var(--text3)', fontSize: '1.1rem' }}>search</span>
+            <span className="mi-outlined" style={{ color: 'var(--text3)', fontSize: '1.1rem' }}>search</span>
             <input
               type="text"
               placeholder="Search receipts or clients…"
@@ -314,7 +323,7 @@ export default function Receipts({ onMenuClick }) {
                 style={{ background: 'none', border: 'none', color: 'var(--text3)', display: 'flex', cursor: 'pointer', padding: 0 }}
                 onClick={() => setSearch('')}
               >
-                <span className="mi" style={{ fontSize: '1rem' }}>close</span>
+                <span className="mi-outlined" style={{ fontSize: '1rem' }}>close</span>
               </button>
             )}
           </div>
@@ -322,7 +331,7 @@ export default function Receipts({ onMenuClick }) {
             className={`${styles.filterBtn} ${filterOpen ? styles.filterBtnActive : ''}`}
             onClick={() => setFilterOpen(p => !p)}
           >
-            <span className="mi" style={{ fontSize: '1.2rem' }}>tune</span>
+            <span className="mi-outlined" style={{ fontSize: '1.2rem' }}>tune</span>
           </button>
         </div>
 
@@ -335,12 +344,12 @@ export default function Receipts({ onMenuClick }) {
                 className={`${styles.filterOption} ${activeTab === t.id ? styles.filterOptionActive : ''}`}
                 onClick={() => { setActiveTab(t.id); setFilterOpen(false) }}
               >
-                <span className="mi" style={{ fontSize: '1.1rem' }}>
+                <span className="mi-outlined" style={{ fontSize: '1.1rem' }}>
                   {t.id === 'full' ? 'check_circle' : t.id === 'part' ? 'payments' : 'receipt'}
                 </span>
                 {t.label}
                 {activeTab === t.id && (
-                  <span className="mi" style={{ fontSize: '1rem', marginLeft: 'auto', color: 'var(--accent)' }}>check</span>
+                  <span className="mi-outlined" style={{ fontSize: '1rem', marginLeft: 'auto', color: 'var(--accent)' }}>check</span>
                 )}
               </button>
             ))}
@@ -399,7 +408,7 @@ export default function Receipts({ onMenuClick }) {
       >
         {searchFiltered.length === 0 ? (
           <div className={styles.emptyState}>
-            <span className="mi" style={{ fontSize: '2.5rem', color: 'var(--text3)' }}>receipt</span>
+            <span className="mi-outlined" style={{ fontSize: '2.5rem', color: 'var(--text3)' }}>receipt</span>
             <p className={styles.emptyStateTitle}>{EMPTY_STATE_CONFIG[activeTab].title}</p>
             <p className={styles.emptyStateSubtitle}>{EMPTY_STATE_CONFIG[activeTab].subtitle}</p>
           </div>
@@ -429,7 +438,7 @@ export default function Receipts({ onMenuClick }) {
         disabled={isActive}
         title={isActive ? 'Finish the current tour first' : 'Need help?'}
       >
-        <span className="mi">help_outline</span>
+        <span className="mi-outlined">help_outline</span>
       </button>
 
       {viewing && (

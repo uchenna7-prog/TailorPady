@@ -24,7 +24,7 @@ export function StatCard({ card, navigate, isInfoOpen, onToggleInfo, onCloseInfo
             onClick={e => { e.stopPropagation(); onToggleInfo() }}
             aria-label="More info"
           >
-            <span className="mi" style={{ fontSize: '0.8rem' }}>info</span>
+            <span className="mi-outlined" style={{ fontSize: '0.8rem' }}>info</span>
           </button>
 
           {isInfoOpen && (
@@ -45,7 +45,7 @@ export function StatCard({ card, navigate, isInfoOpen, onToggleInfo, onCloseInfo
       )}
 
       <div className={styles.statIconWrap}>
-        <span className="mi" style={{ fontSize: '1.75rem', color: 'var(--accent)' }}>
+        <span className="mi-outlined" style={{ fontSize: '1.75rem', color: 'var(--accent)' }}>
           {card.desktopIcon}
         </span>
       </div>

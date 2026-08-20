@@ -132,7 +132,7 @@ function SectionLabel({ children, premium = false }) {
       <p className={styles.sectionLabel}>{children}</p>
       {premium && (
         <span className={styles.premiumBadge}>
-          <span className="mi" style={{ fontSize: '0.7rem' }}>workspace_premium</span>PRO
+          <span className="mi-outlined" style={{ fontSize: '0.7rem' }}>workspace_premium</span>PRO
         </span>
       )}
     </div>
@@ -148,7 +148,7 @@ function FeatureRow({ icon, title, sub, value, onChange, children }) {
     <div className={styles.featureRow}>
       <div className={styles.featureRowTop}>
         <div className={styles.featureRowIcon}>
-          <span className="mi" style={{ fontSize: 18 }}>{icon}</span>
+          <span className="mi-outlined" style={{ fontSize: 18 }}>{icon}</span>
         </div>
         <div className={styles.featureRowText}>
           <p className={styles.featureRowTitle}>{title}</p>
@@ -169,7 +169,7 @@ function MessagingChannelRow({ icon, label, description }) {
   return (
     <div className={styles.messagingRow}>
       <div className={styles.messagingIcon}>
-        <span className="mi" style={{ fontSize: 18 }}>{icon}</span>
+        <span className="mi-outlined" style={{ fontSize: 18 }}>{icon}</span>
       </div>
       <div className={styles.messagingText}>
         <p className={styles.messagingLabel}>{label}</p>
@@ -243,12 +243,12 @@ export function AgentSettingsModal({ onBack, showToast }) {
 
         {masterOff ? (
           <div className={styles.offNotice}>
-            <span className="mi" style={{ fontSize: 15 }}>info</span>
+            <span className="mi-outlined" style={{ fontSize: 15 }}>info</span>
             <p>Turn the AI assistant on to configure what it can do.</p>
           </div>
         ) : (
           <div className={styles.activeNotice}>
-            <span className="mi" style={{ fontSize: 15 }}>lock</span>
+            <span className="mi-outlined" style={{ fontSize: 15 }}>lock</span>
             <p>The assistant only prepares drafts. Nothing is sent or deleted without your approval.</p>
           </div>
         )}
@@ -388,7 +388,7 @@ export function AgentSettingsModal({ onBack, showToast }) {
 
           <FieldGroup>
             <div className={styles.messagingIntro}>
-              <span className="mi" style={{ fontSize: 15 }}>auto_awesome</span>
+              <span className="mi-outlined" style={{ fontSize: 15 }}>auto_awesome</span>
               <p>Connect a channel and approved drafts go out on their own, no copying or pasting required.</p>
             </div>
 

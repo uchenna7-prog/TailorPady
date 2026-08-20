@@ -132,7 +132,7 @@ export function PaymentDetailsModal({
                   <span style={{ color: activeStatusMeta.color }}>{activeStatusMeta.label}</span>
                 </span>
                 <span
-                  className="mi"
+                  className="mi-outlined"
                   style={{
                     fontSize: '1.1rem',
                     color: activeStatusMeta.color,
@@ -163,10 +163,10 @@ export function PaymentDetailsModal({
                           {s.label}
                         </span>
                         {isActive && (
-                          <span className="mi" style={{ marginLeft: 'auto', fontSize: '1rem', color: s.color }}>check</span>
+                          <span className="mi-outlined" style={{ marginLeft: 'auto', fontSize: '1rem', color: s.color }}>check</span>
                         )}
                         {locked && !isActive && (
-                          <span className="mi" style={{ marginLeft: 'auto', fontSize: '0.9rem', color: 'var(--text3)' }}>lock</span>
+                          <span className="mi-outlined" style={{ marginLeft: 'auto', fontSize: '0.9rem', color: 'var(--text3)' }}>lock</span>
                         )}
                       </button>
                     )
@@ -211,7 +211,7 @@ export function PaymentDetailsModal({
                   <div className={styles.donutContent}>
                     <div className={styles.cardValue}>{formatMoney(currency, totalPaid)} received</div>
                     <div className={styles.donutMeta}>
-                      <span className="mi" style={{ fontSize: '0.82rem' }}>account_balance_wallet</span>
+                      <span className="mi-outlined" style={{ fontSize: '0.82rem' }}>account_balance_wallet</span>
                       <span style={{ color: balanceLeft > 0 ? '#ef4444' : '#22c55e' }}>
                         {balanceLeft > 0 ? `${formatMoney(currency, balanceLeft)} balance left` : 'Fully settled'}
                       </span>
@@ -260,7 +260,7 @@ export function PaymentDetailsModal({
                     </div>
                     <div className={styles.installmentLineLeft}>
                       <div className={styles.installmentLineIcon}>
-                        <span className="mi" style={{ fontSize: '0.95rem', color: '#22c55e' }}>payments</span>
+                        <span className="mi-outlined" style={{ fontSize: '0.95rem', color: '#22c55e' }}>payments</span>
                       </div>
                       <div>
                         <div className={styles.installmentLineAmount}>{formatMoney(currency, inst.amount)}</div>
@@ -292,9 +292,9 @@ export function PaymentDetailsModal({
                       className={styles.installmentActionBtn}
                       onClick={() => hasReceipt ? onViewReceipt?.(matchedReceipt?.id) : handleGenerateReceiptClick(inst)}
                     >
-                      <span className="mi" style={{ fontSize: '1rem' }}>receipt</span>
+                      <span className="mi-outlined" style={{ fontSize: '1rem' }}>receipt</span>
                       {hasReceipt ? 'View receipt' : 'Generate receipt'}
-                      {hasReceipt && (<span className="mi" style={{ fontSize: '1rem' }}>chevron_right</span>)}
+                      {hasReceipt && (<span className="mi-outlined" style={{ fontSize: '1rem' }}>chevron_right</span>)}
                     </button>
                   </div>
                 )
@@ -305,7 +305,7 @@ export function PaymentDetailsModal({
           {!isPaid && (
             <div className={styles.footerButtons}>
               <button className={styles.btnPrimary} onClick={() => setShowInstallmentModal(true)}>
-                <span className="mi" style={{ fontSize: '1.1rem' }}>add_circle_outline</span>
+                <span className="mi-outlined" style={{ fontSize: '1.1rem' }}>add_circle_outline</span>
                 Record Another Payment
               </button>
             </div>

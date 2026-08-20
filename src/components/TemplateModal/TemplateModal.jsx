@@ -359,7 +359,7 @@ export function TemplateModal({
               className={`${styles.tabButton} ${activeTab === tabKey ? styles.tabButtonActive : ''}`}
               onClick={() => handleTabSwitch(tabKey)}
             >
-              <span className="mi" style={{ fontSize: '1rem' }}>{tab.icon}</span>
+              <span className="mi-outlined" style={{ fontSize: '1rem' }}>{tab.icon}</span>
               {tab.label}
             </button>
           ))}
@@ -392,7 +392,7 @@ export function TemplateModal({
       <div className={styles.templateList} ref={scrollRef}>
         {filteredTemplates.length === 0 ? (
           <div className={styles.emptyState}>
-            <span className="mi" style={{ fontSize: '2rem' }}>layers</span>
+            <span className="mi-outlined" style={{ fontSize: '2rem' }}>layers</span>
             <p>No templates in this style</p>
           </div>
         ) : (
@@ -417,11 +417,11 @@ export function TemplateModal({
                         onClick={e => { e.stopPropagation(); handleZoomOpen(template) }}
                         aria-label="Preview template"
                       >
-                        <span className="mi" style={{ fontSize: '0.9rem' }}>open_in_full</span>
+                        <span className="mi-outlined" style={{ fontSize: '0.9rem' }}>open_in_full</span>
                       </button>
                       {isSelected && (
                         <div className={styles.selectedBadge}>
-                          <span className="mi" style={{ fontSize: '0.75rem' }}>check</span>
+                          <span className="mi-outlined" style={{ fontSize: '0.75rem' }}>check</span>
                         </div>
                       )}
                     </div>

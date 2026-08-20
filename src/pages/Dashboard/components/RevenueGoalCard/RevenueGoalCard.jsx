@@ -81,7 +81,7 @@ export function RevenueGoalCard({ goal, derived, onEdit, onDelete }) {
 
         {derived.delta !== 0 && (
           <div className={styles.delta}>
-            <span className="mi" style={{ fontSize: '0.7rem', color: deltaColor }}>{deltaIcon}</span>
+            <span className="mi-outlined" style={{ fontSize: '0.7rem', color: deltaColor }}>{deltaIcon}</span>
             <span style={{ color: deltaColor, fontSize: '0.72rem', fontWeight: 700 }}>
               {fmt(Math.abs(derived.delta))}
             </span>
@@ -107,7 +107,7 @@ export function RevenueGoalCard({ goal, derived, onEdit, onDelete }) {
             onClick={handleMenuToggle}
             title="More options"
           >
-            <span className="mi" style={{ fontSize: '1.1rem' }}>more_vert</span>
+            <span className="mi-outlined" style={{ fontSize: '1.1rem' }}>more_vert</span>
           </button>
 
           {menuOpen && (

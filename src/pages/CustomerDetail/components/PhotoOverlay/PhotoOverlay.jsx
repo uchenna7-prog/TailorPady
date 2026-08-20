@@ -14,7 +14,7 @@ export function PhotoOverlay({ open, onClose, photo, initials, name }) {
   return (
     <div className={styles.photoOverlay} onClick={onClose}>
       <button className={styles.photoCloseBtn} onClick={onClose} aria-label="Close">
-        <span className="mi">close</span>
+        <span className="mi-outlined">close</span>
       </button>
       <div className={styles.photoBig} onClick={e => e.stopPropagation()}>
         {photo

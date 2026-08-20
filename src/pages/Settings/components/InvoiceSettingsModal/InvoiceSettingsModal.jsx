@@ -181,7 +181,7 @@ export function InvoiceSettingsModal({ onBack, showToast }) {
                 </div>
                 <div className={styles.currencyBtnRight}>
                   <span className={styles.currencyCode}>{currency.currencyCode}</span>
-                  <span className="mi" style={{ fontSize: '1rem', color: 'var(--text3)' }}>expand_more</span>
+                  <span className="mi-outlined" style={{ fontSize: '1rem', color: 'var(--text3)' }}>expand_more</span>
                 </div>
               </button>
             </Field>
@@ -203,7 +203,7 @@ export function InvoiceSettingsModal({ onBack, showToast }) {
               style={{ borderBottom: localGeneral.invoiceShowTax ? '1px solid var(--border)' : 'none' }}
             >
               <div className={styles.rowIcon}>
-                <span className="mi" style={{ fontSize: '1.15rem' }}>percent</span>
+                <span className="mi-outlined" style={{ fontSize: '1.15rem' }}>percent</span>
               </div>
               <div className={styles.rowText}>
                 <div className={styles.rowLabel}>Show Tax Line</div>

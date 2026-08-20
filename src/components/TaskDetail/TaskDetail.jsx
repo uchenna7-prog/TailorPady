@@ -62,7 +62,7 @@ function formatTime(timeStr) {
 
 function CustomerLinkIcon({ customer }) {
   if (!customer) {
-    return <span className="mi" style={{ fontSize: '1rem', color: 'var(--text3)' }}>person</span>
+    return <span className="mi-outlined" style={{ fontSize: '1rem', color: 'var(--text3)' }}>person</span>
   }
   return (
     <div className={styles.linkedAvatar}>
@@ -75,7 +75,7 @@ function CustomerLinkIcon({ customer }) {
 
 function OrderLinkIcon({ order }) {
   if (!order) {
-    return <span className="mi" style={{ fontSize: '1rem', color: 'var(--text3)' }}>content_cut</span>
+    return <span className="mi-outlined" style={{ fontSize: '1rem', color: 'var(--text3)' }}>content_cut</span>
   }
   return <OrderMosaic items={order.items} size="sm" />
 }
@@ -146,11 +146,11 @@ export default function TaskDetail({ task, customer, order, onClose, onToggle, o
 
         <div className={styles.detailHeader}>
           <button className={styles.detailCloseBtn} onClick={onClose}>
-            <span className="mi" style={{ fontSize: '1.35rem' }}>close</span>
+            <span className="mi-outlined" style={{ fontSize: '1.35rem' }}>close</span>
           </button>
           <div className={styles.detailHeaderTitle}>Task Details</div>
           <button className={styles.detailHeaderDelete} onClick={() => setConfirmDelete(true)}>
-            <span className="mi" style={{ fontSize: '1.1rem' }}>delete_outline</span>
+            <span className="mi-outlined" style={{ fontSize: '1.1rem' }}>delete_outline</span>
           </button>
         </div>
 
@@ -168,13 +168,13 @@ export default function TaskDetail({ task, customer, order, onClose, onToggle, o
                 style={{ background: activeMeta.bg, borderColor: activeMeta.border }}
               >
                 <span className={styles.statusTriggerLeft}>
-                  <span className="mi" style={{ fontSize: '0.9rem', color: activeMeta.color }}>
+                  <span className="mi-outlined" style={{ fontSize: '0.9rem', color: activeMeta.color }}>
                     {STATUS_ICON[effectiveStatus]}
                   </span>
                   <span style={{ color: activeMeta.color }}>{activeMeta.label}</span>
                 </span>
                 <span
-                  className="mi"
+                  className="mi-outlined"
                   style={{
                     fontSize: '1.1rem',
                     color: activeMeta.color,
@@ -201,7 +201,7 @@ export default function TaskDetail({ task, customer, order, onClose, onToggle, o
                         onClick={() => handleStatusPick(key)}
                       >
                         <span
-                          className="mi"
+                          className="mi-outlined"
                           style={{ fontSize: '0.9rem', color: locked && !isActive ? 'var(--text3)' : cfg.color }}
                         >
                           {STATUS_ICON[key]}
@@ -210,10 +210,10 @@ export default function TaskDetail({ task, customer, order, onClose, onToggle, o
                           {cfg.label}
                         </span>
                         {isActive && (
-                          <span className="mi" style={{ marginLeft: 'auto', fontSize: '1rem', color: cfg.color }}>check</span>
+                          <span className="mi-outlined" style={{ marginLeft: 'auto', fontSize: '1rem', color: cfg.color }}>check</span>
                         )}
                         {locked && !isActive && (
-                          <span className="mi" style={{ marginLeft: 'auto', fontSize: '0.9rem', color: 'var(--text3)' }}>lock</span>
+                          <span className="mi-outlined" style={{ marginLeft: 'auto', fontSize: '0.9rem', color: 'var(--text3)' }}>lock</span>
                         )}
                       </button>
                     )

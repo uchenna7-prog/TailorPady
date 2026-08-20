@@ -15,14 +15,14 @@ function ContactRow({ icon, iconNode, label, value, href, divider = true }) {
   const inner = (
     <div className={`${styles.row} ${href ? styles.rowLink : ''} ${!divider ? styles.noDivider : ''}`}>
       <div className={styles.rowIcon}>
-        {iconNode || <span className="mi" style={{ fontSize: '1.2rem' }}>{icon}</span>}
+        {iconNode || <span className="mi-outlined" style={{ fontSize: '1.2rem' }}>{icon}</span>}
       </div>
       <div className={styles.rowText}>
         {label && <div className={styles.rowLabel}>{label}</div>}
         <div className={href ? styles.rowValueLink : styles.rowValue}>{value}</div>
       </div>
       {href && (
-        <span className="mi" style={{ fontSize: '1rem', color: 'var(--text3)' }}>open_in_new</span>
+        <span className="mi-outlined" style={{ fontSize: '1rem', color: 'var(--text3)' }}>open_in_new</span>
       )}
     </div>
   )
@@ -64,7 +64,7 @@ export default function Contact({ onMenuClick }) {
         <ContactRow icon="language" label="Website" value={CONTACT.website} href={CONTACT.website} divider={false} />
 
         <div className={styles.sectionHeader}>
-          <span className="mi" style={{ fontSize: '1rem', color: 'var(--text3)' }}>business</span>
+          <span className="mi-outlined" style={{ fontSize: '1rem', color: 'var(--text3)' }}>business</span>
           <span className={styles.sectionLabel}>Business Info</span>
         </div>
 

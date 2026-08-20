@@ -43,7 +43,7 @@ export function TourPickerSheet({ open, hasCompletedTour, onSelect, onClose }) {
                 onClick={() => onSelect(tour.id)}
               >
                 <span className={styles.iconWrap}>
-                  <span className="mi">{tour.icon}</span>
+                  <span className="mi-outlined">{tour.icon}</span>
                 </span>
                 <span className={styles.itemText}>
                   <span className={styles.itemLabel}>{tour.label}</span>

@@ -421,14 +421,14 @@ export function MeasurementDetailsModal({ measurement, onClose, onDelete, onUpda
                           className={styles.editImageRemoveBtn}
                           onClick={() => removeDraftImage(img.id)}
                         >
-                          <span className="mi" style={{ fontSize: '0.8rem' }}>close</span>
+                          <span className="mi-outlined" style={{ fontSize: '0.8rem' }}>close</span>
                         </button>
                       </div>
                     ))}
                   </div>
                 )}
                 <button className={styles.addFieldButton} onClick={() => imageInputRef.current?.click()}>
-                  <span className="mi" style={{ fontSize: '0.9rem' }}>add_photo_alternate</span>
+                  <span className="mi-outlined" style={{ fontSize: '0.9rem' }}>add_photo_alternate</span>
                   Add Photos
                 </button>
                 <input
@@ -468,7 +468,7 @@ export function MeasurementDetailsModal({ measurement, onClose, onDelete, onUpda
                         />
                       </div>
                       <button className={styles.removeFieldButton} onClick={() => removeDraftField(field.id)}>
-                        <span className="mi" style={{ fontSize: '1.1rem' }}>remove_circle_outline</span>
+                        <span className="mi-outlined" style={{ fontSize: '1.1rem' }}>remove_circle_outline</span>
                       </button>
                     </div>
                   ))}
@@ -477,7 +477,7 @@ export function MeasurementDetailsModal({ measurement, onClose, onDelete, onUpda
                 {validationErrors.fields && <p className={styles.inlineError}>{validationErrors.fields}</p>}
 
                 <button className={styles.addFieldButton} onClick={addDraftField}>
-                  <span className="mi" style={{ fontSize: '0.9rem' }}>add</span>
+                  <span className="mi-outlined" style={{ fontSize: '0.9rem' }}>add</span>
                   Add Field
                 </button>
               </div>

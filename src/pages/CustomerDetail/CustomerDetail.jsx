@@ -585,7 +585,7 @@ export default function CustomerDetail({ onMenuClick, sidebarOpen }) {
 
               <div className={styles.metaRow}>
                 <span className={styles.metaChip}>
-                  <span className="mi">call</span>
+                  <span className="mi-outlined">call</span>
                   <span className={styles.metaChipText}>{customer.phone}</span>
                 </span>
 
@@ -593,7 +593,7 @@ export default function CustomerDetail({ onMenuClick, sidebarOpen }) {
                   <>
                     <span className={styles.metaDot} aria-hidden="true">·</span>
                     <span className={styles.metaChip}>
-                      <span className="mi">person</span>
+                      <span className="mi-outlined">person</span>
                       <span className={styles.metaChipText}>{customer.sex}</span>
                     </span>
                   </>
@@ -603,7 +603,7 @@ export default function CustomerDetail({ onMenuClick, sidebarOpen }) {
                   <>
                     <span className={styles.metaDot} aria-hidden="true">·</span>
                     <span className={`${styles.metaChip} ${styles.metaChipBirthday}`}>
-                      <span className="mi">cake</span>
+                      <span className="mi-outlined">cake</span>
                       <span className={styles.metaChipText}>{birthday}</span>
                     </span>
                   </>
@@ -616,13 +616,13 @@ export default function CustomerDetail({ onMenuClick, sidebarOpen }) {
             <div className={styles.contactBlock}>
               {customer.email && (
                 <div className={styles.contactRow}>
-                  <span className="mi">mail_outline</span>
+                  <span className="mi-outlined">mail_outline</span>
                   <span className={styles.contactText}>{customer.email}</span>
                 </div>
               )}
               {customer.address && (
                 <div className={styles.contactRow}>
-                  <span className="mi">place</span>
+                  <span className="mi-outlined">place</span>
                   <span className={styles.contactText}>{customer.address}</span>
                 </div>
               )}
@@ -632,7 +632,7 @@ export default function CustomerDetail({ onMenuClick, sidebarOpen }) {
           {lastOrderLabel && (
             <div className={styles.lastOrderBlock}>
               <div className={styles.lastOrderLine}>
-                <span className="mi">schedule</span>
+                <span className="mi-outlined">schedule</span>
                 <span className={styles.lastOrderText}><strong>{lastOrderLabel}</strong></span>
               </div>
             </div>
@@ -641,7 +641,7 @@ export default function CustomerDetail({ onMenuClick, sidebarOpen }) {
           {customer.notes && (
             <div className={styles.notesBlock}>
               <div className={styles.notesLine}>
-                <span className="mi">edit_note</span>
+                <span className="mi-outlined">edit_note</span>
                 <p
                   className={`${styles.notesText} ${notesExpanded ? styles.notesText_expanded : ''}`}
                   onClick={() => setNotesExpanded(prev => !prev)}
@@ -690,7 +690,7 @@ export default function CustomerDetail({ onMenuClick, sidebarOpen }) {
             className={`${styles.btn} ${styles.light}`}
             onClick={() => { window.location = `tel:${customer.phone}` }}
           >
-            <span className="mi">call</span>
+            <span className="mi-outlined">call</span>
             Call
           </button>
 
@@ -709,7 +709,7 @@ export default function CustomerDetail({ onMenuClick, sidebarOpen }) {
               className={`${styles.btn} ${styles.light}`}
               onClick={() => { window.location = `mailto:${customer.email}` }}
             >
-              <span className="mi">mail_outline</span>
+              <span className="mi-outlined">mail_outline</span>
               Email
             </button>
           )}
@@ -719,7 +719,7 @@ export default function CustomerDetail({ onMenuClick, sidebarOpen }) {
             onClick={handleBodyMeasurementsClick}
             data-tour="body-measurements-btn"
           >
-            <span className="mi">straighten</span>
+            <span className="mi-outlined">straighten</span>
             Body Measurements
           </button>
         </div>
@@ -853,7 +853,7 @@ export default function CustomerDetail({ onMenuClick, sidebarOpen }) {
       </div>
 
       <button className={styles.fab} onClick={handleFabClick} data-tour="detail-fab">
-        <span className="mi">add</span>
+        <span className="mi-outlined">add</span>
       </button>
 
       <Toast message={toastMsg} />

@@ -72,7 +72,7 @@ export function AddReceiptModal({ isOpen, onClose, orders, payments, receipts, o
 
         {showAllReceiptsGenerated && (
           <div className={styles.pickerEmpty}>
-            <span className="mi" style={{ fontSize: '2rem', color: 'var(--text3)' }}>receipt_long</span>
+            <span className="mi-outlined" style={{ fontSize: '2rem', color: 'var(--text3)' }}>receipt_long</span>
             <p style={{ fontWeight: 700, color: 'var(--text2)' }}>All receipts generated</p>
             <p>Every recorded payment already has a receipt. Record a new payment first to generate another.</p>
           </div>
@@ -80,7 +80,7 @@ export function AddReceiptModal({ isOpen, onClose, orders, payments, receipts, o
 
         {showNoSearchMatch && (
           <div className={styles.pickerEmpty}>
-            <span className="mi" style={{ fontSize: '2rem', color: 'var(--text3)' }}>search_off</span>
+            <span className="mi-outlined" style={{ fontSize: '2rem', color: 'var(--text3)' }}>search_off</span>
             <p>No orders match your search</p>
           </div>
         )}
@@ -93,7 +93,7 @@ export function AddReceiptModal({ isOpen, onClose, orders, payments, receipts, o
 
               {showSearch && (
                 <div className={styles.clothSearchBar}>
-                  <span className="mi" style={{ fontSize: '1.1rem', color: 'var(--text3)' }}>search</span>
+                  <span className="mi-outlined" style={{ fontSize: '1.1rem', color: 'var(--text3)' }}>search</span>
                   <input
                     type="text"
                     className={styles.clothSearchInput}
@@ -106,7 +106,7 @@ export function AddReceiptModal({ isOpen, onClose, orders, payments, receipts, o
                       style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text3)', display: 'flex', alignItems: 'center', padding: 0 }}
                       onClick={() => setSearch('')}
                     >
-                      <span className="mi" style={{ fontSize: '1rem' }}>close</span>
+                      <span className="mi-outlined" style={{ fontSize: '1rem' }}>close</span>
                     </button>
                   )}
                 </div>
@@ -150,8 +150,8 @@ export function AddReceiptModal({ isOpen, onClose, orders, payments, receipts, o
 
                         <div className={`${styles.clothCheckCircle} ${isSelected ? styles.clothCheckCircle_checked : ''}`}>
                           {isSelected
-                            ? <span className="mi" style={{ fontSize: '0.9rem' }}>check</span>
-                            : <span className="mi" style={{ fontSize: '0.9rem', color: 'var(--text3)' }}>expand_more</span>
+                            ? <span className="mi-outlined" style={{ fontSize: '0.9rem' }}>check</span>
+                            : <span className="mi-outlined" style={{ fontSize: '0.9rem', color: 'var(--text3)' }}>expand_more</span>
                           }
                         </div>
                       </div>

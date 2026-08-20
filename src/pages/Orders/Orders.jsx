@@ -37,13 +37,41 @@ const TABS = [
 ]
 
 const EMPTY_CONFIG = {
-  all:           { icon: 'assignment',     title: 'No orders yet',           subtitle: 'Orders from all your customers will appear here. Create one from their profile page. Tap ? button for help.' },
-  pending:       { icon: 'schedule',       title: 'No pending orders',       subtitle: 'Pending orders from all your customers will appear here. Tap ? button  for help.' },
-  'in-progress': { icon: 'autorenew',      title: 'No orders in progress',   subtitle: 'In-progress orders from all your customers will appear here. Tap ? button for help.' },
-  completed:     { icon: 'check_circle',   title: 'No completed orders yet', subtitle: 'Completed orders from all your customers will appear here. Tap ? button for help.' },
-  delivered:     { icon: 'local_shipping', title: 'No delivered orders yet', subtitle: 'Delivered orders from all your customers will appear here. Tap ? button for help.' },
-  cancelled:     { icon: 'cancel',         title: 'No cancelled orders',     subtitle: 'Cancelled orders from all your customers will appear here. Tap ? button for help.' },
-  overdue:       { icon: 'alarm_on',       title: 'No overdue orders',       subtitle: 'Nice work, every order is on schedule. Tap ? button for help.' },
+  all: {
+    icon: 'shopping_basket',
+    title: 'No orders yet',
+    subtitle: <>Orders from all your customers will appear here. Create one from their profile page. Tap <strong>?</strong> button for help.</>,
+  },
+  pending: {
+    icon: 'schedule',
+    title: 'No pending orders',
+    subtitle: <>Pending orders from all your customers will appear here. Tap <strong>?</strong> button for help.</>,
+  },
+  'in-progress': {
+    icon: 'autorenew',
+    title: 'No orders in progress',
+    subtitle: <>In-progress orders from all your customers will appear here. Tap <strong>?</strong> button for help.</>,
+  },
+  completed: {
+    icon: 'check_circle',
+    title: 'No completed orders yet',
+    subtitle: <>Completed orders from all your customers will appear here. Tap <strong>?</strong> button for help.</>,
+  },
+  delivered: {
+    icon: 'local_shipping',
+    title: 'No delivered orders yet',
+    subtitle: <>Delivered orders from all your customers will appear here. Tap <strong>?</strong> button for help.</>,
+  },
+  cancelled: {
+    icon: 'cancel',
+    title: 'No cancelled orders',
+    subtitle: <>Cancelled orders from all your customers will appear here. Tap <strong>?</strong> button for help.</>,
+  },
+  overdue: {
+    icon: 'alarm_on',
+    title: 'No overdue orders',
+    subtitle: <>Nice work, every order is on schedule. Tap <strong>?</strong> button for help.</>,
+  },
 }
 
 const SWIPE_THRESHOLD    = 50
@@ -161,7 +189,7 @@ export default function Orders({ onMenuClick, onGoToCustomer }) {
       <div className={styles.searchContainer}>
         <div className={styles.searchRow}>
           <div className={styles.searchBox}>
-            <span className="mi" style={{ color: 'var(--text3)', fontSize: '1.1rem' }}>search</span>
+            <span className="mi-outlined" style={{ color: 'var(--text3)', fontSize: '1.1rem' }}>search</span>
             <input
               type="text"
               placeholder="Search orders or clients…"
@@ -173,7 +201,7 @@ export default function Orders({ onMenuClick, onGoToCustomer }) {
                 style={{ background: 'none', border: 'none', color: 'var(--text3)', display: 'flex', cursor: 'pointer', padding: 0 }}
                 onClick={() => setSearch('')}
               >
-                <span className="mi" style={{ fontSize: '1rem' }}>close</span>
+                <span className="mi-outlined" style={{ fontSize: '1rem' }}>close</span>
               </button>
             )}
           </div>
@@ -181,7 +209,7 @@ export default function Orders({ onMenuClick, onGoToCustomer }) {
             className={`${styles.filterBtn} ${filterOpen ? styles.filterBtnActive : ''}`}
             onClick={() => setFilterOpen(p => !p)}
           >
-            <span className="mi" style={{ fontSize: '1.2rem' }}>tune</span>
+            <span className="mi-outlined" style={{ fontSize: '1.2rem' }}>tune</span>
           </button>
         </div>
 
@@ -194,10 +222,10 @@ export default function Orders({ onMenuClick, onGoToCustomer }) {
                 className={`${styles.filterOption} ${activeTab === t.id ? styles.filterOptionActive : ''}`}
                 onClick={() => { setActiveTab(t.id); setFilterOpen(false) }}
               >
-                <span className="mi" style={{ fontSize: '1.1rem' }}>{t.icon}</span>
+                <span className="mi-outlined" style={{ fontSize: '1.1rem' }}>{t.icon}</span>
                 {t.label}
                 {activeTab === t.id && (
-                  <span className="mi" style={{ fontSize: '1rem', marginLeft: 'auto', color: 'var(--accent)' }}>check</span>
+                  <span className="mi-outlined" style={{ fontSize: '1rem', marginLeft: 'auto', color: 'var(--accent)' }}>check</span>
                 )}
               </button>
             ))}
@@ -235,7 +263,7 @@ export default function Orders({ onMenuClick, onGoToCustomer }) {
       >
         {searchFiltered.length === 0 ? (
           <div className={styles.emptyState}>
-            <span className="mi" style={{ fontSize: '2.5rem', color: 'var(--text3)' }}>
+            <span className="mi-outlined" style={{ fontSize: '2.5rem', color: 'var(--text3)' }}>
               {EMPTY_CONFIG[activeTab].icon}
             </span>
             <p className={styles.emptyStateTitle}>{EMPTY_CONFIG[activeTab].title}</p>
@@ -265,7 +293,7 @@ export default function Orders({ onMenuClick, onGoToCustomer }) {
         disabled={isActive}
         title={isActive ? 'Finish the current tour first' : 'Need help?'}
       >
-        <span className="mi">help_outline</span>
+        <span className="mi-outlined">help_outline</span>
       </button>
 
       {detailOrder && (

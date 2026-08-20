@@ -286,7 +286,7 @@ export default function Account({ onMenuClick, isPremium = false, onUpgrade = ()
               <div className={styles.heroName}>{personalInfo.fullName || 'Your Name'}</div>
               {(personalInfo.city || personalInfo.country) && (
                 <div className={styles.heroLocation}>
-                  <span className="mi" style={{ fontSize: '0.75rem' }}>location_on</span>
+                  <span className="mi-outlined" style={{ fontSize: '0.75rem' }}>location_on</span>
                   {[personalInfo.city, personalInfo.country].filter(Boolean).join(', ')}
                 </div>
               )}
@@ -296,19 +296,19 @@ export default function Account({ onMenuClick, isPremium = false, onUpgrade = ()
           <div className={styles.heroMeta}>
             {joinDate && (
               <div className={styles.heroMetaItem}>
-                <span className="mi" style={{ fontSize: '0.85rem', color: 'var(--text3)' }}>calendar_today</span>
+                <span className="mi-outlined" style={{ fontSize: '0.85rem', color: 'var(--text3)' }}>calendar_today</span>
                 <span className={styles.heroMetaLabel}>Joined {joinDate}</span>
               </div>
             )}
             {(personalInfo.email || user?.email) && (
               <div className={styles.heroMetaItem}>
-                <span className="mi" style={{ fontSize: '0.85rem', color: 'var(--text3)' }}>mail</span>
+                <span className="mi-outlined" style={{ fontSize: '0.85rem', color: 'var(--text3)' }}>mail</span>
                 <span className={styles.heroMetaLabel}>{personalInfo.email || user?.email}</span>
               </div>
             )}
             {referralCode && (
               <div className={styles.heroMetaItem}>
-                <span className="mi" style={{ fontSize: '0.85rem', color: 'var(--text3)' }}>redeem</span>
+                <span className="mi-outlined" style={{ fontSize: '0.85rem', color: 'var(--text3)' }}>redeem</span>
                 <span className={styles.heroMetaLabel}>Referral code: {referralCode}</span>
                 <button
                   type="button"
@@ -316,7 +316,7 @@ export default function Account({ onMenuClick, isPremium = false, onUpgrade = ()
                   onClick={handleCopyReferral}
                   aria-label="Copy referral code"
                 >
-                  <span className="mi" style={{ fontSize: '0.9rem' }}>content_copy</span>
+                  <span className="mi-outlined" style={{ fontSize: '0.9rem' }}>content_copy</span>
                 </button>
               </div>
             )}
@@ -361,7 +361,7 @@ export default function Account({ onMenuClick, isPremium = false, onUpgrade = ()
           </div>
         ) : (
           <div className={`${styles.row} ${styles.brandEmpty}`}>
-            <span className="mi" style={{ fontSize: '1.5rem', color: 'var(--text3)' }}>storefront</span>
+            <span className="mi-outlined" style={{ fontSize: '1.5rem', color: 'var(--text3)' }}>storefront</span>
             <span className={styles.brandEmptyText}>No brand set up yet</span>
           </div>
         )}
@@ -372,7 +372,7 @@ export default function Account({ onMenuClick, isPremium = false, onUpgrade = ()
         {profileSettings.brandSignature && (
           <div className={styles.row}>
             <div className={styles.rowIcon}>
-              <span className="mi" style={{ fontSize: '1.15rem' }}>draw</span>
+              <span className="mi-outlined" style={{ fontSize: '1.15rem' }}>draw</span>
             </div>
             <div className={styles.rowText}>
               <div className={styles.rowLabel}>Signature</div>
@@ -406,7 +406,7 @@ export default function Account({ onMenuClick, isPremium = false, onUpgrade = ()
           </>
         ) : (
           <div className={`${styles.row} ${styles.brandEmpty}`}>
-            <span className="mi" style={{ fontSize: '1.5rem', color: 'var(--text3)' }}>contact_phone</span>
+            <span className="mi-outlined" style={{ fontSize: '1.5rem', color: 'var(--text3)' }}>contact_phone</span>
             <span className={styles.brandEmptyText}>No business info set yet</span>
           </div>
         )}
@@ -436,7 +436,7 @@ export default function Account({ onMenuClick, isPremium = false, onUpgrade = ()
           </div>
         ) : (
           <div className={`${styles.row} ${styles.brandEmpty}`}>
-            <span className="mi" style={{ fontSize: '1.5rem', color: 'var(--text3)' }}>share</span>
+            <span className="mi-outlined" style={{ fontSize: '1.5rem', color: 'var(--text3)' }}>share</span>
             <span className={styles.brandEmptyText}>No social links yet</span>
           </div>
         )}
@@ -465,19 +465,19 @@ export default function Account({ onMenuClick, isPremium = false, onUpgrade = ()
           </div>
           <PlanBadge isPremium={isPremium} />
           {isPremium && (
-            <span className="mi" style={{ fontSize: '1rem', color: 'var(--text3)' }}>chevron_right</span>
+            <span className="mi-outlined" style={{ fontSize: '1rem', color: 'var(--text3)' }}>chevron_right</span>
           )}
         </div>
 
         {!isPremium && (
           <div className={`${styles.row} ${styles.upgradeStrip}`} onClick={handleOpenUpgrade}>
             <div className={styles.upgradeStripGlow} />
-            <span className="mi" style={{ fontSize: '1.3rem', color: 'var(--accent)' }}>workspace_premium</span>
+            <span className="mi-outlined" style={{ fontSize: '1.3rem', color: 'var(--accent)' }}>workspace_premium</span>
             <div className={styles.upgradeStripText}>
               <div className={styles.upgradeStripTitle}>Upgrade to Pro</div>
               <div className={styles.upgradeStripSub}>Branded invoices and receipts PDFs, unlimited uploads & a portfolio that works for you 24/7</div>
             </div>
-            <span className="mi" style={{ fontSize: '1rem', color: 'var(--accent)' }}>chevron_right</span>
+            <span className="mi-outlined" style={{ fontSize: '1rem', color: 'var(--accent)' }}>chevron_right</span>
           </div>
         )}
 

@@ -128,14 +128,14 @@ export default function UpgradeModal({ onClose, onSuccess, initialTab = 'free' }
               {FREE_FEATURES.map((f, i) => (
                 <div key={i} className={styles.featureRow}>
                   <div className={styles.featureIconWrap}>
-                    <span className="mi" style={{ fontSize: '0.85rem' }}>{f.icon}</span>
+                    <span className="mi-outlined" style={{ fontSize: '0.85rem' }}>{f.icon}</span>
                   </div>
                   <span className={styles.featureLabel}>{f.label}</span>
                 </div>
               ))}
             </div>
             <button className={`${styles.ctaBtn} ${styles.ctaBtnFree}`} disabled>
-              <span className="mi" style={{ fontSize: '1rem' }}>check_circle</span>
+              <span className="mi-outlined" style={{ fontSize: '1rem' }}>check_circle</span>
               You're on this plan
             </button>
           </div>
@@ -148,7 +148,7 @@ export default function UpgradeModal({ onClose, onSuccess, initialTab = 'free' }
               <div className={styles.planTitleRow}>
                 <div className={styles.planNamePro}>Pro Monthly</div>
                 <div className={styles.planPopularBadge}>
-                  <span className="mi" style={{ fontSize: '0.65rem' }}>star</span>
+                  <span className="mi-outlined" style={{ fontSize: '0.65rem' }}>star</span>
                   Pro
                 </div>
               </div>
@@ -163,7 +163,7 @@ export default function UpgradeModal({ onClose, onSuccess, initialTab = 'free' }
               {PRO_FEATURES.map((f, i) => (
                 <div key={i} className={styles.featureRow}>
                   <div className={`${styles.featureIconWrap} ${styles.featureIconPro}`}>
-                    <span className="mi" style={{ fontSize: '0.85rem' }}>{f.icon}</span>
+                    <span className="mi-outlined" style={{ fontSize: '0.85rem' }}>{f.icon}</span>
                   </div>
                   <span className={styles.featureLabelPro}>{f.label}</span>
                 </div>
@@ -174,7 +174,7 @@ export default function UpgradeModal({ onClose, onSuccess, initialTab = 'free' }
               onClick={() => handleUpgrade('monthly')}
               disabled={payingPlan === 'monthly'}
             >
-              <span className="mi" style={{ fontSize: '1rem' }}>workspace_premium</span>
+              <span className="mi-outlined" style={{ fontSize: '1rem' }}>workspace_premium</span>
               {payingPlan === 'monthly' ? 'Processing…' : 'Subscribe to Pro'}
             </button>
             {errorMsg && <p className={styles.fine} style={{ color: '#ef4444' }}>{errorMsg}</p>}
@@ -189,7 +189,7 @@ export default function UpgradeModal({ onClose, onSuccess, initialTab = 'free' }
               <div className={styles.planTitleRow}>
                 <div className={styles.planNamePro}>Pro Annual</div>
                 <div className={styles.planPopularBadge}>
-                  <span className="mi" style={{ fontSize: '0.65rem' }}>star</span>
+                  <span className="mi-outlined" style={{ fontSize: '0.65rem' }}>star</span>
                   Most popular
                 </div>
               </div>
@@ -199,7 +199,7 @@ export default function UpgradeModal({ onClose, onSuccess, initialTab = 'free' }
               </div>
               <div className={styles.planBilled}>₦833/month</div>
               <div className={styles.planSavingsBadge}>
-                <span className="mi" style={{ fontSize: '0.75rem' }}>savings</span>
+                <span className="mi-outlined" style={{ fontSize: '0.75rem' }}>savings</span>
                 You save ₦4,401 vs monthly
               </div>
             </div>
@@ -208,7 +208,7 @@ export default function UpgradeModal({ onClose, onSuccess, initialTab = 'free' }
               {PRO_FEATURES.map((f, i) => (
                 <div key={i} className={styles.featureRow}>
                   <div className={`${styles.featureIconWrap} ${styles.featureIconPro}`}>
-                    <span className="mi" style={{ fontSize: '0.85rem' }}>{f.icon}</span>
+                    <span className="mi-outlined" style={{ fontSize: '0.85rem' }}>{f.icon}</span>
                   </div>
                   <span className={styles.featureLabelPro}>{f.label}</span>
                 </div>
@@ -219,7 +219,7 @@ export default function UpgradeModal({ onClose, onSuccess, initialTab = 'free' }
               onClick={() => handleUpgrade('annual')}
               disabled={payingPlan === 'annual'}
             >
-              <span className="mi" style={{ fontSize: '1rem' }}>workspace_premium</span>
+              <span className="mi-outlined" style={{ fontSize: '1rem' }}>workspace_premium</span>
               {payingPlan === 'annual' ? 'Processing…' : 'Subscribe to Pro'}
             </button>
             {errorMsg && <p className={styles.fine} style={{ color: '#ef4444' }}>{errorMsg}</p>}

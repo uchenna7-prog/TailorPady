@@ -35,7 +35,7 @@ export function AddInstallmentModal({ payment, onClose, onSave }) {
         <div className={styles.bottomSheetHeader}>
           <div className={styles.bottomSheetTitle}>Record Payment</div>
           <button onClick={onClose} style={{ background: 'none', border: 'none', color: 'var(--text2)', cursor: 'pointer', display: 'flex' }}>
-            <span className="mi" style={{ fontSize: '1.4rem' }}>close</span>
+            <span className="mi-outlined" style={{ fontSize: '1.4rem' }}>close</span>
           </button>
         </div>
         <div className={styles.bottomSheetBody}>

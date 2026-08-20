@@ -70,7 +70,7 @@ export function InstallBanner() {
 
   return (
     <div className={styles.banner}>
-      <span className="mi" style={{ fontSize: '1.3rem', color: 'var(--accent)', flexShrink: 0 }}>
+      <span className="mi-outlined" style={{ fontSize: '1.3rem', color: 'var(--accent)', flexShrink: 0 }}>
         install_mobile
       </span>
 

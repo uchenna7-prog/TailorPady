@@ -298,7 +298,7 @@ function EditMeasurementsModal({ isOpen, customer, onClose, onSave }) {
 
         <div className={styles.editHeader}>
           <button className={styles.editCloseBtn} onClick={onClose}>
-            <span className="mi" style={{ fontSize: '1.3rem' }}>close</span>
+            <span className="mi-outlined" style={{ fontSize: '1.3rem' }}>close</span>
           </button>
           <span className={styles.editHeaderTitle}>Edit Measurements</span>
           <button className={styles.editSaveBtn} onClick={handleSave} disabled={saving}>
@@ -373,13 +373,13 @@ function EditMeasurementsModal({ isOpen, customer, onClose, onSave }) {
                 />
               </div>
               <button className={styles.removeCustomBtn} onClick={() => removeCustomField(f.id)}>
-                <span className="mi" style={{ fontSize: '1.2rem' }}>remove_circle_outline</span>
+                <span className="mi-outlined" style={{ fontSize: '1.2rem' }}>remove_circle_outline</span>
               </button>
             </div>
           ))}
 
           <button className={styles.addCustomFieldBtn} onClick={addCustomField}>
-            <span className="mi" style={{ fontSize: '1rem' }}>add</span> Add Custom Field
+            <span className="mi-outlined" style={{ fontSize: '1rem' }}>add</span> Add Custom Field
           </button>
         </div>
       </div>
@@ -484,13 +484,13 @@ export default function CustomerBodyMeasurements({ onMenuClick }) {
       <div className={styles.scrollArea}>
         {isEmpty ? (
           <div className={styles.emptyState}>
-            <span className="mi" style={{ fontSize: '3rem', color: 'var(--text3)', opacity: 0.3 }}>
+            <span className="mi-outlined" style={{ fontSize: '3rem', color: 'var(--text3)', opacity: 0.3 }}>
               straighten
             </span>
             <p>No body measurements recorded.</p>
             <span>Tap the button below to add measurements.</span>
             <button className={styles.emptyEditBtn} onClick={() => setEditOpen(true)}>
-              <span className="mi" style={{ fontSize: '1rem' }}>edit</span>
+              <span className="mi-outlined" style={{ fontSize: '1rem' }}>edit</span>
               Add Measurements
             </button>
           </div>

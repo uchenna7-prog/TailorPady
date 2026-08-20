@@ -90,14 +90,14 @@ export function AddInvoiceModal({
 
         {showAllInvoiced && (
           <div className={styles.pickerEmpty}>
-            <span className="mi" style={{ fontSize: '2rem', color: 'var(--text3)',textTransform: "lowercase" }}>receipt_long</span>
+            <span className="mi-outlined" style={{ fontSize: '2rem', color: 'var(--text3)',textTransform: "lowercase" }}>receipt_long</span>
             <p>All orders already have invoices.</p>
           </div>
         )}
 
         {showNoSearchMatch && (
           <div className={styles.pickerEmpty}>
-            <span className="mi" style={{ fontSize: '2rem', color: 'var(--text3)' }}>search_off</span>
+            <span className="mi-outlined" style={{ fontSize: '2rem', color: 'var(--text3)' }}>search_off</span>
             <p>No orders match your search</p>
           </div>
         )}
@@ -110,7 +110,7 @@ export function AddInvoiceModal({
 
               {showSearch && (
                 <div className={styles.clothSearchBar}>
-                  <span className="mi" style={{ fontSize: '1.1rem', color: 'var(--text3)' }}>search</span>
+                  <span className="mi-outlined" style={{ fontSize: '1.1rem', color: 'var(--text3)' }}>search</span>
                   <input
                     type="text"
                     placeholder="Search orders…"
@@ -123,7 +123,7 @@ export function AddInvoiceModal({
                       className={styles.clothSearchClear}
                       onClick={() => setSearch('')}
                     >
-                      <span className="mi" style={{ fontSize: '1rem' }}>close</span>
+                      <span className="mi-outlined" style={{ fontSize: '1rem' }}>close</span>
                     </button>
                   )}
                 </div>
@@ -160,7 +160,7 @@ export function AddInvoiceModal({
                         {isGenerating
                           ? <div className={styles.pickerSpinner} />
                           : isSelected
-                            ? <span className="mi" style={{ fontSize: '0.9rem' }}>check</span>
+                            ? <span className="mi-outlined" style={{ fontSize: '0.9rem' }}>check</span>
                             : null
                         }
                       </div>
@@ -222,7 +222,7 @@ export function AddInvoiceModal({
                         </>
                       ) : (
                         <>
-                          <span className="mi" style={{ fontSize: '1.1rem', color:"var(--text)",textTransform: "lowercase" }}>receipt_long</span>
+                          <span className="mi-outlined" style={{ fontSize: '1.1rem', color:"var(--text)",textTransform: "lowercase" }}>receipt_long</span>
                           {selectedOrders.length > 1
                             ? `Generate ${selectedOrders.length} Invoices`
                             : 'Generate Invoice'

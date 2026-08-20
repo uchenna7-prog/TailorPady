@@ -21,7 +21,7 @@ export function ShareOptionsSheet({ onClose, onShare, onDownload, docType = 'inv
         <div className={styles.options}>
           <button className={styles.option} onClick={handleShare}>
             <div className={styles.optionIcon}>
-              <span className="mi" style={{ fontSize: '1.3rem' }}>share</span>
+              <span className="mi-outlined" style={{ fontSize: '1.3rem' }}>share</span>
             </div>
             <div className={styles.optionText}>
               <span className={styles.optionLabel}>Share {label}</span>
@@ -30,7 +30,7 @@ export function ShareOptionsSheet({ onClose, onShare, onDownload, docType = 'inv
           </button>
           <button className={styles.option} onClick={handleDownload}>
             <div className={styles.optionIcon}>
-              <span className="mi" style={{ fontSize: '1.3rem' }}>download</span>
+              <span className="mi-outlined" style={{ fontSize: '1.3rem' }}>download</span>
             </div>
             <div className={styles.optionText}>
               <span className={styles.optionLabel}>Download {label}</span>

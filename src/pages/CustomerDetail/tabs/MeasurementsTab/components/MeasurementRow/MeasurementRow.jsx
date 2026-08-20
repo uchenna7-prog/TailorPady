@@ -15,7 +15,7 @@ export function MeasurementRow({ measurement, index, measurementsInGroup, onTap,
         <div className={styles.thumbnailBox}>
           {coverImage
             ? <img src={coverImage} alt={measurement.name} className={styles.thumbnailImage} />
-            : <span className="mi" style={{ fontSize: '1.5rem', color: 'var(--text3)' }}>straighten</span>
+            : <span className="mi-outlined" style={{ fontSize: '1.5rem', color: 'var(--text3)' }}>straighten</span>
           }
           {extraCount > 0 && coverImage && (
             <div className={styles.thumbnailExtraOverlay}>+{extraCount}</div>
@@ -35,9 +35,9 @@ export function MeasurementRow({ measurement, index, measurementsInGroup, onTap,
           className={styles.deleteButton}
           onClick={e => { e.stopPropagation(); onDelete(measurement) }}
         >
-          <span className="mi" style={{ fontSize: '1.2rem' }}>delete_outline</span>
+          <span className="mi-outlined" style={{ fontSize: '1.2rem' }}>delete_outline</span>
         </button>
-        <span className="mi" style={{ color: 'var(--text3)', fontSize: '1.1rem' }}>chevron_right</span>
+        <span className="mi-outlined" style={{ color: 'var(--text3)', fontSize: '1.1rem' }}>chevron_right</span>
       </div>
     </div>
   )

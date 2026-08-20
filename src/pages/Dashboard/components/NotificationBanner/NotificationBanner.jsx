@@ -6,7 +6,7 @@ export function NotificationBanner({ onEnable, onDismiss }) {
   return (
     <div className={styles.NotificationBanner}>
 
-      <span className="mi" style={{ fontSize: '1.3rem', color: 'var(--accent)', flexShrink: 0 }}>notifications</span>
+      <span className="mi-outlined" style={{ fontSize: '1.3rem', color: 'var(--accent)', flexShrink: 0 }}>notifications</span>
       
       <div className={styles.NotificationBannerText}>
 

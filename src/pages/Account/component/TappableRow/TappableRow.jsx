@@ -22,7 +22,7 @@ export function TappableRow({
       data-tour={dataTour}
     >
       <div className={styles.rowIcon} style={isEdit ? { background: 'var(--text)', color: 'var(--bg)' } : undefined}>
-        <span className="mi" style={{ fontSize: '1.15rem', color: danger ? '#ef4444' : undefined }}>{icon}</span>
+        <span className="mi-outlined" style={{ fontSize: '1.15rem', color: danger ? '#ef4444' : undefined }}>{icon}</span>
       </div>
       <div className={styles.rowText}>
         <div className={`${styles.rowLabel} ${danger ? styles.rowLabelDanger : ''}`}>{label}</div>
@@ -30,7 +30,7 @@ export function TappableRow({
       </div>
       <div className={styles.rowRight}>
         {value && <span className={styles.rowBadge}>{value}</span>}
-        {chevron && <span className="mi" style={{ fontSize: '1rem', color: 'var(--text3)' }}>chevron_right</span>}
+        {chevron && <span className="mi-outlined" style={{ fontSize: '1rem', color: 'var(--text3)' }}>chevron_right</span>}
       </div>
     </div>
   )

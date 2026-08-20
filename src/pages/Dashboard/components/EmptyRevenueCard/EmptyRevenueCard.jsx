@@ -4,7 +4,7 @@ export function EmptyRevenueCard({ onOpen, ...rest }) {
   return (
     <div className={styles.card} onClick={onOpen} {...rest}>
       <div className={styles.iconWrap}>
-        <span className="mi" style={{ fontSize: '1.6rem', color: 'var(--accent)' }}>ads_click</span>
+        <span className="mi-outlined" style={{ fontSize: '1.6rem', color: 'var(--accent)' }}>ads_click</span>
       </div>
       <div className={styles.textWrap}>
         <div className={styles.title}>Set your first goal</div>

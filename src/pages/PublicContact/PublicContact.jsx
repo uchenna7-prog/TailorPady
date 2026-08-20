@@ -35,7 +35,7 @@ function ContactRow({ iconNode, icon, label, value, href }) {
   return (
     <a href={href} target="_blank" rel="noreferrer" className={styles.row}>
       <div className={styles.rowIcon}>
-        {iconNode || <span className="mi" style={{ fontSize: '1.15rem' }}>{icon}</span>}
+        {iconNode || <span className="mi-outlined" style={{ fontSize: '1.15rem' }}>{icon}</span>}
       </div>
       <div className={styles.rowText}>
         <span className={styles.rowLabel}>{label}</span>
@@ -62,7 +62,7 @@ export default function PublicContact() {
           <span className={styles.faqCalloutTitle}>Check the FAQ first</span>
           <span className={styles.faqCalloutSub}>Most questions are already answered there.</span>
         </span>
-        <span className="mi" style={{ fontSize: '1.15rem', marginLeft: 'auto' }}>chevron_right</span>
+        <span className="mi-outlined" style={{ fontSize: '1.15rem', marginLeft: 'auto' }}>chevron_right</span>
       </a>
 
       <div className={styles.list}>

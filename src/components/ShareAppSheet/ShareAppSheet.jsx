@@ -68,7 +68,7 @@ export default function ShareAppSheet({ open, referralCode, onClose }) {
             className={`${styles.linkCopyBtn} ${linkCopied ? styles.copied : ''}`}
             onClick={handleCopyLink}
           >
-            <span className="mi">{linkCopied ? 'check' : 'content_copy'}</span>
+            <span className="mi-outlined">{linkCopied ? 'check' : 'content_copy'}</span>
             {linkCopied ? 'Copied' : 'Copy'}
           </button>
         </div>
@@ -117,7 +117,7 @@ export default function ShareAppSheet({ open, referralCode, onClose }) {
               className={`${styles.codeCopyBtn} ${codeCopied ? styles.copied : ''}`}
               onClick={handleCopyCode}
             >
-              <span className="mi">{codeCopied ? 'check' : 'content_copy'}</span>
+              <span className="mi-outlined">{codeCopied ? 'check' : 'content_copy'}</span>
               {codeCopied ? 'Copied' : 'Copy'}
             </button>
           </div>

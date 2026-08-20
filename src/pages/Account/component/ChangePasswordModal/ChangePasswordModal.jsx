@@ -90,7 +90,7 @@ export function ChangePasswordModal({ onBack, showToast }) {
 
         {error && (
           <div className={styles.error}>
-            <span className="mi" style={{ fontSize: '1rem' }}>error_outline</span>
+            <span className="mi-outlined" style={{ fontSize: '1rem' }}>error_outline</span>
             <span>{error}</span>
           </div>
         )}

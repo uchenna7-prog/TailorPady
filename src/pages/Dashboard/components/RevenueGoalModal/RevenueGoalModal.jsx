@@ -266,12 +266,12 @@ export function RevenueGoalModal({
 
           {periodAlreadyTaken ? (
             <div className={styles.periodError}>
-              <span className="mi" style={{ fontSize: '0.75rem' }}>error_outline</span>
+              <span className="mi-outlined" style={{ fontSize: '0.75rem' }}>error_outline</span>
               A {period} goal already exists
             </div>
           ) : (
             <div className={styles.periodCaption}>
-              <span className="mi" style={{ fontSize: '0.8rem' }}>{PERIOD_HINTS[period].icon}</span>
+              <span className="mi-outlined" style={{ fontSize: '0.8rem' }}>{PERIOD_HINTS[period].icon}</span>
               {PERIOD_HINTS[period].text}
             </div>
           )}
@@ -315,13 +315,13 @@ export function RevenueGoalModal({
         >
           <div className={styles.currencySettingsBtnInner}>
             <span className={styles.currencySettingsIcon}>
-              <span className="mi">tune</span>
+              <span className="mi-outlined">tune</span>
             </span>
             <div className={styles.currencySettingsText}>
               <span className={styles.currencySettingsTitle}>Currency settings</span>
               <span className={styles.currencySettingsSub}>Symbol, decimals & format</span>
             </div>
-            <span className="mi" style={{ fontSize: '0.9rem', color: 'var(--text3)' }}>chevron_right</span>
+            <span className="mi-outlined" style={{ fontSize: '0.9rem', color: 'var(--text3)' }}>chevron_right</span>
           </div>
         </button>
 
@@ -367,7 +367,7 @@ export function RevenueGoalModal({
                 className={styles.deleteBtn}
                 onClick={() => { haptic(8); setConfirmDelete(true) }}
               >
-                <span className="mi" style={{ fontSize: '0.85rem' }}>delete_forever</span>
+                <span className="mi-outlined" style={{ fontSize: '0.85rem' }}>delete_forever</span>
                 Delete this goal
               </button>
             ) : (

@@ -34,7 +34,7 @@ export function ImageLightbox({ images, startIndex = 0, onClose }) {
   return (
     <div className={styles.lightboxOverlay} onTouchStart={handleTouchStart} onTouchEnd={handleTouchEnd}>
       <button className={styles.lightboxCloseButton} onClick={onClose} type="button">
-        <span className="mi">close</span>
+        <span className="mi-outlined">close</span>
       </button>
       {images.length > 1 && (
         <div className={styles.lightboxCounter}>{currentIndex + 1} / {images.length}</div>
@@ -45,10 +45,10 @@ export function ImageLightbox({ images, startIndex = 0, onClose }) {
       {images.length > 1 && (
         <>
           <button className={`${styles.lightboxArrow} ${styles.lightboxArrow_left}`} onClick={goPrev} type="button">
-            <span className="mi">chevron_left</span>
+            <span className="mi-outlined">chevron_left</span>
           </button>
           <button className={`${styles.lightboxArrow} ${styles.lightboxArrow_right}`} onClick={goNext} type="button">
-            <span className="mi">chevron_right</span>
+            <span className="mi-outlined">chevron_right</span>
           </button>
           <div className={styles.lightboxDots}>
             {images.map((_, i) => (

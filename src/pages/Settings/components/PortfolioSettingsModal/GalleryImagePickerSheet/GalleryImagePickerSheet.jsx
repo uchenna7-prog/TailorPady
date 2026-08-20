@@ -35,7 +35,7 @@ export function GalleryImagePickerSheet({ open, onClose, onSelect }) {
         <div className={styles.header}>
           <div className={styles.title}>Choose from Gallery</div>
           <button type="button" className={styles.closeBtn} onClick={onClose}>
-            <span className="mi">close</span>
+            <span className="mi-outlined">close</span>
           </button>
         </div>
 
@@ -51,7 +51,7 @@ export function GalleryImagePickerSheet({ open, onClose, onSelect }) {
           />
           {search && (
             <button type="button" className={styles.clearBtn} onClick={() => setSearch('')}>
-              <span className="mi" style={{ fontSize: 16 }}>close</span>
+              <span className="mi-outlined" style={{ fontSize: 16 }}>close</span>
             </button>
           )}
         </div>

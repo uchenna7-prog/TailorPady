@@ -72,7 +72,7 @@ export default function UsageModal({ onClose, onUpgrade }) {
             </div>
           </div>
           <button className={styles.closeBtn} onClick={onClose}>
-            <span className="mi">close</span>
+            <span className="mi-outlined">close</span>
           </button>
         </div>
 
@@ -99,7 +99,7 @@ export default function UsageModal({ onClose, onUpgrade }) {
 
           {!isPremium && !loading && rows.length === 0 && (
             <div className={styles.freeBanner}>
-              <span className="mi" style={{ fontSize: '1.2rem', color: 'var(--text3)' }}>info</span>
+              <span className="mi-outlined" style={{ fontSize: '1.2rem', color: 'var(--text3)' }}>info</span>
               <span className={styles.freeBannerText}>No usage tracked yet this month.</span>
             </div>
           )}
@@ -114,7 +114,7 @@ export default function UsageModal({ onClose, onUpgrade }) {
                   <div key={row.field} className={`${styles.usageRow} ${i === rows.length - 1 ? styles.noDivider : ''}`}>
                     <div className={styles.usageTop}>
                       <div className={styles.usageIcon}>
-                        <span className="mi" style={{ fontSize: '1rem', color: atLimit ? '#ef4444' : 'var(--text2)' }}>
+                        <span className="mi-outlined" style={{ fontSize: '1rem', color: atLimit ? '#ef4444' : 'var(--text2)' }}>
                           {row.icon}
                         </span>
                       </div>
@@ -159,13 +159,13 @@ export default function UsageModal({ onClose, onUpgrade }) {
 
           {!isPremium && !loading && rows.length > 0 && (
             <button className={styles.upgradeBtn} onClick={onUpgrade}>
-              <span className="mi" style={{ fontSize: '1rem' }}>bolt</span>
+              <span className="mi-outlined" style={{ fontSize: '1rem' }}>bolt</span>
               Upgrade for unlimited usage
             </button>
           )}
 
           <div className={styles.footer}>
-            <span className="mi" style={{ fontSize: '0.85rem', color: 'var(--text3)' }}>event_repeat</span>
+            <span className="mi-outlined" style={{ fontSize: '0.85rem', color: 'var(--text3)' }}>event_repeat</span>
             <span className={styles.footerText}>Monthly limits reset {getResetLabel()}</span>
           </div>
 

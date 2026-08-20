@@ -206,7 +206,7 @@ export default function Customers({ onMenuClick }) {
       <div className={styles.searchContainer}>
         <div className={styles.searchRow}>
           <div className={styles.searchBox} data-tour="customer-search-box">
-            <span className="mi" style={{ color: 'var(--text3)', fontSize: '1.1rem' }}>search</span>
+            <span className="mi-outlined" style={{ color: 'var(--text3)', fontSize: '1.1rem' }}>search</span>
             <input
               type="text"
               placeholder="Search clients…"
@@ -218,7 +218,7 @@ export default function Customers({ onMenuClick }) {
             className={`${styles.filterBtn} ${sortMode !== 'date' ? styles.filterBtnActive : ''}`}
             onClick={() => setFilterOpen(v => !v)}
           >
-            <span className="mi" style={{ fontSize: '1.3rem' }}>tune</span>
+            <span className="mi-outlined" style={{ fontSize: '1.3rem' }}>tune</span>
           </button>
         </div>
 
@@ -229,20 +229,20 @@ export default function Customers({ onMenuClick }) {
               className={`${styles.filterOption} ${sortMode === 'date' ? styles.filterOptionActive : ''}`}
               onClick={() => selectSort('date')}
             >
-              <span className="mi" style={{ fontSize: '1.1rem' }}>calendar_today</span>
+              <span className="mi-outlined" style={{ fontSize: '1.1rem' }}>calendar_today</span>
               <span>Date Added</span>
               {sortMode === 'date' && (
-                <span className="mi" style={{ fontSize: '1rem', marginLeft: 'auto', color: 'var(--accent)' }}>check</span>
+                <span className="mi-outlined" style={{ fontSize: '1rem', marginLeft: 'auto', color: 'var(--accent)' }}>check</span>
               )}
             </button>
             <button
               className={`${styles.filterOption} ${sortMode === 'alpha' ? styles.filterOptionActive : ''}`}
               onClick={() => selectSort('alpha')}
             >
-              <span className="mi" style={{ fontSize: '1.1rem' }}>sort_by_alpha</span>
+              <span className="mi-outlined" style={{ fontSize: '1.1rem' }}>sort_by_alpha</span>
               <span>Alphabetically (A–Z)</span>
               {sortMode === 'alpha' && (
-                <span className="mi" style={{ fontSize: '1rem', marginLeft: 'auto', color: 'var(--accent)' }}>check</span>
+                <span className="mi-outlined" style={{ fontSize: '1rem', marginLeft: 'auto', color: 'var(--accent)' }}>check</span>
               )}
             </button>
           </div>
@@ -259,7 +259,7 @@ export default function Customers({ onMenuClick }) {
         {customers.length > 0 && filtered.length === 0 && (
           <div className={styles.emptyState}>
             <div className={styles.emptyIcon}>
-              <span className="mi" style={{ fontSize: '3rem', color: 'var(--text3)' }}>search_off</span>
+              <span className="mi-outlined" style={{ fontSize: '3rem', color: 'var(--text3)' }}>search_off</span>
             </div>
             <p>No matches found.</p>
             <span>Try a different name or number</span>
@@ -296,7 +296,7 @@ export default function Customers({ onMenuClick }) {
         onClick={handleFabClick}
         data-tour="add-customer-fab"
       >
-        <span className="mi">add</span>
+        <span className="mi-outlined">add</span>
       </button>
 
       <AddCustomerModal

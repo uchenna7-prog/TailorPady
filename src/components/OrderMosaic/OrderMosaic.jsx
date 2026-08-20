@@ -30,7 +30,7 @@ export default function OrderMosaic({
     return (
       <div className={outerCls}>
         <div className={innerCls}>
-          <span className="mi" style={{ fontSize: size === 'sm' ? '1rem' : '1.3rem', color: overdue ? '#ef4444' : 'var(--text3)' }}>
+          <span className="mi-outlined" style={{ fontSize: size === 'sm' ? '1rem' : '1.3rem', color: overdue ? '#ef4444' : 'var(--text3)' }}>
             {overdue ? overdueIcon : emptyIcon}
           </span>
         </div>
@@ -60,7 +60,7 @@ export default function OrderMosaic({
             <div className={styles.cell}>
               {covers[1]
                 ? <img src={covers[1]} alt="" className={styles.panelImg} />
-                : <span className="mi" style={{ fontSize: '0.7rem', color: 'var(--text3)' }}>{slotIcon}</span>
+                : <span className="mi-outlined" style={{ fontSize: '0.7rem', color: 'var(--text3)' }}>{slotIcon}</span>
               }
             </div>
           </div>
@@ -76,7 +76,7 @@ export default function OrderMosaic({
         <div className={styles.left}>
           {covers[0]
             ? <img src={covers[0]} alt="" className={styles.panelImg} />
-            : <span className="mi" style={{ fontSize: '0.8rem', color: 'var(--text3)' }}>{slotIcon}</span>
+            : <span className="mi-outlined" style={{ fontSize: '0.8rem', color: 'var(--text3)' }}>{slotIcon}</span>
           }
         </div>
         <div className={styles.dividerV} />
@@ -84,14 +84,14 @@ export default function OrderMosaic({
           <div className={styles.cell}>
             {covers[1]
               ? <img src={covers[1]} alt="" className={styles.panelImg} />
-              : <span className="mi" style={{ fontSize: '0.7rem', color: 'var(--text3)' }}>{slotIcon}</span>
+              : <span className="mi-outlined" style={{ fontSize: '0.7rem', color: 'var(--text3)' }}>{slotIcon}</span>
             }
           </div>
           <div className={styles.dividerH} />
           <div className={`${styles.cell} ${extra > 0 ? styles.cellOverlay : ''}`}>
             {covers[2]
               ? <img src={covers[2]} alt="" className={styles.panelImg} />
-              : <span className="mi" style={{ fontSize: '0.7rem', color: 'var(--text3)' }}>{slotIcon}</span>
+              : <span className="mi-outlined" style={{ fontSize: '0.7rem', color: 'var(--text3)' }}>{slotIcon}</span>
             }
             {extra > 0 && <div className={styles.overlay}>+{extra}</div>}
           </div>

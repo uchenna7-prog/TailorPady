@@ -46,7 +46,7 @@ export default function RefundPolicy({ onMenuClick }) {
       <div className={styles.scrollArea} ref={scrollRef}>
         <div className={styles.hero}>
           <div className={styles.heroIcon}>
-            <span className="mi">receipt_long</span>
+            <span className="mi-outlined">receipt_long</span>
           </div>
           <p className={styles.heroSub}>Last revised {REFUND_LAST_UPDATED}</p>
           <div className={styles.heroDivider} />

@@ -55,7 +55,7 @@ export function ProfileSetupCard({ completedCount, totalCount, nextItem, nextIte
       <div className={styles.inner}>
 
         <div className={styles.iconWrap}>
-          <span className="mi" style={{ fontSize: '1.1rem', color: 'var(--accent)' }}>storefront</span>
+          <span className="mi-outlined" style={{ fontSize: '1.1rem', color: 'var(--accent)' }}>storefront</span>
         </div>
 
         <div className={styles.body}>
@@ -73,7 +73,7 @@ export function ProfileSetupCard({ completedCount, totalCount, nextItem, nextIte
         </div>
 
         <button className={styles.dismiss} onClick={dismiss} aria-label="Dismiss">
-          <span className="mi" style={{ fontSize: '1rem' }}>close</span>
+          <span className="mi-outlined" style={{ fontSize: '1rem' }}>close</span>
         </button>
 
       </div>

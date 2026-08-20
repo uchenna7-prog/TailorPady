@@ -158,7 +158,7 @@ export default function Signup() {
 
         {error && (
           <div className={styles.errorBanner}>
-            <span className="mi" style={{ fontSize: '1rem' }}>error</span>
+            <span className="mi-outlined" style={{ fontSize: '1rem' }}>error</span>
             {error}
           </div>
         )}
@@ -183,7 +183,7 @@ export default function Signup() {
           <div className={styles.field}>
             <label className={styles.label}>Full Name</label>
             <div className={styles.inputWrap}>
-              <span className="mi" style={{ position: 'absolute', left: 12, color: nameError ? '#ef4444' : 'var(--text3)', fontSize: '1.1rem' }}>person</span>
+              <span className="mi-outlined" style={{ position: 'absolute', left: 12, color: nameError ? '#ef4444' : 'var(--text3)', fontSize: '1.1rem' }}>person</span>
               <input
                 className={`${styles.input} ${nameError ? styles.inputError : ''}`}
                 type="text"
@@ -201,7 +201,7 @@ export default function Signup() {
           <div className={styles.field}>
             <label className={styles.label}>Email</label>
             <div className={styles.inputWrap}>
-              <span className="mi" style={{ position: 'absolute', left: 12, color: emailError ? '#ef4444' : 'var(--text3)', fontSize: '1.1rem' }}>mail</span>
+              <span className="mi-outlined" style={{ position: 'absolute', left: 12, color: emailError ? '#ef4444' : 'var(--text3)', fontSize: '1.1rem' }}>mail</span>
               <input
                 className={`${styles.input} ${emailError ? styles.inputError : ''}`}
                 type="email"
@@ -219,7 +219,7 @@ export default function Signup() {
           <div className={styles.field}>
             <label className={styles.label}>Password</label>
             <div className={styles.inputWrap}>
-              <span className="mi" style={{ position: 'absolute', left: 12, color: passwordError ? '#ef4444' : 'var(--text3)', fontSize: '1.1rem' }}>lock</span>
+              <span className="mi-outlined" style={{ position: 'absolute', left: 12, color: passwordError ? '#ef4444' : 'var(--text3)', fontSize: '1.1rem' }}>lock</span>
               <input
                 className={`${styles.input} ${passwordError ? styles.inputError : ''}`}
                 type={showPass ? 'text' : 'password'}
@@ -235,7 +235,7 @@ export default function Signup() {
                 className={styles.eyeBtn}
                 onClick={() => setShowPass(p => !p)}
               >
-                <span className="mi" style={{ fontSize: '1.1rem', color: 'var(--text3)' }}>
+                <span className="mi-outlined" style={{ fontSize: '1.1rem', color: 'var(--text3)' }}>
                   {showPass ? 'visibility_off' : 'visibility'}
                 </span>
               </button>
@@ -262,7 +262,7 @@ export default function Signup() {
           <div className={styles.field}>
             <label className={styles.label}>Referral Code (optional)</label>
             <div className={styles.inputWrap}>
-              <span className="mi" style={{ position: 'absolute', left: 12, color: 'var(--text3)', fontSize: '1.1rem' }}>redeem</span>
+              <span className="mi-outlined" style={{ position: 'absolute', left: 12, color: 'var(--text3)', fontSize: '1.1rem' }}>redeem</span>
               <input
                 className={styles.input}
                 type="text"

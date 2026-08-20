@@ -52,7 +52,7 @@ export default function BillingHistoryModal({ onClose }) {
             </div>
           </div>
           <button className={styles.closeBtn} onClick={onClose}>
-            <span className="mi">close</span>
+            <span className="mi-outlined">close</span>
           </button>
         </div>
 
@@ -77,7 +77,7 @@ export default function BillingHistoryModal({ onClose }) {
 
           {!isPremium && (
             <div className={styles.freeBanner}>
-              <span className="mi" style={{ fontSize: '1.2rem', color: 'var(--text3)' }}>info</span>
+              <span className="mi-outlined" style={{ fontSize: '1.2rem', color: 'var(--text3)' }}>info</span>
               <span className={styles.freeBannerText}>You are on the Free plan, no billing history yet.</span>
             </div>
           )}
@@ -90,7 +90,7 @@ export default function BillingHistoryModal({ onClose }) {
 
           {isPremium && !loading && payments.length === 0 && (
             <div className={styles.freeBanner}>
-              <span className="mi" style={{ fontSize: '1.2rem', color: 'var(--text3)' }}>info</span>
+              <span className="mi-outlined" style={{ fontSize: '1.2rem', color: 'var(--text3)' }}>info</span>
               <span className={styles.freeBannerText}>No payments recorded yet.</span>
             </div>
           )}
@@ -102,7 +102,7 @@ export default function BillingHistoryModal({ onClose }) {
                 return (
                   <div key={inv.id} className={`${styles.invoiceRow} ${i === payments.length - 1 ? styles.noDivider : ''}`}>
                     <div className={styles.invoiceIcon}>
-                      <span className="mi" style={{ fontSize: '1rem', color: inv.status === 'failed' ? '#ef4444' : 'var(--text2)' }}>
+                      <span className="mi-outlined" style={{ fontSize: '1rem', color: inv.status === 'failed' ? '#ef4444' : 'var(--text2)' }}>
                         {inv.status === 'failed' ? 'error_outline' : 'receipt'}
                       </span>
                     </div>
@@ -121,7 +121,7 @@ export default function BillingHistoryModal({ onClose }) {
           )}
 
           <div className={styles.footer}>
-            <span className="mi" style={{ fontSize: '0.85rem', color: 'var(--text3)' }}>lock</span>
+            <span className="mi-outlined" style={{ fontSize: '0.85rem', color: 'var(--text3)' }}>lock</span>
             <span className={styles.footerText}>Payments secured by Paystack</span>
           </div>
 

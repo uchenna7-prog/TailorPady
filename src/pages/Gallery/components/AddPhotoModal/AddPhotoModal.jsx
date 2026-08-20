@@ -174,7 +174,7 @@ export function AddPhotoModal({ isOpen, onClose, onSave, GarmentTypes, activeMai
 
         <div className={styles.header}>
           <button className={styles.closeBtn} onClick={handleClose}>
-            <span className="mi">close</span>
+            <span className="mi-outlined">close</span>
           </button>
           <div className={styles.headerTitle}>Add Photo</div>
           <button
@@ -190,14 +190,14 @@ export function AddPhotoModal({ isOpen, onClose, onSave, GarmentTypes, activeMai
 
           {photos.length === 0 ? (
             <div className={styles.uploadArea}>
-              <span className="mi" style={{ fontSize: '3rem', opacity: 0.3 }}>add_a_photo</span>
+              <span className="mi-outlined" style={{ fontSize: '3rem', opacity: 0.3 }}>add_a_photo</span>
               <p className={styles.uploadText}>Add photos from your camera or files</p>
               <div className={styles.uploadBtns}>
                 <button className={styles.uploadBtn} onClick={() => cameraInputRef.current?.click()}>
-                  <span className="mi" style={{ fontSize: '1.2rem' }}>photo_camera</span> Camera
+                  <span className="mi-outlined" style={{ fontSize: '1.2rem' }}>photo_camera</span> Camera
                 </button>
                 <button className={styles.uploadBtn} onClick={() => fileInputRef.current?.click()}>
-                  <span className="mi" style={{ fontSize: '1.2rem' }}>photo_library</span> Gallery
+                  <span className="mi-outlined" style={{ fontSize: '1.2rem' }}>photo_library</span> Gallery
                 </button>
               </div>
               <input ref={cameraInputRef} type="file" accept="image/*" capture="environment" hidden onChange={e => handleFiles(e.target.files)} />
@@ -222,7 +222,7 @@ export function AddPhotoModal({ isOpen, onClose, onSave, GarmentTypes, activeMai
 
                       {p.status === 'done' && (
                         <div className={styles.uploadDoneBadge}>
-                          <span className="mi" style={{ fontSize: '0.85rem', color: '#fff' }}>check</span>
+                          <span className="mi-outlined" style={{ fontSize: '0.85rem', color: '#fff' }}>check</span>
                         </div>
                       )}
 
@@ -232,14 +232,14 @@ export function AddPhotoModal({ isOpen, onClose, onSave, GarmentTypes, activeMai
                           onClick={() => retryUpload(i)}
                           title="Tap to retry"
                         >
-                          <span className="mi" style={{ fontSize: '1.1rem', color: '#fff' }}>refresh</span>
+                          <span className="mi-outlined" style={{ fontSize: '1.1rem', color: '#fff' }}>refresh</span>
                           <span className={styles.uploadErrorLabel}>Retry</span>
                         </div>
                       )}
 
                       {p.status !== 'uploading' && (
                         <button className={styles.previewRemove} onClick={() => removePhoto(i)}>
-                          <span className="mi" style={{ fontSize: '0.9rem' }}>close</span>
+                          <span className="mi-outlined" style={{ fontSize: '0.9rem' }}>close</span>
                         </button>
                       )}
                     </div>
@@ -302,7 +302,7 @@ export function AddPhotoModal({ isOpen, onClose, onSave, GarmentTypes, activeMai
 
                       {p.status === 'error' && (
                         <p className={styles.photoUploadError}>
-                          <span className="mi" style={{ fontSize: '0.85rem' }}>error_outline</span>
+                          <span className="mi-outlined" style={{ fontSize: '0.85rem' }}>error_outline</span>
                           {p.error}
                         </p>
                       )}
@@ -312,7 +312,7 @@ export function AddPhotoModal({ isOpen, onClose, onSave, GarmentTypes, activeMai
               ))}
 
               <button className={styles.addMoreBtn} onClick={() => fileInputRef.current?.click()}>
-                <span className="mi" style={{ fontSize: '1.4rem', color: 'var(--text3)' }}>add_photo_alternate</span>
+                <span className="mi-outlined" style={{ fontSize: '1.4rem', color: 'var(--text3)' }}>add_photo_alternate</span>
                 <span style={{ fontSize: '0.78rem', color: 'var(--text3)', fontWeight: 700 }}>Add more photos</span>
               </button>
               <input ref={fileInputRef}   type="file" accept="image/*" multiple           hidden onChange={e => handleFiles(e.target.files)} />
@@ -329,7 +329,7 @@ export function AddPhotoModal({ isOpen, onClose, onSave, GarmentTypes, activeMai
                   className={`${styles.categoryChip} ${category === key ? styles.categoryActive : ''}`}
                   onClick={() => setCategory(key)}
                 >
-                  <span className="mi" style={{ fontSize: '1rem' }}>{val.icon}</span>
+                  <span className="mi-outlined" style={{ fontSize: '1rem' }}>{val.icon}</span>
                   <span className={styles.categoryLabel}>{val.label}</span>
                 </button>
               ))}

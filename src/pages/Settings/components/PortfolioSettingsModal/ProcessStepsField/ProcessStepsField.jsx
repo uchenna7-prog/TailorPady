@@ -34,10 +34,10 @@ export function ProcessStepsField({ value, onChange }) {
             <span className={styles.stepNumber}>{i + 1}</span>
             <div className={styles.cardActions}>
               <button type="button" className={styles.iconBtn} disabled={i === 0} onClick={() => moveStep(i, -1)}>
-                <span className="mi" style={{ fontSize: '1rem' }}>arrow_upward</span>
+                <span className="mi-outlined" style={{ fontSize: '1rem' }}>arrow_upward</span>
               </button>
               <button type="button" className={styles.iconBtn} disabled={i === steps.length - 1} onClick={() => moveStep(i, 1)}>
-                <span className="mi" style={{ fontSize: '1rem' }}>arrow_downward</span>
+                <span className="mi-outlined" style={{ fontSize: '1rem' }}>arrow_downward</span>
               </button>
               <button
                 type="button"
@@ -45,7 +45,7 @@ export function ProcessStepsField({ value, onChange }) {
                 disabled={steps.length === 1}
                 onClick={() => removeStep(i)}
               >
-                <span className="mi" style={{ fontSize: '1rem' }}>close</span>
+                <span className="mi-outlined" style={{ fontSize: '1rem' }}>close</span>
               </button>
             </div>
           </div>
@@ -76,7 +76,7 @@ export function ProcessStepsField({ value, onChange }) {
 
       {steps.length < MAX_PROCESS_STEPS && (
         <button type="button" className={styles.addBtn} onClick={addStep}>
-          <span className="mi">add</span>
+          <span className="mi-outlined">add</span>
           Add Step
         </button>
       )}

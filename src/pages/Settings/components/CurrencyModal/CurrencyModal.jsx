@@ -109,7 +109,7 @@ export function CurrencyModal({ currentSettings, onBack, onSave }) {
                 </div>
                 <div className={styles.currencyBtnRight}>
                   {currency && <span className={styles.currencyCode}>{currency.currencyCode}</span>}
-                  <span className="mi" style={{ fontSize: '1rem', color: 'var(--text-sub)' }}>expand_more</span>
+                  <span className="mi-outlined" style={{ fontSize: '1rem', color: 'var(--text-sub)' }}>expand_more</span>
                 </div>
               </button>
             </Field>

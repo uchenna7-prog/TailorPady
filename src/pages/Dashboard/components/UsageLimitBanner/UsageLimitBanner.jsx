@@ -83,7 +83,7 @@ export function UsageLimitBanner() {
     <div className={`${styles.banner} ${isAtLimit ? styles.bannerCritical : styles.bannerWarning}`}>
       <div className={styles.row}>
         <div className={styles.iconBadge}>
-          <span className="mi" style={{ fontSize: '1.15rem' }}>
+          <span className="mi-outlined" style={{ fontSize: '1.15rem' }}>
             {isAtLimit ? 'lock' : 'bolt'}
           </span>
         </div>

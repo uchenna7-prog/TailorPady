@@ -81,7 +81,7 @@ export function AddPaymentModal({ isOpen, onClose, orders, payments, onSave }) {
 
         {showAllHavePayments && (
           <div className={styles.pickerEmpty}>
-            <span className="mi" style={{ fontSize: '2rem', color: 'var(--text3)', textTransform: 'lowercase' }}>assignment</span>
+            <span className="mi-outlined" style={{ fontSize: '2rem', color: 'var(--text3)', textTransform: 'lowercase' }}>assignment</span>
             <p>All orders already have a payment recorded.</p>
             <p>Open an existing payment to add an instalment.</p>
           </div>
@@ -89,7 +89,7 @@ export function AddPaymentModal({ isOpen, onClose, orders, payments, onSave }) {
 
         {showNoSearchMatch && (
           <div className={styles.pickerEmpty}>
-            <span className="mi" style={{ fontSize: '2rem', color: 'var(--text3)', textTransform: 'lowercase' }}>search_off</span>
+            <span className="mi-outlined" style={{ fontSize: '2rem', color: 'var(--text3)', textTransform: 'lowercase' }}>search_off</span>
             <p>No orders match your search</p>
           </div>
         )}
@@ -102,7 +102,7 @@ export function AddPaymentModal({ isOpen, onClose, orders, payments, onSave }) {
 
               {showSearch && (
                 <div className={styles.clothSearchBar}>
-                  <span className="mi" style={{ fontSize: '1.1rem', color: 'var(--text3)', textTransform: 'lowercase' }}>search</span>
+                  <span className="mi-outlined" style={{ fontSize: '1.1rem', color: 'var(--text3)', textTransform: 'lowercase' }}>search</span>
                   <input
                     type="text"
                     className={styles.clothSearchInput}
@@ -115,7 +115,7 @@ export function AddPaymentModal({ isOpen, onClose, orders, payments, onSave }) {
                       style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text3)', display: 'flex', alignItems: 'center', padding: 0 }}
                       onClick={() => setSearch('')}
                     >
-                      <span className="mi" style={{ fontSize: '1rem', textTransform: 'lowercase' }}>close</span>
+                      <span className="mi-outlined" style={{ fontSize: '1rem', textTransform: 'lowercase' }}>close</span>
                     </button>
                   )}
                 </div>
@@ -143,7 +143,7 @@ export function AddPaymentModal({ isOpen, onClose, orders, payments, onSave }) {
                           }
                         </div>
                         <div className={`${styles.clothCheckCircle} ${isSelected ? styles.clothCheckCircle_checked : ''}`}>
-                          {isSelected && <span className="mi" style={{ fontSize: '0.9rem' }}>check</span>}
+                          {isSelected && <span className="mi-outlined" style={{ fontSize: '0.9rem' }}>check</span>}
                         </div>
                       </div>
 

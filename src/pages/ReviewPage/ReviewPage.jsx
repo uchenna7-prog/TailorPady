@@ -159,7 +159,7 @@ function StarPicker({ value, onChange, disabled }) {
           aria-label={`${n} star${n !== 1 ? 's' : ''}`}
         >
           <span
-            className="mi"
+            className="mi-outlined"
             style={{
               fontSize: '2rem',
               color: n <= (hovered || value) ? '#e0a92f' : '#d9d3c7',
@@ -435,7 +435,7 @@ export default function ReviewPage() {
     return (
       <div className={`${styles.page} ${styles.pageCenter}`}>
         <div className={styles.simpleCard}>
-          <span className="mi" style={{ fontSize: '3rem', color: 'var(--text3)' }}>link_off</span>
+          <span className="mi-outlined" style={{ fontSize: '3rem', color: 'var(--text3)' }}>link_off</span>
           <h2 className={styles.simpleTitle}>Invalid Link</h2>
           <p className={styles.simpleSubtitle}>This review link is not valid. Please ask your tailor to resend the link.</p>
         </div>
@@ -447,11 +447,11 @@ export default function ReviewPage() {
     return (
       <div className={`${styles.page} ${styles.pageCenter}`}>
         <div className={styles.simpleCard}>
-          <span className="mi" style={{ fontSize: '3rem', color: 'var(--text3)' }}>wifi_off</span>
+          <span className="mi-outlined" style={{ fontSize: '3rem', color: 'var(--text3)' }}>wifi_off</span>
           <h2 className={styles.simpleTitle}>Couldn't Load</h2>
           <p className={styles.simpleSubtitle}>Check your connection and try again.</p>
           <button className={styles.retryBtn} onClick={retry}>
-            <span className="mi" style={{ fontSize: '1rem' }}>refresh</span>
+            <span className="mi-outlined" style={{ fontSize: '1rem' }}>refresh</span>
             Try Again
           </button>
         </div>
@@ -464,7 +464,7 @@ export default function ReviewPage() {
       <div className={`${styles.page} ${styles.pageCenter}`}>
         <div className={styles.simpleCard}>
           <div className={styles.successIcon}>
-            <span className="mi" style={{ fontSize: '2rem', color: '#22c55e' }}>check_circle</span>
+            <span className="mi-outlined" style={{ fontSize: '2rem', color: '#22c55e' }}>check_circle</span>
           </div>
           <h2 className={styles.simpleTitle}>Already Submitted</h2>
           <p className={styles.simpleSubtitle}>
@@ -480,7 +480,7 @@ export default function ReviewPage() {
       <div className={`${styles.page} ${styles.pageCenter}`}>
         <div className={styles.simpleCard}>
           <div className={styles.successIcon}>
-            <span className="mi" style={{ fontSize: '2.5rem', color: '#22c55e' }}>check_circle</span>
+            <span className="mi-outlined" style={{ fontSize: '2.5rem', color: '#22c55e' }}>check_circle</span>
           </div>
           <h2 className={styles.simpleTitle}>{isLowRating ? 'Thank You for Sharing' : 'Thank You'}</h2>
           <p className={styles.simpleSubtitle}>
@@ -492,7 +492,7 @@ export default function ReviewPage() {
             {[1, 2, 3, 4, 5].map(n => (
               <span
                 key={n}
-                className="mi"
+                className="mi-outlined"
                 style={{ fontSize: '1.5rem', color: n <= rating ? '#e0a92f' : '#d9d3c7' }}
               >
                 star
@@ -675,7 +675,7 @@ export default function ReviewPage() {
               onClick={removePhoto}
               disabled={submitting}
             >
-              <span className="mi" style={{ fontSize: '1rem' }}>close</span>
+              <span className="mi-outlined" style={{ fontSize: '1rem' }}>close</span>
             </button>
           </div>
         ) : (
@@ -686,13 +686,13 @@ export default function ReviewPage() {
             disabled={submitting}
           >
             <span className={styles.photoUploadIcon}>
-              <span className="mi" style={{ fontSize: '1.2rem' }}>upload</span>
+              <span className="mi-outlined" style={{ fontSize: '1.2rem' }}>upload</span>
             </span>
             <span className={styles.photoUploadText}>
               <span className={styles.photoUploadTitle}>Upload a photo of yourself</span>
               <span className={styles.photoUploadHint}>JPG, PNG up to {MAX_PHOTO_MB}MB</span>
             </span>
-            <span className="mi" style={{ fontSize: '1.6rem', color: 'var(--text3)' }}>account_circle</span>
+            <span className="mi-outlined" style={{ fontSize: '1.6rem', color: 'var(--text3)' }}>account_circle</span>
           </button>
         )}
         {photoError && <span className={styles.errorMsg}>{photoError}</span>}
@@ -708,26 +708,26 @@ export default function ReviewPage() {
 
       {error && (
         <div className={styles.submitError}>
-          <span className="mi" style={{ fontSize: '1rem' }}>error_outline</span>
+          <span className="mi-outlined" style={{ fontSize: '1rem' }}>error_outline</span>
           {error}
         </div>
       )}
 
       <div className={styles.footerBlock}>
         <span className={styles.privacyRow}>
-          <span className="mi" style={{ fontSize: '0.95rem', flexShrink: 0, marginTop: 1 }}>info</span>
+          <span className="mi-outlined" style={{ fontSize: '0.95rem', flexShrink: 0, marginTop: 1 }}>info</span>
           Your name, photo, and review may be published on {tailorName}'s portfolio for other customers to see.
         </span>
         <button className={styles.submitBtn} onClick={handleSubmit} disabled={submitting}>
           {submitting ? (
             <>
-              <span className="mi" style={{ fontSize: '1rem', animation: 'spin 1s linear infinite' }}>autorenew</span>
+              <span className="mi-outlined" style={{ fontSize: '1rem', animation: 'spin 1s linear infinite' }}>autorenew</span>
               {submitLabel}
             </>
           ) : (
             <>
               Submit Review
-              <span className="mi" style={{ fontSize: '1rem' }}>arrow_forward</span>
+              <span className="mi-outlined" style={{ fontSize: '1rem' }}>arrow_forward</span>
             </>
           )}
         </button>

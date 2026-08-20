@@ -40,7 +40,7 @@ function StarDisplay({ rating, size = '1rem' }) {
       {[1, 2, 3, 4, 5].map(n => (
         <span
           key={n}
-          className="mi"
+          className="mi-outlined"
           style={{
             fontSize: size,
             color: n <= rating ? '#f59e0b' : 'var(--border2)',
@@ -67,7 +67,7 @@ function StarPicker({ value, onChange }) {
           onClick={() => onChange(n)}
         >
           <span
-            className="mi"
+            className="mi-outlined"
             style={{
               fontSize: '2rem',
               color: n <= (hovered || value) ? '#f59e0b' : 'var(--border2)',
@@ -145,7 +145,7 @@ function AddReviewSheet({ isOpen, onClose, onSave }) {
         <div className={styles.sheetHeader}>
           <span className={styles.sheetTitle}>Add Review Manually</span>
           <button className={styles.sheetClose} onClick={handleClose}>
-            <span className="mi" style={{ fontSize: '1.2rem' }}>close</span>
+            <span className="mi-outlined" style={{ fontSize: '1.2rem' }}>close</span>
           </button>
         </div>
 
@@ -259,10 +259,10 @@ function ReviewDetailSheet({ review, phone, phoneLoading, onClose, onApprove, on
           <span className={styles.sheetTitle}>Review Details</span>
           <div className={styles.sheetHeaderActions}>
             <button className={styles.sheetHeaderDelete} onClick={() => onDelete(review)}>
-              <span className="mi" style={{ fontSize: '1.05rem' }}>delete_outline</span>
+              <span className="mi-outlined" style={{ fontSize: '1.05rem' }}>delete_outline</span>
             </button>
             <button className={styles.sheetClose} onClick={onClose}>
-              <span className="mi" style={{ fontSize: '1.2rem' }}>close</span>
+              <span className="mi-outlined" style={{ fontSize: '1.2rem' }}>close</span>
             </button>
           </div>
         </div>
@@ -286,12 +286,12 @@ function ReviewDetailSheet({ review, phone, phoneLoading, onClose, onApprove, on
               <div className={styles.detailCustomerName}>{review.customerName}</div>
               {phoneLoading ? (
                 <div className={styles.detailCustomerPhone}>
-                  <span className="mi" style={{ fontSize: '0.85rem', color: 'var(--text3)' }}>phone</span>
+                  <span className="mi-outlined" style={{ fontSize: '0.85rem', color: 'var(--text3)' }}>phone</span>
                   …
                 </div>
               ) : phone ? (
                 <div className={styles.detailCustomerPhone}>
-                  <span className="mi" style={{ fontSize: '0.85rem', color: 'var(--text3)' }}>phone</span>
+                  <span className="mi-outlined" style={{ fontSize: '0.85rem', color: 'var(--text3)' }}>phone</span>
                   {phone}
                 </div>
               ) : null}
@@ -309,11 +309,11 @@ function ReviewDetailSheet({ review, phone, phoneLoading, onClose, onApprove, on
                 style={{ background: sc.bg, borderColor: sc.border }}
               >
                 <span className={styles.statusTriggerLeft}>
-                  <span className="mi" style={{ fontSize: '0.9rem', color: sc.color }}>{sc.icon}</span>
+                  <span className="mi-outlined" style={{ fontSize: '0.9rem', color: sc.color }}>{sc.icon}</span>
                   <span style={{ color: sc.color }}>{sc.label}</span>
                 </span>
                 <span
-                  className="mi"
+                  className="mi-outlined"
                   style={{
                     fontSize: '1.1rem',
                     color: sc.color,
@@ -337,7 +337,7 @@ function ReviewDetailSheet({ review, phone, phoneLoading, onClose, onApprove, on
                         className={styles.statusMenuItem}
                         onClick={() => handleStatusSelect(s)}
                       >
-                        <span className="mi" style={{ fontSize: '0.9rem', color: meta.color }}>{meta.icon}</span>
+                        <span className="mi-outlined" style={{ fontSize: '0.9rem', color: meta.color }}>{meta.icon}</span>
                         <span>{STATUS_ACTIONS[s]}</span>
                       </button>
                     )
@@ -358,7 +358,7 @@ function ReviewDetailSheet({ review, phone, phoneLoading, onClose, onApprove, on
               <div className={styles.infoGridCell}>
                 <div className={styles.infoGridLabel}>Recommend</div>
                 <div className={styles.infoGridValue} style={{ color: rc.color, display: 'flex', alignItems: 'center', gap: 5 }}>
-                  <span className="mi" style={{ fontSize: '0.95rem' }}>{rc.icon}</span>
+                  <span className="mi-outlined" style={{ fontSize: '0.95rem' }}>{rc.icon}</span>
                   {rc.label}
                 </div>
               </div>
@@ -375,7 +375,7 @@ function ReviewDetailSheet({ review, phone, phoneLoading, onClose, onApprove, on
               <div className={styles.highlightGrid}>
                 {highlights.map(label => (
                   <span key={label} className={styles.highlightChip}>
-                    <span className="mi" style={{ fontSize: '0.95rem' }}>
+                    <span className="mi-outlined" style={{ fontSize: '0.95rem' }}>
                       {HIGHLIGHT_ICONS[label] || 'label'}
                     </span>
                     {label}
@@ -388,7 +388,7 @@ function ReviewDetailSheet({ review, phone, phoneLoading, onClose, onApprove, on
           <div className={styles.sectionCard}>
             <div className={styles.sectionCardLabel}>Review</div>
             <div className={styles.detailReviewBox}>
-              <span className="mi" style={{ fontSize: '1.2rem', color: 'var(--text3)', flexShrink: 0 }}>format_quote</span>
+              <span className="mi-outlined" style={{ fontSize: '1.2rem', color: 'var(--text3)', flexShrink: 0 }}>format_quote</span>
               <p className={styles.detailReviewText}>{review.review}</p>
             </div>
           </div>
@@ -543,7 +543,7 @@ export default function Reviews({ onMenuClick }) {
 
       <div className={styles.searchRow}>
         <div className={styles.searchWrap}>
-          <span className="mi" style={{ fontSize: '1.1rem', color: 'var(--text3)' }}>search</span>
+          <span className="mi-outlined" style={{ fontSize: '1.1rem', color: 'var(--text3)' }}>search</span>
           <input
             className={styles.searchInput}
             placeholder="Search reviews or clients…"
@@ -552,12 +552,12 @@ export default function Reviews({ onMenuClick }) {
           />
           {searchQuery.length > 0 && (
             <button className={styles.searchClear} onClick={() => setSearchQuery('')}>
-              <span className="mi" style={{ fontSize: '1rem' }}>close</span>
+              <span className="mi-outlined" style={{ fontSize: '1rem' }}>close</span>
             </button>
           )}
         </div>
         <button className={styles.filterBtn}>
-          <span className="mi" style={{ fontSize: '1.2rem' }}>tune</span>
+          <span className="mi-outlined" style={{ fontSize: '1.2rem' }}>tune</span>
         </button>
       </div>
 
@@ -585,12 +585,12 @@ export default function Reviews({ onMenuClick }) {
       <div className={styles.listArea}>
         {loading ? (
           <div className={styles.emptyState}>
-            <span className="mi" style={{ fontSize: '2.5rem', opacity: 0.2 }}>hourglass_empty</span>
+            <span className="mi-outlined" style={{ fontSize: '2.5rem', opacity: 0.2 }}>hourglass_empty</span>
             <p>Loading…</p>
           </div>
         ) : filtered.length === 0 ? (
           <div className={styles.emptyState}>
-            <span className="mi" style={{ fontSize: '3rem', opacity: 0.15 }}>rate_review</span>
+            <span className="mi-outlined" style={{ fontSize: '3rem', opacity: 0.15 }}>rate_review</span>
             <p>
               {searchQuery.trim()
                 ? 'No results found.'
@@ -619,7 +619,7 @@ export default function Reviews({ onMenuClick }) {
       </div>
 
       <button className={styles.fab} onClick={() => setAddSheetOpen(true)}>
-        <span className="mi">add</span>
+        <span className="mi-outlined">add</span>
       </button>
 
       <AddReviewSheet

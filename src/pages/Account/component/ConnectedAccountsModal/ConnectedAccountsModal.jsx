@@ -106,7 +106,7 @@ export function ConnectedAccountsModal({ onBack, showToast }) {
 
           <div className={styles.providerRow} style={{ borderBottom: 'none' }}>
             <div className={styles.providerIcon}>
-              <span className="mi" style={{ fontSize: '1.3rem', color: 'var(--text2)' }}>lock</span>
+              <span className="mi-outlined" style={{ fontSize: '1.3rem', color: 'var(--text2)' }}>lock</span>
             </div>
             <div className={styles.providerText}>
               <span className={styles.providerName}>Email & Password</span>
@@ -123,14 +123,14 @@ export function ConnectedAccountsModal({ onBack, showToast }) {
 
         {error && (
           <div className={styles.error}>
-            <span className="mi" style={{ fontSize: '1rem' }}>error_outline</span>
+            <span className="mi-outlined" style={{ fontSize: '1rem' }}>error_outline</span>
             <span>{error}</span>
           </div>
         )}
 
         {!canUnlink && hasGoogle && (
           <div className={styles.notice}>
-            <span className="mi" style={{ fontSize: '0.9rem', flexShrink: 0 }}>info</span>
+            <span className="mi-outlined" style={{ fontSize: '0.9rem', flexShrink: 0 }}>info</span>
             <span>Set up a password first before removing Google sign-in.</span>
           </div>
         )}

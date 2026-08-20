@@ -44,7 +44,7 @@ export default function ManagePlanModal({ uid, plan, nextRenewal, onClose, onCan
             </div>
           </div>
           <button className={styles.closeBtn} onClick={onClose}>
-            <span className="mi">close</span>
+            <span className="mi-outlined">close</span>
           </button>
         </div>
 
@@ -54,7 +54,7 @@ export default function ManagePlanModal({ uid, plan, nextRenewal, onClose, onCan
             {PRO_FEATURES.map((f, i) => (
               <div key={i} className={styles.featureRow}>
                 <div className={styles.featureIconWrap}>
-                  <span className="mi" style={{ fontSize: '0.85rem' }}>{f.icon}</span>
+                  <span className="mi-outlined" style={{ fontSize: '0.85rem' }}>{f.icon}</span>
                 </div>
                 <span className={styles.featureLabel}>{f.label}</span>
               </div>

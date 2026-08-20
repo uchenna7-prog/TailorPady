@@ -245,7 +245,7 @@ export function AddOrderModal({ isOpen, onClose, measurements, onSave, taxRate, 
 
             {measurements.length > VISIBLE_MEASUREMENT_LIMIT && (
               <div className={styles.clothSearchBar}>
-                <span className="mi" style={{ fontSize: '1.1rem', color: 'var(--text3)' }}>search</span>
+                <span className="mi-outlined" style={{ fontSize: '1.1rem', color: 'var(--text3)' }}>search</span>
                 <input
                   type="text"
                   placeholder="Search cloth type…"
@@ -258,7 +258,7 @@ export function AddOrderModal({ isOpen, onClose, measurements, onSave, taxRate, 
                     style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text3)', display: 'flex', alignItems: 'center', padding: 0 }}
                     onClick={() => setClothSearchText('')}
                   >
-                    <span className="mi" style={{ fontSize: '1rem' }}>close</span>
+                    <span className="mi-outlined" style={{ fontSize: '1rem' }}>close</span>
                   </button>
                 )}
               </div>
@@ -278,7 +278,7 @@ export function AddOrderModal({ isOpen, onClose, measurements, onSave, taxRate, 
                     <div className={styles.clothThumb}>
                       {coverImg
                         ? <img src={coverImg} alt={measurement.name} />
-                        : <span className="mi" style={{ fontSize: '1.1rem' }}>checkroom</span>
+                        : <span className="mi-outlined" style={{ fontSize: '1.1rem' }}>checkroom</span>
                       }
                     </div>
                     <div className={styles.clothInfo}>
@@ -286,7 +286,7 @@ export function AddOrderModal({ isOpen, onClose, measurements, onSave, taxRate, 
                       <span>{measurement.fields?.length || 0} measurements</span>
                     </div>
                     <div className={`${styles.clothCheckCircle} ${isSelected ? styles.clothCheckCircle_checked : ''}`}>
-                      {isSelected && <span className="mi" style={{ fontSize: '0.9rem' }}>check</span>}
+                      {isSelected && <span className="mi-outlined" style={{ fontSize: '0.9rem' }}>check</span>}
                     </div>
                   </div>
                 )
@@ -306,7 +306,7 @@ export function AddOrderModal({ isOpen, onClose, measurements, onSave, taxRate, 
 
             {isSearching && visibleMeasurements.length === 0 && (
               <div className={styles.clothEmptySearch}>
-                <span className="mi" style={{ fontSize: '1.6rem' }}>search_off</span>
+                <span className="mi-outlined" style={{ fontSize: '1.6rem' }}>search_off</span>
                 <span>No results for "<strong>{clothSearchText}</strong>"</span>
               </div>
             )}
@@ -333,7 +333,7 @@ export function AddOrderModal({ isOpen, onClose, measurements, onSave, taxRate, 
                           <div className={styles.pricingThumb}>
                             {item.imgSrc
                               ? <img src={item.imgSrc} alt="" />
-                              : <span className="mi" style={{ fontSize: '0.85rem' }}>checkroom</span>
+                              : <span className="mi-outlined" style={{ fontSize: '0.85rem' }}>checkroom</span>
                             }
                           </div>
                           <span className={styles.pricingItemName}>{item.name}</span>
@@ -380,7 +380,7 @@ export function AddOrderModal({ isOpen, onClose, measurements, onSave, taxRate, 
 
                   {validationErrors.pricing && (
                     <div className={styles.pricingError}>
-                      <span className="mi" style={{ fontSize: '0.9rem' }}>error_outline</span>
+                      <span className="mi-outlined" style={{ fontSize: '0.9rem' }}>error_outline</span>
                       {validationErrors.pricing}
                     </div>
                   )}
@@ -399,7 +399,7 @@ export function AddOrderModal({ isOpen, onClose, measurements, onSave, taxRate, 
                   <div className={styles.chargeRow}>
                     <div className={styles.chargeRowLeft}>
                       <div className={styles.chargeIconBox}>
-                        <span className="mi" style={{ fontSize: '1rem' }}>local_shipping</span>
+                        <span className="mi-outlined" style={{ fontSize: '1rem' }}>local_shipping</span>
                       </div>
                       <div>
                         <div className={styles.chargeRowLabel}>Shipping Fee</div>
@@ -424,7 +424,7 @@ export function AddOrderModal({ isOpen, onClose, measurements, onSave, taxRate, 
                   <div className={styles.chargeRow}>
                     <div className={styles.chargeRowLeft}>
                       <div className={styles.chargeIconBox}>
-                        <span className="mi" style={{ fontSize: '1rem' }}>sell</span>
+                        <span className="mi-outlined" style={{ fontSize: '1rem' }}>sell</span>
                       </div>
                       <div>
                         <div className={styles.chargeRowLabel}>Discount</div>
@@ -461,7 +461,7 @@ export function AddOrderModal({ isOpen, onClose, measurements, onSave, taxRate, 
                       <div className={styles.chargeRow}>
                         <div className={styles.chargeRowLeft}>
                           <div className={styles.chargeIconBox}>
-                            <span className="mi" style={{ fontSize: '1rem' }}>receipt</span>
+                            <span className="mi-outlined" style={{ fontSize: '1rem' }}>receipt</span>
                           </div>
                           <div>
                             <div className={styles.chargeRowLabel}>
@@ -474,7 +474,7 @@ export function AddOrderModal({ isOpen, onClose, measurements, onSave, taxRate, 
                         <div className={styles.chargeReadOnly}>
                           ₦{taxAmount.toLocaleString()}
                           <span className={styles.lockIcon}>
-                            <span className="mi" style={{ fontSize: '0.8rem' }}>lock</span>
+                            <span className="mi-outlined" style={{ fontSize: '0.8rem' }}>lock</span>
                           </span>
                         </div>
                       </div>

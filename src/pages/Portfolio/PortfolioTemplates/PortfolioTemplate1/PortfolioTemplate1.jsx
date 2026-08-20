@@ -208,7 +208,7 @@ function WhatsAppWidget({ brandName, brandPhone, brandLogo }) {
             onClick={handlePeekDismiss}
             aria-label="Dismiss message"
           >
-            <span className="mi" style={{ fontSize: '0.95rem' }}>close</span>
+            <span className="mi-outlined" style={{ fontSize: '0.95rem' }}>close</span>
           </button>
           <span className={styles.peekAvatar}>
             {brandLogo
@@ -245,7 +245,7 @@ function WhatsAppWidget({ brandName, brandPhone, brandLogo }) {
               onClick={() => setOpen(false)}
               aria-label="Close chat"
             >
-              <span className="mi" style={{ fontSize: '1.1rem' }}>close</span>
+              <span className="mi-outlined" style={{ fontSize: '1.1rem' }}>close</span>
             </button>
           </div>
           <div className={styles.whatsappPanelBody}>
@@ -542,7 +542,7 @@ function BookingSheet({ isOpen, onClose, brandName, brandEmail, brandPhone, book
         <div className={styles.drawerHandle} />
         {sent ? (
           <div className={styles.sentState}>
-            <div className={styles.sentCheck}><span className="mi">check</span></div>
+            <div className={styles.sentCheck}><span className="mi-outlined">check</span></div>
             <p className={styles.sentTitle}>Request sent</p>
             <p className={styles.sentSub}>{brandName} will be in touch shortly.</p>
           </div>
@@ -554,7 +554,7 @@ function BookingSheet({ isOpen, onClose, brandName, brandEmail, brandPhone, book
                 <p className={styles.drawerTitle}>Book {brandName}</p>
               </div>
               <button className={styles.drawerClose} onClick={onClose}>
-                <span className="mi">close</span>
+                <span className="mi-outlined">close</span>
               </button>
             </div>
             {bookingNote && <p className={styles.drawerNote}>{bookingNote}</p>}
@@ -609,18 +609,18 @@ function Lightbox({ photo, photos, onClose }) {
   return (
     <div className={styles.lbOverlay} onClick={onClose}>
       <div className={styles.lbInner} onClick={e => e.stopPropagation()}>
-        <button className={styles.lbClose} onClick={onClose}><span className="mi">close</span></button>
+        <button className={styles.lbClose} onClick={onClose}><span className="mi-outlined">close</span></button>
         <img src={current.src || current.storageUrl} alt={current.caption} className={styles.lbImg} />
         {photos.length > 1 && (
           <>
             {idx > 0 && (
               <button className={`${styles.lbNav} ${styles.lbLeft}`} onClick={e => { e.stopPropagation(); setIdx(i => i - 1) }}>
-                <span className="mi">chevron_left</span>
+                <span className="mi-outlined">chevron_left</span>
               </button>
             )}
             {idx < photos.length - 1 && (
               <button className={`${styles.lbNav} ${styles.lbRight}`} onClick={e => { e.stopPropagation(); setIdx(i => i + 1) }}>
-                <span className="mi">chevron_right</span>
+                <span className="mi-outlined">chevron_right</span>
               </button>
             )}
           </>
@@ -782,7 +782,7 @@ export function PortfolioTemplate1({ brand, photos, garmentTypes, reviews }) {
           <div className={styles.navMobileTrigger}>
             <ThemeToggle theme={theme} onToggle={toggleTheme} />
             <button className={styles.navMenuButton} onClick={() => setNavOpen(o => !o)} aria-label="Toggle menu">
-              <span className="mi">{navOpen ? 'close' : 'menu'}</span>
+              <span className="mi-outlined">{navOpen ? 'close' : 'menu'}</span>
             </button>
           </div>
         </div>
@@ -1025,19 +1025,19 @@ export function PortfolioTemplate1({ brand, photos, garmentTypes, reviews }) {
             <p className={styles.footerColLabel}>Contact</p>
             {brand.brandAddress && (
               <div className={styles.footerRow}>
-                <span className="mi">location_on</span>
+                <span className="mi-outlined">location_on</span>
                 <span>{brand.brandAddress}</span>
               </div>
             )}
             {brand.brandEmail && (
               <a href={`mailto:${brand.brandEmail}`} className={styles.footerRow}>
-                <span className="mi">mail</span>
+                <span className="mi-outlined">mail</span>
                 <span>{brand.brandEmail}</span>
               </a>
             )}
             {brand.brandPhone && (
               <a href={`tel:${brand.brandPhone}`} className={styles.footerRow}>
-                <span className="mi">call</span>
+                <span className="mi-outlined">call</span>
                 <span>{brand.brandPhone}</span>
               </a>
             )}

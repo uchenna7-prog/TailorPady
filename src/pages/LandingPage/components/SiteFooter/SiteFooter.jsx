@@ -87,15 +87,15 @@ export default function SiteFooter() {
             </div>
             <div className={styles.footerContactDetails}>
               <a href={`tel:${CONTACT.phone.replace(/\s/g, '')}`} className={styles.footerContactLine}>
-                <span className="mi" style={{ fontSize: '1rem' }}>call</span>
+                <span className="mi-outlined" style={{ fontSize: '1rem' }}>call</span>
                 {CONTACT.phone}
               </a>
               <a href={`mailto:${CONTACT.email}`} className={styles.footerContactLine}>
-                <span className="mi" style={{ fontSize: '1rem' }}>mail</span>
+                <span className="mi-outlined" style={{ fontSize: '1rem' }}>mail</span>
                 {CONTACT.email}
               </a>
               <span className={styles.footerContactLine}>
-                <span className="mi" style={{ fontSize: '1rem' }}>location_on</span>
+                <span className="mi-outlined" style={{ fontSize: '1rem' }}>location_on</span>
                 {CONTACT.address}
               </span>
             </div>
