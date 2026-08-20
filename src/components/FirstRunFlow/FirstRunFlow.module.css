@@ -1,0 +1,373 @@
+.page {
+  min-height: 100dvh;
+  background: var(--bg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.card {
+  width: 100%;
+  max-width: 400px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 32px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.dots {
+  display: flex;
+  justify-content: center;
+  gap: 6px;
+  margin-bottom: 20px;
+}
+
+.dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 999px;
+  background: var(--border2);
+  transition: all var(--transition);
+}
+
+.dotActive {
+  width: 20px;
+  background: var(--accent);
+}
+
+.title {
+  font-family: 'Onest', sans-serif;
+  font-size: 1.4rem;
+  font-weight: 900;
+  color: var(--text);
+  margin: 0 0 6px;
+  text-align: center;
+}
+
+.sub {
+  font-size: 0.85rem;
+  color: var(--text3);
+  margin: 0 0 20px;
+  text-align: center;
+  line-height: 1.5;
+}
+
+.phoneFrame {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px 0 24px;
+}
+
+.phone {
+  width: 100%;
+  max-width: 240px;
+  border-radius: 26px;
+  background: var(--surface);
+  box-shadow: 0 20px 40px -20px rgba(0, 0, 0, 0.35);
+  overflow: hidden;
+  border: 5px solid var(--accent);
+}
+
+.phoneNotch {
+  height: 18px;
+  background: var(--accent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.phoneNotch::after {
+  content: '';
+  width: 44px;
+  height: 5px;
+  border-radius: 4px;
+  background: var(--text3);
+}
+
+.phoneScreen {
+  padding: 14px;
+  min-height: 260px;
+  background: var(--surface2);
+}
+
+.mockStatGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.mockStatCard {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 10px;
+}
+
+.mockStatIcon {
+  font-size: 1rem !important;
+  color: var(--text3);
+  margin-bottom: 6px;
+}
+
+.mockStatValue {
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: var(--text);
+  line-height: 1;
+  margin-bottom: 3px;
+}
+
+.mockStatLabel {
+  font-size: 0.55rem;
+  font-weight: 700;
+  color: var(--text3);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.mockRevenueCard {
+  background: var(--accent);
+  border-radius: 10px;
+  padding: 12px;
+}
+
+.mockRevenueLabel {
+  font-size: 0.55rem;
+  font-weight: 700;
+  color: var(--text3);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin-bottom: 4px;
+}
+
+.mockRevenueValue {
+  font-size: 1.1rem;
+  font-weight: 900;
+  color: var(--bg);
+}
+
+.mockListCard {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 10px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.mockThumb {
+  width: 30px;
+  height: 30px;
+  border-radius: 7px;
+  background: var(--surface3);
+  flex-shrink: 0;
+}
+
+.mockListBody {
+  flex: 1;
+  min-width: 0;
+}
+
+.mockListTitle {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--text);
+  margin: 0 0 2px;
+}
+
+.mockListSub {
+  font-size: 0.62rem;
+  color: var(--text3);
+  margin: 0;
+}
+
+.mockTag {
+  font-size: 0.55rem;
+  font-weight: 700;
+  padding: 3px 7px;
+  border-radius: 999px;
+  white-space: nowrap;
+}
+
+.mockTagDone {
+  background: var(--success-soft);
+  color: var(--success);
+}
+
+.mockTagWait {
+  background: var(--warning-soft);
+  color: var(--warning);
+}
+
+.mockNoticeCard {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 10px;
+  display: flex;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.mockNoticeIcon {
+  width: 26px;
+  height: 26px;
+  border-radius: 7px;
+  background: var(--surface3);
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.mockNoticeIcon span {
+  font-size: 0.85rem !important;
+  color: var(--text2);
+}
+
+.mockNoticeTitle {
+  font-size: 0.68rem;
+  font-weight: 700;
+  color: var(--text);
+  margin: 0 0 2px;
+}
+
+.mockNoticeBody {
+  font-size: 0.6rem;
+  color: var(--text3);
+  margin: 0;
+}
+
+.primaryBtn {
+  width: 100%;
+  padding: 14px;
+  background: var(--accent);
+  border: none;
+  border-radius: 12px;
+  font-size: 0.95rem;
+  font-weight: 900;
+  color: var(--bg);
+  font-family: inherit;
+  cursor: pointer;
+  transition: opacity var(--transition);
+}
+
+.primaryBtn:active {
+  opacity: 0.85;
+}
+
+.secondaryBtn {
+  width: 100%;
+  padding: 12px;
+  background: none;
+  border: none;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--text3);
+  cursor: pointer;
+  margin-top: 4px;
+  font-family: inherit;
+}
+
+.permissionIconWrap {
+  display: flex;
+  justify-content: center;
+  margin: 8px 0 20px;
+}
+
+.permissionIcon {
+  width: 72px;
+  height: 72px;
+  border-radius: 20px;
+  background: var(--accent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.permissionIcon span {
+  font-size: 2rem !important;
+  color: var(--bg);
+}
+
+.roleOption {
+  border: 1.5px solid var(--border);
+  border-radius: 14px;
+  padding: 16px;
+  margin-bottom: 12px;
+  cursor: pointer;
+  transition: border-color var(--transition), background var(--transition);
+}
+
+.roleOptionSelected {
+  border-color: var(--accent);
+  background: var(--surface2);
+}
+
+.roleHead {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.roleRadio {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  border: 1.5px solid var(--border2);
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: border-color var(--transition);
+}
+
+.roleRadioSelected {
+  border-color: var(--accent);
+}
+
+.roleRadioSelected::after {
+  content: '';
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--accent);
+}
+
+.roleIcon {
+  width: 36px;
+  height: 36px;
+  border-radius: 9px;
+  background: var(--surface2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.roleIcon span {
+  font-size: 1.1rem !important;
+  color: var(--text2);
+}
+
+.roleTitle {
+  font-size: 0.92rem;
+  font-weight: 800;
+  color: var(--text);
+  margin: 0 0 2px;
+}
+
+.roleSub {
+  font-size: 0.76rem;
+  color: var(--text3);
+  margin: 0;
+  padding-left: 48px;
+}
