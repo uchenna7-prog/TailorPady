@@ -40,7 +40,7 @@ export function ReceiptTemplate5({ receipt, customer, receiptBrandSettings }) {
 
           <div className={styles.headerSplit}>
 
-            <div className={styles.title}>receipt</div>
+            <div className={styles.title}>RECEIPT</div>
 
             <div style={{ textAlign : 'right', fontSize : 9 }}>
               <div className={styles.receiptInfos}>
