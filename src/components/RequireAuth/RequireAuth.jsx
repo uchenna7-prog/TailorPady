@@ -1,12 +1,14 @@
 import { Navigate, useLocation } from 'react-router-dom'
 import { useAuth } from '../../contexts/AuthContext'
+import FirstRunFlow, { useFirstRunStatus } from '../FirstRunFlow/FirstRunFlow'
 import styles from './RequireAuth.module.css'
 
 export default function RequireAuth({ children }) {
   const { user, loading } = useAuth()
   const location          = useLocation()
+  const firstRun          = useFirstRunStatus()
 
-  if (loading) {
+  if (loading || (user && firstRun.checking)) {
     return (
       <div className={styles.loader}>
         <span className={`mi-outlined ${styles.spinner}`}>autorenew</span>
@@ -16,6 +18,10 @@ export default function RequireAuth({ children }) {
 
   if (!user) {
     return <Navigate to="/login" state={{ from: location }} replace />
+  }
+
+  if (firstRun.shouldShow) {
+    return <FirstRunFlow onComplete={() => firstRun.setShouldShow(false)} />
   }
 
   return children
