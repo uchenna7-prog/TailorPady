@@ -37,13 +37,13 @@ const TABS = [
 ]
 
 const EMPTY_CONFIG = {
-  all:           { icon: 'assignment',     title: 'No orders yet',           subtitle: 'Orders from all your customers will appear here. Create one from their profile page. Tap ? for help.' },
-  pending:       { icon: 'schedule',       title: 'No pending orders',       subtitle: 'Pending orders from all your customers will appear here. Tap ? for help.' },
-  'in-progress': { icon: 'autorenew',      title: 'No orders in progress',   subtitle: 'In-progress orders from all your customers will appear here. Tap ? for help.' },
-  completed:     { icon: 'check_circle',   title: 'No completed orders yet', subtitle: 'Completed orders from all your customers will appear here. Tap ? for help.' },
-  delivered:     { icon: 'local_shipping', title: 'No delivered orders yet', subtitle: 'Delivered orders from all your customers will appear here. Tap ? for help.' },
-  cancelled:     { icon: 'cancel',         title: 'No cancelled orders',     subtitle: 'Cancelled orders from all your customers will appear here. Tap ? for help.' },
-  overdue:       { icon: 'alarm_on',       title: 'No overdue orders',       subtitle: 'Nice work, every order is on schedule. Tap ? for help.' },
+  all:           { icon: 'assignment',     title: 'No orders yet',           subtitle: 'Orders from all your customers will appear here. Create one from their profile page. Tap ? button for help.' },
+  pending:       { icon: 'schedule',       title: 'No pending orders',       subtitle: 'Pending orders from all your customers will appear here. Tap ? button  for help.' },
+  'in-progress': { icon: 'autorenew',      title: 'No orders in progress',   subtitle: 'In-progress orders from all your customers will appear here. Tap ? button for help.' },
+  completed:     { icon: 'check_circle',   title: 'No completed orders yet', subtitle: 'Completed orders from all your customers will appear here. Tap ? button for help.' },
+  delivered:     { icon: 'local_shipping', title: 'No delivered orders yet', subtitle: 'Delivered orders from all your customers will appear here. Tap ? button for help.' },
+  cancelled:     { icon: 'cancel',         title: 'No cancelled orders',     subtitle: 'Cancelled orders from all your customers will appear here. Tap ? button for help.' },
+  overdue:       { icon: 'alarm_on',       title: 'No overdue orders',       subtitle: 'Nice work, every order is on schedule. Tap ? button for help.' },
 }
 
 const SWIPE_THRESHOLD    = 50

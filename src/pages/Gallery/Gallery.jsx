@@ -20,7 +20,7 @@ const TABS = [
 ]
 
 const CATEGORY_MAP = {
-  completed_works: { label: 'Portfolio',    icon: 'check_circle' },
+  completed_works: { label: 'Portfolio',    icon: 'photo_library' },
   designs:         { label: 'Design',       icon: 'content_cut'  },
   inspiration:     { label: 'Inspiration',  icon: 'lightbulb'    },
 }

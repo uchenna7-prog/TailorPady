@@ -46,9 +46,9 @@ const STATUS_STYLES = {
 }
 
 const EMPTY_STATE_CONFIG = {
-  all:  { title: 'No receipts yet',            subtitle: 'Receipts from all your customers will appear here. Generate one from their profile page. Tap ? for help.' },
-  full: { title: 'No fully paid receipts yet',  subtitle: 'Fully paid receipts from all your customers will appear here. Tap ? for help.' },
-  part: { title: 'No part payment receipts',    subtitle: 'Part-payment receipts from all your customers will appear here. Tap ? for help.' },
+  all:  { title: 'No receipts yet',            subtitle: 'Receipts from all your customers will appear here. Generate one from their profile page. Tap ? button for help.' },
+  full: { title: 'No fully paid receipts yet',  subtitle: 'Fully paid receipts from all your customers will appear here. Tap ? button for help.' },
+  part: { title: 'No part payment receipts',    subtitle: 'Part-payment receipts from all your customers will appear here. Tap ? button for help.' },
 }
 
 function ReceiptCard({ receipt, currency, onTap, isLast, orderItems }) {

@@ -184,11 +184,11 @@ export default function Invoices({ onMenuClick }) {
   }
 
   const EMPTY_STATE_CONFIG = {
-    all:       { title: 'No invoices yet',           subtitle: 'Invoices from all your customers will appear here. Create one from their profile page. Tap ? for help.' },
-    unpaid:    { title: 'No unpaid invoices',         subtitle: 'Unpaid invoices from all your customers will appear here. Tap ? for help.' },
-    part_paid: { title: 'No part-payment invoices',   subtitle: 'Part-payment invoices from all your customers will appear here. Tap ? for help.' },
-    paid:      { title: 'No paid invoices yet',       subtitle: 'Paid invoices from all your customers will appear here. Tap ? for help.' },
-    overdue:   { title: 'No overdue invoices',        subtitle: 'Nice work, every invoice is on schedule. Tap ? for help.' },
+    all:       { title: 'No invoices yet',           subtitle: 'Invoices from all your customers will appear here. Create one from their profile page. Tap ? button for help.' },
+    unpaid:    { title: 'No unpaid invoices',         subtitle: 'Unpaid invoices from all your customers will appear here. Tap ? button for help.' },
+    part_paid: { title: 'No part-payment invoices',   subtitle: 'Part-payment invoices from all your customers will appear here. Tap ? button for help.' },
+    paid:      { title: 'No paid invoices yet',       subtitle: 'Paid invoices from all your customers will appear here. Tap ? button for help.' },
+    overdue:   { title: 'No overdue invoices',        subtitle: 'Nice work, every invoice is on schedule. Tap ? button for help.' },
   }
 
   const searchFiltered = search.trim()

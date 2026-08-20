@@ -243,7 +243,7 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  background: var(--surface);
+  background: var(--surface2);
   border: 1px solid var(--border2);
   border-radius: 14px;
   padding: 0 12px;
@@ -251,7 +251,7 @@
 
 .gallerySearchInput {
   flex: 1;
-  background: transparent;
+  background: var(--surface2);
   border: none;
   outline: none;
   color: var(--text);

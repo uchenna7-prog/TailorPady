@@ -121,9 +121,9 @@ const TABS = [
 ]
 
 const EMPTY_CONFIG = {
-  all:          { icon: 'payments',     title: 'No payments yet',      subtitle: 'Payments from all your customers will appear here. Record one from their profile page. Tap ? for help.' },
-  full_payment: { icon: 'check_circle', title: 'No full payments yet', subtitle: 'Fully paid payments from all your customers will appear here. Tap ? for help.' },
-  part:         { icon: 'pending',      title: 'No part payments yet', subtitle: 'Partial payments from all your customers will appear here. Tap ? for help.' },
+  all:          { icon: 'payments',     title: 'No payments yet',      subtitle: 'Payments from all your customers will appear here. Record one from their profile page. Tap ? button for help.' },
+  full_payment: { icon: 'check_circle', title: 'No full payments yet', subtitle: 'Fully paid payments from all your customers will appear here. Tap ? button for help.' },
+  part:         { icon: 'pending',      title: 'No part payments yet', subtitle: 'Partial payments from all your customers will appear here. Tap ? button for help.' },
 }
 
 function PaymentRow({ row, isLast, onTap, orderItems }) {
