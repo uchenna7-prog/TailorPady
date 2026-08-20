@@ -6,13 +6,12 @@ import RoleSelection from './RoleSelection'
 import WelcomeCarousel from './WelcomeCarousel'
 import NotificationPermission from './NotificationPermission'
 
-const STEPS = ['role', 'welcome', 'notifications']
+const STEPS = ['welcome', 'notifications', 'role']
 
-export default function FirstRunFlow() {
+export function useFirstRunStatus() {
   const { user } = useAuth()
   const [checking, setChecking] = useState(true)
   const [shouldShow, setShouldShow] = useState(false)
-  const [stepIndex, setStepIndex] = useState(0)
 
   useEffect(() => {
     if (!user?.uid) {
@@ -37,21 +36,25 @@ export default function FirstRunFlow() {
     return () => { cancelled = true }
   }, [user?.uid])
 
+  return { checking, shouldShow, setShouldShow }
+}
+
+export default function FirstRunFlow({ onComplete }) {
+  const [stepIndex, setStepIndex] = useState(0)
+
   function advance() {
     setStepIndex(prev => {
       if (prev + 1 >= STEPS.length) {
-        setShouldShow(false)
+        onComplete()
         return prev
       }
       return prev + 1
     })
   }
 
-  if (checking || !shouldShow) return null
-
   const step = STEPS[stepIndex]
 
-  if (step === 'role') return <RoleSelection onDone={advance} />
   if (step === 'welcome') return <WelcomeCarousel onDone={advance} />
-  return <NotificationPermission onDone={advance} />
+  if (step === 'notifications') return <NotificationPermission onDone={advance} />
+  return <RoleSelection onDone={advance} />
 }
