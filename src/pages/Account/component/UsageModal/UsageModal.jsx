@@ -65,7 +65,7 @@ export default function UsageModal({ onClose, onUpgrade }) {
 
         <div className={styles.header}>
           <div className={styles.headerLeft}>
-            <span className={`mi ${styles.headerIcon}`}>speed</span>
+            <span className={`mi-outlined ${styles.headerIcon}`}>speed</span>
             <div>
               <div className={styles.headerTitle}>Usage</div>
               <div className={styles.headerSub}>Your monthly plan limits</div>
@@ -81,7 +81,7 @@ export default function UsageModal({ onClose, onUpgrade }) {
           {isPremium && (
             <div className={styles.statusCard}>
               <div className={styles.statusCardLeft}>
-                <span className={`mi ${styles.statusIcon}`}>workspace_premium</span>
+                <span className={`mi-outlined ${styles.statusIcon}`}>workspace_premium</span>
                 <div>
                   <div className={styles.statusPlan}>Unlimited usage</div>
                   <div className={styles.statusRenewal}>No limits on Pro, use TailorPady freely</div>

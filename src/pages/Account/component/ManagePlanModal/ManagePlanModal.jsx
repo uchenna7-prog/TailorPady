@@ -37,7 +37,7 @@ export default function ManagePlanModal({ uid, plan, nextRenewal, onClose, onCan
 
         <div className={styles.header}>
           <div className={styles.headerLeft}>
-            <span className={`mi ${styles.crownIcon}`}>workspace_premium</span>
+            <span className={`mi-outlined ${styles.crownIcon}`}>workspace_premium</span>
             <div>
               <div className={styles.title}>{plan || 'TailorPady Pro'}</div>
               <div className={styles.subtitle}>Renews {formatDate(nextRenewal)}</div>

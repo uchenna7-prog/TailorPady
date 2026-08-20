@@ -62,7 +62,7 @@ export default function ShareAppSheet({ open, referralCode, onClose }) {
         <p>Invite another tailor. Once they start using TailorPady, you get a free month of Pro.</p>
 
         <div className={styles.linkRow}>
-          <span className={`mi ${styles.linkIcon}`}>link</span>
+          <span className={`mi-outlined ${styles.linkIcon}`}>link</span>
           <span className={styles.linkText}>{shareUrl.replace(/^https?:\/\//, '')}</span>
           <button
             className={`${styles.linkCopyBtn} ${linkCopied ? styles.copied : ''}`}

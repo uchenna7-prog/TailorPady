@@ -50,9 +50,9 @@ export function TourPickerSheet({ open, hasCompletedTour, onSelect, onClose }) {
                   <span className={styles.itemDescription}>{tour.description}</span>
                 </span>
                 {completed ? (
-                  <span className={`mi ${styles.completedIcon}`}>check_circle</span>
+                  <span className={`mi-outlined ${styles.completedIcon}`}>check_circle</span>
                 ) : (
-                  <span className={`mi ${styles.chevron}`}>chevron_right</span>
+                  <span className={`mi-outlined ${styles.chevron}`}>chevron_right</span>
                 )}
               </button>
             )

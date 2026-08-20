@@ -210,7 +210,7 @@ export function Dropdown({
             {selectedOption ? getOptionLabel(selectedOption) : placeholder}
           </span>
         )}
-        <span className={`mi ${styles.ddArrow} ${open ? styles.ddArrowOpen : ""}`}>expand_more</span>
+        <span className={`mi-outlined ${styles.ddArrow} ${open ? styles.ddArrowOpen : ""}`}>expand_more</span>
       </button>
 
       {open && menuPos && createPortal(
@@ -231,7 +231,7 @@ export function Dropdown({
         >
           {searchable && (
             <div className={styles.ddSearchWrap}>
-              <span className={`mi ${styles.ddSearchIcon}`}>search</span>
+              <span className={`mi-outlined ${styles.ddSearchIcon}`}>search</span>
               <input
                 ref={searchInputRef}
                 type="text"
@@ -261,7 +261,7 @@ export function Dropdown({
           <div className={styles.ddList} ref={listRef}>
             {filtered.length === 0 && (
               <div className={styles.ddListEmpty}>
-                <span className={`mi ${styles.ddListEmptyIcon}`}>search_off</span>
+                <span className={`mi-outlined ${styles.ddListEmptyIcon}`}>search_off</span>
                 <span>No results found</span>
               </div>
             )}
@@ -284,7 +284,7 @@ export function Dropdown({
                   ) : (
                     <>
                       <span className={styles.ddOptionLabel}>{getOptionLabel(option)}</span>
-                      {active && <span className={`mi ${styles.ddOptionCheck}`}>check</span>}
+                      {active && <span className={`mi-outlined ${styles.ddOptionCheck}`}>check</span>}
                     </>
                   )}
                 </button>

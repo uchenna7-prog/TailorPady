@@ -43,7 +43,7 @@ function ContactRow({ iconNode, icon, label, value, href }) {
       </div>
       <div className={styles.rowActions}>
         <CopyButton value={value} />
-        <span className={`mi ${styles.rowArrow}`} style={{ fontSize: '1.15rem' }}>arrow_outward</span>
+        <span className={`mi-outlined ${styles.rowArrow}`} style={{ fontSize: '1.15rem' }}>arrow_outward</span>
       </div>
     </a>
   )

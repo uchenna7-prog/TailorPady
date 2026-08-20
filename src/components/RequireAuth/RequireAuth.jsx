@@ -9,7 +9,7 @@ export default function RequireAuth({ children }) {
   if (loading) {
     return (
       <div className={styles.loader}>
-        <span className={`mi ${styles.spinner}`}>autorenew</span>
+        <span className={`mi-outlined ${styles.spinner}`}>autorenew</span>
       </div>
     )
   }

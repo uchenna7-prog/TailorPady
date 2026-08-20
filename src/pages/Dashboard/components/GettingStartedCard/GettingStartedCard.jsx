@@ -27,12 +27,12 @@ export function GettingStartedCard() {
               disabled={!track.available || isActive}
               onClick={() => startTour(track.id)}
             >
-              <span className={`mi ${styles.rowIcon}`}>
+              <span className={`mi-outlined ${styles.rowIcon}`}>
                 {done ? 'check_circle' : track.available ? 'radio_button_unchecked' : 'lock_outline'}
               </span>
               <span className={styles.rowLabel}>{track.label}</span>
               {track.available && !done && (
-                <span className={`mi ${styles.rowChevron}`}>chevron_right</span>
+                <span className={`mi-outlined ${styles.rowChevron}`}>chevron_right</span>
               )}
               {!track.available && <span className={styles.soon}>Soon</span>}
             </button>

@@ -867,7 +867,7 @@ export function PortfolioTemplate2({ brand, photos, garmentTypes, reviews }) {
                     <div className={styles.reviewTop}>
                       <div className={styles.reviewStars}>
                         {Array.from({ length: 5 }).map((_, s) => (
-                          <span key={s} className={`mi ${styles.starIcon} ${s < r.rating ? styles.starIconFilled : ''}`}>
+                          <span key={s} className={`mi-outlined ${styles.starIcon} ${s < r.rating ? styles.starIconFilled : ''}`}>
                             {s < r.rating ? 'star' : 'star_outline'}
                           </span>
                         ))}

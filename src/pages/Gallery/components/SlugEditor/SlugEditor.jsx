@@ -84,9 +84,9 @@ export function SlugEditor({ uid, currentSlug, onSlugSaved }) {
   const canSave = preview.length >= 3 && available === true && !saving
 
   const statusIcon = () => {
-    if (checking) return <span className={`mi ${styles.spinIcon}`}>refresh</span>
-    if (available === true)  return <span className={`mi ${styles.okIcon}`}>check_circle</span>
-    if (available === false) return <span className={`mi ${styles.errIcon}`}>cancel</span>
+    if (checking) return <span className={`mi-outlined ${styles.spinIcon}`}>refresh</span>
+    if (available === true)  return <span className={`mi-outlined ${styles.okIcon}`}>check_circle</span>
+    if (available === false) return <span className={`mi-outlined ${styles.errIcon}`}>cancel</span>
     return null
   }
 
@@ -172,7 +172,7 @@ export function SlugEditor({ uid, currentSlug, onSlugSaved }) {
         </button>
         <button className={styles.saveBtn} onClick={handleSave} disabled={!canSave}>
           {saving
-            ? <><span className={`mi ${styles.spinIcon}`} style={{ fontSize: '0.9rem' }}>refresh</span> Saving…</>
+            ? <><span className={`mi-outlined ${styles.spinIcon}`} style={{ fontSize: '0.9rem' }}>refresh</span> Saving…</>
             : <><span className="mi-outlined" style={{ fontSize: '0.9rem' }}>check</span> Save Link</>
           }
         </button>

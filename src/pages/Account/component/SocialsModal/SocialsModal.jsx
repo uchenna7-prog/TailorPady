@@ -73,7 +73,7 @@ export function SocialsModal({ onBack, showToast }) {
                 </div>
                 <span className={styles.socialPlatformLabel}>{platform.label}</span>
               </div>
-              <span className={`mi ${styles.socialChevron} ${expanded[platform.id] ? styles.socialChevronOpen : ''}`} style={{ fontSize: '1rem' }}>
+              <span className={`mi-outlined ${styles.socialChevron} ${expanded[platform.id] ? styles.socialChevronOpen : ''}`} style={{ fontSize: '1rem' }}>
                 expand_more
               </span>
             </button>

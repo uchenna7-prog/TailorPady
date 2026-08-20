@@ -22,7 +22,7 @@ export function ImageSourceMenu({ open, onClose, onChooseGallery, onChooseUpload
             <div className={styles.optionLabel}>Choose from Gallery</div>
             <div className={styles.optionHint}>Pick from your Portfolio photos</div>
           </div>
-          <span className={`mi ${styles.chevron}`}>chevron_right</span>
+          <span className={`mi-outlined ${styles.chevron}`}>chevron_right</span>
         </button>
 
         <button
@@ -37,7 +37,7 @@ export function ImageSourceMenu({ open, onClose, onChooseGallery, onChooseUpload
             <div className={styles.optionLabel}>Upload from Phone</div>
             <div className={styles.optionHint}>Select a new image from your device</div>
           </div>
-          <span className={`mi ${styles.chevron}`}>chevron_right</span>
+          <span className={`mi-outlined ${styles.chevron}`}>chevron_right</span>
         </button>
 
         <button type="button" className={styles.cancelBtn} onClick={onClose}>

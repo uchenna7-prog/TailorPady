@@ -197,7 +197,7 @@ export default function Gallery({ onMenuClick }) {
                 aria-label={tabAction.label}
                 data-tour="gallery-share-portfolio-pill"
               >
-                <span className={`mi ${styles.pillIcon}`}>{tabAction.icon}</span>
+                <span className={`mi-outlined ${styles.pillIcon}`}>{tabAction.icon}</span>
                 <span className={styles.pillLabel}>{tabAction.label}</span>
               </button>
             </div>

@@ -292,7 +292,7 @@ export default function Signup() {
                   setTouched(prev => ({ ...prev, agreed: true }))
                 }}
               >
-                <span className={`mi ${styles.checkmark}`}>check</span>
+                <span className={`mi-outlined ${styles.checkmark}`}>check</span>
               </button>
               <label
                 className={styles.agreeLabel}

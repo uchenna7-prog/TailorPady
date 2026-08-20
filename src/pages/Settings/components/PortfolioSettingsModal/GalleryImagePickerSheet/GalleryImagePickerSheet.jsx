@@ -40,7 +40,7 @@ export function GalleryImagePickerSheet({ open, onClose, onSelect }) {
         </div>
 
         <div className={styles.searchWrap}>
-          <span className={`mi ${styles.searchIcon}`}>search</span>
+          <span className={`mi-outlined ${styles.searchIcon}`}>search</span>
           <input
             type="text"
             className={styles.searchInput}

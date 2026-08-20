@@ -9,7 +9,7 @@ export function UrgentStrip({ items, navigate }) {
     <div className={styles.urgentStrip}>
 
       <div className={styles.urgentStripHeader}>
-        <span className={`mi ${styles.urgentStripHeaderIcon}`}>warning_amber</span>
+        <span className={`mi-outlined ${styles.urgentStripHeaderIcon}`}>warning_amber</span>
         <span className={styles.urgentStripTitle}>Needs attention</span>
       </div>
 
@@ -18,7 +18,7 @@ export function UrgentStrip({ items, navigate }) {
         {items.map((item, i) => (
           <button key={i} className={styles.urgentItem} onClick={() => navigate(item.route)}>
 
-            <span className={`mi ${styles.urgentItemIcon}`}>{item.icon}</span>
+            <span className={`mi-outlined ${styles.urgentItemIcon}`}>{item.icon}</span>
             <span className={styles.urgentItemText}>{item.text}</span>
             <span className="mi-outlined" style={{ fontSize: '0.8rem', color: 'var(--text3)', marginLeft: 'auto', flexShrink: 0 }}>chevron_right</span>
           

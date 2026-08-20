@@ -45,7 +45,7 @@ export default function BillingHistoryModal({ onClose }) {
 
         <div className={styles.header}>
           <div className={styles.headerLeft}>
-            <span className={`mi ${styles.headerIcon}`}>receipt_long</span>
+            <span className={`mi-outlined ${styles.headerIcon}`}>receipt_long</span>
             <div>
               <div className={styles.headerTitle}>Billing History</div>
               <div className={styles.headerSub}>Payments, renewals and receipts</div>
@@ -61,7 +61,7 @@ export default function BillingHistoryModal({ onClose }) {
           {isPremium && (
             <div className={styles.statusCard}>
               <div className={styles.statusCardLeft}>
-                <span className={`mi ${styles.statusIcon}`}>workspace_premium</span>
+                <span className={`mi-outlined ${styles.statusIcon}`}>workspace_premium</span>
                 <div>
                   <div className={styles.statusPlan}>{plan || 'TailorPady Pro'}</div>
                   <div className={styles.statusRenewal}>

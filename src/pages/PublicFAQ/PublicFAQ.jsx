@@ -26,7 +26,7 @@ export default function PublicFAQ() {
               <div key={key} className={styles.item}>
                 <button className={styles.itemHeader} onClick={() => toggle(key)}>
                   <span className={styles.itemQ}>{item.q}</span>
-                  <span className={`mi ${styles.chevron} ${isOpen ? styles.chevronOpen : ''}`}>
+                  <span className={`mi-outlined ${styles.chevron} ${isOpen ? styles.chevronOpen : ''}`}>
                     expand_more
                   </span>
                 </button>

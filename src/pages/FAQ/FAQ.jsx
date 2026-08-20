@@ -9,7 +9,7 @@ function AccordionItem({ q, a, isOpen, onToggle, divider = true }) {
     <div className={`${styles.item} ${!divider ? styles.noDivider : ''}`}>
       <button className={styles.itemHeader} onClick={onToggle}>
         <span className={styles.itemQ}>{q}</span>
-        <span className={`mi ${styles.itemChevron} ${isOpen ? styles.itemChevronOpen : ''}`}>
+        <span className={`mi-outlined ${styles.itemChevron} ${isOpen ? styles.itemChevronOpen : ''}`}>
           expand_more
         </span>
       </button>
@@ -47,7 +47,7 @@ export default function FAQ({ onMenuClick }) {
 
         <div className={styles.searchPadding}>
           <div className={styles.searchWrap}>
-            <span className={`mi ${styles.searchIcon}`}>search</span>
+            <span className={`mi-outlined ${styles.searchIcon}`}>search</span>
             <input
               className={styles.searchInput}
               type="text"

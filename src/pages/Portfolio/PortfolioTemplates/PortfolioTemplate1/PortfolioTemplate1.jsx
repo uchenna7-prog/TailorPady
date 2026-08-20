@@ -653,7 +653,7 @@ function FaqItem({ index, item, openIndex, onToggle, delay = 0 }) {
     <Reveal as="div" className={styles.faqRow} delay={delay}>
       <button className={styles.faqQuestion} onClick={() => onToggle(isOpen ? null : index)} aria-expanded={isOpen}>
         <span>{item.question}</span>
-        <span className={`mi ${styles.faqIcon} ${isOpen ? styles.faqIconOpen : ''}`}>add</span>
+        <span className={`mi-outlined ${styles.faqIcon} ${isOpen ? styles.faqIconOpen : ''}`}>add</span>
       </button>
       <div className={styles.faqAnswerWrap} style={{ maxHeight }}>
         <p className={styles.faqAnswer} ref={answerRef}>{item.answer}</p>
@@ -868,7 +868,7 @@ export function PortfolioTemplate1({ brand, photos, garmentTypes, reviews }) {
               <div className={styles.factsList}>
                 {aboutInfoItems.map(item => (
                   <div key={item.label} className={styles.factRow}>
-                    <span className={`mi ${styles.factIcon}`}>{item.icon}</span>
+                    <span className={`mi-outlined ${styles.factIcon}`}>{item.icon}</span>
                     <div className={styles.factText}>
                       <span className={styles.factLabel}>{item.label}</span>
                       <span className={styles.factValue}>{item.value}</span>
@@ -954,7 +954,7 @@ export function PortfolioTemplate1({ brand, photos, garmentTypes, reviews }) {
                 <Reveal as="div" key={r.id} className={styles.reviewCard} delay={(i % 3) * 80}>
                   <div className={styles.reviewStars}>
                     {Array.from({ length: 5 }).map((_, s) => (
-                      <span key={s} className={`mi ${styles.starIcon} ${s < r.rating ? styles.starIconFilled : ''}`}>
+                      <span key={s} className={`mi-outlined ${styles.starIcon} ${s < r.rating ? styles.starIconFilled : ''}`}>
                         {s < r.rating ? 'star' : 'star_outline'}
                       </span>
                     ))}

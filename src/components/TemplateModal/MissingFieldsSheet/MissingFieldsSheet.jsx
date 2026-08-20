@@ -98,7 +98,7 @@ function FieldPill({ fieldKey }) {
   const meta = FIELD_META[fieldKey]
   return (
     <div className={styles.pill}>
-      <span className={`mi ${styles.pillIcon}`}>{meta?.icon ?? 'circle'}</span>
+      <span className={`mi-outlined ${styles.pillIcon}`}>{meta?.icon ?? 'circle'}</span>
       <span className={styles.pillLabel}>{meta?.label ?? fieldKey}</span>
     </div>
   )
@@ -123,7 +123,7 @@ function GroupCard({ icon, title, fields, actionLabel, onAction }) {
 
       <button className={styles.groupAction} onClick={onAction}>
         <span>{actionLabel}</span>
-        <span className={`mi ${styles.groupActionIcon}`}>arrow_forward</span>
+        <span className={`mi-outlined ${styles.groupActionIcon}`}>arrow_forward</span>
       </button>
     </div>
   )
@@ -132,7 +132,7 @@ function GroupCard({ icon, title, fields, actionLabel, onAction }) {
 function CompletedBanner({ label }) {
   return (
     <div className={styles.completedBanner}>
-      <span className={`mi ${styles.completedBannerIcon}`}>check_circle</span>
+      <span className={`mi-outlined ${styles.completedBannerIcon}`}>check_circle</span>
       <span className={styles.completedBannerLabel}>{label} ✓</span>
     </div>
   )

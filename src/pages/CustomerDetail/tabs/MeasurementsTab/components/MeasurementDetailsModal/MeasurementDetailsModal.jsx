@@ -10,7 +10,7 @@ import styles from "./MeasurementDetailsModal.module.css"
 function DressFormPlaceholder() {
   return (
     <div className={styles.placeholderBlock}>
-      <span className={`mi ${styles.placeholderIcon}`}>checkroom</span>
+      <span className={`mi-outlined ${styles.placeholderIcon}`}>checkroom</span>
       <p className={styles.placeholderText}>No design references saved</p>
     </div>
   )

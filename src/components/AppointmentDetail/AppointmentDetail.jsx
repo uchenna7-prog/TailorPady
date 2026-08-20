@@ -240,7 +240,7 @@ export function AppointmentDetail({ appt, customer, order, onClose, onStatusChan
               >
                 <div className={styles.cardHeader}>
                   <span className={styles.sectionCardLabel}>Customer</span>
-                  <span className={`mi ${styles.chevronIcon}`} style={{ fontSize: '1.05rem', color: 'var(--text3)' }}>chevron_right</span>
+                  <span className={`mi-outlined ${styles.chevronIcon}`} style={{ fontSize: '1.05rem', color: 'var(--text3)' }}>chevron_right</span>
                 </div>
                 <div className={styles.detailLinkedRow}>
                   <CustomerLinkIcon customer={customer} />

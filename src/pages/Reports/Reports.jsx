@@ -223,7 +223,7 @@ function StatCard({ icon, label, value, info, isInfoOpen, onToggleInfo, onCloseI
           )}
         </>
       )}
-      <span className={`mi ${styles.statIcon}`}>{icon}</span>
+      <span className={`mi-outlined ${styles.statIcon}`}>{icon}</span>
       <div className={styles.statValue}>{value}</div>
       <div className={styles.statLabel}>{label}</div>
     </div>

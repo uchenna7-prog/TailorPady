@@ -347,7 +347,7 @@ function StarRating({ rating, max = 5 }) {
       {Array.from({ length: max }).map((_, i) => (
         <span
           key={i}
-          className={`mi ${styles.reviewStarIcon} ${i < rating ? styles.reviewStarIconFilled : ''}`}
+          className={`mi-outlined ${styles.reviewStarIcon} ${i < rating ? styles.reviewStarIconFilled : ''}`}
         >
           star
         </span>
@@ -495,7 +495,7 @@ function AboutAndProduct({ items }) {
         <Reveal as="ul" className={styles.aboutChecklist} delay={120}>
           {ABOUT_POINTS.map(point => (
             <li key={point} className={styles.aboutChecklistItem}>
-              <span className={`mi ${styles.aboutCheckIcon}`}>check_circle</span>
+              <span className={`mi-outlined ${styles.aboutCheckIcon}`}>check_circle</span>
               {point}
             </li>
           ))}
@@ -504,7 +504,7 @@ function AboutAndProduct({ items }) {
         <div className={styles.aboutStats}>
           {ABOUT_STATS.map((stat, i) => (
             <Reveal key={stat.label} as="div" className={styles.aboutStat} delay={180 + i * 70}>
-              <span className={`mi ${styles.aboutStatIcon}`}>{stat.icon}</span>
+              <span className={`mi-outlined ${styles.aboutStatIcon}`}>{stat.icon}</span>
               <div className={styles.aboutStatText}>
                 <StatValue value={stat.value} className={styles.aboutStatValue} />
                 <span className={styles.aboutStatLabel}>{stat.label}</span>
@@ -584,7 +584,7 @@ function HowItWorks() {
                 {s.n}
                 <span className={styles.howIndexTotal}>/{STEPS.length.toString().padStart(2, '0')}</span>
               </span>
-              <span className={`mi ${styles.howIcon}`}>{s.icon}</span>
+              <span className={`mi-outlined ${styles.howIcon}`}>{s.icon}</span>
             </div>
             <h3 className={styles.stepTitle}>{s.title}</h3>
             <p className={styles.stepBody}>{s.body}</p>
@@ -670,7 +670,7 @@ function PricingTeaser({ onNavigate }) {
             <ul className={styles.pricingList}>
               {plan.features.map(feature => (
                 <li key={feature.label} className={styles.pricingListItem}>
-                  <span className={`mi ${styles.pricingCheck}`}>{feature.icon}</span>
+                  <span className={`mi-outlined ${styles.pricingCheck}`}>{feature.icon}</span>
                   {feature.label}
                 </li>
               ))}
@@ -707,7 +707,7 @@ function FAQPreview() {
                 onClick={() => setOpenIndex(isOpen ? -1 : i)}
               >
                 <span className={styles.faqQ}>{item.q}</span>
-                <span className={`mi ${styles.faqIcon} ${isOpen ? styles.faqIconOpen : ''}`}>add</span>
+                <span className={`mi-outlined ${styles.faqIcon} ${isOpen ? styles.faqIconOpen : ''}`}>add</span>
               </button>
               <div className={`${styles.faqPanel} ${isOpen ? styles.faqPanelOpen : ''}`}>
                 <div className={styles.faqPanelInner}>

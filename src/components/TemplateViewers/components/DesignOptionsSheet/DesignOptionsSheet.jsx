@@ -16,7 +16,7 @@ export function DesignOptionsSheet({ onClose, onSelectTemplate, onSelectColour }
               <span className={styles.optionLabel}>Template</span>
               <span className={styles.optionDesc}>Choose a layout for this document</span>
             </div>
-            <span className={`mi ${styles.optionChevron}`}>chevron_right</span>
+            <span className={`mi-outlined ${styles.optionChevron}`}>chevron_right</span>
           </button>
 
           <button className={styles.option} onClick={onSelectColour}>
@@ -27,7 +27,7 @@ export function DesignOptionsSheet({ onClose, onSelectTemplate, onSelectColour }
               <span className={styles.optionLabel}>Brand Colour</span>
               <span className={styles.optionDesc}>Set the accent colour for this document</span>
             </div>
-            <span className={`mi ${styles.optionChevron}`}>chevron_right</span>
+            <span className={`mi-outlined ${styles.optionChevron}`}>chevron_right</span>
           </button>
         </div>
 

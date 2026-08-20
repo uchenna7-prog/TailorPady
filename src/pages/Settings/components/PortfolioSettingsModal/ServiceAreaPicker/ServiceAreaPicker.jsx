@@ -84,7 +84,7 @@ export function ServiceAreaPicker({ value, onChange }) {
 
       <div className={styles.toggleRow}>
         <div className={styles.toggleLabel}>
-          <span className={`mi ${styles.toggleIcon}`}>public</span>
+          <span className={`mi-outlined ${styles.toggleIcon}`}>public</span>
           <div className={styles.toggleText}>
             <span className={styles.toggleTitle}>International clients</span>
             <span className={styles.toggleSub}>Also show your services to clients outside Nigeria</span>

@@ -520,7 +520,7 @@ export default function OrderDetailModal({
           >
             <div className={styles.cardHeader}>
               <span className={styles.cardLabel}>Production Progress</span>
-              <span className={`mi ${styles.chevronIcon}`} style={{ fontSize: '1.05rem', color: 'var(--text3)' }}>chevron_right</span>
+              <span className={`mi-outlined ${styles.chevronIcon}`} style={{ fontSize: '1.05rem', color: 'var(--text3)' }}>chevron_right</span>
             </div>
             <div className={styles.donutRow}>
               <div className={styles.donutContent}>
@@ -565,7 +565,7 @@ export default function OrderDetailModal({
           >
             <div className={styles.cardHeader}>
               <span className={styles.cardLabel}>Customer</span>
-              <span className={`mi ${styles.chevronIcon}`} style={{ fontSize: '1.05rem', color: 'var(--text3)' }}>chevron_right</span>
+              <span className={`mi-outlined ${styles.chevronIcon}`} style={{ fontSize: '1.05rem', color: 'var(--text3)' }}>chevron_right</span>
             </div>
             <div className={styles.linkedRow}>
               <span className="mi-outlined" style={{ fontSize: '1rem', color: 'var(--text3)' }}>person</span>
@@ -661,7 +661,7 @@ export default function OrderDetailModal({
         {local.notes && (
           <div className={styles.sectionCard}>
             <div className={styles.sectionCardLabel}>
-              <span className={`mi ${styles.sectionIcon}`}>sticky_note_2</span>
+              <span className={`mi-outlined ${styles.sectionIcon}`}>sticky_note_2</span>
               Notes
             </div>
             <p className={styles.notesText}>{local.notes}</p>
