@@ -249,7 +249,7 @@
   min-width: 15px;
   height: 15px;
   border-radius: 10px;
-  background: var(--alert);
+  background: var(--danger);
   border: 2px solid var(--bg);
   font-size: 0.5rem;
   font-weight: 800;

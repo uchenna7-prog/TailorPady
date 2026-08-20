@@ -45,6 +45,12 @@ const STATUS_STYLES = {
   part: { bg: 'rgba(251,146,60,0.12)', color: '#c2410c', border: 'rgba(251,146,60,0.3)' },
 }
 
+const EMPTY_STATE_CONFIG = {
+  all:  { title: 'No receipts yet',            subtitle: 'Receipts from all your customers will appear here. Generate one from their profile page. Tap ? for help.' },
+  full: { title: 'No fully paid receipts yet',  subtitle: 'Fully paid receipts from all your customers will appear here. Tap ? for help.' },
+  part: { title: 'No part payment receipts',    subtitle: 'Part-payment receipts from all your customers will appear here. Tap ? for help.' },
+}
+
 function ReceiptCard({ receipt, currency, onTap, isLast, orderItems }) {
   const amount = getReceiptOwnAmount(receipt)
   const full   = isFullPayment(receipt)
@@ -88,7 +94,7 @@ export default function Receipts({ onMenuClick }) {
   const { generalSettings }                                                          = useGeneralSettings()
   const { allOrders }                                                                = useOrders()
   const { allReceipts, updateReceiptTemplate, updateReceiptColour, deleteReceipt }  = useReceipts()
-  const { hasCompletedTour, startTour, isActive } = useTour()
+  const { startTour, isActive } = useTour()
 
   const currency = generalSettings.invoiceCurrency || '₦'
 
@@ -123,14 +129,6 @@ export default function Receipts({ onMenuClick }) {
   useEffect(() => {
     return () => clearTimeout(toastTimerRef.current)
   }, [])
-
-  function handleAddCTA() {
-    if (!hasCompletedTour('onboarding') && !hasCompletedTour('recovery-receipts')) {
-      startTour('recovery-receipts')
-      return
-    }
-    navigate('/customers')
-  }
 
   function handleHelpClick() {
     if (isActive) return
@@ -205,12 +203,6 @@ export default function Receipts({ onMenuClick }) {
     all:  allReceipts.length,
     full: allReceipts.filter(r =>  isFullPayment(r)).length,
     part: allReceipts.filter(r => !isFullPayment(r)).length,
-  }
-
-  const EMPTY_STATE_CONFIG = {
-    all:  { title: 'No receipts yet',           subtitle: 'Add a customer first, then generate a receipt from their profile page.' },
-    full: { title: 'No fully paid receipts yet', subtitle: 'Receipts paid in full will appear here.' },
-    part: { title: 'No part payment receipts',   subtitle: 'Receipts with a partial payment will appear here.' },
   }
 
   const searchFiltered = search.trim()
@@ -306,31 +298,6 @@ export default function Receipts({ onMenuClick }) {
   return (
     <div className={styles.page}>
       <Header title="All Receipts" onMenuClick={onMenuClick} />
-
-      <div style={{ display: 'flex', justifyContent: 'flex-end', padding: '10px 16px 0' }}>
-        <button
-          type="button"
-          onClick={handleHelpClick}
-          disabled={isActive}
-          title={isActive ? 'Finish the current tour first' : 'Learn how to generate a receipt'}
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: 4,
-            background: 'none',
-            border: 'none',
-            color: 'var(--accent)',
-            fontSize: '0.78rem',
-            fontWeight: 700,
-            cursor: isActive ? 'default' : 'pointer',
-            opacity: isActive ? 0.5 : 1,
-            padding: '4px 0',
-          }}
-        >
-          <span className="mi" style={{ fontSize: '0.9rem' }}>help_outline</span>
-          Need help?
-        </button>
-      </div>
 
       <div className={styles.searchContainer}>
         <div className={styles.searchRow}>
@@ -435,15 +402,6 @@ export default function Receipts({ onMenuClick }) {
             <span className="mi" style={{ fontSize: '2.5rem', color: 'var(--text3)' }}>receipt</span>
             <p className={styles.emptyStateTitle}>{EMPTY_STATE_CONFIG[activeTab].title}</p>
             <p className={styles.emptyStateSubtitle}>{EMPTY_STATE_CONFIG[activeTab].subtitle}</p>
-            {activeTab === 'all' && !search && (
-              <button
-                onClick={handleAddCTA}
-                className={styles.generateReceiptBtn}
-              >
-                <span className="mi">add</span>
-                Generate Receipt
-              </button>
-            )}
           </div>
         ) : (
           Object.entries(grouped).map(([date, dateReceipts]) => (
@@ -464,6 +422,15 @@ export default function Receipts({ onMenuClick }) {
           ))
         )}
       </div>
+
+      <button
+        className={styles.fab}
+        onClick={handleHelpClick}
+        disabled={isActive}
+        title={isActive ? 'Finish the current tour first' : 'Need help?'}
+      >
+        <span className="mi">help_outline</span>
+      </button>
 
       {viewing && (
         <ReceiptViewer

@@ -120,6 +120,12 @@ const TABS = [
   { id: 'part',          label: 'Part Payment'  },
 ]
 
+const EMPTY_CONFIG = {
+  all:          { icon: 'payments',     title: 'No payments yet',      subtitle: 'Payments from all your customers will appear here. Record one from their profile page. Tap ? for help.' },
+  full_payment: { icon: 'check_circle', title: 'No full payments yet', subtitle: 'Fully paid payments from all your customers will appear here. Tap ? for help.' },
+  part:         { icon: 'pending',      title: 'No part payments yet', subtitle: 'Partial payments from all your customers will appear here. Tap ? for help.' },
+}
+
 function PaymentRow({ row, isLast, onTap, orderItems }) {
   const sm        = STATUS_META[row.paymentStatus] ?? STATUS_META.not_paid
   const mIcon     = METHOD_ICONS[row.method] ?? 'payments'
@@ -456,7 +462,7 @@ export default function Payments({ onMenuClick }) {
   const navigate         = useNavigate()
   const { allPayments }  = usePayments()
   const { allOrders }    = useOrders()
-  const { hasCompletedTour, startTour, isActive } = useTour()
+  const { startTour, isActive } = useTour()
 
   const [activeTab,     setActiveTab]     = useState('all')
   const [detailRow,     setDetailRow]     = useState(null)
@@ -476,14 +482,6 @@ export default function Payments({ onMenuClick }) {
   const tabItemRefs     = useRef([])
 
   const activeTabIdx = TABS.findIndex(t => t.id === activeTab)
-
-  function handleAddCTA() {
-    if (!hasCompletedTour('onboarding') && !hasCompletedTour('recovery-payments')) {
-      startTour('recovery-payments')
-      return
-    }
-    navigate('/customers')
-  }
 
   function handleHelpClick() {
     if (isActive) return
@@ -647,31 +645,6 @@ export default function Payments({ onMenuClick }) {
     <div className={styles.page}>
       <Header onMenuClick={onMenuClick} title="All Payments" />
 
-      <div style={{ display: 'flex', justifyContent: 'flex-end', padding: '10px 16px 0' }}>
-        <button
-          type="button"
-          onClick={handleHelpClick}
-          disabled={isActive}
-          title={isActive ? 'Finish the current tour first' : 'Learn how to record a payment'}
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: 4,
-            background: 'none',
-            border: 'none',
-            color: 'var(--accent)',
-            fontSize: '0.78rem',
-            fontWeight: 700,
-            cursor: isActive ? 'default' : 'pointer',
-            opacity: isActive ? 0.5 : 1,
-            padding: '4px 0',
-          }}
-        >
-          <span className="mi" style={{ fontSize: '0.9rem' }}>help_outline</span>
-          Need help?
-        </button>
-      </div>
-
       <div className={styles.searchContainer}>
         <div className={styles.searchRow}>
           <div className={styles.searchBox}>
@@ -773,31 +746,14 @@ export default function Payments({ onMenuClick }) {
         {filtered.length === 0 && (
           <div className={styles.emptyState}>
             <span className="mi" style={{ fontSize: '2.5rem', color: 'var(--text3)' }}>
-              {activeTab === 'full_payment' ? 'check_circle' : activeTab === 'part' ? 'pending' : 'payments'}
+              {search ? 'search_off' : EMPTY_CONFIG[activeTab].icon}
             </span>
             <p className={styles.emptyStateTitle}>
-              {search
-                ? 'No results found'
-                : activeTab === 'all'
-                  ? 'No payments yet'
-                  : `No ${TABS.find(t => t.id === activeTab)?.label.toLowerCase()} payments`}
+              {search ? 'No results found' : EMPTY_CONFIG[activeTab].title}
             </p>
             <p className={styles.emptyStateSubtitle}>
-              {search
-                ? `No payments match "${search}".`
-                : activeTab === 'all'
-                  ? 'Add a customer first, then record a payment from their profile page.'
-                  : 'Payments matching this filter will appear here.'}
+              {search ? `No payments match "${search}".` : EMPTY_CONFIG[activeTab].subtitle}
             </p>
-            {!search && activeTab === 'all' && (
-              <button
-                onClick={handleAddCTA}
-                className={styles.recordPaymentBtn}
-              >
-                <span className="mi">add</span>
-                Record Payment
-              </button>
-            )}
           </div>
         )}
 
@@ -820,6 +776,15 @@ export default function Payments({ onMenuClick }) {
 
         <div style={{ height: 32 }} />
       </div>
+
+      <button
+        className={styles.fab}
+        onClick={handleHelpClick}
+        disabled={isActive}
+        title={isActive ? 'Finish the current tour first' : 'Need help?'}
+      >
+        <span className="mi">help_outline</span>
+      </button>
 
       {detailRow && (
         <PaymentDetail

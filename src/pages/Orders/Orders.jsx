@@ -1,5 +1,4 @@
 import { useState, useRef } from 'react'
-import { useNavigate } from 'react-router-dom'
 import { useTour } from '../../contexts/TourContext'
 import Header from '../../components/Header/Header'
 import BottomNav from '../../components/BottomNav/BottomNav'
@@ -38,13 +37,13 @@ const TABS = [
 ]
 
 const EMPTY_CONFIG = {
-  all:           { icon: 'assignment',     title: 'No orders yet',          subtitle: 'Add a customer first, then create an order from their profile page.' },
-  pending:       { icon: 'schedule',       title: 'No pending orders',      subtitle: 'Orders waiting to be started will appear here.' },
-  'in-progress': { icon: 'autorenew',      title: 'No orders in progress',  subtitle: 'Orders currently being worked on will appear here.' },
-  completed:     { icon: 'check_circle',   title: 'No completed orders yet', subtitle: 'Orders marked complete will appear here.' },
-  delivered:     { icon: 'local_shipping', title: 'No delivered orders yet', subtitle: 'Orders marked delivered will appear here.' },
-  cancelled:     { icon: 'cancel',         title: 'No cancelled orders',    subtitle: 'Orders you cancel will appear here.' },
-  overdue:       { icon: 'alarm_on',       title: 'No overdue orders',      subtitle: 'Nice work, every order is on schedule.' },
+  all:           { icon: 'assignment',     title: 'No orders yet',           subtitle: 'Orders from all your customers will appear here. Create one from their profile page. Tap ? for help.' },
+  pending:       { icon: 'schedule',       title: 'No pending orders',       subtitle: 'Pending orders from all your customers will appear here. Tap ? for help.' },
+  'in-progress': { icon: 'autorenew',      title: 'No orders in progress',   subtitle: 'In-progress orders from all your customers will appear here. Tap ? for help.' },
+  completed:     { icon: 'check_circle',   title: 'No completed orders yet', subtitle: 'Completed orders from all your customers will appear here. Tap ? for help.' },
+  delivered:     { icon: 'local_shipping', title: 'No delivered orders yet', subtitle: 'Delivered orders from all your customers will appear here. Tap ? for help.' },
+  cancelled:     { icon: 'cancel',         title: 'No cancelled orders',     subtitle: 'Cancelled orders from all your customers will appear here. Tap ? for help.' },
+  overdue:       { icon: 'alarm_on',       title: 'No overdue orders',       subtitle: 'Nice work, every order is on schedule. Tap ? for help.' },
 }
 
 const SWIPE_THRESHOLD    = 50
@@ -53,25 +52,16 @@ const SWIPE_MAX_VERTICAL = 80
 export default function Orders({ onMenuClick, onGoToCustomer }) {
   const { allOrders } = useOrders()
   const { hasCompletedTour, startTour, isActive } = useTour()
-  const navigate = useNavigate()
 
   const [activeTab,   setActiveTab]   = useState('all')
   const [detailOrder, setDetailOrder] = useState(null)
   const [search,      setSearch]      = useState('')
   const [filterOpen,  setFilterOpen]  = useState(false)
 
-  const tabsRef     = useRef(null)
-  const swipeRef    = useRef({ startX: 0, startY: 0, tracking: false })
+  const tabsRef  = useRef(null)
+  const swipeRef = useRef({ startX: 0, startY: 0, tracking: false })
 
   const activeIndex = TABS.findIndex(t => t.id === activeTab)
-
-  function handleAddCTA() {
-    if (!hasCompletedTour('onboarding') && !hasCompletedTour('recovery-orders')) {
-      startTour('recovery-orders')
-      return
-    }
-    navigate('/customers')
-  }
 
   function handleHelpClick() {
     if (isActive) return
@@ -168,31 +158,6 @@ export default function Orders({ onMenuClick, onGoToCustomer }) {
     <div className={styles.page}>
       <Header title="All Orders" onMenuClick={onMenuClick} />
 
-      <div style={{ display: 'flex', justifyContent: 'flex-end', padding: '10px 16px 0' }}>
-        <button
-          type="button"
-          onClick={handleHelpClick}
-          disabled={isActive}
-          title={isActive ? 'Finish the current tour first' : 'Learn how to add an order'}
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: 4,
-            background: 'none',
-            border: 'none',
-            color: 'var(--accent)',
-            fontSize: '0.78rem',
-            fontWeight: 700,
-            cursor: isActive ? 'default' : 'pointer',
-            opacity: isActive ? 0.5 : 1,
-            padding: '4px 0',
-          }}
-        >
-          <span className="mi" style={{ fontSize: '0.9rem' }}>help_outline</span>
-          Need help?
-        </button>
-      </div>
-
       <div className={styles.searchContainer}>
         <div className={styles.searchRow}>
           <div className={styles.searchBox}>
@@ -243,7 +208,6 @@ export default function Orders({ onMenuClick, onGoToCustomer }) {
       <div
         className={styles.tabs}
         ref={tabsRef}
-
         onClick={() => filterOpen && setFilterOpen(false)}
       >
         {TABS.map(tab => (
@@ -276,15 +240,6 @@ export default function Orders({ onMenuClick, onGoToCustomer }) {
             </span>
             <p className={styles.emptyStateTitle}>{EMPTY_CONFIG[activeTab].title}</p>
             <p className={styles.emptyStateSubtitle}>{EMPTY_CONFIG[activeTab].subtitle}</p>
-            {activeTab === 'all' && !search && (
-              <button
-                onClick={handleAddCTA}
-                className={styles.addOrderBtn}
-              >
-                <span className="mi">add</span>
-                Add Order
-              </button>
-            )}
           </div>
         ) : (
           Object.entries(grouped).map(([date, dateOrders]) => (
@@ -303,6 +258,15 @@ export default function Orders({ onMenuClick, onGoToCustomer }) {
           ))
         )}
       </div>
+
+      <button
+        className={styles.fab}
+        onClick={handleHelpClick}
+        disabled={isActive}
+        title={isActive ? 'Finish the current tour first' : 'Need help?'}
+      >
+        <span className="mi">help_outline</span>
+      </button>
 
       {detailOrder && (
         <OrderDetailModal

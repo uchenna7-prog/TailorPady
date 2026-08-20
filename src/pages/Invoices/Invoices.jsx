@@ -100,7 +100,7 @@ export default function Invoices({ onMenuClick }) {
   const { generalSettings }                                                                              = useGeneralSettings()
   const { allOrders }                                                                                    = useOrders()
   const { allInvoices, updateInvoiceStatus, updateInvoiceTemplate, updateInvoiceColour, deleteInvoice } = useInvoices()
-  const { hasCompletedTour, startTour, isActive } = useTour()
+  const { startTour, isActive } = useTour()
   const currency = generalSettings.invoiceCurrency || '₦'
 
   const location = useLocation()
@@ -154,14 +154,6 @@ export default function Invoices({ onMenuClick }) {
     navigate(location.pathname, { replace: true, state: null })
   }, [location.state, allInvoices])
 
-  function handleAddCTA() {
-    if (!hasCompletedTour('onboarding') && !hasCompletedTour('recovery-invoices')) {
-      startTour('recovery-invoices')
-      return
-    }
-    navigate('/customers')
-  }
-
   function handleHelpClick() {
     if (isActive) return
     startTour('recovery-invoices')
@@ -192,11 +184,11 @@ export default function Invoices({ onMenuClick }) {
   }
 
   const EMPTY_STATE_CONFIG = {
-    all:       { title: 'No invoices yet',           subtitle: 'Add a customer first, then create an invoice from their profile page.' },
-    unpaid:    { title: 'No unpaid invoices',         subtitle: 'Invoices awaiting payment will appear here.' },
-    part_paid: { title: 'No part-payment invoices',   subtitle: 'Invoices with a partial payment will appear here.' },
-    paid:      { title: 'No paid invoices yet',       subtitle: 'Fully paid invoices will appear here.' },
-    overdue:   { title: 'No overdue invoices',        subtitle: 'Nice work, every invoice is on schedule.' },
+    all:       { title: 'No invoices yet',           subtitle: 'Invoices from all your customers will appear here. Create one from their profile page. Tap ? for help.' },
+    unpaid:    { title: 'No unpaid invoices',         subtitle: 'Unpaid invoices from all your customers will appear here. Tap ? for help.' },
+    part_paid: { title: 'No part-payment invoices',   subtitle: 'Part-payment invoices from all your customers will appear here. Tap ? for help.' },
+    paid:      { title: 'No paid invoices yet',       subtitle: 'Paid invoices from all your customers will appear here. Tap ? for help.' },
+    overdue:   { title: 'No overdue invoices',        subtitle: 'Nice work, every invoice is on schedule. Tap ? for help.' },
   }
 
   const searchFiltered = search.trim()
@@ -245,31 +237,6 @@ export default function Invoices({ onMenuClick }) {
     <div className={styles.page}>
 
       <Header title="All Invoices" onMenuClick={onMenuClick} />
-
-      <div style={{ display: 'flex', justifyContent: 'flex-end', padding: '10px 16px 0' }}>
-        <button
-          type="button"
-          onClick={handleHelpClick}
-          disabled={isActive}
-          title={isActive ? 'Finish the current tour first' : 'Learn how to create an invoice'}
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: 4,
-            background: 'none',
-            border: 'none',
-            color: 'var(--accent)',
-            fontSize: '0.78rem',
-            fontWeight: 700,
-            cursor: isActive ? 'default' : 'pointer',
-            opacity: isActive ? 0.5 : 1,
-            padding: '4px 0',
-          }}
-        >
-          <span className="mi" style={{ fontSize: '0.9rem' }}>help_outline</span>
-          Need help?
-        </button>
-      </div>
 
       <div className={styles.searchContainer}>
         <div className={styles.searchRow}>
@@ -358,15 +325,6 @@ export default function Invoices({ onMenuClick }) {
             <span className="mi" style={{ fontSize: '2.5rem', color: 'var(--text3)' }}>receipt_long</span>
             <p className={styles.emptyStateTitle}>{EMPTY_STATE_CONFIG[activeTab].title}</p>
             <p className={styles.emptyStateSubtitle}>{EMPTY_STATE_CONFIG[activeTab].subtitle}</p>
-            {activeTab === 'all' && !search && (
-              <button
-                onClick={handleAddCTA}
-                className={styles.createInvoiceBtn}
-              >
-                <span className="mi">add</span>
-                Create Invoice
-              </button>
-            )}
           </div>
         ) : (
           Object.entries(grouped).map(([date, dateInvoices]) => (
@@ -387,6 +345,15 @@ export default function Invoices({ onMenuClick }) {
           ))
         )}
       </div>
+
+      <button
+        className={styles.fab}
+        onClick={handleHelpClick}
+        disabled={isActive}
+        title={isActive ? 'Finish the current tour first' : 'Need help?'}
+      >
+        <span className="mi">help_outline</span>
+      </button>
 
       {viewing && (
         <InvoiceViewer
