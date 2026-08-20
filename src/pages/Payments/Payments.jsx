@@ -456,7 +456,7 @@ export default function Payments({ onMenuClick }) {
   const navigate         = useNavigate()
   const { allPayments }  = usePayments()
   const { allOrders }    = useOrders()
-  const { hasCompletedTour, startTour } = useTour()
+  const { hasCompletedTour, startTour, isActive } = useTour()
 
   const [activeTab,     setActiveTab]     = useState('all')
   const [detailRow,     setDetailRow]     = useState(null)
@@ -483,6 +483,11 @@ export default function Payments({ onMenuClick }) {
       return
     }
     navigate('/customers')
+  }
+
+  function handleHelpClick() {
+    if (isActive) return
+    startTour('recovery-payments')
   }
 
   const measureTabs = useCallback(() => {
@@ -642,6 +647,31 @@ export default function Payments({ onMenuClick }) {
     <div className={styles.page}>
       <Header onMenuClick={onMenuClick} title="All Payments" />
 
+      <div style={{ display: 'flex', justifyContent: 'flex-end', padding: '10px 16px 0' }}>
+        <button
+          type="button"
+          onClick={handleHelpClick}
+          disabled={isActive}
+          title={isActive ? 'Finish the current tour first' : 'Learn how to record a payment'}
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: 4,
+            background: 'none',
+            border: 'none',
+            color: 'var(--accent)',
+            fontSize: '0.78rem',
+            fontWeight: 700,
+            cursor: isActive ? 'default' : 'pointer',
+            opacity: isActive ? 0.5 : 1,
+            padding: '4px 0',
+          }}
+        >
+          <span className="mi" style={{ fontSize: '0.9rem' }}>help_outline</span>
+          Need help?
+        </button>
+      </div>
+
       <div className={styles.searchContainer}>
         <div className={styles.searchRow}>
           <div className={styles.searchBox}>
@@ -698,11 +728,11 @@ export default function Payments({ onMenuClick }) {
         {TABS.map((tab, idx) => {
           const distanceFromActive = idx - activeTabIdx
           const colorProgress      = Math.max(0, 1 - Math.abs(distanceFromActive + (-swipeProgress)))
-          const isActive           = tab.id === activeTab
+          const isActiveTab        = tab.id === activeTab
 
           const textColor = colorProgress > 0.5
             ? 'var(--accent)'
-            : isActive
+            : isActiveTab
               ? 'var(--accent)'
               : 'var(--text3)'
 
@@ -710,7 +740,7 @@ export default function Payments({ onMenuClick }) {
             <div
               key={tab.id}
               ref={el => { tabItemRefs.current[idx] = el }}
-              className={`${styles.tab} ${isActive ? styles.tabActive : ''}`}
+              className={`${styles.tab} ${isActiveTab ? styles.tabActive : ''}`}
               style={{ whiteSpace: 'nowrap', color: textColor }}
               onClick={() => setActiveTab(tab.id)}
             >

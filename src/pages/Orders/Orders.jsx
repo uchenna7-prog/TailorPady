@@ -52,7 +52,7 @@ const SWIPE_MAX_VERTICAL = 80
 
 export default function Orders({ onMenuClick, onGoToCustomer }) {
   const { allOrders } = useOrders()
-  const { hasCompletedTour, startTour } = useTour()
+  const { hasCompletedTour, startTour, isActive } = useTour()
   const navigate = useNavigate()
 
   const [activeTab,   setActiveTab]   = useState('all')
@@ -71,6 +71,11 @@ export default function Orders({ onMenuClick, onGoToCustomer }) {
       return
     }
     navigate('/customers')
+  }
+
+  function handleHelpClick() {
+    if (isActive) return
+    startTour('recovery-orders')
   }
 
   function goToTab(index) {
@@ -162,6 +167,31 @@ export default function Orders({ onMenuClick, onGoToCustomer }) {
   return (
     <div className={styles.page}>
       <Header title="All Orders" onMenuClick={onMenuClick} />
+
+      <div style={{ display: 'flex', justifyContent: 'flex-end', padding: '10px 16px 0' }}>
+        <button
+          type="button"
+          onClick={handleHelpClick}
+          disabled={isActive}
+          title={isActive ? 'Finish the current tour first' : 'Learn how to add an order'}
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: 4,
+            background: 'none',
+            border: 'none',
+            color: 'var(--accent)',
+            fontSize: '0.78rem',
+            fontWeight: 700,
+            cursor: isActive ? 'default' : 'pointer',
+            opacity: isActive ? 0.5 : 1,
+            padding: '4px 0',
+          }}
+        >
+          <span className="mi" style={{ fontSize: '0.9rem' }}>help_outline</span>
+          Need help?
+        </button>
+      </div>
 
       <div className={styles.searchContainer}>
         <div className={styles.searchRow}>

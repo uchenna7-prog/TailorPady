@@ -65,10 +65,10 @@ function AppShell() {
           <div className="appContent">
             <ScrollToTop />
             <Routes>
-              <Route path="/dashboard" element={<Dashboard onMenuClick={menuClick} />} />
+              <Route path="/dashboard" element={<Dashboard onMenuClick={menuClick} sidebarOpen={sidebarOpen} />} />
               <Route path="/appointments" element={<Appointments onMenuClick={menuClick} />} />
               <Route path="/customers" element={<Customers onMenuClick={menuClick} />} />
-              <Route path="/customers/:id" element={<CustomerDetail onMenuClick={menuClick} />} />
+              <Route path="/customers/:id" element={<CustomerDetail onMenuClick={menuClick} sidebarOpen={sidebarOpen} />} />
               <Route path="/customers/:id/body-measurements" element={<CustomerBodyMeasurements onMenuClick={menuClick} />} />
               <Route path="/tasks" element={<Tasks onMenuClick={menuClick} />} />
               <Route path="/orders" element={<Orders onMenuClick={menuClick} onGoToCustomer={id => navigate(`/customers/${id}`)} />} />

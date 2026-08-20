@@ -1,4 +1,3 @@
-// CustomerDetail.jsx
 import { useState, useRef, useCallback, useEffect, useLayoutEffect } from 'react'
 import { useParams, useNavigate, useLocation }      from 'react-router-dom'
 import { useCustomers }                             from '../../contexts/CustomerContext'
@@ -34,6 +33,10 @@ const TAB_TOUR_STEP_IDS = {
   receipts: 'goto-receipts-tab',
 }
 
+const NUDGE_INITIAL_DELAY_MS = 1800
+const NUDGE_RETRY_INTERVAL_MS = 1500
+const NUDGE_MAX_ATTEMPTS = 8
+
 
 function prevTabIdToDirection(currentTabId, nextTabId) {
   const currentIdx = TAB_IDS.indexOf(currentTabId)
@@ -54,7 +57,7 @@ function resolveChainLanding(tourId, measurementsCount, ordersCount, paymentsCou
 }
 
 
-export default function CustomerDetail({ onMenuClick }) {
+export default function CustomerDetail({ onMenuClick, sidebarOpen }) {
 
   const { id }       = useParams()
   const navigate     = useNavigate()
@@ -99,6 +102,7 @@ export default function CustomerDetail({ onMenuClick }) {
   const tabStripScrollAtDown = useRef(null)
   const tabStripPointerStartX = useRef(null)
   const tabStripCooldownRef  = useRef(null)
+  const uiBusyRef = useRef(false)
   const [underlineStyle, setUnderlineStyle] = useState({ left: 0, width: 0 })
   const [dragOffset, setDragOffset] = useState(0)
   const [slideDirection, setSlideDirection] = useState(null)
@@ -214,20 +218,42 @@ export default function CustomerDetail({ onMenuClick }) {
   }, [location.state])
 
   useEffect(() => {
+    uiBusyRef.current = Boolean(
+      sidebarOpen ||
+      activeTourId ||
+      editModalOpen ||
+      deleteModalOpen ||
+      photoModalOpen ||
+      invoiceUpgradeOpen ||
+      receiptUpgradeOpen
+    )
+  }, [sidebarOpen, activeTourId, editModalOpen, deleteModalOpen, photoModalOpen, invoiceUpgradeOpen, receiptUpgradeOpen])
+
+  function armNudge(startFn) {
+    let attempts = 0
+    let timeoutId = setTimeout(function tryFire() {
+      if (uiBusyRef.current || document.hidden) {
+        attempts += 1
+        if (attempts >= NUDGE_MAX_ATTEMPTS) return
+        timeoutId = setTimeout(tryFire, NUDGE_RETRY_INTERVAL_MS)
+        return
+      }
+      startFn()
+    }, NUDGE_INITIAL_DELAY_MS)
+    return () => clearTimeout(timeoutId)
+  }
+
+  useEffect(() => {
     if (!customer) return
     if (activeTourId) return
     if (!hasCompletedTour('onboarding')) return
     if (hasCompletedTour('body-measurements-nudge')) return
-
-    const timer = setTimeout(() => {
-      startTour('body-measurements-nudge')
-    }, 1800)
-    return () => clearTimeout(timer)
+    return armNudge(() => startTour('body-measurements-nudge'))
   }, [customer, activeTourId, hasCompletedTour, startTour])
 
   useEffect(() => {
     if (currentStep?.id !== 'recovery-chain-check') return
-    if (customerData.measurementsLoading || customerData.ordersLoading) return
+    if (customerData.measurementsLoading || customerData.ordersLoading || customerData.paymentsLoading) return
     const landing = resolveChainLanding(
       activeTourId,
       customerData.measurements?.length ?? 0,
@@ -235,7 +261,7 @@ export default function CustomerDetail({ onMenuClick }) {
       customerData.payments?.length ?? 0,
     )
     goToStep(landing)
-  }, [currentStep, activeTourId, customerData.measurementsLoading, customerData.ordersLoading, customerData.measurements, orders, customerData.payments, goToStep])
+  }, [currentStep, activeTourId, customerData.measurementsLoading, customerData.ordersLoading, customerData.paymentsLoading, customerData.measurements, orders, customerData.payments, goToStep])
 
   useEffect(() => {
     if (currentStep?.id !== 'confirm-setup-profile-after-tour') return

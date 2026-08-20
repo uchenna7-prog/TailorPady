@@ -53,6 +53,10 @@ import styles from './Dashboard.module.css'
 import Skeleton from 'react-loading-skeleton'
 import 'react-loading-skeleton/dist/skeleton.css'
 
+const NUDGE_INITIAL_DELAY_MS = 2000
+const NUDGE_RETRY_INTERVAL_MS = 1500
+const NUDGE_MAX_ATTEMPTS = 8
+
 function CardSkeleton({ height = 88 }) {
   return <Skeleton height={height} borderRadius={10} style={{ marginBottom: 12, display: 'block' }} />
 }
@@ -113,7 +117,7 @@ function getOrderTimestamp(order) {
   return 0
 }
 
-function Dashboard({ onMenuClick, onGoToCustomer }) {
+function Dashboard({ onMenuClick, onGoToCustomer, sidebarOpen }) {
   const navigate = useNavigate()
   const location  = useLocation()
 
@@ -145,6 +149,7 @@ function Dashboard({ onMenuClick, onGoToCustomer }) {
   const [celebrationIsFirst, setCelebrationIsFirst] = useState(false)
   const toastTimer = useRef(null)
   const autoTourAttemptedRef = useRef(false)
+  const uiBusyRef = useRef(false)
 
   const greetingTextRef  = useRef(getGreeting())
   const greetingEmojiRef = useRef(getGreetingEmoji())
@@ -179,6 +184,35 @@ function Dashboard({ onMenuClick, onGoToCustomer }) {
 
   const now      = new Date()
   const todayStr = now.toISOString().slice(0, 10)
+
+  useEffect(() => {
+    uiBusyRef.current = Boolean(
+      sidebarOpen ||
+      tourActive ||
+      isGoalModalOpen ||
+      celebrationOpen ||
+      selectedOrder ||
+      detailAppt ||
+      detailTask ||
+      confirmDelAppt ||
+      confirmDelTask ||
+      isTourPickerOpen
+    )
+  }, [sidebarOpen, tourActive, isGoalModalOpen, celebrationOpen, selectedOrder, detailAppt, detailTask, confirmDelAppt, confirmDelTask, isTourPickerOpen])
+
+  function armNudge(startFn) {
+    let attempts = 0
+    let timeoutId = setTimeout(function tryFire() {
+      if (uiBusyRef.current || document.hidden) {
+        attempts += 1
+        if (attempts >= NUDGE_MAX_ATTEMPTS) return
+        timeoutId = setTimeout(tryFire, NUDGE_RETRY_INTERVAL_MS)
+        return
+      }
+      startFn()
+    }, NUDGE_INITIAL_DELAY_MS)
+    return () => clearTimeout(timeoutId)
+  }
 
   useEffect(() => {
     if (autoTourAttemptedRef.current) return
@@ -242,10 +276,7 @@ function Dashboard({ onMenuClick, onGoToCustomer }) {
     if (revenueGoalNudgeComplete) return
     if (!isNewSessionSinceOnboarding) return
     if (tourActive) return
-    const timer = setTimeout(() => {
-      startTour('revenue-goal-nudge')
-    }, 2000)
-    return () => clearTimeout(timer)
+    return armNudge(() => startTour('revenue-goal-nudge'))
   }, [onboardingComplete, goalLoading, goal, revenueGoalNudgeComplete, isNewSessionSinceOnboarding, tourActive, startTour])
 
   useEffect(() => {
@@ -253,10 +284,7 @@ function Dashboard({ onMenuClick, onGoToCustomer }) {
     if (discoverToursComplete) return
     if (!isNewSessionSinceRevenueGoalNudge) return
     if (tourActive) return
-    const timer = setTimeout(() => {
-      startTour('discover-tours-nudge')
-    }, 2000)
-    return () => clearTimeout(timer)
+    return armNudge(() => startTour('discover-tours-nudge'))
   }, [revenueGoalNudgeComplete, discoverToursComplete, isNewSessionSinceRevenueGoalNudge, tourActive, startTour])
 
   useEffect(() => {
@@ -264,10 +292,7 @@ function Dashboard({ onMenuClick, onGoToCustomer }) {
     if (referralNudgeComplete) return
     if (!isNewSessionSinceDiscoverToursNudge) return
     if (tourActive) return
-    const timer = setTimeout(() => {
-      startTour('referral-nudge')
-    }, 2000)
-    return () => clearTimeout(timer)
+    return armNudge(() => startTour('referral-nudge'))
   }, [discoverToursComplete, referralNudgeComplete, isNewSessionSinceDiscoverToursNudge, tourActive, startTour])
 
   useEffect(() => {

@@ -100,7 +100,7 @@ export default function Invoices({ onMenuClick }) {
   const { generalSettings }                                                                              = useGeneralSettings()
   const { allOrders }                                                                                    = useOrders()
   const { allInvoices, updateInvoiceStatus, updateInvoiceTemplate, updateInvoiceColour, deleteInvoice } = useInvoices()
-  const { hasCompletedTour, startTour } = useTour()
+  const { hasCompletedTour, startTour, isActive } = useTour()
   const currency = generalSettings.invoiceCurrency || '₦'
 
   const location = useLocation()
@@ -160,6 +160,11 @@ export default function Invoices({ onMenuClick }) {
       return
     }
     navigate('/customers')
+  }
+
+  function handleHelpClick() {
+    if (isActive) return
+    startTour('recovery-invoices')
   }
 
   const orderItemsMap = {}
@@ -240,6 +245,31 @@ export default function Invoices({ onMenuClick }) {
     <div className={styles.page}>
 
       <Header title="All Invoices" onMenuClick={onMenuClick} />
+
+      <div style={{ display: 'flex', justifyContent: 'flex-end', padding: '10px 16px 0' }}>
+        <button
+          type="button"
+          onClick={handleHelpClick}
+          disabled={isActive}
+          title={isActive ? 'Finish the current tour first' : 'Learn how to create an invoice'}
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: 4,
+            background: 'none',
+            border: 'none',
+            color: 'var(--accent)',
+            fontSize: '0.78rem',
+            fontWeight: 700,
+            cursor: isActive ? 'default' : 'pointer',
+            opacity: isActive ? 0.5 : 1,
+            padding: '4px 0',
+          }}
+        >
+          <span className="mi" style={{ fontSize: '0.9rem' }}>help_outline</span>
+          Need help?
+        </button>
+      </div>
 
       <div className={styles.searchContainer}>
         <div className={styles.searchRow}>
