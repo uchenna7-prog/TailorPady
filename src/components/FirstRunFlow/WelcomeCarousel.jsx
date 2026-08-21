@@ -19,7 +19,7 @@ const SLIDES = [
     image: ordersSlide,
   },
   {
-    title: 'Everything about your customer, in one place',
+    title: 'Your customers, organized',
     sub: 'Contact info, measurements, orders, and payment history together, so you never lose track of a client.',
     image: customersSlide,
   },
