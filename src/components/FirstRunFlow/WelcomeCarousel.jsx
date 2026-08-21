@@ -28,7 +28,7 @@ const SLIDES = [
 const SWIPE_THRESHOLD = 50
 const DRAG_DAMPING = 0.55
 
-export default function WelcomeCarousel({ onDone }) {
+export default function WelcomeCarousel({ onDone, onSkip }) {
   const { generalSettings } = useGeneralSettings()
   const [index, setIndex] = useState(0)
   const [dragX, setDragX] = useState(0)
@@ -75,16 +75,13 @@ export default function WelcomeCarousel({ onDone }) {
 
   return (
     <div className={styles.page}>
+      <button type="button" className={styles.skipBtn} onClick={onSkip}>
+        Skip
+      </button>
+
       <div className={styles.header}>
-        <img
-          src={logoSrc}
-          alt="TailorPady"
-          className={styles.logoIcon}
-          style={{ background: theme === 'dark' ? '#ffffff' : '#000000' }}
-        />
-        <div className={styles.logoText}>
-          <span className={styles.logoName}>TailorPady</span>
-          <span className={styles.logoTagline}>The business side of tailoring, simplified.</span>
+        <div className={styles.logoWrap}>
+          <img src={logoSrc} alt="TailorPady" className={styles.logoIcon} />
         </div>
       </div>
 
