@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useGeneralSettings } from '../../contexts/GeneralSettingsContext'
 import logoLightMode from '../../assets/logoLightMode.png'
 import logoDarkMode from '../../assets/logoDarkMode.png'
+import notificationsImage from '../../assets/onboarding/onboarding-notifications.png'
 import styles from './FirstRunFlow.module.css'
 
 function isNotificationSupported() {
@@ -53,12 +54,7 @@ export default function NotificationPermission({ onDone, onSkip }) {
         </p>
 
         <div className={styles.backdrop}>
-          <div className={styles.pulseWrap}>
-            <span className={styles.pulseRing} />
-            <div className={styles.permissionIcon}>
-              <span className="mi-outlined">notifications</span>
-            </div>
-          </div>
+          <img src={notificationsImage} alt="Notifications preview" className={styles.image} draggable={false} />
         </div>
       </div>
 
