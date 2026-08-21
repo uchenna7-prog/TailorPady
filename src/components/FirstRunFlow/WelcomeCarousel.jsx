@@ -4,7 +4,7 @@ import logoLightMode from '../../assets/logoLightMode.png'
 import logoDarkMode from '../../assets/logoDarkMode.png'
 import dashboardSlide from '../../assets/onboarding/onboarding-dashboard.png'
 import ordersSlide from '../../assets/onboarding/onboarding-orders.png'
-import notificationsSlide from '../../assets/onboarding/onboarding-notifications.png'
+import customersSlide from '../../assets/onboarding/onboarding-customers.png'
 import styles from './FirstRunFlow.module.css'
 
 const SLIDES = [
@@ -19,14 +19,13 @@ const SLIDES = [
     image: ordersSlide,
   },
   {
-    title: 'Get notified before it matters',
-    sub: 'Tasks due today, appointments, and unpaid invoices come to you, so you never have to go looking.',
-    image: notificationsSlide,
+    title: 'Everything about your customer, in one place',
+    sub: 'Contact info, measurements, orders, and payment history together, so you never lose track of a client.',
+    image: customersSlide,
   },
 ]
 
 const SWIPE_THRESHOLD = 50
-const DRAG_DAMPING = 0.55
 
 export default function WelcomeCarousel({ onDone, onSkip }) {
   const { generalSettings } = useGeneralSettings()
@@ -35,7 +34,6 @@ export default function WelcomeCarousel({ onDone, onSkip }) {
   const [dragging, setDragging] = useState(false)
   const touchStartX = useRef(null)
 
-  const slide = SLIDES[index]
   const isLast = index === SLIDES.length - 1
   const theme = generalSettings.theme
   const logoSrc = theme === 'dark' ? logoLightMode : logoDarkMode
@@ -60,7 +58,11 @@ export default function WelcomeCarousel({ onDone, onSkip }) {
   function handleTouchMove(e) {
     if (touchStartX.current === null) return
     const delta = e.touches[0].clientX - touchStartX.current
-    setDragX(delta * DRAG_DAMPING)
+    if ((index === 0 && delta > 0) || (index === SLIDES.length - 1 && delta < 0)) {
+      setDragX(delta * 0.25)
+    } else {
+      setDragX(delta)
+    }
   }
 
   function handleTouchEnd(e) {
@@ -89,21 +91,27 @@ export default function WelcomeCarousel({ onDone, onSkip }) {
       </div>
 
       <div
-        key={index}
-        className={styles.slideTrack}
-        style={{
-          transform: `translateX(${dragX}px)`,
-          transition: dragging ? 'none' : 'transform 320ms cubic-bezier(0.22, 1, 0.36, 1)',
-        }}
+        className={styles.viewport}
         onTouchStart={handleTouchStart}
         onTouchMove={handleTouchMove}
         onTouchEnd={handleTouchEnd}
       >
-        <h1 className={styles.title}>{slide.title}</h1>
-        <p className={styles.sub}>{slide.sub}</p>
-
-        <div className={styles.backdrop}>
-          <img src={slide.image} alt={slide.title} className={styles.image} draggable={false} />
+        <div
+          className={styles.strip}
+          style={{
+            transform: `translateX(calc(-${index * 100}vw + ${dragX}px))`,
+            transition: dragging ? 'none' : 'transform 420ms cubic-bezier(0.22, 1, 0.36, 1)',
+          }}
+        >
+          {SLIDES.map(item => (
+            <div key={item.title} className={styles.slideItem}>
+              <h1 className={styles.title}>{item.title}</h1>
+              <p className={styles.sub}>{item.sub}</p>
+              <div className={styles.backdrop}>
+                <img src={item.image} alt={item.title} className={styles.image} draggable={false} />
+              </div>
+            </div>
+          ))}
         </div>
       </div>
 
