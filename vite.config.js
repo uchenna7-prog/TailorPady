@@ -3,7 +3,7 @@ import react, { reactCompilerPreset } from '@vitejs/plugin-react'
 import babel from '@rolldown/plugin-babel'
 import { VitePWA } from 'vite-plugin-pwa'
 
-const PUBLIC_PATHS = new Set(['/', '/faq', '/contact', '/privacy', '/terms', '/refund', '/founder'])
+const PUBLIC_PATHS = new Set(['/', '/faq', '/contact', '/privacy', '/terms', '/refund', '/founder', '/delete-account'])
 
 function isPublicPath(url) {
   const path = url.split('?')[0]
