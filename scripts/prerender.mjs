@@ -12,6 +12,7 @@ const ROUTES = [
   { path: '/terms', module: '/src/pages/PublicTerms/PublicTerms.jsx', output: 'terms.html' },
   { path: '/refund', module: '/src/pages/PublicRefund/PublicRefund.jsx', output: 'refund.html' },
   { path: '/founder', module: '/src/pages/PublicFounder/PublicFounder.jsx', output: 'founder.html' },
+  { path: '/delete-account', module: '/src/pages/PublicDeleteAccount/PublicDeleteAccount.jsx', output: 'delete-account.html' },
 ]
 
 async function prerender() {
