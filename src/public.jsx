@@ -13,6 +13,7 @@ import PublicPrivacy from './pages/PublicPrivacy/PublicPrivacy'
 import PublicTerms from './pages/PublicTerms/PublicTerms'
 import PublicRefund from './pages/PublicRefund/PublicRefund'
 import PublicFounder from './pages/PublicFounder/PublicFounder'
+import PublicDeleteAccount from './pages/PublicDeleteAccount/PublicDeleteAccount'
 import './index.css'
 
 function LandingGate() {
@@ -47,6 +48,7 @@ ReactDOM.createRoot(document.getElementById('root')).render(
           <Route path="/terms" element={<PublicTerms />} />
           <Route path="/refund" element={<PublicRefund />} />
           <Route path="/founder" element={<PublicFounder />} />
+          <Route path="/delete-account" element={<PublicDeleteAccount />} />
         </Routes>
       </InstallProvider>
     </BrowserRouter>
