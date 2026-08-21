@@ -43,11 +43,11 @@
 }
 
 .logoIcon {
-  width: 64px;
-  height: 64px;
+  width: 56px;
+  height: 56px;
   object-fit: contain;
-  border-radius: 16px;
-  padding: 8px;
+  border-radius: 14px;
+  padding: 5px;
   box-sizing: border-box;
 }
 
@@ -119,6 +119,7 @@
   touch-action: pan-y;
   position: relative;
   flex-shrink: 0;
+  box-shadow: 0 20px 40px -24px rgba(0, 0, 0, 0.28);
 }
 
 .image {
@@ -187,12 +188,14 @@
   font-size: 0.98rem;
   font-family: inherit;
   cursor: pointer;
-  transition: transform 140ms ease, opacity 140ms ease;
+  box-shadow: 0 10px 24px -10px rgba(0, 0, 0, 0.35);
+  transition: transform 140ms ease, opacity 140ms ease, box-shadow 140ms ease;
 }
 
 .primaryBtn:active {
   transform: scale(0.97);
   opacity: 0.9;
+  box-shadow: 0 4px 10px -6px rgba(0, 0, 0, 0.25);
 }
 
 .primaryBtn:disabled {
