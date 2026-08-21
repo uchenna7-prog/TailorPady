@@ -204,3 +204,57 @@ export const REFUND_SECTIONS = [
     body: `Deleting your account does not automatically cancel an active subscription. Please cancel your subscription first before deleting your account to avoid future charges.`,
   },
 ]
+
+export const DELETE_ACCOUNT_LAST_UPDATED = 'June 2026'
+
+export const DELETE_ACCOUNT_SECTIONS = [
+  {
+    id: 'in-app-deletion',
+    title: 'Delete Your Account In the App',
+    body: `You can delete your TailorPady account and all associated data directly from within the app:`,
+    bullets: [
+      'Open the TailorPady app and log in to your account.',
+      'Go to Account.',
+      'Tap Delete Account.',
+      'Confirm the deletion when prompted.',
+    ],
+    footer: 'Your account and data will begin processing for deletion immediately after confirmation.',
+  },
+  {
+    id: 'no-app-deletion',
+    title: "Don't Have the App, or Can't Log In?",
+    body: `If you no longer have the app installed, or you're unable to log in, you can still request deletion of your account and data. Send a deletion request to the email address below from the email associated with your TailorPady account, including your registered name or email so we can locate your account.`,
+    footer: 'We will verify the request and process the deletion within a reasonable timeframe.',
+  },
+  {
+    id: 'what-gets-deleted',
+    title: 'What Gets Deleted',
+    body: `When your account is deleted, the following data is permanently removed from our systems:`,
+    bullets: [
+      'Account data: your name, email address, and password.',
+      'Business data: customer records, orders, invoices, payments, measurements, and appointments.',
+      'Profile photos and gallery images stored on Cloudinary.',
+      'Tasks and other content you created within the app.',
+    ],
+  },
+  {
+    id: 'retention',
+    title: 'Data We May Retain',
+    body: `In limited cases, we may retain certain data for a period after account deletion where required by law or legitimate business need, such as:`,
+    bullets: [
+      'Billing or payment records needed for tax, accounting, or fraud-prevention purposes.',
+      'Records we are legally required to keep under applicable law.',
+    ],
+    footer: 'Any retained data is kept only as long as necessary for these purposes and is not used for any other purpose.',
+  },
+  {
+    id: 'timeframe',
+    title: 'Deletion Timeframe',
+    body: `Account and business data are typically removed from our active systems within a reasonable period of your request. Data may persist briefly in backups before being fully purged.`,
+  },
+  {
+    id: 'contact',
+    title: 'Contact Us',
+    body: `If you have questions about account deletion, or you'd like to request deletion without using the app, contact us:`,
+  },
+]
