@@ -28,23 +28,18 @@ function writeCachedCompleted(uid) {
 
 export function useFirstRunStatus() {
   const { user } = useAuth()
-  const [checking, setChecking] = useState(true)
-  const [shouldShow, setShouldShow] = useState(false)
+  const [sessionCompleted, setSessionCompleted] = useState(false)
+  const [remoteChecked, setRemoteChecked] = useState(false)
+  const [remoteShouldShow, setRemoteShouldShow] = useState(false)
   const [debugError, setDebugError] = useState(null)
 
+  const forceShow = new URLSearchParams(window.location.search).get('resetOnboarding') === '1'
+  const cachedCompleted = user?.uid ? readCachedCompleted(user.uid) : false
+  const knownComplete = sessionCompleted || (!forceShow && cachedCompleted)
+  const needsRemoteCheck = !!user?.uid && !forceShow && !cachedCompleted && !sessionCompleted && !remoteChecked
+
   useEffect(() => {
-    if (!user?.uid) {
-      setChecking(false)
-      return
-    }
-
-    const forceShow = new URLSearchParams(window.location.search).get('resetOnboarding') === '1'
-
-    if (!forceShow && readCachedCompleted(user.uid)) {
-      setShouldShow(false)
-      setChecking(false)
-      return
-    }
+    if (!needsRemoteCheck) return
 
     let cancelled = false
 
@@ -52,27 +47,30 @@ export function useFirstRunStatus() {
       .then(status => {
         if (cancelled) return
         const show = forceShow || !status.onboardingCompleted
-        setShouldShow(show)
+        setRemoteShouldShow(show)
         if (!show) writeCachedCompleted(user.uid)
       })
       .catch(err => {
         if (cancelled) return
         setDebugError(err?.message || String(err))
-        setShouldShow(false)
+        setRemoteShouldShow(false)
       })
       .finally(() => {
-        if (!cancelled) setChecking(false)
+        if (!cancelled) setRemoteChecked(true)
       })
 
     return () => { cancelled = true }
-  }, [user?.uid])
+  }, [needsRemoteCheck, user?.uid, forceShow])
 
   function markCompleted() {
     if (user?.uid) writeCachedCompleted(user.uid)
-    setShouldShow(false)
+    setSessionCompleted(true)
   }
 
-  return { checking, shouldShow, markCompleted, debugError }
+  if (!user?.uid) return { checking: true, shouldShow: false, markCompleted, debugError }
+  if (knownComplete) return { checking: false, shouldShow: false, markCompleted, debugError }
+  if (forceShow) return { checking: false, shouldShow: true, markCompleted, debugError }
+  return { checking: !remoteChecked, shouldShow: remoteChecked ? remoteShouldShow : false, markCompleted, debugError }
 }
 
 function renderStep(step, onDone, onSkip) {
