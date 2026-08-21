@@ -30,6 +30,7 @@ export function useFirstRunStatus() {
   const { user } = useAuth()
   const [checking, setChecking] = useState(true)
   const [shouldShow, setShouldShow] = useState(false)
+  const [debugError, setDebugError] = useState(null)
 
   useEffect(() => {
     if (!user?.uid) {
@@ -54,8 +55,10 @@ export function useFirstRunStatus() {
         setShouldShow(show)
         if (!show) writeCachedCompleted(user.uid)
       })
-      .catch(() => {
-        if (!cancelled) setShouldShow(false)
+      .catch(err => {
+        if (cancelled) return
+        setDebugError(err?.message || String(err))
+        setShouldShow(false)
       })
       .finally(() => {
         if (!cancelled) setChecking(false)
@@ -69,7 +72,7 @@ export function useFirstRunStatus() {
     setShouldShow(false)
   }
 
-  return { checking, shouldShow, markCompleted }
+  return { checking, shouldShow, markCompleted, debugError }
 }
 
 function renderStep(step, onDone, onSkip) {
