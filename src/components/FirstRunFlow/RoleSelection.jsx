@@ -1,6 +1,5 @@
 import { useState } from 'react'
 import { useAuth } from '../../contexts/AuthContext'
-import { useGeneralSettings } from '../../contexts/GeneralSettingsContext'
 import { db } from '../../firebase'
 import { saveOnboardingRole } from '../../services/profileService'
 import logoLightMode from '../../assets/logoLightMode.png'
@@ -22,12 +21,16 @@ const ROLES = [
   },
 ]
 
+function getTheme() {
+  if (typeof document === 'undefined') return 'light'
+  return document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'light'
+}
+
 export default function RoleSelection({ onDone, onSkip }) {
   const { user } = useAuth()
-  const { generalSettings } = useGeneralSettings()
   const [selected, setSelected] = useState(null)
   const [saving, setSaving] = useState(false)
-  const theme = generalSettings.theme
+  const theme = getTheme()
   const logoSrc = theme === 'dark' ? logoLightMode : logoDarkMode
 
   async function handleContinue() {
