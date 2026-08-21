@@ -1,5 +1,4 @@
 import { useState, useRef } from 'react'
-import { useGeneralSettings } from '../../contexts/GeneralSettingsContext'
 import logoLightMode from '../../assets/logoLightMode.png'
 import logoDarkMode from '../../assets/logoDarkMode.png'
 import dashboardSlide from '../../assets/onboarding/onboarding-dashboard.png'
@@ -27,15 +26,19 @@ const SLIDES = [
 
 const SWIPE_THRESHOLD = 50
 
+function getTheme() {
+  if (typeof document === 'undefined') return 'light'
+  return document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'light'
+}
+
 export default function WelcomeCarousel({ onDone, onSkip }) {
-  const { generalSettings } = useGeneralSettings()
   const [index, setIndex] = useState(0)
   const [dragX, setDragX] = useState(0)
   const [dragging, setDragging] = useState(false)
   const touchStartX = useRef(null)
 
   const isLast = index === SLIDES.length - 1
-  const theme = generalSettings.theme
+  const theme = getTheme()
   const logoSrc = theme === 'dark' ? logoLightMode : logoDarkMode
 
   function goToNext() {
