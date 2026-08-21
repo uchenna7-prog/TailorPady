@@ -1,6 +1,4 @@
 import { useState, useRef } from 'react'
-import logoLightMode from '../../assets/logoLightMode.png'
-import logoDarkMode from '../../assets/logoDarkMode.png'
 import dashboardSlide from '../../assets/onboarding/onboarding-dashboard.png'
 import ordersSlide from '../../assets/onboarding/onboarding-orders.png'
 import customersSlide from '../../assets/onboarding/onboarding-customers.png'
@@ -26,11 +24,6 @@ const SLIDES = [
 
 const SWIPE_THRESHOLD = 50
 
-function getTheme() {
-  if (typeof document === 'undefined') return 'light'
-  return document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'light'
-}
-
 export default function WelcomeCarousel({ onDone, onSkip }) {
   const [index, setIndex] = useState(0)
   const [dragX, setDragX] = useState(0)
@@ -38,8 +31,6 @@ export default function WelcomeCarousel({ onDone, onSkip }) {
   const touchStartX = useRef(null)
 
   const isLast = index === SLIDES.length - 1
-  const theme = getTheme()
-  const logoSrc = theme === 'dark' ? logoLightMode : logoDarkMode
 
   function goToNext() {
     if (isLast) {
@@ -84,15 +75,6 @@ export default function WelcomeCarousel({ onDone, onSkip }) {
         Skip
       </button>
 
-      <div className={styles.header}>
-        <img
-          src={logoSrc}
-          alt="TailorPady"
-          className={styles.logoIcon}
-          style={{ background: theme === 'dark' ? '#ffffff' : '#000000' }}
-        />
-      </div>
-
       <div
         className={styles.viewport}
         onTouchStart={handleTouchStart}
@@ -108,11 +90,11 @@ export default function WelcomeCarousel({ onDone, onSkip }) {
         >
           {SLIDES.map(item => (
             <div key={item.title} className={styles.slideItem}>
-              <h1 className={styles.title}>{item.title}</h1>
-              <p className={styles.sub}>{item.sub}</p>
               <div className={styles.backdrop}>
                 <img src={item.image} alt={item.title} className={styles.image} draggable={false} />
               </div>
+              <h1 className={styles.title}>{item.title}</h1>
+              <p className={styles.sub}>{item.sub}</p>
             </div>
           ))}
         </div>
