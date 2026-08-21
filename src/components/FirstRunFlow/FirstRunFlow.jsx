@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useAuth } from '../../contexts/AuthContext'
 import { db } from '../../firebase'
-import { getOnboardingStatus } from '../../services/profileService'
+import { getOnboardingStatus, skipOnboarding } from '../../services/profileService'
 import RoleSelection from './RoleSelection'
 import WelcomeCarousel from './WelcomeCarousel'
 import NotificationPermission from './NotificationPermission'
@@ -40,7 +40,9 @@ export function useFirstRunStatus() {
 }
 
 export default function FirstRunFlow({ onComplete }) {
+  const { user } = useAuth()
   const [stepIndex, setStepIndex] = useState(0)
+  const [skipping, setSkipping] = useState(false)
 
   function advance() {
     setStepIndex(prev => {
@@ -52,9 +54,25 @@ export default function FirstRunFlow({ onComplete }) {
     })
   }
 
+  async function handleSkip() {
+    if (skipping || !user?.uid) {
+      onComplete()
+      return
+    }
+    setSkipping(true)
+    try {
+      await skipOnboarding(db, user.uid)
+    } catch {
+      // non-blocking: user should not get stuck in onboarding over a network hiccup
+    } finally {
+      setSkipping(false)
+      onComplete()
+    }
+  }
+
   const step = STEPS[stepIndex]
 
-  if (step === 'welcome') return <WelcomeCarousel onDone={advance} />
-  if (step === 'notifications') return <NotificationPermission onDone={advance} />
-  return <RoleSelection onDone={advance} />
+  if (step === 'welcome') return <WelcomeCarousel onDone={advance} onSkip={handleSkip} />
+  if (step === 'notifications') return <NotificationPermission onDone={advance} onSkip={handleSkip} />
+  return <RoleSelection onDone={advance} onSkip={handleSkip} />
 }
