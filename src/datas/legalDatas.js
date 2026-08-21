@@ -83,7 +83,7 @@ export const PRIVACY_SECTIONS = [
   {
     id: 'bug-reports',
     title: 'Bug Reports',
-    body: `If you use the Report a Bug feature, we collect your device model, operating system version, app version, your typed description of the issue, and an optional screenshot. This information is stored in Firebase and also sent to our internal Telegram for support purposes. A screenshot may incidentally contain other information visible on your screen at the time, such as customer data.`,
+    body: `If you use the Report a Bug feature, we collect your device model, operating system version, app version, your typed description of the issue, and an optional screenshot. This information is stored in Firebase and reviewed internally to provide support. A screenshot may incidentally contain other information visible on your screen at the time, such as customer data.`,
   },
   {
     id: 'analytics',
@@ -112,7 +112,6 @@ export const PRIVACY_SECTIONS = [
       'Firebase (Google): used for authentication, database storage, hosting, and analytics.',
       'Cloudinary: used for storing and serving profile photos, gallery, and other images.',
       'Paystack: used to process payment for your TailorPady subscription. Paystack handles your card details directly; we do not store your card information.',
-      'Telegram: used internally to receive and respond to bug reports.',
     ],
     footer: 'These services process your data on our behalf and are bound by their own privacy policies. We encourage you to review the privacy policies of Firebase, Cloudinary, and Paystack if you have concerns about how they handle data.',
   },
