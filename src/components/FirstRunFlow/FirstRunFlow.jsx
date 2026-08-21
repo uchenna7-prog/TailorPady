@@ -7,6 +7,7 @@ import WelcomeCarousel from './WelcomeCarousel'
 import NotificationPermission from './NotificationPermission'
 
 const STEPS = ['welcome', 'notifications', 'role']
+const TRANSITION_MS = 200
 
 export function useFirstRunStatus() {
   const { user } = useAuth()
@@ -39,10 +40,30 @@ export function useFirstRunStatus() {
   return { checking, shouldShow, setShouldShow }
 }
 
+function renderStep(step, onDone, onSkip) {
+  if (step === 'welcome') return <WelcomeCarousel onDone={onDone} onSkip={onSkip} />
+  if (step === 'notifications') return <NotificationPermission onDone={onDone} onSkip={onSkip} />
+  return <RoleSelection onDone={onDone} onSkip={onSkip} />
+}
+
 export default function FirstRunFlow({ onComplete }) {
   const { user } = useAuth()
   const [stepIndex, setStepIndex] = useState(0)
+  const [displayStep, setDisplayStep] = useState(STEPS[0])
+  const [fading, setFading] = useState(false)
   const [skipping, setSkipping] = useState(false)
+
+  const step = STEPS[stepIndex]
+
+  useEffect(() => {
+    if (step === displayStep) return
+    setFading(true)
+    const timer = setTimeout(() => {
+      setDisplayStep(step)
+      setFading(false)
+    }, TRANSITION_MS)
+    return () => clearTimeout(timer)
+  }, [step, displayStep])
 
   function advance() {
     setStepIndex(prev => {
@@ -70,9 +91,15 @@ export default function FirstRunFlow({ onComplete }) {
     }
   }
 
-  const step = STEPS[stepIndex]
-
-  if (step === 'welcome') return <WelcomeCarousel onDone={advance} onSkip={handleSkip} />
-  if (step === 'notifications') return <NotificationPermission onDone={advance} onSkip={handleSkip} />
-  return <RoleSelection onDone={advance} onSkip={handleSkip} />
+  return (
+    <div
+      style={{
+        opacity: fading ? 0 : 1,
+        transform: fading ? 'translateY(6px)' : 'translateY(0)',
+        transition: `opacity ${TRANSITION_MS}ms ease, transform ${TRANSITION_MS}ms ease`,
+      }}
+    >
+      {renderStep(displayStep, advance, handleSkip)}
+    </div>
+  )
 }
