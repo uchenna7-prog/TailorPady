@@ -130,8 +130,7 @@ export default function FirstRunFlow({ onComplete }) {
     <div
       style={{
         opacity: fading ? 0 : 1,
-        transform: fading ? 'translateY(6px)' : 'translateY(0)',
-        transition: `opacity ${TRANSITION_MS}ms ease, transform ${TRANSITION_MS}ms ease`,
+        transition: `opacity ${TRANSITION_MS}ms ease`,
       }}
     >
       {renderStep(displayStep, advance, handleSkip)}
