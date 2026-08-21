@@ -9,8 +9,8 @@ import styles from './FirstRunFlow.module.css'
 
 const SLIDES = [
   {
-    title: 'All your business, one screen',
-    sub: 'Revenue, active orders, and unpaid invoices at a glance, updated the moment something changes.',
+    title: 'Welcome to TailorPady',
+    sub: 'Manage orders, customers, measurements, and payments, all in one simple app built for tailors.',
     image: dashboardSlide,
   },
   {
