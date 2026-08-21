@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, Component } from 'react'
 import { Routes, Route, Navigate, useNavigate } from 'react-router-dom'
 import { useAuth } from './contexts/AuthContext'
 import { usePremium } from './contexts/PremiumContext'
@@ -36,6 +36,64 @@ import RefundPolicy from './pages/RefundPolicy/RefundPolicy'
 import PrivacyPolicy from './pages/PrivacyPolicy/PrivacyPolicy'
 import BugReport from './pages/BugReport/BugReport'
 import './index.css'
+
+class CrashPopup extends Component {
+  constructor(props) {
+    super(props)
+    this.state = { error: null }
+  }
+
+  static getDerivedStateFromError(error) {
+    return { error }
+  }
+
+  componentDidCatch(error, info) {
+    console.error(error, info)
+  }
+
+  render() {
+    if (!this.state.error) return this.props.children
+
+    return (
+      <div
+        style={{
+          position: 'fixed',
+          inset: 0,
+          background: 'rgba(0, 0, 0, 0.6)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          zIndex: 9999,
+          padding: 20,
+        }}
+      >
+        <div
+          style={{
+            background: '#ffffff',
+            borderRadius: 16,
+            padding: 20,
+            maxWidth: 420,
+            width: '100%',
+            maxHeight: '80vh',
+            overflowY: 'auto',
+            fontFamily: 'monospace',
+            fontSize: 12,
+          }}
+        >
+          <div style={{ fontWeight: 800, fontSize: 15, marginBottom: 10, color: '#d00000' }}>
+            Something broke
+          </div>
+          <div style={{ marginBottom: 10, whiteSpace: 'pre-wrap', color: '#111111' }}>
+            {this.state.error.message}
+          </div>
+          <div style={{ opacity: 0.6, whiteSpace: 'pre-wrap', color: '#111111' }}>
+            {this.state.error.stack}
+          </div>
+        </div>
+      </div>
+    )
+  }
+}
 
 function GuestRoute({ children }) {
   const { user, loading } = useAuth()
@@ -102,19 +160,21 @@ function AppShell() {
 
 export default function App() {
   return (
-    <Routes>
-      <Route path="/" element={<RootRoute />} />
-      <Route path="/app" element={<RootRoute />} />
-      <Route path="/login" element={<GuestRoute><Login /></GuestRoute>} />
-      <Route path="/signup" element={<GuestRoute><Signup /></GuestRoute>} />
-      <Route
-        path="/*"
-        element={
-          <RequireAuth>
-            <AppShell />
-          </RequireAuth>
-        }
-      />
-    </Routes>
+    <CrashPopup>
+      <Routes>
+        <Route path="/" element={<RootRoute />} />
+        <Route path="/app" element={<RootRoute />} />
+        <Route path="/login" element={<GuestRoute><Login /></GuestRoute>} />
+        <Route path="/signup" element={<GuestRoute><Signup /></GuestRoute>} />
+        <Route
+          path="/*"
+          element={
+            <RequireAuth>
+              <AppShell />
+            </RequireAuth>
+          }
+        />
+      </Routes>
+    </CrashPopup>
   )
 }
