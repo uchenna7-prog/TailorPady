@@ -6,18 +6,18 @@ import styles from './FirstRunFlow.module.css'
 
 const SLIDES = [
   {
-    title: 'Welcome to TailorPady',
-    sub: 'Manage orders, customers, measurements, and payments, all in one simple app built for tailors.',
+    title: 'See How Your Business Is Doing',
+    sub: 'Get a quick look at your orders, payments, appointments, tasks, and income.',
     image: dashboardSlide,
   },
   {
-    title: 'Never miss a deadline',
-    sub: 'Every order shows its status and due date, so nothing slips through on delivery day.',
+    title: 'Keep Track Of Every Order',
+    sub: 'Know what’s pending, in progress, completed, or ready for pickup.',
     image: ordersSlide,
   },
   {
-    title: 'Your customers, organized',
-    sub: 'Contact info, measurements, orders, and payment history together, so you never lose track of a client.',
+    title: 'Keep All Customer Details Together',
+    sub: 'Find measurements, orders, payments, and customer information in one place.',
     image: customersSlide,
   },
 ]
