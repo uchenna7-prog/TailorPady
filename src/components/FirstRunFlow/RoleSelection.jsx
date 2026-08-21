@@ -2,8 +2,6 @@ import { useState } from 'react'
 import { useAuth } from '../../contexts/AuthContext'
 import { db } from '../../firebase'
 import { saveOnboardingRole } from '../../services/profileService'
-import logoLightMode from '../../assets/logoLightMode.png'
-import logoDarkMode from '../../assets/logoDarkMode.png'
 import styles from './FirstRunFlow.module.css'
 
 const ROLES = [
@@ -21,17 +19,10 @@ const ROLES = [
   },
 ]
 
-function getTheme() {
-  if (typeof document === 'undefined') return 'light'
-  return document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'light'
-}
-
 export default function RoleSelection({ onDone, onSkip }) {
   const { user } = useAuth()
   const [selected, setSelected] = useState(null)
   const [saving, setSaving] = useState(false)
-  const theme = getTheme()
-  const logoSrc = theme === 'dark' ? logoLightMode : logoDarkMode
 
   async function handleContinue() {
     if (!selected || !user?.uid) return
@@ -52,15 +43,6 @@ export default function RoleSelection({ onDone, onSkip }) {
       <button type="button" className={styles.skipBtn} onClick={onSkip}>
         Skip
       </button>
-
-      <div className={styles.header}>
-        <img
-          src={logoSrc}
-          alt="TailorPady"
-          className={styles.logoIcon}
-          style={{ background: theme === 'dark' ? '#ffffff' : '#000000' }}
-        />
-      </div>
 
       <div className={styles.slideTrack}>
         <h1 className={styles.title}>Tell us who you are</h1>
