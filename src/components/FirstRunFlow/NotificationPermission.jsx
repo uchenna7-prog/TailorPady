@@ -38,9 +38,12 @@ export default function NotificationPermission({ onDone, onSkip }) {
       </button>
 
       <div className={styles.header}>
-        <div className={styles.logoWrap}>
-          <img src={logoSrc} alt="TailorPady" className={styles.logoIcon} />
-        </div>
+        <img
+          src={logoSrc}
+          alt="TailorPady"
+          className={styles.logoIcon}
+          style={{ background: theme === 'dark' ? '#ffffff' : '#000000' }}
+        />
       </div>
 
       <div className={styles.slideTrack}>
