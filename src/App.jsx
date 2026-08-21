@@ -54,6 +54,8 @@ class CrashPopup extends Component {
   render() {
     if (!this.state.error) return this.props.children
 
+    const debugOn = new URLSearchParams(window.location.search).get('debug') === '1'
+
     return (
       <div
         style={{
@@ -76,19 +78,48 @@ class CrashPopup extends Component {
             width: '100%',
             maxHeight: '80vh',
             overflowY: 'auto',
-            fontFamily: 'monospace',
-            fontSize: 12,
           }}
         >
-          <div style={{ fontWeight: 800, fontSize: 15, marginBottom: 10, color: '#d00000' }}>
-            Something broke
+          <div style={{ fontWeight: 800, fontSize: 16, marginBottom: 8, color: '#111111' }}>
+            Something went wrong
           </div>
-          <div style={{ marginBottom: 10, whiteSpace: 'pre-wrap', color: '#111111' }}>
-            {this.state.error.message}
+          <div style={{ fontSize: 13, color: '#555555', marginBottom: 16, lineHeight: 1.5 }}>
+            Please reload the app. If this keeps happening, reach out to support.
           </div>
-          <div style={{ opacity: 0.6, whiteSpace: 'pre-wrap', color: '#111111' }}>
-            {this.state.error.stack}
-          </div>
+          <button
+            onClick={() => window.location.reload()}
+            style={{
+              width: '100%',
+              padding: 12,
+              background: '#0a0a0a',
+              color: '#ffffff',
+              border: 'none',
+              borderRadius: 10,
+              fontWeight: 700,
+              fontSize: 14,
+              cursor: 'pointer',
+            }}
+          >
+            Reload
+          </button>
+          {debugOn && (
+            <div
+              style={{
+                marginTop: 16,
+                paddingTop: 16,
+                borderTop: '1px solid #eeeeee',
+                fontFamily: 'monospace',
+                fontSize: 11,
+              }}
+            >
+              <div style={{ marginBottom: 8, whiteSpace: 'pre-wrap', color: '#d00000' }}>
+                {this.state.error.message}
+              </div>
+              <div style={{ opacity: 0.6, whiteSpace: 'pre-wrap', color: '#111111' }}>
+                {this.state.error.stack}
+              </div>
+            </div>
+          )}
         </div>
       </div>
     )
