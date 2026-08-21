@@ -1,7 +1,7 @@
 export const LEGAL_CONTACT_EMAIL = 'uchenduuchenna7@gmail.com'
 export const LEGAL_CONTACT_PHONE = '+234 907 911 6980'
 
-export const PRIVACY_LAST_UPDATED = 'June 2026'
+export const PRIVACY_LAST_UPDATED = 'August 2026'
 
 export const PRIVACY_SECTIONS = [
   {
@@ -10,15 +10,85 @@ export const PRIVACY_SECTIONS = [
     body: `TailorPady is a business management application for tailors and fashion professionals. This Privacy Policy explains how we collect, use, store, and protect your personal data when you use the app.`,
   },
   {
-    id: 'data-we-collect',
-    title: 'Data We Collect',
-    body: `We collect the following categories of data:`,
+    id: 'account-data',
+    title: 'Account Information',
+    body: `When you register, we collect:`,
     bullets: [
-      'Account data: your name, email address, and password when you register.',
-      'Business data: customer records, orders, invoices, payments, measurements, photos, appointments, and tasks that you create within the app.',
-      'Profile photos and gallery images you upload.',
-      'Device and usage data: your device type, browser, IP address, and how you interact with the app, collected automatically for performance and security purposes.',
+      'Full name (required).',
+      'Email address (required).',
+      'Phone number (optional).',
+      'City and country (optional).',
+      'Sex (optional).',
+      'Birthday, month and day only, not year (optional).',
     ],
+    footer: 'Full name and email are required for account creation and authentication. The optional fields help us personalise your experience, for example recognising your birthday, and are never required to use the app.',
+  },
+  {
+    id: 'brand-identity',
+    title: 'Brand Identity',
+    body: `To power features like invoices, receipts, and your public portfolio page, you may add:`,
+    bullets: [
+      'Your logo.',
+      'Shop or brand name.',
+      'Tagline.',
+      'Brand colour.',
+      'Signature.',
+    ],
+    footer: 'Your logo and signature are optional and help personalise documents you generate in the app, but are not required to use core features.',
+  },
+  {
+    id: 'business-info',
+    title: 'Business Information',
+    body: `You may add business details used mainly to generate invoices and receipts for your customers:`,
+    bullets: [
+      'Business phone number and business email.',
+      'Business address.',
+      'Website or social handle.',
+      'Bank name, account number, and account name, displayed on invoices as payment instructions for your customers.',
+      'Payment terms.',
+    ],
+    footer: 'These fields are optional and only used to populate documents you choose to generate, such as invoices and receipts. We do not use your bank details for any payment processing.',
+  },
+  {
+    id: 'socials',
+    title: 'Social Media Handles',
+    body: `If you set up a public portfolio, you may add your social handles for: Instagram, TikTok, Facebook, Twitter, YouTube, Pinterest, and Threads. These are optional and only used to display links on your public portfolio page.`,
+  },
+  {
+    id: 'customer-data',
+    title: 'Customer Data You Enter',
+    body: `As a tailor using TailorPady, you enter data about your own customers. We store this on your behalf to power the app's features:`,
+    bullets: [
+      'Customer measurements, used for order and garment tracking.',
+      'Garment reference images for your customers\u2019 orders.',
+      'Customer details such as name, phone number, email, profile picture, and address. Most of these fields are optional, and help personalise the customer experience within the app.',
+    ],
+    footer: 'You are responsible for having the appropriate basis to collect and store your customers\u2019 data within the app.',
+  },
+  {
+    id: 'payments-recorded',
+    title: 'Payment Records',
+    body: `TailorPady lets you manually record payments received from your customers for an order. This is for your own bookkeeping, receipts, reports, and revenue goals. TailorPady does not process or move this money; it is a record you type in yourself.`,
+  },
+  {
+    id: 'reviews',
+    title: 'Customer Reviews',
+    body: `If you share a review link with your customers, anyone who submits a review through that link may provide their name, a rating, a written review, and an optional photo of themselves. Submitted reviews may be displayed publicly, for example on your portfolio page.`,
+  },
+  {
+    id: 'portfolio-visibility',
+    title: 'Public Portfolio Page',
+    body: `If you set up a portfolio, the information you choose to include, such as your brand identity, business details, social handles, images, and customer reviews, is displayed on a public web page accessible to anyone with the link, without requiring login.`,
+  },
+  {
+    id: 'bug-reports',
+    title: 'Bug Reports',
+    body: `If you use the Report a Bug feature, we collect your device model, operating system version, app version, your typed description of the issue, and an optional screenshot. This information is stored in Firebase and also sent to our internal Telegram for support purposes. A screenshot may incidentally contain other information visible on your screen at the time, such as customer data.`,
+  },
+  {
+    id: 'analytics',
+    title: 'Analytics',
+    body: `We use Firebase Analytics to understand how the app is used, such as which features are opened and how often, so we can improve TailorPady. We do not use crash reporting tools, advertising identifiers, or third-party advertising or tracking pixels.`,
   },
   {
     id: 'how-we-use',
@@ -27,9 +97,10 @@ export const PRIVACY_SECTIONS = [
     bullets: [
       'Provide and maintain the TailorPady service.',
       'Sync your business data across your devices.',
+      'Generate documents you request, such as invoices, receipts, and your portfolio page.',
       'Send important account notifications and service updates.',
-      'Improve the performance and features of the app.',
-      'Respond to your support requests.',
+      'Improve the performance and features of the app, including through analytics.',
+      'Respond to your support requests and bug reports.',
     ],
     footer: 'We do not use your data for advertising, and we do not sell your data to any third party.',
   },
@@ -38,10 +109,12 @@ export const PRIVACY_SECTIONS = [
     title: 'Third-Party Services',
     body: `TailorPady uses the following trusted third-party services to deliver its functionality:`,
     bullets: [
-      'Firebase (Google): used for authentication, database storage, and hosting.',
-      'Cloudinary: used for storing and serving profile photos and gallery images.',
+      'Firebase (Google): used for authentication, database storage, hosting, and analytics.',
+      'Cloudinary: used for storing and serving profile photos, gallery, and other images.',
+      'Paystack: used to process payment for your TailorPady subscription. Paystack handles your card details directly; we do not store your card information.',
+      'Telegram: used internally to receive and respond to bug reports.',
     ],
-    footer: 'These services process your data on our behalf and are bound by their own privacy policies. We encourage you to review the privacy policies of Firebase and Cloudinary if you have concerns about how they handle data.',
+    footer: 'These services process your data on our behalf and are bound by their own privacy policies. We encourage you to review the privacy policies of Firebase, Cloudinary, and Paystack if you have concerns about how they handle data.',
   },
   {
     id: 'storage-security',
@@ -51,7 +124,7 @@ export const PRIVACY_SECTIONS = [
   {
     id: 'data-retention',
     title: 'Data Retention',
-    body: `We retain your data for as long as your account is active. If you delete your account, your data will be removed from our systems within a reasonable period, except where we are required to retain it by law.`,
+    body: `We retain your data for as long as your account is active. If you delete your account, your data will be removed from our systems within a reasonable period, except where we are required to retain it by law, such as billing records related to your Paystack transactions.`,
   },
   {
     id: 'your-rights',
@@ -73,7 +146,7 @@ export const PRIVACY_SECTIONS = [
   {
     id: 'international',
     title: 'International Users',
-    body: `TailorPady is available globally. If you are accessing the app from outside Nigeria, please be aware that your data may be transferred to and processed in servers located in other countries, including those operated by Firebase and Cloudinary. By using the app, you consent to this transfer.`,
+    body: `TailorPady is available globally. If you are accessing the app from outside Nigeria, please be aware that your data may be transferred to and processed in servers located in other countries, including those operated by Firebase, Cloudinary, and Paystack. By using the app, you consent to this transfer.`,
   },
   {
     id: 'changes',
@@ -117,7 +190,7 @@ export const TERMS_SECTIONS = [
   {
     id: 'subscriptions',
     title: 'Subscription Plans and Payments',
-    body: `TailorPady offers both a free plan and paid subscription plans. Paid plans are billed on a monthly or annual basis as selected at the time of subscription.`,
+    body: `TailorPady offers both a free plan and paid subscription plans. Paid plans are billed on a monthly or annual basis as selected at the time of subscription, and processed securely through Paystack.`,
     bullets: [
       'All fees are non-refundable except as described in our Refund and Cancellation Policy.',
       'We reserve the right to change pricing with reasonable notice.',
@@ -166,7 +239,7 @@ export const REFUND_SECTIONS = [
   {
     id: 'paid-plans',
     title: 'Paid Subscription Plans',
-    body: `TailorPady offers monthly and annual subscription plans. By subscribing to a paid plan, you authorise us to charge your selected payment method at the beginning of each billing period. All subscription fees are charged in advance.`,
+    body: `TailorPady offers monthly and annual subscription plans, billed securely through Paystack. By subscribing to a paid plan, you authorise us to charge your selected payment method at the beginning of each billing period. All subscription fees are charged in advance.`,
   },
   {
     id: 'cancellation',
@@ -205,7 +278,7 @@ export const REFUND_SECTIONS = [
   },
 ]
 
-export const DELETE_ACCOUNT_LAST_UPDATED = 'June 2026'
+export const DELETE_ACCOUNT_LAST_UPDATED = 'August 2026'
 
 export const DELETE_ACCOUNT_SECTIONS = [
   {
@@ -231,10 +304,12 @@ export const DELETE_ACCOUNT_SECTIONS = [
     title: 'What Gets Deleted',
     body: `When your account is deleted, the following data is permanently removed from our systems:`,
     bullets: [
-      'Account data: your name, email address, and password.',
-      'Business data: customer records, orders, invoices, payments, measurements, and appointments.',
-      'Profile photos and gallery images stored on Cloudinary.',
-      'Tasks and other content you created within the app.',
+      'Account data: your name, email address, phone number, city, country, sex, and birthday.',
+      'Brand identity: logo, shop name, tagline, brand colour, and signature.',
+      'Business information: business contact details, address, website/social handles, and payment terms.',
+      'Customer data you entered: customer measurements, garment reference images, and customer details.',
+      'Payment records you manually entered, and customer reviews.',
+      'Profile, gallery, and portfolio images stored on Cloudinary.',
     ],
   },
   {
@@ -242,7 +317,7 @@ export const DELETE_ACCOUNT_SECTIONS = [
     title: 'Data We May Retain',
     body: `In limited cases, we may retain certain data for a period after account deletion where required by law or legitimate business need, such as:`,
     bullets: [
-      'Billing or payment records needed for tax, accounting, or fraud-prevention purposes.',
+      'Subscription billing records from Paystack needed for tax, accounting, or fraud-prevention purposes.',
       'Records we are legally required to keep under applicable law.',
     ],
     footer: 'Any retained data is kept only as long as necessary for these purposes and is not used for any other purpose.',
