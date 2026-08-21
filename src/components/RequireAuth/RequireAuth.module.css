@@ -16,11 +16,4 @@
   to { transform: rotate(360deg); }
 }
 
-.splashLogo {
-  width: 68px;
-  height: 68px;
-  object-fit: contain;
-  border-radius: 16px;
-  padding: 6px;
-  box-sizing: border-box;
-}
+
