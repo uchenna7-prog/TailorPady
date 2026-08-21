@@ -24,6 +24,7 @@
       { "source": "/terms",        "destination": "/terms.html" },
       { "source": "/refund",       "destination": "/refund.html" },
       { "source": "/founder",      "destination": "/founder.html" },
+      { "source": "/delete-account", "destination": "/delete-account.html" },
       { "source": "**",            "destination": "/app.html" }
     ]
   },
