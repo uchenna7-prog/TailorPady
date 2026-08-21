@@ -1,5 +1,4 @@
 import { useState } from 'react'
-import { useGeneralSettings } from '../../contexts/GeneralSettingsContext'
 import logoLightMode from '../../assets/logoLightMode.png'
 import logoDarkMode from '../../assets/logoDarkMode.png'
 import notificationsImage from '../../assets/onboarding/onboarding-notifications.png'
@@ -9,10 +8,14 @@ function isNotificationSupported() {
   return typeof window !== 'undefined' && 'Notification' in window
 }
 
+function getTheme() {
+  if (typeof document === 'undefined') return 'light'
+  return document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'light'
+}
+
 export default function NotificationPermission({ onDone, onSkip }) {
-  const { generalSettings } = useGeneralSettings()
   const [requesting, setRequesting] = useState(false)
-  const theme = generalSettings.theme
+  const theme = getTheme()
   const logoSrc = theme === 'dark' ? logoLightMode : logoDarkMode
 
   async function handleAllow() {
