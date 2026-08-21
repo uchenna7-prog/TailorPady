@@ -8,6 +8,23 @@ import NotificationPermission from './NotificationPermission'
 
 const STEPS = ['welcome', 'notifications', 'role']
 const TRANSITION_MS = 200
+const CACHE_KEY_PREFIX = 'tp_onboarding_completed_'
+
+function readCachedCompleted(uid) {
+  try {
+    return localStorage.getItem(CACHE_KEY_PREFIX + uid) === 'true'
+  } catch {
+    return false
+  }
+}
+
+function writeCachedCompleted(uid) {
+  try {
+    localStorage.setItem(CACHE_KEY_PREFIX + uid, 'true')
+  } catch {
+    // best-effort cache, Firestore remains the source of truth
+  }
+}
 
 export function useFirstRunStatus() {
   const { user } = useAuth()
@@ -20,12 +37,22 @@ export function useFirstRunStatus() {
       return
     }
 
+    const forceShow = new URLSearchParams(window.location.search).get('resetOnboarding') === '1'
+
+    if (!forceShow && readCachedCompleted(user.uid)) {
+      setShouldShow(false)
+      setChecking(false)
+      return
+    }
+
     let cancelled = false
 
     getOnboardingStatus(db, user.uid)
       .then(status => {
         if (cancelled) return
-        setShouldShow(!status.onboardingCompleted)
+        const show = forceShow || !status.onboardingCompleted
+        setShouldShow(show)
+        if (!show) writeCachedCompleted(user.uid)
       })
       .catch(() => {
         if (!cancelled) setShouldShow(false)
@@ -37,7 +64,12 @@ export function useFirstRunStatus() {
     return () => { cancelled = true }
   }, [user?.uid])
 
-  return { checking, shouldShow, setShouldShow }
+  function markCompleted() {
+    if (user?.uid) writeCachedCompleted(user.uid)
+    setShouldShow(false)
+  }
+
+  return { checking, shouldShow, markCompleted }
 }
 
 function renderStep(step, onDone, onSkip) {
