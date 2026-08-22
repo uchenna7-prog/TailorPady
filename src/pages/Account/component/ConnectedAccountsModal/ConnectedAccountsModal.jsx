@@ -1,6 +1,8 @@
 import { useState } from 'react'
 import { FullModal } from '../../../../components/FullModal/FullModal'
 import { FieldGroup } from '../FieldGroup/FieldGroup'
+import { Field } from '../Field/Field'
+import { TextInput } from '../TextInput/TextInput'
 import { useAuth } from '../../../../contexts/AuthContext'
 import styles from './ConnectedAccountsModal.module.css'
 
@@ -17,10 +19,13 @@ function getProviders(user) {
 
 export function ConnectedAccountsModal({ onBack, showToast }) {
 
-  const { user, linkGoogle, unlinkProvider } = useAuth()
+  const { user, linkGoogle, unlinkProvider, setPassword } = useAuth()
 
   const [loading, setLoading] = useState(null)
   const [error,   setError]   = useState('')
+  const [settingPassword, setSettingPassword] = useState(false)
+  const [newPassword,     setNewPassword]     = useState('')
+  const [confirmPassword, setConfirmPassword] = useState('')
 
   const { hasGoogle, hasPassword } = getProviders(user)
 
@@ -37,7 +42,6 @@ export function ConnectedAccountsModal({ onBack, showToast }) {
       if (err.code === 'auth/credential-already-in-use') {
         setError('This Google account is already linked to another user.')
       } else if (err.code === 'auth/popup-closed-by-user') {
-        // user dismissed — do nothing
       } else {
         setError('Could not link Google. Please try again.')
       }
@@ -58,6 +62,50 @@ export function ConnectedAccountsModal({ onBack, showToast }) {
       showToast('Google account removed')
     } catch {
       setError('Could not remove Google. Please try again.')
+    } finally {
+      setLoading(null)
+    }
+  }
+
+  function openSetPassword() {
+    setError('')
+    setNewPassword('')
+    setConfirmPassword('')
+    setSettingPassword(true)
+  }
+
+  function cancelSetPassword() {
+    setError('')
+    setNewPassword('')
+    setConfirmPassword('')
+    setSettingPassword(false)
+  }
+
+  async function handleSetPassword() {
+    setError('')
+    if (newPassword.length < 6) {
+      setError('Password must be at least 6 characters.')
+      return
+    }
+    if (newPassword !== confirmPassword) {
+      setError('Passwords do not match.')
+      return
+    }
+    setLoading('set-password')
+    try {
+      await setPassword(user, newPassword)
+      showToast('Password added')
+      setSettingPassword(false)
+      setNewPassword('')
+      setConfirmPassword('')
+    } catch (err) {
+      if (err.code === 'auth/weak-password') {
+        setError('Password is too weak. Use at least 6 characters.')
+      } else if (err.code === 'auth/requires-recent-login') {
+        setError('Please log out and back in, then try again.')
+      } else {
+        setError('Could not set password. Please try again.')
+      }
     } finally {
       setLoading(null)
     }
@@ -114,12 +162,72 @@ export function ConnectedAccountsModal({ onBack, showToast }) {
                 {hasPassword ? `Active · ${user.email}` : 'Not set up'}
               </span>
             </div>
-            <div className={`${styles.providerStatus} ${hasPassword ? styles.providerStatusActive : ''}`}>
-              {hasPassword ? 'Active' : 'None'}
-            </div>
+            {hasPassword ? (
+              <div className={`${styles.providerStatus} ${styles.providerStatusActive}`}>
+                Active
+              </div>
+            ) : (
+              <button
+                className={styles.providerBtn}
+                onClick={openSetPassword}
+                disabled={settingPassword}
+              >
+                Set Up
+              </button>
+            )}
           </div>
 
         </FieldGroup>
+
+        {settingPassword && (
+          <>
+            <div style={{ height: 12 }} />
+            <FieldGroup>
+              <Field label="New Password" hint="At least 6 characters.">
+                <TextInput
+                  type="password"
+                  value={newPassword}
+                  onChange={setNewPassword}
+                  placeholder="New password"
+                />
+              </Field>
+              <Field label="Confirm Password">
+                <TextInput
+                  type="password"
+                  value={confirmPassword}
+                  onChange={setConfirmPassword}
+                  placeholder="Repeat new password"
+                />
+              </Field>
+            </FieldGroup>
+            <div style={{ display: 'flex', gap: 10, marginTop: 12 }}>
+              <button
+                className={styles.providerBtn}
+                onClick={handleSetPassword}
+                disabled={loading === 'set-password'}
+              >
+                {loading === 'set-password' ? 'Saving…' : 'Save Password'}
+              </button>
+              <button
+                onClick={cancelSetPassword}
+                disabled={loading === 'set-password'}
+                style={{
+                  background: 'transparent',
+                  border: '1.5px solid var(--border)',
+                  borderRadius: 10,
+                  padding: '8px 16px',
+                  fontSize: '0.85rem',
+                  fontWeight: 700,
+                  color: 'var(--text3)',
+                  cursor: 'pointer',
+                  fontFamily: 'inherit',
+                }}
+              >
+                Cancel
+              </button>
+            </div>
+          </>
+        )}
 
         {error && (
           <div className={styles.error}>
@@ -128,7 +236,7 @@ export function ConnectedAccountsModal({ onBack, showToast }) {
           </div>
         )}
 
-        {!canUnlink && hasGoogle && (
+        {!canUnlink && hasGoogle && !settingPassword && (
           <div className={styles.notice}>
             <span className="mi-outlined" style={{ fontSize: '0.9rem', flexShrink: 0 }}>info</span>
             <span>Set up a password first before removing Google sign-in.</span>
