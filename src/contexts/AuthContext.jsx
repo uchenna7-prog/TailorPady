@@ -28,28 +28,30 @@ export function AuthProvider({ children }) {
       setUser(null)
       return
     }
-    if (profiledUidRef.current === firebaseUser.uid) {
-      setUser(firebaseUser)
-      return
-    }
-    profiledUidRef.current = firebaseUser.uid
-    ensureUserProfile(firebaseUser, hint)
-      .then((profile) => {
-        if (profile?.pendingDeletion) {
-          profiledUidRef.current = null
+
+    setUser(firebaseUser)
+
+    firebaseUser.getIdTokenResult()
+      .then(tokenResult => {
+        if (tokenResult.claims.pendingDeletion) {
           logout()
           setUser(null)
-          return
         }
-        setUser(firebaseUser)
-        checkReferralActivation(firebaseUser).catch(err => {
-          console.warn('Referral activation check failed:', err)
+      })
+      .catch(() => {})
+
+    if (profiledUidRef.current !== firebaseUser.uid) {
+      profiledUidRef.current = firebaseUser.uid
+      ensureUserProfile(firebaseUser, hint)
+        .then(() => {
+          checkReferralActivation(firebaseUser).catch(err => {
+            console.warn('Referral activation check failed:', err)
+          })
         })
-      })
-      .catch(() => {
-        profiledUidRef.current = null
-        setUser(firebaseUser)
-      })
+        .catch(() => {
+          profiledUidRef.current = null
+        })
+    }
   }, [])
 
   useEffect(() => {
