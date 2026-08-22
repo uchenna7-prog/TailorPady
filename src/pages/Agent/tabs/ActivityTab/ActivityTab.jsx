@@ -9,12 +9,11 @@ import styles from './ActivityTab.module.css'
 
 export function ActivityTab({ user, items, dailyBrief, allOrders, allInvoices, allPayments, customers, onGoToCustomer }) {
   const [selected, setSelected] = useState(null)
-
   const isEmpty = !items?.length && !dailyBrief
 
   if (isEmpty) return (
     <div className={styles.emptyTab}>
-      <MIcon name="check_circle" size="2rem" color="var(--border2)" />
+      <MIcon name="check_circle" size="2.5rem" color="var(--text3)" />
       <p className={styles.emptyTabTitle}>No activity yet</p>
       <p className={styles.emptyTabSub}>Your assistant will log its actions here as it works</p>
     </div>
@@ -28,7 +27,6 @@ export function ActivityTab({ user, items, dailyBrief, allOrders, allInvoices, a
         {dailyBrief && !dailyBrief.isEmpty && (
           <DailyBriefCard user={user} brief={dailyBrief} />
         )}
-
         {groups.map(group => (
           <div key={group.date} className={styles.dateGroup}>
             <DateDivider label={group.date} />
@@ -49,7 +47,6 @@ export function ActivityTab({ user, items, dailyBrief, allOrders, allInvoices, a
           </div>
         ))}
       </div>
-
       {selected && (
         <ActivityDetailSheet
           item={selected}
