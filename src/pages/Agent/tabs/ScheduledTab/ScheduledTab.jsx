@@ -11,7 +11,7 @@ export function ScheduledTab({ items, allOrders, allInvoices, allPayments, custo
 
   if (!items?.length) return (
     <div className={styles.emptyTab}>
-      <MIcon name="schedule" size="2rem" color="var(--border2)" />
+      <MIcon name="schedule" size="2.5rem" color="var(--text3)" />
       <p className={styles.emptyTabTitle}>Nothing scheduled</p>
       <p className={styles.emptyTabSub}>Upcoming assistant actions will appear here</p>
     </div>
@@ -42,7 +42,6 @@ export function ScheduledTab({ items, allOrders, allInvoices, allPayments, custo
           </div>
         ))}
       </div>
-
       {selected && (
         <ScheduledDetailSheet
           item={selected}
