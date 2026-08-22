@@ -1,26 +1,18 @@
 import { useState } from 'react'
+import { useNotifications } from '../../contexts/NotificationContext'
 import notificationsImage from '../../assets/onboarding/onboarding-notifications.png'
 import styles from './FirstRunFlow.module.css'
 
-function isNotificationSupported() {
-  return typeof window !== 'undefined' && 'Notification' in window
-}
-
 export default function NotificationPermission({ onDone, onSkip }) {
+  const { requestPushPermission } = useNotifications()
   const [requesting, setRequesting] = useState(false)
 
   async function handleAllow() {
-    if (!isNotificationSupported()) {
-      onDone()
-      return
-    }
     setRequesting(true)
     try {
-      await Notification.requestPermission()
+      await requestPushPermission()
     } catch {
-      setRequesting(false)
-      onDone()
-      return
+      // non-blocking: user should still continue even if the subscription failed
     }
     setRequesting(false)
     onDone()
