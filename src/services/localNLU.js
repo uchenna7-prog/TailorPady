@@ -69,12 +69,12 @@ function phraseMatches(tokens, phraseWords) {
   return phraseWords.every(pw => tokens.some(t => fuzzyTokenMatch(t, pw)))
 }
 
-export function matchCustomer(customers, text) {
-  if (!text || !customers?.length) return null
+export function matchCustomerCandidates(customers, text) {
+  if (!text || !customers?.length) return []
   const norm = normalizeText(text)
   const textTokens = tokenize(text)
+  const results = []
 
-  let best = null
   for (const c of customers) {
     if (!c.name) continue
     const nameNorm = normalizeText(c.name)
@@ -92,11 +92,25 @@ export function matchCustomer(customers, text) {
       score = matchedCount > 0 ? 50 + (matchedCount / nameTokens.length) * 50 : 0
     }
 
-    if (score > 45 && (!best || score > best.score)) {
-      best = { customer: c, score }
-    }
+    if (score > 45) results.push({ customer: c, score })
   }
-  return best
+
+  return results.sort((a, b) => b.score - a.score)
+}
+
+export function matchCustomer(customers, text) {
+  const candidates = matchCustomerCandidates(customers, text)
+  return candidates.length ? candidates[0] : null
+}
+
+export function isAmbiguousMatch(candidates) {
+  return candidates.length >= 2 &&
+    candidates[1].score > 45 &&
+    candidates[0].score - candidates[1].score < 15
+}
+
+export function containsPronoun(text) {
+  return /\b(he|she|they|him|her|them|his|hers|their)\b/i.test(text)
 }
 
 export function parseMoney(str) {
@@ -120,6 +134,73 @@ export function parseMoney(str) {
 export function formatMoney(amount, currencySymbol = '₦') {
   if (!amount) return `${currencySymbol}0`
   return `${currencySymbol}${Number(amount).toLocaleString()}`
+}
+
+const NUMBER_ONES = {
+  zero: 0, one: 1, two: 2, three: 3, four: 4, five: 5, six: 6, seven: 7, eight: 8, nine: 9,
+  ten: 10, eleven: 11, twelve: 12, thirteen: 13, fourteen: 14, fifteen: 15,
+  sixteen: 16, seventeen: 17, eighteen: 18, nineteen: 19,
+}
+const NUMBER_TENS = {
+  twenty: 20, thirty: 30, forty: 40, fifty: 50, sixty: 60, seventy: 70, eighty: 80, ninety: 90,
+}
+const NUMBER_SCALES = { thousand: 1000, million: 1_000_000 }
+
+function isNumberWord(word) {
+  return word in NUMBER_ONES || word in NUMBER_TENS || word === 'hundred' || word in NUMBER_SCALES || word === 'and'
+}
+
+export function wordsToNumber(tokens) {
+  let total = 0
+  let current = 0
+  let found = false
+
+  for (const t of tokens) {
+    if (t === 'and') continue
+    if (t in NUMBER_ONES) { current += NUMBER_ONES[t]; found = true; continue }
+    if (t in NUMBER_TENS) { current += NUMBER_TENS[t]; found = true; continue }
+    if (t === 'hundred') { current = (current || 1) * 100; found = true; continue }
+    if (t in NUMBER_SCALES) { total += (current || 1) * NUMBER_SCALES[t]; current = 0; found = true; continue }
+    break
+  }
+
+  if (!found) return null
+  return total + current
+}
+
+export function extractMoneyMention(text) {
+  const norm = normalizeText(text)
+
+  const kMatch = norm.match(/(\d[\d,]*(?:\.\d+)?)\s*k\b/)
+  if (kMatch) {
+    const n = parseFloat(kMatch[1].replace(/,/g, ''))
+    if (!isNaN(n)) return n * 1000
+  }
+
+  const currencyMatch = norm.match(/₦\s*([\d,]+(?:\.\d+)?)/) || norm.match(/([\d,]+(?:\.\d+)?)\s*(?:naira|ngn)\b/)
+  if (currencyMatch) {
+    const n = parseFloat(currencyMatch[1].replace(/,/g, ''))
+    if (!isNaN(n)) return n
+  }
+
+  const tokens = tokenize(text)
+  const magnitudeWords = new Set(['hundred', 'thousand', 'million'])
+  for (let i = 0; i < tokens.length; i++) {
+    if (!(tokens[i] in NUMBER_ONES) && !(tokens[i] in NUMBER_TENS)) continue
+    let j = i
+    let sawMagnitude = false
+    while (j < tokens.length && isNumberWord(tokens[j])) {
+      if (magnitudeWords.has(tokens[j])) sawMagnitude = true
+      j++
+    }
+    if (sawMagnitude) {
+      const value = wordsToNumber(tokens.slice(i, j))
+      if (value !== null) return value
+    }
+    i = j
+  }
+
+  return null
 }
 
 const DAY_NAMES = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday']
@@ -179,6 +260,105 @@ export function parseDate(str) {
   const parsed = new Date(str)
   if (!isNaN(parsed)) return parsed.toISOString().slice(0, 10)
   return null
+}
+
+const DATE_MENTION_PATTERNS = [
+  /\btoday\b/,
+  /\btomorrow\b/,
+  /\byesterday\b/,
+  /\bthis weekend\b/,
+  /\bend of (?:the )?month\b/,
+  /\bin\s+\d+\s*(?:day|days|week|weeks)\b/,
+  /\bnext\s+(?:sunday|monday|tuesday|wednesday|thursday|friday|saturday|week)\b/,
+  /\b(?:sunday|monday|tuesday|wednesday|thursday|friday|saturday)\b/,
+  /\b(?:jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)[a-z]*\s+\d{1,2}(?:st|nd|rd|th)?\b/,
+]
+
+export function extractDateMention(text) {
+  const norm = normalizeText(text)
+  for (const re of DATE_MENTION_PATTERNS) {
+    const m = norm.match(re)
+    if (m) {
+      const parsed = parseDate(m[0])
+      if (parsed) return parsed
+    }
+  }
+  return null
+}
+
+const GARMENT_WORDS = new Set([
+  'agbada', 'kaftan', 'caftan', 'gown', 'suit', 'trouser', 'trousers', 'skirt',
+  'blouse', 'dress', 'shirt', 'top', 'ankara', 'senator', 'buba', 'iro',
+  'wrapper', 'jacket', 'kimono', 'jumpsuit', 'native', 'dashiki', 'agabada',
+])
+
+const DESC_STOPWORDS = new Set([
+  'for', 'due', 'by', 'at', 'on', 'cost', 'price', 'worth', 'is', 'was',
+  'paid', 'deposit', 'naira', 'ngn', 'today', 'tomorrow',
+])
+
+export function extractGarmentDesc(text) {
+  const tokens = tokenize(text)
+  const startIdx = tokens.findIndex(t =>
+    GARMENT_WORDS.has(t) || [...GARMENT_WORDS].some(g => fuzzyTokenMatch(t, g))
+  )
+  if (startIdx === -1) return null
+
+  let end = startIdx
+  while (end < tokens.length) {
+    const t = tokens[end]
+    if (DESC_STOPWORDS.has(t) || /^\d/.test(t) || end - startIdx >= 6) break
+    end++
+  }
+
+  const words = tokens.slice(startIdx, end)
+  return words.length ? words.join(' ') : null
+}
+
+export function extractPaymentMethod(text) {
+  const s = normalizeText(text)
+  if (/\btransfer\b/.test(s)) return 'transfer'
+  if (/\bcard\b/.test(s)) return 'card'
+  if (/\bpos\b/.test(s)) return 'card'
+  if (/\bcash\b/.test(s)) return 'cash'
+  return null
+}
+
+const APPT_TYPE_WORDS = [
+  { match: /\bfitting\b/, value: 'fitting' },
+  { match: /\bmeasurements?\b/, value: 'measurement' },
+  { match: /\bdeliver(y|ing)?\b/, value: 'delivery' },
+  { match: /\bconsult(ation)?\b/, value: 'consultation' },
+  { match: /\bpick[\s-]?up\b/, value: 'pickup' },
+]
+
+export function extractApptType(text) {
+  const s = normalizeText(text)
+  for (const { match, value } of APPT_TYPE_WORDS) {
+    if (match.test(s)) return value
+  }
+  return null
+}
+
+export function extractTimeMention(text) {
+  const m = text.match(/\b\d{1,2}(:\d{2})?\s*(am|pm|AM|PM)\b/) || text.match(/\b([01]?\d|2[0-3]):([0-5]\d)\b/)
+  return m ? m[0].trim() : null
+}
+
+export function extractEntities(text, customers) {
+  const candidates = matchCustomerCandidates(customers, text)
+  const topCustomer = candidates.length ? candidates[0].customer : null
+
+  return {
+    customerName: topCustomer ? topCustomer.name : null,
+    customerCandidates: candidates,
+    money: extractMoneyMention(text),
+    date: extractDateMention(text),
+    desc: extractGarmentDesc(text),
+    method: extractPaymentMethod(text),
+    apptType: extractApptType(text),
+    time: extractTimeMention(text),
+  }
 }
 
 export function formatDateNice(isoStr) {
