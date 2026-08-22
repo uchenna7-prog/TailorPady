@@ -894,15 +894,20 @@ function WhatsAppWidget() {
             )}
           </div>
           <div className={styles.whatsappPanelFooter}>
-            
-              href={WHATSAPP_HREF}
-              target="_blank"
-              rel="noreferrer"
-              className={styles.whatsappStartChatBtn}
-            >
-              <WhatsAppIcon size={18} />
-              Continue on WhatsApp
-            </a>
+            {(() => {
+              const AnchorTag = 'a'
+              return (
+                <AnchorTag
+                  href={WHATSAPP_HREF}
+                  target="_blank"
+                  rel="noreferrer"
+                  className={styles.whatsappStartChatBtn}
+                >
+                  <WhatsAppIcon size={18} />
+                  Continue on WhatsApp
+                </AnchorTag>
+              )
+            })()}
           </div>
         </div>
       )}
