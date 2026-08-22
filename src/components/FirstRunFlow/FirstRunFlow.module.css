@@ -227,16 +227,11 @@
   gap: 12px;
 }
 
-.roleIcon {
-  width: 40px;
-  height: 40px;
-  border-radius: 11px;
-  background: var(--surface2);
-  display: flex;
-  align-items: center;
-  justify-content: center;
+.roleImage {
+  width: 68px;
+  height: 68px;
+  object-fit: contain;
   flex-shrink: 0;
-  transition: background 220ms ease;
 }
 
 .roleIconSelected {
