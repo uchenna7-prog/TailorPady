@@ -1,8 +1,7 @@
 import { RichText } from "../../../Agent/components/RichText/RichText"
 import { MIcon } from "../../../Agent/components/MIcon/MIcon"
+import { haptic } from "../../utils"
 import styles from "./ChatMessage.module.css"
-
-
 export function ChatMessage({ msg, onAction, onNavigate }) {
   const isAgent = msg.role === 'agent'
   return (
