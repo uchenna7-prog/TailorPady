@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from 'react'
 import { useTheme } from './hooks/useTheme'
 import SiteNav from './components/SiteNav/SiteNav'
 import SiteFooter from './components/SiteFooter/SiteFooter'
-import { USAGE_LIMITS } from '../datas/usageLimits'
+import { USAGE_LIMITS } from '../../datas/usageLimits'
 import styles from './LandingPage.module.css'
 
 const ABOUT_STATS = [
