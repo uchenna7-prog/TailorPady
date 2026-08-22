@@ -24,37 +24,47 @@ export function AuthProvider({ children }) {
   const profiledUidRef = useRef(null)
 
   const handleUser = useCallback((firebaseUser, hint) => {
-    setUser(firebaseUser)
-    if (firebaseUser && profiledUidRef.current !== firebaseUser.uid) {
-      profiledUidRef.current = firebaseUser.uid
-      ensureUserProfile(firebaseUser, hint)
-        .then(() => {
-          checkReferralActivation(firebaseUser).catch(err => {
-            console.warn('Referral activation check failed:', err)
-          })
-        })
-        .catch(() => {
-          profiledUidRef.current = null
-        })
+    if (!firebaseUser) {
+      setUser(null)
+      return
     }
+    if (profiledUidRef.current === firebaseUser.uid) {
+      setUser(firebaseUser)
+      return
+    }
+    profiledUidRef.current = firebaseUser.uid
+    ensureUserProfile(firebaseUser, hint)
+      .then((profile) => {
+        if (profile?.pendingDeletion) {
+          profiledUidRef.current = null
+          logout()
+          setUser(null)
+          return
+        }
+        setUser(firebaseUser)
+        checkReferralActivation(firebaseUser).catch(err => {
+          console.warn('Referral activation check failed:', err)
+        })
+      })
+      .catch(() => {
+        profiledUidRef.current = null
+        setUser(firebaseUser)
+      })
   }, [])
 
   useEffect(() => {
     let authSettled = false
     let redirectSettled = false
-
     const trySettle = () => {
       if (authSettled && redirectSettled) {
         setLoading(false)
       }
     }
-
     const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
       handleUser(firebaseUser)
       authSettled = true
       trySettle()
     })
-
     getGoogleRedirectResult()
       .then(({ user: redirectUser, isNewUser }) => {
         if (redirectUser) {
@@ -66,7 +76,6 @@ export function AuthProvider({ children }) {
         redirectSettled = true
         trySettle()
       })
-
     return unsubscribe
   }, [handleUser])
 
