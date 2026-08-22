@@ -3,8 +3,10 @@ import { useCustomers } from '../../contexts/CustomerContext'
 import { useGallery } from '../../contexts/GalleryContext'
 import { useProfileSettings } from '../../contexts/ProfileSettingsContext'
 import { useTour } from '../../contexts/TourContext'
+import { sharePDF } from '../../utils/pdfUtils'
 import { AddPhotoModal } from './components/AddPhotoModal/AddPhotoModal'
-import {SharePortfolioModal} from './components/SharePortfolioModal/SharePortfolioModal'
+import { SharePortfolioModal } from './components/SharePortfolioModal/SharePortfolioModal'
+import { LookbookTemplate } from './components/LookbookTemplate/LookbookTemplate'
 import { Lightbox } from './components/Lightbox/Lightbox'
 import { ManageGarmentTypesSheet } from './components/ManageGarmentTypesSheet/ManageGarmentTypesSheet'
 import BottomNav from '../../components/BottomNav/BottomNav'
@@ -27,6 +29,37 @@ const CATEGORY_MAP = {
 
 const ALL_SUB_TAB = { id: '__all__', label: 'All' }
 
+const MAX_SHARED_PHOTOS = 10
+
+function buildLookbookMessage(photos, profileSettings) {
+  const brandName = profileSettings?.brandName || 'our atelier'
+  const count = photos.length
+  const lines = [
+    `Hi, here's a look at ${brandName}'s design catalogue.`,
+    '',
+    `${count} design${count === 1 ? '' : 's'} attached.`,
+  ]
+  if (profileSettings?.brandPhone) lines.push(`For orders, reach us at ${profileSettings.brandPhone}.`)
+  lines.push('')
+  lines.push('Thank you!')
+  return lines.join('\n')
+}
+
+async function urlToFile(url, filename) {
+  const res = await fetch(url)
+  const blob = await res.blob()
+  return new File([blob], filename, { type: blob.type || 'image/jpeg' })
+}
+
+function downloadFile(file) {
+  const url = URL.createObjectURL(file)
+  const a = document.createElement('a')
+  a.href = url
+  a.download = file.name
+  a.click()
+  setTimeout(() => URL.revokeObjectURL(url), 10000)
+}
+
 export default function Gallery({ onMenuClick }) {
   const { customers } = useCustomers()
   const { photos, GarmentTypes, loading, addPhoto, deletePhoto, updatePhoto, saveGarmentTypes } = useGallery()
@@ -42,11 +75,13 @@ export default function Gallery({ onMenuClick }) {
   const [toastMsg,      setToastMsg]      = useState('')
   const [shareOpen,     setShareOpen]     = useState(false)
   const [searchQuery,   setSearchQuery]   = useState('')
+  const [actionLoading, setActionLoading] = useState(false)
   const toastTimer       = useRef(null)
   const tabsRef          = useRef(null)
   const subTabsRef       = useRef(null)
   const tabActionBarRef  = useRef(null)
   const pageRef          = useRef(null)
+  const lookbookRef      = useRef(null)
 
   const showToast = useCallback((msg) => {
     setToastMsg(msg)
@@ -134,10 +169,86 @@ export default function Gallery({ onMenuClick }) {
     if (activeEl) activeEl.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' })
   }, [activeSubTab, activeTab])
 
+  const handleShareDesigns = async () => {
+    if (actionLoading) return
+    if (filtered.length === 0) {
+      showToast('No designs to share yet')
+      return
+    }
+    setActionLoading(true)
+    showToast('Preparing lookbook…')
+    try {
+      const brandName = (profileSettings.brandName || 'TailorPady').replace(/\s+/g, '_')
+      const filename = `Lookbook-${brandName}.pdf`
+      const message = buildLookbookMessage(filtered, profileSettings)
+      await sharePDF(lookbookRef.current, filename, message)
+      showToast('Shared ✓')
+    } catch (err) {
+      if (err?.name !== 'AbortError') showToast('Failed to prepare lookbook — please try again')
+    } finally {
+      setActionLoading(false)
+    }
+  }
+
+  const handleSharePhotos = async () => {
+    if (actionLoading) return
+    if (filtered.length === 0) {
+      showToast('No photos to share yet')
+      return
+    }
+    setActionLoading(true)
+    showToast('Preparing photos…')
+    try {
+      const subset = filtered.slice(0, MAX_SHARED_PHOTOS)
+      const files = []
+      for (let i = 0; i < subset.length; i++) {
+        const src = resolveImgSrc(subset[i])
+        if (!src) continue
+        try {
+          const file = await urlToFile(src, `${subset[i].caption || 'inspiration'}-${i + 1}.jpg`)
+          files.push(file)
+        } catch {}
+      }
+
+      if (files.length === 0) {
+        showToast('Could not prepare photos — please try again')
+        return
+      }
+
+      const canShareFiles = typeof navigator.share === 'function'
+        && typeof navigator.canShare === 'function'
+        && navigator.canShare({ files })
+
+      if (canShareFiles) {
+        await navigator.share({ files, text: 'A few pieces I thought you would like' })
+        showToast('Shared ✓')
+      } else {
+        files.forEach(downloadFile)
+        showToast('Sharing not supported here — photos downloaded instead')
+      }
+
+      if (filtered.length > MAX_SHARED_PHOTOS) {
+        showToast(`Only the first ${MAX_SHARED_PHOTOS} photos were shared`)
+      }
+    } catch (err) {
+      if (err?.name !== 'AbortError') showToast('Failed to share photos')
+    } finally {
+      setActionLoading(false)
+    }
+  }
+
   const TAB_ACTIONS = {
-    completed_works: { icon: 'share',          label: 'Share Portfolio Link', onPress: () => setShareOpen(true) },
-    designs:         { icon: 'picture_as_pdf', label: 'Export Lookbook',      onPress: () => showToast('Export lookbook coming soon!') },
-    inspiration:     { icon: 'send',           label: 'Send Board',           onPress: () => showToast('Share board coming soon!') },
+    completed_works: { icon: 'share', label: 'Share Portfolio Link', onPress: () => setShareOpen(true) },
+    designs: {
+      icon:    actionLoading ? 'hourglass_empty' : 'picture_as_pdf',
+      label:   actionLoading ? 'Preparing…' : 'Share Designs',
+      onPress: handleShareDesigns,
+    },
+    inspiration: {
+      icon:    actionLoading ? 'hourglass_empty' : 'share',
+      label:   actionLoading ? 'Preparing…' : 'Share Photos',
+      onPress: handleSharePhotos,
+    },
   }
   const tabAction = TAB_ACTIONS[activeTab]
   const [pillExpanded, setPillExpanded] = useState(true)
@@ -151,6 +262,7 @@ export default function Gallery({ onMenuClick }) {
   }, [activeTab])
 
   const handlePillClick = () => {
+    if (actionLoading) return
     if (!pillExpanded) {
       setPillExpanded(true)
       clearTimeout(pillTimer.current)
@@ -347,6 +459,12 @@ export default function Gallery({ onMenuClick }) {
         brandName={profileSettings.brandName}
         completedWorksPhotos={completedWorksPhotos}
       />
+
+      <div style={{ display: 'none' }}>
+        <div ref={lookbookRef}>
+          <LookbookTemplate photos={filtered} profileSettings={profileSettings} />
+        </div>
+      </div>
 
       <Toast message={toastMsg} />
       <BottomNav></BottomNav>
