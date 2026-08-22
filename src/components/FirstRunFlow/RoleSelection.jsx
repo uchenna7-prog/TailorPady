@@ -63,12 +63,14 @@ export default function RoleSelection({ onDone, onSkip }) {
                 tabIndex={0}
               >
                 <div className={styles.roleHead}>
-                  <img src={role.image} alt={role.title} className={styles.roleImage} draggable={false} />
+                  <div className={`${styles.roleRadio} ${isSelected ? styles.roleRadioSelected : ''}`} />
                   <div className={styles.roleTextBlock}>
                     <p className={styles.roleTitle}>{role.title}</p>
                     <p className={styles.roleSub}>{role.sub}</p>
                   </div>
-                  <div className={`${styles.roleRadio} ${isSelected ? styles.roleRadioSelected : ''}`} />
+                </div>
+                <div className={styles.roleImageWrap}>
+                  <img src={role.image} alt={role.title} className={styles.roleImage} draggable={false} />
                 </div>
               </div>
             )
