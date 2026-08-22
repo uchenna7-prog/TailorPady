@@ -4,6 +4,7 @@ import {
   useState,
   useCallback,
   useEffect,
+  useRef,
 } from 'react'
 import { useAuth }            from './AuthContext'
 import { useCustomers }       from './CustomerContext'
@@ -21,6 +22,10 @@ import {
 import {
   classifyIntent,
   matchCustomer,
+  matchCustomerCandidates,
+  isAmbiguousMatch,
+  containsPronoun,
+  extractEntities,
   parseMoney,
   parseDate,
   formatMoney,
@@ -31,13 +36,69 @@ import {
   detectTimeWindow,
   HELP_TEXT,
 } from '../services/localNLU'
-// NOTE: adjust the import path above ("../services/localNLU") to wherever
-// you place localNLU.js in your project — it should sit next to agentService.
+
+const FLOW_INTENTS = ['add_order', 'gen_invoice', 'record_payment', 'add_task', 'add_appt']
+const CUSTOMER_QUERY_INTENTS = ['query_customer', 'query_contact', 'check_measurements', 'update_status']
 
 function findCustomer(customers, nameHint) {
   if (!nameHint) return null
   const match = matchCustomer(customers, nameHint)
   return match ? match.customer : null
+}
+
+function nextQuestionIndex(steps, data, fromIdx) {
+  let idx = fromIdx
+  while (idx < steps.length) {
+    const step = steps[idx]
+    if (step.question === null) { idx++; continue }
+    if (data[step.key] !== undefined) { idx++; continue }
+    return idx
+  }
+  return steps.length
+}
+
+function buildInitialDataForFlow(intent, entities) {
+  const data = {}
+  if (entities.customerName) data.customerName = entities.customerName
+
+  switch (intent) {
+    case 'add_order':
+      if (entities.desc) data.desc = entities.desc
+      if (entities.money !== null) data.price = entities.money
+      if (entities.date) data.dueDate = entities.date
+      break
+    case 'record_payment':
+      if (entities.money !== null) data.amount = entities.money
+      if (entities.method) data.method = entities.method
+      break
+    case 'add_task':
+      if (entities.date) data.dueDate = entities.date
+      break
+    case 'add_appt':
+      if (entities.apptType) data.type = entities.apptType
+      if (entities.date) data.date = entities.date
+      if (entities.time) data.time = entities.time
+      break
+    default:
+      break
+  }
+
+  return data
+}
+
+function buildExtractionSummary(data, currencySymbol) {
+  const lines = ["Here's what I got:"]
+  if (data.customerName) lines.push(`👤 ${data.customerName}`)
+  if (data.desc)          lines.push(`📦 ${data.desc}`)
+  if (data.price !== undefined)  lines.push(`💰 ${formatMoney(data.price, currencySymbol)}`)
+  if (data.amount !== undefined) lines.push(`💰 ${formatMoney(data.amount, currencySymbol)}`)
+  if (data.dueDate) lines.push(`📅 Due ${formatDateNice(data.dueDate)}`)
+  if (data.date)     lines.push(`📅 ${formatDateNice(data.date)}`)
+  if (data.time)     lines.push(`🕐 ${data.time}`)
+  if (data.method)   lines.push(`💳 ${data.method}`)
+  if (data.type)     lines.push(`📌 ${data.type}`)
+  lines.push('', 'Look right?')
+  return lines.join('\n')
 }
 
 const FLOWS = {
@@ -116,10 +177,12 @@ export function AgentProvider({ children }) {
   const { generalSettings }                        = useGeneralSettings()
   const { hasReachedLimit, recordUsage, limits }   = useUsage()
 
-  const [messages,   setMessages]   = useState([])
-  const [isTyping,   setIsTyping]   = useState(false)
-  const [isLoading,  setIsLoading]  = useState(true)
-  const [activeFlow, setActiveFlow] = useState(null)
+  const [messages,      setMessages]      = useState([])
+  const [isTyping,      setIsTyping]      = useState(false)
+  const [isLoading,     setIsLoading]     = useState(true)
+  const [activeFlow,    setActiveFlow]    = useState(null)
+  const [pendingChoice, setPendingChoice] = useState(null)
+  const lastCustomerRef = useRef(null)
 
   useEffect(() => {
     if (!user) { setIsLoading(false); return }
@@ -165,17 +228,7 @@ export function AgentProvider({ children }) {
     const steps = FLOWS[flowName]
     if (!steps) return
 
-    let stepIdx = 0
-    for (let i = 0; i < steps.length; i++) {
-      if (steps[i].question && initialData[steps[i].key] !== undefined) stepIdx = i + 1
-      else break
-    }
-
-    const flow = { name: flowName, stepIdx, data: { ...initialData } }
-
-    while (flow.stepIdx < steps.length && steps[flow.stepIdx].question === null) {
-      flow.stepIdx++
-    }
+    const flow = { name: flowName, stepIdx: nextQuestionIndex(steps, initialData, 0), data: { ...initialData } }
 
     if (flow.stepIdx >= steps.length) { await executeFlow(flow); return }
 
@@ -196,9 +249,7 @@ export function AgentProvider({ children }) {
 
     const value   = step.transform ? step.transform(userText) : userText.trim()
     const newData = { ...activeFlow.data, [step.key]: value }
-
-    let nextIdx = activeFlow.stepIdx + 1
-    while (nextIdx < steps.length && steps[nextIdx].question === null) nextIdx++
+    const nextIdx = nextQuestionIndex(steps, newData, activeFlow.stepIdx + 1)
 
     if (nextIdx >= steps.length) {
       setActiveFlow(null)
@@ -248,6 +299,8 @@ export function AgentProvider({ children }) {
       )
       return
     }
+
+    lastCustomerRef.current = customer.id
 
     const hasMeasurements = /yes|yeah|yep|have|got/i.test(data.hasMeasurements || '')
     const depositAmount   = parseMoney(data.deposit)
@@ -324,6 +377,8 @@ export function AgentProvider({ children }) {
       return
     }
 
+    lastCustomerRef.current = customer.id
+
     const customerOrders   = allOrders.filter(o => o.customerId === customer.id && o.status !== 'cancelled')
     if (!customerOrders.length) {
       await agentReply(`${customer.name} doesn't have any active orders to invoice right now.`)
@@ -362,6 +417,8 @@ export function AgentProvider({ children }) {
       return
     }
 
+    lastCustomerRef.current = customer.id
+
     const method         = /transfer/i.test(data.method) ? 'transfer' : /card/i.test(data.method) ? 'card' : 'cash'
     const currencySymbol = generalSettings.invoiceCurrency?.symbol || '₦'
 
@@ -378,6 +435,7 @@ export function AgentProvider({ children }) {
   async function executeAddTask(data) {
     try {
       const customer = data.customerName ? findCustomer(customers, data.customerName) : null
+      if (customer) lastCustomerRef.current = customer.id
       await addTask({
         desc:         data.desc,
         dueDate:      data.dueDate || null,
@@ -411,7 +469,6 @@ export function AgentProvider({ children }) {
     )
   }
 
-  // Balance for a single customer: total invoiced (unpaid) minus total paid.
   function customerBalance(customer) {
     const customerInvoices = allInvoices.filter(i => i.customerId === customer.id && i.status !== 'paid')
     const customerPayments = allPayments.filter(p => p.customerId === customer.id)
@@ -421,7 +478,7 @@ export function AgentProvider({ children }) {
     return { totalOwed, totalPaid, balance: totalOwed - totalPaid, unpaidCount: customerInvoices.length }
   }
 
-  async function handleQuery(intent, text) {
+  async function handleQuery(intent, text, context = {}) {
     const currencySymbol = generalSettings.invoiceCurrency?.symbol || '₦'
 
     switch (intent) {
@@ -432,9 +489,9 @@ export function AgentProvider({ children }) {
       }
 
       case 'query_customer': {
-        const match = matchCustomer(customers, text)
-        if (!match) { await agentReply('Which customer are you asking about?'); return }
-        const customer = match.customer
+        const customer = context.customer || matchCustomer(customers, text)?.customer
+        if (!customer) { await agentReply('Which customer are you asking about?'); return }
+        lastCustomerRef.current = customer.id
         const { balance, totalOwed, unpaidCount } = customerBalance(customer)
 
         const lines = [
@@ -530,9 +587,9 @@ export function AgentProvider({ children }) {
       }
 
       case 'query_contact': {
-        const match = matchCustomer(customers, text)
-        if (!match) { await agentReply("Which customer's contact do you need?"); return }
-        const customer = match.customer
+        const customer = context.customer || matchCustomer(customers, text)?.customer
+        if (!customer) { await agentReply("Which customer's contact do you need?"); return }
+        lastCustomerRef.current = customer.id
         if (!customer.phone) {
           await agentReply(`I don't have a phone number on file for ${customer.name}.`, null, [
             { label: `View ${customer.name}'s profile`, action: 'navigate', payload: { route: '/customers' } },
@@ -653,9 +710,9 @@ export function AgentProvider({ children }) {
       }
 
       case 'check_measurements': {
-        const match = matchCustomer(customers, text)
-        if (!match) { await agentReply("Which customer's measurements do you want to check?"); return }
-        const customer = match.customer
+        const customer = context.customer || matchCustomer(customers, text)?.customer
+        if (!customer) { await agentReply("Which customer's measurements do you want to check?"); return }
+        lastCustomerRef.current = customer.id
 
         await agentReply(
           `To view ${customer.name}'s measurements, head to their profile.`,
@@ -666,8 +723,7 @@ export function AgentProvider({ children }) {
       }
 
       case 'update_status': {
-        const match = matchCustomer(customers, text)
-        const customer = match?.customer
+        const customer = context.customer || matchCustomer(customers, text)?.customer
 
         const statusMap = {
           ready:         'completed',
@@ -690,6 +746,8 @@ export function AgentProvider({ children }) {
           await agentReply("I need a customer name and a new status to update. For example: \"Mark Emeka's order as ready\".")
           return
         }
+
+        lastCustomerRef.current = customer.id
 
         const customerOrders = allOrders.filter(o =>
           o.customerId === customer.id && !['completed', 'delivered', 'cancelled'].includes(o.status)
@@ -722,6 +780,7 @@ export function AgentProvider({ children }) {
 
     const userMsg = makeUserMsg(text.trim())
     addMessage(userMsg)
+    setPendingChoice(null)
 
     if (activeFlow) {
       const handled = await advanceFlow(text.trim())
@@ -732,16 +791,63 @@ export function AgentProvider({ children }) {
 
     if (intent === 'unknown') { await handleQuery('unknown', text); return }
 
-    if (['add_order', 'gen_invoice', 'record_payment', 'add_task', 'add_appt'].includes(intent)) {
-      const initialData = {}
-      const match = matchCustomer(customers, text)
-      if (match) initialData.customerName = match.customer.name
+    if (FLOW_INTENTS.includes(intent)) {
+      const entities = extractEntities(text, customers)
+
+      if (isAmbiguousMatch(entities.customerCandidates)) {
+        const candidates = entities.customerCandidates.slice(0, 4)
+        setPendingChoice({ kind: 'customer_disambiguation', resumeKind: 'flow', intent, entities, candidates })
+        await agentReply(
+          "I found a few customers that could match — who did you mean?",
+          null,
+          candidates.map(c => ({ label: c.customer.name, action: 'select_customer', payload: { customerId: c.customer.id } }))
+        )
+        return
+      }
+
+      const initialData = buildInitialDataForFlow(intent, entities)
+      const richKeys = Object.keys(initialData).filter(k => k !== 'customerName')
+      const needsConfirm = richKeys.length >= 2 || initialData.desc !== undefined
+
+      if (needsConfirm) {
+        const currencySymbol = generalSettings.invoiceCurrency?.symbol || '₦'
+        setPendingChoice({ kind: 'flow_confirm', intent, initialData })
+        await agentReply(buildExtractionSummary(initialData, currencySymbol), null, [
+          { label: 'Yes, continue', action: 'confirm_extracted_flow' },
+          { label: "No, ask me step by step", action: 'discard_extracted_flow' },
+        ])
+        return
+      }
+
       await startFlow(intent, initialData)
       return
     }
 
+    if (CUSTOMER_QUERY_INTENTS.includes(intent)) {
+      const candidates = matchCustomerCandidates(customers, text)
+
+      if (isAmbiguousMatch(candidates)) {
+        const top = candidates.slice(0, 4)
+        setPendingChoice({ kind: 'customer_disambiguation', resumeKind: 'query', intent, text, candidates: top })
+        await agentReply(
+          "I found a few customers that could match — who did you mean?",
+          null,
+          top.map(c => ({ label: c.customer.name, action: 'select_customer', payload: { customerId: c.customer.id } }))
+        )
+        return
+      }
+
+      let customer = candidates.length ? candidates[0].customer : null
+      if (!customer && containsPronoun(text) && lastCustomerRef.current) {
+        customer = customers.find(c => c.id === lastCustomerRef.current) || null
+      }
+
+      await handleQuery(intent, text, { customer })
+      return
+    }
+
     await handleQuery(intent, text)
-  }, [activeFlow, customers, allOrders, allInvoices, allPayments, tasks]) // eslint-disable-line
+  }, [activeFlow, customers, allOrders, allInvoices, allPayments, tasks, generalSettings]) // eslint-disable-line
 
   const handleAction = useCallback(async (action, payload) => {
     switch (action) {
@@ -750,15 +856,47 @@ export function AgentProvider({ children }) {
         break
       case 'cancel':
         setActiveFlow(null)
+        setPendingChoice(null)
         await agentReply('No problem — cancelled. What else can I help with?')
         break
+      case 'confirm_extracted_flow': {
+        if (!pendingChoice) break
+        const { intent, initialData } = pendingChoice
+        setPendingChoice(null)
+        await startFlow(intent, initialData)
+        break
+      }
+      case 'discard_extracted_flow': {
+        if (!pendingChoice) break
+        const { intent, initialData } = pendingChoice
+        setPendingChoice(null)
+        await startFlow(intent, initialData.customerName ? { customerName: initialData.customerName } : {})
+        break
+      }
+      case 'select_customer': {
+        if (!pendingChoice) break
+        const choice = pendingChoice
+        setPendingChoice(null)
+        const customer = customers.find(c => c.id === payload.customerId)
+        if (!customer) break
+        lastCustomerRef.current = customer.id
+
+        if (choice.resumeKind === 'query') {
+          await handleQuery(choice.intent, choice.text, { customer })
+        } else if (choice.resumeKind === 'flow') {
+          const initialData = buildInitialDataForFlow(choice.intent, { ...choice.entities, customerName: customer.name })
+          await startFlow(choice.intent, initialData)
+        }
+        break
+      }
       default:
         break
     }
-  }, []) // eslint-disable-line
+  }, [pendingChoice, customers]) // eslint-disable-line
 
   const cancelFlow = useCallback(async () => {
     setActiveFlow(null)
+    setPendingChoice(null)
     await agentReply('Got it, cancelled. What else do you need?')
   }, []) // eslint-disable-line
 
