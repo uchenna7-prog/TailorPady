@@ -6,18 +6,18 @@ import styles from './FirstRunFlow.module.css'
 
 const SLIDES = [
   {
-    title: 'See How Your Business Is Doing',
-    sub: 'Get a quick look at your orders, payments, appointments, tasks, and income.',
+    title: 'Track Performance',
+    sub: 'Get a clear view of how your business is doing at a glance.',
     image: dashboardSlide,
   },
   {
-    title: 'Keep Track Of Every Order',
-    sub: 'Know what’s pending, in progress, completed, or ready for pickup.',
+    title: 'Track Every Order',
+    sub: 'See what’s pending, in progress, completed, or ready for pickup.',
     image: ordersSlide,
   },
   {
-    title: 'Keep All Customer Details Together',
-    sub: 'Find measurements, orders, payments, and customer information in one place.',
+    title: 'Manage Customers',
+    sub: 'Keep customer details, measurements, orders, payments and more together in one place.',
     image: customersSlide,
   },
 ]
