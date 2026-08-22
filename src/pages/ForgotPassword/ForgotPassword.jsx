@@ -4,7 +4,7 @@ import { useAuth } from '../../contexts/AuthContext'
 import { useGeneralSettings } from '../../contexts/GeneralSettingsContext'
 import logoLightMode from '../../assets/logoLightMode.png'
 import logoDarkMode from '../../assets/logoDarkMode.png'
-import styles from '../Login/Login.module.css'
+import styles from './ForgotPassword.module.css'
 
 function friendlyError(code) {
   switch (code) {
