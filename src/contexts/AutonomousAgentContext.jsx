@@ -22,72 +22,25 @@ import {
   removeScheduledItem,
   commitScheduledChanges,
 } from '../services/agentService'
+import {
+  formatMoney,
+  formatDateLabel,
+  formatClockLabel,
+  timestampToMs,
+  durationToMs,
+  durationLabel,
+  DAY_MS,
+  HOUR_MS,
+  WEEK_MS,
+} from '../services/localNLU'
+// NOTE: adjust the import path above ("../services/localNLU") to wherever
+// you place localNLU.js in your project — it should sit next to agentService.
 
-const DAY_MS  = 86_400_000
-const HOUR_MS = 3_600_000
-const WEEK_MS = 604_800_000
 const TICK_MS = 30_000
 const DEBOUNCE_MS = 2_500
 
-function durationToMs(duration) {
-  if (!duration || typeof duration !== 'object') return DAY_MS
-  const amount = Number(duration.amount) || 1
-  const unitMs = { hours: HOUR_MS, days: DAY_MS, weeks: WEEK_MS, months: DAY_MS * 30 }
-  return amount * (unitMs[duration.unit] || DAY_MS)
-}
-
-function durationLabel(duration) {
-  if (!duration || typeof duration !== 'object') return '1 day'
-  const amount = Number(duration.amount) || 1
-  const unit   = duration.unit || 'days'
-  const base   = unit.replace(/s$/, '')
-  return `${amount} ${amount === 1 ? base : unit}`
-}
-
-function timestampToMs(value) {
-  if (!value) return 0
-  if (typeof value === 'number') return value
-  if (typeof value.toDate === 'function') return value.toDate().getTime()
-  if (value.seconds !== undefined) return value.seconds * 1000 + Math.floor((value.nanoseconds || 0) / 1_000_000)
-  if (typeof value === 'string') {
-    const parsed = new Date(value)
-    return isNaN(parsed) ? 0 : parsed.getTime()
-  }
-  return 0
-}
-
-function formatMoney(amount, currencySymbol = '₦') {
-  if (!amount) return `${currencySymbol}0`
-  return `${currencySymbol}${Number(amount).toLocaleString()}`
-}
-
-function formatDateLabel(ms) {
-  if (!ms) return 'Other'
-  const date      = new Date(ms)
-  const today     = new Date()
-  const yesterday = new Date(today)
-  yesterday.setDate(yesterday.getDate() - 1)
-
-  const isSameDay = (a, b) =>
-    a.getFullYear() === b.getFullYear() &&
-    a.getMonth()    === b.getMonth()    &&
-    a.getDate()     === b.getDate()
-
-  if (isSameDay(date, today))     return 'Today'
-  if (isSameDay(date, yesterday)) return 'Yesterday'
-
-  return (
-    date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) +
-    ' ' +
-    date.getFullYear()
-  )
-}
-
-function formatClockLabel(ms) {
-  if (!ms) return ''
-  return new Date(ms).toLocaleTimeString('en-US', {
-    hour: 'numeric', minute: '2-digit', hour12: true,
-  })
+function timestampToMsLocal(value) {
+  return timestampToMs(value)
 }
 
 function whenLabel(remainingMs) {
@@ -208,10 +161,10 @@ function detectCandidates({
       .filter(o => {
         if (invoicedOrderIds.has(o.id)) return false
         if (o.status === 'cancelled')   return false
-        return timestampToMs(o.createdAt) > 0
+        return timestampToMsLocal(o.createdAt) > 0
       })
       .forEach(order => {
-        const detectedAt = timestampToMs(order.createdAt)
+        const detectedAt = timestampToMsLocal(order.createdAt)
         const fireAt     = detectedAt + thresholdMs
         const visibleAt  = detectedAt
         const orderName  = order.desc || 'order'
@@ -253,7 +206,7 @@ function detectCandidates({
       const customerName  = customer?.name || payment.customerName || 'a customer'
       const amount        = formatMoney(installment.amount, generalSettings.receiptCurrency?.symbol)
       const method        = installment.method || 'cash'
-      const detectedAt    = installment.createdAtMs || timestampToMs(payment.createdAt) || nowMs
+      const detectedAt    = installment.createdAtMs || timestampToMsLocal(payment.createdAt) || nowMs
       const fireAt        = detectedAt + thresholdMs
       const visibleAt     = detectedAt
 
@@ -358,7 +311,7 @@ function detectCandidates({
     allOrders
       .filter(o => o.status === 'completed')
       .forEach(order => {
-        const completedAtMs = timestampToMs(order.completedAt)
+        const completedAtMs = timestampToMsLocal(order.completedAt)
         if (!completedAtMs) return
         const fireAt    = completedAtMs + windowMs
         const visibleAt = completedAtMs
@@ -439,10 +392,10 @@ function detectCandidates({
       if (!customerOrders.length) return
 
       const lastOrder = customerOrders.reduce((latest, o) =>
-        timestampToMs(o.createdAt) > timestampToMs(latest.createdAt) ? o : latest
+        timestampToMsLocal(o.createdAt) > timestampToMsLocal(latest.createdAt) ? o : latest
       , customerOrders[0])
 
-      const lastActivityMs = timestampToMs(lastOrder.createdAt)
+      const lastActivityMs = timestampToMsLocal(lastOrder.createdAt)
       if (!lastActivityMs) return
 
       const fireAt       = lastActivityMs + inactivityMs
@@ -676,7 +629,7 @@ export function AutonomousAgentProvider({ children }) {
   }, [user, enabled, agentDataLoaded, candidates, knownDraftIds, knownScheduledIds, scheduledItems])
 
   const mapDraftForDisplay = useCallback((draft) => {
-    const createdAtMs = timestampToMs(draft.createdAt)
+    const createdAtMs = timestampToMsLocal(draft.createdAt)
     const dateLabel   = formatDateLabel(createdAtMs)
     const clockLabel  = formatClockLabel(createdAtMs)
     return {
