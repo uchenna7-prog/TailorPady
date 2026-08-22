@@ -2,18 +2,20 @@ import { useState } from 'react'
 import { useAuth } from '../../contexts/AuthContext'
 import { db } from '../../firebase'
 import { saveOnboardingRole } from '../../services/profileService'
+import roleOwnerImage from '../../assets/onboarding/role-owner.png'
+import roleWorkerImage from '../../assets/onboarding/role-worker.png'
 import styles from './FirstRunFlow.module.css'
 
 const ROLES = [
   {
     id: 'owner',
-    icon: 'storefront',
+    image: roleOwnerImage,
     title: 'Owner (Master/Madam)',
     sub: 'You run the studio and manage the business.',
   },
   {
     id: 'worker',
-    icon: 'content_cut',
+    image: roleWorkerImage,
     title: 'Worker / Apprentice',
     sub: 'You work under a studio owner.',
   },
@@ -61,9 +63,7 @@ export default function RoleSelection({ onDone, onSkip }) {
                 tabIndex={0}
               >
                 <div className={styles.roleHead}>
-                  <div className={`${styles.roleIcon} ${isSelected ? styles.roleIconSelected : ''}`}>
-                    <span className="mi-outlined">{role.icon}</span>
-                  </div>
+                  <img src={role.image} alt={role.title} className={styles.roleImage} draggable={false} />
                   <div className={styles.roleTextBlock}>
                     <p className={styles.roleTitle}>{role.title}</p>
                     <p className={styles.roleSub}>{role.sub}</p>
