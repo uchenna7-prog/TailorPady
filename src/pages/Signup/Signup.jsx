@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useNavigate, useSearchParams, Link } from 'react-router-dom'
 import { useAuth } from '../../contexts/AuthContext'
 import { useGeneralSettings } from '../../contexts/GeneralSettingsContext'
@@ -65,6 +65,11 @@ export default function Signup() {
   const [loading,       setLoading]       = useState(false)
   const [googleLoading, setGoogleLoading] = useState(false)
 
+  const nameFieldRef  = useRef(null)
+  const emailFieldRef = useRef(null)
+  const passFieldRef  = useRef(null)
+  const agreeFieldRef = useRef(null)
+
   useEffect(() => {
     const ref = searchParams.get('ref')
     if (ref) {
@@ -93,15 +98,22 @@ export default function Signup() {
     stashReferralCode(value)
   }
 
+  const scrollToField = (ref) => {
+    if (!ref.current) return
+    ref.current.scrollIntoView({ behavior: 'smooth', block: 'center' })
+    const focusable = ref.current.querySelector('input, button')
+    if (focusable) focusable.focus({ preventScroll: true })
+  }
+
   const handleSubmit = async (e) => {
     e.preventDefault()
     setTouched({ fullName: true, email: true, password: true, agreed: true })
     setError('')
 
-    if (!fullName.trim())    return
-    if (!email.trim())       return
-    if (password.length < 8) return
-    if (!agreed)              return
+    if (!fullName.trim())    { scrollToField(nameFieldRef);  return }
+    if (!email.trim())       { scrollToField(emailFieldRef); return }
+    if (password.length < 8) { scrollToField(passFieldRef);  return }
+    if (!agreed)              { scrollToField(agreeFieldRef); return }
 
     setLoading(true)
     try {
@@ -117,6 +129,7 @@ export default function Signup() {
   const handleGoogle = () => {
     if (!agreed) {
       setTouched(prev => ({ ...prev, agreed: true }))
+      scrollToField(agreeFieldRef)
       return
     }
     setError('')
@@ -180,7 +193,7 @@ export default function Signup() {
         </div>
 
         <form onSubmit={handleSubmit} className={styles.form} noValidate>
-          <div className={styles.field}>
+          <div className={styles.field} ref={nameFieldRef}>
             <label className={styles.label}>Full Name</label>
             <div className={styles.inputWrap}>
               <span className="mi-outlined" style={{ position: 'absolute', left: 12, color: nameError ? '#ef4444' : 'var(--text3)', fontSize: '1.1rem' }}>person</span>
@@ -198,7 +211,7 @@ export default function Signup() {
             {nameError && <span className={styles.fieldError}>Full name is required</span>}
           </div>
 
-          <div className={styles.field}>
+          <div className={styles.field} ref={emailFieldRef}>
             <label className={styles.label}>Email</label>
             <div className={styles.inputWrap}>
               <span className="mi-outlined" style={{ position: 'absolute', left: 12, color: emailError ? '#ef4444' : 'var(--text3)', fontSize: '1.1rem' }}>mail</span>
@@ -216,7 +229,7 @@ export default function Signup() {
             {emailError && <span className={styles.fieldError}>Email is required</span>}
           </div>
 
-          <div className={styles.field}>
+          <div className={styles.field} ref={passFieldRef}>
             <label className={styles.label}>Password</label>
             <div className={styles.inputWrap}>
               <span className="mi-outlined" style={{ position: 'absolute', left: 12, color: passwordError ? '#ef4444' : 'var(--text3)', fontSize: '1.1rem' }}>lock</span>
@@ -280,7 +293,7 @@ export default function Signup() {
             )}
           </div>
 
-          <div className={styles.agreeField}>
+          <div className={styles.agreeField} ref={agreeFieldRef}>
             <div className={styles.agreeRow}>
               <button
                 type="button"
