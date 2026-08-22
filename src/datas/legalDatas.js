@@ -295,21 +295,15 @@ export const DELETE_ACCOUNT_SECTIONS = [
     footer: 'Your access to your account is revoked immediately after confirmation. Your data is not deleted right away — see the Grace Period section below.',
   },
   {
-    id: 'no-app-deletion',
-    title: "Don't Have the App, or Can't Log In?",
-    body: `If you no longer have the app installed, or you're unable to log in, you can still request deletion of your account and data. Send a deletion request to the email address below from the email associated with your TailorPady account, including your registered name or email so we can locate your account.`,
-    footer: 'We will verify the request and initiate deletion within a reasonable timeframe.',
-  },
-  {
     id: 'grace-period',
-    title: 'Grace Period',
-    body: `Once your account deletion is confirmed, you are logged out immediately and can no longer access your account or any data in it.`,
+    title: 'Grace Period and Recovery',
+    body: `Once you confirm account deletion in the app, you are logged out immediately and your account is scheduled for permanent deletion 30 days later.`,
     bullets: [
-      'Your data is retained for 30 days before permanent deletion begins.',
-      'This deletion cannot be reversed or cancelled by you or by us, whether initiated in the app or by request, once confirmed.',
-      'You cannot create a new TailorPady account using the same email address until the 30-day process is complete.',
+      'During this 30-day window, your account cannot be accessed or restored by logging in.',
+      'If you change your mind, contact us at the email address below within the 30-day window, from the email address associated with your account, to request recovery.',
+      'After the 30-day window ends, deletion is permanent and cannot be reversed.',
+      'You cannot create a new TailorPady account using the same email address until the deletion process is complete.',
     ],
-    footer: 'If you did not intend to delete your account, contact us immediately using the details below, before the 30-day period ends.',
   },
   {
     id: 'what-gets-deleted',
