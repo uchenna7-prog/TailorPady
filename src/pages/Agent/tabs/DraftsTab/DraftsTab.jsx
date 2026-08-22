@@ -27,7 +27,7 @@ export function DraftsTab({
 
   if (!items?.length) return (
     <div className={styles.emptyTab}>
-      <MIcon name="edit_note" size="2rem" color="var(--border2)" />
+      <MIcon name="edit_note" size="2.5rem" color="var(--text3)" />
       <p className={styles.emptyTabTitle}>Nothing ready yet</p>
       <p className={styles.emptyTabSub}>Documents and messages your assistant prepares will appear here</p>
     </div>
@@ -66,7 +66,6 @@ export function DraftsTab({
           </div>
         ))}
       </div>
-
       {selected && (
         <DraftDetailSheet
           item={selected}
