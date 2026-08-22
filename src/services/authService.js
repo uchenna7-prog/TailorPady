@@ -8,6 +8,7 @@ import {
   updateProfile,
   verifyBeforeUpdateEmail,
   reauthenticateWithCredential,
+  linkWithCredential,
   EmailAuthProvider,
   GoogleAuthProvider,
   signInWithPopup,
@@ -15,6 +16,7 @@ import {
   getRedirectResult,
   getAdditionalUserInfo,
   linkWithPopup,
+  linkWithRedirect,
   unlink,
 } from 'firebase/auth'
 
@@ -31,7 +33,6 @@ export const login = (email, password) => {
 export const loginWithGoogle = async () => {
   const provider = new GoogleAuthProvider()
   provider.setCustomParameters({ prompt: 'select_account' })
-
   try {
     const result = await signInWithPopup(auth, provider)
     const isNewUser = getAdditionalUserInfo(result)?.isNewUser ?? false
@@ -75,9 +76,22 @@ export const changeEmail = async (user, currentPassword, newEmail) => {
   return verifyBeforeUpdateEmail(user, newEmail)
 }
 
-export const linkGoogle = (user) => {
+export const setPassword = (user, newPassword) => {
+  const credential = EmailAuthProvider.credential(user.email, newPassword)
+  return linkWithCredential(user, credential)
+}
+
+export const linkGoogle = async (user) => {
   const provider = new GoogleAuthProvider()
-  return linkWithPopup(user, provider)
+  try {
+    return await linkWithPopup(user, provider)
+  } catch (err) {
+    if (err.code === 'auth/popup-blocked') {
+      await linkWithRedirect(user, provider)
+      return null
+    }
+    throw err
+  }
 }
 
 export const unlinkProvider = (user, providerId) => {
