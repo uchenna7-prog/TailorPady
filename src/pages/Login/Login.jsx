@@ -1,5 +1,7 @@
 import { useState } from 'react'
 import { useNavigate, useLocation, Link } from 'react-router-dom'
+import { doc, getDoc } from 'firebase/firestore'
+import { db } from '../../firebase'
 import { useAuth } from '../../contexts/AuthContext'
 import { useGeneralSettings } from '../../contexts/GeneralSettingsContext'
 import logoLightMode from '../../assets/logoLightMode.png'
@@ -29,11 +31,11 @@ function GoogleIcon() {
 }
 
 export default function Login() {
-  const { login, loginWithGoogle, setRedirecting } = useAuth()
-  const { generalSettings }                        = useGeneralSettings()
-  const navigate                                   = useNavigate()
-  const location                                   = useLocation()
-  const from                                       = location.state?.from?.pathname || '/'
+  const { login, loginWithGoogle, setRedirecting, logout } = useAuth()
+  const { generalSettings }                                = useGeneralSettings()
+  const navigate                                           = useNavigate()
+  const location                                           = useLocation()
+  const from                                               = location.state?.from?.pathname || '/'
 
   const [email,         setEmail]         = useState('')
   const [password,      setPassword]      = useState('')
@@ -50,7 +52,13 @@ export default function Login() {
     setError('')
     setLoading(true)
     try {
-      await login(email.trim(), password)
+      const credential = await login(email.trim(), password)
+      const profileSnap = await getDoc(doc(db, 'users', credential.user.uid))
+      if (profileSnap.exists() && profileSnap.data().pendingDeletion) {
+        await logout()
+        setError('This account is scheduled for deletion and can no longer be accessed.')
+        return
+      }
       navigate(from, { replace: true })
     } catch (err) {
       setError(friendlyError(err.code))
