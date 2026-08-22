@@ -126,15 +126,10 @@ function DurationPicker({ value, onChange }) {
   )
 }
 
-function SectionLabel({ children, premium = false }) {
+function SectionLabel({ children }) {
   return (
     <div className={styles.sectionLabelRow}>
       <p className={styles.sectionLabel}>{children}</p>
-      {premium && (
-        <span className={styles.premiumBadge}>
-          <span className="mi-outlined" style={{ fontSize: '0.7rem' }}>workspace_premium</span>PRO
-        </span>
-      )}
     </div>
   )
 }
@@ -161,21 +156,6 @@ function FeatureRow({ icon, title, sub, value, onChange, children }) {
           {children}
         </div>
       )}
-    </div>
-  )
-}
-
-function MessagingChannelRow({ icon, label, description }) {
-  return (
-    <div className={styles.messagingRow}>
-      <div className={styles.messagingIcon}>
-        <span className="mi-outlined" style={{ fontSize: 18 }}>{icon}</span>
-      </div>
-      <div className={styles.messagingText}>
-        <p className={styles.messagingLabel}>{label}</p>
-        <p className={styles.messagingDesc}>{description}</p>
-      </div>
-      <span className={styles.comingSoonBadge}>Soon</span>
     </div>
   )
 }
@@ -381,31 +361,6 @@ export function AgentSettingsModal({ onBack, showToast }) {
               sub="A short summary of assistant activity each time you open the app"
               value={local.agentDailyBrief}
               onChange={v => set('agentDailyBrief', v)}
-            />
-          </FieldGroup>
-
-          <SectionLabel premium>Autonomous sending</SectionLabel>
-
-          <FieldGroup>
-            <div className={styles.messagingIntro}>
-              <span className="mi-outlined" style={{ fontSize: 15 }}>auto_awesome</span>
-              <p>Connect a channel and approved drafts go out on their own, no copying or pasting required.</p>
-            </div>
-
-            <MessagingChannelRow
-              icon="chat"
-              label="WhatsApp"
-              description="Send through your WhatsApp Business account"
-            />
-            <MessagingChannelRow
-              icon="email"
-              label="Email"
-              description="Send via Gmail, Outlook, or a custom address"
-            />
-            <MessagingChannelRow
-              icon="send"
-              label="Telegram"
-              description="Send through a connected Telegram bot"
             />
           </FieldGroup>
 
