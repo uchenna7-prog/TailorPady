@@ -75,6 +75,9 @@
 
 .tabContent {
   flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
   overflow-y: auto;
   padding-bottom: 100px;
 }
@@ -194,11 +197,9 @@
     padding: 0 24px;
     gap: 4px;
   }
-
   .groupRows {
     padding: 0 24px;
   }
-
   .bubble { font-size: 0.83rem; }
 }
 
@@ -207,11 +208,9 @@
     padding: 0 40px;
     gap: 4px;
   }
-
   .groupRows {
     padding: 0 40px;
   }
-
   .rowTitle    { font-size: 0.92rem; }
   .rowMetaText { font-size: 0.78rem; }
 }
@@ -220,7 +219,6 @@
   .tabRow {
     padding: 0 max(40px, calc(50% - 680px));
   }
-
   .groupRows {
     padding: 0 max(40px, calc(50% - 680px));
   }
