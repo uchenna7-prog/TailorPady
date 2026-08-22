@@ -279,6 +279,8 @@ export default function Account({ onMenuClick, isPremium = false, onUpgrade = ()
     || null
 
   const isGoogleUser = user?.providerData?.some(p => p.providerId === 'google.com')
+  const hasPasswordProvider = user?.providerData?.some(p => p.providerId === 'password')
+  const passwordManagementDisabled = isGoogleUser && !hasPasswordProvider
 
   return (
     <div className={styles.page}>
@@ -516,14 +518,15 @@ export default function Account({ onMenuClick, isPremium = false, onUpgrade = ()
           label="Change Password"
           sub="Update your account password"
           onClick={() => setActiveModal('changePassword')}
-          disabled={isGoogleUser && !user?.providerData?.some(p => p.providerId === 'password')}
+          disabled={passwordManagementDisabled}
         />
 
         <TappableRow
           icon="alternate_email"
           label="Change Email"
-          sub={`Current: ${user?.email ?? '—'}`}
+          sub={passwordManagementDisabled ? 'Set up a password first' : `Current: ${user?.email ?? '—'}`}
           onClick={() => setActiveModal('changeEmail')}
+          disabled={passwordManagementDisabled}
         />
 
         <TappableRow
