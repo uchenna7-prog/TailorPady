@@ -4,6 +4,8 @@ import {
   signInWithEmailAndPassword,
   signOut,
   sendPasswordResetEmail,
+  verifyPasswordResetCode,
+  confirmPasswordReset,
   updatePassword,
   updateProfile,
   verifyBeforeUpdateEmail,
@@ -58,7 +60,18 @@ export const logout = () => {
 }
 
 export const resetPassword = (email) => {
-  return sendPasswordResetEmail(auth, email)
+  return sendPasswordResetEmail(auth, email, {
+    url: `${window.location.origin}/reset-password`,
+    handleCodeInApp: true,
+  })
+}
+
+export const verifyResetCode = (oobCode) => {
+  return verifyPasswordResetCode(auth, oobCode)
+}
+
+export const confirmReset = (oobCode, newPassword) => {
+  return confirmPasswordReset(auth, oobCode, newPassword)
 }
 
 export const reauth = (user, currentPassword) => {
