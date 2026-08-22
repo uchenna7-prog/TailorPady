@@ -1,7 +1,5 @@
 import { useState } from 'react'
 import { useNavigate, useLocation, Link } from 'react-router-dom'
-import { doc, getDoc } from 'firebase/firestore'
-import { db } from '../../firebase'
 import { useAuth } from '../../contexts/AuthContext'
 import { useGeneralSettings } from '../../contexts/GeneralSettingsContext'
 import logoLightMode from '../../assets/logoLightMode.png'
@@ -35,7 +33,7 @@ export default function Login() {
   const { generalSettings }                                = useGeneralSettings()
   const navigate                                           = useNavigate()
   const location                                           = useLocation()
-  const from                                               = location.state?.from?.pathname || '/'
+  const from                                                = location.state?.from?.pathname || '/'
 
   const [email,         setEmail]         = useState('')
   const [password,      setPassword]      = useState('')
@@ -53,8 +51,8 @@ export default function Login() {
     setLoading(true)
     try {
       const credential = await login(email.trim(), password)
-      const profileSnap = await getDoc(doc(db, 'users', credential.user.uid))
-      if (profileSnap.exists() && profileSnap.data().pendingDeletion) {
+      const tokenResult = await credential.user.getIdTokenResult()
+      if (tokenResult.claims.pendingDeletion) {
         await logout()
         setError('This account is scheduled for deletion and can no longer be accessed.')
         return
