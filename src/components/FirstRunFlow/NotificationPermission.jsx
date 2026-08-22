@@ -37,9 +37,9 @@ export default function NotificationPermission({ onDone, onSkip }) {
           <img src={notificationsImage} alt="Notifications preview" className={styles.image} draggable={false} />
         </div>
 
-        <h1 className={styles.title}>Never Miss An Important Update</h1>
+        <h1 className={styles.title}>Stay Updated</h1>
         <p className={styles.sub}>
-          Get reminders about appointments, unpaid bills, tasks, and important updates.
+          Get timely reminders for appointments, unpaid bills, tasks, and important updates.
         </p>
       </div>
 
