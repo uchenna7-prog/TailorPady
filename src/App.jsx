@@ -11,6 +11,8 @@ import ScrollToTop from './components/ScrollToTop/ScrollToTop'
 import SideBar from './components/SideBar/SideBar'
 import Login from './pages/Login/Login'
 import Signup from './pages/Signup/Signup'
+import ForgotPassword from './pages/ForgotPassword/ForgotPassword'
+import ResetPassword from './pages/ResetPassword/ResetPassword'
 import Dashboard from './pages/Dashboard/Dashboard'
 import Customers from './pages/Customers/Customers'
 import CustomerDetail from './pages/CustomerDetail/CustomerDetail'
@@ -197,6 +199,8 @@ export default function App() {
         <Route path="/app" element={<RootRoute />} />
         <Route path="/login" element={<GuestRoute><Login /></GuestRoute>} />
         <Route path="/signup" element={<GuestRoute><Signup /></GuestRoute>} />
+        <Route path="/forgot-password" element={<GuestRoute><ForgotPassword /></GuestRoute>} />
+        <Route path="/reset-password" element={<GuestRoute><ResetPassword /></GuestRoute>} />
         <Route
           path="/*"
           element={
