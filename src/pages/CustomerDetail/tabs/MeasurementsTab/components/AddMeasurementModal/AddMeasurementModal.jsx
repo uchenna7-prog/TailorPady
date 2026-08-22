@@ -84,23 +84,6 @@ function buildSavePayload(measurement, unit, uploadedImages, gender) {
   }
 }
 
-async function uploadMeasurementImages(slots, isOnline) {
-  if (!slots?.length) return []
-  const results = await Promise.all(
-    slots.map(async slot => {
-      if (!slot.file) return null
-      if (!isOnline) return null
-      try {
-        const { url, publicId } = await uploadToCloudinary(slot.file, 'measurements')
-        return { url, publicId }
-      } catch {
-        return null
-      }
-    })
-  )
-  return results.filter(Boolean)
-}
-
 const hasStyleSelections = styleSelections =>
   Object.values(styleSelections).some(v => v && v !== '')
 
@@ -114,6 +97,8 @@ export function AddMeasurementModal({ isOpen, onClose, onSave, gender }) {
   const [openSlotId,        setOpenSlotId]        = useState(null)
   const [formInlineMsg,     setFormInlineMsg]     = useState(null)
   const [uploadedImages,    setUploadedImages]    = useState(null)
+  const [imageUploading,    setImageUploading]    = useState(false)
+  const [uploadProgress,    setUploadProgress]    = useState(0)
   const isOnline                                  = useNetworkStatus()
   const detailsRef                                = useRef(null)
   const scrollBodyRef                             = useRef(null)
@@ -124,6 +109,8 @@ export function AddMeasurementModal({ isOpen, onClose, onSave, gender }) {
   const { GARMENT_CATEGORIES, FEMALE_FULL_WEAR_TYPES, FEMALE_LOWER_BODY_TYPES, getSlotsForCard } = useGarmentFeatures()
 
   const fullWearTypes = gender === 'Female' ? FEMALE_FULL_WEAR_TYPES : []
+
+  const savingLabel = imageUploading ? `Saving… ${uploadProgress}%` : 'Saving…'
 
 
   function showInlineMsg(text, ok = true) {
@@ -235,6 +222,40 @@ export function AddMeasurementModal({ isOpen, onClose, onSave, gender }) {
   }
 
 
+  async function uploadPendingImages() {
+    const filesToUpload = measurement.slots.filter(s => s.file)
+    if (filesToUpload.length === 0 || !isOnline) return []
+
+    setImageUploading(true)
+    setUploadProgress(0)
+
+    const progressMap = {}
+    const updateOverallProgress = () => {
+      const values  = Object.values(progressMap)
+      const overall = Math.round(values.reduce((sum, v) => sum + v, 0) / filesToUpload.length)
+      setUploadProgress(overall)
+    }
+
+    const results = await Promise.all(
+      filesToUpload.map(async (slot, index) => {
+        try {
+          const { url, publicId } = await uploadToCloudinary(slot.file, 'measurements', pct => {
+            progressMap[index] = pct
+            updateOverallProgress()
+          })
+          return { url, publicId }
+        } catch {
+          return null
+        }
+      })
+    )
+
+    setImageUploading(false)
+    setUploadProgress(0)
+    return results.filter(Boolean)
+  }
+
+
   async function handleSave() {
     if (activeTab === 'measurements') {
       const errors = validateMeasurement(measurement)
@@ -249,7 +270,7 @@ export function AddMeasurementModal({ isOpen, onClose, onSave, gender }) {
 
       if (isOnline && hasPendingFiles) {
         setIsSaving(true)
-        const images = await uploadMeasurementImages(measurement.slots, true)
+        const images = await uploadPendingImages()
         setUploadedImages(images)
         setIsSaving(false)
       }
@@ -265,7 +286,7 @@ export function AddMeasurementModal({ isOpen, onClose, onSave, gender }) {
     }
 
     setIsSaving(true)
-    const images = uploadedImages ?? await uploadMeasurementImages(measurement.slots, isOnline)
+    const images = uploadedImages ?? await uploadPendingImages()
     onSave(buildSavePayload(measurement, unit, images, gender))
     setIsSaving(false)
     resetAndClose()
@@ -273,7 +294,7 @@ export function AddMeasurementModal({ isOpen, onClose, onSave, gender }) {
 
   async function handleSkip() {
     setIsSaving(true)
-    const images = uploadedImages ?? await uploadMeasurementImages(measurement.slots, isOnline)
+    const images = uploadedImages ?? await uploadPendingImages()
     onSave({
       ...buildSavePayload(measurement, unit, images, gender),
       styleSelections: {},
@@ -292,6 +313,8 @@ export function AddMeasurementModal({ isOpen, onClose, onSave, gender }) {
     setOpenSlotId(null)
     setFormInlineMsg(null)
     setUploadedImages(null)
+    setImageUploading(false)
+    setUploadProgress(0)
     clearTimeout(formInlineMsgTimer.current)
     onClose()
   }
@@ -332,12 +355,12 @@ export function AddMeasurementModal({ isOpen, onClose, onSave, gender }) {
 
   const headerAction = (() => {
     if (activeTab === 'measurements') {
-      return { label: isSaving ? 'Saving...' : 'Save', onClick: handleSave, disabled: isSaving }
+      return { label: isSaving ? savingLabel : 'Save', onClick: handleSave, disabled: isSaving }
     }
     if (hasFeatures) {
-      return { label: isSaving ? 'Saving...' : 'Save', onClick: handleSave, disabled: isSaving }
+      return { label: isSaving ? savingLabel : 'Save', onClick: handleSave, disabled: isSaving }
     }
-    return { label: isSaving ? 'Saving...' : 'Skip', onClick: handleSkip, color: 'var(--text2)', disabled: isSaving }
+    return { label: isSaving ? savingLabel : 'Skip & Save', onClick: handleSkip, color: 'var(--text2)', disabled: isSaving }
   })()
 
   return createPortal(
