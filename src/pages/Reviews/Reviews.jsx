@@ -537,20 +537,26 @@ export default function Reviews({ onMenuClick }) {
     setDetailReview(null)
   }
 
+  const emptyTitle = searchQuery.trim()
+    ? 'No results found'
+    : activeTab === 'all'
+      ? 'No reviews yet'
+      : `No ${activeTab} reviews`
+
   return (
     <div className={styles.page}>
       <Header title="Reviews" onMenuClick={onMenuClick} />
 
       <div className={styles.searchRow}>
         <div className={styles.searchWrap}>
-          <span className="mi-outlined" style={{ fontSize: '1.1rem', color: 'var(--text3)' }}>search</span>
+          <span className="mi-outlined" style={{ color: 'var(--text3)', fontSize: '1.1rem' }}>search</span>
           <input
             className={styles.searchInput}
             placeholder="Search reviews or clients…"
             value={searchQuery}
             onChange={e => setSearchQuery(e.target.value)}
           />
-          {searchQuery.length > 0 && (
+          {searchQuery && (
             <button className={styles.searchClear} onClick={() => setSearchQuery('')}>
               <span className="mi-outlined" style={{ fontSize: '1rem' }}>close</span>
             </button>
@@ -585,23 +591,17 @@ export default function Reviews({ onMenuClick }) {
       <div className={styles.listArea}>
         {loading ? (
           <div className={styles.emptyState}>
-            <span className="mi-outlined" style={{ fontSize: '2.5rem', opacity: 0.2 }}>hourglass_empty</span>
-            <p>Loading…</p>
+            <span className="mi-outlined" style={{ fontSize: '2.5rem', color: 'var(--text3)' }}>hourglass_empty</span>
+            <p className={styles.emptyStateTitle}>Loading…</p>
           </div>
         ) : filtered.length === 0 ? (
           <div className={styles.emptyState}>
-            <span className="mi-outlined" style={{ fontSize: '3rem', opacity: 0.15 }}>rate_review</span>
-            <p>
-              {searchQuery.trim()
-                ? 'No results found.'
-                : activeTab === 'all'
-                  ? 'No reviews yet.'
-                  : `No ${activeTab} reviews.`}
-            </p>
+            <span className="mi-outlined" style={{ fontSize: '2.5rem', color: 'var(--text3)' }}>rate_review</span>
+            <p className={styles.emptyStateTitle}>{emptyTitle}</p>
             {activeTab === 'all' && !searchQuery.trim() && (
-              <span className={styles.emptyHint}>
-                Send review links to customers from their order detail,{'\n'}or add one manually below.
-              </span>
+              <p className={styles.emptyStateSubtitle}>
+                Send review links to customers from their order detail, or tap the <strong>+</strong> button to add one manually.
+              </p>
             )}
           </div>
         ) : (
