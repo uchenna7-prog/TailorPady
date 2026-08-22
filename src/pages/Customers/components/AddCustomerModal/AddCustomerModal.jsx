@@ -355,7 +355,7 @@ export function AddCustomerModal({ isOpen, onClose, onSave }) {
                 ? { label: 'Save', onClick: handleSave, color: 'var(--accent)', disabled: isSaving }
                 : hasMeasurements
                   ? { label: isSaving ? savingLabel : 'Save', onClick: handleSave, color: 'var(--accent)', disabled: isSaving }
-                  : { label: isSaving ? savingLabel : 'Skip', onClick: handleSkip, color: 'var(--text2)', disabled: isSaving }
+                  : { label: isSaving ? savingLabel : 'Skip & Save', onClick: handleSkip, color: 'var(--text2)', disabled: isSaving }
             ]}
           />
 
