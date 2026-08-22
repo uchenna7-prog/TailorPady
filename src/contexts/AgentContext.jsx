@@ -18,116 +18,26 @@ import {
   loadAgentMessages,
   clearAgentMessages,
 } from '../services/agentService'
-
-function now() {
-  return new Date().toLocaleTimeString('en-US', {
-    hour: 'numeric', minute: '2-digit', hour12: true,
-  })
-}
-
-function todayISO() {
-  return new Date().toISOString().slice(0, 10)
-}
-
-function formatMoney(amount, currencySymbol = '₦') {
-  if (!amount) return `${currencySymbol}0`
-  return `${currencySymbol}${Number(amount).toLocaleString()}`
-}
-
-function parseMoney(str) {
-  if (!str) return null
-  const cleaned = String(str).replace(/[₦,\s]/g, '')
-  const n       = parseFloat(cleaned)
-  return isNaN(n) ? null : n
-}
-
-function parseDate(str) {
-  if (!str) return null
-  const s     = str.toLowerCase().trim()
-  const today = new Date()
-
-  if (s === 'today') return todayISO()
-  if (s === 'tomorrow') {
-    const d = new Date(today)
-    d.setDate(d.getDate() + 1)
-    return d.toISOString().slice(0, 10)
-  }
-
-  const dayNames = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday']
-
-  const nextMatch = s.match(/^next\s+(\w+)/)
-  if (nextMatch) {
-    const idx = dayNames.indexOf(nextMatch[1])
-    if (idx !== -1) {
-      const d    = new Date(today)
-      const diff = (idx - d.getDay() + 7) % 7 || 7
-      d.setDate(d.getDate() + diff)
-      return d.toISOString().slice(0, 10)
-    }
-  }
-
-  const dayIdx = dayNames.indexOf(s)
-  if (dayIdx !== -1) {
-    const d    = new Date(today)
-    const diff = (dayIdx - d.getDay() + 7) % 7 || 7
-    d.setDate(d.getDate() + diff)
-    return d.toISOString().slice(0, 10)
-  }
-
-  const parsed = new Date(str)
-  if (!isNaN(parsed)) return parsed.toISOString().slice(0, 10)
-  return null
-}
-
-function formatDateNice(isoStr) {
-  if (!isoStr) return ''
-  return new Date(isoStr + 'T00:00:00').toLocaleDateString('en-US', {
-    month: 'short', day: 'numeric', year: 'numeric',
-  })
-}
+import {
+  classifyIntent,
+  matchCustomer,
+  parseMoney,
+  parseDate,
+  formatMoney,
+  formatDateNice,
+  now,
+  todayISO,
+  timestampToMs,
+  detectTimeWindow,
+  HELP_TEXT,
+} from '../services/localNLU'
+// NOTE: adjust the import path above ("../services/localNLU") to wherever
+// you place localNLU.js in your project — it should sit next to agentService.
 
 function findCustomer(customers, nameHint) {
   if (!nameHint) return null
-  const lower = nameHint.toLowerCase().trim()
-  return (
-    customers.find(c => c.name?.toLowerCase() === lower) ||
-    customers.find(c => c.name?.toLowerCase().includes(lower)) ||
-    customers.find(c => lower.includes(c.name?.toLowerCase() || ''))
-  )
-}
-
-const INTENTS = [
-  { intent: 'add_order',          patterns: [/add.*(order|job)/i, /new.*(order|job)/i, /creat.*(order|job)/i, /take.*order/i, /order for/i] },
-  { intent: 'gen_invoice',        patterns: [/generat.*invoice/i, /creat.*invoice/i, /send.*invoice/i, /invoice for/i, /make.*invoice/i] },
-  { intent: 'record_payment',     patterns: [/paid/i, /record.*pay/i, /payment.*from/i, /just paid/i, /received.*payment/i, /mark.*paid/i] },
-  { intent: 'add_task',           patterns: [/add.*task/i, /remind me/i, /creat.*task/i, /new.*task/i, /note to/i] },
-  { intent: 'add_appt',           patterns: [/schedul/i, /book.*appt/i, /book.*appointment/i, /set.*appointment/i, /appt.*for/i, /fitting.*for/i] },
-  { intent: 'query_customer',     patterns: [/how much.*owe/i, /balance.*for/i, /what.*owe/i, /does.*owe/i, /owe.*me/i] },
-  { intent: 'query_orders',       patterns: [/orders.*due/i, /what.*due/i, /pending.*order/i, /active.*order/i, /show.*order/i] },
-  { intent: 'query_overdue',      patterns: [/overdue/i, /late.*invoice/i, /unpaid/i, /who.*not.*paid/i] },
-  { intent: 'query_summary',      patterns: [/summar/i, /how.*doing/i, /today.*status/i, /what.*happening/i, /overview/i, /snapshot/i] },
-  { intent: 'update_status',      patterns: [/mark.*as/i, /status.*to/i, /update.*status/i, /set.*status/i, /change.*to/i, /ready/i, /complet/i, /deliver/i] },
-  { intent: 'check_measurements', patterns: [/measurement/i, /measure/i, /size.*for/i, /has.*measurement/i] },
-]
-
-function detectIntent(text) {
-  for (const { intent, patterns } of INTENTS) {
-    if (patterns.some(p => p.test(text))) return intent
-  }
-  return 'unknown'
-}
-
-function extractCustomerName(text) {
-  const patterns = [
-    /(?:for|from|to)\s+([A-Z][a-z]+(?:\s+[A-Z][a-z]+)?)/,
-    /([A-Z][a-z]+(?:\s+[A-Z][a-z]+)?)'s/,
-    /([A-Z][a-z]+(?:\s+[A-Z][a-z]+)?)\s+(?:paid|owes|order)/i,
-  ]
-  for (const p of patterns) {
-    const m = text.match(p)
-    if (m) return m[1].trim()
-  }
-  return null
+  const match = matchCustomer(customers, nameHint)
+  return match ? match.customer : null
 }
 
 const FLOWS = {
@@ -138,12 +48,12 @@ const FLOWS = {
       key:      'price',
       question: "What's the total price?",
       validate: v => parseMoney(v) !== null,
-      errMsg:   'Please enter a valid amount, e.g. 45000 or ₦45,000.',
+      errMsg:   'Please enter a valid amount, e.g. 45000 or 50k.',
       transform: v => parseMoney(v),
     },
     {
       key:      'dueDate',
-      question: "When is it due? (e.g. May 20, next Friday, tomorrow)",
+      question: "When is it due? (e.g. May 20, next Friday, in 3 days)",
       validate: v => parseDate(v) !== null,
       errMsg:   "I didn't catch that date. Try something like 'May 20' or 'next Friday'.",
       transform: v => parseDate(v),
@@ -161,7 +71,7 @@ const FLOWS = {
       key:      'amount',
       question: 'How much did they pay?',
       validate: v => parseMoney(v) !== null,
-      errMsg:   'Please enter a valid amount, e.g. 10000 or ₦10,000.',
+      errMsg:   'Please enter a valid amount, e.g. 10000 or 10k.',
       transform: v => parseMoney(v),
     },
     { key: 'method',  question: 'How did they pay? (cash / transfer / card)' },
@@ -501,21 +411,31 @@ export function AgentProvider({ children }) {
     )
   }
 
+  // Balance for a single customer: total invoiced (unpaid) minus total paid.
+  function customerBalance(customer) {
+    const customerInvoices = allInvoices.filter(i => i.customerId === customer.id && i.status !== 'paid')
+    const customerPayments = allPayments.filter(p => p.customerId === customer.id)
+    const totalPaid = customerPayments.reduce((sum, p) =>
+      sum + (p.installments || []).reduce((s, inst) => s + (Number(inst.amount) || 0), 0), 0)
+    const totalOwed = customerInvoices.reduce((sum, i) => sum + (Number(i.totalAmount || i.price) || 0), 0)
+    return { totalOwed, totalPaid, balance: totalOwed - totalPaid, unpaidCount: customerInvoices.length }
+  }
+
   async function handleQuery(intent, text) {
+    const currencySymbol = generalSettings.invoiceCurrency?.symbol || '₦'
+
     switch (intent) {
 
-      case 'query_customer': {
-        const nameHint = extractCustomerName(text)
-        const customer = nameHint ? findCustomer(customers, nameHint) : null
-        if (!customer) { await agentReply('Which customer are you asking about?'); return }
+      case 'help': {
+        await agentReply(HELP_TEXT)
+        break
+      }
 
-        const currencySymbol   = generalSettings.invoiceCurrency?.symbol || '₦'
-        const customerInvoices = allInvoices.filter(i => i.customerId === customer.id && i.status !== 'paid')
-        const customerPayments = allPayments.filter(p => p.customerId === customer.id)
-        const totalPaid        = customerPayments.reduce((sum, p) =>
-          sum + (p.installments || []).reduce((s, inst) => s + (Number(inst.amount) || 0), 0), 0)
-        const totalOwed        = customerInvoices.reduce((sum, i) => sum + (Number(i.totalAmount || i.price) || 0), 0)
-        const balance          = totalOwed - totalPaid
+      case 'query_customer': {
+        const match = matchCustomer(customers, text)
+        if (!match) { await agentReply('Which customer are you asking about?'); return }
+        const customer = match.customer
+        const { balance, totalOwed, unpaidCount } = customerBalance(customer)
 
         const lines = [
           `**${customer.name}**`,
@@ -523,13 +443,118 @@ export function AgentProvider({ children }) {
             ? `💰 Outstanding balance: ${formatMoney(balance, currencySymbol)}`
             : '✅ No outstanding balance — all paid up.',
         ]
-        if (customerInvoices.length) {
-          lines.push(`🧾 ${customerInvoices.length} unpaid invoice${customerInvoices.length > 1 ? 's' : ''}`)
-        }
+        if (unpaidCount) lines.push(`🧾 ${unpaidCount} unpaid invoice${unpaidCount > 1 ? 's' : ''}`)
 
         await agentReply(lines.join('\n'), null, [
           { label: `View ${customer.name}'s profile`, action: 'navigate', payload: { route: '/customers' } },
         ])
+        break
+      }
+
+      case 'query_debtors': {
+        const debtors = customers
+          .map(c => ({ customer: c, ...customerBalance(c) }))
+          .filter(d => d.balance > 0)
+          .sort((a, b) => b.balance - a.balance)
+
+        if (!debtors.length) {
+          await agentReply('Nobody owes you money right now — everyone is paid up! 🎉')
+          return
+        }
+
+        const top = debtors.slice(0, 5)
+        const lines = [
+          `🔴 **${debtors.length} customer${debtors.length > 1 ? 's' : ''} owe${debtors.length === 1 ? 's' : ''} you money**`,
+          ...top.map(d => `• ${d.customer.name} — ${formatMoney(d.balance, currencySymbol)}`),
+        ]
+        if (debtors.length > top.length) lines.push(`…and ${debtors.length - top.length} more`)
+
+        await agentReply(lines.join('\n'), null, [
+          { label: 'View customers', action: 'navigate', payload: { route: '/customers' } },
+        ])
+        break
+      }
+
+      case 'query_top_customers': {
+        const ranked = customers
+          .map(c => {
+            const paid = allPayments
+              .filter(p => p.customerId === c.id)
+              .reduce((sum, p) => sum + (p.installments || []).reduce((s, i) => s + (Number(i.amount) || 0), 0), 0)
+            return { customer: c, paid }
+          })
+          .filter(r => r.paid > 0)
+          .sort((a, b) => b.paid - a.paid)
+          .slice(0, 5)
+
+        if (!ranked.length) {
+          await agentReply("I don't have enough payment history yet to rank your customers.")
+          return
+        }
+
+        await agentReply(
+          ['🏆 **Top customers by total spend**', ...ranked.map((r, i) => `${i + 1}. ${r.customer.name} — ${formatMoney(r.paid, currencySymbol)}`)].join('\n'),
+          null,
+          [{ label: 'View customers', action: 'navigate', payload: { route: '/customers' } }]
+        )
+        break
+      }
+
+      case 'query_new_customers': {
+        const withDates = customers
+          .map(c => ({ customer: c, createdAtMs: timestampToMs(c.createdAt) }))
+          .filter(c => c.createdAtMs > 0)
+
+        if (!withDates.length) {
+          await agentReply("I don't have signup dates on file for your customers yet, so I can't tell how many are new. You can check the Customers page for the full list.")
+          return
+        }
+
+        let window = detectTimeWindow(text)
+        if (window.label === 'all time') {
+          const today = new Date()
+          window = { label: 'this month', startMs: new Date(today.getFullYear(), today.getMonth(), 1).getTime(), endMs: Date.now() }
+        }
+
+        const newOnes = withDates.filter(c => c.createdAtMs >= window.startMs && c.createdAtMs <= window.endMs)
+
+        if (!newOnes.length) {
+          await agentReply(`No new customers ${window.label}.`)
+          return
+        }
+
+        await agentReply(
+          [`👥 **${newOnes.length} new customer${newOnes.length > 1 ? 's' : ''} ${window.label}**`, ...newOnes.map(c => `• ${c.customer.name}`)].join('\n')
+        )
+        break
+      }
+
+      case 'query_contact': {
+        const match = matchCustomer(customers, text)
+        if (!match) { await agentReply("Which customer's contact do you need?"); return }
+        const customer = match.customer
+        if (!customer.phone) {
+          await agentReply(`I don't have a phone number on file for ${customer.name}.`, null, [
+            { label: `View ${customer.name}'s profile`, action: 'navigate', payload: { route: '/customers' } },
+          ])
+          return
+        }
+        await agentReply(`📞 **${customer.name}**: ${customer.phone}`)
+        break
+      }
+
+      case 'query_revenue': {
+        const window = detectTimeWindow(text)
+        const total = allPayments.reduce((sum, p) => {
+          const installments = p.installments || []
+          return sum + installments.reduce((s, inst) => {
+            const paidAt = inst.createdAtMs || timestampToMs(p.createdAt)
+            if (paidAt < window.startMs || paidAt > window.endMs) return s
+            return s + (Number(inst.amount) || 0)
+          }, 0)
+        }, 0)
+
+        await agentReply(`💰 You've made **${formatMoney(total, currencySymbol)}** ${window.label}.`)
         break
       }
 
@@ -554,7 +579,7 @@ export function AgentProvider({ children }) {
       case 'query_overdue': {
         const overdueInvoices = allInvoices.filter(i => {
           if (i.status === 'paid' || !i.due) return false
-          return new Date(i.due + 'T23:59:59') < new Date()
+          return new Date((i.dueRaw || i.due) + 'T23:59:59') < new Date()
         })
 
         if (!overdueInvoices.length) {
@@ -568,6 +593,41 @@ export function AgentProvider({ children }) {
           null,
           [{ label: 'View invoices', action: 'navigate', payload: { route: '/invoices' } }]
         )
+        break
+      }
+
+      case 'query_tasks_overdue': {
+        const today = todayISO()
+        const overdueTasks = tasks.filter(t => !t.done && t.dueDate && t.dueDate < today)
+
+        if (!overdueTasks.length) {
+          await agentReply('No overdue tasks — you\'re on top of things! ✅')
+          return
+        }
+
+        await agentReply(
+          [`🔴 **${overdueTasks.length} overdue task${overdueTasks.length > 1 ? 's' : ''}**`, ...overdueTasks.map(t => `• ${t.desc}${t.customerName ? ` (${t.customerName})` : ''}`)].join('\n'),
+          null,
+          [{ label: 'View tasks', action: 'navigate', payload: { route: '/tasks' } }]
+        )
+        break
+      }
+
+      case 'query_schedule': {
+        const today     = todayISO()
+        const dueTasks  = tasks.filter(t => !t.done && t.dueDate === today)
+        const dueOrders = allOrders.filter(o => !['completed', 'delivered', 'cancelled'].includes(o.status) && (o.dueDate || o.dueRaw) === today)
+
+        if (!dueTasks.length && !dueOrders.length) {
+          await agentReply("Nothing on today's schedule. 🎉")
+          return
+        }
+
+        const lines = ["📅 **Today's schedule**"]
+        if (dueOrders.length) lines.push(...dueOrders.map(o => `• Order: ${o.desc} (${o.customerName || 'customer'})`))
+        if (dueTasks.length)  lines.push(...dueTasks.map(t => `• Task: ${t.desc}${t.customerName ? ` (${t.customerName})` : ''}`))
+
+        await agentReply(lines.join('\n'))
         break
       }
 
@@ -593,9 +653,9 @@ export function AgentProvider({ children }) {
       }
 
       case 'check_measurements': {
-        const nameHint = extractCustomerName(text)
-        const customer = nameHint ? findCustomer(customers, nameHint) : null
-        if (!customer) { await agentReply("Which customer's measurements do you want to check?"); return }
+        const match = matchCustomer(customers, text)
+        if (!match) { await agentReply("Which customer's measurements do you want to check?"); return }
+        const customer = match.customer
 
         await agentReply(
           `To view ${customer.name}'s measurements, head to their profile.`,
@@ -606,8 +666,8 @@ export function AgentProvider({ children }) {
       }
 
       case 'update_status': {
-        const nameHint = extractCustomerName(text)
-        const customer = nameHint ? findCustomer(customers, nameHint) : null
+        const match = matchCustomer(customers, text)
+        const customer = match?.customer
 
         const statusMap = {
           ready:         'completed',
@@ -652,7 +712,7 @@ export function AgentProvider({ children }) {
 
       default:
         await agentReply(
-          "I'm not sure what you mean. Here are some things you can try:\n• \"Add an order for Uchenna\"\n• \"How much does Bola owe?\"\n• \"Emeka just paid 15k\"\n• \"What's happening today?\""
+          "I'm not sure what you mean. Here are some things you can try:\n• \"Add an order for Uchenna\"\n• \"How much does Bola owe?\"\n• \"Emeka just paid 15k\"\n• \"What's happening today?\"\n\nOr just ask \"what can you do?\""
         )
     }
   }
@@ -668,14 +728,14 @@ export function AgentProvider({ children }) {
       if (handled) return
     }
 
-    const intent = detectIntent(text)
+    const { intent } = classifyIntent(text)
 
     if (intent === 'unknown') { await handleQuery('unknown', text); return }
 
     if (['add_order', 'gen_invoice', 'record_payment', 'add_task', 'add_appt'].includes(intent)) {
       const initialData = {}
-      const nameHint    = extractCustomerName(text)
-      if (nameHint) initialData.customerName = nameHint
+      const match = matchCustomer(customers, text)
+      if (match) initialData.customerName = match.customer.name
       await startFlow(intent, initialData)
       return
     }
