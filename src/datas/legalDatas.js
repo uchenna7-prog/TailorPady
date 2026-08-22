@@ -123,7 +123,8 @@ export const PRIVACY_SECTIONS = [
   {
     id: 'data-retention',
     title: 'Data Retention',
-    body: `We retain your data for as long as your account is active. If you delete your account, your data will be removed from our systems within a reasonable period, except where we are required to retain it by law, such as billing records related to your Paystack transactions.`,
+    body: `We retain your data for as long as your account is active. If you delete your account, your access is revoked immediately, and your data is permanently deleted from our systems within 30 days. See our Account Deletion page for full details.`,
+    footer: 'We may retain limited data beyond this period where required by law, such as billing records related to your Paystack transactions.',
   },
   {
     id: 'your-rights',
@@ -274,6 +275,7 @@ export const REFUND_SECTIONS = [
     id: 'account-deletion',
     title: 'Account Deletion',
     body: `Deleting your account does not automatically cancel an active subscription. Please cancel your subscription first before deleting your account to avoid future charges.`,
+    footer: 'Once your account deletion is confirmed, it cannot be reversed. See our Account Deletion page for the full timeline.',
   },
 ]
 
@@ -290,18 +292,29 @@ export const DELETE_ACCOUNT_SECTIONS = [
       'Tap Delete Account.',
       'Confirm the deletion when prompted.',
     ],
-    footer: 'Your account and data will begin processing for deletion immediately after confirmation.',
+    footer: 'Your access to your account is revoked immediately after confirmation. Your data is not deleted right away — see the Grace Period section below.',
   },
   {
     id: 'no-app-deletion',
     title: "Don't Have the App, or Can't Log In?",
     body: `If you no longer have the app installed, or you're unable to log in, you can still request deletion of your account and data. Send a deletion request to the email address below from the email associated with your TailorPady account, including your registered name or email so we can locate your account.`,
-    footer: 'We will verify the request and process the deletion within a reasonable timeframe.',
+    footer: 'We will verify the request and initiate deletion within a reasonable timeframe.',
+  },
+  {
+    id: 'grace-period',
+    title: 'Grace Period',
+    body: `Once your account deletion is confirmed, you are logged out immediately and can no longer access your account or any data in it.`,
+    bullets: [
+      'Your data is retained for 30 days before permanent deletion begins.',
+      'This deletion cannot be reversed or cancelled by you or by us, whether initiated in the app or by request, once confirmed.',
+      'You cannot create a new TailorPady account using the same email address until the 30-day process is complete.',
+    ],
+    footer: 'If you did not intend to delete your account, contact us immediately using the details below, before the 30-day period ends.',
   },
   {
     id: 'what-gets-deleted',
     title: 'What Gets Deleted',
-    body: `When your account is deleted, the following data is permanently removed from our systems:`,
+    body: `After the 30-day period, the following data is permanently removed from our systems:`,
     bullets: [
       'Account data: your name, email address, phone number, city, country, sex, and birthday.',
       'Brand identity: logo, shop name, tagline, brand colour, and signature.',
@@ -314,7 +327,7 @@ export const DELETE_ACCOUNT_SECTIONS = [
   {
     id: 'retention',
     title: 'Data We May Retain',
-    body: `In limited cases, we may retain certain data for a period after account deletion where required by law or legitimate business need, such as:`,
+    body: `In limited cases, we may retain certain data beyond the 30-day period where required by law or legitimate business need, such as:`,
     bullets: [
       'Subscription billing records from Paystack needed for tax, accounting, or fraud-prevention purposes.',
       'Records we are legally required to keep under applicable law.',
@@ -324,7 +337,7 @@ export const DELETE_ACCOUNT_SECTIONS = [
   {
     id: 'timeframe',
     title: 'Deletion Timeframe',
-    body: `Account and business data are typically removed from our active systems within a reasonable period of your request. Data may persist briefly in backups before being fully purged.`,
+    body: `Your account is locked immediately upon confirming deletion. Your data, including images, is permanently deleted from our active systems 30 days after your request. Data may persist briefly in backups before being fully purged.`,
   },
   {
     id: 'contact',
