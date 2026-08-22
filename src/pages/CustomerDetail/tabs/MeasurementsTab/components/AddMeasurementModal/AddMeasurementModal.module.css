@@ -311,19 +311,22 @@
 /* ─── Add buttons ──────────────────────────────────────────────────────────── */
 
 .addFieldButton {
-  background:    transparent;
-  border:        1px dashed var(--border2);
-  color:         var(--text2);
-  padding:       9px 16px;
-  border-radius: 10px;
-  font-weight:   700;
-  display:       flex;
-  align-items:   center;
-  gap:           6px;
-  font-size:     0.75rem;
-  margin-top:    4px;
-  cursor:        pointer;
-  transition:    border-color 0.2s;
+  background:      transparent;
+  border:          1px dashed var(--border2);
+  color:           var(--text2);
+  padding:         9px 16px;
+  border-radius:   10px;
+  font-weight:     700;
+  display:         flex;
+  align-items:     center;
+  justify-content: center;
+  gap:             6px;
+  font-size:       0.75rem;
+  margin-top:      4px;
+  cursor:          pointer;
+  transition:      border-color 0.2s;
+  width:           100%;
+  box-sizing:      border-box;
 }
 
 .addFieldButton:active {
