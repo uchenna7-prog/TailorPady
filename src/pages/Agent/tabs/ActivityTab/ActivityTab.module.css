@@ -36,21 +36,30 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 72px 24px;
-  text-align: center;
   gap: 8px;
+  text-align: center;
+  padding: 32px;
+  flex: 1;
+  min-height: 0;
+  height: 100%;
 }
 
 .emptyTabTitle {
-  font-size: 0.9rem;
-  font-weight: 700;
-  color: var(--text2);
-  margin: 4px 0 0;
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: var(--text);
+  margin: 0;
 }
 
 .emptyTabSub {
-  font-size: 0.75rem;
+  font-size: 0.8rem;
   color: var(--text3);
   margin: 0;
   line-height: 1.5;
+  max-width: 260px;
+}
+
+.emptyTabSub strong {
+  color: var(--text2);
+  font-weight: 800;
 }
