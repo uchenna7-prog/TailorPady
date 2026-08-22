@@ -36,6 +36,7 @@ import { db } from '../../firebase'
 
 const PROFILE_TOUR_STEP_IDS = ['highlight-profile-card', 'highlight-edit-brand', 'highlight-edit-business-info']
 const AUTO_OPEN_MODALS = ['brand', 'businessInfo', 'socials', 'upgrade', 'usage']
+const API_BASE = 'https://tailor-pady-api.vercel.app'
 
 export default function Account({ onMenuClick, isPremium = false, onUpgrade = () => {} }) {
 
@@ -53,6 +54,7 @@ export default function Account({ onMenuClick, isPremium = false, onUpgrade = ()
   const [upgradeInitialTab, setUpgradeInitialTab] = useState('free')
   const [logoutConfirm, setLogoutConfirm] = useState(false)
   const [deleteConfirm, setDeleteConfirm] = useState(false)
+  const [deleting, setDeleting] = useState(false)
   const [toastMsg, setToastMsg] = useState('')
   const [pendingTemplate, setPendingTemplate] = useState(null)
   const [returnTo, setReturnTo] = useState(null)
@@ -249,15 +251,26 @@ export default function Account({ onMenuClick, isPremium = false, onUpgrade = ()
 
   const handleDeleteAccount = async () => {
     setDeleteConfirm(false)
+    setDeleting(true)
     try {
-      await user.delete()
+      const idToken = await user.getIdToken()
+      const response = await fetch(`${API_BASE}/api/delete-account`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${idToken}`,
+        },
+      })
+      const data = await response.json().catch(() => ({}))
+      if (!response.ok) {
+        throw new Error(data.error || 'Could not delete account')
+      }
+      await logout()
       navigate('/login', { replace: true })
     } catch (err) {
-      if (err.code === 'auth/requires-recent-login') {
-        showToast('Please log out and log in again to delete your account')
-      } else {
-        showToast('Could not delete account — please try again')
-      }
+      showToast('Could not delete account — please try again')
+    } finally {
+      setDeleting(false)
     }
   }
 
@@ -626,7 +639,7 @@ export default function Account({ onMenuClick, isPremium = false, onUpgrade = ()
         open={deleteConfirm}
         title="Delete Account?"
         message="This will permanently delete your account and all your data. This cannot be undone."
-        confirmLabel="Delete"
+        confirmLabel={deleting ? 'Deleting…' : 'Delete'}
         confirmDanger
         onConfirm={handleDeleteAccount}
         onCancel={() => setDeleteConfirm(false)}
