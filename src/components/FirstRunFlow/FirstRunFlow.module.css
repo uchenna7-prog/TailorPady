@@ -223,15 +223,20 @@
 
 .roleHead {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   gap: 12px;
 }
 
+.roleImageWrap {
+  display: flex;
+  justify-content: center;
+  margin-top: 14px;
+}
+
 .roleImage {
-  width: 68px;
-  height: 68px;
+  width: auto;
+  height: 128px;
   object-fit: contain;
-  flex-shrink: 0;
 }
 
 .roleIconSelected {
