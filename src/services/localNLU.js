@@ -1,21 +1,3 @@
-// localNLU.js
-//
-// A small, fully-local "understanding" engine for the tailor-shop assistant.
-// No model calls, no network — just better string matching than plain regex:
-//   - typo/shorthand tolerant text normalization ("wat", "2day", "hw" etc.)
-//   - Levenshtein-based fuzzy word matching
-//   - weighted, scored intent classification (instead of first-regex-wins)
-//   - fuzzy customer-name lookup against your real customer list
-//   - money/date parsing that understands Nigerian shorthand ("50k", "5k naira")
-//   - shared formatters so AgentContext and AutonomousAgentContext don't
-//     each maintain their own copy of formatMoney/date helpers.
-
-// ---------------------------------------------------------------------------
-// Text normalization
-// ---------------------------------------------------------------------------
-
-// Common mobile-typing shorthand -> full word. Keep this list small and safe;
-// only add entries you're confident won't collide with real words/names.
 const SHORTHAND = {
   wat: 'what', wats: 'what is', whats: 'what is',
   hw: 'how', hws: 'how is',
@@ -45,10 +27,6 @@ export function tokenize(text) {
   return normalizeText(text).split(/\s+/).filter(Boolean)
 }
 
-// ---------------------------------------------------------------------------
-// Fuzzy matching
-// ---------------------------------------------------------------------------
-
 export function levenshtein(a, b) {
   if (a === b) return 0
   if (!a.length) return b.length
@@ -63,9 +41,9 @@ export function levenshtein(a, b) {
     for (let j = 1; j <= b.length; j++) {
       const cost = a[i - 1] === b[j - 1] ? 0 : 1
       curr[j] = Math.min(
-        prev[j] + 1,      // deletion
-        curr[j - 1] + 1,  // insertion
-        prev[j - 1] + cost // substitution
+        prev[j] + 1,
+        curr[j - 1] + 1,
+        prev[j - 1] + cost
       )
     }
     for (let j = 0; j <= b.length; j++) prev[j] = curr[j]
@@ -73,8 +51,6 @@ export function levenshtein(a, b) {
   return prev[b.length]
 }
 
-// How much typo tolerance to allow, scaled to word length so short words
-// (which are more likely to collide with unrelated short words) stay strict.
 function allowedDistance(word) {
   if (word.length <= 3) return 0
   if (word.length <= 6) return 1
@@ -89,21 +65,10 @@ export function fuzzyTokenMatch(token, target) {
   return levenshtein(token, target) <= dist
 }
 
-// Does every word in `phraseWords` appear somewhere (in any order, fuzzily)
-// among `tokens`? Used to detect a trigger phrase regardless of word order
-// or minor typos.
 function phraseMatches(tokens, phraseWords) {
   return phraseWords.every(pw => tokens.some(t => fuzzyTokenMatch(t, pw)))
 }
 
-// ---------------------------------------------------------------------------
-// Fuzzy customer lookup
-// ---------------------------------------------------------------------------
-
-// Searches free-form text for the customer it most likely refers to, using
-// the real customer list rather than guessing from capitalization. This
-// replaces the old "extract a Title Case word, then look it up" approach,
-// which broke on lowercase typing, typos, and multi-word names.
 export function matchCustomer(customers, text) {
   if (!text || !customers?.length) return null
   const norm = normalizeText(text)
@@ -120,9 +85,6 @@ export function matchCustomer(customers, text) {
     } else if (norm.includes(nameNorm) || nameNorm.includes(norm)) {
       score = 85
     } else {
-      // Shop owners very often refer to customers by first name only, so a
-      // partial token match (e.g. "Bola" matching "Bola Adeyemi") still
-      // needs to clear the confidence bar — not just a full-name match.
       const nameTokens = nameNorm.split(' ')
       const matchedCount = nameTokens.filter(nt =>
         textTokens.some(tt => fuzzyTokenMatch(tt, nt))
@@ -137,10 +99,6 @@ export function matchCustomer(customers, text) {
   return best
 }
 
-// ---------------------------------------------------------------------------
-// Money parsing
-// ---------------------------------------------------------------------------
-
 export function parseMoney(str) {
   if (str === null || str === undefined) return null
   let s = String(str).toLowerCase().trim()
@@ -148,7 +106,6 @@ export function parseMoney(str) {
 
   s = s.replace(/naira|ngn|₦/g, '').trim()
 
-  // "50k" / "50.5k" -> 50000 / 50500
   const kMatch = s.match(/^([\d,]+(?:\.\d+)?)\s*k$/)
   if (kMatch) {
     const n = parseFloat(kMatch[1].replace(/,/g, ''))
@@ -164,10 +121,6 @@ export function formatMoney(amount, currencySymbol = '₦') {
   if (!amount) return `${currencySymbol}0`
   return `${currencySymbol}${Number(amount).toLocaleString()}`
 }
-
-// ---------------------------------------------------------------------------
-// Date parsing
-// ---------------------------------------------------------------------------
 
 const DAY_NAMES = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday']
 
@@ -273,9 +226,6 @@ export function formatClockLabel(ms) {
   return new Date(ms).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true })
 }
 
-// Time-window helper used by the revenue / new-customers / debtor queries.
-// Detects "today" / "this week" / "this month" in free text; defaults to
-// "all time" when nothing specific is mentioned.
 export function detectTimeWindow(text) {
   const s = normalizeText(text)
   const now = Date.now()
@@ -315,16 +265,6 @@ export function durationLabel(duration) {
   const base = unit.replace(/s$/, '')
   return `${amount} ${amount === 1 ? base : unit}`
 }
-
-// ---------------------------------------------------------------------------
-// Intent classification
-// ---------------------------------------------------------------------------
-//
-// Each intent has a list of trigger phrases with weights. A phrase matches
-// if ALL of its words are found (fuzzily, any order) in the input. The
-// intent with the highest total matched weight wins — this fixes the old
-// "first regex to fire wins" problem, where a generic single word like
-// "ready" could hijack an unrelated sentence.
 
 const INTENT_DEFS = [
   { intent: 'help', phrases: [
