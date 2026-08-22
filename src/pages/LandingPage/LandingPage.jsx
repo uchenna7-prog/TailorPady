@@ -2,11 +2,12 @@ import { useState, useEffect, useRef } from 'react'
 import { useTheme } from './hooks/useTheme'
 import SiteNav from './components/SiteNav/SiteNav'
 import SiteFooter from './components/SiteFooter/SiteFooter'
+import { USAGE_LIMITS } from '../datas/usageLimits'
 import styles from './LandingPage.module.css'
 
 const ABOUT_STATS = [
-  { icon: 'group', value: '5+', label: 'Active tailors' },
-  { icon: 'shopping_cart', value: '30+', label: 'Orders tracked' },
+  { icon: 'group', value: '100+', label: 'Active tailors' },
+  { icon: 'shopping_cart', value: '500+', label: 'Orders tracked' },
 ]
 
 const FEATURES = [
@@ -149,36 +150,50 @@ const TESTIMONIALS = [
 ]
 
 const FREE_FEATURES = [
-  { icon: 'group', label: 'Up to 15 customers' },
-  { icon: 'straighten', label: 'Full body & cloth measurements' },
-  { icon: 'receipt_long', label: '20 active orders / month' },
-  { icon: 'description', label: 'All invoice & receipt templates' },
-  { icon: 'print', label: '10 invoice + 10 receipt generations / month' },
-  { icon: 'palette', label: 'Basic branding customisation' },
-  { icon: 'photo_library', label: '15 portfolio uploads / month' },
-  { icon: 'link', label: 'Public portfolio link' },
-  { icon: 'star_rate', label: '5 review links / month' },
-  { icon: 'payments', label: 'Basic payment tracking' },
-  { icon: 'smart_toy', label: '3 AI assistant actions / month' },
-  { icon: 'cake', label: 'Birthday reminders' },
+  { icon: 'group', label: `Up to ${USAGE_LIMITS.customers} customers (lifetime limit)` },
+  { icon: 'straighten', label: `${USAGE_LIMITS.measurementsPerMonth} measurements / month` },
+  { icon: 'receipt_long', label: `${USAGE_LIMITS.ordersPerMonth} orders / month` },
+  { icon: 'description', label: 'Access to all invoice & receipt templates' },
+  { icon: 'print', label: `${USAGE_LIMITS.invoicesPerMonth} invoices / month` },
+  { icon: 'receipt', label: `${USAGE_LIMITS.receiptsPerMonth} receipts / month` },
+  { icon: 'palette', label: 'Basic brand customization (logo, colors, and business details)' },
+  { icon: 'link', label: 'Fully branded public portfolio page with shareable link' },
+  { icon: 'photo_library', label: `${USAGE_LIMITS.portfolioUploadsPerMonth} portfolio image uploads / month` },
+  { icon: 'star_rate', label: `${USAGE_LIMITS.reviewLinksPerMonth} review links / month` },
+  { icon: 'payments', label: `${USAGE_LIMITS.paymentRecordsPerMonth} payment records / month` },
+  { icon: 'smart_toy', label: `${USAGE_LIMITS.aiActionsPerMonth} AI assistant actions / month` },
+  { icon: 'cake', label: 'Customer birthday reminders' },
+  { icon: 'inventory_2', label: 'Inventory tracking' },
+  { icon: 'checklist', label: 'Task management' },
+  { icon: 'event', label: 'Appointment scheduling' },
+  { icon: 'bar_chart', label: 'Business reports (orders, customers, appointments, tasks, and revenue)' },
 ]
 
 const PRO_FEATURES = [
-  { icon: 'all_inclusive', label: 'Unlimited customers' },
-  { icon: 'all_inclusive', label: 'Unlimited measurements' },
-  { icon: 'all_inclusive', label: 'Unlimited active orders' },
-  { icon: 'all_inclusive', label: 'Unlimited invoice & receipt generations' },
-  { icon: 'palette', label: 'Full branding — logo, colours, signature' },
-  { icon: 'account_balance', label: 'Bank details & T&Cs on every document' },
-  { icon: 'photo_library', label: 'Unlimited portfolio uploads' },
-  { icon: 'auto_awesome', label: 'Fully branded portfolio page' },
-  { icon: 'star', label: 'Unlimited review links' },
-  { icon: 'bar_chart', label: 'Advanced payment tracking & reports' },
+  { icon: 'group', label: 'Unlimited customers, no lifetime cap' },
+  { icon: 'straighten', label: 'Unlimited measurements / month' },
+  { icon: 'receipt_long', label: 'Unlimited orders / month' },
+  { icon: 'description', label: 'Access to all invoice & receipt templates' },
+  { icon: 'print', label: 'Unlimited invoices / month' },
+  { icon: 'receipt', label: 'Unlimited receipts / month' },
+  { icon: 'palette', label: 'Full brand customization: logo, colors, signature & business details' },
+  { icon: 'account_balance', label: 'Bank details & terms and conditions on every document' },
+  { icon: 'link', label: 'Fully branded public portfolio page with shareable link' },
+  { icon: 'photo_library', label: 'Unlimited portfolio image uploads' },
+  { icon: 'star_rate', label: 'Unlimited review links' },
+  { icon: 'payments', label: 'Unlimited payment records with advanced tracking' },
   { icon: 'smart_toy', label: 'Unlimited AI assistant actions' },
+  { icon: 'cake', label: 'Customer birthday reminders' },
+  { icon: 'inventory_2', label: 'Inventory tracking' },
+  { icon: 'checklist', label: 'Task management' },
+  { icon: 'event', label: 'Appointment scheduling' },
+  { icon: 'bar_chart', label: 'Advanced business reports (orders, customers, appointments, tasks, and revenue)' },
   { icon: 'edit_note', label: 'Smart invoice auto-drafts' },
   { icon: 'campaign', label: 'Customer re-engagement reminders' },
   { icon: 'cloud', label: 'Expanded cloud storage' },
 ]
+
+const PLAN_FEATURE_PREVIEW_COUNT = 8
 
 const FREE_PLAN = {
   name: 'Free',
@@ -239,7 +254,7 @@ const FAQ_PREVIEW = [
   },
   {
     q: 'How many invoices can I send on the free plan?',
-    a: 'Up to 10 invoices and 10 receipts a month, alongside 20 active orders. Pro removes every limit.',
+    a: `Up to ${USAGE_LIMITS.invoicesPerMonth} invoices and ${USAGE_LIMITS.receiptsPerMonth} receipts a month, alongside ${USAGE_LIMITS.ordersPerMonth} orders. Pro removes every limit.`,
   },
 ]
 
@@ -650,40 +665,50 @@ function PricingTeaser({ onNavigate }) {
       </div>
 
       <div className={styles.pricingGrid}>
-        {plans.map((plan, i) => (
-          <Reveal
-            key={`${plan.name}-${billing}`}
-            as="div"
-            className={`${styles.pricingCard} `}
-            delay={i * 100}
-          >
-            <div className={styles.pricingCardHead}>
-              <span className={styles.pricingName}>{plan.name}</span>
-              <div className={styles.pricingPriceRow}>
-                <span className={styles.pricingPrice}>{plan.price}</span>
-                <span className={styles.pricingPeriod}>{plan.period}</span>
-                {plan.badge && <span className={styles.pricingCardBadge}>{plan.badge}</span>}
-              </div>
-              {plan.subNote && <span className={styles.pricingSubNote}>{plan.subNote}</span>}
-              <p className={styles.pricingTagline}>{plan.tagline}</p>
-            </div>
-            <ul className={styles.pricingList}>
-              {plan.features.map(feature => (
-                <li key={feature.label} className={styles.pricingListItem}>
-                  <span className={`mi-outlined ${styles.pricingCheck}`}>{feature.icon}</span>
-                  {feature.label}
-                </li>
-              ))}
-            </ul>
-            <button
-              type="button"
-              className={plan.highlighted ? styles.primaryButton : styles.outlineButton}
-              onClick={() => onNavigate('/signup')}
+        {plans.map((plan, i) => {
+          const previewFeatures = plan.features.slice(0, PLAN_FEATURE_PREVIEW_COUNT)
+          const remainingCount = plan.features.length - previewFeatures.length
+
+          return (
+            <Reveal
+              key={`${plan.name}-${billing}`}
+              as="div"
+              className={`${styles.pricingCard} `}
+              delay={i * 100}
             >
-              {plan.cta}
-            </button>
-          </Reveal>
-        ))}
+              <div className={styles.pricingCardHead}>
+                <span className={styles.pricingName}>{plan.name}</span>
+                <div className={styles.pricingPriceRow}>
+                  <span className={styles.pricingPrice}>{plan.price}</span>
+                  <span className={styles.pricingPeriod}>{plan.period}</span>
+                  {plan.badge && <span className={styles.pricingCardBadge}>{plan.badge}</span>}
+                </div>
+                {plan.subNote && <span className={styles.pricingSubNote}>{plan.subNote}</span>}
+                <p className={styles.pricingTagline}>{plan.tagline}</p>
+              </div>
+              <ul className={styles.pricingList}>
+                {previewFeatures.map(feature => (
+                  <li key={feature.label} className={styles.pricingListItem}>
+                    <span className={`mi-outlined ${styles.pricingCheck}`}>{feature.icon}</span>
+                    {feature.label}
+                  </li>
+                ))}
+                {remainingCount > 0 && (
+                  <li className={styles.pricingListMore}>
+                    +{remainingCount} more feature{remainingCount === 1 ? '' : 's'}
+                  </li>
+                )}
+              </ul>
+              <button
+                type="button"
+                className={plan.highlighted ? styles.primaryButton : styles.outlineButton}
+                onClick={() => onNavigate('/signup')}
+              >
+                {plan.cta}
+              </button>
+            </Reveal>
+          )
+        })}
       </div>
     </section>
   )
@@ -869,7 +894,7 @@ function WhatsAppWidget() {
             )}
           </div>
           <div className={styles.whatsappPanelFooter}>
-            <a
+            
               href={WHATSAPP_HREF}
               target="_blank"
               rel="noreferrer"
