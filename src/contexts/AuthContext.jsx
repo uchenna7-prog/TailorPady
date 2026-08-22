@@ -6,8 +6,11 @@ import {
   login,
   logout,
   resetPassword,
+  verifyResetCode,
+  confirmReset,
   changePassword,
   changeEmail,
+  setPassword,
   loginWithGoogle as loginWithGoogleService,
   getGoogleRedirectResult,
   linkGoogle,
@@ -28,9 +31,7 @@ export function AuthProvider({ children }) {
       setUser(null)
       return
     }
-
     setUser(firebaseUser)
-
     firebaseUser.getIdTokenResult()
       .then(tokenResult => {
         if (tokenResult.claims.pendingDeletion) {
@@ -39,7 +40,6 @@ export function AuthProvider({ children }) {
         }
       })
       .catch(() => {})
-
     if (profiledUidRef.current !== firebaseUser.uid) {
       profiledUidRef.current = firebaseUser.uid
       ensureUserProfile(firebaseUser, hint)
@@ -107,8 +107,11 @@ export function AuthProvider({ children }) {
     signup,
     logout,
     resetPassword,
+    verifyResetCode,
+    confirmReset,
     changePassword,
     changeEmail,
+    setPassword,
     linkGoogle,
     unlinkProvider,
   }), [user, loading, redirecting, signup, loginWithGoogle])
