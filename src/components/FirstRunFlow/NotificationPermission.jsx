@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useNotifications } from '../../contexts/NotificationContext'
-import notificationsImage from '../../assets/onboarding/onboarding-notifications.png'
+import notificationsImage from '../../assets/onboarding/onboarding-notifications.jpg'
 import styles from './FirstRunFlow.module.css'
 
 export default function NotificationPermission({ onDone, onSkip }) {
