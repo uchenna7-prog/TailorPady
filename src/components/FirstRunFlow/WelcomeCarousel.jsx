@@ -1,7 +1,7 @@
 import { useState, useRef } from 'react'
-import dashboardSlide from '../../assets/onboarding/onboarding-dashboard.jpg'
-import ordersSlide from '../../assets/onboarding/onboarding-orders.jpg'
-import customersSlide from '../../assets/onboarding/onboarding-customers.jpg'
+import dashboardSlide from '../../assets/onboarding/onboarding-dashboard.webp'
+import ordersSlide from '../../assets/onboarding/onboarding-orders.webp'
+import customersSlide from '../../assets/onboarding/onboarding-customers.webp'
 import styles from './FirstRunFlow.module.css'
 
 const SLIDES = [
