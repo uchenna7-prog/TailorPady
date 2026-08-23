@@ -1,7 +1,7 @@
 export const CONTACT = {
   whatsapp: '+234 7079645766',
   phone: '+234 7079645766',
-  email: 'support@TailorPady.app',
+  email: 'tailorpadysupport@gmail.com',
   website: 'https://tailorpady.web.app',
   businessName: 'TailorPady',
   billingName: 'TailorPady Technologies',
