@@ -1,8 +1,13 @@
-[{
-  "relation": ["delegate_permission/common.handle_all_urls"],
-  "target": {
-    "namespace": "android_app",
-    "package_name": "com.tailorpady.app",
-    "sha256_cert_fingerprints": ["1C:17:F7:E2:22:B7:F0:B4:70:75:B2:9C:02:07:8D:7D:83:C6:47:51:BA:71:86:8E:04:29:4F:58:CB:E5:44:2D"]
+[
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "com.tailorpady.app",
+      "sha256_cert_fingerprints": [
+        "1C:17:F7:E2:22:B7:F0:B4:70:75:B2:9C:02:07:8D:7D:83:C6:47:51:BA:71:86:8E:04:29:4F:58:CB:E5:44:2D",
+        "D2:31:A3:0D:40:6D:49:B3:E4:EC:3A:F7:FB:F7:0F:95:60:70:A7:C3:6B:00:7E:40:12:54:06:59:20:D3:85:67"
+      ]
+    }
   }
-}]
+]
