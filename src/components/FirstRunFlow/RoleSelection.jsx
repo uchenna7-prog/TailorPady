@@ -2,8 +2,8 @@ import { useState } from 'react'
 import { useAuth } from '../../contexts/AuthContext'
 import { db } from '../../firebase'
 import { saveOnboardingRole } from '../../services/profileService'
-import roleOwnerImage from '../../assets/onboarding/role-owner.png'
-import roleWorkerImage from '../../assets/onboarding/role-worker.png'
+import roleOwnerImage from '../../assets/onboarding/role-owner.jpg'
+import roleWorkerImage from '../../assets/onboarding/role-worker.jpg'
 import styles from './FirstRunFlow.module.css'
 
 const ROLES = [
