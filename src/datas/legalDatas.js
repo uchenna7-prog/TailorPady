@@ -1,5 +1,5 @@
-export const LEGAL_CONTACT_EMAIL = 'uchenduuchenna7@gmail.com'
-export const LEGAL_CONTACT_PHONE = '+234 907 911 6980'
+export const LEGAL_CONTACT_EMAIL = 'tailorpadysupport@gmail.com'
+export const LEGAL_CONTACT_PHONE = '+234 707 964 5766'
 
 export const PRIVACY_LAST_UPDATED = 'August 2026'
 
