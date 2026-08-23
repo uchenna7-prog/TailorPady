@@ -39,15 +39,13 @@ export const PRIVACY_SECTIONS = [
   {
     id: 'business-info',
     title: 'Business Information',
-    body: `You may add business details used mainly to generate invoices and receipts for your customers:`,
+    body: `You may add business details used to generate invoices and receipts for your customers:`,
     bullets: [
-      'Business phone number and business email.',
-      'Business address.',
-      'Website or social handle.',
-      'Bank name, account number, and account name, displayed on invoices as payment instructions for your customers.',
-      'Payment terms.',
+      'Business phone number and business address, required if you want to generate invoices or receipts.',
+      'Business email, website or social handle, payment terms, optional.',
+      'Bank name, account number, and account name, displayed on invoices as payment instructions for your customers, optional.',
     ],
-    footer: 'These fields are optional and only used to populate documents you choose to generate, such as invoices and receipts. We do not use your bank details for any payment processing.',
+    footer: 'Adding business information is entirely optional and only needed if you choose to use invoicing or receipt features. If you do not use these features, none of this information is required. We do not use your bank details for any payment processing.',
   },
   {
     id: 'socials',
@@ -144,6 +142,7 @@ export const PRIVACY_SECTIONS = [
     bullets: [
       'Access the data we hold about you.',
       'Request correction of inaccurate data.',
+      'Delete individual records you have created, such as customers, orders, or images, directly within the app at any time.',
       'Request deletion of your account and associated data.',
       'Export your business data.',
     ],
@@ -280,7 +279,7 @@ export const REFUND_SECTIONS = [
   {
     id: 'exceptional',
     title: 'Exceptional Circumstances',
-    body: `In exceptional circumstances — such as extended service unavailability caused by our end — we may at our discretion offer account credits or partial refunds. These will be evaluated on a case-by-case basis. Please contact us to discuss your situation.`,
+    body: `In exceptional circumstances \u2014 such as extended service unavailability caused by our end \u2014 we may at our discretion offer account credits or partial refunds. These will be evaluated on a case-by-case basis. Please contact us to discuss your situation.`,
   },
   {
     id: 'account-deletion',
@@ -303,7 +302,12 @@ export const DELETE_ACCOUNT_SECTIONS = [
       'Tap Delete Account.',
       'Confirm the deletion when prompted.',
     ],
-    footer: 'Your access to your account is revoked immediately after confirmation. Your data is not deleted right away — see the Grace Period section below.',
+    footer: 'Your access to your account is revoked immediately after confirmation. Your data is not deleted right away, see the Grace Period section below.',
+  },
+  {
+    id: 'deleting-individual-data',
+    title: 'Deleting Individual Data You No Longer Need',
+    body: `You do not need to delete your entire account to remove specific data. Items such as customers, orders, garment images, and other records you have created can be deleted directly within the app at any time, using the delete option available on that item. This kind of deletion is immediate and does not go through the 30-day grace period described below, which applies only to full account deletion.`,
   },
   {
     id: 'grace-period',
@@ -347,6 +351,6 @@ export const DELETE_ACCOUNT_SECTIONS = [
   {
     id: 'contact',
     title: 'Contact Us',
-    body: `If you have questions about account deletion, or you'd like to request deletion without using the app, contact us:`,
+    body: `If you do not have access to the app, you can request account deletion or the deletion of other data by emailing us at the address below. Requests for full account deletion made this way follow the same 30-day grace period described above.`,
   },
 ]
