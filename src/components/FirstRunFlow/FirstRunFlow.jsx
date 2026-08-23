@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { useAuth } from '../../contexts/AuthContext'
 import { db } from '../../firebase'
 import { skipOnboarding } from '../../services/profileService'
+import { preloadUpcomingStepImages } from './preloadImages'
 import RoleSelection from './RoleSelection'
 import WelcomeCarousel from './WelcomeCarousel'
 import NotificationPermission from './NotificationPermission'
@@ -22,7 +23,6 @@ function writeCachedCompleted(uid) {
   try {
     localStorage.setItem(CACHE_KEY_PREFIX + uid, 'true')
   } catch {
-    // best-effort cache, safe to skip if storage is unavailable
   }
 }
 
@@ -58,6 +58,10 @@ export default function FirstRunFlow({ onComplete }) {
   const step = STEPS[stepIndex]
 
   useEffect(() => {
+    preloadUpcomingStepImages()
+  }, [])
+
+  useEffect(() => {
     if (step === displayStep) return
     setFading(true)
     const timer = setTimeout(() => {
@@ -86,7 +90,6 @@ export default function FirstRunFlow({ onComplete }) {
     try {
       await skipOnboarding(db, user.uid)
     } catch {
-      // non-blocking: user should not get stuck in onboarding over a network hiccup
     } finally {
       setSkipping(false)
       onComplete()
