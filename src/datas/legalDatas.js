@@ -95,7 +95,6 @@ export const PRIVACY_SECTIONS = [
     bullets: [
       'Automation engine: when you turn on the AI Assistant in Settings, it monitors your orders, invoices, payments, and customer records against the timeframes you configure, for example generating an invoice draft after an order has gone unbilled for the period you set, or preparing a receipt, payment reminder, overdue alert, birthday message, or win-back message. It only prepares drafts. Nothing is sent to your customers, and nothing is deleted, without your review and approval.',
       'Chat assistant: lets you ask questions about your business in plain language, such as checking a customer\u2019s balance or what\u2019s due today. It works entirely on-device using pattern matching against your own stored data; we do not send your messages to any external AI or language model provider to generate a response. Your chat messages are still saved to your account the same way other app data is, so your conversation history is available across your devices.',
-      'Autonomous sending, where an approved draft would be sent automatically through a connected channel such as WhatsApp, Email, or Telegram, is a planned feature and is not active yet. If we launch it, you will need to separately connect a channel and give your consent before anything is sent without your review.',
     ],
     footer: 'You can turn the AI Assistant off at any time from Settings. Turning it off stops the automation engine from creating new drafts; it does not delete drafts or chat history you already have.',
   },
