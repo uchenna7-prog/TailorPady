@@ -120,9 +120,10 @@ export const PRIVACY_SECTIONS = [
     bullets: [
       'Firebase (Google): used for authentication, database storage, hosting, and analytics.',
       'Cloudinary: used for storing and serving profile photos, gallery, and other images.',
-      'Paystack: used to process payment for your TailorPady subscription. Paystack handles your card details directly; we do not store your card information.',
+      'Paystack: used to process subscription payments made through our website. Paystack handles your card details directly; we do not store your card information.',
+      'Google Play Billing: used to process subscription payments made from within the TailorPady Android app. Google handles your payment details directly; we do not store your card or payment information.',
     ],
-    footer: 'These services process your data on our behalf and are bound by their own privacy policies. We encourage you to review the privacy policies of Firebase, Cloudinary, and Paystack if you have concerns about how they handle data.',
+    footer: 'These services process your data on our behalf and are bound by their own privacy policies. We encourage you to review the privacy policies of Firebase, Cloudinary, Paystack, and Google Play if you have concerns about how they handle data.',
   },
   {
     id: 'storage-security',
@@ -200,8 +201,10 @@ export const TERMS_SECTIONS = [
   {
     id: 'subscriptions',
     title: 'Subscription Plans and Payments',
-    body: `TailorPady offers both a free plan and paid subscription plans. Paid plans are billed on a monthly or annual basis as selected at the time of subscription, and processed securely through Paystack.`,
+    body: `TailorPady offers both a free plan and paid subscription plans. Paid plans are billed on a monthly or annual basis as selected at the time of subscription.`,
     bullets: [
+      'If you subscribe through our website, payment is processed securely through Paystack.',
+      'If you subscribe from within the TailorPady Android app, payment is processed securely through Google Play Billing, and your subscription is managed through your Google Play account.',
       'All fees are non-refundable except as described in our Refund and Cancellation Policy.',
       'We reserve the right to change pricing with reasonable notice.',
       'Continued use of the app after a price change constitutes your acceptance of the new pricing.',
@@ -249,13 +252,15 @@ export const REFUND_SECTIONS = [
   {
     id: 'paid-plans',
     title: 'Paid Subscription Plans',
-    body: `TailorPady offers monthly and annual subscription plans, billed securely through Paystack. By subscribing to a paid plan, you authorise us to charge your selected payment method at the beginning of each billing period. All subscription fees are charged in advance.`,
+    body: `TailorPady offers monthly and annual subscription plans. If you subscribe through our website, billing is handled securely through Paystack. If you subscribe from within the TailorPady Android app, billing is handled through Google Play Billing. By subscribing to a paid plan, you authorise the applicable payment provider to charge your selected payment method at the beginning of each billing period. All subscription fees are charged in advance.`,
   },
   {
     id: 'cancellation',
     title: 'Cancellation',
-    body: `You may cancel your paid subscription at any time through the app settings or by contacting us directly.`,
+    body: `You may cancel your paid subscription at any time.`,
     bullets: [
+      'If you subscribed through our website, you can cancel through the app settings or by contacting us directly.',
+      'If you subscribed through the Android app, you can cancel through your Google Play account subscriptions page, since Google manages billing for these subscriptions directly.',
       'Once cancelled, your subscription will remain active until the end of the current billing period.',
       'You will not be charged for the next billing cycle.',
       'Cancellation does not entitle you to a refund for the current or any past billing period.',
@@ -265,7 +270,7 @@ export const REFUND_SECTIONS = [
     id: 'refunds',
     title: 'Refunds',
     body: `All payments made to TailorPady are non-refundable. We do not offer partial refunds for unused portions of a billing period.`,
-    footer: 'If you believe you were charged in error, please contact us within 7 days of the charge and we will investigate and resolve the issue promptly.',
+    footer: 'If you subscribed through our website and believe you were charged in error, please contact us within 7 days of the charge and we will investigate and resolve the issue promptly. If you subscribed through the Android app, refund requests for Google Play purchases are handled through Google Play\u2019s own refund process.',
   },
   {
     id: 'annual-plans',
