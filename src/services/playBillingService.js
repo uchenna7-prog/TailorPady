@@ -44,30 +44,37 @@ export async function startPlayBillingPayment({ uid, billingCycle, onSuccess, on
     return
   }
 
+  let request
   try {
-    const request = new PaymentRequest(
+    request = new PaymentRequest(
       [{ supportedMethods: PLAY_BILLING_METHOD, data: { sku: itemId } }],
       { total: { label: 'Total', amount: { currency: 'NGN', value: '0' } } }
     )
+  } catch (err) {
+    onError?.(err)
+    return
+  }
 
-    const canMakePayment = await request.canMakePayment()
-    if (!canMakePayment) {
-      onError?.(new Error('Play Billing is not available on this device'))
-      return
-    }
-
-    const paymentResponse = await request.show()
-    const purchaseToken = paymentResponse.details.purchaseToken
-
-    await paymentResponse.complete('success')
-
-    const data = await verifyPlayPurchase({ purchaseToken, uid, billingCycle })
-    onSuccess?.({ billingCycle, ...data })
+  let paymentResponse
+  try {
+    paymentResponse = await request.show()
   } catch (err) {
     if (err?.name === 'AbortError') {
       onClose?.()
       return
     }
+    onError?.(err)
+    return
+  }
+
+  try {
+    const purchaseToken = paymentResponse.details.purchaseToken
+    await paymentResponse.complete('success')
+
+    const data = await verifyPlayPurchase({ purchaseToken, uid, billingCycle })
+    onSuccess?.({ billingCycle, ...data })
+  } catch (err) {
+    await paymentResponse.complete('fail').catch(() => {})
     onError?.(err)
   }
 }
