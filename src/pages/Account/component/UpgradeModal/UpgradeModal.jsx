@@ -1,6 +1,7 @@
 import { useState, useRef } from 'react'
 import { useAuth } from '../../../../contexts/AuthContext'
 import { startPaystackPayment } from '../../../../services/paystackService'
+import { startPlayBillingPayment, isPlayBillingAvailable } from '../../../../services/playBillingService'
 import { FREE_FEATURES, PRO_FEATURES } from '../../../../config/planFeatures'
 import Header from '../../../../components/Header/Header'
 import styles from './UpgradeModal.module.css'
@@ -21,6 +22,8 @@ export default function UpgradeModal({ onClose, onSuccess, initialTab = 'free' }
   const scrollRef = useRef(null)
   const touchStartX = useRef(null)
   const touchStartY = useRef(null)
+
+  const usingPlayBilling = isPlayBillingAvailable()
 
   const handleTab = (key) => {
     setActive(key)
@@ -62,10 +65,7 @@ export default function UpgradeModal({ onClose, onSuccess, initialTab = 'free' }
     setErrorMsg('')
     setPayingPlan(billingCycle)
 
-    startPaystackPayment({
-      email: user.email,
-      uid: user.uid,
-      billingCycle,
+    const handlers = {
       onSuccess: (data) => {
         setPayingPlan(null)
         onSuccess?.({ billingCycle, ...data })
@@ -77,7 +77,13 @@ export default function UpgradeModal({ onClose, onSuccess, initialTab = 'free' }
       onClose: () => {
         setPayingPlan(null)
       },
-    })
+    }
+
+    if (usingPlayBilling) {
+      startPlayBillingPayment({ uid: user.uid, billingCycle, ...handlers })
+    } else {
+      startPaystackPayment({ email: user.email, uid: user.uid, billingCycle, ...handlers })
+    }
   }
 
   return (
