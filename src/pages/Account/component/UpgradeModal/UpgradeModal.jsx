@@ -65,17 +65,30 @@ export default function UpgradeModal({ onClose, onSuccess, initialTab = 'free' }
     setErrorMsg('')
     setPayingPlan(billingCycle)
 
+    const handleUnexpected = (event) => {
+      const message = event.reason?.message || event.message || 'Unknown error'
+      window.alert(`Unexpected payment error: ${message}`)
+      setPayingPlan(null)
+      window.removeEventListener('unhandledrejection', handleUnexpected)
+    }
+    window.addEventListener('unhandledrejection', handleUnexpected)
+
     const handlers = {
       onSuccess: (data) => {
         setPayingPlan(null)
+        window.removeEventListener('unhandledrejection', handleUnexpected)
         onSuccess?.({ billingCycle, ...data })
       },
       onError: (err) => {
         setPayingPlan(null)
-        setErrorMsg(err.message || 'Something went wrong, please try again')
+        window.removeEventListener('unhandledrejection', handleUnexpected)
+        const message = err?.message || 'Something went wrong, please try again'
+        setErrorMsg(message)
+        window.alert(`Payment error: ${message}`)
       },
       onClose: () => {
         setPayingPlan(null)
+        window.removeEventListener('unhandledrejection', handleUnexpected)
       },
     }
 
