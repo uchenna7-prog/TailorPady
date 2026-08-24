@@ -31,6 +31,7 @@ export default function WelcomeCarousel({ onDone, onSkip }) {
   const touchStartX = useRef(null)
 
   const isLast = index === SLIDES.length - 1
+  const isFirst = index === 0
 
   function goToNext() {
     if (isLast) {
@@ -114,9 +115,21 @@ export default function WelcomeCarousel({ onDone, onSkip }) {
         ))}
       </div>
 
-      <div className={styles.footer}>
-        <button className={styles.primaryBtn} onClick={goToNext}>
-          {isLast ? 'Continue' : 'Next'}
+      <div className={styles.navFooter}>
+        <button
+          type="button"
+          className={`${styles.backBtn} ${isFirst ? styles.backBtnHidden : ''}`}
+          onClick={goToPrev}
+        >
+          Back
+        </button>
+        <button
+          type="button"
+          className={styles.arrowBtn}
+          onClick={goToNext}
+          aria-label={isLast ? 'Continue' : 'Next'}
+        >
+          <span className="mi-outlined">arrow_forward</span>
         </button>
       </div>
     </div>
