@@ -25,7 +25,9 @@ import {
   matchCustomerCandidates,
   isAmbiguousMatch,
   containsPronoun,
+  isCancelText,
   extractEntities,
+  extractGarmentDescFallback,
   parseMoney,
   parseDate,
   formatMoney,
@@ -39,7 +41,27 @@ import {
 
 const FLOW_INTENTS = ['add_order', 'gen_invoice', 'record_payment', 'add_task', 'add_appt']
 const CUSTOMER_QUERY_INTENTS = ['query_customer', 'query_contact', 'check_measurements', 'update_status']
-const AWAITING_CUSTOMER_INTENTS = ['query_customer', 'query_contact', 'check_measurements']
+const FREE_TEXT_STEP_KEYS = ['customerName', 'desc']
+
+const STATUS_MAP = {
+  ready: 'completed',
+  complete: 'completed',
+  completed: 'completed',
+  deliver: 'delivered',
+  delivered: 'delivered',
+  cancel: 'cancelled',
+  cancelled: 'cancelled',
+  'in progress': 'in-progress',
+  started: 'in-progress',
+}
+
+function parseStatusKeyword(text) {
+  const lower = text.toLowerCase()
+  for (const [keyword, status] of Object.entries(STATUS_MAP)) {
+    if (lower.includes(keyword)) return status
+  }
+  return null
+}
 
 function findCustomer(customers, nameHint) {
   if (!nameHint) return null
@@ -184,6 +206,7 @@ export function AgentProvider({ children }) {
   const [activeFlow,    setActiveFlow]    = useState(null)
   const [pendingChoice, setPendingChoice] = useState(null)
   const lastCustomerRef = useRef(null)
+  const busyRef         = useRef(false)
 
   useEffect(() => {
     if (!user) { setIsLoading(false); return }
@@ -264,15 +287,6 @@ export function AgentProvider({ children }) {
   }
 
   async function executeFlow(flow) {
-    if (hasReachedLimit('aiActionsPerMonth', 'aiActionsPerMonth')) {
-      await agentReply(
-        `You've hit the free plan limit of ${limits.aiActionsPerMonth} AI assistant actions this month. Upgrade to Premium for unlimited actions.`,
-        null,
-        [{ label: 'Upgrade to Premium', action: 'navigate', payload: { route: '/upgrade' } }]
-      )
-      return
-    }
-
     const { name, data } = flow
     switch (name) {
       case 'add_order':      await executeAddOrder(data); break
@@ -371,6 +385,18 @@ export function AgentProvider({ children }) {
     }
   }
 
+  async function executeGenInvoiceForOrder(order, customer) {
+    const currencySymbol = generalSettings.invoiceCurrency?.symbol || '₦'
+    await agentReply(
+      `Found an uninvoiced order for ${customer.name}:\n📦 **${order.desc}** · ${formatMoney(order.totalAmount || order.price, currencySymbol)}\n\nHead to the Invoices page to generate and send it.`,
+      null,
+      [
+        { label: 'Go to Invoices', action: 'navigate', payload: { route: '/invoices' } },
+        { label: 'Cancel',         action: 'cancel' },
+      ]
+    )
+  }
+
   async function executeGenInvoice(data) {
     const customer = findCustomer(customers, data.customerName)
     if (!customer) {
@@ -380,7 +406,7 @@ export function AgentProvider({ children }) {
 
     lastCustomerRef.current = customer.id
 
-    const customerOrders   = allOrders.filter(o => o.customerId === customer.id && o.status !== 'cancelled')
+    const customerOrders = allOrders.filter(o => o.customerId === customer.id && o.status !== 'cancelled')
     if (!customerOrders.length) {
       await agentReply(`${customer.name} doesn't have any active orders to invoice right now.`)
       return
@@ -398,17 +424,18 @@ export function AgentProvider({ children }) {
       return
     }
 
-    const order          = uninvoicedOrders[0]
-    const currencySymbol = generalSettings.invoiceCurrency?.symbol || '₦'
+    if (uninvoicedOrders.length > 1) {
+      const candidates = uninvoicedOrders.slice(0, 5)
+      setPendingChoice({ kind: 'order_disambiguation', resumeKind: 'gen_invoice', customerId: customer.id, candidates })
+      await agentReply(
+        `${customer.name} has more than one uninvoiced order — which one?`,
+        null,
+        candidates.map(o => ({ label: o.desc || 'Order', action: 'select_order', payload: { orderId: o.id } }))
+      )
+      return
+    }
 
-    await agentReply(
-      `Found an uninvoiced order for ${customer.name}:\n📦 **${order.desc}** · ${formatMoney(order.totalAmount || order.price, currencySymbol)}\n\nHead to the Invoices page to generate and send it.`,
-      null,
-      [
-        { label: 'Go to Invoices', action: 'navigate', payload: { route: '/invoices' } },
-        { label: 'Cancel',         action: 'cancel' },
-      ]
-    )
+    await executeGenInvoiceForOrder(uninvoicedOrders[0], customer)
   }
 
   async function executeRecordPayment(data) {
@@ -479,10 +506,69 @@ export function AgentProvider({ children }) {
     return { totalOwed, totalPaid, balance: totalOwed - totalPaid, unpaidCount: customerInvoices.length }
   }
 
+  async function executeStatusUpdateOnOrder(order, customerName, newStatus) {
+    try {
+      await updateOrderStatus(order.id, newStatus)
+      await agentReply(`✅ **${order.desc}** for ${customerName} has been marked as ${newStatus}.`)
+    } catch {
+      await agentReply("Couldn't update that order. Please try from the Orders page.")
+    }
+  }
+
+  async function performStatusUpdate(customer, newStatus) {
+    lastCustomerRef.current = customer.id
+    const customerOrders = allOrders.filter(o =>
+      o.customerId === customer.id && !['completed', 'delivered', 'cancelled'].includes(o.status)
+    )
+
+    if (!customerOrders.length) {
+      await agentReply(`${customer.name} doesn't have any active orders to update.`)
+      return
+    }
+
+    if (customerOrders.length > 1) {
+      const candidates = customerOrders.slice(0, 5)
+      setPendingChoice({ kind: 'order_disambiguation', resumeKind: 'update_status', customerId: customer.id, newStatus, candidates })
+      await agentReply(
+        `${customer.name} has more than one active order — which one?`,
+        null,
+        candidates.map(o => ({ label: o.desc || 'Order', action: 'select_order', payload: { orderId: o.id } }))
+      )
+      return
+    }
+
+    const order = customerOrders[0]
+
+    if (newStatus === 'cancelled') {
+      setPendingChoice({ kind: 'confirm_status_update', orderId: order.id, orderDesc: order.desc, customerName: customer.name, newStatus })
+      await agentReply(
+        `Mark **${order.desc}** for ${customer.name} as cancelled? This can't be undone from here.`,
+        null,
+        [
+          { label: 'Yes, cancel it', action: 'confirm_status_update' },
+          { label: 'No, keep it', action: 'cancel' },
+        ]
+      )
+      return
+    }
+
+    await executeStatusUpdateOnOrder(order, customer.name, newStatus)
+  }
+
   async function handleQuery(intent, text, context = {}) {
     const currencySymbol = generalSettings.invoiceCurrency?.symbol || '₦'
 
     switch (intent) {
+
+      case 'greeting': {
+        await agentReply('Hey! What can I help you with today?')
+        break
+      }
+
+      case 'thanks': {
+        await agentReply("Anytime! Let me know if there's anything else.")
+        break
+      }
 
       case 'help': {
         await agentReply(buildHelpText(customers))
@@ -736,48 +822,22 @@ export function AgentProvider({ children }) {
       }
 
       case 'update_status': {
-        const customer = context.customer || matchCustomer(customers, text)?.customer
+        const customer  = context.customer || matchCustomer(customers, text)?.customer
+        const newStatus = parseStatusKeyword(text)
 
-        const statusMap = {
-          ready:         'completed',
-          complete:      'completed',
-          completed:     'completed',
-          deliver:       'delivered',
-          delivered:     'delivered',
-          cancel:        'cancelled',
-          cancelled:     'cancelled',
-          'in progress': 'in-progress',
-          started:       'in-progress',
-        }
-
-        let newStatus = null
-        for (const [keyword, status] of Object.entries(statusMap)) {
-          if (text.toLowerCase().includes(keyword)) { newStatus = status; break }
-        }
-
-        if (!customer || !newStatus) {
-          await agentReply("I need a customer name and a new status to update. For example: \"Mark Emeka's order as ready\".")
+        if (!customer) {
+          setPendingChoice({ kind: 'awaiting_customer_name', intent: 'update_status' })
+          await agentReply("Which customer's order would you like to update?")
           return
         }
 
-        lastCustomerRef.current = customer.id
-
-        const customerOrders = allOrders.filter(o =>
-          o.customerId === customer.id && !['completed', 'delivered', 'cancelled'].includes(o.status)
-        )
-
-        if (!customerOrders.length) {
-          await agentReply(`${customer.name} doesn't have any active orders to update.`)
+        if (!newStatus) {
+          setPendingChoice({ kind: 'awaiting_status', customerId: customer.id })
+          await agentReply(`What should ${customer.name}'s order status be? (ready / delivered / in progress / cancelled)`)
           return
         }
 
-        const order = customerOrders[0]
-        try {
-          await updateOrderStatus(order.id, newStatus)
-          await agentReply(`✅ **${order.desc}** for ${customer.name} has been marked as ${newStatus}.`)
-        } catch {
-          await agentReply("Couldn't update that order. Please try from the Orders page.")
-        }
+        await performStatusUpdate(customer, newStatus)
         break
       }
 
@@ -786,53 +846,27 @@ export function AgentProvider({ children }) {
     }
   }
 
-  const sendMessage = useCallback(async (text) => {
-    if (!text.trim()) return
-
-    const trimmed = text.trim()
-    const priorPendingChoice = pendingChoice
-
-    addMessage(makeUserMsg(trimmed))
-    setPendingChoice(null)
-
-    if (activeFlow) {
-      const handled = await advanceFlow(trimmed)
-      if (handled) return
-    }
-
-    if (priorPendingChoice?.kind === 'awaiting_customer_name') {
-      const { intent } = priorPendingChoice
-      const candidates = matchCustomerCandidates(customers, trimmed)
-
-      if (isAmbiguousMatch(candidates)) {
-        const top = candidates.slice(0, 4)
-        setPendingChoice({ kind: 'customer_disambiguation', resumeKind: 'query', intent, text: trimmed, candidates: top })
-        await agentReply(
-          "I found a few customers that could match — who did you mean?",
-          null,
-          top.map(c => ({ label: c.customer.name, action: 'select_customer', payload: { customerId: c.customer.id } }))
-        )
-        return
-      }
-
-      const customer = candidates.length ? candidates[0].customer : null
-
-      if (!customer) {
-        setPendingChoice({ kind: 'awaiting_customer_name', intent })
-        await agentReply(`I couldn't find a customer called "${trimmed}". Try their full name, or check the Customers page.`)
-        return
-      }
-
-      await handleQuery(intent, trimmed, { customer })
-      return
-    }
-
+  async function routeIntent(trimmed) {
     const { intent } = classifyIntent(trimmed)
 
     if (intent === 'unknown') { await handleQuery('unknown', trimmed); return }
 
     if (FLOW_INTENTS.includes(intent)) {
+      if (hasReachedLimit('aiActionsPerMonth', 'aiActionsPerMonth')) {
+        await agentReply(
+          `You've hit the free plan limit of ${limits.aiActionsPerMonth} AI assistant actions this month. Upgrade to Premium for unlimited actions.`,
+          null,
+          [{ label: 'Upgrade to Premium', action: 'navigate', payload: { route: '/upgrade' } }]
+        )
+        return
+      }
+
       const entities = extractEntities(trimmed, customers)
+
+      if (intent === 'add_order' && !entities.desc) {
+        const fallbackDesc = extractGarmentDescFallback(trimmed, entities.customerName)
+        if (fallbackDesc) entities.desc = fallbackDesc
+      }
 
       if (isAmbiguousMatch(entities.customerCandidates)) {
         const candidates = entities.customerCandidates.slice(0, 4)
@@ -887,7 +921,103 @@ export function AgentProvider({ children }) {
     }
 
     await handleQuery(intent, trimmed)
-  }, [pendingChoice, activeFlow, customers, allOrders, allInvoices, allPayments, tasks, generalSettings]) // eslint-disable-line
+  }
+
+  const sendMessage = useCallback(async (text) => {
+    if (!text.trim() || busyRef.current) return
+    busyRef.current = true
+
+    try {
+      const trimmed = text.trim()
+      const priorPendingChoice = pendingChoice
+
+      addMessage(makeUserMsg(trimmed))
+      setPendingChoice(null)
+
+      if (activeFlow) {
+        if (isCancelText(trimmed)) {
+          setActiveFlow(null)
+          await agentReply('No problem — cancelled. What else can I help with?')
+          return
+        }
+
+        const step = FLOWS[activeFlow.name][activeFlow.stepIdx]
+
+        if (FREE_TEXT_STEP_KEYS.includes(step.key)) {
+          const { intent: interruptIntent, score } = classifyIntent(trimmed)
+          const isInterrupt = score >= 8 && (FLOW_INTENTS.includes(interruptIntent) || CUSTOMER_QUERY_INTENTS.includes(interruptIntent))
+
+          if (isInterrupt) {
+            setPendingChoice({ kind: 'flow_interrupt', pendingText: trimmed })
+            await agentReply(
+              "You're partway through something — want to continue that, or handle this new request instead?",
+              null,
+              [
+                { label: 'Continue', action: 'continue_flow' },
+                { label: 'Handle this instead', action: 'switch_flow' },
+              ]
+            )
+            return
+          }
+        }
+
+        const handled = await advanceFlow(trimmed)
+        if (handled) return
+      }
+
+      if (priorPendingChoice?.kind === 'awaiting_customer_name') {
+        const { intent } = priorPendingChoice
+        const candidates = matchCustomerCandidates(customers, trimmed)
+
+        if (isAmbiguousMatch(candidates)) {
+          const top = candidates.slice(0, 4)
+          setPendingChoice({ kind: 'customer_disambiguation', resumeKind: 'query', intent, text: trimmed, candidates: top })
+          await agentReply(
+            "I found a few customers that could match — who did you mean?",
+            null,
+            top.map(c => ({ label: c.customer.name, action: 'select_customer', payload: { customerId: c.customer.id } }))
+          )
+          return
+        }
+
+        const customer = candidates.length ? candidates[0].customer : null
+
+        if (!customer) {
+          setPendingChoice({ kind: 'awaiting_customer_name', intent })
+          await agentReply(`I couldn't find a customer called "${trimmed}". Try their full name, or check the Customers page.`)
+          return
+        }
+
+        await handleQuery(intent, trimmed, { customer })
+        return
+      }
+
+      if (priorPendingChoice?.kind === 'awaiting_status') {
+        const customer = customers.find(c => c.id === priorPendingChoice.customerId)
+
+        if (!customer) {
+          setPendingChoice({ kind: 'awaiting_customer_name', intent: 'update_status' })
+          await agentReply("I lost track of which customer that was — which customer's order would you like to update?")
+          return
+        }
+
+        const newStatus = parseStatusKeyword(trimmed)
+
+        if (!newStatus) {
+          setPendingChoice({ kind: 'awaiting_status', customerId: customer.id })
+          await agentReply("I didn't catch that. Try: ready, delivered, in progress, or cancelled.")
+          return
+        }
+
+        await performStatusUpdate(customer, newStatus)
+        return
+      }
+
+      await routeIntent(trimmed)
+    } finally {
+      busyRef.current = false
+    }
+  }, [pendingChoice, activeFlow, customers, allOrders, allInvoices, allPayments, tasks, generalSettings])
 
   const handleAction = useCallback(async (action, payload) => {
     switch (action) {
@@ -929,16 +1059,70 @@ export function AgentProvider({ children }) {
         }
         break
       }
+      case 'select_order': {
+        if (!pendingChoice || pendingChoice.kind !== 'order_disambiguation') break
+        const choice = pendingChoice
+        setPendingChoice(null)
+        const order = choice.candidates.find(o => o.id === payload.orderId)
+        const customer = customers.find(c => c.id === choice.customerId)
+        if (!order || !customer) break
+
+        if (choice.resumeKind === 'gen_invoice') {
+          await executeGenInvoiceForOrder(order, customer)
+        } else if (choice.resumeKind === 'update_status') {
+          if (choice.newStatus === 'cancelled') {
+            setPendingChoice({ kind: 'confirm_status_update', orderId: order.id, orderDesc: order.desc, customerName: customer.name, newStatus: choice.newStatus })
+            await agentReply(
+              `Mark **${order.desc}** for ${customer.name} as cancelled? This can't be undone from here.`,
+              null,
+              [
+                { label: 'Yes, cancel it', action: 'confirm_status_update' },
+                { label: 'No, keep it', action: 'cancel' },
+              ]
+            )
+          } else {
+            await executeStatusUpdateOnOrder(order, customer.name, choice.newStatus)
+          }
+        }
+        break
+      }
+      case 'confirm_status_update': {
+        if (!pendingChoice || pendingChoice.kind !== 'confirm_status_update') break
+        const { orderId, customerName, newStatus } = pendingChoice
+        setPendingChoice(null)
+        try {
+          await updateOrderStatus(orderId, newStatus)
+          await agentReply(`✅ Order for ${customerName} has been marked as ${newStatus}.`)
+        } catch {
+          await agentReply("Couldn't update that order. Please try from the Orders page.")
+        }
+        break
+      }
+      case 'continue_flow': {
+        if (!pendingChoice || pendingChoice.kind !== 'flow_interrupt') break
+        const { pendingText } = pendingChoice
+        setPendingChoice(null)
+        await advanceFlow(pendingText)
+        break
+      }
+      case 'switch_flow': {
+        if (!pendingChoice || pendingChoice.kind !== 'flow_interrupt') break
+        const { pendingText } = pendingChoice
+        setPendingChoice(null)
+        setActiveFlow(null)
+        await routeIntent(pendingText)
+        break
+      }
       default:
         break
     }
-  }, [pendingChoice, customers]) // eslint-disable-line
+  }, [pendingChoice, customers])
 
   const cancelFlow = useCallback(async () => {
     setActiveFlow(null)
     setPendingChoice(null)
     await agentReply('Got it, cancelled. What else do you need?')
-  }, []) // eslint-disable-line
+  }, [])
 
   const clearHistory = useCallback(async () => {
     if (!user) return
