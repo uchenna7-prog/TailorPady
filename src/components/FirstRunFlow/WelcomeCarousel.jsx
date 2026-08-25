@@ -76,6 +76,15 @@ export default function WelcomeCarousel({ onDone, onSkip }) {
         Skip
       </button>
 
+      <div className={styles.progressRow}>
+        {SLIDES.map((_, i) => (
+          <span
+            key={i}
+            className={`${styles.progressSeg} ${i === index ? styles.progressSegActive : ''}`}
+          />
+        ))}
+      </div>
+
       <div
         className={styles.viewport}
         onTouchStart={handleTouchStart}
@@ -91,28 +100,16 @@ export default function WelcomeCarousel({ onDone, onSkip }) {
         >
           {SLIDES.map(item => (
             <div key={item.title} className={styles.slideItem}>
+              <div className={styles.textBlock}>
+                <h1 className={styles.title}>{item.title}</h1>
+                <p className={styles.sub}>{item.sub}</p>
+              </div>
               <div className={styles.backdrop}>
                 <img src={item.image} alt={item.title} className={styles.image} draggable={false} />
               </div>
-              <h1 className={styles.title}>{item.title}</h1>
-              <p className={styles.sub}>{item.sub}</p>
             </div>
           ))}
         </div>
-      </div>
-
-      <div className={styles.dotsRow}>
-        {SLIDES.map((_, i) => (
-          <button
-            key={i}
-            type="button"
-            className={styles.dotBtn}
-            onClick={() => setIndex(i)}
-            aria-label={`Go to slide ${i + 1}`}
-          >
-            <span className={`${styles.dot} ${i === index ? styles.dotActive : ''}`} />
-          </button>
-        ))}
       </div>
 
       <div className={styles.navFooter}>
