@@ -33,6 +33,7 @@ function AgentChat() {
 
   function routeAction(action, payload) {
     if (action === 'navigate') { navigate(payload.route); return }
+    if (action === 'fill_prompt') { setInputValue(payload.prompt); return }
     handleAction(action, payload)
   }
 
