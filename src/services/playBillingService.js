@@ -46,13 +46,11 @@ export async function startPlayBillingPayment({ uid, billingCycle, onSuccess, on
 
   let request
   try {
-    window.alert(`Attempting purchase for item: ${itemId}`)
     request = new PaymentRequest(
       [{ supportedMethods: PLAY_BILLING_METHOD, data: { sku: itemId } }],
       { total: { label: 'Total', amount: { currency: 'NGN', value: '0' } } }
     )
   } catch (err) {
-    window.alert(`Construction failed: ${err?.name || 'Unknown'} — ${err?.message || 'no message'}`)
     onError?.(err)
     return
   }
@@ -61,7 +59,6 @@ export async function startPlayBillingPayment({ uid, billingCycle, onSuccess, on
   try {
     paymentResponse = await request.show()
   } catch (err) {
-    window.alert(`Show failed: ${err?.name || 'Unknown'} — ${err?.message || 'no message'}`)
     if (err?.name === 'AbortError') {
       onClose?.()
       return
