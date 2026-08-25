@@ -26,7 +26,7 @@ import UpgradeModal from './component/UpgradeModal/UpgradeModal'
 import BillingHistoryModal from './component/BillingHistoryModal/BillingHistoryModal'
 import UsageModal from './component/UsageModal/UsageModal'
 import ManagePlanModal from './component/ManagePlanModal/ManagePlanModal'
-import { getJoinDate, loadPersonalInfo, savePersonalInfoLocally } from './utils'
+import { loadPersonalInfo, savePersonalInfoLocally } from './utils'
 import BottomNav from '../../components/BottomNav/BottomNav'
 import Header from '../../components/Header/Header'
 import Toast from '../../components/Toast/Toast'
@@ -60,8 +60,6 @@ export default function Account({ onMenuClick, isPremium = false, onUpgrade = ()
   const [returnTo, setReturnTo] = useState(null)
   const [awaitingProfileTourAdvance, setAwaitingProfileTourAdvance] = useState(false)
   const toastTimer = useRef(null)
-
-  const joinDate = getJoinDate(user)
 
   const hasBrand = !!(profileSettings.brandName || profileSettings.brandLogo)
   const hasBusinessInfo = !!(profileSettings.brandPhone || profileSettings.brandEmail || profileSettings.brandAddress)
@@ -309,12 +307,6 @@ export default function Account({ onMenuClick, isPremium = false, onUpgrade = ()
             </div>
           </div>
           <div className={styles.heroMeta}>
-            {joinDate && (
-              <div className={styles.heroMetaItem}>
-                <span className="mi-outlined" style={{ fontSize: '0.85rem', color: 'var(--text3)' }}>calendar_today</span>
-                <span className={styles.heroMetaLabel}>Joined {joinDate}</span>
-              </div>
-            )}
             {(personalInfo.email || user?.email) && (
               <div className={styles.heroMetaItem}>
                 <span className="mi-outlined" style={{ fontSize: '0.85rem', color: 'var(--text3)' }}>mail</span>
@@ -348,7 +340,7 @@ export default function Account({ onMenuClick, isPremium = false, onUpgrade = ()
               <div className={styles.upgradeBannerTitle}>Upgrade to Pro</div>
               <div className={styles.upgradeBannerSub}>Unlimited customers, invoices &amp; more</div>
             </div>
-            <span className="mi-outlined" style={{ fontSize: '1.3rem', color: 'var(--brand-on-primary)' }}>chevron_right</span>
+            <span className="mi-outlined" style={{ fontSize: '1.3rem', color: 'var(--text3)' }}>chevron_right</span>
           </div>
         )}
 
