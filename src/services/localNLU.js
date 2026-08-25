@@ -614,15 +614,18 @@ export function classifyIntent(text) {
   return best
 }
 
-export const HELP_TEXT = [
-  "Here's what I can help you with:",
-  '',
-  '📦 **Orders** — "Add an order for Uchenna", "What orders are due today?"',
-  '🧾 **Invoices** — "Generate invoice for Bola", "Any overdue invoices?"',
-  '💰 **Payments** — "Emeka just paid 15k", "Who owes me money?"',
-  '👥 **Customers** — "How much does Bola owe?", "Top customers this month"',
-  '✅ **Tasks** — "Remind me to call Ada tomorrow", "Any overdue tasks?"',
-  '📊 **Business** — "How am I doing today?", "How much did I make this week?"',
-  '',
-  'Just type naturally — I\'ll do my best to figure it out.',
-].join('\n')
+export function buildHelpText(customers) {
+  const name = customers?.[0]?.name || 'a customer'
+  return [
+    "Here's what I can help you with:",
+    '',
+    `📦 **Orders** — "Add an order for ${name}", "What orders are due today?"`,
+    `🧾 **Invoices** — "Generate invoice for ${name}", "Any overdue invoices?"`,
+    `💰 **Payments** — "${name} just paid 15k", "Who owes me money?"`,
+    `👥 **Customers** — "How much does ${name} owe?", "Top customers this month"`,
+    '✅ **Tasks** — "Remind me to call a customer tomorrow", "Any overdue tasks?"',
+    '📊 **Business** — "How am I doing today?", "How much did I make this week?"',
+    '',
+    "Just type naturally — I'll do my best to figure it out.",
+  ].join('\n')
+}
