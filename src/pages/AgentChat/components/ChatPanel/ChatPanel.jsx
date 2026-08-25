@@ -6,7 +6,6 @@ import { haptic } from '../../utils'
 import { BotIcon } from '../../../../components/BotIcon/BotIcon'
 import styles from './ChatPanel.module.css'
 
-
 export const SUGGESTION_CHIPS = [
   { label: 'Add order',        prompt: 'Add an order for '       },
   { label: 'Record payment',   prompt: 'just paid ₦'             },
@@ -23,6 +22,8 @@ const FLOW_LABELS = {
   add_task: 'Adding task',
   add_appt: 'Booking appointment',
 }
+
+const MAX_MESSAGE_LENGTH = 500
 
 export function ChatPanel({
   messages,
@@ -45,22 +46,26 @@ export function ChatPanel({
   }, [messages, isTyping])
 
   function handleKeyDown(e) {
-    if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); onSend() }
+    if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); if (!isTyping) onSend() }
   }
 
   function handleChipTap(prompt) {
+    if (isTyping) return
     haptic('light')
     setInputValue(prompt)
     inputRef.current?.focus()
   }
 
   const showChips = !activeFlow && messages.length === 0 && !isLoading
+  const canSend = inputValue.trim().length > 0 && !isTyping
 
   return (
     <div className={styles.chatPanel}>
       {activeFlow && (
         <div className={styles.chatFlowBar}>
-          <MIcon name="pending" size="0.75rem" color="var(--accent)" />
+          <span aria-hidden="true">
+            <MIcon name="pending" size="0.75rem" color="var(--accent)" />
+          </span>
           <span className={styles.chatFlowLabel}>
             {FLOW_LABELS[activeFlow.name] || 'In progress'}
           </span>
@@ -73,7 +78,7 @@ export function ChatPanel({
         </div>
       )}
 
-      <div className={styles.chatMessages}>
+      <div className={styles.chatMessages} role="log" aria-live="polite" aria-relevant="additions">
         {isLoading && (
           <div className={styles.chatLoadingWrap}>
             <div className={styles.loadingDots}><span /><span /><span /></div>
@@ -111,6 +116,7 @@ export function ChatPanel({
                 key={chip.label}
                 className={styles.chip}
                 onClick={() => handleChipTap(chip.prompt)}
+                disabled={isTyping}
               >
                 {chip.label}
               </button>
@@ -119,13 +125,18 @@ export function ChatPanel({
         )}
 
         <div className={styles.chatInputWrap}>
-          <BotIcon size={"1.5rem"} color={"var(--text3)"} />
+          <span aria-hidden="true">
+            <BotIcon size={"1.5rem"} color={"var(--text3)"} />
+          </span>
           <textarea
             ref={inputRef}
             className={styles.chatInputField}
             placeholder={activeFlow ? 'Type your answer...' : 'Message...'}
+            aria-label="Message"
             value={inputValue}
             rows={1}
+            maxLength={MAX_MESSAGE_LENGTH}
+            disabled={isTyping}
             onChange={e => {
               setInputValue(e.target.value)
               e.target.style.height = 'auto'
@@ -134,9 +145,10 @@ export function ChatPanel({
             onKeyDown={handleKeyDown}
           />
           <button
-            className={`${styles.chatSendBtn} ${inputValue.trim() ? styles.chatSendBtnActive : ''}`}
+            className={`${styles.chatSendBtn} ${canSend ? styles.chatSendBtnActive : ''}`}
             onClick={onSend}
-            disabled={!inputValue.trim()}
+            disabled={!canSend}
+            aria-label="Send message"
           >
             <MIcon name="arrow_upward" size="0.85rem" color="var(--bg)" />
           </button>
