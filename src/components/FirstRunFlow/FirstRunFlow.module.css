@@ -35,6 +35,25 @@
   opacity: 0.6;
 }
 
+.progressRow {
+  display: flex;
+  gap: 6px;
+  padding: 0 24px;
+  flex-shrink: 0;
+}
+
+.progressSeg {
+  flex: 1;
+  height: 4px;
+  border-radius: 999px;
+  background: var(--border2);
+  transition: background 220ms ease;
+}
+
+.progressSegActive {
+  background: var(--accent);
+}
+
 .viewport {
   flex: 1;
   min-height: 0;
@@ -70,35 +89,36 @@
   to   { opacity: 1; transform: translateY(0); }
 }
 
+.textBlock {
+  flex-shrink: 0;
+  padding-top: 18px;
+}
+
 .title {
-  font-size: 1.5rem;
+  font-size: 0.98rem;
   font-weight: 800;
   color: var(--text);
-  text-align: center;
-  margin: 22px 24px 8px;
-  line-height: 1.28;
-  flex-shrink: 0;
+  text-align: left;
+  margin: 0 24px 6px;
+  line-height: 1.3;
 }
 
 .sub {
-  font-size: 0.85rem;
+  font-size: 0.82rem;
   color: var(--text3);
-  text-align: center;
-  margin: 0 30px 0;
+  text-align: left;
+  margin: 0 24px 0;
   line-height: 1.5;
-  flex-shrink: 0;
 }
 
 .backdrop {
-  height: 48vh;
-  max-height: 440px;
-  min-height: 280px;
+  flex: 1;
   display: flex;
   align-items: center;
   justify-content: center;
   margin: 0 8px;
   position: relative;
-  flex-shrink: 0;
+  min-height: 0;
   touch-action: pan-y;
 }
 
