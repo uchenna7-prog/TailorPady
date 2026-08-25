@@ -348,7 +348,7 @@ export default function Account({ onMenuClick, isPremium = false, onUpgrade = ()
               <div className={styles.upgradeBannerTitle}>Upgrade to Pro</div>
               <div className={styles.upgradeBannerSub}>Unlimited customers, invoices &amp; more</div>
             </div>
-            <span className="mi-outlined" style={{ fontSize: '1.3rem', color: '#fff' }}>chevron_right</span>
+            <span className="mi-outlined" style={{ fontSize: '1.3rem', color: 'var(--brand-on-primary)' }}>chevron_right</span>
           </div>
         )}
 
