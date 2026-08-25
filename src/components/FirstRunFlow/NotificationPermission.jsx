@@ -12,7 +12,6 @@ export default function NotificationPermission({ onDone, onSkip }) {
     try {
       await requestPushPermission()
     } catch {
-      // non-blocking: user should still continue even if the subscription failed
     }
     setRequesting(false)
     onDone()
@@ -25,14 +24,16 @@ export default function NotificationPermission({ onDone, onSkip }) {
       </button>
 
       <div className={styles.slideTrack}>
+        <div className={styles.textBlock}>
+          <h1 className={styles.title}>Stay Updated</h1>
+          <p className={styles.sub}>
+            Get timely reminders for appointments, unpaid bills, tasks, and important updates.
+          </p>
+        </div>
+
         <div className={styles.backdrop}>
           <img src={notificationsImage} alt="Notifications preview" className={styles.image} draggable={false} />
         </div>
-
-        <h1 className={styles.title}>Stay Updated</h1>
-        <p className={styles.sub}>
-          Get timely reminders for appointments, unpaid bills, tasks, and important updates.
-        </p>
       </div>
 
       <div className={styles.footer}>
