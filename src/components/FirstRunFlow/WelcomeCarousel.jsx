@@ -112,17 +112,15 @@ export default function WelcomeCarousel({ onDone, onSkip }) {
                   <div className={styles.introHero}>
                     <span className={styles.introEyebrow}>Welcome to</span>
                     <h1 className={styles.wordmark}>TailorPady</h1>
+                    <p className={styles.introTagline}>The business side of tailoring, simplified.</p>
                     <svg
                       className={styles.introWave}
-                      viewBox="0 0 400 46"
+                      viewBox="0 0 400 120"
                       preserveAspectRatio="none"
                       aria-hidden="true"
                     >
-                      <path d="M0,0 C120,50 280,-10 400,30 L400,46 L0,46 Z" />
+                      <path d="M0,20 C90,110 160,0 240,60 C300,100 350,20 400,50 L400,120 L0,120 Z" />
                     </svg>
-                  </div>
-                  <div className={styles.introBody}>
-                    <p className={styles.introTagline}>The business side of tailoring, simplified.</p>
                   </div>
                 </div>
               ) : (
