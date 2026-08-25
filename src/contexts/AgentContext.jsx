@@ -34,11 +34,12 @@ import {
   todayISO,
   timestampToMs,
   detectTimeWindow,
-  HELP_TEXT,
+  buildHelpText,
 } from '../services/localNLU'
 
 const FLOW_INTENTS = ['add_order', 'gen_invoice', 'record_payment', 'add_task', 'add_appt']
 const CUSTOMER_QUERY_INTENTS = ['query_customer', 'query_contact', 'check_measurements', 'update_status']
+const AWAITING_CUSTOMER_INTENTS = ['query_customer', 'query_contact', 'check_measurements']
 
 function findCustomer(customers, nameHint) {
   if (!nameHint) return null
@@ -484,13 +485,17 @@ export function AgentProvider({ children }) {
     switch (intent) {
 
       case 'help': {
-        await agentReply(HELP_TEXT)
+        await agentReply(buildHelpText(customers))
         break
       }
 
       case 'query_customer': {
         const customer = context.customer || matchCustomer(customers, text)?.customer
-        if (!customer) { await agentReply('Which customer are you asking about?'); return }
+        if (!customer) {
+          setPendingChoice({ kind: 'awaiting_customer_name', intent: 'query_customer' })
+          await agentReply('Which customer are you asking about?')
+          return
+        }
         lastCustomerRef.current = customer.id
         const { balance, totalOwed, unpaidCount } = customerBalance(customer)
 
@@ -588,7 +593,11 @@ export function AgentProvider({ children }) {
 
       case 'query_contact': {
         const customer = context.customer || matchCustomer(customers, text)?.customer
-        if (!customer) { await agentReply("Which customer's contact do you need?"); return }
+        if (!customer) {
+          setPendingChoice({ kind: 'awaiting_customer_name', intent: 'query_contact' })
+          await agentReply("Which customer's contact do you need?")
+          return
+        }
         lastCustomerRef.current = customer.id
         if (!customer.phone) {
           await agentReply(`I don't have a phone number on file for ${customer.name}.`, null, [
@@ -711,7 +720,11 @@ export function AgentProvider({ children }) {
 
       case 'check_measurements': {
         const customer = context.customer || matchCustomer(customers, text)?.customer
-        if (!customer) { await agentReply("Which customer's measurements do you want to check?"); return }
+        if (!customer) {
+          setPendingChoice({ kind: 'awaiting_customer_name', intent: 'check_measurements' })
+          await agentReply("Which customer's measurements do you want to check?")
+          return
+        }
         lastCustomerRef.current = customer.id
 
         await agentReply(
@@ -769,30 +782,57 @@ export function AgentProvider({ children }) {
       }
 
       default:
-        await agentReply(
-          "I'm not sure what you mean. Here are some things you can try:\n• \"Add an order for Uchenna\"\n• \"How much does Bola owe?\"\n• \"Emeka just paid 15k\"\n• \"What's happening today?\"\n\nOr just ask \"what can you do?\""
-        )
+        await agentReply(buildHelpText(customers))
     }
   }
 
   const sendMessage = useCallback(async (text) => {
     if (!text.trim()) return
 
-    const userMsg = makeUserMsg(text.trim())
-    addMessage(userMsg)
+    const trimmed = text.trim()
+    const priorPendingChoice = pendingChoice
+
+    addMessage(makeUserMsg(trimmed))
     setPendingChoice(null)
 
     if (activeFlow) {
-      const handled = await advanceFlow(text.trim())
+      const handled = await advanceFlow(trimmed)
       if (handled) return
     }
 
-    const { intent } = classifyIntent(text)
+    if (priorPendingChoice?.kind === 'awaiting_customer_name') {
+      const { intent } = priorPendingChoice
+      const candidates = matchCustomerCandidates(customers, trimmed)
 
-    if (intent === 'unknown') { await handleQuery('unknown', text); return }
+      if (isAmbiguousMatch(candidates)) {
+        const top = candidates.slice(0, 4)
+        setPendingChoice({ kind: 'customer_disambiguation', resumeKind: 'query', intent, text: trimmed, candidates: top })
+        await agentReply(
+          "I found a few customers that could match — who did you mean?",
+          null,
+          top.map(c => ({ label: c.customer.name, action: 'select_customer', payload: { customerId: c.customer.id } }))
+        )
+        return
+      }
+
+      const customer = candidates.length ? candidates[0].customer : null
+
+      if (!customer) {
+        setPendingChoice({ kind: 'awaiting_customer_name', intent })
+        await agentReply(`I couldn't find a customer called "${trimmed}". Try their full name, or check the Customers page.`)
+        return
+      }
+
+      await handleQuery(intent, trimmed, { customer })
+      return
+    }
+
+    const { intent } = classifyIntent(trimmed)
+
+    if (intent === 'unknown') { await handleQuery('unknown', trimmed); return }
 
     if (FLOW_INTENTS.includes(intent)) {
-      const entities = extractEntities(text, customers)
+      const entities = extractEntities(trimmed, customers)
 
       if (isAmbiguousMatch(entities.customerCandidates)) {
         const candidates = entities.customerCandidates.slice(0, 4)
@@ -824,11 +864,11 @@ export function AgentProvider({ children }) {
     }
 
     if (CUSTOMER_QUERY_INTENTS.includes(intent)) {
-      const candidates = matchCustomerCandidates(customers, text)
+      const candidates = matchCustomerCandidates(customers, trimmed)
 
       if (isAmbiguousMatch(candidates)) {
         const top = candidates.slice(0, 4)
-        setPendingChoice({ kind: 'customer_disambiguation', resumeKind: 'query', intent, text, candidates: top })
+        setPendingChoice({ kind: 'customer_disambiguation', resumeKind: 'query', intent, text: trimmed, candidates: top })
         await agentReply(
           "I found a few customers that could match — who did you mean?",
           null,
@@ -838,16 +878,16 @@ export function AgentProvider({ children }) {
       }
 
       let customer = candidates.length ? candidates[0].customer : null
-      if (!customer && containsPronoun(text) && lastCustomerRef.current) {
+      if (!customer && containsPronoun(trimmed) && lastCustomerRef.current) {
         customer = customers.find(c => c.id === lastCustomerRef.current) || null
       }
 
-      await handleQuery(intent, text, { customer })
+      await handleQuery(intent, trimmed, { customer })
       return
     }
 
-    await handleQuery(intent, text)
-  }, [activeFlow, customers, allOrders, allInvoices, allPayments, tasks, generalSettings]) // eslint-disable-line
+    await handleQuery(intent, trimmed)
+  }, [pendingChoice, activeFlow, customers, allOrders, allInvoices, allPayments, tasks, generalSettings]) // eslint-disable-line
 
   const handleAction = useCallback(async (action, payload) => {
     switch (action) {
