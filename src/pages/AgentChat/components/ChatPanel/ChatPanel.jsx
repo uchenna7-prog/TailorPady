@@ -4,16 +4,10 @@ import { ChatMessage } from '../ChatMessage/ChatMessage'
 import { TypingIndicator } from '../TypingIndicator/TypingIndicator'
 import { haptic } from '../../utils'
 import { BotIcon } from '../../../../components/BotIcon/BotIcon'
+import { QUICK_ACTIONS } from '../../../../services/localNLU'
 import styles from './ChatPanel.module.css'
 
-export const SUGGESTION_CHIPS = [
-  { label: 'Add order',        prompt: 'Add an order for '       },
-  { label: 'Record payment',   prompt: 'just paid ₦'             },
-  { label: "Who owes me?",     prompt: 'How much does  owe?'     },
-  { label: 'Add task',         prompt: 'Remind me to '           },
-  { label: 'Book appointment', prompt: 'Schedule a fitting for ' },
-  { label: "Today's summary",  prompt: "What's happening today?" },
-]
+export const SUGGESTION_CHIPS = QUICK_ACTIONS
 
 const FLOW_LABELS = {
   add_order: 'Adding order',
