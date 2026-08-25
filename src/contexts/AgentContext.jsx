@@ -570,6 +570,24 @@ export function AgentProvider({ children }) {
         break
       }
 
+      case 'identity': {
+        await agentReply("I'm Pady, your shop assistant here in TailorPady.")
+        break
+      }
+
+      case 'wellbeing': {
+        await agentReply("Doing great and ready to help! What do you need?")
+        break
+      }
+
+      case 'date_time': {
+        const dateLabel = new Date().toLocaleDateString('en-US', {
+          weekday: 'long', month: 'long', day: 'numeric', year: 'numeric',
+        })
+        await agentReply(`Today is ${dateLabel}.`)
+        break
+      }
+
       case 'help': {
         await agentReply(buildHelpText(customers))
         break
