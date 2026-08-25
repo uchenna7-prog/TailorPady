@@ -37,7 +37,6 @@ export default function WelcomeCarousel({ onDone, onSkip }) {
   const touchStartX = useRef(null)
 
   const isLast = index === SLIDES.length - 1
-  const isFirst = index === 0
 
   function goToNext() {
     if (isLast) {
@@ -82,14 +81,16 @@ export default function WelcomeCarousel({ onDone, onSkip }) {
         Skip
       </button>
 
-      <div className={styles.progressRow}>
-        {SLIDES.map((_, i) => (
-          <span
-            key={i}
-            className={`${styles.progressSeg} ${i === index ? styles.progressSegActive : ''}`}
-          />
-        ))}
-      </div>
+      {index > 0 && (
+        <div className={styles.progressRow}>
+          {SLIDES.slice(1).map((_, i) => (
+            <span
+              key={i}
+              className={`${styles.progressSeg} ${i === index - 1 ? styles.progressSegActive : ''}`}
+            />
+          ))}
+        </div>
+      )}
 
       <div
         className={styles.viewport}
@@ -109,6 +110,7 @@ export default function WelcomeCarousel({ onDone, onSkip }) {
               {i === 0 ? (
                 <div className={styles.introSlide}>
                   <span className={styles.introGlow} />
+                  <span className={styles.introEyebrow}>Welcome</span>
                   <h1 className={styles.wordmark}>TailorPady</h1>
                   <p className={styles.introTagline}>The business side of tailoring, simplified.</p>
                 </div>
@@ -128,23 +130,30 @@ export default function WelcomeCarousel({ onDone, onSkip }) {
         </div>
       </div>
 
-      <div className={styles.navFooter}>
-        <button
-          type="button"
-          className={`${styles.backBtn} ${isFirst ? styles.backBtnHidden : ''}`}
-          onClick={goToPrev}
-        >
-          Back
-        </button>
-        <button
-          type="button"
-          className={styles.arrowBtn}
-          onClick={goToNext}
-          aria-label={isLast ? 'Continue' : 'Next'}
-        >
-          <span className="mi-outlined">arrow_forward</span>
-        </button>
-      </div>
+      {index === 0 ? (
+        <div className={styles.introFooter}>
+          <button type="button" className={styles.primaryBtn} onClick={goToNext}>
+            Get Started
+          </button>
+        </div>
+      ) : (
+        <div className={styles.navFooter}>
+          <button type="button" className={styles.backBtn} onClick={goToPrev}>
+            Back
+          </button>
+          <button
+            type="button"
+            className={styles.arrowBtn}
+            onClick={goToNext}
+            aria-label={isLast ? 'Continue' : 'Next'}
+          >
+            <span className={styles.arrowDouble}>
+              <span className="mi-outlined">chevron_right</span>
+              <span className="mi-outlined">chevron_right</span>
+            </span>
+          </button>
+        </div>
+      )}
     </div>
   )
 }
