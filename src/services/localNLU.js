@@ -700,18 +700,25 @@ export function classifyIntent(text) {
   return best
 }
 
-export function buildHelpText(customers) {
-  const name = customers?.[0]?.name || 'a customer'
+export const QUICK_ACTIONS = [
+  { label: 'Add order',        prompt: 'Add an order for '       },
+  { label: 'Record payment',   prompt: 'just paid ₦'             },
+  { label: "Who owes me?",     prompt: 'How much does  owe?'     },
+  { label: 'Add task',         prompt: 'Remind me to '           },
+  { label: 'Book appointment', prompt: 'Schedule a fitting for ' },
+  { label: "Today's summary",  prompt: "What's happening today?" },
+]
+
+export function buildHelpText() {
   return [
-    "Here's what I can help you with:",
+    "Here's what I can help with:",
     '',
-    `📦 **Orders** — "Add an order for ${name}", "What orders are due today?"`,
-    `🧾 **Invoices** — "Generate invoice for ${name}", "Any overdue invoices?"`,
-    `💰 **Payments** — "${name} just paid 15k", "Who owes me money?"`,
-    `👥 **Customers** — "How much does ${name} owe?", "Top customers this month"`,
-    '✅ **Tasks** — "Remind me to call a customer tomorrow", "Any overdue tasks?"',
-    '📊 **Business** — "How am I doing today?", "How much did I make this week?"',
+    "📦 Orders: add new ones, check what's due",
+    '🧾 Invoices: generate one, check overdue',
+    '💰 Payments: record one, see who owes you',
+    '✅ Tasks: add one, check overdue',
+    '📊 Business: daily summary, earnings',
     '',
-    "Just type naturally — I'll do my best to figure it out.",
+    'Tap a suggestion below or just type naturally.',
   ].join('\n')
 }
