@@ -3,7 +3,6 @@ import { useNavigate, useLocation } from 'react-router-dom'
 import { useNotifications } from '../../contexts/NotificationContext'
 import { useAutonomousAgent } from '../../contexts/AutonomousAgentContext'
 import { useTour } from '../../contexts/TourContext'
-import { BotIcon } from '../BotIcon/BotIcon'
 import styles from './Header.module.css'
 
 const NOTIF_TYPE_BG = {
@@ -71,7 +70,7 @@ function BotButton({ pendingCount, onClick }) {
       title="Pady — tailorpady Agent"
       data-tour="tour-bot-icon-btn"
     >
-      <BotIcon />
+      <span className="mi-outlined" style={{ fontSize: '1.4rem' }}>smart_toy</span>
       {pendingCount > 0 && (
         <span className={styles.agentBadge}>
           {pendingCount > 9 ? '9+' : pendingCount}
