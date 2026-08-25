@@ -5,6 +5,7 @@ import { useAgent } from '../../contexts/AgentContext'
 import { useAutonomousAgent } from '../../contexts/AutonomousAgentContext'
 import { useAuth } from '../../contexts/AuthContext'
 import { ChatPanel } from './components/ChatPanel/ChatPanel'
+import { ErrorBoundary } from '../../components/ErrorBoundary/ErrorBoundary'
 import { getGreeting, getGreetingEmoji, getDisplayName, haptic } from './utils'
 import { AgentTitleIcon } from './components/AgentTitleIcon/AgentTitleIcon'
 import styles from './AgentChat.module.css'
@@ -43,19 +44,21 @@ function AgentChat() {
         onBackClick={() => navigate('/agent')}
         agentActive={enabled}
       />
-      <ChatPanel
-        messages={messages}
-        isTyping={isTyping}
-        isLoading={isLoading}
-        activeFlow={activeFlow}
-        inputValue={inputValue}
-        setInputValue={setInputValue}
-        onSend={handleSend}
-        onAction={routeAction}
-        onNavigate={navigate}
-        onCancelFlow={cancelFlow}
-        greeting={greeting}
-      />
+      <ErrorBoundary>
+        <ChatPanel
+          messages={messages}
+          isTyping={isTyping}
+          isLoading={isLoading}
+          activeFlow={activeFlow}
+          inputValue={inputValue}
+          setInputValue={setInputValue}
+          onSend={handleSend}
+          onAction={routeAction}
+          onNavigate={navigate}
+          onCancelFlow={cancelFlow}
+          greeting={greeting}
+        />
+      </ErrorBoundary>
     </div>
   )
 }
