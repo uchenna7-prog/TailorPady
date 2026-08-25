@@ -6,16 +6,22 @@ import styles from './FirstRunFlow.module.css'
 
 const SLIDES = [
   {
+    key: 'intro',
+  },
+  {
+    key: 'dashboard',
     title: 'Track Performance',
     sub: 'Get a clear view of how your business is doing at a glance.',
     image: dashboardSlide,
   },
   {
+    key: 'orders',
     title: 'Track Every Order',
     sub: 'See what’s pending, in progress, completed, or ready for pickup.',
     image: ordersSlide,
   },
   {
+    key: 'customers',
     title: 'Manage Customers',
     sub: 'Keep customer details, measurements, orders, payments and more together in one place.',
     image: customersSlide,
@@ -98,15 +104,25 @@ export default function WelcomeCarousel({ onDone, onSkip }) {
             transition: dragging ? 'none' : 'transform 420ms cubic-bezier(0.22, 1, 0.36, 1)',
           }}
         >
-          {SLIDES.map(item => (
-            <div key={item.title} className={styles.slideItem}>
-              <div className={styles.textBlock}>
-                <h1 className={styles.title}>{item.title}</h1>
-                <p className={styles.sub}>{item.sub}</p>
-              </div>
-              <div className={styles.backdrop}>
-                <img src={item.image} alt={item.title} className={styles.image} draggable={false} />
-              </div>
+          {SLIDES.map((item, i) => (
+            <div key={item.key} className={styles.slideItem}>
+              {i === 0 ? (
+                <div className={styles.introSlide}>
+                  <span className={styles.introGlow} />
+                  <h1 className={styles.wordmark}>TailorPady</h1>
+                  <p className={styles.introTagline}>The business side of tailoring, simplified.</p>
+                </div>
+              ) : (
+                <>
+                  <div className={styles.textBlock}>
+                    <h1 className={styles.title}>{item.title}</h1>
+                    <p className={styles.sub}>{item.sub}</p>
+                  </div>
+                  <div className={styles.backdrop}>
+                    <img src={item.image} alt={item.title} className={styles.image} draggable={false} />
+                  </div>
+                </>
+              )}
             </div>
           ))}
         </div>
