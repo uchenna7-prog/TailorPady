@@ -109,10 +109,21 @@ export default function WelcomeCarousel({ onDone, onSkip }) {
             <div key={item.key} className={styles.slideItem}>
               {i === 0 ? (
                 <div className={styles.introSlide}>
-                  <span className={styles.introGlow} />
-                  <span className={styles.introEyebrow}>Welcome</span>
-                  <h1 className={styles.wordmark}>TailorPady</h1>
-                  <p className={styles.introTagline}>The business side of tailoring, simplified.</p>
+                  <div className={styles.introHero}>
+                    <span className={styles.introEyebrow}>Welcome to</span>
+                    <h1 className={styles.wordmark}>TailorPady</h1>
+                    <svg
+                      className={styles.introWave}
+                      viewBox="0 0 400 46"
+                      preserveAspectRatio="none"
+                      aria-hidden="true"
+                    >
+                      <path d="M0,0 C120,50 280,-10 400,30 L400,46 L0,46 Z" />
+                    </svg>
+                  </div>
+                  <div className={styles.introBody}>
+                    <p className={styles.introTagline}>The business side of tailoring, simplified.</p>
+                  </div>
                 </div>
               ) : (
                 <>
