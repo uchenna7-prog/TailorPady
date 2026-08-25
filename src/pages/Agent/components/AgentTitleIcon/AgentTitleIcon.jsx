@@ -1,6 +1,3 @@
-import { BotIcon } from "../../../../components/BotIcon/BotIcon"
-
-
 export function AgentTitleIcon() {
-  return <BotIcon size={28} />
+  return <span className="mi-outlined" style={{ fontSize: '28px' }}>smart_toy</span>
 }
