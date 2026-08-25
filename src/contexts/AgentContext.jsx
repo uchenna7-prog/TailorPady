@@ -37,6 +37,7 @@ import {
   timestampToMs,
   detectTimeWindow,
   buildHelpText,
+  QUICK_ACTIONS,
 } from '../services/localNLU'
 
 const FLOW_INTENTS = ['add_order', 'gen_invoice', 'record_payment', 'add_task', 'add_appt']
@@ -107,6 +108,14 @@ function buildInitialDataForFlow(intent, entities) {
   }
 
   return data
+}
+
+function buildQuickActionButtons() {
+  return QUICK_ACTIONS.slice(0, 4).map(qa => ({
+    label: qa.label,
+    action: 'fill_prompt',
+    payload: { prompt: qa.prompt },
+  }))
 }
 
 function buildExtractionSummary(data, currencySymbol) {
@@ -589,7 +598,7 @@ export function AgentProvider({ children }) {
       }
 
       case 'help': {
-        await agentReply(buildHelpText(customers))
+        await agentReply(buildHelpText(), null, buildQuickActionButtons())
         break
       }
 
@@ -860,7 +869,7 @@ export function AgentProvider({ children }) {
       }
 
       default:
-        await agentReply(buildHelpText(customers))
+        await agentReply(buildHelpText(), null, buildQuickActionButtons())
     }
   }
 
