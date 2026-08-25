@@ -11,9 +11,35 @@ const SHORTHAND = {
   amt: 'amount', pymt: 'payment', pmt: 'payment',
 }
 
+const CONTRACTIONS = [
+  [/\bwhat's\b/g, 'what is'],
+  [/\bwho's\b/g, 'who is'],
+  [/\bhow's\b/g, 'how is'],
+  [/\bit's\b/g, 'it is'],
+  [/\bthat's\b/g, 'that is'],
+  [/\bthere's\b/g, 'there is'],
+  [/\bwhere's\b/g, 'where is'],
+  [/\bwhen's\b/g, 'when is'],
+  [/\blet's\b/g, 'let us'],
+  [/\bdon't\b/g, 'do not'],
+  [/\bdoesn't\b/g, 'does not'],
+  [/\bdidn't\b/g, 'did not'],
+  [/\bcan't\b/g, 'cannot'],
+  [/\bwon't\b/g, 'will not'],
+  [/\bisn't\b/g, 'is not'],
+  [/\baren't\b/g, 'are not'],
+  [/\bi'm\b/g, 'i am'],
+  [/\byou're\b/g, 'you are'],
+  [/\bthey're\b/g, 'they are'],
+  [/\bwe're\b/g, 'we are'],
+]
+
 export function normalizeText(text) {
   if (!text) return ''
-  const lower = String(text).toLowerCase().trim().replace(/\s+/g, ' ')
+  let lower = String(text).toLowerCase().trim().replace(/\s+/g, ' ')
+  for (const [pattern, replacement] of CONTRACTIONS) {
+    lower = lower.replace(pattern, replacement)
+  }
   return lower
     .split(' ')
     .map(w => {
@@ -483,6 +509,28 @@ const INTENT_DEFS = [
     { words: ['thank', 'you'], weight: 9 },
     { words: ['thanks'], weight: 8 },
     { words: ['appreciate', 'it'], weight: 8 },
+  ]},
+
+  { intent: 'identity', phrases: [
+    { words: ['what', 'is', 'your', 'name'], weight: 10 },
+    { words: ['who', 'are', 'you'], weight: 10 },
+    { words: ['your', 'name'], weight: 7 },
+  ]},
+
+  { intent: 'wellbeing', phrases: [
+    { words: ['how', 'are', 'you'], weight: 10 },
+    { words: ['how', 'is', 'it', 'going'], weight: 10 },
+    { words: ['how', 'have', 'you', 'been'], weight: 10 },
+  ]},
+
+  { intent: 'date_time', phrases: [
+    { words: ['what', 'is', 'today'], weight: 9 },
+    { words: ['what', 'day', 'is', 'it'], weight: 10 },
+    { words: ['what', 'is', 'the', 'date'], weight: 10 },
+    { words: ['what', 'is', 'the', 'time'], weight: 10 },
+    { words: ['what', 'time', 'is', 'it'], weight: 10 },
+    { words: ['today', 'date'], weight: 8 },
+    { words: ['current', 'date'], weight: 8 },
   ]},
 
   { intent: 'help', phrases: [
