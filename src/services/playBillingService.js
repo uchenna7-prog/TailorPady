@@ -2,8 +2,8 @@ const API_BASE = 'https://tailor-pady-api.vercel.app'
 const PLAY_BILLING_METHOD = 'https://play.google.com/billing'
 
 const ITEM_IDS = {
-  monthly: 'pro:monthly',
-  annual: 'pro:annual',
+  monthly: 'pro_monthly',
+  annual: 'pro_annually',
 }
 
 export function isPlayBillingAvailable() {
