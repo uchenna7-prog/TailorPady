@@ -106,19 +106,19 @@
   margin: 14px 16px 0;
   padding: 16px 18px;
   border-radius: 18px;
-  background: var(--brand-gradient);
+  background: var(--surface);
+  border: 1px solid var(--border);
   cursor: pointer;
-  box-shadow: 0 10px 24px -12px var(--brand-glow);
 }
 
 .upgradeBannerGlow {
   position: absolute;
-  top: -30px;
-  right: -20px;
-  width: 140px;
-  height: 140px;
+  top: -50px;
+  right: -50px;
+  width: 180px;
+  height: 180px;
   border-radius: 50%;
-  background: radial-gradient(circle, rgba(255, 255, 255, 0.14), transparent 70%);
+  background: radial-gradient(circle, color-mix(in srgb, var(--accent) 14%, transparent), transparent 70%);
   pointer-events: none;
 }
 
@@ -126,7 +126,7 @@
   width: 44px;
   height: 44px;
   border-radius: 12px;
-  background: rgba(255, 255, 255, 0.16);
+  background: var(--brand-gradient);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -142,12 +142,12 @@
 .upgradeBannerTitle {
   font-size: 1rem;
   font-weight: 900;
-  color: var(--brand-on-primary);
+  color: var(--text);
 }
 
 .upgradeBannerSub {
   font-size: 0.78rem;
-  color: rgba(255, 255, 255, 0.78);
+  color: var(--text3);
   margin-top: 2px;
 }
 
