@@ -338,6 +338,20 @@ export default function Account({ onMenuClick, isPremium = false, onUpgrade = ()
           </div>
         </div>
 
+        {!isPremium && (
+          <div className={styles.upgradeBanner} onClick={handleOpenUpgrade}>
+            <div className={styles.upgradeBannerGlow} />
+            <div className={styles.upgradeBannerIcon}>
+              <span className="mi-outlined" style={{ fontSize: '1.4rem' }}>workspace_premium</span>
+            </div>
+            <div className={styles.upgradeBannerText}>
+              <div className={styles.upgradeBannerTitle}>Upgrade to Pro</div>
+              <div className={styles.upgradeBannerSub}>Unlimited customers, invoices &amp; more</div>
+            </div>
+            <span className="mi-outlined" style={{ fontSize: '1.3rem', color: '#fff' }}>chevron_right</span>
+          </div>
+        )}
+
         <SectionHeader icon="person" label="Personal Info" />
 
         <InfoRow icon="badge" label="Full Name" value={personalInfo.fullName} placeholder="Not set" />
