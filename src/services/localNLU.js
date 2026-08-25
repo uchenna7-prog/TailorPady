@@ -113,6 +113,11 @@ export function containsPronoun(text) {
   return /\b(he|she|they|him|her|them|his|hers|their)\b/i.test(text)
 }
 
+export function isCancelText(text) {
+  const s = normalizeText(text)
+  return /^(cancel|stop|nevermind|never mind|forget it|quit|exit|nvm)\b/.test(s)
+}
+
 export function parseMoney(str) {
   if (str === null || str === undefined) return null
   let s = String(str).toLowerCase().trim()
@@ -315,6 +320,24 @@ export function extractGarmentDesc(text) {
   return words.length ? words.join(' ') : null
 }
 
+const ORDER_FILLER_WORDS = new Set([
+  'add', 'an', 'a', 'the', 'new', 'create', 'take', 'order', 'orders', 'job',
+  'for', 'ordering', 'make', 'put', 'and', 'with', 'of', 'is', 'was',
+])
+
+export function extractGarmentDescFallback(text, customerName) {
+  const nameTokens = customerName ? tokenize(customerName) : []
+  const tokens = tokenize(text).filter(t => {
+    if (ORDER_FILLER_WORDS.has(t)) return false
+    if (nameTokens.includes(t)) return false
+    if (/^\d/.test(t)) return false
+    if (['k', 'naira', 'ngn', 'today', 'tomorrow', 'due', 'by'].includes(t)) return false
+    return true
+  })
+  const result = tokens.join(' ').trim()
+  return result.length > 1 ? result : null
+}
+
 export function extractPaymentMethod(text) {
   const s = normalizeText(text)
   if (/\btransfer\b/.test(s)) return 'transfer'
@@ -447,6 +470,21 @@ export function durationLabel(duration) {
 }
 
 const INTENT_DEFS = [
+  { intent: 'greeting', phrases: [
+    { words: ['hi'], weight: 8 },
+    { words: ['hello'], weight: 8 },
+    { words: ['hey'], weight: 8 },
+    { words: ['good', 'morning'], weight: 9 },
+    { words: ['good', 'afternoon'], weight: 9 },
+    { words: ['good', 'evening'], weight: 9 },
+  ]},
+
+  { intent: 'thanks', phrases: [
+    { words: ['thank', 'you'], weight: 9 },
+    { words: ['thanks'], weight: 8 },
+    { words: ['appreciate', 'it'], weight: 8 },
+  ]},
+
   { intent: 'help', phrases: [
     { words: ['what', 'can', 'you', 'do'], weight: 10 },
     { words: ['what', 'can', 'i', 'ask'], weight: 10 },
