@@ -3,7 +3,6 @@ import { MIcon } from '../MIcon/MIcon'
 import { ChatMessage } from '../ChatMessage/ChatMessage'
 import { TypingIndicator } from '../TypingIndicator/TypingIndicator'
 import { haptic } from '../../utils'
-import { BotIcon } from '../../../../components/BotIcon/BotIcon'
 import { QUICK_ACTIONS } from '../../../../services/localNLU'
 import styles from './ChatPanel.module.css'
 
@@ -82,7 +81,12 @@ export function ChatPanel({
         {!isLoading && messages.length === 0 && (
           <div className={styles.chatEmpty}>
             <div className={styles.chatEmptyAvatar}>
-              <BotIcon  size={"1.7rem"} color={"var(--bg)"} backgroundColor={"var(--accent)"} />
+              <span
+                className="mi-outlined"
+                style={{ fontSize: '1.7rem', color: 'var(--bg)', background: 'var(--accent)', borderRadius: '50%' }}
+              >
+                smart_toy
+              </span>
             </div>
             <p className={styles.chatEmptyGreeting}>{greeting}</p>
             <p className={styles.chatEmptySub}>I'm your shop assistant.</p>
@@ -120,7 +124,7 @@ export function ChatPanel({
 
         <div className={styles.chatInputWrap}>
           <span aria-hidden="true">
-            <BotIcon size={"1.5rem"} color={"var(--text3)"} />
+            <span className="mi-outlined" style={{ fontSize: '1.5rem', color: 'var(--text3)' }}>smart_toy</span>
           </span>
           <textarea
             ref={inputRef}
