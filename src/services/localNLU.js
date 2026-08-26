@@ -533,6 +533,24 @@ const INTENT_DEFS = [
     { words: ['current', 'date'], weight: 8 },
   ]},
 
+  { intent: 'farewell', phrases: [
+    { words: ['bye'], weight: 8 },
+    { words: ['goodbye'], weight: 9 },
+    { words: ['see', 'you'], weight: 8 },
+    { words: ['good', 'night'], weight: 9 },
+    { words: ['talk', 'later'], weight: 9 },
+  ]},
+
+  { intent: 'about_bot', phrases: [
+    { words: ['who', 'made', 'you'], weight: 10 },
+    { words: ['who', 'created', 'you'], weight: 10 },
+    { words: ['who', 'built', 'you'], weight: 10 },
+    { words: ['are', 'you', 'a', 'bot'], weight: 10 },
+    { words: ['are', 'you', 'human'], weight: 10 },
+    { words: ['are', 'you', 'real'], weight: 9 },
+    { words: ['are', 'you', 'ai'], weight: 10 },
+  ]},
+
   { intent: 'help', phrases: [
     { words: ['what', 'can', 'you', 'do'], weight: 10 },
     { words: ['what', 'can', 'i', 'ask'], weight: 10 },
@@ -709,15 +727,35 @@ export const QUICK_ACTIONS = [
   { label: "Today's summary",  prompt: "What's happening today?" },
 ]
 
+export function isAcknowledgmentText(text) {
+  const s = normalizeText(text)
+  return /^(ok|okay|alright|sure|fine|cool|nice|great|got it)$/.test(s)
+}
+
 export function buildHelpText() {
   return [
     "Here's what I can help with:",
     '',
-    "📦 Orders: add new ones, check what's due",
-    '🧾 Invoices: generate one, check overdue',
-    '💰 Payments: record one, see who owes you',
-    '✅ Tasks: add one, check overdue',
-    '📊 Business: daily summary, earnings',
+    '📦 **ORDERS:**',
+    '• Add a new order',
+    "• Check what's due today",
+    "• Update an order's status",
+    '',
+    '🧾 **INVOICES:**',
+    '• Generate an invoice',
+    '• Check overdue invoices',
+    '',
+    '💰 **PAYMENTS:**',
+    '• Record a payment',
+    '• See who owes you money',
+    '',
+    '✅ **TASKS:**',
+    '• Add a task',
+    '• Check overdue tasks',
+    '',
+    '📊 **BUSINESS:**',
+    '• Daily summary',
+    '• Earnings this week or month',
     '',
     'Tap a suggestion below or just type naturally.',
   ].join('\n')
