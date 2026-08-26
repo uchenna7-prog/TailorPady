@@ -93,7 +93,7 @@ export const PRIVACY_SECTIONS = [
     title: 'AI Features',
     body: `TailorPady includes two AI-related features. Both work using the business data you've already stored in the app, and neither sends your data to a third-party AI or language model provider.`,
     bullets: [
-      'Automation engine: when you turn on the AI Assistant in Settings, it monitors your orders, invoices, payments, and customer records against the timeframes you configure, for example generating an invoice draft after an order has gone unbilled for the period you set, or preparing a receipt, payment reminder, overdue alert, birthday message, or win-back message. It only prepares drafts. Nothing is sent to your customers, and nothing is deleted, without your review and approval.',
+      'Automation engine: when you turn on the AI Assistant in Settings, it monitors your orders, invoices, payments, and customer records against the timeframes you configure, for example generating an invoice draft after an order has gone unbilled for the period you set, or preparing a receipt, payment reminder, overdue alert, order-ready-for-pickup reminder, birthday message, or win-back message. It only prepares drafts. Approving a draft adds it to your normal records, such as your invoices, receipts, or tasks. TailorPady never sends anything to a customer automatically; sending is always a separate action you choose to take yourself. Discarding a draft simply removes it.',
       'Chat assistant: lets you ask questions about your business in plain language, such as checking a customer\u2019s balance or what\u2019s due today. It works entirely on-device using pattern matching against your own stored data; we do not send your messages to any external AI or language model provider to generate a response. Your chat messages are still saved to your account the same way other app data is, so your conversation history is available across your devices.',
     ],
     footer: 'You can turn the AI Assistant off at any time from Settings. Turning it off stops the automation engine from creating new drafts; it does not delete drafts or chat history you already have.',
@@ -283,7 +283,7 @@ export const REFUND_SECTIONS = [
   {
     id: 'exceptional',
     title: 'Exceptional Circumstances',
-    body: `In exceptional circumstances \u2014 such as extended service unavailability caused by our end \u2014 we may at our discretion offer account credits or partial refunds. These will be evaluated on a case-by-case basis. Please contact us to discuss your situation.`,
+    body: `In exceptional circumstances, such as extended service unavailability caused by our end, we may at our discretion offer account credits or partial refunds. These will be evaluated on a case-by-case basis. Please contact us to discuss your situation.`,
   },
   {
     id: 'account-deletion',
