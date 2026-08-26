@@ -318,9 +318,14 @@ export function extractDateMention(text) {
 }
 
 const GARMENT_WORDS = new Set([
-  'agbada', 'kaftan', 'caftan', 'gown', 'suit', 'trouser', 'trousers', 'skirt',
-  'blouse', 'dress', 'shirt', 'top', 'ankara', 'senator', 'buba', 'iro',
-  'wrapper', 'jacket', 'kimono', 'jumpsuit', 'native', 'dashiki', 'agabada',
+  'agbada', 'kaftan', 'caftan', 'gown', 'suit', 'trouser', 'trousers', 'pants',
+  'jeans', 'skirt', 'blouse', 'dress', 'shirt', 'top', 'ankara', 'senator',
+  'buba', 'iro', 'wrapper', 'jacket', 'kimono', 'jumpsuit', 'native', 'dashiki',
+  'coat', 'blazer', 'cardigan', 'hoodie', 'sweater', 'jumper', 'tuxedo',
+  'romper', 'overalls', 'vest', 'waistcoat', 'tunic', 'robe', 'pajamas',
+  'uniform', 'veil', 'hijab', 'abaya', 'thobe', 'dishdasha', 'kurta',
+  'sherwani', 'lehenga', 'salwar', 'sari', 'saree', 'cheongsam', 'qipao',
+  'hanbok', 'kilt', 'poncho', 'cape', 'sarong', 'dirndl', 'toga', 'guayabera',
 ])
 
 const DESC_STOPWORDS = new Set([
@@ -496,33 +501,6 @@ export function durationLabel(duration) {
 }
 
 const INTENT_DEFS = [
-  { intent: 'greeting', phrases: [
-    { words: ['hi'], weight: 8 },
-    { words: ['hello'], weight: 8 },
-    { words: ['hey'], weight: 8 },
-    { words: ['good', 'morning'], weight: 9 },
-    { words: ['good', 'afternoon'], weight: 9 },
-    { words: ['good', 'evening'], weight: 9 },
-  ]},
-
-  { intent: 'thanks', phrases: [
-    { words: ['thank', 'you'], weight: 9 },
-    { words: ['thanks'], weight: 8 },
-    { words: ['appreciate', 'it'], weight: 8 },
-  ]},
-
-  { intent: 'identity', phrases: [
-    { words: ['what', 'is', 'your', 'name'], weight: 10 },
-    { words: ['who', 'are', 'you'], weight: 10 },
-    { words: ['your', 'name'], weight: 7 },
-  ]},
-
-  { intent: 'wellbeing', phrases: [
-    { words: ['how', 'are', 'you'], weight: 10 },
-    { words: ['how', 'is', 'it', 'going'], weight: 10 },
-    { words: ['how', 'have', 'you', 'been'], weight: 10 },
-  ]},
-
   { intent: 'date_time', phrases: [
     { words: ['what', 'is', 'today'], weight: 9 },
     { words: ['what', 'day', 'is', 'it'], weight: 10 },
@@ -533,60 +511,9 @@ const INTENT_DEFS = [
     { words: ['current', 'date'], weight: 8 },
   ]},
 
-  { intent: 'farewell', phrases: [
-    { words: ['bye'], weight: 8 },
-    { words: ['goodbye'], weight: 9 },
-    { words: ['see', 'you'], weight: 8 },
-    { words: ['good', 'night'], weight: 9 },
-    { words: ['talk', 'later'], weight: 9 },
-  ]},
-
-  { intent: 'about_bot', phrases: [
-    { words: ['who', 'made', 'you'], weight: 10 },
-    { words: ['who', 'created', 'you'], weight: 10 },
-    { words: ['who', 'built', 'you'], weight: 10 },
-    { words: ['are', 'you', 'a', 'bot'], weight: 10 },
-    { words: ['are', 'you', 'human'], weight: 10 },
-    { words: ['are', 'you', 'real'], weight: 9 },
-    { words: ['are', 'you', 'ai'], weight: 10 },
-  ]},
-
   { intent: 'my_name', phrases: [
     { words: ['what', 'is', 'my', 'name'], weight: 10 },
     { words: ['who', 'am', 'i'], weight: 10 },
-  ]},
-
-  { intent: 'ping', phrases: [
-    { words: ['are', 'you', 'working'], weight: 10 },
-    { words: ['are', 'you', 'there'], weight: 9 },
-    { words: ['test'], weight: 6 },
-    { words: ['testing'], weight: 6 },
-  ]},
-
-  { intent: 'compliment', phrases: [
-    { words: ['you', 'are', 'the', 'best'], weight: 10 },
-    { words: ['i', 'love', 'this'], weight: 9 },
-    { words: ['you', 'are', 'smart'], weight: 9 },
-    { words: ['good', 'job'], weight: 8 },
-    { words: ['well', 'done'], weight: 8 },
-    { words: ['nice', 'work'], weight: 8 },
-  ]},
-
-  { intent: 'frustration', phrases: [
-    { words: ['this', 'is', 'stupid'], weight: 10 },
-    { words: ['you', 'are', 'useless'], weight: 10 },
-    { words: ['this', 'is', 'not', 'working'], weight: 10 },
-    { words: ['you', 'are', 'dumb'], weight: 10 },
-    { words: ['not', 'helpful'], weight: 8 },
-  ]},
-
-  { intent: 'off_topic', phrases: [
-    { words: ['weather'], weight: 8 },
-    { words: ['tell', 'me', 'a', 'joke'], weight: 10 },
-    { words: ['football'], weight: 7 },
-    { words: ['news'], weight: 6 },
-    { words: ['sing', 'a', 'song'], weight: 10 },
-    { words: ['tell', 'me', 'a', 'story'], weight: 10 },
   ]},
 
   { intent: 'help', phrases: [
@@ -753,6 +680,143 @@ export function classifyIntent(text) {
   }
 
   if (best.score < MIN_INTENT_SCORE) return { intent: 'unknown', score: best.score }
+  return best
+}
+
+const FAQ_ENTRIES = [
+  { phrases: [
+      { words: ['hi'], weight: 8 }, { words: ['hello'], weight: 8 }, { words: ['hey'], weight: 8 },
+      { words: ['good', 'morning'], weight: 9 }, { words: ['good', 'afternoon'], weight: 9 },
+      { words: ['good', 'evening'], weight: 9 }, { words: ['whats', 'up'], weight: 8 }, { words: ['sup'], weight: 7 },
+    ], reply: 'Hey! What can I help you with today?' },
+
+  { phrases: [
+      { words: ['thank', 'you'], weight: 9 }, { words: ['thanks'], weight: 8 }, { words: ['appreciate', 'it'], weight: 8 },
+    ], reply: "Anytime! Let me know if there's anything else." },
+
+  { phrases: [
+      { words: ['bye'], weight: 8 }, { words: ['goodbye'], weight: 9 }, { words: ['see', 'you'], weight: 8 },
+      { words: ['good', 'night'], weight: 9 }, { words: ['talk', 'later'], weight: 9 }, { words: ['catch', 'you', 'later'], weight: 9 },
+    ], reply: "Bye! I'll be here whenever you need me." },
+
+  { phrases: [
+      { words: ['what', 'is', 'your', 'name'], weight: 10 }, { words: ['who', 'are', 'you'], weight: 10 },
+      { words: ['your', 'name'], weight: 7 },
+    ], reply: "I'm Pady, your AI assistant here in TailorPady." },
+
+  { phrases: [
+      { words: ['who', 'made', 'you'], weight: 10 }, { words: ['who', 'created', 'you'], weight: 10 },
+      { words: ['who', 'built', 'you'], weight: 10 }, { words: ['are', 'you', 'a', 'bot'], weight: 10 },
+      { words: ['are', 'you', 'ai'], weight: 10 },
+    ], reply: "I'm an AI assistant built into TailorPady to help you manage orders, payments, invoices, and tasks." },
+
+  { phrases: [
+      { words: ['are', 'you', 'human'], weight: 10 }, { words: ['are', 'you', 'real'], weight: 9 },
+    ], reply: "I'm an AI, not a human — but I'm here and ready to help with your shop." },
+
+  { phrases: [
+      { words: ['how', 'are', 'you'], weight: 10 }, { words: ['how', 'is', 'it', 'going'], weight: 10 },
+      { words: ['how', 'have', 'you', 'been'], weight: 10 },
+    ], reply: 'Doing great and ready to help! What do you need?' },
+
+  { phrases: [
+      { words: ['are', 'you', 'working'], weight: 10 }, { words: ['are', 'you', 'there'], weight: 9 },
+      { words: ['test'], weight: 6 }, { words: ['testing'], weight: 6 },
+    ], reply: "Yep, I'm up and running! Ask me about your orders, payments, or schedule." },
+
+  { phrases: [
+      { words: ['you', 'are', 'the', 'best'], weight: 10 }, { words: ['i', 'love', 'this'], weight: 9 },
+      { words: ['you', 'are', 'smart'], weight: 9 }, { words: ['good', 'job'], weight: 8 },
+      { words: ['well', 'done'], weight: 8 }, { words: ['nice', 'work'], weight: 8 },
+    ], reply: 'Thank you! Glad I could help.' },
+
+  { phrases: [
+      { words: ['this', 'is', 'stupid'], weight: 10 }, { words: ['you', 'are', 'useless'], weight: 10 },
+      { words: ['this', 'is', 'not', 'working'], weight: 10 }, { words: ['you', 'are', 'dumb'], weight: 10 },
+      { words: ['not', 'helpful'], weight: 8 }, { words: ['this', 'is', 'confusing'], weight: 9 },
+      { words: ['i', 'do', 'not', 'understand'], weight: 9 },
+    ], reply: "Sorry this hasn't been smooth. Try rephrasing, or tap a suggestion below to see what I can do.", showQuickActions: true },
+
+  { phrases: [
+      { words: ['sorry'], weight: 6 }, { words: ['my', 'bad'], weight: 8 }, { words: ['my', 'mistake'], weight: 8 },
+    ], reply: 'No worries at all!' },
+
+  { phrases: [
+      { words: ['i', 'am', 'bored'], weight: 9 },
+    ], reply: "Let's put that to good use — want to check what's due today?" },
+
+  { phrases: [
+      { words: ['weather'], weight: 8 },
+    ], reply: "I can't check the weather, but I'm great with your shop's orders, payments, and schedule." },
+
+  { phrases: [
+      { words: ['tell', 'me', 'a', 'joke'], weight: 10 },
+    ], reply: "I'm better with invoices than punchlines! Try asking what's due today instead." },
+
+  { phrases: [
+      { words: ['football'], weight: 7 }, { words: ['news'], weight: 6 }, { words: ['sports'], weight: 6 },
+    ], reply: "That's outside what I'm built for, but I'm great with your shop's orders, payments, and schedule." },
+
+  { phrases: [
+      { words: ['sing', 'a', 'song'], weight: 10 }, { words: ['tell', 'me', 'a', 'story'], weight: 10 },
+    ], reply: "Not really my thing — but I can tell you who owes you money, which might be more useful right now." },
+
+  { phrases: [
+      { words: ['how', 'old', 'are', 'you'], weight: 10 },
+    ], reply: "I don't have an age — I'm software, always ready when you are." },
+
+  { phrases: [
+      { words: ['where', 'are', 'you'], weight: 9 },
+    ], reply: 'I live right here in your TailorPady app, ready whenever you open it.' },
+
+  { phrases: [
+      { words: ['what', 'is', 'your', 'favorite', 'color'], weight: 10 },
+      { words: ['what', 'is', 'your', 'favorite', 'food'], weight: 10 },
+    ], reply: "I don't really have favorites — but I do have a favorite topic: your business numbers." },
+
+  { phrases: [
+      { words: ['can', 'you', 'call'], weight: 9 }, { words: ['can', 'you', 'send', 'email'], weight: 9 },
+      { words: ['can', 'you', 'browse'], weight: 9 }, { words: ['can', 'you', 'translate'], weight: 9 },
+    ], reply: "I can't do that yet — I'm focused on helping you manage orders, payments, invoices, and tasks right here in the app." },
+
+  { phrases: [
+      { words: ['is', 'my', 'data', 'safe'], weight: 10 }, { words: ['is', 'this', 'app', 'safe'], weight: 10 },
+    ], reply: 'Your data is stored securely and only accessible to you. Check the Privacy Policy in Settings for full details.' },
+
+  { phrases: [
+      { words: ['is', 'this', 'free'], weight: 10 }, { words: ['how', 'much', 'does', 'this', 'cost'], weight: 10 },
+    ], reply: 'Check the Upgrade page in Settings for current plans and pricing.' },
+
+  { phrases: [
+      { words: ['i', 'love', 'you'], weight: 9 },
+    ], reply: "That's kind! I'm glad TailorPady is working for you." },
+
+  { phrases: [
+      { words: ['say', 'that', 'again'], weight: 9 }, { words: ['what', 'did', 'you', 'say'], weight: 9 },
+    ], reply: "Sorry, I don't keep a running memory of exact wording — could you ask again?" },
+
+  { phrases: [
+      { words: ['whats', 'new'], weight: 8 },
+    ], reply: "Just here helping manage your shop! What's on your mind?" },
+]
+
+const FAQ_MIN_SCORE = 6
+
+export function matchFAQ(text) {
+  const tokens = tokenize(text)
+  if (!tokens.length) return null
+
+  let best = null
+  let bestScore = 0
+  for (const entry of FAQ_ENTRIES) {
+    let score = 0
+    for (const { words, weight } of entry.phrases) {
+      if (phraseMatches(tokens, words)) score += weight
+    }
+    if (score > bestScore) { bestScore = score; best = entry }
+  }
+
+  if (bestScore < FAQ_MIN_SCORE) return null
   return best
 }
 
