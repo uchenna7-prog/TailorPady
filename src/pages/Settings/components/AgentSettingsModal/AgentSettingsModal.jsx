@@ -6,7 +6,6 @@ import { FieldGroup } from '../FieldGroup/FieldGroup'
 import { Field } from '../Field/Field'
 import { Toggle } from '../../components/Toggle/Toggle'
 import { Dropdown } from '../../../../components/Dropdown/Dropdown'
-import { BotIcon } from '../../../../components/BotIcon/BotIcon'
 import styles from './AgentSettingsModal.module.css'
 
 const DURATION_PRESETS = [
@@ -206,7 +205,17 @@ export function AgentSettingsModal({ onBack, showToast }) {
         <div className={styles.masterCard}>
           <div className={styles.masterLeft}>
             <div className={`${styles.masterIcon} ${local.agentEnabled ? styles.masterIconActive : ''}`}>
-              <BotIcon size={22} color="currentColor" backgroundColor={local.agentEnabled ? 'var(--accent)' : 'var(--surface2)'} />
+              <span
+                className="mi-outlined"
+                style={{
+                  fontSize: 22,
+                  color: 'currentColor',
+                  background: local.agentEnabled ? 'var(--accent)' : 'var(--surface2)',
+                  borderRadius: '50%',
+                }}
+              >
+                smart_toy
+              </span>
               <StatusDot active={local.agentEnabled} />
             </div>
             <div>
