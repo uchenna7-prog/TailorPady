@@ -26,6 +26,7 @@ import {
   isAmbiguousMatch,
   containsPronoun,
   isCancelText,
+  isAcknowledgmentText,
   extractEntities,
   extractGarmentDescFallback,
   parseMoney,
@@ -597,6 +598,16 @@ export function AgentProvider({ children }) {
         break
       }
 
+      case 'farewell': {
+        await agentReply("Bye! I'll be here whenever you need me.")
+        break
+      }
+
+      case 'about_bot': {
+        await agentReply("I'm an AI assistant built into TailorPady to help you manage orders, payments, invoices, and tasks.")
+        break
+      }
+
       case 'help': {
         await agentReply(buildHelpText(), null, buildQuickActionButtons())
         break
@@ -874,6 +885,11 @@ export function AgentProvider({ children }) {
   }
 
   async function routeIntent(trimmed) {
+    if (isAcknowledgmentText(trimmed)) {
+      await agentReply('👍 Anything else?')
+      return
+    }
+
     const { intent } = classifyIntent(trimmed)
 
     if (intent === 'unknown') { await handleQuery('unknown', trimmed); return }
