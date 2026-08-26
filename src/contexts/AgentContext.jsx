@@ -65,6 +65,13 @@ function parseStatusKeyword(text) {
   return null
 }
 
+function getUserDisplayName(user) {
+  if (!user) return null
+  if (user.displayName) return user.displayName.split(' ')[0]
+  if (user.email) return user.email.split('@')[0]
+  return null
+}
+
 function findCustomer(customers, nameHint) {
   if (!nameHint) return null
   const match = matchCustomer(customers, nameHint)
@@ -605,6 +612,40 @@ export function AgentProvider({ children }) {
 
       case 'about_bot': {
         await agentReply("I'm an AI assistant built into TailorPady to help you manage orders, payments, invoices, and tasks.")
+        break
+      }
+
+      case 'my_name': {
+        const displayName = getUserDisplayName(user)
+        await agentReply(
+          displayName
+            ? `Your name is ${displayName}.`
+            : "I don't have your name on file yet. You can add it in your profile settings."
+        )
+        break
+      }
+
+      case 'ping': {
+        await agentReply("Yep, I'm up and running! Ask me about your orders, payments, or schedule.")
+        break
+      }
+
+      case 'compliment': {
+        await agentReply('Thank you! Glad I could help.')
+        break
+      }
+
+      case 'frustration': {
+        await agentReply(
+          "Sorry this hasn't been smooth. Try rephrasing, or tap a suggestion below to see what I can do.",
+          null,
+          buildQuickActionButtons()
+        )
+        break
+      }
+
+      case 'off_topic': {
+        await agentReply("That's outside what I'm built for, but I'm great with your shop's orders, payments, and schedule. Try asking what's happening today.")
         break
       }
 
