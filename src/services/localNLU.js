@@ -551,6 +551,44 @@ const INTENT_DEFS = [
     { words: ['are', 'you', 'ai'], weight: 10 },
   ]},
 
+  { intent: 'my_name', phrases: [
+    { words: ['what', 'is', 'my', 'name'], weight: 10 },
+    { words: ['who', 'am', 'i'], weight: 10 },
+  ]},
+
+  { intent: 'ping', phrases: [
+    { words: ['are', 'you', 'working'], weight: 10 },
+    { words: ['are', 'you', 'there'], weight: 9 },
+    { words: ['test'], weight: 6 },
+    { words: ['testing'], weight: 6 },
+  ]},
+
+  { intent: 'compliment', phrases: [
+    { words: ['you', 'are', 'the', 'best'], weight: 10 },
+    { words: ['i', 'love', 'this'], weight: 9 },
+    { words: ['you', 'are', 'smart'], weight: 9 },
+    { words: ['good', 'job'], weight: 8 },
+    { words: ['well', 'done'], weight: 8 },
+    { words: ['nice', 'work'], weight: 8 },
+  ]},
+
+  { intent: 'frustration', phrases: [
+    { words: ['this', 'is', 'stupid'], weight: 10 },
+    { words: ['you', 'are', 'useless'], weight: 10 },
+    { words: ['this', 'is', 'not', 'working'], weight: 10 },
+    { words: ['you', 'are', 'dumb'], weight: 10 },
+    { words: ['not', 'helpful'], weight: 8 },
+  ]},
+
+  { intent: 'off_topic', phrases: [
+    { words: ['weather'], weight: 8 },
+    { words: ['tell', 'me', 'a', 'joke'], weight: 10 },
+    { words: ['football'], weight: 7 },
+    { words: ['news'], weight: 6 },
+    { words: ['sing', 'a', 'song'], weight: 10 },
+    { words: ['tell', 'me', 'a', 'story'], weight: 10 },
+  ]},
+
   { intent: 'help', phrases: [
     { words: ['what', 'can', 'you', 'do'], weight: 10 },
     { words: ['what', 'can', 'i', 'ask'], weight: 10 },
