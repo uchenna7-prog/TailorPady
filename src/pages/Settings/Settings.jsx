@@ -21,7 +21,6 @@ import { AgentSettingsModal } from './components/AgentSettingsModal/AgentSetting
 import { PortfolioTemplateModal } from './components/PortfolioTemplateModal/PortfolioTemplateModal'
 import { CurrencyModal } from './components/CurrencyModal/CurrencyModal'
 import { AppearanceModal } from './components/AppearanceModal/AppearanceModal'
-import { BotIcon } from '../../components/BotIcon/BotIcon'
 import styles from './Settings.module.css'
 import { db } from '../../firebase'
 
@@ -408,10 +407,10 @@ export default function Settings({ onMenuClick }) {
           data-tour="settings-portfolio-template-row"
         />
 
-        <SectionHeader icon={BotIcon} label="AI Assitant" />
+        <SectionHeader icon="smart_toy" label="AI Assitant" />
 
         <SettingRow
-          icon={BotIcon}
+          icon="smart_toy"
           label="AI Settings"
           sub={"Configure your AI assistant preferences"}
           value={getAgentSub()}
