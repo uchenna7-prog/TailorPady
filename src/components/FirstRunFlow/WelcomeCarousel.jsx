@@ -154,12 +154,8 @@ export default function WelcomeCarousel({ onDone, onSkip }) {
             type="button"
             className={styles.arrowBtn}
             onClick={goToNext}
-            aria-label={isLast ? 'Continue' : 'Next'}
           >
-            <span className={styles.arrowDouble}>
-              <span className="mi-outlined">chevron_right</span>
-              <span className="mi-outlined">chevron_right</span>
-            </span>
+            {isLast ? 'Continue' : 'Next'}
           </button>
         </div>
       )}
