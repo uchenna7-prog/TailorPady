@@ -13,7 +13,7 @@ const TARGET_TIMEOUT_MS = 2500
 const RESIZE_SETTLE_MS = 200
 const DESKTOP_BREAKPOINT = 769
 const KEEP_VISIBLE_FALLBACK_OFFSET = 60
-const POINTER_SIZE = 48
+const POINTER_SIZE = 58
 
 function resolveTarget(step) {
   if (!step) return null
