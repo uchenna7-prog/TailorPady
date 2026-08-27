@@ -346,11 +346,14 @@ export default function OnboardingTour() {
     showPointer = hasTarget && currentStep.hidePointer !== true
 
     if (showPointer) {
-      const overlap = POINTER_SIZE * 0.55
-      const pointerTopRaw = rect.top + rect.height - overlap
-      const pointerLeftRaw = rect.left + rect.width - overlap
-      const pointerTop = Math.min(pointerTopRaw, window.innerHeight - POINTER_SIZE - 8)
-      const pointerLeft = Math.min(pointerLeftRaw, window.innerWidth - POINTER_SIZE - 8)
+      const marginTop = POINTER_SIZE * 0.65 + 8
+      const marginBottom = POINTER_SIZE * 0.35 + 8
+      const marginLeft = POINTER_SIZE * 0.65 + 8
+      const marginRight = POINTER_SIZE * 0.35 + 8
+      const cornerTop = rect.top + rect.height
+      const cornerLeft = rect.left + rect.width
+      const pointerTop = Math.min(Math.max(cornerTop, marginTop), window.innerHeight - marginBottom)
+      const pointerLeft = Math.min(Math.max(cornerLeft, marginLeft), window.innerWidth - marginRight)
       pointerPos = { top: pointerTop, left: pointerLeft }
     }
   }
