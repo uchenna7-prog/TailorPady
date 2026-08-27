@@ -2,7 +2,7 @@ import { useEffect, useRef, useState, useCallback, useLayoutEffect } from 'react
 import { useLocation } from 'react-router-dom'
 import { useTour } from '../../contexts/TourContext'
 import ConfirmSheet from '../ConfirmSheet/ConfirmSheet'
-import pointerHandSrc from '../../../assets/pointer-hand.png'
+import pointerHandSrc from '../../assets/pointer-hand.png'
 import styles from './OnboardingTour.module.css'
 
 const PAD = 8
