@@ -49,6 +49,24 @@
   100% { box-shadow: 0 0 0 0 rgba(var(--accent-rgb, 59, 130, 246), 0); opacity: 0; }
 }
 
+.pointerHand {
+  position: fixed;
+  width: 46px;
+  height: auto;
+  pointer-events: none;
+  z-index: 1001;
+  transform-origin: top left;
+  transform: rotate(-12deg);
+  animation: pointerBounce 1.3s ease-in-out infinite;
+  filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.35));
+  transition: top 0.25s ease, left 0.25s ease;
+}
+
+@keyframes pointerBounce {
+  0%, 100% { transform: rotate(-12deg) translate(0, 0); }
+  50% { transform: rotate(-12deg) translate(-5px, 5px); }
+}
+
 .card {
   position: fixed;
   z-index: 1000;
@@ -249,7 +267,7 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .blockStrip, .spotlightRing, .card, .cardCentered, .blockStripHeavy {
+  .blockStrip, .spotlightRing, .card, .cardCentered, .blockStripHeavy, .pointerHand {
     transition: none !important;
     animation: none !important;
   }
@@ -284,5 +302,9 @@
     background: rgba(0, 0, 0, 0.52);
     backdrop-filter: blur(8px);
     -webkit-backdrop-filter: blur(8px);
+  }
+
+  .pointerHand {
+    width: 38px;
   }
 }
