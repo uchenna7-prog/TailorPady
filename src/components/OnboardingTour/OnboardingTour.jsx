@@ -13,6 +13,7 @@ const TARGET_TIMEOUT_MS = 2500
 const RESIZE_SETTLE_MS = 200
 const DESKTOP_BREAKPOINT = 769
 const KEEP_VISIBLE_FALLBACK_OFFSET = 60
+const POINTER_SIZE = 48
 
 function resolveTarget(step) {
   if (!step) return null
@@ -315,6 +316,7 @@ export default function OnboardingTour() {
   let centeredActionsClass = ''
   let centeredBranchClass = ''
   let showPointer = false
+  let pointerPos = null
 
   if (showTour) {
     isLastStep = stepIndex === totalSteps - 1
@@ -342,6 +344,14 @@ export default function OnboardingTour() {
     centeredActionsClass = !hasTarget ? styles.actionsCentered : ''
     centeredBranchClass = !hasTarget ? styles.branchButtonsCentered : ''
     showPointer = hasTarget && currentStep.hidePointer !== true
+
+    if (showPointer) {
+      const pointerTopRaw = rect.top + rect.height - 16
+      const pointerLeftRaw = rect.left + rect.width - 16
+      const pointerTop = Math.min(pointerTopRaw, window.innerHeight - POINTER_SIZE - 8)
+      const pointerLeft = Math.min(pointerLeftRaw, window.innerWidth - POINTER_SIZE - 8)
+      pointerPos = { top: pointerTop, left: pointerLeft }
+    }
   }
 
   return (
@@ -368,8 +378,8 @@ export default function OnboardingTour() {
                 alt=""
                 className={`${styles.pointerHand} ${noTransitionClass}`}
                 style={{
-                  top: rect.top + rect.height - 6,
-                  left: rect.left + rect.width - 6,
+                  top: pointerPos.top,
+                  left: pointerPos.left,
                 }}
               />
             )}
