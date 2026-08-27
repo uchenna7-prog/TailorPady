@@ -51,7 +51,7 @@
 
 .pointerHand {
   position: fixed;
-  width: 48px;
+  width: 58px;
   height: auto;
   pointer-events: none;
   z-index: 1001;
@@ -305,6 +305,6 @@
   }
 
   .pointerHand {
-    width: 40px;
+    width: 48px;
   }
 }
