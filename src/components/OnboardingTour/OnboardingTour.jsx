@@ -2,6 +2,7 @@ import { useEffect, useRef, useState, useCallback, useLayoutEffect } from 'react
 import { useLocation } from 'react-router-dom'
 import { useTour } from '../../contexts/TourContext'
 import ConfirmSheet from '../ConfirmSheet/ConfirmSheet'
+import pointerHandSrc from '../../../assets/pointer-hand.png'
 import styles from './OnboardingTour.module.css'
 
 const PAD = 8
@@ -313,6 +314,7 @@ export default function OnboardingTour() {
   let noTransitionClass = ''
   let centeredActionsClass = ''
   let centeredBranchClass = ''
+  let showPointer = false
 
   if (showTour) {
     isLastStep = stepIndex === totalSteps - 1
@@ -339,6 +341,7 @@ export default function OnboardingTour() {
     noTransitionClass = isResizing ? styles.noTransition : ''
     centeredActionsClass = !hasTarget ? styles.actionsCentered : ''
     centeredBranchClass = !hasTarget ? styles.branchButtonsCentered : ''
+    showPointer = hasTarget && currentStep.hidePointer !== true
   }
 
   return (
@@ -359,6 +362,17 @@ export default function OnboardingTour() {
               className={`${styles.pulseRing} ${noTransitionClass}`}
               style={{ top: rect.top, left: rect.left, width: rect.width, height: rect.height }}
             />
+            {showPointer && (
+              <img
+                src={pointerHandSrc}
+                alt=""
+                className={`${styles.pointerHand} ${noTransitionClass}`}
+                style={{
+                  top: rect.top + rect.height - 6,
+                  left: rect.left + rect.width - 6,
+                }}
+              />
+            )}
           </>
         ) : (
           <div
