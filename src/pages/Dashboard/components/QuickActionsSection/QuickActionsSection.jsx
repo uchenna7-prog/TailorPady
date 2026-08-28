@@ -2,8 +2,6 @@ import { QUICK_ACTIONS } from "../../datas"
 import { useTour } from '../../../../contexts/TourContext'
 import styles from "./QuickActionsSection.module.css"
 
-const ICON_COLORS = ['#fb923c', '#3b82f6', '#22c55e', '#ec4899', '#8b5cf6', '#06b6d4']
-
 export function QuickActionsSection({ onNavigate }) {
   const { completeStep } = useTour()
 
@@ -15,28 +13,24 @@ export function QuickActionsSection({ onNavigate }) {
   }
 
   return (
-    <section className={styles.quickActions}>
+    <section className={styles.quickActionsDesktop}>
       <h3 className={styles.sectionTitle}>Quick Actions</h3>
-      <div className={styles.scrollRow}>
-        {QUICK_ACTIONS.map((action, i) => (
+      <div className={styles.statsGrid}>
+        {QUICK_ACTIONS.map(action => (
           <div
             key={action.label}
             className={styles.actionCard}
             onClick={() => handleActionClick(action)}
             data-tour={action.tourId}
           >
-            <div
-              className={styles.iconCircle}
-              style={{ background: `${ICON_COLORS[i % ICON_COLORS.length]}1a` }}
-            >
-              <span
-                className="mi-outlined"
-                style={{ fontSize: '1.4rem', color: ICON_COLORS[i % ICON_COLORS.length] }}
-              >
+            <div className={styles.statIconWrap}>
+              <span className="mi-outlined" style={{ fontSize: '1.75rem', color: 'var(--accent)' }}>
                 {action.icon}
               </span>
             </div>
-            <div className={styles.actionLabel}>{action.label}</div>
+            <div className={styles.actionCardText}>
+              <div className={styles.actionLabel}>{action.label}</div>
+            </div>
           </div>
         ))}
       </div>
