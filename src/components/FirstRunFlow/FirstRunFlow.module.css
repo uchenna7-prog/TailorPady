@@ -157,6 +157,16 @@
   stroke-width: 1.5;
 }
 
+.introImage {
+  width: 100%;
+  max-width: 280px;
+  height: auto;
+  object-fit: contain;
+  margin-bottom: 8px;
+  pointer-events: none;
+  user-select: none;
+}
+
 .introContent {
   position: relative;
   display: flex;
