@@ -5,9 +5,8 @@ import { skipOnboarding } from '../../services/profileService'
 import { preloadUpcomingStepImages } from './preloadImages'
 import RoleSelection from './RoleSelection'
 import WelcomeCarousel from './WelcomeCarousel'
-import NotificationPermission from './NotificationPermission'
 
-const STEPS = ['welcome', 'notifications', 'role']
+const STEPS = ['welcome', 'role']
 const TRANSITION_MS = 200
 const CACHE_KEY_PREFIX = 'tp_onboarding_completed_'
 
@@ -44,7 +43,6 @@ export function useFirstRunStatus() {
 
 function renderStep(step, onDone, onSkip) {
   if (step === 'welcome') return <WelcomeCarousel onDone={onDone} onSkip={onSkip} />
-  if (step === 'notifications') return <NotificationPermission onDone={onDone} onSkip={onSkip} />
   return <RoleSelection onDone={onDone} onSkip={onSkip} />
 }
 
