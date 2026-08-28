@@ -14,7 +14,7 @@
 
 .scrollRow {
   display: flex;
-  gap: 10px;
+  gap: 18px;
   overflow-x: auto;
   scroll-snap-type: x proximity;
   -webkit-overflow-scrolling: touch;
@@ -28,36 +28,35 @@
 
 .actionCard {
   flex: 0 0 auto;
-  width: 88px;
+  width: 68px;
   scroll-snap-align: start;
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 10px;
-  padding: 16px 10px;
   display: flex;
   flex-direction: column;
-  gap: 10px;
   align-items: center;
-  justify-content: center;
+  gap: 8px;
   text-align: center;
   cursor: pointer;
-  transition: background 0.15s;
 }
 
-.actionCard:active {
-  background: var(--surface2);
-}
-
-.actionCardText {
+.iconCircle {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
   display: flex;
-  flex-direction: column;
   align-items: center;
+  justify-content: center;
+  transition: transform 0.15s;
+}
+
+.actionCard:active .iconCircle {
+  transform: scale(0.92);
 }
 
 .actionLabel {
-  font-size: 0.75rem;
-  font-weight: 700;
+  font-size: 0.7rem;
+  font-weight: 600;
   color: var(--text);
+  line-height: 1.2;
 }
 
 @media (min-width: 769px) {
@@ -72,9 +71,7 @@
     width: auto;
   }
 
-  .actionCard:hover {
-    background: var(--surface2);
-    box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+  .actionCard:hover .iconCircle {
     transform: translateY(-2px);
   }
 }
