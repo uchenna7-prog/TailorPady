@@ -2,20 +2,18 @@ import { useState } from 'react'
 import { useAuth } from '../../contexts/AuthContext'
 import { db } from '../../firebase'
 import { saveOnboardingRole } from '../../services/profileService'
-import roleOwnerImage from '../../assets/onboarding/role-owner.webp'
-import roleWorkerImage from '../../assets/onboarding/role-worker.webp'
 import styles from './FirstRunFlow.module.css'
 
 const ROLES = [
   {
     id: 'owner',
-    image: roleOwnerImage,
+    icon: 'storefront',
     title: 'Owner (Master/Madam)',
     sub: 'You run the studio and manage the business.',
   },
   {
     id: 'worker',
-    image: roleWorkerImage,
+    icon: 'person',
     title: 'Worker / Apprentice',
     sub: 'You work under a studio owner.',
   },
@@ -62,16 +60,14 @@ export default function RoleSelection({ onDone, onSkip }) {
                 aria-checked={isSelected}
                 tabIndex={0}
               >
-                <div className={styles.roleHead}>
-                  <div className={`${styles.roleRadio} ${isSelected ? styles.roleRadioSelected : ''}`} />
-                  <div className={styles.roleTextBlock}>
-                    <p className={styles.roleTitle}>{role.title}</p>
-                    <p className={styles.roleSub}>{role.sub}</p>
-                  </div>
+                <div className={`${styles.roleIconWrap} ${isSelected ? styles.roleIconWrapSelected : ''}`}>
+                  <span className={`mi ${styles.roleIcon}`}>{role.icon}</span>
                 </div>
-                <div className={styles.roleImageWrap}>
-                  <img src={role.image} alt={role.title} className={styles.roleImage} draggable={false} />
+                <div className={styles.roleTextBlock}>
+                  <p className={styles.roleTitle}>{role.title}</p>
+                  <p className={styles.roleSub}>{role.sub}</p>
                 </div>
+                <div className={`${styles.roleRadio} ${isSelected ? styles.roleRadioSelected : ''}`} />
               </div>
             )
           })}
