@@ -134,37 +134,25 @@
 .introSlide {
   flex: 1;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
   position: relative;
   min-height: 0;
   padding: 0 32px;
-}
-
-.introWave {
-  position: absolute;
-  width: 340px;
-  height: 340px;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  pointer-events: none;
-}
-
-.introWave path {
-  fill: none;
-  stroke: var(--border2);
-  stroke-width: 1.5;
+  gap: 28px;
 }
 
 .introImage {
   width: 100%;
-  max-width: 280px;
+  max-width: 220px;
   height: auto;
   object-fit: contain;
-  margin-bottom: 8px;
   pointer-events: none;
   user-select: none;
+  filter: drop-shadow(0 16px 22px rgba(0, 0, 0, 0.14));
+  animation: introFadeUp 520ms cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation-delay: 60ms;
 }
 
 .introContent {
@@ -176,33 +164,23 @@
   gap: 10px;
 }
 
-.introEyebrow {
-  font-size: 0.72rem;
-  font-weight: 700;
-  letter-spacing: 2px;
-  text-transform: uppercase;
-  color: var(--text3);
-  animation: introFadeUp 520ms cubic-bezier(0.22, 1, 0.36, 1) both;
-  animation-delay: 60ms;
-}
-
 .wordmark {
   font-family: 'Onest', sans-serif;
-  font-size: 2.1rem;
+  font-size: 1.7rem;
   font-weight: 900;
   color: var(--text);
   letter-spacing: -0.5px;
   animation: introFadeUp 520ms cubic-bezier(0.22, 1, 0.36, 1) both;
-  animation-delay: 140ms;
+  animation-delay: 160ms;
 }
 
 .introTagline {
-  font-size: 0.92rem;
+  font-size: 0.9rem;
   color: var(--text3);
   line-height: 1.55;
-  max-width: 260px;
+  max-width: 240px;
   animation: introFadeUp 520ms cubic-bezier(0.22, 1, 0.36, 1) both;
-  animation-delay: 220ms;
+  animation-delay: 240ms;
 }
 
 @keyframes introFadeUp {
