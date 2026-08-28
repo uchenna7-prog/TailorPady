@@ -13,9 +13,9 @@ export function QuickActionsSection({ onNavigate }) {
   }
 
   return (
-    <section className={styles.quickActionsDesktop}>
+    <section className={styles.quickActions}>
       <h3 className={styles.sectionTitle}>Quick Actions</h3>
-      <div className={styles.statsGrid}>
+      <div className={styles.scrollRow}>
         {QUICK_ACTIONS.map(action => (
           <div
             key={action.label}
