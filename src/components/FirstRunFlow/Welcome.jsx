@@ -4,7 +4,9 @@ export default function Welcome({ onDone }) {
   return (
     <div className={styles.page}>
       <div className={styles.welcomeContent}>
-        <span className={styles.brandMark}>T</span>
+        <div className={styles.brandMark}>
+          <img src="/icons/icon192.png" alt="TailorPady" />
+        </div>
         <h1 className={styles.wordmark}>TailorPady</h1>
         <p className={styles.introTagline}>The business side of tailoring, simplified.</p>
       </div>
