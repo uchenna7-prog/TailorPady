@@ -2,9 +2,8 @@ import { useState, useEffect } from 'react'
 import { useAuth } from '../../contexts/AuthContext'
 import { db } from '../../firebase'
 import { skipOnboarding } from '../../services/profileService'
-import { preloadUpcomingStepImages } from './preloadImages'
 import RoleSelection from './RoleSelection'
-import WelcomeCarousel from './WelcomeCarousel'
+import Welcome from './Welcome'
 
 const STEPS = ['welcome', 'role']
 const TRANSITION_MS = 200
@@ -42,7 +41,7 @@ export function useFirstRunStatus() {
 }
 
 function renderStep(step, onDone, onSkip) {
-  if (step === 'welcome') return <WelcomeCarousel onDone={onDone} onSkip={onSkip} />
+  if (step === 'welcome') return <Welcome onDone={onDone} />
   return <RoleSelection onDone={onDone} onSkip={onSkip} />
 }
 
@@ -54,10 +53,6 @@ export default function FirstRunFlow({ onComplete }) {
   const [skipping, setSkipping] = useState(false)
 
   const step = STEPS[stepIndex]
-
-  useEffect(() => {
-    preloadUpcomingStepImages()
-  }, [])
 
   useEffect(() => {
     if (step === displayStep) return
