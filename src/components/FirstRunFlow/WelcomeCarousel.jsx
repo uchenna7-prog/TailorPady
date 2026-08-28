@@ -71,9 +71,11 @@ export default function WelcomeCarousel({ onDone, onSkip }) {
 
   return (
     <div className={styles.page}>
-      <button type="button" className={styles.skipBtn} onClick={onSkip}>
-        Skip
-      </button>
+      {index > 0 && (
+        <button type="button" className={styles.skipBtn} onClick={onSkip}>
+          Skip
+        </button>
+      )}
 
       {index > 0 && (
         <div className={styles.progressRow}>
@@ -103,13 +105,16 @@ export default function WelcomeCarousel({ onDone, onSkip }) {
             <div key={item.key} className={styles.slideItem}>
               {i === 0 ? (
                 <div className={styles.introSlide}>
-                  <img
-                    src={welcomeImage}
-                    alt="Welcome to TailorPady"
-                    className={styles.introImage}
-                    draggable={false}
-                  />
+                  <div className={styles.introImageZone}>
+                    <img
+                      src={welcomeImage}
+                      alt="Welcome to TailorPady"
+                      className={styles.introImage}
+                      draggable={false}
+                    />
+                  </div>
                   <div className={styles.introContent}>
+                    <span className={styles.brandMark}>T</span>
                     <h1 className={styles.wordmark}>TailorPady</h1>
                     <p className={styles.introTagline}>The business side of tailoring, simplified.</p>
                   </div>
