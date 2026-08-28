@@ -103,14 +103,6 @@ export default function WelcomeCarousel({ onDone, onSkip }) {
             <div key={item.key} className={styles.slideItem}>
               {i === 0 ? (
                 <div className={styles.introSlide}>
-                  <svg
-                    className={styles.introWave}
-                    viewBox="0 0 400 400"
-                    preserveAspectRatio="xMidYMid meet"
-                    aria-hidden="true"
-                  >
-                    <path d="M40,120 C120,20 260,20 340,110 C400,180 380,300 300,340 C210,385 90,360 50,270 C20,200 -20,190 40,120 Z" />
-                  </svg>
                   <img
                     src={welcomeImage}
                     alt="Welcome to TailorPady"
@@ -118,7 +110,6 @@ export default function WelcomeCarousel({ onDone, onSkip }) {
                     draggable={false}
                   />
                   <div className={styles.introContent}>
-                    <span className={styles.introEyebrow}>Welcome to</span>
                     <h1 className={styles.wordmark}>TailorPady</h1>
                     <p className={styles.introTagline}>The business side of tailoring, simplified.</p>
                   </div>
