@@ -35,47 +35,6 @@
   opacity: 0.6;
 }
 
-.progressRow {
-  display: flex;
-  gap: 6px;
-  padding: 0 24px;
-  flex-shrink: 0;
-}
-
-.progressSeg {
-  flex: 1;
-  height: 4px;
-  border-radius: 999px;
-  background: var(--border2);
-  transition: background 220ms ease;
-}
-
-.progressSegActive {
-  background: var(--accent);
-}
-
-.viewport {
-  flex: 1;
-  min-height: 0;
-  overflow: hidden;
-  position: relative;
-  touch-action: pan-y;
-}
-
-.strip {
-  display: flex;
-  width: 400vw;
-  height: 100%;
-}
-
-.slideItem {
-  width: 100vw;
-  flex-shrink: 0;
-  display: flex;
-  flex-direction: column;
-  min-height: 0;
-}
-
 .slideTrack {
   flex: 1;
   display: flex;
@@ -87,11 +46,6 @@
 @keyframes firstRunSlideIn {
   from { opacity: 0; transform: translateY(10px); }
   to   { opacity: 1; transform: translateY(0); }
-}
-
-.textBlock {
-  flex-shrink: 0;
-  padding-top: 18px;
 }
 
 .title {
@@ -111,71 +65,21 @@
   line-height: 1.5;
 }
 
-.backdrop {
-  flex: 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin: 0 8px;
-  position: relative;
-  min-height: 0;
-  touch-action: pan-y;
-}
-
-.image {
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-  pointer-events: none;
-  user-select: none;
-  filter: drop-shadow(0 20px 28px rgba(0, 0, 0, 0.22));
-}
-
-.introSlide {
+.welcomeContent {
   flex: 1;
   display: flex;
   flex-direction: column;
-  min-height: 0;
-  padding: 8px 32px 0;
-}
-
-.introImageZone {
-  flex: 1 1 auto;
-  min-height: 0;
-  display: flex;
-  align-items: flex-end;
-  justify-content: center;
-  padding-bottom: 24px;
-}
-
-.introImage {
-  width: 100%;
-  max-width: 240px;
-  height: auto;
-  max-height: 100%;
-  object-fit: contain;
-  pointer-events: none;
-  user-select: none;
-  filter: drop-shadow(0 16px 22px rgba(0, 0, 0, 0.14));
-  animation: introFadeUp 520ms cubic-bezier(0.22, 1, 0.36, 1) both;
-  animation-delay: 60ms;
-}
-
-.introContent {
-  flex-shrink: 0;
-  position: relative;
-  display: flex;
-  flex-direction: column;
   align-items: center;
+  justify-content: center;
   text-align: center;
-  gap: 8px;
-  padding-bottom: 12px;
+  gap: 12px;
+  padding: 0 32px;
 }
 
 .brandMark {
-  width: 40px;
-  height: 40px;
-  border-radius: 12px;
+  width: 72px;
+  height: 72px;
+  border-radius: 20px;
   background: var(--text);
   color: var(--bg);
   display: flex;
@@ -183,29 +87,29 @@
   justify-content: center;
   font-family: 'Onest', sans-serif;
   font-weight: 900;
-  font-size: 1.1rem;
-  margin-bottom: 4px;
+  font-size: 1.9rem;
+  margin-bottom: 8px;
   animation: introFadeUp 520ms cubic-bezier(0.22, 1, 0.36, 1) both;
-  animation-delay: 120ms;
+  animation-delay: 60ms;
 }
 
 .wordmark {
   font-family: 'Onest', sans-serif;
-  font-size: 1.6rem;
+  font-size: 1.7rem;
   font-weight: 900;
   color: var(--text);
   letter-spacing: -0.6px;
   animation: introFadeUp 520ms cubic-bezier(0.22, 1, 0.36, 1) both;
-  animation-delay: 180ms;
+  animation-delay: 140ms;
 }
 
 .introTagline {
-  font-size: 0.88rem;
+  font-size: 0.9rem;
   color: var(--text3);
-  line-height: 1.5;
+  line-height: 1.55;
   max-width: 240px;
   animation: introFadeUp 520ms cubic-bezier(0.22, 1, 0.36, 1) both;
-  animation-delay: 240ms;
+  animation-delay: 220ms;
 }
 
 @keyframes introFadeUp {
@@ -220,39 +124,6 @@
   padding: 4px 24px 8px;
 }
 
-.dotsRow {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 10px;
-  padding: 18px 0 6px;
-  flex-shrink: 0;
-}
-
-.dotBtn {
-  background: none;
-  border: none;
-  padding: 5px;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.dot {
-  width: 8px;
-  height: 8px;
-  border-radius: 999px;
-  border: 1.5px solid var(--border2);
-  background: transparent;
-  transition: all 250ms cubic-bezier(0.22, 1, 0.36, 1);
-}
-
-.dotActive {
-  background: var(--text);
-  border-color: var(--text);
-}
-
 .footer {
   padding: 10px 24px 28px;
   flex-shrink: 0;
@@ -263,60 +134,6 @@
 .introFooter {
   padding: 10px 24px 28px;
   flex-shrink: 0;
-}
-
-.navFooter {
-  padding: 10px 24px 28px;
-  flex-shrink: 0;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-.backBtn {
-  background: none;
-  border: none;
-  font-size: 0.85rem;
-  font-weight: 700;
-  color: var(--text3);
-  cursor: pointer;
-  padding: 14px 8px;
-  font-family: inherit;
-  transition: opacity 140ms ease;
-}
-
-.backBtn:active {
-  opacity: 0.6;
-}
-
-.backBtnHidden {
-  visibility: hidden;
-  pointer-events: none;
-}
-
-.arrowBtn {
-  height: 44px;
-  flex-shrink: 0;
-  border-radius: 10px;
-  background: var(--accent);
-  border: none;
-  padding: 0 22px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: var(--bg);
-  font-size: 0.85rem;
-  font-weight: 800;
-  font-family: inherit;
-  cursor: pointer;
-  box-shadow: 0 10px 24px -10px rgba(0, 0, 0, 0.35);
-  transition: transform 140ms ease, opacity 140ms ease, box-shadow 140ms ease;
-}
-
-.arrowBtn:active {
-  transform: scale(0.94);
-  opacity: 0.9;
-  box-shadow: 0 4px 10px -6px rgba(0, 0, 0, 0.25);
 }
 
 .primaryBtn {
@@ -345,31 +162,12 @@
   cursor: not-allowed;
 }
 
-.secondaryBtn {
-  width: 100%;
-  padding: 14px;
-  background: none;
-  border: none;
-  font-size: 0.85rem;
-  font-weight: 700;
-  color: var(--text3);
-  cursor: pointer;
-  margin-top: 2px;
-  font-family: inherit;
-  transition: transform 140ms ease, opacity 140ms ease;
-}
-
-.secondaryBtn:active {
-  transform: scale(0.97);
-  opacity: 0.7;
-}
-
 .roleOption {
   display: flex;
-  flex-direction: column;
-  gap: 6px;
+  align-items: center;
+  gap: 14px;
   border-bottom: 1px solid var(--border);
-  padding: 18px 4px;
+  padding: 16px 4px;
   cursor: pointer;
   transition: background 140ms ease;
 }
@@ -382,35 +180,29 @@
   border-bottom: none;
 }
 
-.roleHead {
+.roleIconWrap {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background: var(--surface2);
   display: flex;
-  align-items: flex-start;
-  gap: 12px;
-}
-
-.roleImageWrap {
-  display: flex;
+  align-items: center;
   justify-content: center;
-  margin-top: 14px;
+  flex-shrink: 0;
+  transition: background 220ms ease;
 }
 
-.roleImage {
-  width: auto;
-  height: 128px;
-  object-fit: contain;
-}
-
-.roleIconSelected {
+.roleIconWrapSelected {
   background: var(--accent);
 }
 
-.roleIcon span {
-  font-size: 1.15rem !important;
+.roleIcon {
+  font-size: 1.3rem !important;
   color: var(--text2);
   transition: color 220ms ease;
 }
 
-.roleIconSelected span {
+.roleIconWrapSelected .roleIcon {
   color: var(--bg);
 }
 
