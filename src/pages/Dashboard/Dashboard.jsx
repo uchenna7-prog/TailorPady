@@ -611,6 +611,8 @@ function Dashboard({ onMenuClick, onGoToCustomer, sidebarOpen }) {
             )}
           </section>
 
+          <QuickActionsSection onNavigate={navigate} />
+
           {goalLoading ? (
             <RevenueGoalCardSkeleton />
           ) : goal && derived ? (
@@ -685,8 +687,6 @@ function Dashboard({ onMenuClick, onGoToCustomer, sidebarOpen }) {
               onSelectAppointment={setDetailAppt}
             />
           )}
-
-          <QuickActionsSection onNavigate={navigate} />
 
           {ordersReady ? (
             recentActiveOrders.length > 0 && (
