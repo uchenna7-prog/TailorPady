@@ -135,18 +135,24 @@
   flex: 1;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  position: relative;
   min-height: 0;
-  padding: 0 32px;
-  gap: 28px;
+  padding: 8px 32px 0;
+}
+
+.introImageZone {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding-bottom: 24px;
 }
 
 .introImage {
   width: 100%;
-  max-width: 220px;
+  max-width: 240px;
   height: auto;
+  max-height: 100%;
   object-fit: contain;
   pointer-events: none;
   user-select: none;
@@ -156,28 +162,47 @@
 }
 
 .introContent {
+  flex-shrink: 0;
   position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
   text-align: center;
-  gap: 10px;
+  gap: 8px;
+  padding-bottom: 12px;
+}
+
+.brandMark {
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  background: var(--text);
+  color: var(--bg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Onest', sans-serif;
+  font-weight: 900;
+  font-size: 1.1rem;
+  margin-bottom: 4px;
+  animation: introFadeUp 520ms cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation-delay: 120ms;
 }
 
 .wordmark {
   font-family: 'Onest', sans-serif;
-  font-size: 1.7rem;
+  font-size: 1.6rem;
   font-weight: 900;
   color: var(--text);
-  letter-spacing: -0.5px;
+  letter-spacing: -0.6px;
   animation: introFadeUp 520ms cubic-bezier(0.22, 1, 0.36, 1) both;
-  animation-delay: 160ms;
+  animation-delay: 180ms;
 }
 
 .introTagline {
-  font-size: 0.9rem;
+  font-size: 0.88rem;
   color: var(--text3);
-  line-height: 1.55;
+  line-height: 1.5;
   max-width: 240px;
   animation: introFadeUp 520ms cubic-bezier(0.22, 1, 0.36, 1) both;
   animation-delay: 240ms;
