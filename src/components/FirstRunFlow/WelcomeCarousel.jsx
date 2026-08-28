@@ -1,5 +1,5 @@
 import { useState, useRef } from 'react'
-import dashboardSlide from '../../assets/onboarding/onboarding-dashboard.webp'
+import welcomeImage from '../../assets/onboarding/onboarding-welcome.webp'
 import ordersSlide from '../../assets/onboarding/onboarding-orders.webp'
 import customersSlide from '../../assets/onboarding/onboarding-customers.webp'
 import styles from './FirstRunFlow.module.css'
@@ -7,12 +7,6 @@ import styles from './FirstRunFlow.module.css'
 const SLIDES = [
   {
     key: 'intro',
-  },
-  {
-    key: 'dashboard',
-    title: 'Track Performance',
-    sub: 'Get a clear view of how your business is doing at a glance.',
-    image: dashboardSlide,
   },
   {
     key: 'orders',
@@ -117,6 +111,12 @@ export default function WelcomeCarousel({ onDone, onSkip }) {
                   >
                     <path d="M40,120 C120,20 260,20 340,110 C400,180 380,300 300,340 C210,385 90,360 50,270 C20,200 -20,190 40,120 Z" />
                   </svg>
+                  <img
+                    src={welcomeImage}
+                    alt="Welcome to TailorPady"
+                    className={styles.introImage}
+                    draggable={false}
+                  />
                   <div className={styles.introContent}>
                     <span className={styles.introEyebrow}>Welcome to</span>
                     <h1 className={styles.wordmark}>TailorPady</h1>
