@@ -17,7 +17,7 @@ const ROLES = [
   },
 ]
 
-export default function RoleSelection({ onDone, onSkip }) {
+export default function RoleSelection({ onDone }) {
   const { user } = useAuth()
   const [selected, setSelected] = useState(null)
   const [saving, setSaving] = useState(false)
@@ -38,10 +38,6 @@ export default function RoleSelection({ onDone, onSkip }) {
 
   return (
     <div className={styles.page}>
-      <button type="button" className={styles.skipBtn} onClick={onSkip}>
-        Skip
-      </button>
-
       <div className={styles.slideTrack}>
         <h1 className={styles.title}>Tell us who you are</h1>
         <p className={styles.sub}>Choose your role to personalize your experience.</p>
