@@ -8,7 +8,6 @@ export default function Welcome({ onDone }) {
           <img src="/icons/icon192.png" alt="TailorPady" />
         </div>
         <h1 className={styles.wordmark}>TailorPady</h1>
-        <p className={styles.introTagline}>The business side of tailoring, simplified.</p>
       </div>
 
       <div className={styles.introFooter}>
