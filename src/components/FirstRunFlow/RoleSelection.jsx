@@ -7,13 +7,13 @@ import styles from './FirstRunFlow.module.css'
 const ROLES = [
   {
     id: 'owner',
-    title: 'Owner (Master/Madam)',
-    sub: 'You run the studio and manage the business.',
+    title: 'Master / Madam',
+    sub: 'You own the tailoring business and have workers.',
   },
   {
     id: 'worker',
     title: 'Worker / Apprentice',
-    sub: 'You work under a studio owner.',
+    sub: 'You work for a tailoring business under the owner.',
   },
 ]
 
