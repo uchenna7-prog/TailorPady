@@ -72,7 +72,7 @@ export default function Provisioning({ onDone }) {
           ))}
         </div>
 
-        <p className={styles.provisioningLabel}>Setting up your studio…</p>
+        <p className={styles.provisioningLabel}>Getting everything ready for you…</p>
       </div>
 
       <div className={styles.progressTrack}>
