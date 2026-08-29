@@ -2,8 +2,9 @@ import { useState, useEffect } from 'react'
 import { useAuth } from '../../contexts/AuthContext'
 import RoleSelection from './RoleSelection'
 import Welcome from './Welcome'
+import Provisioning from './Provisioning'
 
-const STEPS = ['welcome', 'role']
+const STEPS = ['welcome', 'role', 'provisioning']
 const TRANSITION_MS = 200
 const CACHE_KEY_PREFIX = 'tp_onboarding_completed_'
 
@@ -40,7 +41,8 @@ export function useFirstRunStatus() {
 
 function renderStep(step, onDone) {
   if (step === 'welcome') return <Welcome onDone={onDone} />
-  return <RoleSelection onDone={onDone} />
+  if (step === 'role') return <RoleSelection onDone={onDone} />
+  return <Provisioning onDone={onDone} />
 }
 
 export default function FirstRunFlow({ onComplete }) {
