@@ -190,7 +190,7 @@
   gap: 16px;
   border: 1.5px solid var(--border);
   border-radius: 16px;
-  padding: 22px 18px;
+  padding: 24px 20px;
   cursor: pointer;
   transition: border-color 200ms ease, background 200ms ease;
 }
@@ -202,32 +202,6 @@
 .roleCardSelected {
   border-color: var(--accent);
   background: var(--surface2);
-}
-
-.roleIconWrap {
-  width: 52px;
-  height: 52px;
-  border-radius: 14px;
-  background: var(--surface2);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-  transition: background 220ms ease;
-}
-
-.roleIconWrapSelected {
-  background: var(--accent);
-}
-
-.roleIcon {
-  font-size: 1.5rem !important;
-  color: var(--text2);
-  transition: color 220ms ease;
-}
-
-.roleIconWrapSelected .roleIcon {
-  color: var(--bg);
 }
 
 .roleTitle {
