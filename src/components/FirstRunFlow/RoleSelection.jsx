@@ -54,7 +54,7 @@ export default function RoleSelection({ onDone, onSkip }) {
             return (
               <div
                 key={role.id}
-                className={styles.roleOption}
+                className={`${styles.roleCard} ${isSelected ? styles.roleCardSelected : ''}`}
                 onClick={() => setSelected(role.id)}
                 role="radio"
                 aria-checked={isSelected}
