@@ -7,13 +7,11 @@ import styles from './FirstRunFlow.module.css'
 const ROLES = [
   {
     id: 'owner',
-    icon: 'storefront',
     title: 'Owner (Master/Madam)',
     sub: 'You run the studio and manage the business.',
   },
   {
     id: 'worker',
-    icon: 'person',
     title: 'Worker / Apprentice',
     sub: 'You work under a studio owner.',
   },
@@ -60,9 +58,6 @@ export default function RoleSelection({ onDone, onSkip }) {
                 aria-checked={isSelected}
                 tabIndex={0}
               >
-                <div className={`${styles.roleIconWrap} ${isSelected ? styles.roleIconWrapSelected : ''}`}>
-                  <span className={`mi ${styles.roleIcon}`}>{role.icon}</span>
-                </div>
                 <div className={styles.roleTextBlock}>
                   <p className={styles.roleTitle}>{role.title}</p>
                   <p className={styles.roleSub}>{role.sub}</p>
