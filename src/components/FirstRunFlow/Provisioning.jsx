@@ -1,7 +1,7 @@
 import { useEffect } from 'react'
 import styles from './FirstRunFlow.module.css'
 
-const DURATION_MS = 2600
+const DURATION_MS = 2900
 
 function assemblePath(sx1, sy1, sx2, sy2, delayMs) {
   return {
@@ -71,6 +71,12 @@ export default function Provisioning({ onDone }) {
             </div>
           ))}
         </div>
+
+        <p className={styles.provisioningLabel}>Setting up your studio…</p>
+      </div>
+
+      <div className={styles.progressTrack}>
+        <span className={styles.progressFill} />
       </div>
     </div>
   )
