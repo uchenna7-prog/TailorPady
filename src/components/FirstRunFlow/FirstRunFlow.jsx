@@ -1,7 +1,5 @@
 import { useState, useEffect } from 'react'
 import { useAuth } from '../../contexts/AuthContext'
-import { db } from '../../firebase'
-import { skipOnboarding } from '../../services/profileService'
 import RoleSelection from './RoleSelection'
 import Welcome from './Welcome'
 
@@ -40,17 +38,15 @@ export function useFirstRunStatus() {
   return { checking: false, shouldShow, markCompleted }
 }
 
-function renderStep(step, onDone, onSkip) {
+function renderStep(step, onDone) {
   if (step === 'welcome') return <Welcome onDone={onDone} />
-  return <RoleSelection onDone={onDone} onSkip={onSkip} />
+  return <RoleSelection onDone={onDone} />
 }
 
 export default function FirstRunFlow({ onComplete }) {
-  const { user } = useAuth()
   const [stepIndex, setStepIndex] = useState(0)
   const [displayStep, setDisplayStep] = useState(STEPS[0])
   const [fading, setFading] = useState(false)
-  const [skipping, setSkipping] = useState(false)
 
   const step = STEPS[stepIndex]
 
@@ -74,21 +70,6 @@ export default function FirstRunFlow({ onComplete }) {
     })
   }
 
-  async function handleSkip() {
-    if (skipping || !user?.uid) {
-      onComplete()
-      return
-    }
-    setSkipping(true)
-    try {
-      await skipOnboarding(db, user.uid)
-    } catch {
-    } finally {
-      setSkipping(false)
-      onComplete()
-    }
-  }
-
   return (
     <div
       style={{
@@ -96,7 +77,7 @@ export default function FirstRunFlow({ onComplete }) {
         transition: `opacity ${TRANSITION_MS}ms ease`,
       }}
     >
-      {renderStep(displayStep, advance, handleSkip)}
+      {renderStep(displayStep, advance)}
     </div>
   )
 }
