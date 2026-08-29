@@ -98,6 +98,7 @@
   height: 100%;
   object-fit: cover;
   display: block;
+  transform: scale(2.05);
 }
 
 .wordmark {
