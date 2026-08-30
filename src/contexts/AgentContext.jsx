@@ -154,9 +154,10 @@ const FLOWS = {
     },
     {
       key:      'dueDate',
-      question: "When is it due? (e.g. May 20, next Friday, in 3 days)",
+      question: 'When is it due?',
+      inputType: 'date',
       validate: v => parseDate(v) !== null,
-      errMsg:   "I didn't catch that date. Try something like 'May 20' or 'next Friday'.",
+      errMsg:   "I didn't catch that date. Please pick a date from the calendar.",
       transform: v => parseDate(v),
     },
     { key: 'deposit',         question: "Has the customer paid a deposit? If yes, how much? (or say 'no')" },
@@ -182,7 +183,9 @@ const FLOWS = {
     { key: 'desc', question: "What's the task?" },
     {
       key:      'dueDate',
-      question: "When is it due? (or say 'no date')",
+      question: 'When is it due?',
+      inputType: 'date',
+      allowSkip: true,
       transform: v => /no date|none|skip/i.test(v) ? null : parseDate(v),
     },
     {
@@ -197,8 +200,9 @@ const FLOWS = {
     {
       key:      'date',
       question: 'What date?',
+      inputType: 'date',
       validate: v => parseDate(v) !== null,
-      errMsg:   "I didn't catch that date. Try something like 'May 20' or 'next Friday'.",
+      errMsg:   "I didn't catch that date. Please pick a date from the calendar.",
       transform: v => parseDate(v),
     },
     { key: 'time', question: 'What time? (e.g. 2pm, 14:00)' },
@@ -269,7 +273,14 @@ export function AgentProvider({ children }) {
     const steps = FLOWS[flowName]
     if (!steps) return
 
-    const flow = { name: flowName, stepIdx: nextQuestionIndex(steps, initialData, 0), data: { ...initialData } }
+    const stepIdx = nextQuestionIndex(steps, initialData, 0)
+    const flow = {
+      name: flowName,
+      stepIdx,
+      data: { ...initialData },
+      inputType: steps[stepIdx]?.inputType || null,
+      allowSkip: steps[stepIdx]?.allowSkip || false,
+    }
 
     if (flow.stepIdx >= steps.length) { await executeFlow(flow); return }
 
@@ -296,7 +307,13 @@ export function AgentProvider({ children }) {
       setActiveFlow(null)
       await executeFlow({ ...activeFlow, data: newData })
     } else {
-      setActiveFlow({ ...activeFlow, stepIdx: nextIdx, data: newData })
+      setActiveFlow({
+        ...activeFlow,
+        stepIdx: nextIdx,
+        data: newData,
+        inputType: steps[nextIdx]?.inputType || null,
+        allowSkip: steps[nextIdx]?.allowSkip || false,
+      })
       await agentReply(steps[nextIdx].question)
     }
 
