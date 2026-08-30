@@ -33,8 +33,6 @@ import {
   HOUR_MS,
   WEEK_MS,
 } from '../services/localNLU'
-// NOTE: adjust the import path above ("../services/localNLU") to wherever
-// you place localNLU.js in your project — it should sit next to agentService.
 
 const TICK_MS = 30_000
 const DEBOUNCE_MS = 2_500
@@ -44,7 +42,7 @@ function timestampToMsLocal(value) {
 }
 
 function whenLabel(remainingMs) {
-  if (!Number.isFinite(remainingMs)) return '—'
+  if (!Number.isFinite(remainingMs)) return '-'
   if (remainingMs <= 0) return 'Soon'
   const totalMins  = remainingMs / (1000 * 60)
   const totalHours = remainingMs / HOUR_MS
