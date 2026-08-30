@@ -16,6 +16,11 @@ const PUBLIC_ROUTE_PATTERNS = [
   /^\/founder$/,
 ]
 
+const STATIC_FILE_PATTERNS = [
+  /^\/sitemap\.xml$/,
+  /^\/robots\.txt$/,
+]
+
 registerRoute(
   new NavigationRoute(createHandlerBoundToURL('/index.html'), {
     allowlist: PUBLIC_ROUTE_PATTERNS,
@@ -24,7 +29,7 @@ registerRoute(
 
 registerRoute(
   new NavigationRoute(createHandlerBoundToURL('/app.html'), {
-    denylist: PUBLIC_ROUTE_PATTERNS,
+    denylist: [...PUBLIC_ROUTE_PATTERNS, ...STATIC_FILE_PATTERNS],
   })
 )
 
