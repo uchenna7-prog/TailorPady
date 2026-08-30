@@ -18,6 +18,10 @@ const FLOW_LABELS = {
 
 const MAX_MESSAGE_LENGTH = 500
 
+function todayISO() {
+  return new Date().toISOString().slice(0, 10)
+}
+
 export function ChatPanel({
   messages,
   isTyping,
@@ -49,6 +53,13 @@ export function ChatPanel({
     inputRef.current?.focus()
   }
 
+  function handleSkipDate() {
+    if (isTyping) return
+    haptic('light')
+    onSend('skip')
+  }
+
+  const isDateStep = activeFlow?.inputType === 'date'
   const showChips = !activeFlow && messages.length === 0 && !isLoading
   const canSend = inputValue.trim().length > 0 && !isTyping
 
@@ -122,35 +133,72 @@ export function ChatPanel({
           </div>
         )}
 
-        <div className={styles.chatInputWrap}>
-          <span aria-hidden="true">
-            <span className="mi-outlined" style={{ fontSize: '1.5rem', color: 'var(--text3)' }}>smart_toy</span>
-          </span>
-          <textarea
-            ref={inputRef}
-            className={styles.chatInputField}
-            placeholder={activeFlow ? 'Type your answer...' : 'Message...'}
-            aria-label="Message"
-            value={inputValue}
-            rows={1}
-            maxLength={MAX_MESSAGE_LENGTH}
-            disabled={isTyping}
-            onChange={e => {
-              setInputValue(e.target.value)
-              e.target.style.height = 'auto'
-              e.target.style.height = Math.min(e.target.scrollHeight, 100) + 'px'
-            }}
-            onKeyDown={handleKeyDown}
-          />
-          <button
-            className={`${styles.chatSendBtn} ${canSend ? styles.chatSendBtnActive : ''}`}
-            onClick={onSend}
-            disabled={!canSend}
-            aria-label="Send message"
-          >
-            <MIcon name="arrow_upward" size="0.85rem" color="var(--bg)" />
-          </button>
-        </div>
+        {isDateStep && activeFlow?.allowSkip && (
+          <div className={styles.chipsRow}>
+            <button
+              className={styles.chip}
+              onClick={handleSkipDate}
+              disabled={isTyping}
+            >
+              No date
+            </button>
+          </div>
+        )}
+
+        {isDateStep ? (
+          <div className={styles.chatDateWrap}>
+            <span aria-hidden="true">
+              <MIcon name="calendar_month" size="1.3rem" color="var(--text3)" />
+            </span>
+            <input
+              type="date"
+              className={styles.chatDateField}
+              aria-label="Select date"
+              value={inputValue}
+              min={todayISO()}
+              disabled={isTyping}
+              onChange={e => setInputValue(e.target.value)}
+            />
+            <button
+              className={`${styles.chatSendBtn} ${canSend ? styles.chatSendBtnActive : ''}`}
+              onClick={() => onSend()}
+              disabled={!canSend}
+              aria-label="Confirm date"
+            >
+              <MIcon name="arrow_upward" size="0.85rem" color="var(--bg)" />
+            </button>
+          </div>
+        ) : (
+          <div className={styles.chatInputWrap}>
+            <span aria-hidden="true">
+              <span className="mi-outlined" style={{ fontSize: '1.5rem', color: 'var(--text3)' }}>smart_toy</span>
+            </span>
+            <textarea
+              ref={inputRef}
+              className={styles.chatInputField}
+              placeholder={activeFlow ? 'Type your answer...' : 'Message...'}
+              aria-label="Message"
+              value={inputValue}
+              rows={1}
+              maxLength={MAX_MESSAGE_LENGTH}
+              disabled={isTyping}
+              onChange={e => {
+                setInputValue(e.target.value)
+                e.target.style.height = 'auto'
+                e.target.style.height = Math.min(e.target.scrollHeight, 100) + 'px'
+              }}
+              onKeyDown={handleKeyDown}
+            />
+            <button
+              className={`${styles.chatSendBtn} ${canSend ? styles.chatSendBtnActive : ''}`}
+              onClick={() => onSend()}
+              disabled={!canSend}
+              aria-label="Send message"
+            >
+              <MIcon name="arrow_upward" size="0.85rem" color="var(--bg)" />
+            </button>
+          </div>
+        )}
       </div>
     </div>
   )
