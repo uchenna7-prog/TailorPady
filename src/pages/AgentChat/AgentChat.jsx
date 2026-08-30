@@ -23,8 +23,8 @@ function AgentChat() {
     return `${getGreeting()}, ${name}! ${getGreetingEmoji()}`
   })
 
-  function handleSend() {
-    const v = inputValue.trim()
+  function handleSend(overrideText) {
+    const v = (typeof overrideText === 'string' ? overrideText : inputValue).trim()
     if (!v) return
     haptic('light')
     setInputValue('')
