@@ -6,6 +6,7 @@ import { readFile, writeFile } from 'node:fs/promises'
 import path from 'node:path'
 
 const ROUTES = [
+  { path: '/', module: '/src/pages/LandingPage/LandingPage.jsx', output: 'index.html' },
   { path: '/faq', module: '/src/pages/PublicFAQ/PublicFAQ.jsx', output: 'faq.html' },
   { path: '/contact', module: '/src/pages/PublicContact/PublicContact.jsx', output: 'contact.html' },
   { path: '/privacy', module: '/src/pages/PublicPrivacy/PublicPrivacy.jsx', output: 'privacy.html' },
@@ -22,6 +23,7 @@ async function prerender() {
   })
 
   const template = await readFile(path.resolve('dist/index.html'), 'utf-8')
+  const { InstallProvider } = await vite.ssrLoadModule('/src/contexts/InstallContext.jsx')
 
   for (const route of ROUTES) {
     const mod = await vite.ssrLoadModule(route.module)
@@ -31,7 +33,11 @@ async function prerender() {
       React.createElement(
         StaticRouter,
         { location: route.path },
-        React.createElement(Component)
+        React.createElement(
+          InstallProvider,
+          null,
+          React.createElement(Component)
+        )
       )
     )
 
