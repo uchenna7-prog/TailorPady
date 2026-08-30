@@ -289,7 +289,12 @@ export function parseDate(str) {
   }
 
   const parsed = new Date(str)
-  if (!isNaN(parsed)) return parsed.toISOString().slice(0, 10)
+  if (!isNaN(parsed)) {
+    const year = parsed.getFullYear()
+    const currentYear = new Date().getFullYear()
+    if (year < currentYear - 1 || year > currentYear + 5) return null
+    return parsed.toISOString().slice(0, 10)
+  }
   return null
 }
 
@@ -712,7 +717,7 @@ const FAQ_ENTRIES = [
 
   { phrases: [
       { words: ['are', 'you', 'human'], weight: 10 }, { words: ['are', 'you', 'real'], weight: 9 },
-    ], reply: "I'm an AI, not a human — but I'm here and ready to help with your shop." },
+    ], reply: "I'm an AI, not a human, but I'm here and ready to help with your shop." },
 
   { phrases: [
       { words: ['how', 'are', 'you'], weight: 10 }, { words: ['how', 'is', 'it', 'going'], weight: 10 },
@@ -743,7 +748,7 @@ const FAQ_ENTRIES = [
 
   { phrases: [
       { words: ['i', 'am', 'bored'], weight: 9 },
-    ], reply: "Let's put that to good use — want to check what's due today?" },
+    ], reply: "Let's put that to good use, want to check what's due today?" },
 
   { phrases: [
       { words: ['weather'], weight: 8 },
@@ -759,11 +764,11 @@ const FAQ_ENTRIES = [
 
   { phrases: [
       { words: ['sing', 'a', 'song'], weight: 10 }, { words: ['tell', 'me', 'a', 'story'], weight: 10 },
-    ], reply: "Not really my thing — but I can tell you who owes you money, which might be more useful right now." },
+    ], reply: "Not really my thing, but I can tell you who owes you money, which might be more useful right now." },
 
   { phrases: [
       { words: ['how', 'old', 'are', 'you'], weight: 10 },
-    ], reply: "I don't have an age — I'm software, always ready when you are." },
+    ], reply: "I don't have an age, I'm software, always ready when you are." },
 
   { phrases: [
       { words: ['where', 'are', 'you'], weight: 9 },
@@ -772,12 +777,12 @@ const FAQ_ENTRIES = [
   { phrases: [
       { words: ['what', 'is', 'your', 'favorite', 'color'], weight: 10 },
       { words: ['what', 'is', 'your', 'favorite', 'food'], weight: 10 },
-    ], reply: "I don't really have favorites — but I do have a favorite topic: your business numbers." },
+    ], reply: "I don't really have favorites, but I do have a favorite topic: your business numbers." },
 
   { phrases: [
       { words: ['can', 'you', 'call'], weight: 9 }, { words: ['can', 'you', 'send', 'email'], weight: 9 },
       { words: ['can', 'you', 'browse'], weight: 9 }, { words: ['can', 'you', 'translate'], weight: 9 },
-    ], reply: "I can't do that yet — I'm focused on helping you manage orders, payments, invoices, and tasks right here in the app." },
+    ], reply: "I can't do that yet, I'm focused on helping you manage orders, payments, invoices, and tasks right here in the app." },
 
   { phrases: [
       { words: ['is', 'my', 'data', 'safe'], weight: 10 }, { words: ['is', 'this', 'app', 'safe'], weight: 10 },
@@ -793,7 +798,7 @@ const FAQ_ENTRIES = [
 
   { phrases: [
       { words: ['say', 'that', 'again'], weight: 9 }, { words: ['what', 'did', 'you', 'say'], weight: 9 },
-    ], reply: "Sorry, I don't keep a running memory of exact wording — could you ask again?" },
+    ], reply: "Sorry, I don't keep a running memory of exact wording, could you ask again?" },
 
   { phrases: [
       { words: ['whats', 'new'], weight: 8 },
