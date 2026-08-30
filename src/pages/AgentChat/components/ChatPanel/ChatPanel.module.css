@@ -181,6 +181,37 @@
   color: var(--text3);
 }
 
+.chatDateWrap {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 9px 10px;
+  transition: border-color 0.15s;
+}
+
+.chatDateWrap:focus-within {
+  border-color: var(--border2);
+}
+
+.chatDateField {
+  flex: 1;
+  border: none;
+  outline: none;
+  background: transparent;
+  font-family: inherit;
+  font-size: 0.85rem;
+  color: var(--text);
+  padding: 2px 0;
+}
+
+.chatDateField::-webkit-calendar-picker-indicator {
+  filter: invert(0.5);
+  cursor: pointer;
+}
+
 .chatSendBtn {
   width: 28px;
   height: 28px;
