@@ -17,12 +17,12 @@ const SW_READY_TIMEOUT_MS   = 6000
 const PERMISSION_TIMEOUT_MS = 15000
 
 const ICONS = {
-  order:       { name: 'content_cut',        outlined: false },
-  invoice:     { name: 'receipt_long',        outlined: true  },
-  task:        { name: 'check_circle',        outlined: true  },
-  appointment: { name: 'calendar_month',      outlined: true  },
-  birthday:    { name: 'cake',               outlined: true  },
-  review:      { name: 'star',               outlined: true  },
+  order:       { name: 'content_cut',    outlined: false },
+  invoice:     { name: 'receipt_long',   outlined: true  },
+  task:        { name: 'check_circle',   outlined: true  },
+  appointment: { name: 'calendar_month', outlined: true  },
+  birthday:    { name: 'cake',           outlined: true  },
+  review:      { name: 'star',           outlined: true  },
 }
 
 function loadReadIds() {
@@ -92,12 +92,24 @@ function withTimeout(promise, ms) {
 }
 
 function subscriptionDocId(endpoint) {
-  return endpoint.replace(/[^a-zA-Z0-9]/g, '_').slice(-300)
+  let hash = 0
+  for (let i = 0; i < endpoint.length; i++) {
+    hash = (hash * 31 + endpoint.charCodeAt(i)) >>> 0
+  }
+  return `sub_${hash.toString(36)}`
+}
+
+async function getServiceWorkerRegistration() {
+  if (!('serviceWorker' in navigator) || !('PushManager' in window)) return null
+  return await withTimeout(navigator.serviceWorker.ready, SW_READY_TIMEOUT_MS)
 }
 
 async function saveSubscription(uid, subscription) {
+  if (!uid || !subscription) return
   try {
-    const json  = subscription.toJSON()
+    const json = subscription.toJSON()
+    if (!json?.endpoint || !json?.keys) return
+
     const docId = subscriptionDocId(json.endpoint)
     await setDoc(doc(db, 'users', uid, 'pushSubscriptions', docId), {
       endpoint:  json.endpoint,
@@ -112,16 +124,19 @@ async function saveSubscription(uid, subscription) {
 
 async function subscribeToPush() {
   try {
-    if (!('serviceWorker' in navigator) || !('PushManager' in window)) return null
-
     const permission = await withTimeout(Notification.requestPermission(), PERMISSION_TIMEOUT_MS)
     if (permission !== 'granted') return null
 
-    const reg = await withTimeout(navigator.serviceWorker.ready, SW_READY_TIMEOUT_MS)
+    const reg = await getServiceWorkerRegistration()
     if (!reg) return null
 
     const existing = await reg.pushManager.getSubscription()
     if (existing) return existing
+
+    if (!VAPID_KEY || VAPID_KEY.startsWith('PASTE_')) {
+      console.warn('VAPID public key is not configured')
+      return null
+    }
 
     return await reg.pushManager.subscribe({
       userVisibleOnly:      true,
@@ -135,8 +150,7 @@ async function subscribeToPush() {
 
 async function getExistingSubscription() {
   try {
-    if (!('serviceWorker' in navigator) || !('PushManager' in window)) return null
-    const reg = await withTimeout(navigator.serviceWorker.ready, SW_READY_TIMEOUT_MS)
+    const reg = await getServiceWorkerRegistration()
     if (!reg) return null
     return await reg.pushManager.getSubscription()
   } catch {
@@ -190,7 +204,7 @@ export function NotificationProvider({ children }) {
     if (Notification.permission !== 'granted') return
     setPushEnabled(true)
 
-    if (!user) return
+    if (!user?.uid) return
     getExistingSubscription().then(sub => {
       if (sub) saveSubscription(user.uid, sub)
     })
@@ -372,7 +386,7 @@ export function NotificationProvider({ children }) {
   }
 
   const requestPushPermission = async () => {
-    if (!user) return
+    if (!user?.uid) return
     const sub = await subscribeToPush()
     if (!sub) return
     setPushEnabled(true)
