@@ -1,4 +1,7 @@
 import { createContext, useContext, useEffect, useRef, useMemo, useState } from 'react'
+import { doc, setDoc } from 'firebase/firestore'
+import { db } from '../firebase'
+import { useAuth }         from './AuthContext'
 import { useOrders }       from './OrdersContext'
 import { useInvoices }     from './InvoiceContext'
 import { useTasks }        from './TaskContext'
@@ -8,7 +11,7 @@ import { useReviews }      from './ReviewContext'
 
 const STORAGE_KEY = 'TailorPady_read_notifs'
 const PUSHED_KEY  = 'TailorPady_pushed_notifs'
-const VAPID_KEY   = 'BAe8t_ReMQne5iBlUJyfwd3HQ8N-TcLJoSH2ai0QSWOQhrSLrbJeQnGENUm01yBoRkynmlnRE-86S_9dFOVaRdM'
+const VAPID_KEY   = 'BCy5e2mRud2GyQVYOnpaJ35jzHEEZtOZ5VCYWtWKxwuqv6RzqeTY0czMsX8EJXJAhXn_10Z8ANfIpRin4uA6mEE'
 
 const SW_READY_TIMEOUT_MS   = 6000
 const PERMISSION_TIMEOUT_MS = 15000
@@ -88,6 +91,25 @@ function withTimeout(promise, ms) {
   })
 }
 
+function subscriptionDocId(endpoint) {
+  return endpoint.replace(/[^a-zA-Z0-9]/g, '_').slice(-300)
+}
+
+async function saveSubscription(uid, subscription) {
+  try {
+    const json  = subscription.toJSON()
+    const docId = subscriptionDocId(json.endpoint)
+    await setDoc(doc(db, 'users', uid, 'pushSubscriptions', docId), {
+      endpoint:  json.endpoint,
+      keys:      json.keys,
+      userAgent: navigator.userAgent,
+      updatedAt: new Date().toISOString(),
+    })
+  } catch (err) {
+    console.warn('Failed to save push subscription:', err)
+  }
+}
+
 async function subscribeToPush() {
   try {
     if (!('serviceWorker' in navigator) || !('PushManager' in window)) return null
@@ -107,6 +129,17 @@ async function subscribeToPush() {
     })
   } catch (err) {
     console.warn('Push subscription failed:', err)
+    return null
+  }
+}
+
+async function getExistingSubscription() {
+  try {
+    if (!('serviceWorker' in navigator) || !('PushManager' in window)) return null
+    const reg = await withTimeout(navigator.serviceWorker.ready, SW_READY_TIMEOUT_MS)
+    if (!reg) return null
+    return await reg.pushManager.getSubscription()
+  } catch {
     return null
   }
 }
@@ -137,6 +170,7 @@ const NotificationContext = createContext({
 })
 
 export function NotificationProvider({ children }) {
+  const { user }                     = useAuth()
   const { allOrders }               = useOrders()
   const { allInvoices }             = useInvoices()
   const { tasks }                   = useTasks()
@@ -153,8 +187,14 @@ export function NotificationProvider({ children }) {
 
   useEffect(() => {
     if (!('Notification' in window)) return
-    if (Notification.permission === 'granted') setPushEnabled(true)
-  }, [])
+    if (Notification.permission !== 'granted') return
+    setPushEnabled(true)
+
+    if (!user) return
+    getExistingSubscription().then(sub => {
+      if (sub) saveSubscription(user.uid, sub)
+    })
+  }, [user])
 
   const notifications = useMemo(() => {
     const list = []
@@ -332,8 +372,11 @@ export function NotificationProvider({ children }) {
   }
 
   const requestPushPermission = async () => {
+    if (!user) return
     const sub = await subscribeToPush()
-    if (sub) setPushEnabled(true)
+    if (!sub) return
+    setPushEnabled(true)
+    await saveSubscription(user.uid, sub)
   }
 
   return (
