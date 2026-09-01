@@ -1,8 +1,11 @@
-import { doc, getDoc } from 'firebase/firestore'
+import { doc, getDoc, collection, query, where, orderBy, limit, startAfter, getDocs, getCountFromServer } from 'firebase/firestore'
 import { db } from '../firebase'
 
 const REFERRAL_STASH_KEY = 'TailorPady_referral_code'
 const API_BASE = 'https://tailor-pady-api.vercel.app'
+const HISTORY_PAGE_SIZE = 20
+const REFERRALS_PER_REWARD = 5
+const MAX_REWARDS_PER_REFERRER = 3
 
 let hasCheckedThisSession = false
 
@@ -81,7 +84,6 @@ export async function triggerReferralActivationCheck(user) {
   try {
     await checkReferralActivation(user)
   } catch (err) {
-    console.warn('Referral activation check failed:', err)
     hasCheckedThisSession = false
   }
 }
@@ -103,4 +105,50 @@ export async function acknowledgeReferral(user, referralId) {
     throw new Error(data.error || 'Could not acknowledge referral')
   }
   return data
+}
+
+export async function getReferralHistory(user, cursor = null) {
+  if (!user) return { referrals: [], nextCursor: null, hasMore: false }
+
+  const base = query(
+    collection(db, 'referrals'),
+    where('referrerUid', '==', user.uid),
+    orderBy('createdAt', 'desc'),
+    limit(HISTORY_PAGE_SIZE),
+  )
+
+  const q = cursor ? query(base, startAfter(cursor)) : base
+  const snap = await getDocs(q)
+
+  const referrals = snap.docs.map(d => ({ id: d.id, ...d.data() }))
+  const hasMore = snap.docs.length === HISTORY_PAGE_SIZE
+
+  return {
+    referrals,
+    nextCursor: hasMore ? snap.docs[snap.docs.length - 1] : null,
+    hasMore,
+  }
+}
+
+export async function getReferralCounts(user) {
+  if (!user) return { total: 0, activated: 0, rewarded: 0, progressToNextReward: 0, rewardsRemaining: MAX_REWARDS_PER_REFERRER }
+
+  const referralsRef = collection(db, 'referrals')
+  const totalQuery = query(referralsRef, where('referrerUid', '==', user.uid))
+  const activatedQuery = query(referralsRef, where('referrerUid', '==', user.uid), where('status', '==', 'activated'))
+  const rewardedQuery = query(referralsRef, where('referrerUid', '==', user.uid), where('rewardGranted', '==', true))
+
+  const [totalSnap, activatedSnap, rewardedSnap] = await Promise.all([
+    getCountFromServer(totalQuery),
+    getCountFromServer(activatedQuery),
+    getCountFromServer(rewardedQuery),
+  ])
+
+  const total = totalSnap.data().count
+  const activated = activatedSnap.data().count
+  const rewarded = rewardedSnap.data().count
+  const rewardsRemaining = Math.max(0, MAX_REWARDS_PER_REFERRER - rewarded)
+  const progressToNextReward = rewardsRemaining > 0 ? activated % REFERRALS_PER_REWARD : 0
+
+  return { total, activated, rewarded, progressToNextReward, rewardsRemaining }
 }

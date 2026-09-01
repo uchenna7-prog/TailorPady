@@ -1,4 +1,3 @@
-// tourSteps.js
 export const TOURS = {
   onboarding: [
     {
@@ -596,8 +595,8 @@ export const TOURS = {
       id: 'referral-nudge-confirm',
       type: 'confirm',
       target: null,
-      title: 'Get a free month, on us 🎁',
-      message: 'Share your referral code with another tailor. Once they start using TailorPady, you get a free month of Pro automatically. No strings attached.',
+      title: 'Get free Pro time, on us 🎁',
+      message: 'Share your referral code with other tailors. For every 5 people who start using TailorPady with your code, you get 30 days of Pro free. You can earn this up to 3 times.',
       yesLabel: 'Show me how',
       noLabel: 'Not now',
       yesTarget: 'referral-nudge-open-menu',
@@ -614,15 +613,15 @@ export const TOURS = {
       id: 'referral-nudge-share-app',
       target: '[data-tour="sidebar-share-app-btn"]',
       title: 'Share your referral link',
-      message: 'Tap here to share your referral code with another tailor.',
+      message: 'Tap here to share your referral code with other tailors.',
     },
     {
       id: 'referral-nudge-done',
       target: null,
       manual: true,
       ctaLabel: 'Got it',
-      title: 'Your reward is waiting 🚀',
-      message: 'You will receive 1 month of Pro access when the people you refer sign up and start using TailorPady, such as adding their first customer.',
+      title: 'Your reward is on its way 🚀',
+      message: '5 tailors who sign up with your code and get started, like adding their first customer, earns you 30 days of Pro. This can happen up to 3 times.',
     },
   ],
 

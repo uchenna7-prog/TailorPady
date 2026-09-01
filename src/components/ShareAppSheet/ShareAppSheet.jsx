@@ -3,7 +3,7 @@ import styles from './ShareAppSheet.module.css'
 
 function buildShareText(referralCode) {
   return referralCode
-    ? `Join me on TailorPady! Use my code ${referralCode} when you sign up, and I get a free month once you get started.`
+    ? `Join me on TailorPady! Use my code ${referralCode} when you sign up. For every 5 tailors I refer, I get 30 days of Pro free.`
     : 'Check out TailorPady!'
 }
 
@@ -59,7 +59,7 @@ export default function ShareAppSheet({ open, referralCode, onClose }) {
     <div className={styles.overlay} onClick={(e) => e.target === e.currentTarget && onClose()}>
       <div className={styles.sheet}>
         <h4>Share TailorPady</h4>
-        <p>Invite another tailor. Once they start using TailorPady, you get a free month of Pro.</p>
+        <p>Invite other tailors. For every 5 who start using TailorPady with your code, you get 30 days of Pro free.</p>
 
         <div className={styles.linkRow}>
           <span className={`mi-outlined ${styles.linkIcon}`}>link</span>

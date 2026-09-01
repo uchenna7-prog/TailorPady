@@ -22,6 +22,7 @@ import { SocialsModal } from './component/SocialsModal/SocialsModal'
 import { ChangePasswordModal } from './component/ChangePasswordModal/ChangePasswordModal'
 import { ChangeEmailModal } from './component/ChangeEmailModal/ChangeEmailModal'
 import { ConnectedAccountsModal } from './component/ConnectedAccountsModal/ConnectedAccountsModal'
+import { ReferralModal } from './component/ReferralModal/ReferralModal'
 import UpgradeModal from './component/UpgradeModal/UpgradeModal'
 import BillingHistoryModal from './component/BillingHistoryModal/BillingHistoryModal'
 import UsageModal from './component/UsageModal/UsageModal'
@@ -31,6 +32,7 @@ import BottomNav from '../../components/BottomNav/BottomNav'
 import Header from '../../components/Header/Header'
 import Toast from '../../components/Toast/Toast'
 import ConfirmSheet from '../../components/ConfirmSheet/ConfirmSheet'
+import ShareAppSheet from '../../components/ShareAppSheet/ShareAppSheet'
 import styles from './Account.module.css'
 import { db } from '../../firebase'
 
@@ -44,7 +46,7 @@ export default function Account({ onMenuClick, isPremium = false, onUpgrade = ()
   const { user, logout } = useAuth()
   const { plan, nextRenewal } = usePremium()
   const { triggerPremiumSuccess } = usePremiumSuccess()
-  const { referralCode } = useReferral()
+  const { referralCode, loading: referralLoading, pendingReferralReward, acknowledgeReferralReward } = useReferral()
   const navigate = useNavigate()
   const location = useLocation()
   const { currentStep, pauseTour, resumeTour, goToStep, pendingCustomerId } = useTour()
@@ -59,6 +61,7 @@ export default function Account({ onMenuClick, isPremium = false, onUpgrade = ()
   const [pendingTemplate, setPendingTemplate] = useState(null)
   const [returnTo, setReturnTo] = useState(null)
   const [awaitingProfileTourAdvance, setAwaitingProfileTourAdvance] = useState(false)
+  const [shareSheetOpen, setShareSheetOpen] = useState(false)
   const toastTimer = useRef(null)
 
   const hasBrand = !!(profileSettings.brandName || profileSettings.brandLogo)
@@ -135,13 +138,6 @@ export default function Account({ onMenuClick, isPremium = false, onUpgrade = ()
     clearTimeout(toastTimer.current)
     toastTimer.current = setTimeout(() => setToastMsg(''), 2400)
   }, [])
-
-  const handleCopyReferral = useCallback(() => {
-    if (!referralCode) return
-    navigator.clipboard.writeText(referralCode)
-      .then(() => showToast('Referral code copied'))
-      .catch(() => showToast('Could not copy code'))
-  }, [referralCode, showToast])
 
   const applyPendingTemplateIfAny = useCallback((extraMessage) => {
     if (extraMessage) showToast(extraMessage)
@@ -311,20 +307,6 @@ export default function Account({ onMenuClick, isPremium = false, onUpgrade = ()
               <div className={styles.heroMetaItem}>
                 <span className="mi-outlined" style={{ fontSize: '0.85rem', color: 'var(--text3)' }}>mail</span>
                 <span className={styles.heroMetaLabel}>{personalInfo.email || user?.email}</span>
-              </div>
-            )}
-            {referralCode && (
-              <div className={styles.heroMetaItem}>
-                <span className="mi-outlined" style={{ fontSize: '0.85rem', color: 'var(--text3)' }}>redeem</span>
-                <span className={styles.heroMetaLabel}>Referral code: {referralCode}</span>
-                <button
-                  type="button"
-                  className={styles.copyIconBtn}
-                  onClick={handleCopyReferral}
-                  aria-label="Copy referral code"
-                >
-                  <span className="mi-outlined" style={{ fontSize: '0.9rem' }}>content_copy</span>
-                </button>
               </div>
             )}
           </div>
@@ -517,6 +499,45 @@ export default function Account({ onMenuClick, isPremium = false, onUpgrade = ()
           divider={false}
         />
 
+        <SectionHeader icon="redeem" label="Referrals" />
+
+        {referralLoading ? (
+          <div className={styles.row}>
+            <div className={styles.rowIcon}>
+              <span className="mi-outlined">redeem</span>
+            </div>
+            <div className={styles.rowText}>
+              <div className={styles.rowPlaceholder}>Loading your referral code…</div>
+            </div>
+          </div>
+        ) : (
+          <div className={`${styles.row} ${styles.brandPreview}`}>
+            <div className={styles.rowIcon}>
+              <span className="mi-outlined">redeem</span>
+            </div>
+            <div className={styles.rowText}>
+              <div className={styles.rowLabel}>Your Code</div>
+              <div className={styles.rowValue}>{referralCode || '—'}</div>
+            </div>
+            <button
+              type="button"
+              className={styles.copyIconBtn}
+              onClick={() => setShareSheetOpen(true)}
+              aria-label="Share referral code"
+            >
+              <span className="mi-outlined" style={{ fontSize: '1.1rem' }}>share</span>
+            </button>
+          </div>
+        )}
+
+        <TappableRow
+          icon="history"
+          label="Referral History"
+          sub="Track invites and free months earned"
+          onClick={() => setActiveModal('referrals')}
+          divider={false}
+        />
+
         <SectionHeader icon="security" label="Security" />
 
         <TappableRow
@@ -636,6 +657,15 @@ export default function Account({ onMenuClick, isPremium = false, onUpgrade = ()
         <ConnectedAccountsModal onBack={() => setActiveModal(null)} showToast={showToast} />
       )}
 
+      {activeModal === 'referrals' && (
+        <ReferralModal
+          onClose={() => setActiveModal(null)}
+          onShare={() => setShareSheetOpen(true)}
+          pendingReferralReward={pendingReferralReward}
+          onAcknowledgeReward={acknowledgeReferralReward}
+        />
+      )}
+
       <ConfirmSheet
         open={logoutConfirm}
         title="Log Out?"
@@ -652,6 +682,12 @@ export default function Account({ onMenuClick, isPremium = false, onUpgrade = ()
         confirmDanger
         onConfirm={handleDeleteAccount}
         onCancel={() => setDeleteConfirm(false)}
+      />
+
+      <ShareAppSheet
+        open={shareSheetOpen}
+        referralCode={referralCode}
+        onClose={() => setShareSheetOpen(false)}
       />
 
       <Toast message={toastMsg} />
