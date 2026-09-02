@@ -111,54 +111,37 @@ async function saveSubscription(uid, token) {
     })
     saveCachedToken(token)
   } catch (err) {
-    alert('Failed to save push subscription: ' + err.message)
+    console.warn('Failed to save push subscription:', err)
   }
 }
 
 async function subscribeToPush() {
-  const debugLines = []
   try {
     const supported = await isSupported()
-    debugLines.push(`isSupported: ${supported}`)
-    if (!supported) { alert(debugLines.join('\n')); return null }
+    if (!supported) return { token: null, blocked: false }
 
     const permission = await withTimeout(Notification.requestPermission(), PERMISSION_TIMEOUT_MS)
-    debugLines.push(`permission: ${permission}`)
-    if (permission !== 'granted') { alert(debugLines.join('\n')); return null }
+    if (permission !== 'granted') return { token: null, blocked: permission === 'denied' }
 
-    if (!('serviceWorker' in navigator)) {
-      debugLines.push('no serviceWorker in navigator')
-      alert(debugLines.join('\n'))
-      return null
-    }
-
-    debugLines.push('waiting for serviceWorker.ready...')
+    if (!('serviceWorker' in navigator)) return { token: null, blocked: false }
     const registration = await navigator.serviceWorker.ready
-    debugLines.push('serviceWorker ready: ' + !!registration)
 
     if (!FCM_VAPID_KEY) {
-      debugLines.push('FCM_VAPID_KEY missing')
-      alert(debugLines.join('\n'))
-      return null
+      console.warn('FCM VAPID key is not configured')
+      return { token: null, blocked: false }
     }
-    debugLines.push('FCM_VAPID_KEY present, length: ' + FCM_VAPID_KEY.length)
 
     const messaging = getMessaging(app)
-    debugLines.push('messaging instance created')
-
     const token = await getToken(messaging, {
       vapidKey: FCM_VAPID_KEY,
       serviceWorkerRegistration: registration,
     })
 
-    debugLines.push('token: ' + token)
-    alert(debugLines.join('\n'))
-
-    return token || null
+    return { token: token || null, blocked: false }
   } catch (err) {
-    debugLines.push('THREW: ' + err.message)
-    alert(debugLines.join('\n'))
-    return null
+    const blocked = err?.code === 'messaging/permission-blocked'
+    console.warn('Push subscription failed:', err)
+    return { token: null, blocked }
   }
 }
 
@@ -176,7 +159,8 @@ async function getExistingToken() {
       serviceWorkerRegistration: registration,
     })
     return token || null
-  } catch {
+  } catch (err) {
+    console.warn('getExistingToken failed:', err)
     return null
   }
 }
@@ -209,6 +193,7 @@ const NotificationContext = createContext({
   notifications: [],
   unreadCount: 0,
   pushEnabled: false,
+  pushBlocked: false,
   markRead: () => {},
   markAllRead: () => {},
   requestPushPermission: async () => {},
@@ -227,6 +212,7 @@ export function NotificationProvider({ children }) {
   const [readIds, setReadIds] = useState(() => loadReadIds())
   const [pushedIds, setPushedIds] = useState(() => loadPushedIds())
   const [pushEnabled, setPushEnabled] = useState(false)
+  const [pushBlocked, setPushBlocked] = useState(false)
 
   useEffect(() => { saveReadIds(readIds) }, [readIds])
   useEffect(() => { savePushedIds(pushedIds) }, [pushedIds])
@@ -447,7 +433,8 @@ export function NotificationProvider({ children }) {
 
   const requestPushPermission = async () => {
     if (!user?.uid) return
-    const token = await subscribeToPush()
+    const { token, blocked } = await subscribeToPush()
+    setPushBlocked(blocked)
     if (!token) return
     setPushEnabled(true)
     await saveSubscription(user.uid, token)
@@ -458,6 +445,7 @@ export function NotificationProvider({ children }) {
       notifications,
       unreadCount,
       pushEnabled,
+      pushBlocked,
       markRead,
       markAllRead,
       requestPushPermission,
