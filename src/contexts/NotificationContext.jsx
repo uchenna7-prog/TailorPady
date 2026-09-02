@@ -1,28 +1,28 @@
 import { createContext, useContext, useEffect, useRef, useMemo, useState } from 'react'
 import { doc, setDoc } from 'firebase/firestore'
+import { getMessaging, getToken, onMessage, isSupported } from 'firebase/messaging'
 import { db } from '../firebase'
-import { useAuth }         from './AuthContext'
-import { useOrders }       from './OrdersContext'
-import { useInvoices }     from './InvoiceContext'
-import { useTasks }        from './TaskContext'
+import app from '../firebase'
+import { useAuth } from './AuthContext'
+import { useOrders } from './OrdersContext'
+import { useInvoices } from './InvoiceContext'
+import { useTasks } from './TaskContext'
 import { useAppointments } from './AppointmentContext'
-import { useCustomers }    from './CustomerContext'
-import { useReviews }      from './ReviewContext'
+import { useCustomers } from './CustomerContext'
+import { useReviews } from './ReviewContext'
 
 const STORAGE_KEY = 'TailorPady_read_notifs'
-const PUSHED_KEY  = 'TailorPady_pushed_notifs'
-const VAPID_KEY   = 'BCy5e2mRud2GyQVYOnpaJ35jzHEEZtOZ5VCYWtWKxwuqv6RzqeTY0czMsX8EJXJAhXn_10Z8ANfIpRin4uA6mEE'
-
-const SW_READY_TIMEOUT_MS   = 6000
+const PUSHED_KEY = 'TailorPady_pushed_notifs'
+const FCM_VAPID_KEY = import.meta.env.VITE_FCM_VAPID_KEY
 const PERMISSION_TIMEOUT_MS = 15000
 
 const ICONS = {
-  order:       { name: 'content_cut',    outlined: false },
-  invoice:     { name: 'receipt_long',   outlined: true  },
-  task:        { name: 'check_circle',   outlined: true  },
-  appointment: { name: 'calendar_month', outlined: true  },
-  birthday:    { name: 'cake',           outlined: true  },
-  review:      { name: 'star',           outlined: true  },
+  order: { name: 'content_cut', outlined: false },
+  invoice: { name: 'receipt_long', outlined: true },
+  task: { name: 'check_circle', outlined: true },
+  appointment: { name: 'calendar_month', outlined: true },
+  birthday: { name: 'cake', outlined: true },
+  review: { name: 'star', outlined: true },
 }
 
 function loadReadIds() {
@@ -62,18 +62,12 @@ function isInvoiceOverdue(inv) {
 function birthdayDaysUntil(birthdayStr) {
   if (!birthdayStr) return null
   const [month, day] = birthdayStr.split('-').map(Number)
+  if (!month || !day) return null
   const today = new Date()
   today.setHours(0, 0, 0, 0)
   const thisYear = new Date(today.getFullYear(), month - 1, day)
   if (thisYear < today) thisYear.setFullYear(today.getFullYear() + 1)
   return Math.round((thisYear - today) / (1000 * 60 * 60 * 24))
-}
-
-function urlBase64ToUint8Array(base64String) {
-  const padding = '='.repeat((4 - (base64String.length % 4)) % 4)
-  const base64  = (base64String + padding).replace(/-/g, '+').replace(/_/g, '/')
-  const raw     = window.atob(base64)
-  return Uint8Array.from([...raw].map(c => c.charCodeAt(0)))
 }
 
 function withTimeout(promise, ms) {
@@ -91,29 +85,15 @@ function withTimeout(promise, ms) {
   })
 }
 
-function subscriptionDocId(endpoint) {
-  let hash = 0
-  for (let i = 0; i < endpoint.length; i++) {
-    hash = (hash * 31 + endpoint.charCodeAt(i)) >>> 0
-  }
-  return `sub_${hash.toString(36)}`
+function tokenDocId(token) {
+  return `fcm_${token.slice(0, 40)}`
 }
 
-async function getServiceWorkerRegistration() {
-  if (!('serviceWorker' in navigator) || !('PushManager' in window)) return null
-  return await withTimeout(navigator.serviceWorker.ready, SW_READY_TIMEOUT_MS)
-}
-
-async function saveSubscription(uid, subscription) {
-  if (!uid || !subscription) return
+async function saveSubscription(uid, token) {
+  if (!uid || !token) return
   try {
-    const json = subscription.toJSON()
-    if (!json?.endpoint || !json?.keys) return
-
-    const docId = subscriptionDocId(json.endpoint)
-    await setDoc(doc(db, 'users', uid, 'pushSubscriptions', docId), {
-      endpoint:  json.endpoint,
-      keys:      json.keys,
+    await setDoc(doc(db, 'users', uid, 'pushSubscriptions', tokenDocId(token)), {
+      token,
       userAgent: navigator.userAgent,
       updatedAt: new Date().toISOString(),
     })
@@ -124,35 +104,47 @@ async function saveSubscription(uid, subscription) {
 
 async function subscribeToPush() {
   try {
+    const supported = await isSupported()
+    if (!supported) return null
+
     const permission = await withTimeout(Notification.requestPermission(), PERMISSION_TIMEOUT_MS)
     if (permission !== 'granted') return null
 
-    const reg = await getServiceWorkerRegistration()
-    if (!reg) return null
+    if (!('serviceWorker' in navigator)) return null
+    const registration = await navigator.serviceWorker.ready
 
-    const existing = await reg.pushManager.getSubscription()
-    if (existing) return existing
-
-    if (!VAPID_KEY || VAPID_KEY.startsWith('PASTE_')) {
-      console.warn('VAPID public key is not configured')
+    if (!FCM_VAPID_KEY || FCM_VAPID_KEY.startsWith('REPLACE_')) {
+      console.warn('FCM VAPID key is not configured')
       return null
     }
 
-    return await reg.pushManager.subscribe({
-      userVisibleOnly:      true,
-      applicationServerKey: urlBase64ToUint8Array(VAPID_KEY),
+    const messaging = getMessaging(app)
+    const token = await getToken(messaging, {
+      vapidKey: FCM_VAPID_KEY,
+      serviceWorkerRegistration: registration,
     })
+
+    return token || null
   } catch (err) {
     console.warn('Push subscription failed:', err)
     return null
   }
 }
 
-async function getExistingSubscription() {
+async function getExistingToken() {
   try {
-    const reg = await getServiceWorkerRegistration()
-    if (!reg) return null
-    return await reg.pushManager.getSubscription()
+    const supported = await isSupported()
+    if (!supported) return null
+    if (!('serviceWorker' in navigator)) return null
+    if (!FCM_VAPID_KEY || FCM_VAPID_KEY.startsWith('REPLACE_')) return null
+
+    const registration = await navigator.serviceWorker.ready
+    const messaging = getMessaging(app)
+    const token = await getToken(messaging, {
+      vapidKey: FCM_VAPID_KEY,
+      serviceWorkerRegistration: registration,
+    })
+    return token || null
   } catch {
     return null
   }
@@ -165,9 +157,9 @@ async function sendLocalPush(title, body, icon = '/icons/icon192.png') {
     await reg.showNotification(title, {
       body,
       icon,
-      badge:   '/icons/icon192.png',
+      badge: '/icons/icon192.png',
       vibrate: [200, 100, 200],
-      tag:     title,
+      tag: title,
     })
   } catch (err) {
     console.warn('showNotification failed:', err)
@@ -175,28 +167,28 @@ async function sendLocalPush(title, body, icon = '/icons/icon192.png') {
 }
 
 const NotificationContext = createContext({
-  notifications:         [],
-  unreadCount:           0,
-  pushEnabled:           false,
-  markRead:              () => {},
-  markAllRead:           () => {},
+  notifications: [],
+  unreadCount: 0,
+  pushEnabled: false,
+  markRead: () => {},
+  markAllRead: () => {},
   requestPushPermission: async () => {},
 })
 
 export function NotificationProvider({ children }) {
-  const { user }                     = useAuth()
-  const { allOrders }               = useOrders()
-  const { allInvoices }             = useInvoices()
-  const { tasks }                   = useTasks()
+  const { user } = useAuth()
+  const { allOrders } = useOrders()
+  const { allInvoices } = useInvoices()
+  const { tasks } = useTasks()
   const { upcoming: upcomingAppts } = useAppointments()
-  const { customers }               = useCustomers()
-  const { reviews }                 = useReviews()
+  const { customers } = useCustomers()
+  const { reviews } = useReviews()
 
-  const [readIds,     setReadIds]     = useState(() => loadReadIds())
-  const [pushedIds,   setPushedIds]   = useState(() => loadPushedIds())
+  const [readIds, setReadIds] = useState(() => loadReadIds())
+  const [pushedIds, setPushedIds] = useState(() => loadPushedIds())
   const [pushEnabled, setPushEnabled] = useState(false)
 
-  useEffect(() => { saveReadIds(readIds)     }, [readIds])
+  useEffect(() => { saveReadIds(readIds) }, [readIds])
   useEffect(() => { savePushedIds(pushedIds) }, [pushedIds])
 
   useEffect(() => {
@@ -205,10 +197,27 @@ export function NotificationProvider({ children }) {
     setPushEnabled(true)
 
     if (!user?.uid) return
-    getExistingSubscription().then(sub => {
-      if (sub) saveSubscription(user.uid, sub)
+    getExistingToken().then(token => {
+      if (token) saveSubscription(user.uid, token)
     })
   }, [user])
+
+  useEffect(() => {
+    if (!pushEnabled) return
+    let unsubscribe
+
+    isSupported().then(supported => {
+      if (!supported) return
+      const messaging = getMessaging(app)
+      unsubscribe = onMessage(messaging, payload => {
+        const title = payload.notification?.title || 'TailorPady'
+        const body = payload.notification?.body || ''
+        sendLocalPush(title, body)
+      })
+    })
+
+    return () => { if (unsubscribe) unsubscribe() }
+  }, [pushEnabled])
 
   const notifications = useMemo(() => {
     const list = []
@@ -221,22 +230,22 @@ export function NotificationProvider({ children }) {
 
         if (diff < 0) {
           list.push({
-            id:      `order-overdue-${o.id}`,
-            type:    'order',
-            icon:    ICONS.order,
-            title:   `Overdue: ${o.desc || 'Order'}`,
-            body:    `${o.customerName ? `${o.customerName} · ` : ''}${Math.abs(diff)}d past due date.`,
-            time:    o.dueDate,
+            id: `order-overdue-${o.id}`,
+            type: 'order',
+            icon: ICONS.order,
+            title: `Overdue: ${o.desc || 'Order'}`,
+            body: `${o.customerName ? `${o.customerName} · ` : ''}${Math.abs(diff)}d past due date.`,
+            time: o.dueDate,
             sortKey: 0,
           })
         } else if (diff <= 3) {
           list.push({
-            id:      `order-due-${o.id}`,
-            type:    'order',
-            icon:    ICONS.order,
-            title:   `Order due ${diff === 0 ? 'today' : `in ${diff}d`}: ${o.desc || 'Order'}`,
-            body:    `${o.customerName ? `${o.customerName} · ` : ''}Due ${o.dueDate}.`,
-            time:    o.dueDate,
+            id: `order-due-${o.id}`,
+            type: 'order',
+            icon: ICONS.order,
+            title: `Order due ${diff === 0 ? 'today' : `in ${diff}d`}: ${o.desc || 'Order'}`,
+            body: `${o.customerName ? `${o.customerName} · ` : ''}Due ${o.dueDate}.`,
+            time: o.dueDate,
             sortKey: 1,
           })
         }
@@ -244,12 +253,12 @@ export function NotificationProvider({ children }) {
 
     allInvoices.filter(isInvoiceOverdue).forEach(inv => {
       list.push({
-        id:      `invoice-overdue-${inv.id}`,
-        type:    'invoice',
-        icon:    ICONS.invoice,
-        title:   `Overdue invoice: ${inv.number || 'Invoice'}`,
-        body:    `${inv.customerName ? `${inv.customerName} · ` : ''}${inv.orderDesc ? `${inv.orderDesc}, ` : ''}payment is past due.`,
-        time:    inv.due,
+        id: `invoice-overdue-${inv.id}`,
+        type: 'invoice',
+        icon: ICONS.invoice,
+        title: `Overdue invoice: ${inv.number || 'Invoice'}`,
+        body: `${inv.customerName ? `${inv.customerName} · ` : ''}${inv.orderDesc ? `${inv.orderDesc}, ` : ''}payment is past due.`,
+        time: inv.due,
         sortKey: 0,
       })
     })
@@ -259,12 +268,12 @@ export function NotificationProvider({ children }) {
       .slice(0, 5)
       .forEach(inv => {
         list.push({
-          id:      `invoice-unpaid-${inv.id}`,
-          type:    'invoice',
-          icon:    ICONS.invoice,
-          title:   `Unpaid: ${inv.number || 'Invoice'}`,
-          body:    `${inv.orderDesc || 'Order'}, awaiting payment.`,
-          time:    inv.date,
+          id: `invoice-unpaid-${inv.id}`,
+          type: 'invoice',
+          icon: ICONS.invoice,
+          title: `Unpaid: ${inv.number || 'Invoice'}`,
+          body: `${inv.orderDesc || 'Order'}, awaiting payment.`,
+          time: inv.date,
           sortKey: 2,
         })
       })
@@ -273,12 +282,12 @@ export function NotificationProvider({ children }) {
       .filter(t => !t.done && t.dueDate && new Date(t.dueDate + 'T23:59:59') < new Date())
       .forEach(t => {
         list.push({
-          id:      `task-overdue-${t.id}`,
-          type:    'task',
-          icon:    ICONS.task,
-          title:   `Overdue task: ${t.desc}`,
-          body:    `${t.customerName ? `${t.customerName} · ` : ''}This task is past its due date.`,
-          time:    t.dueDate,
+          id: `task-overdue-${t.id}`,
+          type: 'task',
+          icon: ICONS.task,
+          title: `Overdue task: ${t.desc}`,
+          body: `${t.customerName ? `${t.customerName} · ` : ''}This task is past its due date.`,
+          time: t.dueDate,
           sortKey: 0,
         })
       })
@@ -289,12 +298,12 @@ export function NotificationProvider({ children }) {
         const diff = daysUntil(t.dueDate)
         if (diff !== null && diff >= 0 && diff <= 2) {
           list.push({
-            id:      `task-due-${t.id}`,
-            type:    'task',
-            icon:    ICONS.task,
-            title:   `Task due ${diff === 0 ? 'today' : `in ${diff}d`}: ${t.desc}`,
-            body:    t.customerName ? `For ${t.customerName}` : 'Tap to view details.',
-            time:    t.dueDate,
+            id: `task-due-${t.id}`,
+            type: 'task',
+            icon: ICONS.task,
+            title: `Task due ${diff === 0 ? 'today' : `in ${diff}d`}: ${t.desc}`,
+            body: t.customerName ? `For ${t.customerName}` : 'Tap to view details.',
+            time: t.dueDate,
             sortKey: 1,
           })
         }
@@ -304,12 +313,12 @@ export function NotificationProvider({ children }) {
       const diff = daysUntil(appt.date)
       if (diff !== null && diff >= 0 && diff <= 2) {
         list.push({
-          id:      `appt-${appt.id}`,
-          type:    'appointment',
-          icon:    ICONS.appointment,
-          title:   `Appointment ${diff === 0 ? 'today' : `in ${diff}d`}: ${appt.title || appt.type || 'Appointment'}`,
-          body:    `${appt.customerName ? `${appt.customerName} · ` : ''}${appt.time ? `at ${appt.time}` : appt.date}`,
-          time:    appt.date,
+          id: `appt-${appt.id}`,
+          type: 'appointment',
+          icon: ICONS.appointment,
+          title: `Appointment ${diff === 0 ? 'today' : `in ${diff}d`}: ${appt.title || appt.type || 'Appointment'}`,
+          body: `${appt.customerName ? `${appt.customerName} · ` : ''}${appt.time ? `at ${appt.time}` : appt.date}`,
+          time: appt.date,
           sortKey: 1,
         })
       }
@@ -320,12 +329,12 @@ export function NotificationProvider({ children }) {
       const diff = birthdayDaysUntil(c.birthday)
       if (diff !== null && diff >= 0 && diff <= 7) {
         list.push({
-          id:      `birthday-${c.id}`,
-          type:    'birthday',
-          icon:    ICONS.birthday,
-          title:   diff === 0 ? `Today is ${c.name}'s birthday!` : `Upcoming birthday: ${c.name}`,
-          body:    diff === 0 ? `Don't forget to wish them well!` : `Birthday in ${diff} day${diff !== 1 ? 's' : ''}.`,
-          time:    c.birthday,
+          id: `birthday-${c.id}`,
+          type: 'birthday',
+          icon: ICONS.birthday,
+          title: diff === 0 ? `Today is ${c.name}'s birthday!` : `Upcoming birthday: ${c.name}`,
+          body: diff === 0 ? `Don't forget to wish them well!` : `Birthday in ${diff} day${diff !== 1 ? 's' : ''}.`,
+          time: c.birthday,
           sortKey: diff === 0 ? 0 : 2,
         })
       }
@@ -335,13 +344,13 @@ export function NotificationProvider({ children }) {
       .filter(r => r.status === 'pending')
       .forEach(r => {
         list.push({
-          id:       `review-pending-${r.id}`,
-          type:     'review',
-          icon:     ICONS.review,
-          title:    `New review from ${r.customerName || 'a customer'}`,
-          body:     `${r.rating ? `${'★'.repeat(r.rating)}${'☆'.repeat(5 - r.rating)} · ` : ''}Tap to approve or reject.`,
-          time:     r.createdAt?.toDate?.().toISOString?.() ?? null,
-          sortKey:  0,
+          id: `review-pending-${r.id}`,
+          type: 'review',
+          icon: ICONS.review,
+          title: `New review from ${r.customerName || 'a customer'}`,
+          body: `${r.rating ? `${'★'.repeat(r.rating)}${'☆'.repeat(5 - r.rating)} · ` : ''}Tap to approve or reject.`,
+          time: r.createdAt?.toDate?.().toISOString?.() ?? null,
+          sortKey: 0,
           reviewId: r.id,
         })
       })
@@ -387,10 +396,10 @@ export function NotificationProvider({ children }) {
 
   const requestPushPermission = async () => {
     if (!user?.uid) return
-    const sub = await subscribeToPush()
-    if (!sub) return
+    const token = await subscribeToPush()
+    if (!token) return
     setPushEnabled(true)
-    await saveSubscription(user.uid, sub)
+    await saveSubscription(user.uid, token)
   }
 
   return (
