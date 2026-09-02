@@ -111,35 +111,53 @@ async function saveSubscription(uid, token) {
     })
     saveCachedToken(token)
   } catch (err) {
-    console.warn('Failed to save push subscription:', err)
+    alert('Failed to save push subscription: ' + err.message)
   }
 }
 
 async function subscribeToPush() {
+  const debugLines = []
   try {
     const supported = await isSupported()
-    if (!supported) return null
+    debugLines.push(`isSupported: ${supported}`)
+    if (!supported) { alert(debugLines.join('\n')); return null }
 
     const permission = await withTimeout(Notification.requestPermission(), PERMISSION_TIMEOUT_MS)
-    if (permission !== 'granted') return null
+    debugLines.push(`permission: ${permission}`)
+    if (permission !== 'granted') { alert(debugLines.join('\n')); return null }
 
-    if (!('serviceWorker' in navigator)) return null
-    const registration = await navigator.serviceWorker.ready
-
-    if (!FCM_VAPID_KEY) {
-      console.warn('FCM VAPID key is not configured')
+    if (!('serviceWorker' in navigator)) {
+      debugLines.push('no serviceWorker in navigator')
+      alert(debugLines.join('\n'))
       return null
     }
 
+    debugLines.push('waiting for serviceWorker.ready...')
+    const registration = await navigator.serviceWorker.ready
+    debugLines.push('serviceWorker ready: ' + !!registration)
+
+    if (!FCM_VAPID_KEY) {
+      debugLines.push('FCM_VAPID_KEY missing')
+      alert(debugLines.join('\n'))
+      return null
+    }
+    debugLines.push('FCM_VAPID_KEY present, length: ' + FCM_VAPID_KEY.length)
+
     const messaging = getMessaging(app)
+    debugLines.push('messaging instance created')
+
     const token = await getToken(messaging, {
       vapidKey: FCM_VAPID_KEY,
       serviceWorkerRegistration: registration,
     })
 
+    debugLines.push('token: ' + token)
+    alert(debugLines.join('\n'))
+
     return token || null
   } catch (err) {
-    console.warn('Push subscription failed:', err)
+    debugLines.push('THREW: ' + err.message)
+    alert(debugLines.join('\n'))
     return null
   }
 }
