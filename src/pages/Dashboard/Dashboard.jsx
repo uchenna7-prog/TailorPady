@@ -437,6 +437,10 @@ function Dashboard({ onMenuClick, onGoToCustomer, sidebarOpen }) {
   })()
 
   const activeOrders            = allOrders.filter(o => !['completed', 'delivered', 'cancelled'].includes(o.status))
+  const overdueOrders           = activeOrders.filter(o => {
+    const due = o.dueDate || o.dueRaw
+    return due && due < todayStr
+  }).length
   const activeOrdersDueToday    = activeOrders.filter(o => (o.dueDate || o.dueRaw) === todayStr).length
   const activeOrdersDueThisWeek = activeOrders.filter(o => dueThisWeek(o.dueDate || o.dueRaw)).length
   const ordersCreatedThisWeek   = allOrders.filter(o => {
@@ -479,11 +483,13 @@ function Dashboard({ onMenuClick, onGoToCustomer, sidebarOpen }) {
     urgentItems.push({ icon: APPOINTMENT_TYPE_ICONS[soonAppointment.type] || 'event', text: `Appointment in ${minsLeft} min${minsLeft !== 1 ? 's' : ''}${suffix}`, route: '/appointments' })
   }
   if (overdueTasks.length > 0)     urgentItems.push({ icon: 'assignment_late', text: `${overdueTasks.length} overdue task${overdueTasks.length > 1 ? 's' : ''}`,         route: '/tasks'        })
+  if (overdueOrders > 0)           urgentItems.push({ icon: 'local_shipping',  text: `${overdueOrders} overdue order${overdueOrders > 1 ? 's' : ''}`,                    route: '/orders'       })
   if (activeOrdersDueToday > 0)    urgentItems.push({ icon: 'local_shipping',  text: `${activeOrdersDueToday} order${activeOrdersDueToday > 1 ? 's' : ''} due today`,    route: '/orders'       })
   if (overdueCount > 0)            urgentItems.push({ icon: 'receipt_long',    text: `${overdueCount} overdue invoice${overdueCount > 1 ? 's' : ''}`,                    route: '/invoices'     })
 
   const orderStatSub = (() => {
     if (activeOrders.length === 0)   return { text: 'All orders sent',                        color: '#22c55e' }
+    if (overdueOrders > 0)           return { text: `${overdueOrders} overdue`,               color: '#ef4444' }
     if (activeOrdersDueToday > 0)    return { text: `${activeOrdersDueToday} due today`,      color: '#ef4444' }
     if (activeOrdersDueThisWeek > 0) return { text: `${activeOrdersDueThisWeek} due this wk`, color: '#fb923c' }
     if (ordersCreatedThisWeek > 0)   return { text: `${ordersCreatedThisWeek} new this wk`,   color: '#818cf8' }
