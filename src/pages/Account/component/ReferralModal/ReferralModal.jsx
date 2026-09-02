@@ -1,7 +1,7 @@
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useRef } from 'react'
 import Skeleton from 'react-loading-skeleton'
 import { useAuth } from '../../../../contexts/AuthContext'
-import { getReferralHistory, getReferralCounts } from '../../../../services/referralService'
+import { getReferralHistory, getReferralHistoryFromCache, getReferralCounts, getCachedReferralCounts } from '../../../../services/referralService'
 import styles from './ReferralModal.module.css'
 
 const STATUS_META = {
@@ -18,29 +18,55 @@ function formatDate(iso) {
 
 export function ReferralModal({ onClose, onShare, pendingReferralReward, onAcknowledgeReward }) {
   const { user } = useAuth()
+  const hasPaintedRef = useRef(false)
+
   const [referrals, setReferrals] = useState([])
   const [cursor, setCursor] = useState(null)
   const [hasMore, setHasMore] = useState(false)
   const [loadingInitial, setLoadingInitial] = useState(true)
   const [loadingMore, setLoadingMore] = useState(false)
-  const [counts, setCounts] = useState(null)
+  const [counts, setCounts] = useState(() => getCachedReferralCounts(user))
+  const [countsStale, setCountsStale] = useState(!!getCachedReferralCounts(user))
   const [error, setError] = useState(false)
 
   const loadInitial = useCallback(async () => {
     if (!user) return
-    setLoadingInitial(true)
     setError(false)
+
+    if (!hasPaintedRef.current) {
+      const cached = await getReferralHistoryFromCache(user)
+      if (cached.referrals.length > 0) {
+        setReferrals(cached.referrals)
+        setLoadingInitial(false)
+        hasPaintedRef.current = true
+      }
+      const cachedCounts = getCachedReferralCounts(user)
+      if (cachedCounts) {
+        setCounts(cachedCounts)
+        setCountsStale(true)
+        setLoadingInitial(false)
+        hasPaintedRef.current = true
+      }
+    }
+
     try {
       const [historyResult, countsResult] = await Promise.all([
         getReferralHistory(user),
-        getReferralCounts(user),
+        getReferralCounts(user).catch(() => null),
       ])
       setReferrals(historyResult.referrals)
       setCursor(historyResult.nextCursor)
       setHasMore(historyResult.hasMore)
-      setCounts(countsResult)
-    } catch {
-      setError(true)
+      if (countsResult) {
+        setCounts(countsResult)
+        setCountsStale(false)
+      }
+      hasPaintedRef.current = true
+    } catch (err) {
+      if (!hasPaintedRef.current) {
+        console.error(err)
+        setError(true)
+      }
     } finally {
       setLoadingInitial(false)
     }
@@ -58,13 +84,15 @@ export function ReferralModal({ onClose, onShare, pendingReferralReward, onAckno
       setReferrals(prev => [...prev, ...result.referrals])
       setCursor(result.nextCursor)
       setHasMore(result.hasMore)
-    } catch {
+    } catch (err) {
+      console.error(err)
     } finally {
       setLoadingMore(false)
     }
   }
 
   const capReached = counts && counts.rewardsRemaining === 0
+  const showSkeleton = loadingInitial && referrals.length === 0 && !counts
 
   return (
     <div className={styles.overlay} onClick={onClose}>
@@ -103,13 +131,13 @@ export function ReferralModal({ onClose, onShare, pendingReferralReward, onAckno
             </div>
           )}
 
-          {loadingInitial && (
+          {showSkeleton && (
             <div className={styles.progressCard}>
               <Skeleton height={54} borderRadius={16} />
             </div>
           )}
 
-          {!loadingInitial && counts && (
+          {!showSkeleton && counts && (
             <div className={styles.progressCard}>
               <div className={styles.progressTop}>
                 <span className={styles.progressLabel}>
@@ -125,6 +153,9 @@ export function ReferralModal({ onClose, onShare, pendingReferralReward, onAckno
                   />
                 </div>
               )}
+              {countsStale && (
+                <div className={styles.staleNote}>Updating…</div>
+              )}
             </div>
           )}
 
@@ -135,7 +166,7 @@ export function ReferralModal({ onClose, onShare, pendingReferralReward, onAckno
 
           <div className={styles.sectionLabel}>Your invites</div>
 
-          {loadingInitial && (
+          {showSkeleton && (
             <div className={styles.list}>
               {[0, 1, 2].map(i => (
                 <div key={i} className={styles.skeletonRow}>
@@ -149,7 +180,7 @@ export function ReferralModal({ onClose, onShare, pendingReferralReward, onAckno
             </div>
           )}
 
-          {!loadingInitial && error && (
+          {!showSkeleton && error && referrals.length === 0 && (
             <div className={styles.emptyState}>
               <span className="mi-outlined" style={{ fontSize: '1.4rem', color: 'var(--text3)' }}>wifi_off</span>
               <span className={styles.emptyStateText}>Couldn't load your invites. Check your connection.</span>
@@ -157,14 +188,14 @@ export function ReferralModal({ onClose, onShare, pendingReferralReward, onAckno
             </div>
           )}
 
-          {!loadingInitial && !error && referrals.length === 0 && (
+          {!showSkeleton && !error && referrals.length === 0 && (
             <div className={styles.emptyState}>
               <span className="mi-outlined" style={{ fontSize: '1.4rem', color: 'var(--text3)' }}>group_add</span>
               <span className={styles.emptyStateText}>No invites yet. Share your code to start earning free months.</span>
             </div>
           )}
 
-          {!loadingInitial && !error && referrals.length > 0 && (
+          {referrals.length > 0 && (
             <div className={styles.list}>
               {referrals.map((r, i) => {
                 const meta = STATUS_META[r.status] || STATUS_META.pending
@@ -184,7 +215,7 @@ export function ReferralModal({ onClose, onShare, pendingReferralReward, onAckno
             </div>
           )}
 
-          {hasMore && !loadingInitial && (
+          {hasMore && !showSkeleton && (
             <button className={styles.loadMoreBtn} onClick={handleLoadMore} disabled={loadingMore}>
               {loadingMore ? 'Loading…' : 'Load more'}
             </button>

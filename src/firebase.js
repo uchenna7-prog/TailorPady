@@ -1,7 +1,6 @@
 import { initializeApp } from 'firebase/app'
 import { initializeFirestore, persistentLocalCache } from 'firebase/firestore'
 import { getAuth, browserLocalPersistence, setPersistence } from 'firebase/auth'
-import { getStorage } from 'firebase/storage'
 import { getAnalytics, isSupported } from 'firebase/analytics'
 
 const firebaseConfig = {
