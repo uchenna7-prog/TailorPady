@@ -1,9 +1,11 @@
-import { doc, getDoc, collection, query, where, orderBy, limit, startAfter, getDocs, getCountFromServer } from 'firebase/firestore'
+import { doc, getDoc, collection, query, where, orderBy, limit, startAfter, getDocs, getDocsFromCache, getCountFromServer } from 'firebase/firestore'
 import { db } from '../firebase'
 
 const REFERRAL_STASH_KEY = 'TailorPady_referral_code'
+const REFERRAL_COUNTS_CACHE_PREFIX = 'TailorPady_referral_counts_'
 const API_BASE = 'https://tailor-pady-api.vercel.app'
 const HISTORY_PAGE_SIZE = 20
+const CACHE_PREVIEW_SIZE = 20
 const REFERRALS_PER_REWARD = 5
 const MAX_REWARDS_PER_REFERRER = 3
 
@@ -107,16 +109,37 @@ export async function acknowledgeReferral(user, referralId) {
   return data
 }
 
-export async function getReferralHistory(user, cursor = null) {
-  if (!user) return { referrals: [], nextCursor: null, hasMore: false }
-
-  const base = query(
+function buildHistoryBaseQuery(user) {
+  return query(
     collection(db, 'referrals'),
     where('referrerUid', '==', user.uid),
     orderBy('createdAt', 'desc'),
     limit(HISTORY_PAGE_SIZE),
   )
+}
 
+export async function getReferralHistoryFromCache(user) {
+  if (!user) return { referrals: [], nextCursor: null, hasMore: false }
+
+  try {
+    const cacheQuery = query(
+      collection(db, 'referrals'),
+      where('referrerUid', '==', user.uid),
+      orderBy('createdAt', 'desc'),
+      limit(CACHE_PREVIEW_SIZE),
+    )
+    const snap = await getDocsFromCache(cacheQuery)
+    const referrals = snap.docs.map(d => ({ id: d.id, ...d.data() }))
+    return { referrals, nextCursor: null, hasMore: false }
+  } catch {
+    return { referrals: [], nextCursor: null, hasMore: false }
+  }
+}
+
+export async function getReferralHistory(user, cursor = null) {
+  if (!user) return { referrals: [], nextCursor: null, hasMore: false }
+
+  const base = buildHistoryBaseQuery(user)
   const q = cursor ? query(base, startAfter(cursor)) : base
   const snap = await getDocs(q)
 
@@ -150,5 +173,23 @@ export async function getReferralCounts(user) {
   const rewardsRemaining = Math.max(0, MAX_REWARDS_PER_REFERRER - rewarded)
   const progressToNextReward = rewardsRemaining > 0 ? activated % REFERRALS_PER_REWARD : 0
 
-  return { total, activated, rewarded, progressToNextReward, rewardsRemaining }
+  const counts = { total, activated, rewarded, progressToNextReward, rewardsRemaining }
+  cacheReferralCounts(user.uid, counts)
+  return counts
+}
+
+function cacheReferralCounts(uid, counts) {
+  try {
+    localStorage.setItem(REFERRAL_COUNTS_CACHE_PREFIX + uid, JSON.stringify(counts))
+  } catch {}
+}
+
+export function getCachedReferralCounts(user) {
+  if (!user) return null
+  try {
+    const raw = localStorage.getItem(REFERRAL_COUNTS_CACHE_PREFIX + user.uid)
+    return raw ? JSON.parse(raw) : null
+  } catch {
+    return null
+  }
 }
