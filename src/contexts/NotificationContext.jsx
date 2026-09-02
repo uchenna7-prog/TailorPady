@@ -10,9 +10,11 @@ import { useTasks } from './TaskContext'
 import { useAppointments } from './AppointmentContext'
 import { useCustomers } from './CustomerContext'
 import { useReviews } from './ReviewContext'
+import { useNetworkStatus } from '../hooks/useNetworkStatus'
 
 const STORAGE_KEY = 'TailorPady_read_notifs'
 const PUSHED_KEY = 'TailorPady_pushed_notifs'
+const TOKEN_CACHE_KEY = 'TailorPady_fcm_token'
 const FCM_VAPID_KEY = import.meta.env.VITE_FCM_VAPID_KEY
 const PERMISSION_TIMEOUT_MS = 15000
 
@@ -42,6 +44,16 @@ function loadPushedIds() {
 
 function savePushedIds(set) {
   try { localStorage.setItem(PUSHED_KEY, JSON.stringify([...set])) }
+  catch {}
+}
+
+function loadCachedToken() {
+  try { return localStorage.getItem(TOKEN_CACHE_KEY) }
+  catch { return null }
+}
+
+function saveCachedToken(token) {
+  try { localStorage.setItem(TOKEN_CACHE_KEY, token) }
   catch {}
 }
 
@@ -97,6 +109,7 @@ async function saveSubscription(uid, token) {
       userAgent: navigator.userAgent,
       updatedAt: new Date().toISOString(),
     })
+    saveCachedToken(token)
   } catch (err) {
     console.warn('Failed to save push subscription:', err)
   }
@@ -113,7 +126,7 @@ async function subscribeToPush() {
     if (!('serviceWorker' in navigator)) return null
     const registration = await navigator.serviceWorker.ready
 
-    if (!FCM_VAPID_KEY || FCM_VAPID_KEY.startsWith('REPLACE_')) {
+    if (!FCM_VAPID_KEY) {
       console.warn('FCM VAPID key is not configured')
       return null
     }
@@ -136,7 +149,7 @@ async function getExistingToken() {
     const supported = await isSupported()
     if (!supported) return null
     if (!('serviceWorker' in navigator)) return null
-    if (!FCM_VAPID_KEY || FCM_VAPID_KEY.startsWith('REPLACE_')) return null
+    if (!FCM_VAPID_KEY) return null
 
     const registration = await navigator.serviceWorker.ready
     const messaging = getMessaging(app)
@@ -148,6 +161,14 @@ async function getExistingToken() {
   } catch {
     return null
   }
+}
+
+async function syncTokenIfChanged(uid) {
+  const token = await getExistingToken()
+  if (!token) return
+  const cached = loadCachedToken()
+  if (token === cached) return
+  await saveSubscription(uid, token)
 }
 
 async function sendLocalPush(title, body, icon = '/icons/icon192.png') {
@@ -183,6 +204,7 @@ export function NotificationProvider({ children }) {
   const { upcoming: upcomingAppts } = useAppointments()
   const { customers } = useCustomers()
   const { reviews } = useReviews()
+  const isOnline = useNetworkStatus()
 
   const [readIds, setReadIds] = useState(() => loadReadIds())
   const [pushedIds, setPushedIds] = useState(() => loadPushedIds())
@@ -197,10 +219,21 @@ export function NotificationProvider({ children }) {
     setPushEnabled(true)
 
     if (!user?.uid) return
-    getExistingToken().then(token => {
-      if (token) saveSubscription(user.uid, token)
-    })
+    syncTokenIfChanged(user.uid)
   }, [user])
+
+  const wasOnlineRef = useRef(isOnline)
+  useEffect(() => {
+    const justCameOnline = isOnline && !wasOnlineRef.current
+    wasOnlineRef.current = isOnline
+
+    if (!justCameOnline) return
+    if (!('Notification' in window)) return
+    if (Notification.permission !== 'granted') return
+    if (!user?.uid) return
+
+    syncTokenIfChanged(user.uid)
+  }, [isOnline, user])
 
   useEffect(() => {
     if (!pushEnabled) return
