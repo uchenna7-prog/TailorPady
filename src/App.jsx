@@ -37,6 +37,7 @@ import TermsAndConditions from './pages/TermsAndConditions/TermsAndConditions'
 import RefundPolicy from './pages/RefundPolicy/RefundPolicy'
 import PrivacyPolicy from './pages/PrivacyPolicy/PrivacyPolicy'
 import BugReport from './pages/BugReport/BugReport'
+import BroadcastAdmin from './pages/BroadcastAdmin/BroadcastAdmin'
 import './index.css'
 
 class CrashPopup extends Component {
@@ -180,6 +181,7 @@ function AppShell() {
               <Route path="/app/refund" element={<RefundPolicy onMenuClick={menuClick} />} />
               <Route path="/app/privacy" element={<PrivacyPolicy onMenuClick={menuClick} />} />
               <Route path="/report-bug" element={<BugReport onMenuClick={menuClick} />} />
+              <Route path="/admin/broadcast" element={<BroadcastAdmin />} />
               <Route path="*" element={<Navigate to="/dashboard" replace />} />
             </Routes>
           </div>
