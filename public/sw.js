@@ -3,6 +3,8 @@ import { registerRoute, NavigationRoute } from 'workbox-routing'
 import { initializeApp } from 'firebase/app'
 import { getMessaging, onBackgroundMessage } from 'firebase/messaging/sw'
 
+self.skipWaiting()
+
 precacheAndRoute(self.__WB_MANIFEST, { directoryIndex: null })
 cleanupOutdatedCaches()
 
@@ -34,6 +36,10 @@ registerRoute(
     denylist: [...PUBLIC_ROUTE_PATTERNS, ...STATIC_FILE_PATTERNS],
   })
 )
+
+self.addEventListener('activate', e => {
+  e.waitUntil(self.clients.claim())
+})
 
 self.addEventListener('message', e => {
   if (e.data?.type === 'SKIP_WAITING') self.skipWaiting()
