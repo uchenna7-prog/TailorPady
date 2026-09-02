@@ -68,11 +68,7 @@ function BroadcastAdmin() {
       <Header type="back" title="Broadcast" />
 
       <main className={styles.main}>
-        <section className={styles.hero}>
-          <p className={styles.eyebrow}>Admin</p>
-          <h1 className={styles.title}>Broadcast</h1>
-          <p className={styles.subtitle}>Send a push notification to every subscribed user.</p>
-        </section>
+
 
         <div className={styles.card}>
           <div className={styles.field}>
