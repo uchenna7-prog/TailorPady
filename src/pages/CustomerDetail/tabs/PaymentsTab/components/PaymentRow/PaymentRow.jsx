@@ -8,12 +8,14 @@ export function PaymentRow({ payment, index, datePayments, orderItemsMap, onTap 
 
   const { generalSettings } = useGeneralSettings()
   const statusMeta = getStatusMeta(payment.status)
+  const statusLabel = payment.status === 'paid' ? 'Full Payment' : statusMeta.label
   const isLast = index === datePayments.length - 1
   const installments = payment.installments || []
   const totalPaid = getTotalPaid(installments)
   const fullPrice = parseFloat(payment.orderPrice) || 0
   const progressPct = getProgressPercent(totalPaid, fullPrice, payment.status)
   const orderItems = orderItemsMap[payment.orderId] ?? []
+  const itemCount = orderItems.length
 
   return (
     <div
@@ -29,28 +31,31 @@ export function PaymentRow({ payment, index, datePayments, orderItemsMap, onTap 
 
       <div className={styles.paymentRowInfo}>
         <div className={styles.paymentRowTitle}>{payment.orderDesc || 'Payment'}</div>
-        <div className={styles.paymentRowMeta}>
-          <span
-            className={styles.paymentStatusBadge}
-            style={{ color: statusMeta.color, background: statusMeta.background, borderColor: statusMeta.borderColor }}
-          >
-            {statusMeta.label}
-          </span>
-        </div>
+        {itemCount > 0 && (
+          <div className={styles.paymentRowMeta}>
+            <span className={styles.paymentRowMetaText}>
+              {itemCount} {itemCount === 1 ? 'item' : 'items'}
+            </span>
+          </div>
+        )}
       </div>
 
       <div className={styles.paymentRowRight}>
-        <div className={styles.paymentRowAmount}>
+        <div className={styles.paymentRowAmount} style={{ color: statusMeta.color }}>
           {fullPrice > 0 ? formatMoney(generalSettings.currency.symbol, totalPaid) : formatMoney(generalSettings.currency.symbol, installments[0]?.amount)}
         </div>
-        {fullPrice > 0 && totalPaid < fullPrice && (
-          <div className={styles.paymentRowSubAmount}>of {formatMoney(generalSettings.currency.symbol, fullPrice)}</div>
-        )}
+
         {fullPrice > 0 && (
           <div className={styles.miniProgressTrack}>
             <div className={styles.miniProgressFill} style={{ width: `${progressPct}%`, background: statusMeta.color }} />
           </div>
         )}
+        <span
+          className={styles.paymentStatusBadge}
+          style={{ color: statusMeta.color, background: statusMeta.background, borderColor: statusMeta.borderColor }}
+        >
+          {statusLabel}
+        </span>
       </div>
     </div>
   )

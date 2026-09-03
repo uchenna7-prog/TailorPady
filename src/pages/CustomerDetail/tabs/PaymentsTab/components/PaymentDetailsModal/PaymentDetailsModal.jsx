@@ -64,6 +64,7 @@ export function PaymentDetailsModal({
 
   const effectiveStatusValue = isNowFullyPaid ? 'paid' : payment.status
   const activeStatusMeta = PAYMENT_STATUSES.find(s => s.value === effectiveStatusValue) || PAYMENT_STATUSES[0]
+  const activeStatusLabel = effectiveStatusValue === 'paid' ? 'Full Payment' : activeStatusMeta.label
 
   function isStatusLocked(value) {
     if (!hasInstallments) return false
@@ -129,7 +130,7 @@ export function PaymentDetailsModal({
               >
                 <span className={styles.statusTriggerLeft}>
                   <span className={styles.statusDot} style={{ background: activeStatusMeta.color }} />
-                  <span style={{ color: activeStatusMeta.color }}>{activeStatusMeta.label}</span>
+                  <span style={{ color: activeStatusMeta.color }}>{activeStatusLabel}</span>
                 </span>
                 <span
                   className="mi-outlined"
@@ -150,6 +151,7 @@ export function PaymentDetailsModal({
                   {PAYMENT_STATUSES.map(s => {
                     const isActive = effectiveStatusValue === s.value
                     const locked = isStatusLocked(s.value)
+                    const label = s.value === 'paid' ? 'Full Payment' : s.label
                     return (
                       <button
                         key={s.value}
@@ -160,7 +162,7 @@ export function PaymentDetailsModal({
                       >
                         <span className={styles.statusDot} style={{ background: locked && !isActive ? 'var(--text3)' : s.color }} />
                         <span style={{ color: isActive ? s.color : locked ? 'var(--text3)' : 'var(--text)' }}>
-                          {s.label}
+                          {label}
                         </span>
                         {isActive && (
                           <span className="mi-outlined" style={{ marginLeft: 'auto', fontSize: '1rem', color: s.color }}>check</span>

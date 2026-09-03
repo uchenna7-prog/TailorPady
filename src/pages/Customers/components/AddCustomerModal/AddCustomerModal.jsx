@@ -1,4 +1,4 @@
-import { useState, useRef } from "react"
+import { useState, useRef, useEffect } from "react"
 import { getInitials } from "../../../../utils/nameUtils"
 import { useBodyMeasurementImages } from "../../../../contexts/BodyMeasurementImagesContext"
 import { Dropdown } from "../../../../components/Dropdown/Dropdown"
@@ -96,6 +96,12 @@ export function AddCustomerModal({ isOpen, onClose, onSave }) {
 
   const formInlineMsgTimer = useRef(null)
   const fileInputRef       = useRef(null)
+  const nameRef             = useRef(null)
+  const sexRef              = useRef(null)
+  const phoneRef            = useRef(null)
+  const whatsAppRef         = useRef(null)
+
+  const [pendingScroll, setPendingScroll] = useState(null)
 
   const initials                           = getInitials(name) || '+'
   const { fields: measureFields, imgMap }  = getBodyMeasurementConfig(sex)
@@ -113,6 +119,19 @@ export function AddCustomerModal({ isOpen, onClose, onSave }) {
   const savingLabel = photoUploading ? `Saving… ${photoProgress}%` : 'Saving…'
 
 
+  useEffect(() => {
+    if (!pendingScroll || formTab !== 'personal') return
+    const refs = { name: nameRef, sex: sexRef, phone: phoneRef, whatsapp: whatsAppRef }
+    const target = refs[pendingScroll]?.current
+    if (target) {
+      requestAnimationFrame(() => {
+        target.scrollIntoView({ behavior: 'smooth', block: 'center' })
+      })
+    }
+    setPendingScroll(null)
+  }, [pendingScroll, formTab])
+
+
   function showInlineMsg(text, ok = true) {
     setFormInlineMsg({ text, ok })
     clearTimeout(formInlineMsgTimer.current)
@@ -128,7 +147,19 @@ export function AddCustomerModal({ isOpen, onClose, onSave }) {
     } else {
       setLocalPhone(normalizeDigits(rawNumber))
     }
+    setOnWhatsApp(null)
+    setWhatsAppError(false)
     setContactNumbers(null)
+  }
+
+
+  function handlePhoneChange(e) {
+    const val = e.target.value
+    setLocalPhone(val)
+    if (!val.trim()) {
+      setOnWhatsApp(null)
+      setWhatsAppError(false)
+    }
   }
 
 
@@ -248,17 +279,19 @@ export function AddCustomerModal({ isOpen, onClose, onSave }) {
 
 
   function validatePersonalTab() {
-    if (!name) { showInlineMsg('Name is required', false); return false }
-    if (!sex)  { setSexError(true); showInlineMsg('Please select a sex', false); return false }
+    if (!name) { showInlineMsg('Name is required', false); setPendingScroll('name'); return false }
+    if (!sex)  { setSexError(true); showInlineMsg('Please select a sex', false); setPendingScroll('sex'); return false }
 
     if (localPhone.trim()) {
       if (!isValidLocalPhoneNumber(localPhone, selectedCountry.cca2)) {
         showInlineMsg('Please enter a valid phone number', false)
+        setPendingScroll('phone')
         return false
       }
       if (onWhatsApp === null) {
         setWhatsAppError(true)
         showInlineMsg('Please indicate if this number is on WhatsApp', false)
+        setPendingScroll('whatsapp')
         return false
       }
     }
@@ -279,6 +312,7 @@ export function AddCustomerModal({ isOpen, onClose, onSave }) {
       setWhatsAppError(true)
       showInlineMsg('Please indicate if the number is on WhatsApp', false)
       setFormTab('personal')
+      setPendingScroll('whatsapp')
       return
     }
 
@@ -311,6 +345,7 @@ export function AddCustomerModal({ isOpen, onClose, onSave }) {
       setWhatsAppError(true)
       showInlineMsg('Please indicate if the number is on WhatsApp', false)
       setFormTab('personal')
+      setPendingScroll('whatsapp')
       return
     }
 
@@ -435,7 +470,7 @@ export function AddCustomerModal({ isOpen, onClose, onSave }) {
                   )}
                 </div>
 
-                <div className={styles.inputGroup}>
+                <div className={styles.inputGroup} ref={nameRef}>
                   <label className={styles.inputLabel}>Full Name *</label>
                   <input
                     type="text"
@@ -446,7 +481,7 @@ export function AddCustomerModal({ isOpen, onClose, onSave }) {
                   />
                 </div>
 
-                <div className={styles.inputGroup}>
+                <div className={styles.inputGroup} ref={sexRef}>
                   <label className={styles.inputLabel}>
                     Sex *
                     {sexError && (
@@ -486,7 +521,7 @@ export function AddCustomerModal({ isOpen, onClose, onSave }) {
                   </div>
                 </div>
 
-                <div className={styles.inputGroup}>
+                <div className={styles.inputGroup} ref={phoneRef}>
                   <label className={styles.inputLabel}>Phone Number</label>
                   <div className={styles.phoneRow}>
                     <Dropdown
@@ -528,7 +563,7 @@ export function AddCustomerModal({ isOpen, onClose, onSave }) {
                       placeholder="e.g. 09078117654"
                       inputMode="tel"
                       value={localPhone}
-                      onChange={e => setLocalPhone(e.target.value)}
+                      onChange={handlePhoneChange}
                     />
                   </div>
                   {phoneHint && (
@@ -559,27 +594,29 @@ export function AddCustomerModal({ isOpen, onClose, onSave }) {
                   />
                 </div>
 
-                <div className={styles.inputGroup}>
-                  <label className={styles.inputLabel}>
-                    On WhatsApp? *
-                    {whatsAppError && (
-                      <span style={{ color: 'var(--danger)', marginLeft: 6, fontWeight: 700, textTransform: 'none', letterSpacing: 0 }}>
-                        Required
-                      </span>
-                    )}
-                  </label>
-                  <div className={styles.sexRow}>
-                    {[{ label: 'Yes', value: true }, { label: 'No', value: false }].map(opt => (
-                      <button
-                        key={opt.label}
-                        className={`${styles.sexChip} ${onWhatsApp === opt.value ? styles.sexChipActive : ''} ${whatsAppError && onWhatsApp === null ? styles.sexChipError : ''}`}
-                        onClick={() => { setOnWhatsApp(opt.value); setWhatsAppError(false) }}
-                      >
-                        {opt.label}
-                      </button>
-                    ))}
+                {localPhone.trim() && (
+                  <div className={styles.inputGroup} ref={whatsAppRef}>
+                    <label className={styles.inputLabel}>
+                      On WhatsApp? *
+                      {whatsAppError && (
+                        <span style={{ color: 'var(--danger)', marginLeft: 6, fontWeight: 700, textTransform: 'none', letterSpacing: 0 }}>
+                          Required
+                        </span>
+                      )}
+                    </label>
+                    <div className={styles.sexRow}>
+                      {[{ label: 'Yes', value: true }, { label: 'No', value: false }].map(opt => (
+                        <button
+                          key={opt.label}
+                          className={`${styles.sexChip} ${onWhatsApp === opt.value ? styles.sexChipActive : ''} ${whatsAppError && onWhatsApp === null ? styles.sexChipError : ''}`}
+                          onClick={() => { setOnWhatsApp(opt.value); setWhatsAppError(false) }}
+                        >
+                          {opt.label}
+                        </button>
+                      ))}
+                    </div>
                   </div>
-                </div>
+                )}
 
                 <div className={styles.inputGroup}>
                   <label className={styles.inputLabel}>Email Address</label>

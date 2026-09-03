@@ -363,7 +363,7 @@ export default function ReceiptViewer({
 
         <div className={styles.statusRow}>
           <div className={`${styles.statusBadge} ${isFullPay ? styles.status_paid : styles.status_part_paid}`}>
-            {isFullPay ? 'Paid in Full' : 'Part Payment'}
+            {isFullPay ? 'Full Payment' : 'Part Payment'}
           </div>
         </div>
 

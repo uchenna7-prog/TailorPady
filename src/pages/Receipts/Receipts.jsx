@@ -36,7 +36,7 @@ function isFullPayment(receipt) {
 
 const TABS = [
   { id: 'all',  label: 'All'          },
-  { id: 'full', label: 'Paid in Full' },
+  { id: 'full', label: 'Full Payment' },
   { id: 'part', label: 'Part Payment' },
 ]
 
@@ -64,7 +64,7 @@ function ReceiptCard({ receipt, currency, onTap, isLast, orderItems }) {
   const amount = getReceiptOwnAmount(receipt)
   const full   = isFullPayment(receipt)
   const sty    = full ? STATUS_STYLES.full : STATUS_STYLES.part
-  const label  = full ? 'Paid in Full' : 'Part Payment'
+  const label  = full ? 'Full Payment' : 'Part Payment'
 
   return (
     <div

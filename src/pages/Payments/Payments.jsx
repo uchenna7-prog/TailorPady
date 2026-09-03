@@ -172,12 +172,14 @@ function PaymentRow({ row, isLast, onTap, orderItems }) {
           <span className={styles.metaText}>{row.customerName}</span>
         </div>
 
-        <span
-          className={styles.statusPill}
-          style={{ background: sm.bg, color: sm.color, borderColor: sm.border }}
-        >
-          {sm.label}
-        </span>
+        {row.method && (
+          <div className={styles.methodRow}>
+            <span className="mi-outlined" style={{ fontSize: '0.7rem', color: 'var(--text3)' }}>{mIcon}</span>
+            <span className={styles.methodLabel}>{mLabel}</span>
+          </div>
+        )}
+
+
       </div>
 
       <div className={styles.amountCol}>
@@ -197,12 +199,15 @@ function PaymentRow({ row, isLast, onTap, orderItems }) {
           </div>
         )}
 
-        {row.method && (
-          <div className={styles.methodRow}>
-            <span className="mi-outlined" style={{ fontSize: '0.7rem', color: 'var(--text3)' }}>{mIcon}</span>
-            <span className={styles.methodLabel}>{mLabel}</span>
-          </div>
-        )}
+
+
+        <span
+          className={styles.statusPill}
+          style={{ background: sm.bg, color: sm.color, borderColor: sm.border }}
+        >
+          {sm.label}
+        </span>
+
       </div>
     </div>
   )

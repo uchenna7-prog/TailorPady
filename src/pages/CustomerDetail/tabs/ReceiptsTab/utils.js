@@ -27,7 +27,7 @@ export function getPaymentStatus(receipt) {
   return {
     thisPayment,
     isPaidInFull,
-    label: isPaidInFull ? 'Paid in Full' : 'Part Payment',
+    label: isPaidInFull ? 'Full Payment' : 'Part Payment',
     badgeStyle: isPaidInFull
       ? { background: 'rgba(34,197,94,0.12)',  color: '#15803d', borderColor: 'rgba(34,197,94,0.3)'  }
       : { background: 'rgba(251,146,60,0.12)', color: '#c2410c', borderColor: 'rgba(251,146,60,0.3)' },

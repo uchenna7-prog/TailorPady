@@ -24,12 +24,14 @@ export function ReceiptRow({ receipt, currency, onTap, isLast, orderItems }) {
       </div>
 
       <div className={styles.receiptRowRight}>
-        <span className={styles.receiptStatusBadge} style={badgeStyle}>
-          {label}
-        </span>
+
         <div className={styles.receiptRowAmount}>
           {formatMoney(currency, thisPayment)}
         </div>
+        <span className={styles.receiptStatusBadge} style={badgeStyle}>
+          {label}
+        </span>
+
       </div>
     </div>
   )

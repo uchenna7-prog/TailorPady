@@ -16,6 +16,7 @@ export function OrderRow({ order, ordersInGroup, index, onTap }) {
   const priceText    = displayPrice != null ? `₦${Number(displayPrice).toLocaleString()}` : '—'
   const dueDateRaw   = order.dueRaw || order.dueDate
   const isLastInGroup = index === ordersInGroup.length - 1
+  const hideDueDate   = statusKey === 'completed' || statusKey === 'delivered'
 
   return (
     <div
@@ -46,7 +47,7 @@ export function OrderRow({ order, ordersInGroup, index, onTap }) {
         <span className={styles.orderStatusBadge} style={statusStyle}>
           {statusLabel}
         </span>
-        {dueDateRaw && (
+        {dueDateRaw && !hideDueDate && (
           <div className={styles.orderRowDueDate}>
             Due {formatShortDate(dueDateRaw)}
           </div>

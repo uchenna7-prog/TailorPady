@@ -29,12 +29,14 @@ export function InvoiceRow({ invoice, currency, onTap, isLast, orderItems }) {
       </div>
 
       <div className={styles.invoiceRowRight}>
-        <span className={styles.invoiceStatusBadge} style={badgeStyle}>
-          {badgeLabel}
-        </span>
+
         <div className={styles.invoiceRowAmount}>
           {formatMoney(currency, total, 0, 0)}
         </div>
+        <span className={styles.invoiceStatusBadge} style={badgeStyle}>
+          {badgeLabel}
+        </span>
+  
       </div>
     </div>
   )
