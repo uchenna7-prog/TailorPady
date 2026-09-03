@@ -628,11 +628,13 @@ export const TOURS = {
   'recovery-orders': [
     {
       id: 'recovery-welcome',
+      type: 'branch',
       target: null,
-      manual: true,
-      ctaLabel: 'Get Started',
-      title: "Let's create an order",
-      message: "We'll walk you through it. First, let's find or add a customer.",
+      title: 'All Customer Orders',
+      message: "This page shows all orders from all your customers in one place. To add a new order, go to the Customers page and select the customer you want to add an order for. If the customer doesn’t exist yet, create them first, then open their profile page to add the order.",
+      viewLabel: 'Got it',
+      continueLabel: 'Show me how',
+      nextTarget: 'goto-customers-nav',
     },
     {
       id: 'goto-customers-nav',
@@ -729,11 +731,13 @@ export const TOURS = {
   'recovery-invoices': [
     {
       id: 'recovery-welcome',
+      type: 'branch',
       target: null,
-      manual: true,
-      ctaLabel: 'Get Started',
-      title: "Let's create an invoice",
-      message: "We'll walk you through it. First, let's find or add a customer.",
+      title: 'All Customer Invoices',
+      message: "This page shows all invoices for all your customers in one place. To create a new invoice, go to the Customers page and select the customer you want to create an invoice for. If the customer doesn’t exist yet, create them first, then open their profile page to generate the invoice.",
+      viewLabel: 'Got it',
+      continueLabel: 'Show me how',
+      nextTarget: 'goto-customers-nav',
     },
     {
       id: 'goto-customers-nav',
@@ -853,11 +857,13 @@ export const TOURS = {
   'recovery-payments': [
     {
       id: 'recovery-welcome',
+      type: 'branch',
       target: null,
-      manual: true,
-      ctaLabel: 'Get Started',
-      title: "Let's record a payment",
-      message: "We'll walk you through it. First, let's find or add a customer.",
+      title: 'All Customer Payments',
+      message: "This page shows all payments from all your customers in one place. To record a new payment, go to the Customers page and select the customer you want to record a payment for. If the customer doesn’t exist yet, create them first, then open their profile page to record the payment.",
+      viewLabel: 'Got it',
+      continueLabel: 'Show me how',
+      nextTarget: 'goto-customers-nav',
     },
     {
       id: 'goto-customers-nav',
@@ -977,11 +983,13 @@ export const TOURS = {
   'recovery-receipts': [
     {
       id: 'recovery-welcome',
+      type: 'branch',
       target: null,
-      manual: true,
-      ctaLabel: 'Get Started',
-      title: "Let's generate a receipt",
-      message: "We'll walk you through it. First, let's find or add a customer.",
+      title: 'All Customer Receipts',
+      message: "This page shows all receipts from all your customers in one place. To create a new receipt, go to the Customers page and select the customer you want to create a receipt for. If the customer doesn’t exist yet, create them first, then open their profile page to generate the receipt.",
+      viewLabel: 'Got it',
+      continueLabel: 'Show me how',
+      nextTarget: 'goto-customers-nav',
     },
     {
       id: 'goto-customers-nav',

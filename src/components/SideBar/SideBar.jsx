@@ -12,6 +12,8 @@ import logoLightMode          from '../../assets/logoLightMode.png'
 import logoDarkMode           from '../../assets/logoDarkMode.png'
 import styles                 from './SideBar.module.css'
 
+const ADMIN_UID = import.meta.env.VITE_ADMIN_UID
+
 const NAV_SECTIONS = [
   {
     key: 'workspace',
@@ -67,6 +69,14 @@ const NAV_SECTIONS = [
     ],
   },
   {
+    key: 'admin',
+    label: 'Admin',
+    adminOnly: true,
+    items: [
+      { path: '/admin/broadcast', label: 'Broadcast', icon: 'campaign' },
+    ],
+  },
+  {
     key: 'account',
     label: 'Account',
     items: [
@@ -92,7 +102,7 @@ function SideBar({ isOpen, onClose }) {
   const { generalSettings } = useGeneralSettings()
   const { triggerInstall, isInstalled } = useInstall()
   const badges              = useBadges()
-  const { logout }          = useAuth()
+  const { logout, user }    = useAuth()
   const { currentStep, goToStep, completeStep } = useTour()
   const { referralCode }    = useReferral()
 
@@ -103,6 +113,7 @@ function SideBar({ isOpen, onClose }) {
 
   const theme   = generalSettings.theme
   const logoSrc = theme === 'dark' ? logoLightMode : logoDarkMode
+  const isAdmin = !!user && user.uid === ADMIN_UID
 
   const badgeMap = {
     orders:       { count: badges.orders,       variant: 'pending' },
@@ -190,6 +201,8 @@ function SideBar({ isOpen, onClose }) {
         >
           <div className={styles.nav}>
             {NAV_SECTIONS.map((section, i) => {
+              if (section.adminOnly && !isAdmin) return null
+
               const visibleItems = section.items.filter(item => {
                 if (item.action === 'install') return !isInstalled
                 return true
