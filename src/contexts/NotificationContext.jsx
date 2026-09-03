@@ -112,6 +112,7 @@ async function saveSubscription(uid, token) {
     saveCachedToken(token)
   } catch (err) {
     console.warn('Failed to save push subscription:', err)
+    alert('Firestore save failed: ' + err.message)
   }
 }
 
@@ -435,9 +436,11 @@ export function NotificationProvider({ children }) {
     if (!user?.uid) return
     const { token, blocked } = await subscribeToPush()
     setPushBlocked(blocked)
+    alert(`token: ${token}, blocked: ${blocked}`)
     if (!token) return
     setPushEnabled(true)
     await saveSubscription(user.uid, token)
+    alert('saved to firestore')
   }
 
   return (
