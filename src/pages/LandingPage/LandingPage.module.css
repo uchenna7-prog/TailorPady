@@ -1063,9 +1063,7 @@
   transition: background 0.2s ease, color 0.2s ease;
 }
 
-.billingToggleBtn:hover {
-  color: var(--ink);
-}
+
 
 .billingToggleBtnActive {
   background: var(--ink);
@@ -1178,7 +1176,7 @@
 
 .pricingListItem {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   gap: 10px;
   font-size: 14px;
 }

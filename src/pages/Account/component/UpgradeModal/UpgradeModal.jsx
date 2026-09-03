@@ -154,7 +154,7 @@ export default function UpgradeModal({ onClose, onSuccess, initialTab = 'free' }
               <div className={styles.planTitleRow}>
                 <div className={styles.planNamePro}>Pro Monthly</div>
                 <div className={styles.planPopularBadge}>
-                  <span className="mi-outlined" style={{ fontSize: '0.65rem' }}>star</span>
+                  <span className="mi-outlined" style={{ fontSize: '0.65rem', textTransform: 'lowercase' }}>star</span>
                   Pro
                 </div>
               </div>
@@ -184,7 +184,7 @@ export default function UpgradeModal({ onClose, onSuccess, initialTab = 'free' }
               {payingPlan === 'monthly' ? 'Processing…' : 'Subscribe to Pro'}
             </button>
             {errorMsg && <p className={styles.fine} style={{ color: '#ef4444' }}>{errorMsg}</p>}
-            <p className={styles.fine}>No hidden charges, Instant activation</p>
+   
           </div>
         )}
 
@@ -195,7 +195,7 @@ export default function UpgradeModal({ onClose, onSuccess, initialTab = 'free' }
               <div className={styles.planTitleRow}>
                 <div className={styles.planNamePro}>Pro Annual</div>
                 <div className={styles.planPopularBadge}>
-                  <span className="mi-outlined" style={{ fontSize: '0.65rem' }}>star</span>
+                  <span className="mi-outlined" style={{ fontSize: '0.65rem',textTransform: 'lowercase' }}>star</span>
                   Most popular
                 </div>
               </div>
@@ -229,7 +229,7 @@ export default function UpgradeModal({ onClose, onSuccess, initialTab = 'free' }
               {payingPlan === 'annual' ? 'Processing…' : 'Subscribe to Pro'}
             </button>
             {errorMsg && <p className={styles.fine} style={{ color: '#ef4444' }}>{errorMsg}</p>}
-            <p className={styles.fine}>No hidden charges · Instant activation</p>
+
           </div>
         )}
 
