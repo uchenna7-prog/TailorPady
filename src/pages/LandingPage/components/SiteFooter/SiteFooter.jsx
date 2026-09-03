@@ -5,8 +5,8 @@ import styles from './SiteFooter.module.css'
 const CONTACT = {
   whatsapp: '+234 7079645766',
   phone: '+234 7079645766',
-  email: 'support@TailorPady.app',
-  address: 'Choba, Uniport, Port Harcourt, Nigeria',
+  email: 'tailorPadysupport@gmail.com',
+  address: "No 5 Captain George's Drive, School To Land Iriebe, Rivers State, Nigeria.",
 }
 
 function InstagramIcon() {

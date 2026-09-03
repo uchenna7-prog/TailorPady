@@ -193,8 +193,6 @@ const PRO_FEATURES = [
   { icon: 'cloud', label: 'Expanded cloud storage' },
 ]
 
-const PLAN_FEATURE_PREVIEW_COUNT = 8
-
 const FREE_PLAN = {
   name: 'Free',
   price: '₦0',
@@ -665,50 +663,40 @@ function PricingTeaser({ onNavigate }) {
       </div>
 
       <div className={styles.pricingGrid}>
-        {plans.map((plan, i) => {
-          const previewFeatures = plan.features.slice(0, PLAN_FEATURE_PREVIEW_COUNT)
-          const remainingCount = plan.features.length - previewFeatures.length
-
-          return (
-            <Reveal
-              key={`${plan.name}-${billing}`}
-              as="div"
-              className={`${styles.pricingCard} `}
-              delay={i * 100}
-            >
-              <div className={styles.pricingCardHead}>
-                <span className={styles.pricingName}>{plan.name}</span>
-                <div className={styles.pricingPriceRow}>
-                  <span className={styles.pricingPrice}>{plan.price}</span>
-                  <span className={styles.pricingPeriod}>{plan.period}</span>
-                  {plan.badge && <span className={styles.pricingCardBadge}>{plan.badge}</span>}
-                </div>
-                {plan.subNote && <span className={styles.pricingSubNote}>{plan.subNote}</span>}
-                <p className={styles.pricingTagline}>{plan.tagline}</p>
+        {plans.map((plan, i) => (
+          <Reveal
+            key={`${plan.name}-${billing}`}
+            as="div"
+            className={`${styles.pricingCard} `}
+            delay={i * 100}
+          >
+            <div className={styles.pricingCardHead}>
+              <span className={styles.pricingName}>{plan.name}</span>
+              <div className={styles.pricingPriceRow}>
+                <span className={styles.pricingPrice}>{plan.price}</span>
+                <span className={styles.pricingPeriod}>{plan.period}</span>
+                {plan.badge && <span className={styles.pricingCardBadge}>{plan.badge}</span>}
               </div>
-              <ul className={styles.pricingList}>
-                {previewFeatures.map(feature => (
-                  <li key={feature.label} className={styles.pricingListItem}>
-                    <span className={`mi-outlined ${styles.pricingCheck}`}>{feature.icon}</span>
-                    {feature.label}
-                  </li>
-                ))}
-                {remainingCount > 0 && (
-                  <li className={styles.pricingListMore}>
-                    +{remainingCount} more feature{remainingCount === 1 ? '' : 's'}
-                  </li>
-                )}
-              </ul>
-              <button
-                type="button"
-                className={plan.highlighted ? styles.primaryButton : styles.outlineButton}
-                onClick={() => onNavigate('/signup')}
-              >
-                {plan.cta}
-              </button>
-            </Reveal>
-          )
-        })}
+              {plan.subNote && <span className={styles.pricingSubNote}>{plan.subNote}</span>}
+              <p className={styles.pricingTagline}>{plan.tagline}</p>
+            </div>
+            <ul className={styles.pricingList}>
+              {plan.features.map(feature => (
+                <li key={feature.label} className={styles.pricingListItem}>
+                  <span className={`mi-outlined ${styles.pricingCheck}`}>{feature.icon}</span>
+                  {feature.label}
+                </li>
+              ))}
+            </ul>
+            <button
+              type="button"
+              className={plan.highlighted ? styles.primaryButton : styles.outlineButton}
+              onClick={() => onNavigate('/signup')}
+            >
+              {plan.cta}
+            </button>
+          </Reveal>
+        ))}
       </div>
     </section>
   )

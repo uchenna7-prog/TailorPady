@@ -4,8 +4,7 @@ export const CONTACT = {
   email: 'tailorpadysupport@gmail.com',
   website: 'https://tailorpady.web.app',
   businessName: 'TailorPady',
-  billingName: 'TailorPady Technologies',
-  address: 'Choba Uniport',
+  address: "No 5 Captain George's Drive, School To Land Iriebe, Rivers State, Nigeria.",
 }
 
 export const WHATSAPP_HREF = `https://wa.me/${CONTACT.whatsapp.replace(/\D/g, '')}`

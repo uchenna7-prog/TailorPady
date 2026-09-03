@@ -69,7 +69,6 @@ export default function Contact({ onMenuClick }) {
         </div>
 
         <InfoRow label="Business name" value={CONTACT.businessName} />
-        <InfoRow label="Billing name" value={CONTACT.billingName} />
         <InfoRow label="Address" value={CONTACT.address} divider={false} />
 
         <div style={{ height: 40 }} />

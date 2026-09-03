@@ -248,18 +248,21 @@ export function AddCustomerModal({ isOpen, onClose, onSave }) {
 
 
   function validatePersonalTab() {
-    if (!name)             { showInlineMsg('Name is required', false); return false }
-    if (!sex)              { setSexError(true); showInlineMsg('Please select a sex', false); return false }
-    if (!localPhone.trim()) { showInlineMsg('Phone number is required', false); return false }
-    if (!isValidLocalPhoneNumber(localPhone, selectedCountry.cca2)) {
-      showInlineMsg('Please enter a valid phone number', false)
-      return false
+    if (!name) { showInlineMsg('Name is required', false); return false }
+    if (!sex)  { setSexError(true); showInlineMsg('Please select a sex', false); return false }
+
+    if (localPhone.trim()) {
+      if (!isValidLocalPhoneNumber(localPhone, selectedCountry.cca2)) {
+        showInlineMsg('Please enter a valid phone number', false)
+        return false
+      }
+      if (onWhatsApp === null) {
+        setWhatsAppError(true)
+        showInlineMsg('Please indicate if this number is on WhatsApp', false)
+        return false
+      }
     }
-    if (onWhatsApp === null) {
-      setWhatsAppError(true)
-      showInlineMsg('Please indicate if this number is on WhatsApp', false)
-      return false
-    }
+
     return true
   }
 
@@ -272,7 +275,7 @@ export function AddCustomerModal({ isOpen, onClose, onSave }) {
       return
     }
 
-    if (onWhatsApp === null) {
+    if (localPhone.trim() && onWhatsApp === null) {
       setWhatsAppError(true)
       showInlineMsg('Please indicate if the number is on WhatsApp', false)
       setFormTab('personal')
@@ -304,7 +307,7 @@ export function AddCustomerModal({ isOpen, onClose, onSave }) {
 
 
   async function handleSkip() {
-    if (onWhatsApp === null) {
+    if (localPhone.trim() && onWhatsApp === null) {
       setWhatsAppError(true)
       showInlineMsg('Please indicate if the number is on WhatsApp', false)
       setFormTab('personal')
@@ -484,7 +487,7 @@ export function AddCustomerModal({ isOpen, onClose, onSave }) {
                 </div>
 
                 <div className={styles.inputGroup}>
-                  <label className={styles.inputLabel}>Phone Number *</label>
+                  <label className={styles.inputLabel}>Phone Number</label>
                   <div className={styles.phoneRow}>
                     <Dropdown
                       options={COUNTRIES}

@@ -86,7 +86,7 @@
 
 .footerContactLine {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   gap: 10px;
   color: var(--paper);
   text-decoration: none;

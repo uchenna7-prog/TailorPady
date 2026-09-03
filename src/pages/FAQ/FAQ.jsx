@@ -101,7 +101,7 @@ export default function FAQ({ onMenuClick }) {
               <span className="mi-outlined" style={{ fontSize: '1.4rem', color: 'var(--accent)' }}>support_agent</span>
               <div className={styles.footerCtaText}>
                 <div className={styles.footerCtaTitle}>Still have questions?</div>
-                <div className={styles.footerCtaSub}>Reach out via the Contact page — we're happy to help.</div>
+                <div className={styles.footerCtaSub}>Reach out via the Contact page, we're happy to help.</div>
               </div>
             </div>
           </div>
