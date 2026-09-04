@@ -1,4 +1,3 @@
-
 .fullScreenModal {
   position: fixed;
   top: 0;
@@ -152,6 +151,9 @@
   font-size: 0.88rem;
   font-weight: 700;
   color: var(--text);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .detailSectionCard {

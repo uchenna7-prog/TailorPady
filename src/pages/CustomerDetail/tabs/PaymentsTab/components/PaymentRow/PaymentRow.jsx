@@ -41,15 +41,10 @@ export function PaymentRow({ payment, index, datePayments, orderItemsMap, onTap 
       </div>
 
       <div className={styles.paymentRowRight}>
-        <div className={styles.paymentRowAmount} style={{ color: statusMeta.color }}>
+        <div className={styles.paymentRowAmount} >
           {fullPrice > 0 ? formatMoney(generalSettings.currency.symbol, totalPaid) : formatMoney(generalSettings.currency.symbol, installments[0]?.amount)}
         </div>
 
-        {fullPrice > 0 && (
-          <div className={styles.miniProgressTrack}>
-            <div className={styles.miniProgressFill} style={{ width: `${progressPct}%`, background: statusMeta.color }} />
-          </div>
-        )}
         <span
           className={styles.paymentStatusBadge}
           style={{ color: statusMeta.color, background: statusMeta.background, borderColor: statusMeta.borderColor }}

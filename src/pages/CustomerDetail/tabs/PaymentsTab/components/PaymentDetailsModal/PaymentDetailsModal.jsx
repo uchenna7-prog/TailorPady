@@ -13,6 +13,13 @@ import styles from "./PaymentDetailsModal.module.css"
 const DONUT_CIRCUMFERENCE = 2 * Math.PI * 26
 
 
+function getItemsSummary(orderItems) {
+  const count = orderItems?.length || 0
+  if (count === 0) return '—'
+  return count === 1 ? '1 item' : `${count} items`
+}
+
+
 export function PaymentDetailsModal({
   payment,
   onClose,
@@ -55,6 +62,7 @@ export function PaymentDetailsModal({
   const progressPercent = Math.round(getProgressPercent(totalPaid, fullPrice, payment.status))
   const currency = getCurrency()
   const balanceLeft = Math.max(0, fullPrice - totalPaid)
+  const itemsSummary = getItemsSummary(payment.orderItems)
 
   const receiptedInstallmentIds = new Set(
     receipts
@@ -183,12 +191,14 @@ export function PaymentDetailsModal({
               <div className={styles.infoGridLabel}>Order</div>
               <div className={styles.infoGridValue}>{payment.orderDesc || '—'}</div>
             </div>
-            {fullPrice > 0 && (
-              <div className={styles.infoGridCell}>
-                <div className={styles.infoGridLabel}>Order Value</div>
-                <div className={styles.infoGridValue}>{formatMoney(currency, fullPrice)}</div>
-              </div>
-            )}
+            <div className={styles.infoGridCell}>
+              <div className={styles.infoGridLabel}>Order Value</div>
+              <div className={styles.infoGridValue}>{fullPrice > 0 ? formatMoney(currency, fullPrice) : '—'}</div>
+            </div>
+            <div className={styles.infoGridCell}>
+              <div className={styles.infoGridLabel}>Items</div>
+              <div className={styles.infoGridValue} title={itemsSummary}>{itemsSummary}</div>
+            </div>
             <div className={styles.infoGridCell}>
               <div className={styles.infoGridLabel}>Date Created</div>
               <div className={styles.infoGridValue}>{payment.date}</div>

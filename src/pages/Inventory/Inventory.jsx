@@ -85,16 +85,18 @@ function InventoryRow({ item, isLast, onTap }) {
       </div>
 
       <div className={styles.invRowRight}>
+
+        <div className={styles.invRowQty}>
+          {item.quantity}
+          <span className={styles.invRowUnit}>{item.unit}</span>
+        </div>
+
         <span
           className={styles.invRowStatus}
           style={{ background: sc.bg, color: sc.color, borderColor: sc.border }}
         >
           {sc.label}
         </span>
-        <div className={styles.invRowQty} style={{ color: sc.color }}>
-          {item.quantity}
-          <span className={styles.invRowUnit}>{item.unit}</span>
-        </div>
       </div>
     </div>
   )

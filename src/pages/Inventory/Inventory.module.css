@@ -331,8 +331,8 @@
 }
 
 .invRowQty {
-  font-size: 1.1rem;
-  font-weight: 900;
+  font-size: 0.88rem;
+  font-weight: 800;
   font-variant-numeric: tabular-nums;
   line-height: 1;
   display: flex;
@@ -341,7 +341,7 @@
 }
 
 .invRowUnit {
-  font-size: 0.65rem;
+  font-size: 0.7rem;
   font-weight: 600;
   color: var(--text3);
 }

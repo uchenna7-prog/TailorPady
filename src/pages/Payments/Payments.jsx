@@ -21,6 +21,12 @@ function getInitials(name) {
   return name.trim().split(/\s+/).slice(0, 2).map(p => p[0]?.toUpperCase() || '').join('')
 }
 
+function getItemsSummary(orderItems) {
+  const count = orderItems?.length || 0
+  if (count === 0) return '—'
+  return count === 1 ? '1 item' : `${count} items`
+}
+
 const METHOD_ICONS = {
   cash:     'payments',
   transfer: 'swap_horiz',
@@ -185,19 +191,9 @@ function PaymentRow({ row, isLast, onTap, orderItems }) {
       <div className={styles.amountCol}>
         <div
           className={styles.amount}
-          style={{ color: isPending ? 'var(--text3)' : sm.color }}
         >
           {isPending ? '—' : fmt(row.amount)}
         </div>
-
-        {showProgress && (
-          <div className={styles.progressWrapRight}>
-            <div
-              className={styles.progressBarRight}
-              style={{ width: `${pct}%`, background: sm.color }}
-            />
-          </div>
-        )}
 
 
 
@@ -229,6 +225,7 @@ function PaymentDetail({ row, onClose, onNavigateToCustomer, orderItems }) {
   const progressPercent = Math.round(rawPct >= 100 ? 100 : Math.min(99, rawPct))
   const isMultiInstallment = row.totalInstallments > 1
   const initials = getInitials(row.customerName)
+  const itemsSummary = getItemsSummary(orderItems)
 
   return (
     <div
@@ -275,12 +272,14 @@ function PaymentDetail({ row, onClose, onNavigateToCustomer, orderItems }) {
               <div className={styles.infoGridLabel}>Date</div>
               <div className={styles.infoGridValue}>{row.date}</div>
             </div>
-            {fullPrice > 0 && (
-              <div className={styles.infoGridCell}>
-                <div className={styles.infoGridLabel}>Order Value</div>
-                <div className={styles.infoGridValue}>{fmt(fullPrice)}</div>
-              </div>
-            )}
+            <div className={styles.infoGridCell}>
+              <div className={styles.infoGridLabel}>Order Value</div>
+              <div className={styles.infoGridValue}>{fullPrice > 0 ? fmt(fullPrice) : '—'}</div>
+            </div>
+            <div className={styles.infoGridCell}>
+              <div className={styles.infoGridLabel}>Items</div>
+              <div className={styles.infoGridValue} title={itemsSummary}>{itemsSummary}</div>
+            </div>
             <div className={styles.infoGridCell}>
               <div className={styles.infoGridLabel}>Method</div>
               <div className={styles.infoGridValue}>{row.method ? mLabel : '—'}</div>
