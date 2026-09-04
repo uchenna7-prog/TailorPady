@@ -9,6 +9,8 @@ const STATUS_META = {
   activated: { label: 'Active', color: '#22c55e' },
 }
 
+const DONUT_CIRCUMFERENCE = 2 * Math.PI * 26
+
 function formatDate(iso) {
   if (!iso) return '—'
   const date = new Date(iso)
@@ -93,6 +95,7 @@ export function ReferralModal({ onClose, onShare, pendingReferralReward, onAckno
 
   const capReached = counts && counts.rewardsRemaining === 0
   const showSkeleton = loadingInitial && referrals.length === 0 && !counts
+  const donutPercent = counts ? (capReached ? 100 : (counts.progressToNextReward / 5) * 100) : 0
 
   return (
     <div className={styles.overlay} onClick={onClose}>
@@ -132,30 +135,57 @@ export function ReferralModal({ onClose, onShare, pendingReferralReward, onAckno
           )}
 
           {showSkeleton && (
-            <div className={styles.progressCard}>
-              <Skeleton height={54} borderRadius={16} />
+            <div className={styles.premiumCard}>
+              <Skeleton height={92} borderRadius={16} />
             </div>
           )}
 
           {!showSkeleton && counts && (
-            <div className={styles.progressCard}>
-              <div className={styles.progressTop}>
-                <span className={styles.progressLabel}>
-                  {capReached ? 'Max rewards reached' : `${counts.progressToNextReward}/5 toward your next free month`}
-                </span>
-                <span className={styles.progressCount}>{counts.rewarded}/3 claimed</span>
+            <div className={styles.premiumCard}>
+              <div className={styles.cardHeader}>
+                <span className={styles.cardLabel}>Referral progress</span>
+                {countsStale && <span className={styles.staleNote}>Updating…</span>}
               </div>
-              {!capReached && (
-                <div className={styles.progressTrack}>
-                  <div
-                    className={styles.progressFill}
-                    style={{ width: `${(counts.progressToNextReward / 5) * 100}%` }}
-                  />
+
+              <div className={styles.donutRow}>
+                <div className={styles.donutContent}>
+                  <div className={styles.cardValue} style={{ color: capReached ? '#22c55e' : 'var(--text)' }}>
+                    {capReached ? 'Max rewards reached' : `${counts.rewarded}/3 rewards claimed`}
+                  </div>
+                  <div className={styles.donutMeta}>
+                    <span className="mi-outlined" style={{ fontSize: '0.82rem' }}>group_add</span>
+                    <span>
+                      {capReached
+                        ? "You've claimed all 3 free months"
+                        : `${counts.progressToNextReward}/5 invites toward next reward`}
+                    </span>
+                  </div>
                 </div>
-              )}
-              {countsStale && (
-                <div className={styles.staleNote}>Updating…</div>
-              )}
+                <div className={styles.donutWrap}>
+                  <svg viewBox="0 0 64 64" className={styles.donutSvg}>
+                    <circle cx="32" cy="32" r="26" fill="none" stroke="var(--surface2)" strokeWidth="7" />
+                    <circle
+                      cx="32" cy="32" r="26" fill="none"
+                      stroke={capReached ? '#22c55e' : 'var(--accent)'}
+                      strokeWidth="7"
+                      strokeLinecap="round"
+                      strokeDasharray={DONUT_CIRCUMFERENCE}
+                      strokeDashoffset={DONUT_CIRCUMFERENCE - (donutPercent / 100) * DONUT_CIRCUMFERENCE}
+                      transform="rotate(-90 32 32)"
+                      className={styles.donutProgress}
+                    />
+                  </svg>
+                  {capReached ? (
+                    <span className={`mi-outlined ${styles.donutIcon}`} style={{ color: '#22c55e' }}>check</span>
+                  ) : (
+                    <span className={styles.donutLabel}>{counts.progressToNextReward}/5</span>
+                  )}
+                </div>
+              </div>
+
+              <div className={styles.cardCaption}>
+                Every 5 activated invites earns you 30 days of Pro, up to 3 times
+              </div>
             </div>
           )}
 
@@ -167,7 +197,7 @@ export function ReferralModal({ onClose, onShare, pendingReferralReward, onAckno
           <div className={styles.sectionLabel}>Your invites</div>
 
           {showSkeleton && (
-            <div className={styles.list}>
+            <div className={styles.listCard}>
               {[0, 1, 2].map(i => (
                 <div key={i} className={styles.skeletonRow}>
                   <Skeleton circle width={36} height={36} />
@@ -196,11 +226,11 @@ export function ReferralModal({ onClose, onShare, pendingReferralReward, onAckno
           )}
 
           {referrals.length > 0 && (
-            <div className={styles.list}>
+            <div className={styles.listCard}>
               {referrals.map((r, i) => {
                 const meta = STATUS_META[r.status] || STATUS_META.pending
                 return (
-                  <div key={r.id} className={`${styles.row} ${i === referrals.length - 1 && !hasMore ? styles.noDivider : ''}`}>
+                  <div key={r.id} className={`${styles.row} ${i === referrals.length - 1 ? styles.noDivider : ''}`}>
                     <div className={styles.rowIcon}>
                       <span className="mi-outlined" style={{ fontSize: '1rem' }}>person</span>
                     </div>
@@ -220,11 +250,6 @@ export function ReferralModal({ onClose, onShare, pendingReferralReward, onAckno
               {loadingMore ? 'Loading…' : 'Load more'}
             </button>
           )}
-
-          <div className={styles.footer}>
-            <span className="mi-outlined" style={{ fontSize: '0.85rem', color: 'var(--text3)' }}>info</span>
-            <span className={styles.footerText}>Every 5 activated invites earns you 30 days of Pro, up to 3 times</span>
-          </div>
 
         </div>
 
