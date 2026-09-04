@@ -210,6 +210,46 @@
   color:        #34D399;
 }
 
+/* Referral history entry point — defaults to secondary, upgraded to primary where it's the sheet's main action */
+.historyBtn {
+  display:        flex;
+  align-items:    center;
+  gap:            10px;
+  width:          100%;
+  background:     var(--surface2);
+  border:         1px solid var(--border);
+  border-radius:  12px;
+  padding:        12px 14px;
+  margin-bottom:  14px;
+  color:          var(--text);
+  font-family:    'Manrope', sans-serif;
+  font-size:      0.82rem;
+  font-weight:    700;
+  cursor:         pointer;
+  transition:     background 0.15s, border-color 0.15s;
+}
+
+.historyBtn:active {
+  background: var(--border);
+}
+
+.historyBtnPrimary {
+  background:  var(--accent);
+  border-color: var(--accent);
+  color:       var(--surface);
+  font-weight: 800;
+}
+
+.historyBtnPrimary:active {
+  opacity: 0.88;
+  background: var(--accent);
+}
+
+.historyBtnText {
+  flex:      1;
+  text-align: left;
+}
+
 .btnCancel {
   width:         100%;
   background:    var(--surface2);

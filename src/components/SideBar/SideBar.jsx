@@ -173,6 +173,12 @@ function SideBar({ isOpen, onClose }) {
     navigate('/login', { replace: true })
   }
 
+  const handleViewReferrals = () => {
+    setShareSheetOpen(false)
+    onClose()
+    navigate('/account', { state: { autoOpenModal: 'referrals' } })
+  }
+
   return (
     <>
       <div
@@ -273,6 +279,8 @@ function SideBar({ isOpen, onClose }) {
         open={shareSheetOpen}
         referralCode={referralCode}
         onClose={() => setShareSheetOpen(false)}
+        onViewReferrals={handleViewReferrals}
+        viewReferralsVariant="primary"
       />
     </>
   )

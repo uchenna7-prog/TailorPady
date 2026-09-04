@@ -13,7 +13,7 @@ function buildShareUrl(referralCode) {
     : window.location.origin
 }
 
-export default function ShareAppSheet({ open, referralCode, onClose }) {
+export default function ShareAppSheet({ open, referralCode, onClose, onViewReferrals, viewReferralsVariant = 'secondary' }) {
   const [codeCopied, setCodeCopied] = useState(false)
   const [linkCopied, setLinkCopied] = useState(false)
 
@@ -21,6 +21,8 @@ export default function ShareAppSheet({ open, referralCode, onClose }) {
 
   const shareText = buildShareText(referralCode)
   const shareUrl = buildShareUrl(referralCode)
+  const historyIsPrimary = viewReferralsVariant === 'primary'
+  const historyIconColor = historyIsPrimary ? 'var(--surface)' : 'var(--text3)'
 
   const handleWhatsApp = () => {
     window.open(`https://wa.me/?text=${encodeURIComponent(`${shareText} ${shareUrl}`)}`, '_blank')
@@ -121,6 +123,18 @@ export default function ShareAppSheet({ open, referralCode, onClose }) {
               {codeCopied ? 'Copied' : 'Copy'}
             </button>
           </div>
+        )}
+
+        {onViewReferrals && (
+          <button
+            type="button"
+            className={`${styles.historyBtn} ${historyIsPrimary ? styles.historyBtnPrimary : ''}`}
+            onClick={onViewReferrals}
+          >
+            <span className="mi-outlined" style={{ fontSize: '1.05rem', color: historyIconColor }}>history</span>
+            <span className={styles.historyBtnText}>Referral history</span>
+            <span className="mi-outlined" style={{ fontSize: '1rem', color: historyIconColor }}>chevron_right</span>
+          </button>
         )}
 
         <button className={styles.btnCancel} onClick={onClose}>Cancel</button>

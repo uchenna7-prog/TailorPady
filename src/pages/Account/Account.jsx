@@ -37,7 +37,7 @@ import styles from './Account.module.css'
 import { db } from '../../firebase'
 
 const PROFILE_TOUR_STEP_IDS = ['highlight-profile-card', 'highlight-edit-brand', 'highlight-edit-business-info']
-const AUTO_OPEN_MODALS = ['brand', 'businessInfo', 'socials', 'upgrade', 'usage']
+const AUTO_OPEN_MODALS = ['brand', 'businessInfo', 'socials', 'upgrade', 'usage', 'referrals']
 const API_BASE = 'https://tailor-pady-api.vercel.app'
 
 export default function Account({ onMenuClick, isPremium = false, onUpgrade = () => {} }) {
@@ -688,6 +688,8 @@ export default function Account({ onMenuClick, isPremium = false, onUpgrade = ()
         open={shareSheetOpen}
         referralCode={referralCode}
         onClose={() => setShareSheetOpen(false)}
+        onViewReferrals={() => activeModal === 'referrals' ? setShareSheetOpen(false) : setActiveModal('referrals')}
+        viewReferralsVariant="primary"
       />
 
       <Toast message={toastMsg} />
