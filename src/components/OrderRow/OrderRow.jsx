@@ -50,7 +50,6 @@ export function OrderRow({ order, isLast, onTap }) {
 
       <div className={styles.orderRowRight}>
         <div className={styles.orderRowPrice}>{priceStr}</div>
-        {totalQty > 1 && <div className={styles.orderRowQty}>{totalQty} items</div>}
         <span
           className={styles.orderRowStatusBadge}
           style={{ color: sc.color, background: sc.background, borderColor: sc.borderColor }}

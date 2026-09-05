@@ -131,9 +131,7 @@ export default function ShareAppSheet({ open, referralCode, onClose, onViewRefer
             className={`${styles.historyBtn} ${historyIsPrimary ? styles.historyBtnPrimary : ''}`}
             onClick={onViewReferrals}
           >
-            <span className="mi-outlined" style={{ fontSize: '1.05rem', color: historyIconColor }}>history</span>
             <span className={styles.historyBtnText}>Referral history</span>
-            <span className="mi-outlined" style={{ fontSize: '1rem', color: historyIconColor }}>chevron_right</span>
           </button>
         )}
 
