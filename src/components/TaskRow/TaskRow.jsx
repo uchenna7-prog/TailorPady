@@ -61,15 +61,15 @@ function timeUntil(dateStr, timeStr) {
 
   if (diffMins < 0) {
     const abs = Math.abs(diffMins)
-    if (abs < 60)   return `${abs}m ago`
-    if (abs < 1440) return `${Math.round(abs / 60)}h ago`
-    return `${Math.round(abs / 1440)}d ago`
+    if (abs < 60)   return `${abs} mins ago`
+    if (abs < 1440) return `${Math.round(abs / 60)} hrs ago`
+    return `${Math.round(abs / 1440)} days ago`
   }
-  if (diffMins < 60)   return `In ${diffMins}m`
-  if (diffMins < 1440) return `In ${Math.round(diffMins / 60)}h`
+  if (diffMins < 60)   return `In ${diffMins} mins`
+  if (diffMins < 1440) return `In ${Math.round(diffMins / 60)} hrs`
   const days = Math.round(diffMins / 1440)
   if (days === 1) return 'Tomorrow'
-  return `In ${days}d`
+  return `In ${days} days`
 }
 
 export function TaskRow({ task, isLast, allOrders, onOpen }) {
