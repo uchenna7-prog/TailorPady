@@ -15,6 +15,8 @@ import { useNetworkStatus } from '../hooks/useNetworkStatus'
 const STORAGE_KEY = 'TailorPady_read_notifs'
 const PUSHED_KEY = 'TailorPady_pushed_notifs'
 const TOKEN_CACHE_KEY = 'TailorPady_fcm_token'
+const PUSH_MESSAGES_KEY = 'TailorPady_push_messages'
+const PUSH_MESSAGES_MAX = 50
 const FCM_VAPID_KEY = import.meta.env.VITE_FCM_VAPID_KEY
 const PERMISSION_TIMEOUT_MS = 15000
 
@@ -25,6 +27,7 @@ const ICONS = {
   appointment: { name: 'calendar_month', outlined: true },
   birthday: { name: 'cake', outlined: true },
   review: { name: 'star', outlined: true },
+  broadcast: { name: 'campaign', outlined: true },
 }
 
 function loadReadIds() {
@@ -54,6 +57,20 @@ function loadCachedToken() {
 
 function saveCachedToken(token) {
   try { localStorage.setItem(TOKEN_CACHE_KEY, token) }
+  catch {}
+}
+
+function loadPushMessages() {
+  try {
+    const parsed = JSON.parse(localStorage.getItem(PUSH_MESSAGES_KEY) || '[]')
+    return Array.isArray(parsed) ? parsed : []
+  } catch {
+    return []
+  }
+}
+
+function savePushMessages(list) {
+  try { localStorage.setItem(PUSH_MESSAGES_KEY, JSON.stringify(list.slice(0, PUSH_MESSAGES_MAX))) }
   catch {}
 }
 
@@ -112,7 +129,6 @@ async function saveSubscription(uid, token) {
     saveCachedToken(token)
   } catch (err) {
     console.warn('Failed to save push subscription:', err)
-
   }
 }
 
@@ -214,9 +230,11 @@ export function NotificationProvider({ children }) {
   const [pushedIds, setPushedIds] = useState(() => loadPushedIds())
   const [pushEnabled, setPushEnabled] = useState(false)
   const [pushBlocked, setPushBlocked] = useState(false)
+  const [pushMessages, setPushMessages] = useState(() => loadPushMessages())
 
   useEffect(() => { saveReadIds(readIds) }, [readIds])
   useEffect(() => { savePushedIds(pushedIds) }, [pushedIds])
+  useEffect(() => { savePushMessages(pushMessages) }, [pushMessages])
 
   useEffect(() => {
     if (!('Notification' in window)) return
@@ -250,7 +268,26 @@ export function NotificationProvider({ children }) {
       unsubscribe = onMessage(messaging, payload => {
         const title = payload.notification?.title || 'TailorPady'
         const body = payload.notification?.body || ''
-        sendLocalPush(title, body)
+        const dedupeId = payload.messageId
+          ? `push-${payload.messageId}`
+          : `push-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`
+
+        setPushMessages(prev => {
+          if (prev.some(m => m.id === dedupeId)) return prev
+          const next = [
+            {
+              id: dedupeId,
+              type: 'broadcast',
+              icon: ICONS.broadcast,
+              title,
+              body,
+              time: new Date().toISOString(),
+              sortKey: 0,
+            },
+            ...prev,
+          ]
+          return next.slice(0, PUSH_MESSAGES_MAX)
+        })
       })
     })
 
@@ -258,7 +295,7 @@ export function NotificationProvider({ children }) {
   }, [pushEnabled])
 
   const notifications = useMemo(() => {
-    const list = []
+    const list = [...pushMessages]
 
     allOrders
       .filter(o => !['completed', 'delivered', 'cancelled'].includes(o.status))
@@ -400,7 +437,7 @@ export function NotificationProvider({ children }) {
     })
 
     return list.map(n => ({ ...n, unread: !readIds.has(n.id) }))
-  }, [allOrders, allInvoices, tasks, upcomingAppts, customers, reviews, readIds])
+  }, [allOrders, allInvoices, tasks, upcomingAppts, customers, reviews, readIds, pushMessages])
 
   const isFirstRun = useRef(true)
   useEffect(() => {
@@ -408,6 +445,7 @@ export function NotificationProvider({ children }) {
     if (!pushEnabled) return
 
     notifications.forEach(n => {
+      if (n.type === 'broadcast') return
       if (pushedIds.has(n.id)) return
       sendLocalPush(n.title, n.body)
       setPushedIds(prev => {
@@ -436,7 +474,6 @@ export function NotificationProvider({ children }) {
     if (!user?.uid) return
     const { token, blocked } = await subscribeToPush()
     setPushBlocked(blocked)
-  
     if (!token) return
     setPushEnabled(true)
     await saveSubscription(user.uid, token)
