@@ -1,4 +1,3 @@
-// Customers.jsx
 import { useState, useRef, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useCustomers } from '../../contexts/CustomerContext'
@@ -85,10 +84,6 @@ export default function Customers({ onMenuClick }) {
 
     if (!name) {
       showToast('Name is required')
-      return
-    }
-    if (!phone) {
-      showToast('Phone number is required')
       return
     }
     if (phone === '__INVALID_PHONE__') {
