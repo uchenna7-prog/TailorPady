@@ -21,7 +21,6 @@ export function UpcomingAppointmentsSection({ appointments, todayAppointments, a
                 allOrders={allOrders}
                 onOpen={() => onSelectAppointment?.(appt)}
               />
-              {isToday && <div className={styles.todayBadge}>Today</div>}
             </div>
           )
         })}
