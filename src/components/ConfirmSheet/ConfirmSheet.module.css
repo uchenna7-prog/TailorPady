@@ -79,3 +79,18 @@
     padding:       28px 24px;
   }
 }
+
+.btnAccent {
+  background:  var(--accent);
+  color:       var(--bg);
+  padding:     16px;
+  border-radius: 12px;
+  font-weight: 800;
+  border:      none;
+  font-family: 'Manrope', sans-serif;
+  font-size:   0.85rem;
+  cursor:      pointer;
+  transition:  opacity 0.15s;
+}
+
+.btnAccent:hover { opacity: 0.88; }
