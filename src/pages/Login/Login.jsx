@@ -80,11 +80,19 @@ export default function Login() {
     setError('')
     setGoogleLoading(true)
     setRedirecting(true)
-    loginWithGoogle().catch(err => {
-      setError(friendlyError(err.code))
-      setGoogleLoading(false)
-      setRedirecting(false)
-    })
+    loginWithGoogle()
+      .then(({ pendingDeletion }) => {
+        if (pendingDeletion && isMountedRef.current) {
+          setGoogleLoading(false)
+          setRedirecting(false)
+        }
+      })
+      .catch(err => {
+        if (!isMountedRef.current) return
+        setError(friendlyError(err.code))
+        setGoogleLoading(false)
+        setRedirecting(false)
+      })
   }
 
   const isLoading = loading || googleLoading
