@@ -222,6 +222,7 @@ export default function App() {
         message="Your account is scheduled for deletion. Reactivating cancels that and restores full access right away."
         confirmText={reactivating ? 'Reactivating…' : 'Reactivate Account'}
         cancelText="Not Now"
+        variant="accent"
         onConfirm={confirmReactivation}
         onCancel={declineReactivation}
       />
