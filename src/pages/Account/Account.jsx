@@ -39,6 +39,7 @@ import { db } from '../../firebase'
 const PROFILE_TOUR_STEP_IDS = ['highlight-profile-card', 'highlight-edit-brand', 'highlight-edit-business-info']
 const AUTO_OPEN_MODALS = ['brand', 'businessInfo', 'socials', 'upgrade', 'usage', 'referrals']
 const API_BASE = 'https://tailor-pady-api.vercel.app'
+const ACCOUNT_DELETION_GRACE_DAYS = 30
 
 export default function Account({ onMenuClick, isPremium = false, onUpgrade = () => {} }) {
 
@@ -57,6 +58,7 @@ export default function Account({ onMenuClick, isPremium = false, onUpgrade = ()
   const [logoutConfirm, setLogoutConfirm] = useState(false)
   const [deleteConfirm, setDeleteConfirm] = useState(false)
   const [deleting, setDeleting] = useState(false)
+  const [deletionInfo, setDeletionInfo] = useState(false)
   const [toastMsg, setToastMsg] = useState('')
   const [pendingTemplate, setPendingTemplate] = useState(null)
   const [returnTo, setReturnTo] = useState(null)
@@ -259,13 +261,18 @@ export default function Account({ onMenuClick, isPremium = false, onUpgrade = ()
       if (!response.ok) {
         throw new Error(data.error || 'Could not delete account')
       }
-      await logout()
-      navigate('/login', { replace: true })
-    } catch (err) {
-      showToast('Could not delete account — please try again')
-    } finally {
       setDeleting(false)
+      setDeletionInfo(true)
+    } catch (err) {
+      setDeleting(false)
+      showToast('Could not delete account — please try again')
     }
+  }
+
+  const acknowledgeDeletion = async () => {
+    setDeletionInfo(false)
+    await logout()
+    navigate('/login', { replace: true })
   }
 
   const brandColourHex = getPaletteById(profileSettings.brandColourId)?.tokens.primary
@@ -677,11 +684,21 @@ export default function Account({ onMenuClick, isPremium = false, onUpgrade = ()
       <ConfirmSheet
         open={deleteConfirm}
         title="Delete Account?"
-        message="This will permanently delete your account and all your data. This cannot be undone."
+        message={`This will schedule your account for permanent deletion in ${ACCOUNT_DELETION_GRACE_DAYS} days. You can cancel by logging back in before then. This cannot be undone after that.`}
         confirmLabel={deleting ? 'Deleting…' : 'Delete'}
         confirmDanger
         onConfirm={handleDeleteAccount}
         onCancel={() => setDeleteConfirm(false)}
+      />
+
+      <ConfirmSheet
+        open={deletionInfo}
+        title="Account Scheduled for Deletion"
+        message={`Your account and data will be permanently deleted in ${ACCOUNT_DELETION_GRACE_DAYS} days. You've been logged out — log back in before then if you'd like to cancel the deletion.`}
+        confirmLabel="Got it"
+        confirmText="Got it"
+        onConfirm={acknowledgeDeletion}
+        onCancel={acknowledgeDeletion}
       />
 
       <ShareAppSheet
