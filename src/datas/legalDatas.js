@@ -318,8 +318,9 @@ export const DELETE_ACCOUNT_SECTIONS = [
     title: 'Grace Period and Recovery',
     body: `Once you confirm account deletion in the app, you are logged out immediately and your account is scheduled for permanent deletion 30 days later.`,
     bullets: [
-      'During this 30-day window, your account cannot be accessed or restored by logging in.',
-      'If you change your mind, contact us at the email address below within the 30-day window, from the email address associated with your account, to request recovery.',
+      'If you log back in during this 30-day window, you will be asked whether you want to reactivate your account.',
+      'Confirming reactivation cancels the deletion immediately and restores full access.',
+      'If you are unable to log in, contact us at the email address below within the 30-day window, from the email address associated with your account, to request recovery.',
       'After the 30-day window ends, deletion is permanent and cannot be reversed.',
       'You cannot create a new TailorPady account using the same email address until the deletion process is complete.',
     ],
