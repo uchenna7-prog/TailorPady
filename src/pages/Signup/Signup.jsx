@@ -91,6 +91,11 @@ export default function Signup() {
   const emailFieldRef = useRef(null)
   const passFieldRef  = useRef(null)
   const agreeFieldRef = useRef(null)
+  const isMountedRef  = useRef(true)
+
+  useEffect(() => {
+    return () => { isMountedRef.current = false }
+  }, [])
 
   useEffect(() => {
     const ref = searchParams.get('ref')
@@ -165,11 +170,19 @@ export default function Signup() {
     setError('')
     setGoogleLoading(true)
     setRedirecting(true)
-    loginWithGoogle().catch(err => {
-      setError(friendlyError(err.code))
-      setGoogleLoading(false)
-      setRedirecting(false)
-    })
+    loginWithGoogle()
+      .then(({ pendingDeletion }) => {
+        if (pendingDeletion && isMountedRef.current) {
+          setGoogleLoading(false)
+          setRedirecting(false)
+        }
+      })
+      .catch(err => {
+        if (!isMountedRef.current) return
+        setError(friendlyError(err.code))
+        setGoogleLoading(false)
+        setRedirecting(false)
+      })
   }
 
   const isLoading = loading || googleLoading
