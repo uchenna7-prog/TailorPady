@@ -132,8 +132,8 @@ export const PRIVACY_SECTIONS = [
   {
     id: 'data-retention',
     title: 'Data Retention',
-    body: `We retain your data for as long as your account is active. If you delete your account, your access is revoked immediately, and your data is permanently deleted from our systems within 30 days. See our Account Deletion page for full details.`,
-    footer: 'We may retain limited data beyond this period where required by law, such as billing records related to your Paystack transactions.',
+    body: `We retain your data for as long as your account is active. If you delete your account, your access is revoked immediately, and your data, including your billing and subscription payment records, is permanently deleted from our systems within 30 days. See our Account Deletion page for full details.`,
+    footer: 'If you subscribed through our website, Paystack maintains its own transaction records independently, under its own retention policy. If you subscribed through the Android app, Google Play maintains its own transaction records independently, under its own retention policy. We do not control how long these providers retain their records.',
   },
   {
     id: 'your-rights',
@@ -334,19 +334,19 @@ export const DELETE_ACCOUNT_SECTIONS = [
       'Brand identity: logo, shop name, tagline, brand colour, and signature.',
       'Business information: business contact details, address, website/social handles, and payment terms.',
       'Customer data you entered: customer measurements, garment reference images, and customer details.',
-      'Payment records you manually entered, and customer reviews.',
+      'Payment records you manually entered, subscription and billing records, and customer reviews.',
       'Profile, gallery, and portfolio images stored on Cloudinary.',
     ],
   },
   {
     id: 'retention',
-    title: 'Data We May Retain',
-    body: `In limited cases, we may retain certain data beyond the 30-day period where required by law or legitimate business need, such as:`,
+    title: 'Payment Provider Records',
+    body: `We do not retain your billing or subscription payment records after your account is deleted. However:`,
     bullets: [
-      'Subscription billing records from Paystack needed for tax, accounting, or fraud-prevention purposes.',
-      'Records we are legally required to keep under applicable law.',
+      'If you subscribed through our website, Paystack retains its own transaction records for the period required under its own policies and applicable law.',
+      'If you subscribed through the Android app, Google Play retains its own transaction records for the period required under its own policies and applicable law.',
     ],
-    footer: 'Any retained data is kept only as long as necessary for these purposes and is not used for any other purpose.',
+    footer: 'These records are held by the payment provider, not by TailorPady, and are outside our control once your account is deleted.',
   },
   {
     id: 'timeframe',
