@@ -40,7 +40,6 @@ export default function Login() {
   const [password,      setPassword]      = useState('')
   const [showPass,      setShowPass]      = useState(false)
   const [error,         setError]         = useState('')
-  const [notice,        setNotice]        = useState('')
   const [loading,       setLoading]       = useState(false)
   const [googleLoading, setGoogleLoading] = useState(false)
 
@@ -61,23 +60,12 @@ export default function Login() {
   const handleSubmit = async (e) => {
     e.preventDefault()
     setError('')
-    setNotice('')
     setLoading(true)
     try {
-      const { pendingDeletion, reactivated } = await login(email.trim(), password)
+      const { pendingDeletion } = await login(email.trim(), password)
 
       if (pendingDeletion) {
-        setError('We could not restore this account. It may be past its deletion window, or something went wrong. Please try again or contact support.')
         setLoading(false)
-        return
-      }
-
-      if (reactivated) {
-        setNotice('Welcome back — your account deletion has been cancelled.')
-        setTimeout(() => {
-          if (!isMountedRef.current) return
-          navigate(from, { replace: true })
-        }, 1400)
         return
       }
 
@@ -90,7 +78,6 @@ export default function Login() {
 
   const handleGoogle = () => {
     setError('')
-    setNotice('')
     setGoogleLoading(true)
     setRedirecting(true)
     loginWithGoogle().catch(err => {
@@ -131,13 +118,6 @@ export default function Login() {
           <div className={styles.errorBanner}>
             <span className="mi-outlined" style={{ fontSize: '1rem' }}>error</span>
             {error}
-          </div>
-        )}
-
-        {notice && (
-          <div className={styles.errorBanner} style={{ background: 'rgba(34,197,94,0.12)', color: '#16a34a' }}>
-            <span className="mi-outlined" style={{ fontSize: '1rem' }}>check_circle</span>
-            {notice}
           </div>
         )}
 
