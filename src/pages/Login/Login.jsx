@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useNavigate, useLocation, Link } from 'react-router-dom'
 import { useAuth } from '../../contexts/AuthContext'
 import { useGeneralSettings } from '../../contexts/GeneralSettingsContext'
@@ -29,44 +29,68 @@ function GoogleIcon() {
 }
 
 export default function Login() {
-  const { login, loginWithGoogle, setRedirecting, logout } = useAuth()
+  const { login, loginWithGoogle, setRedirecting, deletionNotice, clearDeletionNotice } = useAuth()
   const { generalSettings }                                = useGeneralSettings()
   const navigate                                           = useNavigate()
   const location                                           = useLocation()
   const from                                                = location.state?.from?.pathname || '/'
+  const isMountedRef                                        = useRef(true)
 
   const [email,         setEmail]         = useState('')
   const [password,      setPassword]      = useState('')
   const [showPass,      setShowPass]      = useState(false)
   const [error,         setError]         = useState('')
+  const [notice,        setNotice]        = useState('')
   const [loading,       setLoading]       = useState(false)
   const [googleLoading, setGoogleLoading] = useState(false)
 
   const theme   = generalSettings.theme
   const logoSrc = theme === 'dark' ? logoLightMode : logoDarkMode
 
+  useEffect(() => {
+    return () => { isMountedRef.current = false }
+  }, [])
+
+  useEffect(() => {
+    if (deletionNotice) {
+      setError('We could not restore this account. It may be past its deletion window, or something went wrong. Please try again or contact support.')
+      clearDeletionNotice()
+    }
+  }, [deletionNotice, clearDeletionNotice])
+
   const handleSubmit = async (e) => {
     e.preventDefault()
     setError('')
+    setNotice('')
     setLoading(true)
     try {
-      const credential = await login(email.trim(), password)
-      const tokenResult = await credential.user.getIdTokenResult()
-      if (tokenResult.claims.pendingDeletion) {
-        await logout()
-        setError('This account is scheduled for deletion and can no longer be accessed.')
+      const { pendingDeletion, reactivated } = await login(email.trim(), password)
+
+      if (pendingDeletion) {
+        setError('We could not restore this account. It may be past its deletion window, or something went wrong. Please try again or contact support.')
+        setLoading(false)
         return
       }
+
+      if (reactivated) {
+        setNotice('Welcome back — your account deletion has been cancelled.')
+        setTimeout(() => {
+          if (!isMountedRef.current) return
+          navigate(from, { replace: true })
+        }, 1400)
+        return
+      }
+
       navigate(from, { replace: true })
     } catch (err) {
       setError(friendlyError(err.code))
-    } finally {
       setLoading(false)
     }
   }
 
   const handleGoogle = () => {
     setError('')
+    setNotice('')
     setGoogleLoading(true)
     setRedirecting(true)
     loginWithGoogle().catch(err => {
@@ -107,6 +131,13 @@ export default function Login() {
           <div className={styles.errorBanner}>
             <span className="mi-outlined" style={{ fontSize: '1rem' }}>error</span>
             {error}
+          </div>
+        )}
+
+        {notice && (
+          <div className={styles.errorBanner} style={{ background: 'rgba(34,197,94,0.12)', color: '#16a34a' }}>
+            <span className="mi-outlined" style={{ fontSize: '1rem' }}>check_circle</span>
+            {notice}
           </div>
         )}
 
