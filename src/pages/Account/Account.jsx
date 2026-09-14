@@ -236,7 +236,7 @@ export default function Account({ onMenuClick, isPremium = false, onUpgrade = ()
 
   const handleSubscriptionCancelled = useCallback(() => {
     setActiveModal(null)
-    showToast("Subscription cancelled — you'll keep Pro until it renews")
+    showToast("Subscription cancelled. You'll keep Pro until it renews")
   }, [showToast])
 
   const handleLogout = async () => {
@@ -265,7 +265,7 @@ export default function Account({ onMenuClick, isPremium = false, onUpgrade = ()
       setDeletionInfo(true)
     } catch (err) {
       setDeleting(false)
-      showToast('Could not delete account — please try again')
+      showToast('Could not delete account, please try again')
     }
   }
 
@@ -691,15 +691,24 @@ export default function Account({ onMenuClick, isPremium = false, onUpgrade = ()
         onCancel={() => setDeleteConfirm(false)}
       />
 
-      <ConfirmSheet
-        open={deletionInfo}
-        title="Account Scheduled for Deletion"
-        message={`Your account and data will be permanently deleted in ${ACCOUNT_DELETION_GRACE_DAYS} days. You've been logged out — log back in before then if you'd like to cancel the deletion.`}
-        confirmLabel="Got it"
-        confirmText="Got it"
-        onConfirm={acknowledgeDeletion}
-        onCancel={acknowledgeDeletion}
-      />
+      {deletionInfo && (
+        <div className={styles.centeredOverlay}>
+          <div className={styles.centeredBackdrop} />
+          <div className={styles.centeredModal}>
+            <h3 className={styles.centeredTitle}>Account Scheduled for Deletion</h3>
+            <p className={styles.centeredMessage}>
+              {`Your account and data will be permanently deleted in ${ACCOUNT_DELETION_GRACE_DAYS} days. You will be logged out now. You can log back in before then if you would like to cancel the deletion.`}
+            </p>
+            <button
+              type="button"
+              className={styles.centeredButton}
+              onClick={acknowledgeDeletion}
+            >
+              Got it
+            </button>
+          </div>
+        </div>
+      )}
 
       <ShareAppSheet
         open={shareSheetOpen}
