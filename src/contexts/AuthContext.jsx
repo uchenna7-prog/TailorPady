@@ -21,43 +21,16 @@ import { ensureUserProfile, checkReferralActivation } from '../services/referral
 const AuthContext = createContext(null)
 const API_BASE = 'https://tailor-pady-api.vercel.app'
 
-async function attemptReactivation(firebaseUser) {
-  try {
-    const idToken = await firebaseUser.getIdToken()
-    const controller = new AbortController()
-    const timeoutId = setTimeout(() => controller.abort(), 10000)
-
-    let response
-    try {
-      response = await fetch(`${API_BASE}/api/delete-account`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${idToken}`,
-        },
-        body: JSON.stringify({ action: 'reactivate' }),
-        signal: controller.signal,
-      })
-    } finally {
-      clearTimeout(timeoutId)
-    }
-
-    if (!response.ok) return false
-
-    const refreshedResult = await firebaseUser.getIdTokenResult(true)
-    return !refreshedResult.claims.pendingDeletion
-  } catch {
-    return false
-  }
-}
-
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null)
   const [loading, setLoading] = useState(true)
   const [redirecting, setRedirecting] = useState(false)
   const [deletionNotice, setDeletionNotice] = useState(false)
   const [reactivationNotice, setReactivationNotice] = useState(false)
+  const [pendingReactivation, setPendingReactivation] = useState(null)
+  const [reactivating, setReactivating] = useState(false)
   const profiledUidRef = useRef(null)
+  const reactivatingRef = useRef(false)
 
   const ensureProfileOnce = useCallback((firebaseUser, hint) => {
     if (profiledUidRef.current === firebaseUser.uid) return
@@ -76,7 +49,7 @@ export function AuthProvider({ children }) {
   const handleUser = useCallback(async (firebaseUser, hint) => {
     if (!firebaseUser) {
       setUser(null)
-      return { pendingDeletion: false, reactivated: false }
+      return { pendingDeletion: false }
     }
 
     let pendingDeletion = false
@@ -88,26 +61,14 @@ export function AuthProvider({ children }) {
     }
 
     if (pendingDeletion) {
-      const reactivated = await attemptReactivation(firebaseUser)
-
-      if (!reactivated) {
-        try {
-          await logout()
-        } catch {}
-        setUser(null)
-        setDeletionNotice(true)
-        return { pendingDeletion: true, reactivated: false }
-      }
-
-      setUser(firebaseUser)
-      setReactivationNotice(true)
-      ensureProfileOnce(firebaseUser, hint)
-      return { pendingDeletion: false, reactivated: true }
+      setUser(null)
+      setPendingReactivation({ firebaseUser, hint })
+      return { pendingDeletion: true }
     }
 
     setUser(firebaseUser)
     ensureProfileOnce(firebaseUser, hint)
-    return { pendingDeletion: false, reactivated: false }
+    return { pendingDeletion: false }
   }, [ensureProfileOnce])
 
   useEffect(() => {
@@ -141,7 +102,7 @@ export function AuthProvider({ children }) {
   const login = useCallback(async (email, password) => {
     const credential = await loginService(email, password)
     const result = await handleUser(credential.user)
-    return { credential, pendingDeletion: result.pendingDeletion, reactivated: result.reactivated }
+    return { credential, pendingDeletion: result.pendingDeletion }
   }, [handleUser])
 
   const signup = useCallback(async (email, password, displayName) => {
@@ -155,14 +116,71 @@ export function AuthProvider({ children }) {
   const loginWithGoogle = useCallback(async () => {
     const { user: googleUser, isNewUser } = await loginWithGoogleService()
     let pendingDeletion = false
-    let reactivated = false
     if (googleUser) {
       const result = await handleUser(googleUser, { isNewUser })
       pendingDeletion = result.pendingDeletion
-      reactivated = result.reactivated
     }
-    return { user: googleUser, isNewUser, pendingDeletion, reactivated }
+    return { user: googleUser, isNewUser, pendingDeletion }
   }, [handleUser])
+
+  const confirmReactivation = useCallback(async () => {
+    if (!pendingReactivation || reactivatingRef.current) return
+    reactivatingRef.current = true
+    setReactivating(true)
+
+    const { firebaseUser, hint } = pendingReactivation
+
+    try {
+      const idToken = await firebaseUser.getIdToken()
+      const controller = new AbortController()
+      const timeoutId = setTimeout(() => controller.abort(), 10000)
+
+      let response
+      try {
+        response = await fetch(`${API_BASE}/api/delete-account`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${idToken}`,
+          },
+          body: JSON.stringify({ action: 'reactivate' }),
+          signal: controller.signal,
+        })
+      } finally {
+        clearTimeout(timeoutId)
+      }
+
+      if (!response.ok) throw new Error('reactivate-request-failed')
+
+      const refreshedResult = await firebaseUser.getIdTokenResult(true)
+      if (refreshedResult.claims.pendingDeletion) throw new Error('still-pending-after-reactivate')
+
+      setPendingReactivation(null)
+      setReactivating(false)
+      reactivatingRef.current = false
+      setUser(firebaseUser)
+      setReactivationNotice(true)
+      ensureProfileOnce(firebaseUser, hint)
+    } catch {
+      setReactivating(false)
+      reactivatingRef.current = false
+      setPendingReactivation(null)
+      try {
+        await logout()
+      } catch {}
+      setUser(null)
+      setDeletionNotice(true)
+    }
+  }, [pendingReactivation, ensureProfileOnce])
+
+  const declineReactivation = useCallback(async () => {
+    if (!pendingReactivation || reactivatingRef.current) return
+    setPendingReactivation(null)
+    try {
+      await logout()
+    } catch {}
+    setUser(null)
+  }, [pendingReactivation])
 
   const clearDeletionNotice = useCallback(() => setDeletionNotice(false), [])
   const clearReactivationNotice = useCallback(() => setReactivationNotice(false), [])
@@ -176,6 +194,10 @@ export function AuthProvider({ children }) {
     clearDeletionNotice,
     reactivationNotice,
     clearReactivationNotice,
+    pendingReactivation,
+    reactivating,
+    confirmReactivation,
+    declineReactivation,
     login,
     loginWithGoogle,
     signup,
@@ -188,7 +210,11 @@ export function AuthProvider({ children }) {
     setPassword,
     linkGoogle,
     unlinkProvider,
-  }), [user, loading, redirecting, deletionNotice, clearDeletionNotice, reactivationNotice, clearReactivationNotice, signup, loginWithGoogle, login])
+  }), [
+    user, loading, redirecting, deletionNotice, clearDeletionNotice,
+    reactivationNotice, clearReactivationNotice, pendingReactivation, reactivating,
+    confirmReactivation, declineReactivation, signup, loginWithGoogle, login,
+  ])
 
   return (
     <AuthContext.Provider value={value}>
