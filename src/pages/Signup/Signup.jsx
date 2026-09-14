@@ -7,6 +7,8 @@ import logoLightMode from '../../assets/logoLightMode.png'
 import logoDarkMode from '../../assets/logoDarkMode.png'
 import styles from './Signup.module.css'
 
+const API_BASE = 'https://tailor-pady-api.vercel.app'
+
 const STRENGTH_LEVELS = [
   { label: 'Too short', color: '#ef4444', min: 0 },
   { label: 'Weak',      color: '#f97316', min: 1 },
@@ -33,6 +35,26 @@ function friendlyError(code) {
     case 'auth/weak-password':          return 'Password must be at least 6 characters.'
     case 'auth/network-request-failed': return 'Network error. Check your connection.'
     default:                            return 'Something went wrong. Please try again.'
+  }
+}
+
+async function checkAccountStatus(email) {
+  try {
+    const controller = new AbortController()
+    const timeoutId = setTimeout(() => controller.abort(), 6000)
+    let response
+    try {
+      response = await fetch(`${API_BASE}/api/account-status?email=${encodeURIComponent(email)}`, {
+        signal: controller.signal,
+      })
+    } finally {
+      clearTimeout(timeoutId)
+    }
+    if (!response.ok) return null
+    const data = await response.json()
+    return data.status || null
+  } catch {
+    return null
   }
 }
 
@@ -117,6 +139,14 @@ export default function Signup() {
 
     setLoading(true)
     try {
+      const normalizedEmail = email.trim().toLowerCase()
+      const status = await checkAccountStatus(normalizedEmail)
+
+      if (status === 'pending_deletion') {
+        setError('An account with this email is scheduled for deletion. Log in instead to restore it.')
+        return
+      }
+
       await signup(email.trim(), password, fullName.trim())
       navigate('/', { replace: true })
     } catch (err) {
