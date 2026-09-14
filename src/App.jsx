@@ -9,6 +9,7 @@ import ReferralCelebrationFlow from './components/ReferralCelebrationFlow/Referr
 import RequireAuth from './components/RequireAuth/RequireAuth'
 import ScrollToTop from './components/ScrollToTop/ScrollToTop'
 import SideBar from './components/SideBar/SideBar'
+import ConfirmSheet from './components/ConfirmSheet/ConfirmSheet'
 import Login from './pages/Login/Login'
 import Signup from './pages/Signup/Signup'
 import ForgotPassword from './pages/ForgotPassword/ForgotPassword'
@@ -194,6 +195,8 @@ function AppShell() {
 }
 
 export default function App() {
+  const { pendingReactivation, reactivating, confirmReactivation, declineReactivation } = useAuth()
+
   return (
     <CrashPopup>
       <Routes>
@@ -212,6 +215,16 @@ export default function App() {
           }
         />
       </Routes>
+
+      <ConfirmSheet
+        open={!!pendingReactivation}
+        title="Reactivate your account?"
+        message="Your account is scheduled for deletion. Reactivating cancels that and restores full access right away."
+        confirmText={reactivating ? 'Reactivating…' : 'Reactivate Account'}
+        cancelText="Not Now"
+        onConfirm={confirmReactivation}
+        onCancel={declineReactivation}
+      />
     </CrashPopup>
   )
 }
