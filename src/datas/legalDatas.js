@@ -1,7 +1,7 @@
 export const LEGAL_CONTACT_EMAIL = 'tailorpadysupport@gmail.com'
 export const LEGAL_CONTACT_PHONE = '+234 707 964 5766'
 
-export const PRIVACY_LAST_UPDATED = 'August 2026'
+export const PRIVACY_LAST_UPDATED = 'September 2026'
 
 export const PRIVACY_SECTIONS = [
   {
@@ -293,7 +293,7 @@ export const REFUND_SECTIONS = [
   },
 ]
 
-export const DELETE_ACCOUNT_LAST_UPDATED = 'August 2026'
+export const DELETE_ACCOUNT_LAST_UPDATED = 'September 2026'
 
 export const DELETE_ACCOUNT_SECTIONS = [
   {
