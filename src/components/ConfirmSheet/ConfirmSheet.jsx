@@ -5,6 +5,7 @@ export default function ConfirmSheet({
   title, 
   message, 
   confirmText = 'Delete',
+  cancelText = 'Cancel',
   onConfirm, 
   onCancel 
 }) {
@@ -19,7 +20,7 @@ export default function ConfirmSheet({
         <div className={styles.actions}>
 
           <button className={styles.btnDel} onClick={onConfirm}>{confirmText}</button>
-          <button className={styles.btnCancel} onClick={onCancel}>Cancel</button>
+          <button className={styles.btnCancel} onClick={onCancel}>{cancelText}</button>
           
         </div>
 
