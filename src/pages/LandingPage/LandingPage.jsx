@@ -395,6 +395,29 @@ function BotIcon({ size = 18, color = 'currentColor', backgroundColor = 'var(--b
   )
 }
 
+function GooglePlayIcon({ size = 26 }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+      <path d="M4 3 L4 12 L14 12 Z" fill="#12B7F5" />
+      <path d="M4 3 L14 12 L20 12 Z" fill="#FF3D53" />
+      <path d="M4 21 L4 12 L14 12 Z" fill="#28D46B" />
+      <path d="M4 21 L14 12 L20 12 Z" fill="#FFCD00" />
+    </svg>
+  )
+}
+
+function ChromeIcon({ size = 26 }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+      <path d="M12 12 L12 2 A10 10 0 0 1 20.66 17 Z" fill="#EA4335" />
+      <path d="M12 12 L20.66 17 A10 10 0 0 1 3.34 17 Z" fill="#34A853" />
+      <path d="M12 12 L3.34 17 A10 10 0 0 1 12 2 Z" fill="#FBBC05" />
+      <circle cx="12" cy="12" r="7" fill="#fff" />
+      <circle cx="12" cy="12" r="4.2" fill="#4285F4" />
+    </svg>
+  )
+}
+
 function PhoneMockup() {
   const [index, setIndex] = useState(0)
   const total = HERO_SCREENS.length
@@ -545,22 +568,6 @@ function AboutAndProduct({ items }) {
   )
 }
 
-function Mission() {
-  return (
-    <section id="mission" className={styles.mission}>
-      <div className={styles.missionGlow} aria-hidden="true" />
-      <div className={styles.missionInner}>
-        <Reveal as="div" className={styles.missionCopy}>
-          <span className={styles.missionQuoteMark} aria-hidden="true">"</span>
-          <MonoLabel>Our mission</MonoLabel>
-          <p className={styles.missionStatement}>{MISSION_STATEMENT}</p>
-          <p className={styles.missionSub}>{MISSION_SUB}</p>
-        </Reveal>
-      </div>
-    </section>
-  )
-}
-
 function AppStrip({ id, eyebrow, title, items }) {
   return (
     <section id={id} className={styles.showcase}>
@@ -579,6 +586,63 @@ function AppStrip({ id, eyebrow, title, items }) {
             </Reveal>
           ))}
         </div>
+      </div>
+    </section>
+  )
+}
+
+function DownloadSection({ onNavigate }) {
+  return (
+    <section id="download" className={styles.download}>
+      <div className={styles.downloadInner}>
+        <SectionHeading
+          eyebrow="Download"
+          title="Take TailorPady with you"
+          align="center"
+        />
+        <Reveal as="p" className={styles.downloadBody} delay={60}>
+          Manage your shop from your pocket. The mobile app brings the same customers, orders, and payments to your phone, with support for your local currency and language.
+        </Reveal>
+        <Reveal as="div" className={styles.downloadBadges} delay={120}>
+          <button type="button" className={styles.downloadBadge} disabled>
+            <span className={styles.downloadBadgeIcon}>
+              <GooglePlayIcon size={28} />
+            </span>
+            <span className={styles.downloadBadgeText}>
+              <span className={styles.downloadBadgeEyebrow}>Get it on</span>
+              <span className={styles.downloadBadgeLabel}>Google Play</span>
+            </span>
+          </button>
+          <button
+            type="button"
+            className={styles.downloadBadge}
+            onClick={() => onNavigate('/signup')}
+          >
+            <span className={styles.downloadBadgeIcon}>
+              <ChromeIcon size={28} />
+            </span>
+            <span className={styles.downloadBadgeText}>
+              <span className={styles.downloadBadgeEyebrow}>Available on</span>
+              <span className={styles.downloadBadgeLabel}>Web Browser</span>
+            </span>
+          </button>
+        </Reveal>
+      </div>
+    </section>
+  )
+}
+
+function Mission() {
+  return (
+    <section id="mission" className={styles.mission}>
+      <div className={styles.missionGlow} aria-hidden="true" />
+      <div className={styles.missionInner}>
+        <Reveal as="div" className={styles.missionCopy}>
+          <span className={styles.missionQuoteMark} aria-hidden="true">"</span>
+          <MonoLabel>Our mission</MonoLabel>
+          <p className={styles.missionStatement}>{MISSION_STATEMENT}</p>
+          <p className={styles.missionSub}>{MISSION_SUB}</p>
+        </Reveal>
       </div>
     </section>
   )
@@ -942,6 +1006,7 @@ export default function LandingPage() {
           title="From order to delivery"
           items={APP_STRIP_TWO}
         />
+        <DownloadSection onNavigate={goTo} />
         <Mission />
         <Testimonials />
         <PricingTeaser onNavigate={goTo} />
