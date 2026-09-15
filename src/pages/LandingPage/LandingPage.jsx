@@ -420,7 +420,7 @@ function PhoneMockup() {
             ))}
           </div>
         </div>
-        <img src="/landingPageImages/phone-frame.webp" alt="" className={styles.phoneFrameImage} />
+        <img src="/landingPageImages/phone-frame.png" alt="" className={styles.phoneFrameImage} />
       </div>
     </div>
   )
