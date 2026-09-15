@@ -1,5 +1,4 @@
 import { useState, useEffect, useRef } from 'react'
-import { useTheme } from './hooks/useTheme'
 import SiteNav from './components/SiteNav/SiteNav'
 import SiteFooter from './components/SiteFooter/SiteFooter'
 import { USAGE_LIMITS } from '../../datas/usageLimits'
@@ -919,7 +918,6 @@ export default function LandingPage() {
   const goTo = path => {
     window.location.href = path
   }
-  const [theme, toggleTheme] = useTheme()
 
   useEffect(() => {
     const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches
@@ -932,8 +930,8 @@ export default function LandingPage() {
   }, [])
 
   return (
-    <div className={styles.page} data-theme={theme}>
-      <SiteNav theme={theme} onToggleTheme={toggleTheme} />
+    <div className={styles.page}>
+      <SiteNav />
       <main className={styles.mainContent}>
         <Hero onNavigate={goTo} />
         <AboutAndProduct items={APP_STRIP_ONE} />
