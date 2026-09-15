@@ -1,7 +1,6 @@
 import { useState, useEffect, useRef } from 'react'
 import { Link } from 'react-router-dom'
 import { useInstall } from '../../../../contexts/InstallContext'
-import logoLightMode from '../../../../assets/logoLightMode.png'
 import logoDarkMode from '../../../../assets/logoDarkMode.png'
 import styles from './SiteNav.module.css'
 
@@ -91,20 +90,6 @@ function useScrollCollapse() {
   return { scrolled, collapsed }
 }
 
-function ThemeToggle({ theme, onToggle }) {
-  const isDark = theme === 'dark'
-  return (
-    <button
-      type="button"
-      className={styles.themeToggle}
-      onClick={onToggle}
-      aria-label={isDark ? 'Switch to light mode' : 'Switch to dark mode'}
-    >
-      <span className="mi-outlined">{isDark ? 'light_mode' : 'dark_mode'}</span>
-    </button>
-  )
-}
-
 function InstallButton({ className, fullWidth }) {
   const install = useInstall()
   const [showIOSHint, setShowIOSHint] = useState(false)
@@ -146,12 +131,9 @@ function InstallButton({ className, fullWidth }) {
 }
 
 export default function SiteNav({
-  theme,
-  onToggleTheme,
   showLinks = true,
   showInstall = true,
   showAuth = true,
-  showThemeToggle = true,
 }) {
   const [open, setOpen] = useState(false)
   const { scrolled, collapsed } = useScrollCollapse()
@@ -162,14 +144,13 @@ export default function SiteNav({
   }
 
   const hasMobilePanel = showLinks || showInstall || showAuth
-  const logoSrc = theme === 'dark' ? logoLightMode : logoDarkMode
   const isCollapsed = collapsed && !open
 
   return (
     <header className={`${styles.nav} ${scrolled ? styles.navScrolled : ''}`}>
       <div className={styles.navInner}>
         <Link to="/" className={styles.logo}>
-          <img src={logoSrc} alt="TailorPady" className={styles.logoIcon} />
+          <img src={logoDarkMode} alt="TailorPady" className={styles.logoIcon} />
           <span className={`${styles.logoMark} ${isCollapsed ? styles.logoMarkCollapsed : ''}`}>
             TailorPady
           </span>
@@ -191,10 +172,9 @@ export default function SiteNav({
         )}
 
         <div className={styles.navActions}>
-          {(showThemeToggle || showInstall) && (
+          {showInstall && (
             <div className={styles.navUtility}>
-              {showThemeToggle && <ThemeToggle theme={theme} onToggle={onToggleTheme} />}
-              {showInstall && <InstallButton />}
+              <InstallButton />
             </div>
           )}
           {showAuth && (
@@ -210,7 +190,6 @@ export default function SiteNav({
         </div>
 
         <div className={styles.navMobileTrigger}>
-          {showThemeToggle && <ThemeToggle theme={theme} onToggle={onToggleTheme} />}
           {hasMobilePanel ? (
             <button
               type="button"
