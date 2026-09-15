@@ -1,6 +1,5 @@
 import { useEffect } from 'react'
 import { useLocation } from 'react-router-dom'
-import { useTheme } from '../../hooks/useTheme'
 import SiteNav from '../../components/SiteNav/SiteNav'
 import SiteFooter from '../../components/SiteFooter/SiteFooter'
 import styles from './PublicPageLayout.module.css'
@@ -13,7 +12,6 @@ export default function PublicPageLayout({
   navProps,
   children,
 }) {
-  const [theme, toggleTheme] = useTheme()
   const { pathname } = useLocation()
 
   useEffect(() => {
@@ -21,8 +19,8 @@ export default function PublicPageLayout({
   }, [pathname])
 
   return (
-    <div className={styles.page} data-theme={theme}>
-      <SiteNav theme={theme} onToggleTheme={toggleTheme} {...navProps} />
+    <div className={styles.page}>
+      <SiteNav {...navProps} />
       <main className={styles.mainContent}>
         <div className={styles.hero}>
           {eyebrow && <span className={styles.eyebrow}>{eyebrow}</span>}
