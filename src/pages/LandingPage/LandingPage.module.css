@@ -329,7 +329,7 @@
 .phone {
   position: relative;
   width: 280px;
-  aspect-ratio: 553 / 1158;
+  aspect-ratio: 1245 / 2359;
   filter: drop-shadow(0 28px 40px rgba(8, 8, 10, 0.3));
   z-index: 1;
   animation: floatY 6s ease-in-out 1.1s infinite;
@@ -337,11 +337,11 @@
 
 .phoneScreen {
   position: absolute;
-  top: 2.6%;
-  bottom: 3.6%;
-  left: 5.8%;
-  right: 6.1%;
-  border-radius: 6.2% / 2.8%;
+  top: 7.12%;
+  bottom: 7.12%;
+  left: 12.05%;
+  right: 12.53%;
+  border-radius: 3px;
   overflow: hidden;
   background: var(--surface-2);
   z-index: 1;
@@ -751,17 +751,17 @@
 .showcasePhone {
   position: relative;
   width: 100%;
-  aspect-ratio: 553 / 1158;
+  aspect-ratio: 1245 / 2359;
   filter: drop-shadow(0 18px 26px rgba(8, 8, 10, 0.22));
 }
 
 .showcasePhoneScreen {
   position: absolute;
-  top: 2.6%;
-  bottom: 3.6%;
-  left: 5.8%;
-  right: 6.1%;
-  border-radius: 6.2% / 2.8%;
+  top: 7.12%;
+  bottom: 7.12%;
+  left: 12.05%;
+  right: 12.53%;
+  border-radius: 3px;
   overflow: hidden;
   background: var(--surface-2);
   z-index: 1;
@@ -2004,124 +2004,4 @@
   .marqueeTrack {
     width: max-content;
   }
-}
-
-.download {
-  max-width: 900px;
-  margin: 0 auto;
-  padding: 24px clamp(20px, 5vw, 64px) 96px;
-  text-align: center;
-}
-
-.downloadInner {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-.downloadBody {
-  font-size: 15px;
-  line-height: 1.7;
-  color: var(--muted);
-  max-width: 52ch;
-  margin: 0 0 32px;
-}
-
-.downloadBadges {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 16px;
-  width: 100%;
-}
-
-.downloadBadge {
-  display: inline-flex;
-  align-items: center;
-  gap: 12px;
-  background: var(--surface);
-  border: 1px solid var(--line-strong);
-  border-radius: 12px;
-  padding: 12px 22px;
-  cursor: pointer;
-  transition: transform 0.15s ease, border-color 0.15s ease, background 0.15s ease;
-  flex: 0 1 220px;
-  justify-content: flex-start;
-}
-
-.downloadBadge:hover {
-  border-color: var(--ink);
-  transform: translateY(-2px);
-}
-
-.downloadBadge:active {
-  transform: translateY(0) scale(0.98);
-}
-
-.downloadBadge:disabled {
-  cursor: not-allowed;
-  opacity: 0.5;
-}
-
-.downloadBadge:disabled:hover {
-  border-color: var(--line-strong);
-  transform: none;
-}
-
-.downloadBadgeIcon {
-  font-size: 28px !important;
-  color: var(--ink);
-  flex-shrink: 0;
-}
-
-.downloadBadgeText {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  text-align: left;
-}
-
-.downloadBadgeEyebrow {
-  font-size: 11px;
-  font-weight: 500;
-  color: var(--muted-2);
-  line-height: 1.3;
-}
-
-.downloadBadgeLabel {
-  font-family: var(--display);
-  font-size: 15px;
-  font-weight: 700;
-  color: var(--ink);
-  line-height: 1.3;
-}
-
-@media (max-width: 640px) {
-  .download {
-    padding: 16px 16px 72px;
-  }
-
-  .downloadBadges {
-    flex-direction: column;
-    align-items: stretch;
-    gap: 12px;
-  }
-
-  .downloadBadge {
-    flex: 1 1 auto;
-    width: 100%;
-    justify-content: center;
-  }
-
-  .downloadBadgeText {
-    text-align: left;
-  }
-}
-
-
-.downloadBadgeIcon {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
 }
