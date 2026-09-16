@@ -606,7 +606,7 @@ function DownloadSection({ onNavigate }) {
           Download the best tailoring business app from the Google Play Store, or use it right in your browser. It comes packed with amazing features and localisation options like currency and language, built for the way tailors actually work.
         </Reveal>
         <Reveal as="div" className={styles.downloadBadges} delay={120}>
-          
+          <a
             href={PLAYSTORE_HREF}
             target="_blank"
             rel="noreferrer"
@@ -952,20 +952,15 @@ function WhatsAppWidget() {
             )}
           </div>
           <div className={styles.whatsappPanelFooter}>
-            {(() => {
-              const AnchorTag = 'a'
-              return (
-                <AnchorTag
-                  href={WHATSAPP_HREF}
-                  target="_blank"
-                  rel="noreferrer"
-                  className={styles.whatsappStartChatBtn}
-                >
-                  <WhatsAppIcon size={18} />
-                  Continue on WhatsApp
-                </AnchorTag>
-              )
-            })()}
+            <a
+              href={WHATSAPP_HREF}
+              target="_blank"
+              rel="noreferrer"
+              className={styles.whatsappStartChatBtn}
+            >
+              <WhatsAppIcon size={18} />
+              Continue on WhatsApp
+            </a>
           </div>
         </div>
       )}
