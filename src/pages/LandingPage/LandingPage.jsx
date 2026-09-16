@@ -395,25 +395,25 @@ function BotIcon({ size = 18, color = 'currentColor', backgroundColor = 'var(--b
   )
 }
 
-function GooglePlayIcon({ size = 26 }) {
+function GooglePlayIcon({ size = 28 }) {
   return (
-    <svg width={size} height={size} viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-      <path d="M4 3 L4 12 L14 12 Z" fill="#12B7F5" />
-      <path d="M4 3 L14 12 L20 12 Z" fill="#FF3D53" />
-      <path d="M4 21 L4 12 L14 12 Z" fill="#28D46B" />
-      <path d="M4 21 L14 12 L20 12 Z" fill="#FFCD00" />
+    <svg width={size} height={size} viewBox="0 0 466 511.98" xmlns="http://www.w3.org/2000/svg">
+      <path fill="#EA4335" d="M199.9 237.8 1.4 470.17c7.22 24.57 30.16 41.81 55.8 41.81 11.16 0 20.93-2.79 29.3-8.37l244.16-139.46L199.9 237.8z" />
+      <path fill="#FBBC04" d="m433.91 205.1-104.65-60-111.61 110.22 113.01 108.83 104.64-58.6c18.14-9.77 30.7-29.3 30.7-50.23-1.4-20.93-13.95-40.46-32.09-50.22z" />
+      <path fill="#34A853" d="M199.42 273.45 329.27 145.1 87.9 8.37C79.53 2.79 68.36 0 57.2 0 30.7 0 6.98 18.14 1.4 41.86l198.02 231.59z" />
+      <path fill="#4285F4" d="M1.39 41.86C0 46.04 0 51.63 0 57.2v397.64c0 5.57 0 9.76 1.4 15.34l216.27-214.86L1.39 41.86z" />
     </svg>
   )
 }
 
-function ChromeIcon({ size = 26 }) {
+function ChromeIcon({ size = 28 }) {
   return (
     <svg width={size} height={size} viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-      <path d="M12 12 L12 2 A10 10 0 0 1 20.66 17 Z" fill="#EA4335" />
-      <path d="M12 12 L20.66 17 A10 10 0 0 1 3.34 17 Z" fill="#34A853" />
-      <path d="M12 12 L3.34 17 A10 10 0 0 1 12 2 Z" fill="#FBBC05" />
-      <circle cx="12" cy="12" r="7" fill="#fff" />
-      <circle cx="12" cy="12" r="4.2" fill="#4285F4" />
+      <path fill="#EA4335" d="M12 12 L1.608 6 A12 12 0 0 1 22.392 6 Z" />
+      <path fill="#FBBC05" d="M12 12 L22.392 6 A12 12 0 0 1 12 24 Z" />
+      <path fill="#34A853" d="M12 12 L12 24 A12 12 0 0 1 1.608 6 Z" />
+      <circle cx="12" cy="12" r="7.2" fill="#fff" />
+      <circle cx="12" cy="12" r="6" fill="#4285F4" />
     </svg>
   )
 }
@@ -597,14 +597,14 @@ function DownloadSection({ onNavigate }) {
       <div className={styles.downloadInner}>
         <SectionHeading
           eyebrow="Download"
-          title="Take TailorPady with you"
+          title="Download The Latest Version Of TailorPady"
           align="center"
         />
         <Reveal as="p" className={styles.downloadBody} delay={60}>
-          Manage your shop from your pocket. The mobile app brings the same customers, orders, and payments to your phone, with support for your local currency and language.
+          Download the best tailoring business app from the Google Play Store, or use it right in your browser. It comes packed with amazing features and localisation options like currency and language, built for the way tailors actually work.
         </Reveal>
         <Reveal as="div" className={styles.downloadBadges} delay={120}>
-          <button type="button" className={styles.downloadBadge} disabled>
+          <button type="button" className={styles.downloadBadge}>
             <span className={styles.downloadBadgeIcon}>
               <GooglePlayIcon size={28} />
             </span>
