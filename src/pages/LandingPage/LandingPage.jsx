@@ -263,6 +263,8 @@ const WHATSAPP_HREF = `https://wa.me/${CONTACT.whatsapp.replace(/\D/g, '')}`
 
 const WHATSAPP_PEEK_KEY = 'tailorpady-whatsapp-peek-shown'
 
+const PLAYSTORE_HREF = 'https://play.google.com/store/apps/details?id=com.tailorpady.app'
+
 function useInView(threshold = 0.15) {
   const ref = useRef(null)
   const [inView, setInView] = useState(false)
@@ -604,7 +606,12 @@ function DownloadSection({ onNavigate }) {
           Download the best tailoring business app from the Google Play Store, or use it right in your browser. It comes packed with amazing features and localisation options like currency and language, built for the way tailors actually work.
         </Reveal>
         <Reveal as="div" className={styles.downloadBadges} delay={120}>
-          <button type="button" className={styles.downloadBadge}>
+          
+            href={PLAYSTORE_HREF}
+            target="_blank"
+            rel="noreferrer"
+            className={styles.downloadBadge}
+          >
             <span className={styles.downloadBadgeIcon}>
               <GooglePlayIcon size={28} />
             </span>
@@ -612,7 +619,7 @@ function DownloadSection({ onNavigate }) {
               <span className={styles.downloadBadgeEyebrow}>Get it on</span>
               <span className={styles.downloadBadgeLabel}>Google Play</span>
             </span>
-          </button>
+          </a>
           <button
             type="button"
             className={styles.downloadBadge}
