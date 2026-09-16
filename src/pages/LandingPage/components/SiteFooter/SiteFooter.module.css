@@ -153,8 +153,8 @@ a.footerContactLine:hover {
   padding: 8px clamp(20px, 5vw, 64px) 0;
   font-family: var(--display);
   font-weight: 800;
-  font-size: clamp(64px, 16vw, 240px);
-  letter-spacing: -0.02em;
+  font-size: clamp(36px, 12.5vw, 210px);
+  letter-spacing: -0.03em;
   color: color-mix(in srgb, var(--paper) 8%, transparent);
   user-select: none;
   white-space: nowrap;
@@ -205,9 +205,5 @@ a.footerContactLine:hover {
   .footerColumn {
     align-items: flex-start;
     flex: 1 1 0;
-  }
-
-  .footerWordmark {
-    font-size: clamp(48px, 20vw, 120px);
   }
 }
