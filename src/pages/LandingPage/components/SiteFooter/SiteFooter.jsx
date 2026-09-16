@@ -1,5 +1,4 @@
 import { Link } from 'react-router-dom'
-import logoLightMode from '../../../../assets/logoLightMode.png'
 import styles from './SiteFooter.module.css'
 
 const CONTACT = {
@@ -79,12 +78,6 @@ export default function SiteFooter() {
       <div className={styles.footerInner}>
         <div className={styles.footerTop}>
           <div className={styles.footerBrand}>
-            <div className={styles.footerLogo}>
-              <img src={logoLightMode} alt="TailorPady" className={styles.footerLogoIcon} />
-              <span className={`${styles.logoMark} `}>
-                TailorPady
-              </span>
-            </div>
             <div className={styles.footerContactDetails}>
               <a href={`tel:${CONTACT.phone.replace(/\s/g, '')}`} className={styles.footerContactLine}>
                 <span className="mi-outlined" style={{ fontSize: '1rem' }}>call</span>
@@ -129,6 +122,9 @@ export default function SiteFooter() {
         <div className={styles.footerBottom}>
           <span>© {new Date().getFullYear()} TailorPady. All rights reserved.</span>
         </div>
+      </div>
+      <div className={styles.footerWordmark} aria-hidden="true">
+        TAILORPADY
       </div>
     </footer>
   )
