@@ -40,7 +40,7 @@
   width: auto;
   display: block;
   flex-shrink: 0;
-  border-radius: 50px;
+  border-radius: 10px;
   background: var(--ink);
 }
 
@@ -54,16 +54,6 @@
   letter-spacing: -0.02em;
   line-height: normal;
   white-space: nowrap;
-  max-width: 200px;
-  opacity: 1;
-  overflow-x: hidden;
-  overflow-y: visible;
-  transition: max-width 0.35s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.25s ease;
-}
-
-.logoMarkCollapsed {
-  max-width: 0;
-  opacity: 0;
 }
 
 .navLinks {
@@ -121,34 +111,6 @@
   border: 1px solid var(--line);
   border-radius: 10px;
   background: var(--surface);
-}
-
-.themeToggle {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 32px;
-  height: 32px;
-  flex-shrink: 0;
-  background: transparent;
-  color: var(--ink);
-  border: none;
-  border-radius: 10px;
-  cursor: pointer;
-  transition: background 0.15s ease, transform 0.15s ease;
-}
-
-.themeToggle span {
-  font-size: 1.1rem;
-}
-
-.themeToggle:hover {
-  background: var(--surface-2);
-  transform: translateY(-1px);
-}
-
-.themeToggle:active {
-  transform: scale(0.92);
 }
 
 .installWrap {
@@ -432,11 +394,5 @@
 
   .navMobileTrigger {
     display: flex;
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .logoMark {
-    transition: opacity 0.2s ease;
   }
 }
