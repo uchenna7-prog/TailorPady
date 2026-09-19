@@ -596,16 +596,16 @@ function AppStrip({ id, eyebrow, title, items }) {
 function DownloadSection({ onNavigate }) {
   return (
     <section id="download" className={styles.download}>
-      <div className={styles.downloadInner}>
+      <Reveal as="div" className={styles.downloadInner}>
         <SectionHeading
           eyebrow="Download"
           title="Download The Latest Version Of TailorPady"
           align="center"
         />
-        <Reveal as="p" className={styles.downloadBody} delay={60}>
+        <p className={styles.downloadBody}>
           Download the best tailoring business app from the Google Play Store, or use it right in your browser. It comes packed with amazing features and localisation options like currency and language, built for the way tailors actually work.
-        </Reveal>
-        <Reveal as="div" className={styles.downloadBadges} delay={120}>
+        </p>
+        <div className={styles.downloadBadges}>
           <a
             href={PLAYSTORE_HREF}
             target="_blank"
@@ -633,8 +633,8 @@ function DownloadSection({ onNavigate }) {
               <span className={styles.downloadBadgeLabel}>Web Browser</span>
             </span>
           </button>
-        </Reveal>
-      </div>
+        </div>
+      </Reveal>
     </section>
   )
 }
