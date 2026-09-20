@@ -119,9 +119,6 @@ export default function SiteFooter() {
             ))}
           </div>
         </div>
-        <div className={styles.footerBottom}>
-          <span>© {new Date().getFullYear()} TailorPady. All rights reserved.</span>
-        </div>
       </div>
       <div className={styles.footerWordmark} aria-hidden="true">
         TAILORPADY
