@@ -135,16 +135,6 @@ a.footerContactLine:hover {
   opacity: 0.65;
 }
 
-.footerBottom {
-  padding-top: 24px;
-  font-size: 12px;
-  opacity: 0.45;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 12px;
-}
 
 .footerWordmark {
   overflow: hidden;
